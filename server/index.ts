@@ -18,32 +18,32 @@ import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 
+import fs from 'fs';
+import path from 'path';
+
 const app = express();
 
 console.log('🔧 Removing conflicting HTML route to allow React app to load');
 
-// DIRECT FILE SERVING - Bypass Vite for main.tsx
-import fs from 'fs';
-import path from 'path';
-
-app.use('/src/main.tsx', async (req, res, next) => {
-  console.log('🎯 DIRECT SERVE: main.tsx requested - serving directly');
+// FIRST PRIORITY: Direct serving for main.tsx BEFORE any other middleware
+app.get('/src/main.tsx', async (req, res) => {
+  console.log('🎯 PRIORITY ROUTE: main.tsx requested - serving directly');
   
   try {
     const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
-    console.log(`📁 Reading file: ${mainTsxPath}`);
+    console.log(`📁 Reading main.tsx from: ${mainTsxPath}`);
     
     const content = await fs.promises.readFile(mainTsxPath, 'utf-8');
     
     res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     
-    console.log('✅ DIRECT SERVE SUCCESS: main.tsx served with text/javascript MIME type');
-    res.status(200).send(content);
+    console.log('✅ SUCCESS: main.tsx served with correct MIME type');
+    res.send(content);
   } catch (error) {
-    console.error('❌ DIRECT SERVE ERROR:', error);
-    next();
+    console.error('❌ ERROR serving main.tsx:', error);
+    res.status(500).send('// Error loading main.tsx');
   }
 });
 
