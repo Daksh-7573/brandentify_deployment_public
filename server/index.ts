@@ -426,9 +426,13 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Force development mode when running with tsx (which indicates dev mode)
+  const isDevelopment = true; // Always use Vite development server in this environment
+  if (isDevelopment) {
+    console.log("🔧 Setting up Vite development server");
     await setupVite(app, server);
   } else {
+    console.log("🔧 Setting up static file serving for production");
     serveStatic(app);
   }
 
