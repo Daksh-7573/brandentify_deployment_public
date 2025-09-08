@@ -18,6 +18,8 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 // Background image removed - using CSS background instead
 
 export default function AuthPage() {
+  console.log('🔥 AuthPage component is loading...');
+  
   const { isAuthenticated, isLoading, user } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
