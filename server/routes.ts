@@ -58,6 +58,8 @@ import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
+import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
+import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { authRoutes } from "./auth-routes";
 import { 
   handleSmartConnect, 
@@ -7072,6 +7074,111 @@ ${extractedText.substring(0, 5000)}
   // Setup Quest Progress Tracking Middleware
   setupQuestProgressMiddleware(apiRouter, storage);
   console.log("Quest Progress Tracking Middleware loaded");
+
+  // Personalized Quest Assignment API endpoints
+  apiRouter.get('/users/:userId/platform-recommendations', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      
+      console.log(`[Platform Recommendations API] Generated ${recommendations.length} recommendations for user ${userId}`);
+      
+      res.json({
+        success: true,
+        recommendations,
+        userId
+      });
+    } catch (error) {
+      console.error('[Platform Recommendations API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error generating platform recommendations'
+      });
+    }
+  });
+
+  apiRouter.post('/users/:userId/assign-personalized-quests', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      const result = await personalizedQuestAssignment.assignPersonalizedSocialQuests(userId);
+      
+      console.log(`[Personalized Quest Assignment API] Assigned ${result.assignedQuests.length} quests for user ${userId}`);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('[Personalized Quest Assignment API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error assigning personalized quests'
+      });
+    }
+  });
+
+  apiRouter.put('/users/:userId/update-quest-visibility', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      const result = await personalizedQuestAssignment.updateUserSocialQuestVisibility(userId);
+      
+      console.log(`[Quest Visibility API] Updated visibility for user ${userId}: ${result.visibleQuests} visible, ${result.hiddenQuests} hidden`);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('[Quest Visibility API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error updating quest visibility'
+      });
+    }
+  });
+
+  apiRouter.get('/users/:userId/quest-summary', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      const summary = await personalizedQuestAssignment.getPersonalizedQuestSummary(userId);
+      
+      res.json({
+        success: true,
+        summary,
+        userId
+      });
+    } catch (error) {
+      console.error('[Quest Summary API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error getting quest summary'
+      });
+    }
+  });
+  
+  console.log("Personalized Quest Assignment API loaded");
 
   // Post Suggestion routes
   apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
