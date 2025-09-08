@@ -22,6 +22,41 @@ const app = express();
 
 console.log('🔧 Removing conflicting HTML route to allow React app to load');
 
+// EXTREME MIME TYPE FIX - Before any other middleware
+app.use((req, res, next) => {
+  const originalSetHeader = res.setHeader;
+  const originalWriteHead = res.writeHead;
+  
+  // Intercept all TypeScript file requests BEFORE Vite processes them
+  if (req.path === '/src/main.tsx' || req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js')) {
+    console.log(`🚨 INTERCEPTING: ${req.path} - forcing text/javascript`);
+    
+    // Override setHeader to force our MIME type
+    res.setHeader = function(name, value) {
+      if (typeof name === 'string' && name.toLowerCase() === 'content-type') {
+        console.log(`🔧 OVERRIDING Content-Type from ${value} to text/javascript`);
+        return originalSetHeader.call(this, name, 'text/javascript; charset=utf-8');
+      }
+      return originalSetHeader.call(this, name, value);
+    };
+    
+    // Override writeHead to force our MIME type
+    res.writeHead = function(statusCode, statusMessage, headers) {
+      if (headers && typeof headers === 'object') {
+        headers['content-type'] = 'text/javascript; charset=utf-8';
+        console.log(`🔧 OVERRIDING writeHead Content-Type to text/javascript`);
+      }
+      return originalWriteHead.call(this, statusCode, statusMessage, headers);
+    };
+    
+    // Force immediate header setting
+    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+  
+  next();
+});
+
 // Configure MIME types for TypeScript modules - FIXED
 express.static.mime.define({
   'text/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs'],
