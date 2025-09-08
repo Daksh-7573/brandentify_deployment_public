@@ -26,6 +26,22 @@ app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer
 // Add performance middleware first
 app.use(performanceMiddleware());
 
+// CRITICAL: MIME type configuration for JavaScript modules MUST be first
+app.use((req, res, next) => {
+  // Set correct MIME types for JavaScript modules to fix loading issues
+  if (req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    console.log(`🔧 MIME TYPE: ${req.path} -> application/javascript`);
+  } else if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx')) {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    console.log(`🔧 MIME TYPE: ${req.path} -> application/javascript (TypeScript)`);
+  } else if (req.path.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    console.log(`🔧 MIME TYPE: ${req.path} -> text/css`);
+  }
+  next();
+});
+
 // CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
 app.use((req, res, next) => {
   // Skip ALL middleware interference for static assets - let Vite handle them directly
