@@ -46,9 +46,26 @@ app.get('/src/main.js', (req, res) => {
   res.sendFile(mainTsxPath);
 });
 
+// Configure MIME types for static serving
+express.static.mime.define({
+  'text/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs'],
+  'text/css': ['css'],
+  'application/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs']
+});
+
 // Serve built assets if available
 app.use('/assets', express.static(path.join(distPath, 'assets')));
-app.use('/src', express.static(path.join(clientPath, 'src')));
+
+// Serve client source files with correct MIME types
+app.use('/src', (req, res, next) => {
+  // Set correct MIME types for TypeScript and CSS files
+  if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js')) {
+    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+  } else if (req.path.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css; charset=utf-8');
+  }
+  next();
+}, express.static(path.join(clientPath, 'src')));
 
 // API routes
 app.get('/api/health', (req, res) => {
