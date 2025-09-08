@@ -213,19 +213,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 </div>
               )}
 
-              {/* Add PostSuggestionDisplay component for social post quests - as optional enhancement */}
-              {questDefinition.type === 'social_post' && (
-                <div className="mt-4 border-t border-white/10 pt-3">
-                  <div className="text-sm font-medium text-white/70 mb-2">
-                    <span className="mr-1">🤖</span> AI-Generated Content Ideas (Optional):
-                  </div>
-                  <PostSuggestionDisplay 
-                    questType={questDefinition.type}
-                    targetAction={questDefinition.targetAction}
-                    userId={quest.userId}
-                  />
-                </div>
-              )}
             </div>
           )}
         </div>
