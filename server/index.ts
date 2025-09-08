@@ -23,31 +23,26 @@ import path from 'path';
 
 const app = express();
 
-console.log('🔧 Fixing MIME type issue for main.tsx');
+console.log('🔧 Creating main.js route to bypass MIME type issues');
 
-// ULTIMATE PRIORITY: Catch main.tsx requests IMMEDIATELY
-app.use((req, res, next) => {
-  console.log(`🔍 REQUEST: ${req.method} ${req.url} ${req.path}`);
+// JAVASCRIPT VERSION: Serve main.js instead of main.tsx to avoid MIME issues
+app.get('/src/main.js', async (req, res) => {
+  console.log('🎯 SERVING main.js (converted from main.tsx) with correct MIME type');
   
-  if (req.url === '/src/main.tsx' || req.path === '/src/main.tsx') {
-    console.log('🚨 INTERCEPTED: main.tsx request - serving with correct MIME type');
+  try {
+    const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
+    const content = fs.readFileSync(mainTsxPath, 'utf-8');
     
-    try {
-      const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
-      const content = fs.readFileSync(mainTsxPath, 'utf-8');
-      
-      res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      
-      console.log('✅ DIRECT INTERCEPT SUCCESS: main.tsx served with text/javascript');
-      return res.send(content);
-    } catch (error) {
-      console.error('❌ INTERCEPT ERROR:', error);
-    }
+    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    console.log('✅ SUCCESS: main.js served with text/javascript MIME type');
+    res.send(content);
+  } catch (error) {
+    console.error('❌ ERROR serving main.js:', error);
+    res.status(500).send('// Error loading main.js');
   }
-  
-  next();
 });
 
 // Configure MIME types for TypeScript modules - FIXED
