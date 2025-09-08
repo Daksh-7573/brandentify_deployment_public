@@ -25,6 +25,7 @@ import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import { setupQuestProgressMiddleware } from "./routes-quest-progress";
+import { postSuggestionService } from "./services/post-suggestion-service";
 import mentorshipRoutes from "./routes-mentorship";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
@@ -7071,6 +7072,39 @@ ${extractedText.substring(0, 5000)}
   // Setup Quest Progress Tracking Middleware
   setupQuestProgressMiddleware(apiRouter, storage);
   console.log("Quest Progress Tracking Middleware loaded");
+
+  // Post Suggestion routes
+  apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
+    try {
+      const { userId, platform, targetAction } = req.body;
+      
+      if (!userId || !platform || !targetAction) {
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields: userId, platform, targetAction'
+        });
+      }
+
+      const suggestion = await postSuggestionService.generatePostSuggestion({
+        userId: parseInt(userId),
+        platform,
+        targetAction
+      });
+
+      res.json({
+        success: true,
+        suggestion
+      });
+    } catch (error) {
+      console.error('[Post Suggestion API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate post suggestion',
+        error: String(error)
+      });
+    }
+  });
+  console.log("Post Suggestion routes loaded");
   
   // Mentorship Connect routes
   app.use('/api', mentorshipRoutes);
