@@ -2,6 +2,7 @@ import { db } from '../db';
 import { users, userQuests, questDefinitions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { platformRecommendationService } from './platform-recommendation-service';
+import { hashtagSuggestionService } from './hashtag-suggestion-service';
 
 export class PersonalizedQuestAssignment {
   
@@ -123,10 +124,29 @@ export class PersonalizedQuestAssignment {
           })
           .returning();
 
+        const recommendation = recommendations.find(r => r.targetAction === quest.targetAction);
+        
+        // Generate hashtag suggestions for this quest
+        const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
+          userId, 
+          recommendation?.platform || 'LinkedIn', 
+          quest.targetAction
+        );
+
+        // Enhance Musk tip with hashtag suggestions
+        const enhancedMuskTip = quest.muskTip + 
+          (hashtagSuggestion.hashtags.length > 0 
+            ? `\n\n💡 ${hashtagSuggestionService.formatHashtagsForTip(hashtagSuggestion.hashtags)}` 
+            : '');
+
         assignedQuests.push({
           ...assignedQuest,
-          questDefinition: quest,
-          recommendation: recommendations.find(r => r.targetAction === quest.targetAction)
+          questDefinition: {
+            ...quest,
+            muskTip: enhancedMuskTip
+          },
+          recommendation,
+          hashtagSuggestion
         });
 
         console.log(`[PersonalizedQuests] Assigned quest: ${quest.title} to user ${userId}`);
@@ -367,10 +387,27 @@ export class PersonalizedQuestAssignment {
           })
           .returning();
 
+        // Generate hashtag suggestions for this quest
+        const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
+          userId, 
+          recommendation?.platform || 'LinkedIn', 
+          questDef.targetAction
+        );
+
+        // Enhance Musk tip with hashtag suggestions
+        const enhancedMuskTip = questDef.muskTip + 
+          (hashtagSuggestion.hashtags.length > 0 
+            ? `\n\n💡 ${hashtagSuggestionService.formatHashtagsForTip(hashtagSuggestion.hashtags)}` 
+            : '');
+
         assignedQuests.push({
           ...insertedQuest,
-          questDefinition: questDef,
-          recommendation
+          questDefinition: {
+            ...questDef,
+            muskTip: enhancedMuskTip
+          },
+          recommendation,
+          hashtagSuggestion
         });
 
         console.log(`[WeeklyQuests] Assigned quest: ${questDef.title} to user ${userId}`);

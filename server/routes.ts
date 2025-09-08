@@ -60,6 +60,7 @@ import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { platformRecommendationService } from "./services/platform-recommendation-service";
+import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
 import { 
   handleSmartConnect, 
@@ -7179,6 +7180,45 @@ ${extractedText.substring(0, 5000)}
   });
   
   console.log("Personalized Quest Assignment API loaded");
+
+  // Weekly Quest Scheduler API endpoints
+  apiRouter.get('/weekly-quest-scheduler/status', async (req: Request, res: Response) => {
+    try {
+      const status = weeklyQuestScheduler.getSchedulerStatus();
+      res.json({
+        success: true,
+        status
+      });
+    } catch (error) {
+      console.error('[Weekly Scheduler API] Error getting status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error getting scheduler status'
+      });
+    }
+  });
+
+  apiRouter.post('/weekly-quest-scheduler/trigger', async (req: Request, res: Response) => {
+    try {
+      console.log('[Weekly Scheduler API] Manual trigger requested');
+      await weeklyQuestScheduler.triggerWeeklyGeneration();
+      
+      res.json({
+        success: true,
+        message: 'Weekly quest generation triggered successfully'
+      });
+    } catch (error) {
+      console.error('[Weekly Scheduler API] Error triggering generation:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error triggering weekly quest generation'
+      });
+    }
+  });
+
+  // Start the weekly scheduler
+  weeklyQuestScheduler.startScheduler();
+  console.log("Weekly Quest Scheduler started");
 
   // Post Suggestion routes
   apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
