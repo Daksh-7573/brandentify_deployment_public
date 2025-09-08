@@ -22,40 +22,33 @@ const app = express();
 
 console.log('🔧 Removing conflicting HTML route to allow React app to load');
 
-// Configure MIME types for TypeScript modules
+// Configure MIME types for TypeScript modules - FIXED
 express.static.mime.define({
-  'application/javascript': ['tsx', 'ts', 'jsx', 'mjs'],
-  'text/javascript': ['tsx', 'ts', 'jsx', 'mjs', 'js'],
-  'application/typescript': ['tsx', 'ts']
+  'text/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs'],
+  'application/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs']
 });
-console.log('🔧 Enhanced MIME type configuration for TypeScript modules');
+console.log('🔧 FIXED: Enhanced MIME type configuration for TypeScript modules');
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
-// CRITICAL: Force correct MIME type for all JavaScript modules
+// CRITICAL: Force correct MIME type for all JavaScript modules - ENHANCED
 app.use((req, res, next) => {
   console.log(`🔍 Request: ${req.method} ${req.path}`);
   
   if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
-    res.setHeader('Content-Type', 'text/javascript');
+    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`✅ FORCE MIME TYPE: ${req.path} -> text/javascript`);
-    
-    // Override any response content type
-    const originalSend = res.send;
-    const originalJson = res.json;
-    
-    res.send = function(data) {
-      this.setHeader('Content-Type', 'text/javascript');
-      return originalSend.call(this, data);
-    };
-    
-    res.json = function(data) {
-      this.setHeader('Content-Type', 'text/javascript');  
-      return originalJson.call(this, data);
-    };
+    console.log(`✅ FORCE MIME TYPE: ${req.path} -> text/javascript; charset=utf-8`);
   }
+  
+  // Special handling for main.tsx specifically
+  if (req.path === '/src/main.tsx') {
+    console.log('🎯 SPECIAL HANDLING: main.tsx detected');
+    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+  
   next();
 });
 
