@@ -20,27 +20,42 @@ import { performanceMiddleware } from "./middleware/performance-middleware";
 
 const app = express();
 
+// Configure MIME types using Express built-in functionality
+express.static.mime.define({'application/javascript': ['tsx', 'ts', 'jsx', 'mjs']});
+console.log('🔧 Express MIME types configured for TypeScript files');
+
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
-// Add performance middleware first
-app.use(performanceMiddleware());
-
-// CRITICAL: MIME type configuration for JavaScript modules MUST be first
+// CRITICAL: Override response headers to fix MIME types
 app.use((req, res, next) => {
-  // Set correct MIME types for JavaScript modules to fix loading issues
-  if (req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    console.log(`🔧 MIME TYPE: ${req.path} -> application/javascript`);
-  } else if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx')) {
-    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    console.log(`🔧 MIME TYPE: ${req.path} -> application/javascript (TypeScript)`);
-  } else if (req.path.endsWith('.css')) {
-    res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    console.log(`🔧 MIME TYPE: ${req.path} -> text/css`);
-  }
+  const originalSend = res.send;
+  const originalEnd = res.end;
+  
+  // Override send method to fix MIME types
+  res.send = function(body) {
+    if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
+      this.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      console.log(`🔧 FIXED MIME TYPE: ${req.path} -> application/javascript`);
+    }
+    return originalSend.call(this, body);
+  };
+  
+  // Override end method to fix MIME types
+  res.end = function(chunk, encoding) {
+    if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
+      this.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      console.log(`🔧 FIXED MIME TYPE (END): ${req.path} -> application/javascript`);
+    }
+    return originalEnd.call(this, chunk, encoding);
+  };
+  
+  console.log(`🔧 MIME OVERRIDE: Processing ${req.method} ${req.path}`);
   next();
 });
+
+// Add performance middleware after MIME type configuration
+app.use(performanceMiddleware());
 
 // CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
 app.use((req, res, next) => {
@@ -444,13 +459,17 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   console.log('🔧 Environment check:', app.get("env"), 'NODE_ENV:', process.env.NODE_ENV);
-  if (app.get("env") === "development" || process.env.NODE_ENV !== "production") {
+  console.log('🔧 FORCING PRODUCTION MODE to avoid Vite MIME type issues');
+  // Force production mode to use built assets instead of Vite dev server
+  try {
+    console.log('🚀 Setting up production static file serving...');
+    serveStatic(app);
+    console.log('✅ Production static serving setup complete');
+  } catch (error) {
+    console.log('⚠️ Production build not found, falling back to Vite dev server...');
     console.log('🚀 Setting up Vite development server...');
     await setupVite(app, server);
     console.log('✅ Vite development server setup complete');
-  } else {
-    // For production, Vite build output would be served here
-    console.log('Production mode - serving built assets');
   }
 
   // ALWAYS serve the app on port 5000

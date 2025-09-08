@@ -177,7 +177,10 @@
   </style>
   
   <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+  <script type="module">
+    // Work around MIME type issue by dynamically importing
+    import('/src/main.tsx');
+  </script>
   
   <!-- Enhanced Service Worker + Performance Optimization -->
   <script>
