@@ -40,15 +40,6 @@ class HashtagSuggestionService {
     }
   }
 
-  /**
-   * Format hashtags for inclusion in Musk tips
-   */
-  formatHashtagsForTip(hashtags: string[]): string {
-    if (hashtags.length === 0) return '';
-    
-    const formattedHashtags = hashtags.map(tag => `#${tag.replace('#', '')}`).join(' ');
-    return `Musk's hashtag suggestions: ${formattedHashtags}`;
-  }
 
   /**
    * Generate personalized hashtags based on user profile
