@@ -1011,7 +1011,7 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
-  "social_quest" // New type for Social Quests
+  "social_post" // New type for Social Media Post Suggestions
 ]);
 
 // Quest status enum (simplified)
