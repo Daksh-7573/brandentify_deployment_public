@@ -90,16 +90,23 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     return careerQuestTypes.includes(questType) || !socialQuestTypes.includes(questType);
   }) || [];
   
-  // Also include weekly quests in career category for now
-  const activeCareerQuests = [...careerQuests.filter(q => q.status === 'active'), ...(weeklyQuests || []).filter(q => {
+  // Weekly quests filtered by type
+  const weeklyCareerQuests = (weeklyQuests || []).filter(q => {
     const questType = getQuestType(q);
     return !socialQuestTypes.includes(questType);
-  })];
+  });
   
-  const activeSocialQuests = [...socialQuests.filter(q => q.status === 'active'), ...(weeklyQuests || []).filter(q => {
+  const weeklySocialQuests = (weeklyQuests || []).filter(q => {
     const questType = getQuestType(q);
     return socialQuestTypes.includes(questType);
-  })];
+  });
+  
+  // Status-based filtering for each category
+  const completedCareerQuests = careerQuests.filter(q => q.status === 'completed');
+  const expiredCareerQuests = careerQuests.filter(q => q.status === 'expired');
+  
+  const completedSocialQuests = socialQuests.filter(q => q.status === 'completed');
+  const expiredSocialQuests = socialQuests.filter(q => q.status === 'expired');
   
   // Count skill-related quests
   const skillQuests = allQuests?.filter(quest => {
@@ -169,11 +176,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
             <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Career Quests</span>
-              <span className="text-xs">({activeCareerQuests.length})</span>
+              <span className="text-xs">({weeklyCareerQuests.length + completedCareerQuests.length + expiredCareerQuests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Social Quests</span>
-              <span className="text-xs">({activeSocialQuests.length})</span>
+              <span className="text-xs">({weeklySocialQuests.length + completedSocialQuests.length + expiredSocialQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
@@ -181,14 +188,90 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             <div className="text-xs sm:text-sm text-white/70 mb-2">
               Professional development quests to build your career foundation
             </div>
-            {renderQuestsList(activeCareerQuests, isLoadingAll || isLoadingWeekly)}
+            
+            {/* Career Quests Sub-tabs */}
+            <Tabs defaultValue="weekly" className="w-full">
+              <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+                <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Weekly</span>
+                  <span className="text-xs">({weeklyCareerQuests.length})</span>
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Completed</span>
+                  <span className="text-xs">({completedCareerQuests.length})</span>
+                </TabsTrigger>
+                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Missed</span>
+                  <span className="text-xs">({expiredCareerQuests.length})</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Week {currentWeek}, {currentYear} - Weekly career quests
+                </div>
+                {renderQuestsList(weeklyCareerQuests, isLoadingWeekly)}
+              </TabsContent>
+              
+              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Completed career quests that earned you XP
+                </div>
+                {renderQuestsList(completedCareerQuests, isLoadingAll)}
+              </TabsContent>
+              
+              <TabsContent value="missed" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Missed career quest opportunities
+                </div>
+                {renderQuestsList(expiredCareerQuests, isLoadingAll)}
+              </TabsContent>
+            </Tabs>
           </TabsContent>
           
           <TabsContent value="social" className="space-y-3 sm:space-y-4">
             <div className="text-xs sm:text-sm text-white/70 mb-2">
               Social media quests to amplify your professional brand online
             </div>
-            {renderQuestsList(activeSocialQuests, isLoadingAll || isLoadingWeekly)}
+            
+            {/* Social Quests Sub-tabs */}
+            <Tabs defaultValue="weekly" className="w-full">
+              <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+                <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Weekly</span>
+                  <span className="text-xs">({weeklySocialQuests.length})</span>
+                </TabsTrigger>
+                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Completed</span>
+                  <span className="text-xs">({completedSocialQuests.length})</span>
+                </TabsTrigger>
+                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Missed</span>
+                  <span className="text-xs">({expiredSocialQuests.length})</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Week {currentWeek}, {currentYear} - Weekly social media quests
+                </div>
+                {renderQuestsList(weeklySocialQuests, isLoadingWeekly)}
+              </TabsContent>
+              
+              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Completed social quests with platform-specific achievements
+                </div>
+                {renderQuestsList(completedSocialQuests, isLoadingAll)}
+              </TabsContent>
+              
+              <TabsContent value="missed" className="space-y-3 sm:space-y-4">
+                <div className="text-xs text-white/60 mb-2">
+                  Missed social media opportunities
+                </div>
+                {renderQuestsList(expiredSocialQuests, isLoadingAll)}
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       )}
