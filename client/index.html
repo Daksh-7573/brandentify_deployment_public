@@ -366,11 +366,11 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('🎉 Brandentifier landing page loaded successfully!');
       
-      // Add click handlers for buttons
+      // Add click handlers for buttons - redirect to login page
       document.querySelectorAll('a[href="/auth"]').forEach(button => {
         button.addEventListener('click', function(e) {
           e.preventDefault();
-          alert('Authentication system would be activated here!');
+          window.location.href = '/auth';
         });
       });
       
