@@ -6,6 +6,7 @@ export type QuestType =
   | 'portfolio'
   | 'resume'
   | 'visibility'
+  | 'social_post'
   | 'daily'
   | 'weekly'
   | 'monthly'
@@ -25,7 +26,11 @@ export type BadgeType =
   | 'portfolio_star'
   | 'visibility_boosted'
   | 'explorer'
-  | 'opportunist';
+  | 'opportunist'
+  | 'video_creator'
+  | 'social_strategist'
+  | 'visual_storyteller'
+  | 'community_builder';
 
 export interface QuestDefinition {
   id: number;
@@ -131,7 +136,11 @@ export const getBadgeLabel = (badgeType: BadgeType): string => {
     portfolio_star: 'Portfolio Star',
     visibility_boosted: 'Visibility Boosted',
     explorer: 'Opportunity Explorer',
-    opportunist: 'Career Opportunist'
+    opportunist: 'Career Opportunist',
+    video_creator: 'Video Creator',
+    social_strategist: 'Social Strategist',
+    visual_storyteller: 'Visual Storyteller',
+    community_builder: 'Community Builder'
   };
   return labels[badgeType] || badgeType;
 };
@@ -145,6 +154,7 @@ export const getQuestTypeIcon = (type: QuestType): string => {
     portfolio: '💼',
     resume: '📄',
     visibility: '👁️',
+    social_post: '📱',
     daily: '⏱️',
     weekly: '📅',
     monthly: '🗓️',
@@ -172,7 +182,11 @@ export const getBadgeDescription = (badgeType: BadgeType): string => {
     portfolio_star: 'Awarded for showcasing 5 projects in your portfolio',
     visibility_boosted: 'Awarded for being featured 3 times',
     explorer: 'Awarded for exploring career opportunities on Nowboard',
-    opportunist: 'Awarded for saving and engaging with multiple career opportunities'
+    opportunist: 'Awarded for saving and engaging with multiple career opportunities',
+    video_creator: 'Awarded for creating engaging video content',
+    social_strategist: 'Awarded for developing multi-platform content strategies',
+    visual_storyteller: 'Awarded for creating compelling visual content',
+    community_builder: 'Awarded for building and engaging professional communities'
   };
   return descriptions[badgeType] || 'A special achievement';
 };

@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 import { StaticHashtagSuggestions } from '@/components/brand-quests/static-hashtag-suggestions';
+import { PostSuggestionDisplay } from '@/components/brand-quests/post-suggestion-display';
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -182,6 +183,15 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                     }}
                   />
                 </div>
+              )}
+
+              {/* Add PostSuggestionDisplay component for social post quests */}
+              {questDefinition.type === 'social_post' && (
+                <PostSuggestionDisplay 
+                  questType={questDefinition.type}
+                  targetAction={questDefinition.targetAction}
+                  userId={quest.userId}
+                />
               )}
             </div>
           )}
