@@ -190,11 +190,16 @@ function Router() {
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
-      <Route path="/auth" component={() => (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80"><FeedSkeleton count={1} /></div>}>
-          <AuthPage />
-        </Suspense>
-      )} />
+      <Route path="/auth" component={() => {
+        console.log('🚨 AUTH ROUTE HIT - Testing if route works at all');
+        return (
+          <div className="min-h-screen bg-red-500 text-white p-8 text-center">
+            <h1 className="text-4xl font-bold mb-4">AUTH PAGE TEST</h1>
+            <p className="text-xl">This is a simple test page to verify /auth routing works.</p>
+            <p className="text-lg mt-4">If you see this, the route is working!</p>
+          </div>
+        );
+      }} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
