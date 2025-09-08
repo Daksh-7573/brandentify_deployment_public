@@ -190,7 +190,11 @@ function Router() {
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
-      <Route path="/auth" component={AuthPage} />
+      <Route path="/auth" component={() => (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80"><FeedSkeleton count={1} /></div>}>
+          <AuthPage />
+        </Suspense>
+      )} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
