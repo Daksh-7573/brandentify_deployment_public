@@ -338,7 +338,7 @@ app.use((req, res, next) => {
     console.log('[JSON Parser Debug] Content-Type:', req.headers['content-type']);
     return express.json({ 
       limit: '50mb',
-      verify: (req, res, buf, encoding) => {
+      verify: (req, res, buf: Buffer, encoding) => {
         console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
         console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
       }
