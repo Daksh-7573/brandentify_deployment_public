@@ -369,8 +369,8 @@
       // Add click handlers for buttons - redirect to login page
       document.querySelectorAll('a[href="/auth"]').forEach(button => {
         button.addEventListener('click', function(e) {
-          e.preventDefault();
-          window.location.href = '/auth';
+          // Allow natural navigation to /auth
+          console.log('Redirecting to login page...');
         });
       });
       
