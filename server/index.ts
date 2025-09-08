@@ -33,11 +33,28 @@ console.log('🔧 Enhanced MIME type configuration for TypeScript modules');
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
-// CRITICAL: Enhanced MIME type middleware for TypeScript files
+// CRITICAL: Force correct MIME type for all JavaScript modules
 app.use((req, res, next) => {
-  if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx')) {
-    res.setHeader('Content-Type', 'application/javascript');
-    console.log(`🔧 Setting JavaScript MIME type for: ${req.path}`);
+  console.log(`🔍 Request: ${req.method} ${req.path}`);
+  
+  if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
+    res.setHeader('Content-Type', 'text/javascript');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    console.log(`✅ FORCE MIME TYPE: ${req.path} -> text/javascript`);
+    
+    // Override any response content type
+    const originalSend = res.send;
+    const originalJson = res.json;
+    
+    res.send = function(data) {
+      this.setHeader('Content-Type', 'text/javascript');
+      return originalSend.call(this, data);
+    };
+    
+    res.json = function(data) {
+      this.setHeader('Content-Type', 'text/javascript');  
+      return originalJson.call(this, data);
+    };
   }
   next();
 });
