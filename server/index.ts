@@ -20,71 +20,7 @@ import { performanceMiddleware } from "./middleware/performance-middleware";
 
 const app = express();
 
-// CRITICAL: Direct landing page route with cache busting
-app.get('/', (req, res) => {
-  console.log('🎉 Serving Brandentifier landing page directly - bypassing all issues');
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brandentifier - AI-Powered Career Platform</title>
-  <style>* { margin: 0; padding: 0; box-sizing: border-box; }</style>
-</head>
-<body>
-  <div style="min-height: 100vh; background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); color: white; font-family: Arial, sans-serif;">
-    <header style="padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-      <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
-        <h1 style="font-size: 28px; font-weight: 700; margin: 0;">Brandentifier</h1>
-        <div style="font-size: 14px; opacity: 0.8;">AI-Powered Career Platform</div>
-      </div>
-    </header>
-    <main style="padding: 60px 40px; max-width: 1200px; margin: 0 auto; text-align: center;">
-      <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-          Build Your Professional Brand
-        </h2>
-        <p style="font-size: 20px; margin-bottom: 40px; opacity: 0.9; line-height: 1.6;">
-          Leverage AI-powered insights to accelerate your career growth, connect with industry leaders, and showcase your expertise to the world.
-        </p>
-        <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 60px; flex-wrap: wrap;">
-          <button style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Get Started</button>
-          <button style="background: transparent; border: 2px solid rgba(255,255,255,0.3); padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Learn More</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 60px;">
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🤖</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">AI Career Insights</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Get personalized career guidance powered by advanced AI technology.</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🌟</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Brand Building</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Create a compelling professional presence across all platforms.</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🚀</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Career Growth</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Track your progress and achieve your professional goals faster.</p>
-          </div>
-        </div>
-        <div style="margin-top: 60px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-          <p style="margin: 0; opacity: 0.7; font-size: 14px;">🎉 Brandentifier is working perfectly! All issues resolved!</p>
-        </div>
-      </div>
-    </main>
-  </div>
-  <script>console.log('✅ Brandentifier working perfectly!');</script>
-</body>
-</html>`;
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.send(html);
-});
+console.log('🔧 Removing conflicting HTML route to allow React app to load');
 
 // Configure MIME types for TypeScript modules
 express.static.mime.define({
