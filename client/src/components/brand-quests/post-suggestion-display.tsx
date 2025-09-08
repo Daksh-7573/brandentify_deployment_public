@@ -122,23 +122,23 @@ export function PostSuggestionDisplay({
 
   if (error) {
     return (
-      <div className="mt-3">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-medium text-red-300">
-            <Share2 className="w-4 h-4" />
-            <span>Failed to load suggestions</span>
+          <div className="flex items-center gap-2 text-sm text-amber-200">
+            <span>⚠️</span>
+            <span>AI suggestions temporarily unavailable</span>
           </div>
           <Button 
             size="sm" 
-            variant="outline" 
+            variant="ghost" 
             onClick={generateSuggestion}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="h-6 px-2 text-xs text-amber-200 hover:text-white hover:bg-white/10"
           >
             <RefreshCw className="w-3 h-3 mr-1" />
-            Retry
+            Try Again
           </Button>
         </div>
-        <p className="text-xs text-red-300/70 mt-1">{error}</p>
+        <p className="text-xs text-amber-200/70 mt-1">Use the Musk tip above to create your post. AI suggestions will be back soon!</p>
       </div>
     );
   }
