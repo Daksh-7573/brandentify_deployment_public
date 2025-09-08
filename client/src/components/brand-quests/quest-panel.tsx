@@ -19,7 +19,7 @@ interface QuestPanelProps {
 
 export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { toast } = useToast();
-  const [tabValue, setTabValue] = useState('weekly');
+  const [tabValue, setTabValue] = useState('career');
   const currentWeek = getCurrentWeekNumber();
   const currentYear = getCurrentYear();
   
@@ -70,10 +70,36 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   }, [weeklyError, allError, toast]);
   
-  // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
-  // For completed and expired tabs, use the data from the all quests hook
-  const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
-  const expiredQuests = allQuests?.filter(quest => quest.status === 'expired') || [];
+  // Filter quests by type
+  const socialQuestTypes = ['social_post', 'social_quest'];
+  const careerQuestTypes = ['profile_update', 'pulse_creation', 'networking', 'learning', 'portfolio', 'resume', 'visibility', 'exploration', 'nowboard'];
+  
+  // Get quest type from different possible sources in the data
+  const getQuestType = (quest: any) => {
+    return quest.definition?.type || quest.questDefinition?.type || quest.questType || quest.type;
+  };
+  
+  // Filter by quest category
+  const socialQuests = allQuests?.filter(quest => {
+    const questType = getQuestType(quest);
+    return socialQuestTypes.includes(questType);
+  }) || [];
+  
+  const careerQuests = allQuests?.filter(quest => {
+    const questType = getQuestType(quest);
+    return careerQuestTypes.includes(questType) || !socialQuestTypes.includes(questType);
+  }) || [];
+  
+  // Also include weekly quests in career category for now
+  const activeCareerQuests = [...careerQuests.filter(q => q.status === 'active'), ...(weeklyQuests || []).filter(q => {
+    const questType = getQuestType(q);
+    return !socialQuestTypes.includes(questType);
+  })];
+  
+  const activeSocialQuests = [...socialQuests.filter(q => q.status === 'active'), ...(weeklyQuests || []).filter(q => {
+    const questType = getQuestType(q);
+    return socialQuestTypes.includes(questType);
+  })];
   
   // Count skill-related quests
   const skillQuests = allQuests?.filter(quest => {
@@ -127,8 +153,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-3 sm:mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold text-white">Career Quests</h2>
-        <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your influence</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-white">Brand Quests</h2>
+        <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your professional influence</p>
       </div>
       
       {/* Quest Tabs */}
@@ -139,41 +165,30 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
         </div>
       ) : (
-        <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-            <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-              <span className="text-center">Weekly</span>
-              <span className="text-xs">({weeklyQuests?.length || 0})</span>
+        <Tabs defaultValue="career" value={tabValue} onValueChange={setTabValue}>
+          <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+            <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Career Quests</span>
+              <span className="text-xs">({activeCareerQuests.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-              <span className="text-center">Completed</span>
-              <span className="text-xs">({completedQuests.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="expired" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-              <span className="text-center">Missed</span>
-              <span className="text-xs">({expiredQuests.length})</span>
+            <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Social Quests</span>
+              <span className="text-xs">({activeSocialQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+          <TabsContent value="career" className="space-y-3 sm:space-y-4">
             <div className="text-xs sm:text-sm text-white/70 mb-2">
-              Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
+              Professional development quests to build your career foundation
             </div>
-            {renderQuestsList(weeklyQuests, isLoadingWeekly)}
+            {renderQuestsList(activeCareerQuests, isLoadingAll || isLoadingWeekly)}
           </TabsContent>
           
-          <TabsContent value="expired" className="space-y-3 sm:space-y-4">
+          <TabsContent value="social" className="space-y-3 sm:space-y-4">
             <div className="text-xs sm:text-sm text-white/70 mb-2">
-              Quests that expired without completion - missed XP opportunities
+              Social media quests to amplify your professional brand online
             </div>
-            {renderQuestsList(expiredQuests, isLoadingAll)}
-          </TabsContent>
-          
-          <TabsContent value="completed" className="space-y-3 sm:space-y-4">
-            <div className="text-xs sm:text-sm text-white/70 mb-2">
-              Completed quests that earned you XP rewards
-            </div>
-            {renderQuestsList(completedQuests, isLoadingAll)}
+            {renderQuestsList(activeSocialQuests, isLoadingAll || isLoadingWeekly)}
           </TabsContent>
         </Tabs>
       )}
