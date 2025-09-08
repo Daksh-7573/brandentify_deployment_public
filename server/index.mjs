@@ -36,6 +36,16 @@ app.get('/api/health', (req, res) => {
 const clientPath = path.join(__dirname, '../client');
 const distPath = path.join(__dirname, '../dist/public');
 
+// 🚨 MAIN.JS FIX: Handle main.js specially before static serving
+app.get('/src/main.js', (req, res) => {
+  console.log('🎯 SERVING main.js with correct MIME type from index.mjs');
+  
+  const mainTsxPath = path.join(clientPath, 'src', 'main.tsx');
+  res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(mainTsxPath);
+});
+
 // Serve built assets if available
 app.use('/assets', express.static(path.join(distPath, 'assets')));
 app.use('/src', express.static(path.join(clientPath, 'src')));

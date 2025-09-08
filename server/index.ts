@@ -21,29 +21,36 @@ import { performanceMiddleware } from "./middleware/performance-middleware";
 import fs from 'fs';
 import path from 'path';
 
+console.log('🚨🚨🚨 CRITICAL DEBUG: Express app created - this should show in logs');
+
 const app = express();
 
-console.log('🔧 Creating main.js route to bypass MIME type issues');
+console.log('🚨🚨🚨 CRITICAL DEBUG: About to register debug middleware');
 
-// JAVASCRIPT VERSION: Serve main.js instead of main.tsx to avoid MIME issues
-app.get('/src/main.js', async (req, res) => {
-  console.log('🎯 SERVING main.js (converted from main.tsx) with correct MIME type');
-  
-  try {
-    const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
-    const content = fs.readFileSync(mainTsxPath, 'utf-8');
-    
-    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    console.log('✅ SUCCESS: main.js served with text/javascript MIME type');
-    res.send(content);
-  } catch (error) {
-    console.error('❌ ERROR serving main.js:', error);
-    res.status(500).send('// Error loading main.js');
-  }
+// 🚨 ULTIMATE DEBUG: Log every single request
+app.use((req, res, next) => {
+  console.log(`🔍 INCOMING REQUEST: ${req.method} ${req.url} ${req.path}`);
+  next();
 });
+
+console.log('🚨🚨🚨 CRITICAL DEBUG: Debug middleware registered');
+
+// 🚨 HIGHEST PRIORITY: main.js route MUST be first to avoid interception
+app.get('/src/main.js', (req, res) => {
+  console.log('🎯 PRIORITY ROUTE HIT: Serving main.js with correct MIME type');
+  
+  const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
+  const content = fs.readFileSync(mainTsxPath, 'utf-8');
+  
+  res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  console.log('✅ PRIORITY SUCCESS: main.js served as JavaScript');
+  return res.send(content);
+});
+
+console.log('🔧 Priority main.js route registered first - before all middleware');
 
 // Configure MIME types for TypeScript modules - FIXED
 express.static.mime.define({
