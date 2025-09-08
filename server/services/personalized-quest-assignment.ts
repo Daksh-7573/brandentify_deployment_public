@@ -285,6 +285,118 @@ export class PersonalizedQuestAssignment {
   }
 
   /**
+   * Weekly quest assignment with 3-7 quest limit per user
+   */
+  async assignWeeklyPersonalizedQuests(
+    userId: number, 
+    options: { minQuests: number; maxQuests: number } = { minQuests: 3, maxQuests: 7 }
+  ): Promise<{
+    success: boolean;
+    assignedQuests: any[];
+    recommendations: any[];
+    message: string;
+  }> {
+    try {
+      console.log(`[WeeklyQuests] Starting weekly assignment for user ${userId}`);
+      
+      // Get platform recommendations
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      
+      if (recommendations.length === 0) {
+        return {
+          success: false,
+          assignedQuests: [],
+          recommendations: [],
+          message: 'No platform recommendations available'
+        };
+      }
+
+      // Get current week info
+      const now = new Date();
+      const weekNumber = this.getWeekNumber(now);
+      const year = now.getFullYear();
+
+      // Clear existing quests for this week
+      await db
+        .delete(userQuests)
+        .where(
+          and(
+            eq(userQuests.userId, userId),
+            eq(userQuests.weekNumber, weekNumber),
+            eq(userQuests.year, year)
+          )
+        );
+
+      // Get relevant quest definitions based on recommendations
+      const recommendedTargetActions = recommendations.map(r => r.targetAction);
+      
+      const availableQuests = await db
+        .select()
+        .from(questDefinitions)
+        .where(
+          and(
+            eq(questDefinitions.type, 'social_post'),
+            eq(questDefinitions.isActive, true),
+            inArray(questDefinitions.targetAction, recommendedTargetActions)
+          )
+        );
+
+      // Limit quests based on options (3-7 per week)
+      const questsToAssign = availableQuests.slice(0, options.maxQuests);
+      
+      // Ensure minimum quest count
+      if (questsToAssign.length < options.minQuests) {
+        console.log(`[WeeklyQuests] Warning: Only ${questsToAssign.length} quests available, less than minimum ${options.minQuests}`);
+      }
+
+      const assignedQuests = [];
+
+      for (const questDef of questsToAssign) {
+        const recommendation = recommendations.find(r => r.targetAction === questDef.targetAction);
+        
+        const [insertedQuest] = await db
+          .insert(userQuests)
+          .values({
+            userId,
+            questDefinitionId: questDef.id,
+            status: 'active',
+            progress: 0,
+            weekNumber,
+            year,
+            assignedAt: new Date()
+          })
+          .returning();
+
+        assignedQuests.push({
+          ...insertedQuest,
+          questDefinition: questDef,
+          recommendation
+        });
+
+        console.log(`[WeeklyQuests] Assigned quest: ${questDef.title} to user ${userId}`);
+      }
+
+      console.log(`[WeeklyQuests] Assigned ${assignedQuests.length} weekly quests for user ${userId}`);
+
+      return {
+        success: true,
+        assignedQuests,
+        recommendations,
+        message: `Assigned ${assignedQuests.length} weekly personalized quests`
+      };
+
+    } catch (error) {
+      console.error('[WeeklyQuests] Error assigning weekly quests:', error);
+      return {
+        success: false,
+        assignedQuests: [],
+        recommendations: [],
+        message: 'Error assigning weekly quests'
+      };
+    }
+  }
+
+  /**
    * Helper function to get week number
    */
   private getWeekNumber(date: Date): number {
