@@ -42,8 +42,11 @@ const ALLOWED_ORIGINS = [
   'https://www.brandentifier.com',
   'https://brandentifier.replit.app',
   'http://localhost:3000',
-  'http://localhost:5000'
-];
+  'http://localhost:5000',
+  'http://127.0.0.1:5000', // Add 127.0.0.1 variant
+  // Add current Replit domain
+  `https://${process.env.REPLIT_DOMAINS}`
+].filter(Boolean);
 
 // Role definitions for RBAC
 export enum UserRole {
@@ -335,16 +338,29 @@ export async function setupSecurity(app: any) {
   // 2. Set up CORS with whitelisted origins
   const corsOptions = {
     origin: function (origin: any, callback: any) {
+      // Debug logging
+      console.log(`CORS: Checking origin: ${origin}`);
+      console.log(`CORS: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
+      console.log(`CORS: NODE_ENV: ${process.env.NODE_ENV}`);
+      
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        console.log('CORS: Allowing request with no origin');
+        return callback(null, true);
+      }
       
       // Allow all Replit domains and development
-      if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || 
-          process.env.NODE_ENV === 'development' ||
-          origin.endsWith('.replit.app') ||
-          origin.endsWith('.replit.dev')) {
+      if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+        console.log('CORS: Origin found in ALLOWED_ORIGINS');
+        callback(null, true);
+      } else if (process.env.NODE_ENV === 'development') {
+        console.log('CORS: Allowing due to development mode');
+        callback(null, true);
+      } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
+        console.log('CORS: Allowing Replit domain');
         callback(null, true);
       } else {
+        console.log(`CORS: Rejecting origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
