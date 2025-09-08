@@ -110,6 +110,31 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskTip || 
     questDefinition.muskTip || 
     quest.muskResponse;
+
+  // Get platform-specific icon for social_post quests
+  const getPlatformIcon = (targetAction: string): string => {
+    const platformIcons: { [key: string]: string } = {
+      'post_linkedin_suggestion': '💼',
+      'post_instagram_suggestion': '📸', 
+      'post_twitter_suggestion': '🐦',
+      'post_youtube_suggestion': '📺',
+      'post_facebook_suggestion': '👥',
+      'post_tiktok_suggestion': '🎵',
+      'post_multi_platform_suggestion': '🌐',
+      'post_hashtag_optimized_suggestion': '🏷️',
+      'post_visual_content_suggestion': '🖼️',
+      'post_engagement_optimized_suggestion': '🎯'
+    };
+    return platformIcons[targetAction] || '📱';
+  };
+
+  // Determine which icon to show
+  const getQuestIcon = (): string => {
+    if (questDefinition.type === 'social_post' && questDefinition.targetAction) {
+      return getPlatformIcon(questDefinition.targetAction);
+    }
+    return getQuestTypeIcon(questDefinition.type);
+  };
   
   return (
     <div className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-5 shadow-lg transition-all hover:shadow-xl hover:bg-black/30 hover:scale-[1.02] duration-300">
@@ -117,7 +142,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xl text-white">{getQuestTypeIcon(questDefinition.type)}</span>
+              <span className="text-xl text-white">{getQuestIcon()}</span>
               <h3 className="text-lg font-semibold text-white">{questDefinition.title}</h3>
             </div>
             {questDefinition.badgeReward && (
