@@ -556,9 +556,12 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     throw err;
   });
 
-  // CRITICAL: Completely disable Vite to prevent interference
-  console.log('🔧 COMPLETELY DISABLING VITE - Direct HTML serving only');
+  // ENABLE VITE: Re-enable Vite to load proper React landing page
+  console.log('🔧 ENABLING VITE - React app with proper landing page');
   console.log('🔧 Environment check:', app.get("env"), 'NODE_ENV:', process.env.NODE_ENV);
+  
+  // Setup Vite for React transpilation and serving
+  await setupVite(app, server);
   
   // Serve the clean HTML landing page directly
   app.get('/', (req, res) => {
