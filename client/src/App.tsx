@@ -631,16 +631,20 @@ function Router() {
       </Route>
       
       {/* AUTH ROUTE - MUST COME BEFORE CATCH-ALL */}
-      <Route path="/auth" component={() => {
-        console.log('🚨 AUTH ROUTE HIT - Testing if route works at all');
-        return (
-          <div className="min-h-screen bg-red-500 text-white p-8 text-center">
-            <h1 className="text-4xl font-bold mb-4">AUTH PAGE TEST</h1>
-            <p className="text-xl">This is a simple test page to verify /auth routing works.</p>
-            <p className="text-lg mt-4">If you see this, the route is working!</p>
-          </div>
-        );
-      }} />
+      <Route path="/auth">
+        {() => {
+          console.log('🔥🔥🔥 AUTH ROUTE MATCHED - /auth route is working!');
+          window.document.title = 'AUTH PAGE WORKING';
+          return (
+            <div className="min-h-screen bg-green-500 text-white p-8 text-center">
+              <h1 className="text-6xl font-bold mb-4">✅ AUTH ROUTE WORKS!</h1>
+              <p className="text-2xl">SUCCESS: /auth route is properly matched!</p>
+              <p className="text-xl mt-4">URL: {window.location.pathname}</p>
+              <p className="text-lg mt-2">This proves routing is working correctly!</p>
+            </div>
+          );
+        }}
+      </Route>
       
       {/* Brand name public profile route - must be last to avoid conflicts */}
       <Route path="/:brandName">
