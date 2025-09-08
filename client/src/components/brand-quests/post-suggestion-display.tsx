@@ -5,13 +5,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Share2, 
-  Video, 
-  Image, 
-  TrendingUp, 
   Hash, 
   Copy,
   Lightbulb,
-  ExternalLink,
   RefreshCw
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
@@ -20,9 +16,6 @@ interface PostSuggestion {
   platform: string;
   postIdeas: string[];
   hashtags: string[];
-  videoIdeas: string[];
-  imageIdeas: string[];
-  engagementTips: string[];
   contentType: string;
   toneOfVoice: string;
 }
@@ -221,76 +214,6 @@ export function PostSuggestionDisplay({
         </div>
       )}
 
-      {/* Video Ideas */}
-      {suggestion.videoIdeas.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-white/90">
-            <Video className="w-4 h-4 text-purple-400" />
-            <span>Video Ideas</span>
-          </div>
-          <div className="space-y-1">
-            {suggestion.videoIdeas.slice(0, 2).map((idea, index) => (
-              <div 
-                key={index} 
-                className="bg-purple-500/10 p-2 rounded text-sm text-white/80 border border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors"
-                onClick={() => copyToClipboard(idea, 'Video idea')}
-              >
-                <div className="flex items-start gap-2">
-                  <span className="text-xs text-purple-300 mt-0.5">📹</span>
-                  <span className="flex-1">{idea}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Image Ideas */}
-      {suggestion.imageIdeas.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-white/90">
-            <Image className="w-4 h-4 text-green-400" />
-            <span>Image Ideas</span>
-          </div>
-          <div className="space-y-1">
-            {suggestion.imageIdeas.slice(0, 2).map((idea, index) => (
-              <div 
-                key={index} 
-                className="bg-green-500/10 p-2 rounded text-sm text-white/80 border border-green-500/20 cursor-pointer hover:bg-green-500/20 transition-colors"
-                onClick={() => copyToClipboard(idea, 'Image idea')}
-              >
-                <div className="flex items-start gap-2">
-                  <span className="text-xs text-green-300 mt-0.5">🖼️</span>
-                  <span className="flex-1">{idea}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Engagement Tips */}
-      {suggestion.engagementTips.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-medium text-white/90">
-            <TrendingUp className="w-4 h-4 text-orange-400" />
-            <span>Engagement Tips</span>
-          </div>
-          <div className="space-y-1">
-            {suggestion.engagementTips.slice(0, 2).map((tip, index) => (
-              <div 
-                key={index} 
-                className="bg-orange-500/10 p-2 rounded text-sm text-white/80 border border-orange-500/20"
-              >
-                <div className="flex items-start gap-2">
-                  <span className="text-xs text-orange-300 mt-0.5">💡</span>
-                  <span className="flex-1">{tip}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Refresh Button */}
       <div className="pt-2 border-t border-white/10">
