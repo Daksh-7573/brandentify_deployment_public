@@ -86,14 +86,26 @@ app.get('/', (req, res) => {
   res.send(html);
 });
 
-// Configure MIME types using Express built-in functionality
-express.static.mime.define({'application/javascript': ['tsx', 'ts', 'jsx', 'mjs']});
-console.log('🔧 Express MIME types configured for TypeScript files');
+// Configure MIME types for TypeScript modules
+express.static.mime.define({
+  'application/javascript': ['tsx', 'ts', 'jsx', 'mjs'],
+  'text/javascript': ['tsx', 'ts', 'jsx', 'mjs', 'js'],
+  'application/typescript': ['tsx', 'ts']
+});
+console.log('🔧 Enhanced MIME type configuration for TypeScript modules');
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
-// CRITICAL: Override response headers to fix MIME types
+// CRITICAL: Enhanced MIME type middleware for TypeScript files
+app.use((req, res, next) => {
+  if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx')) {
+    res.setHeader('Content-Type', 'application/javascript');
+    console.log(`🔧 Setting JavaScript MIME type for: ${req.path}`);
+  }
+  next();
+});
+
 app.use((req, res, next) => {
   const originalSend = res.send;
   const originalEnd = res.end;
