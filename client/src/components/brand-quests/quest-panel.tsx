@@ -47,7 +47,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll, refetchSocial]);
+  }, [refetchWeekly, refetchAll]);
   
   useEffect(() => {
     if (weeklyError) {
@@ -176,7 +176,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             {renderQuestsList(completedQuests, isLoadingAll)}
           </TabsContent>
         </Tabs>
-      )
+      )}
     </div>
   );
 }
