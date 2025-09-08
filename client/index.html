@@ -189,7 +189,7 @@
             </p>
             
             <div class="flex justify-center mt-8">
-              <a href="/simple-login" class="btn btn-large">
+              <a href="/auth" class="btn btn-large">
                 Get Started
                 <i data-lucide="arrow-right" class="icon ml-2"></i>
               </a>
@@ -347,7 +347,7 @@
             <p class="text-xl text-gray-300 max-w-2xl mx-auto">
               Join thousands of professionals who are already accelerating their careers with AI-powered insights
             </p>
-            <a href="/simple-login" class="btn btn-large">
+            <a href="/auth" class="btn btn-large">
               Start Your Journey
               <i data-lucide="arrow-right" class="icon ml-2"></i>
             </a>
@@ -366,11 +366,11 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('🎉 Brandentifier landing page loaded successfully!');
       
-      // Add click handlers for buttons - redirect to login page
-      document.querySelectorAll('a[href="/simple-login"]').forEach(button => {
+      // Add click handlers for buttons - redirect to auth page
+      document.querySelectorAll('a[href="/auth"]').forEach(button => {
         button.addEventListener('click', function(e) {
-          // Allow natural navigation to /simple-login
-          console.log('Redirecting to simple login page...');
+          // Allow natural navigation to /auth
+          console.log('Redirecting to auth page...');
         });
       });
       
