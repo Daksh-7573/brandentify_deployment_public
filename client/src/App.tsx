@@ -175,6 +175,23 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 function Router() {
   const { coreLoaded, secondaryLoaded, adminLoaded } = useProgressiveLoading();
   
+  // EXTREME DEBUG - check what's happening with routing
+  const [location] = useLocation();
+  console.log('🚨 ROUTER DEBUG - Current location:', location);
+  
+  // FORCE OVERRIDE FOR TESTING - if URL is /auth, always show test page
+  if (location === '/auth') {
+    console.log('💥 FORCING AUTH PAGE DISPLAY - URL is /auth');
+    return (
+      <div className="min-h-screen bg-purple-500 text-white p-8 text-center">
+        <h1 className="text-8xl font-bold mb-4">🔥 FORCED AUTH PAGE 🔥</h1>
+        <p className="text-3xl">This is a FORCED override - URL: {location}</p>
+        <p className="text-2xl mt-4">If you see this, routing detection works!</p>
+        <p className="text-xl mt-4">Location: {window.location.href}</p>
+      </div>
+    );
+  }
+  
   return (
     <Switch>
       {/* Tier 1: Critical Routes (Always Available) */}
