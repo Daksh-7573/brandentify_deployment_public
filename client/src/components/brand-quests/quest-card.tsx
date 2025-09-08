@@ -113,22 +113,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     // Final fallback for debugging
     (quest.definition && Object.keys(quest.definition).includes('musk_tip') ? quest.definition.musk_tip : null);
 
-  // Debug logging for Musk tip extraction (temporary)
-  if (questDefinition.type === 'social_post') {
-    console.log('🔍 [MUSK TIP DEBUG]', {
-      questTitle: questDefinition.title,
-      questType: questDefinition.type,
-      muskTipFound: !!muskTipContent,
-      muskTipContent: muskTipContent,
-      questDefinitionMuskTip: questDefinition.muskTip,
-      questDefinitionDirect: quest.definition?.muskTip,
-      questStructure: {
-        hasDefinition: !!quest.definition,
-        hasQuestDefinition: !!quest.questDefinition,
-        definitionKeys: quest.definition ? Object.keys(quest.definition) : []
-      }
-    });
-  }
 
   // Get platform-specific icon for social_post quests
   const getPlatformIcon = (targetAction: string): string => {

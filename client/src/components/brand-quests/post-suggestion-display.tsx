@@ -138,7 +138,7 @@ export function PostSuggestionDisplay({
             Try Again
           </Button>
         </div>
-        <p className="text-xs text-amber-200/70 mt-1">Use the Musk tip above to create your post. AI suggestions will be back soon!</p>
+        <p className="text-xs text-amber-200/70 mt-1">💡 <strong>Use Musk's Tip above</strong> to create your post. AI suggestions will be back soon!</p>
       </div>
     );
   }
