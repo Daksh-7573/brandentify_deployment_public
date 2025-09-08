@@ -7136,10 +7136,6 @@ ${extractedText.substring(0, 5000)}
   registerMuskAIEnhancedRoutes(app);
   console.log("Musk AI Enhanced routes loaded");
 
-  // Register Social Quest AI-powered routes
-  const { default: setupSocialQuestRoutes } = await import('./routes-social-quests');
-  setupSocialQuestRoutes(app);
-  console.log("Social Quest AI routes loaded");
   
   // Register Musk Testing routes for QA and Roleplay scenarios
   setupMuskTestingRoutes(apiRouter);
