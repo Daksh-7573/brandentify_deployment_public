@@ -1,48 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brandentifier - Professional Networking & AI-Powered Career Platform</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brandentifier - Professional Networking & AI-Powered Career Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', Arial, sans-serif; overflow-x: hidden; }
     
-    <!-- Force cache bypass -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    .min-h-screen { min-height: 100vh; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { inset: 0; }
+    .z-10 { z-index: 10; }
+    .overflow-hidden { overflow: hidden; }
     
-    <!-- Preconnects for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    .bg-gradient-to-br { background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.8), rgba(0, 0, 0, 0.7), rgba(31, 41, 55, 0.8)); }
+    .backdrop-blur-sm { backdrop-filter: blur(4px); }
     
-    <!-- Load fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    .neo-glass-layout { 
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1rem;
+    }
     
-    <!-- Force service worker unregistration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister().then(() => {
-              console.log('Service worker unregistered:', registration);
-            });
-          }
+    .neo-glass-section {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .neo-glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .neo-glass-card:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    
+    .text-center { text-align: center; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-12 { margin-bottom: 3rem; }
+    .mb-16 { margin-bottom: 4rem; }
+    .mb-20 { margin-bottom: 5rem; }
+    .mr-3 { margin-right: 0.75rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .mt-8 { margin-top: 2rem; }
+    
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .gap-6 { gap: 1.5rem; }
+    .gap-4 { gap: 1rem; }
+    
+    @media (min-width: 768px) {
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:text-6xl { font-size: 3.75rem; line-height: 1; }
+      .md\:text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    }
+    
+    @media (min-width: 1024px) {
+      .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    
+    @media (min-width: 1280px) {
+      .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    
+    .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .text-6xl { font-size: 3.75rem; line-height: 1; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    
+    .bg-gradient-text {
+      background: linear-gradient(to right, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .text-white { color: white; }
+    .text-gray-300 { color: #d1d5db; }
+    
+    .max-w-3xl { max-width: 48rem; }
+    .max-w-2xl { max-width: 42rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .leading-relaxed { line-height: 1.625; }
+    
+    .btn {
+      background: linear-gradient(to right, #3b82f6, #8b5cf6);
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    
+    .btn:hover {
+      background: linear-gradient(to right, #2563eb, #7c3aed);
+      transform: scale(1.05);
+    }
+    
+    .btn-large {
+      padding: 1rem 3rem;
+      font-size: 1rem;
+    }
+    
+    .icon { width: 1.5rem; height: 1.5rem; }
+    .icon-large { width: 2rem; height: 2rem; }
+    
+    .text-blue-400 { color: #60a5fa; }
+    .text-purple-400 { color: #a78bfa; }
+    .text-green-400 { color: #4ade80; }
+    .text-yellow-400 { color: #facc15; }
+    .text-pink-400 { color: #f472b6; }
+    .text-cyan-400 { color: #22d3ee; }
+    .text-orange-400 { color: #fb923c; }
+    .text-red-400 { color: #f87171; }
+    .text-indigo-400 { color: #818cf8; }
+    .text-rose-400 { color: #fb7185; }
+    .text-emerald-400 { color: #34d399; }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen w-full relative overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); color: white;">
+    <!-- Glass UI overlay -->
+    <div class="absolute inset-0 bg-gradient-to-br backdrop-blur-sm"></div>
+    
+    <!-- Content layer -->
+    <div class="relative z-10">
+      <div class="neo-glass-layout" style="min-height: 100vh; margin: 0; padding: 1rem;">
+        
+        <!-- Hero Section -->
+        <div class="neo-glass-section text-center mb-12">
+          <div class="space-y-6">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+              <i data-lucide="sparkles" class="icon-large text-blue-400"></i>
+              <h1 class="text-4xl md:text-6xl font-bold bg-gradient-text" style="background: linear-gradient(to right, #60a5fa, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Brandentifier
+              </h1>
+              <i data-lucide="sparkles" class="icon-large text-purple-400"></i>
+            </div>
+            
+            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
+            </p>
+            
+            <div class="flex justify-center mt-8">
+              <a href="/auth" class="btn btn-large">
+                Get Started
+                <i data-lucide="arrow-right" class="icon ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="neo-glass-section mb-16">
+          <h2 class="text-3xl font-bold text-white text-center mb-12">Platform Features</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
+            <!-- Career Clarity -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="brain" class="icon-large text-blue-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Career Clarity</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Confused about your next move? Get smart, personalized career advice instantly.
+              </p>
+            </div>
+
+            <!-- AI Mentorship -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="message-circle" class="icon-large text-purple-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">AI Mentorship</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Talk to AI mentors modeled after industry legends — anytime, anywhere.
+              </p>
+            </div>
+
+            <!-- Smart Resume -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="file-text" class="icon-large text-green-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Smart Resume</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Upload your resume and get instant feedback, scoring, and styling tips.
+              </p>
+            </div>
+
+            <!-- Skill Matching -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="trending-up" class="icon-large text-yellow-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Skill Matching</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Find out which skills you need to grow in your dream career path.
+              </p>
+            </div>
+
+            <!-- Pro Network -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="users" class="icon-large text-pink-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Pro Network</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Build a professional network that actually helps — not just connects.
+              </p>
+            </div>
+
+            <!-- Portfolio Builder -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="building" class="icon-large text-cyan-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Portfolio Builder</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Showcase your skills with real, categorized projects recruiters care about.
+              </p>
+            </div>
+
+            <!-- Experience Tracker -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="calendar" class="icon-large text-orange-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Experience Tracker</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Add internships, jobs, and learnings — everything that shapes your journey.
+              </p>
+            </div>
+
+            <!-- Goal Planner -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="target" class="icon-large text-red-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Goal Planner</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Set career goals and let AI guide you step-by-step to reach them.
+              </p>
+            </div>
+
+            <!-- XP Quests -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="trophy" class="icon-large text-yellow-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">XP Quests</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Level up your career with gamified challenges and win badges as you grow.
+              </p>
+            </div>
+
+            <!-- Job Radar -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="search" class="icon-large text-indigo-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Job Radar</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Get alerts for jobs, collaborations, and career opportunities in your domain.
+              </p>
+            </div>
+
+            <!-- Real Feedback -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="heart" class="icon-large text-rose-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Real Feedback</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Get reactions and endorsements that boost your credibility — not just likes.
+              </p>
+            </div>
+
+            <!-- Insight Feed -->
+            <div class="neo-glass-card">
+              <div class="flex items-center mb-4">
+                <i data-lucide="newspaper" class="icon-large text-emerald-400 mr-3"></i>
+                <h3 class="text-xl font-semibold text-white">Insight Feed</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                Stay ahead with personalized industry news, tips, and AI-powered posts.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="neo-glass-section text-center mb-20">
+          <div class="space-y-6">
+            <h2 class="text-3xl font-bold text-white">
+              Ready to Transform Your Career?
+            </h2>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+              Join thousands of professionals who are already accelerating their careers with AI-powered insights
+            </p>
+            <a href="/auth" class="btn btn-large">
+              Start Your Journey
+              <i data-lucide="arrow-right" class="icon ml-2"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+    
+    // Add smooth scrolling and interaction effects
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🎉 Brandentifier landing page loaded successfully!');
+      
+      // Add click handlers for buttons
+      document.querySelectorAll('a[href="/auth"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Authentication system would be activated here!');
         });
-        // Clear all caches
-        caches.keys().then(cacheNames => {
-          return Promise.all(
-            cacheNames.map(cacheName => {
-              console.log('Deleting cache:', cacheName);
-              return caches.delete(cacheName);
-            })
-          );
-        }).then(() => {
-          console.log('All caches cleared');
-        });
+      });
+      
+      // Add subtle animation to cards
+      const cards = document.querySelectorAll('.neo-glass-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.animation = 'fadeInUp 0.6s ease-out both';
+      });
+    });
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx?nocache=${Date.now()}"></script>
-  </body>
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
 </html>
