@@ -15,7 +15,7 @@ import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+// Background image removed - using CSS background instead
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -61,7 +61,7 @@ export default function AuthPage() {
     <div 
       className="responsive-background min-h-screen w-full relative overflow-hidden"
       style={{ 
-        backgroundImage: `url(${backgroundImage})`
+        background: '#0a0a0a'
       }}
     >
       {/* Glass UI overlay to maintain design consistency */}
