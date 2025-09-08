@@ -24,8 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuestCardSkeleton } from '@/components/ui/skeleton-components';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import { NeoGlassSection } from '@/components/ui/neo-glass/index';
-// @ts-ignore
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+
 export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
   const { toast } = useToast();

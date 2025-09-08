@@ -62,9 +62,9 @@ export default function BrandQuestsPage() {
                   <Skeleton className="w-full h-[50px]" />
                 ) : userXp ? (
                   <XpProgressBar 
-                    balance={userXp.balance || 0}
-                    monthlyEarned={userXp.currentMonthEarned || 0}
-                    lifetimeEarned={userXp.lifetimeEarned || 0}
+                    balance={userXp.balance}
+                    monthlyEarned={userXp.currentMonthEarned}
+                    lifetimeEarned={userXp.lifetimeEarned}
                   />
                 ) : (
                   <div className="text-center py-4 text-muted-foreground">
@@ -92,11 +92,16 @@ export default function BrandQuestsPage() {
               <CardContent>
                 <HashtagSuggestions 
                   questType="pulse_creation"
+                  showTitle={false}
+                  showMuskTip={true}
                   count={5}
-                  onHashtagClick={(hashtag: string) => {
+                  showSources={true}
+                  muskTipContent="Using industry-relevant hashtags can boost your content visibility by up to 42%. I've suggested tags based on your profile data and engagement."
+                  onHashtagClick={(hashtag) => {
                     navigator.clipboard.writeText(hashtag);
                     // Could show a toast notification here
                   }}
+                  demo={true} // For testing/demo purposes
                 />
               </CardContent>
             </Card>
@@ -120,7 +125,7 @@ export default function BrandQuestsPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {xpTransactions.slice(0, 10).map((transaction: any) => (
+                    {xpTransactions.slice(0, 10).map(transaction => (
                       <div 
                         key={transaction.id} 
                         className="flex justify-between items-center py-2 border-b last:border-0"

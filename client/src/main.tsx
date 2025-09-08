@@ -1,6 +1,14 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import SimpleApp from "./simple-app";
 import "./index.css";
+
+// Initialize Firebase and other services
+import "./lib/firebase";
+
+// Performance measurement
+const appStartTime = performance.now();
+console.log('[PERF] React app initialization started');
 
 // Remove HTML loader immediately when React app starts
 const loader = document.getElementById('app-loader');
@@ -9,22 +17,30 @@ if (loader) {
   loader.style.transition = 'opacity 0.15s ease-out';
   setTimeout(() => {
     loader.style.display = 'none';
-    console.log('Skeleton loader removed');
+    console.log('[PERF] Skeleton loader removed in', (performance.now() - appStartTime).toFixed(2), 'ms');
   }, 150);
 }
 
-// Simple function to mount app
+// Check if we should use the simple app or the full app
+const useSimpleApp = false; // Set to true for testing
+
+// Progressive rendering - start with critical components
 const renderApp = () => {
-  const root = document.getElementById("root");
-  if (root) {
-    createRoot(root).render(<App />);
-    console.log('React app mounted successfully');
-  } else {
-    console.error('Root element not found');
-  }
+  const renderStartTime = performance.now();
+  console.log('[PERF] React rendering started');
+  
+  createRoot(document.getElementById("root")!).render(
+    useSimpleApp ? <SimpleApp /> : <App />
+  );
+  
+  // Report rendering time after React has mounted
+  setTimeout(() => {
+    console.log('[PERF] React app rendered in', (performance.now() - renderStartTime).toFixed(2), 'ms');
+    console.log('[PERF] Total initialization time:', (performance.now() - appStartTime).toFixed(2), 'ms');
+  }, 0);
 };
 
-// Render the app
+// Optimize rendering timing
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', renderApp);
 } else {

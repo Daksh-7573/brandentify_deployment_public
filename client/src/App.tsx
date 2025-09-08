@@ -190,6 +190,7 @@ function Router() {
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
+      <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
@@ -629,13 +630,6 @@ function Router() {
       <Route path="/signin-callback">
         <CatchAllAuthHandler />
       </Route>
-      
-      {/* AUTH ROUTE - MUST COME BEFORE CATCH-ALL */}
-      <Route path="/auth" component={() => (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80"><FeedSkeleton count={1} /></div>}>
-          <AuthPage />
-        </Suspense>
-      )} />
       
       {/* Brand name public profile route - must be last to avoid conflicts */}
       <Route path="/:brandName">

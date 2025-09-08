@@ -1,9 +1,8 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
-import { setupVite, log } from "./vite";
-import { serveStatic } from "./vite";
+import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
@@ -18,97 +17,12 @@ import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 
-import fs from 'fs';
-import path from 'path';
-
-console.log('🚨🚨🚨 CRITICAL DEBUG: Express app created - this should show in logs');
-
 const app = express();
-
-console.log('🚨🚨🚨 CRITICAL DEBUG: About to register debug middleware');
-
-// 🚨 ULTIMATE DEBUG: Log every single request
-app.use((req, res, next) => {
-  console.log(`🔍 INCOMING REQUEST: ${req.method} ${req.url} ${req.path}`);
-  next();
-});
-
-console.log('🚨🚨🚨 CRITICAL DEBUG: Debug middleware registered');
-
-// 🚨 HIGHEST PRIORITY: main.js route MUST be first to avoid interception
-app.get('/src/main.js', (req, res) => {
-  console.log('🎯 PRIORITY ROUTE HIT: Serving main.js with correct MIME type');
-  
-  const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
-  const content = fs.readFileSync(mainTsxPath, 'utf-8');
-  
-  res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  console.log('✅ PRIORITY SUCCESS: main.js served as JavaScript');
-  return res.send(content);
-});
-
-console.log('🔧 Priority main.js route registered first - before all middleware');
-
-// Configure MIME types for TypeScript modules - FIXED
-express.static.mime.define({
-  'text/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs'],
-  'application/javascript': ['tsx', 'ts', 'jsx', 'js', 'mjs']
-});
-console.log('🔧 FIXED: Enhanced MIME type configuration for TypeScript modules');
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
-// CRITICAL: Force correct MIME type for all JavaScript modules - ENHANCED
-app.use((req, res, next) => {
-  console.log(`🔍 Request: ${req.method} ${req.path}`);
-  
-  if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
-    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    console.log(`✅ FORCE MIME TYPE: ${req.path} -> text/javascript; charset=utf-8`);
-  }
-  
-  // Special handling for main.tsx specifically
-  if (req.path === '/src/main.tsx') {
-    console.log('🎯 SPECIAL HANDLING: main.tsx detected');
-    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
-  }
-  
-  next();
-});
-
-app.use((req, res, next) => {
-  const originalSend = res.send;
-  const originalEnd = res.end;
-  
-  // Override send method to fix MIME types
-  res.send = function(body) {
-    if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
-      this.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-      console.log(`🔧 FIXED MIME TYPE: ${req.path} -> application/javascript`);
-    }
-    return originalSend.call(this, body);
-  };
-  
-  // Override end method to fix MIME types
-  res.end = function(chunk, encoding) {
-    if (req.path.endsWith('.tsx') || req.path.endsWith('.ts') || req.path.endsWith('.jsx') || req.path.endsWith('.js') || req.path.endsWith('.mjs')) {
-      this.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-      console.log(`🔧 FIXED MIME TYPE (END): ${req.path} -> application/javascript`);
-    }
-    return originalEnd.call(this, chunk, encoding);
-  };
-  
-  console.log(`🔧 MIME OVERRIDE: Processing ${req.method} ${req.path}`);
-  next();
-});
-
-// Add performance middleware after MIME type configuration
+// Add performance middleware first
 app.use(performanceMiddleware());
 
 // CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
@@ -498,53 +412,6 @@ console.log("Starting Musk Pulse automation system...");
 muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
-  // CRITICAL: Add direct landing page route BEFORE all other routes
-  app.get('/', (req, res) => {
-    console.log('🎉 Serving direct HTML landing page - bypassing all issues');
-    const landingPageHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brandentifier - AI-Powered Career Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Inter', Arial, sans-serif; }</style>
-</head>
-<body>
-  <div style="min-height: 100vh; background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); color: white;">
-    <header style="padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-      <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
-        <h1 style="font-size: 28px; font-weight: 700; margin: 0;">Brandentifier</h1>
-        <div style="font-size: 14px; opacity: 0.8;">AI-Powered Career Platform</div>
-      </div>
-    </header>
-    <main style="padding: 60px 40px; max-width: 1200px; margin: 0 auto; text-align: center;">
-      <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Build Your Professional Brand</h2>
-        <p style="font-size: 20px; margin-bottom: 40px; opacity: 0.9; line-height: 1.6;">Leverage AI-powered insights to accelerate your career growth, connect with industry leaders, and showcase your expertise to the world.</p>
-        <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 60px; flex-wrap: wrap;">
-          <button style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Get Started</button>
-          <button style="background: transparent; border: 2px solid rgba(255,255,255,0.3); padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Learn More</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 60px;">
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);"><div style="font-size: 24px; margin-bottom: 15px;">🤖</div><h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">AI Career Insights</h3><p style="opacity: 0.8; line-height: 1.5;">Get personalized career guidance powered by advanced AI technology.</p></div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);"><div style="font-size: 24px; margin-bottom: 15px;">🌟</div><h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Brand Building</h3><p style="opacity: 0.8; line-height: 1.5;">Create a compelling professional presence across all platforms.</p></div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);"><div style="font-size: 24px; margin-bottom: 15px;">🚀</div><div style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Career Growth</h3><p style="opacity: 0.8; line-height: 1.5;">Track your progress and achieve your professional goals faster.</p></div>
-        </div>
-        <div style="margin-top: 60px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-          <p style="margin: 0; opacity: 0.7; font-size: 14px;">🎉 Brandentifier is working perfectly! All issues resolved!</p>
-        </div>
-      </div>
-    </main>
-  </div>
-  <script>console.log('✅ Brandentifier landing page loaded successfully!');</script>
-</body>
-</html>`;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.send(landingPageHTML);
-  });
-
 (async () => {
   const server = await registerRoutes(app);
 
@@ -556,79 +423,14 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     throw err;
   });
 
-  // ENABLE VITE: Re-enable Vite to load proper React landing page
-  console.log('🔧 ENABLING VITE - React app with proper landing page');
-  console.log('🔧 Environment check:', app.get("env"), 'NODE_ENV:', process.env.NODE_ENV);
-  
-  // Setup Vite for React transpilation and serving
-  await setupVite(app, server);
-  
-  // Serve the clean HTML landing page directly
-  app.get('/', (req, res) => {
-    console.log('📄 Serving direct HTML landing page');
-    const landingPageHTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brandentifier - Professional Networking & AI-Powered Career Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', Arial, sans-serif; }
-  </style>
-</head>
-<body>
-  <div style="min-height: 100vh; background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%); color: white; font-family: 'Inter', Arial, sans-serif;">
-    <header style="padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-      <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
-        <h1 style="font-size: 28px; font-weight: 700; margin: 0;">Brandentifier</h1>
-        <div style="font-size: 14px; opacity: 0.8;">AI-Powered Career Platform</div>
-      </div>
-    </header>
-    <main style="padding: 60px 40px; max-width: 1200px; margin: 0 auto; text-align: center;">
-      <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="font-size: 48px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-          Build Your Professional Brand
-        </h2>
-        <p style="font-size: 20px; margin-bottom: 40px; opacity: 0.9; line-height: 1.6;">
-          Leverage AI-powered insights to accelerate your career growth, connect with industry leaders, and showcase your expertise to the world.
-        </p>
-        <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 60px; flex-wrap: wrap;">
-          <button style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Get Started</button>
-          <button style="background: transparent; border: 2px solid rgba(255,255,255,0.3); padding: 15px 30px; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer;">Learn More</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 60px;">
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🤖</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">AI Career Insights</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Get personalized career guidance powered by advanced AI technology.</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🌟</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Brand Building</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Create a compelling professional presence across all platforms.</p>
-          </div>
-          <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <div style="font-size: 24px; margin-bottom: 15px;">🚀</div>
-            <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">Career Growth</h3>
-            <p style="opacity: 0.8; line-height: 1.5;">Track your progress and achieve your professional goals faster.</p>
-          </div>
-        </div>
-        <div style="margin-top: 60px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-          <p style="margin: 0; opacity: 0.7; font-size: 14px;">🎉 Brandentifier is working perfectly! Issue completely resolved!</p>
-        </div>
-      </div>
-    </main>
-  </div>
-  <script>console.log('🎉 Brandentifier working perfectly - all issues resolved!');</script>
-</body>
-</html>`;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(landingPageHTML);
-  });
-  
-  console.log('✅ Direct HTML serving configured - bypassing all Vite issues');
+  // importantly only setup vite in development and after
+  // setting up all the other routes so the catch-all route
+  // doesn't interfere with the other routes
+  if (app.get("env") === "development") {
+    await setupVite(app, server);
+  } else {
+    serveStatic(app);
+  }
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.

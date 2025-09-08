@@ -1011,7 +1011,7 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
-  "content_creation" // Content creation quests
+  "social_quest" // New type for Social Quests
 ]);
 
 // Quest status enum (simplified)
@@ -1157,7 +1157,67 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
 
-// Social Quest functionality removed
+// Social Quests Extension - Platform-specific quest management
+// Social platform enum for targeting specific platforms
+export const socialPlatformEnum = pgEnum("social_platform", [
+  "brandentifier", // Primary focus - internal platform
+  "linkedin",      // Secondary platform
+  "instagram",     // Visual content platform
+  "twitter",       // Micro-blogging platform
+  "youtube",       // Video content platform
+  "tiktok",        // Short-form video platform
+  "facebook"       // General social platform
+]);
+
+// Social Quest definitions - extends regular quests with platform-specific data
+export const socialQuestDefinitions = pgTable("social_quest_definitions", {
+  id: serial("id").primaryKey(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  targetPlatform: socialPlatformEnum("target_platform").notNull(),
+  platformPriority: integer("platform_priority").notNull().default(1), // 1=primary, 2=secondary, 3=tertiary
+  contentTemplate: text("content_template"), // Template for AI-generated content
+  platformSpecificData: jsonb("platform_specific_data").default('{}'), // Platform-specific metadata
+  aiGenerationPrompt: text("ai_generation_prompt"), // Prompt for AI task generation
+  requiredIndustries: jsonb("required_industries").default('[]'), // Industries this quest applies to
+  requiredDomains: jsonb("required_domains").default('[]'), // Domains this quest applies to
+  isAiGenerated: boolean("is_ai_generated").default(true), // Whether this quest uses AI generation
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// User Social Quest assignments - tracks user-specific platform recommendations and progress
+export const userSocialQuests = pgTable("user_social_quests", {
+  id: serial("id").primaryKey(),
+  userQuestId: integer("user_quest_id").references(() => userQuests.id).notNull(),
+  socialQuestDefinitionId: integer("social_quest_definition_id").references(() => socialQuestDefinitions.id).notNull(),
+  aiGeneratedContent: text("ai_generated_content"), // AI-generated task content specific to user
+  platformRecommendationReason: text("platform_recommendation_reason"), // Why this platform was recommended
+  userFeedbackRating: integer("user_feedback_rating"), // 1-5 user rating of task relevance
+  platformEngagementGoal: integer("platform_engagement_goal"), // Target engagement for this quest
+  actualPlatformEngagement: integer("actual_platform_engagement").default(0), // Actual engagement achieved
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schemas for Social Quests
+export const insertSocialQuestDefinitionSchema = createInsertSchema(socialQuestDefinitions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserSocialQuestSchema = createInsertSchema(userSocialQuests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Social Quests
+export type SocialQuestDefinition = typeof socialQuestDefinitions.$inferSelect;
+export type InsertSocialQuestDefinition = z.infer<typeof insertSocialQuestDefinitionSchema>;
+
+export type UserSocialQuest = typeof userSocialQuests.$inferSelect;
+export type InsertUserSocialQuest = z.infer<typeof insertUserSocialQuestSchema>;
 
 // Brand of the Day model - for storing and tracking featured profiles
 export const brandsOfTheDay = pgTable("brands_of_the_day", {
@@ -1439,90 +1499,3 @@ export type InsertItemView = z.infer<typeof insertItemViewSchema>;
 
 export type UserRestriction = typeof userRestrictions.$inferSelect;
 export type InsertUserRestriction = z.infer<typeof insertUserRestrictionSchema>;
-
-// Platform Intelligence System Tables
-
-// Platform intelligence data - maps industry/domain combinations to platform effectiveness
-export const platformIntelligence = pgTable("platform_intelligence", {
-  id: serial("id").primaryKey(),
-  industry: text("industry").notNull(),
-  domain: text("domain"),
-  platform: text("platform").notNull(),
-  effectivenessScore: decimal("effectiveness_score", { precision: 3, scale: 2 }).notNull(), // 0.00 - 1.00
-  audienceSize: integer("audience_size"), // Estimated audience size for this industry-platform combo
-  engagementRate: decimal("engagement_rate", { precision: 3, scale: 2 }), // Average engagement rate
-  contentTypes: jsonb("content_types").default('[]'), // Types of content that work best
-  optimalPostingTimes: jsonb("optimal_posting_times").default('{}'), // Best times to post
-  keyHashtags: jsonb("key_hashtags").default('[]'), // Effective hashtags for this combo
-  competitorAnalysis: jsonb("competitor_analysis").default('{}'), // Insights about competitors
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// User platform preferences and performance
-export const userPlatformPreferences = pgTable("user_platform_preferences", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  platform: text("platform").notNull(),
-  preferenceScore: decimal("preference_score", { precision: 3, scale: 2 }).notNull(), // User's preference for this platform
-  isActive: boolean("is_active").default(true), // Whether user wants quests for this platform
-  experienceLevel: text("experience_level").default("beginner"), // beginner, intermediate, advanced
-  lastEngagement: timestamp("last_engagement"), // When user last engaged with this platform
-  performanceScore: decimal("performance_score", { precision: 3, scale: 2 }), // How well user performs on this platform
-  contentPreferences: jsonb("content_preferences").default('{}'), // User's content preferences
-  goalAlignment: decimal("goal_alignment", { precision: 3, scale: 2 }), // How well platform aligns with user goals
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => ({
-  uniqueUserPlatform: unique().on(table.userId, table.platform),
-}));
-
-// Platform performance analytics for dynamic optimization
-export const platformAnalytics = pgTable("platform_analytics", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  platform: text("platform").notNull(),
-  questId: integer("quest_id").references(() => userQuests.id),
-  engagementMetrics: jsonb("engagement_metrics").default('{}'), // likes, shares, comments, etc.
-  completionRate: decimal("completion_rate", { precision: 3, scale: 2 }), // How often user completes quests
-  timeToComplete: integer("time_to_complete"), // Average time to complete quests (minutes)
-  userSatisfaction: integer("user_satisfaction"), // 1-5 rating
-  contentQuality: decimal("content_quality", { precision: 3, scale: 2 }), // AI-assessed content quality
-  networkGrowth: integer("network_growth"), // New connections/followers gained
-  leadGeneration: integer("lead_generation"), // Business leads generated
-  brandMentions: integer("brand_mentions"), // Times user's brand was mentioned
-  trafficToBrandentifier: integer("traffic_to_brandentifier"), // Clicks back to Brandentifier
-  recordedAt: timestamp("recorded_at").defaultNow(),
-});
-
-// Goal-based platform strategy mapping
-export const goalPlatformStrategies = pgTable("goal_platform_strategies", {
-  id: serial("id").primaryKey(),
-  userGoal: text("user_goal").notNull(), // career_advice, job_opportunities, networking, thought_leadership, business_growth
-  targetAudience: text("target_audience").notNull(), // professionals, executives, entrepreneurs, creatives, technical
-  platform: text("platform").notNull(),
-  priorityScore: decimal("priority_score", { precision: 3, scale: 2 }).notNull(), // How important this platform is for this goal
-  strategyDescription: text("strategy_description").notNull(), // What strategy to use on this platform
-  contentFocus: jsonb("content_focus").default('[]'), // Types of content to focus on
-  keyMetrics: jsonb("key_metrics").default('[]'), // What metrics to track for success
-  timeInvestment: integer("time_investment"), // Recommended minutes per week
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Insert schemas for the new tables
-export const insertPlatformIntelligenceSchema = createInsertSchema(platformIntelligence);
-export const insertUserPlatformPreferenceSchema = createInsertSchema(userPlatformPreferences);
-export const insertPlatformAnalyticsSchema = createInsertSchema(platformAnalytics);
-export const insertGoalPlatformStrategySchema = createInsertSchema(goalPlatformStrategies);
-
-// Type exports
-export type PlatformIntelligence = typeof platformIntelligence.$inferSelect;
-export type UserPlatformPreference = typeof userPlatformPreferences.$inferSelect;
-export type PlatformAnalytics = typeof platformAnalytics.$inferSelect;
-export type GoalPlatformStrategy = typeof goalPlatformStrategies.$inferSelect;
-
-export type InsertPlatformIntelligence = z.infer<typeof insertPlatformIntelligenceSchema>;
-export type InsertUserPlatformPreference = z.infer<typeof insertUserPlatformPreferenceSchema>;
-export type InsertPlatformAnalytics = z.infer<typeof insertPlatformAnalyticsSchema>;
-export type InsertGoalPlatformStrategy = z.infer<typeof insertGoalPlatformStrategySchema>;

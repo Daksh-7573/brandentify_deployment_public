@@ -1,6 +1,5 @@
 console.log("Loaded routes.ts");
-import express from "express";
-import type { Express, Request, Response } from "express";
+import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
@@ -11,7 +10,7 @@ import { getCachedUserData, setCachedUserData } from "./middleware/user-cache";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";
-import * as fileUpload from "express-fileupload";
+import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
@@ -7137,7 +7136,10 @@ ${extractedText.substring(0, 5000)}
   registerMuskAIEnhancedRoutes(app);
   console.log("Musk AI Enhanced routes loaded");
 
-  // Social Quest routes removed
+  // Register Social Quest AI-powered routes
+  const { default: setupSocialQuestRoutes } = await import('./routes-social-quests');
+  setupSocialQuestRoutes(app);
+  console.log("Social Quest AI routes loaded");
   
   // Register Musk Testing routes for QA and Roleplay scenarios
   setupMuskTestingRoutes(apiRouter);

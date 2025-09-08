@@ -284,7 +284,6 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             WHERE uq.user_id = ${userId} AND 
                   ((uq.week_number = ${weekNumber} AND uq.year = ${year}) OR 
                    (uq.week_number = ${prevWeek} AND uq.year = ${prevYear}))
-                  AND qd.type != 'social_quest'
             ORDER BY uq.assigned_at DESC
           `);
           
@@ -409,7 +408,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
               qd.updated_at as "updatedAt"
             FROM user_quests uq
             LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-            WHERE uq.user_id = ${userId} AND qd.type != 'social_quest'
+            WHERE uq.user_id = ${userId}
             ORDER BY uq.assigned_at DESC
           `);
           
