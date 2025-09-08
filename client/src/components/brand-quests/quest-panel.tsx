@@ -93,6 +93,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   // Weekly quests filtered by type
   const weeklyCareerQuests = (weeklyQuests || []).filter(q => {
     const questType = getQuestType(q);
+    console.log('Weekly quest:', q.id, q.questTitle || q.definition?.title, 'Type:', questType, 'Is Social?', socialQuestTypes.includes(questType));
     return !socialQuestTypes.includes(questType);
   });
   
@@ -100,6 +101,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     const questType = getQuestType(q);
     return socialQuestTypes.includes(questType);
   });
+  
+  // Debug logging
+  console.log('Total weekly quests:', weeklyQuests?.length || 0);
+  console.log('Weekly career quests:', weeklyCareerQuests.length);
+  console.log('Weekly social quests:', weeklySocialQuests.length);
   
   // Status-based filtering for each category
   const completedCareerQuests = careerQuests.filter(q => q.status === 'completed');
