@@ -113,15 +113,16 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     // Final fallback for debugging
     (quest.definition && Object.keys(quest.definition).includes('muskTip') ? quest.definition.muskTip : null);
 
-  // Extract hashtag suggestions for Social Quests and clean the tip content
+  // Extract hashtag suggestions and clean the tip content
   const extractHashtagsAndCleanTip = (content: string) => {
     if (!content) return { cleanContent: '', hashtags: [] };
     
-    const hashtagPattern = /💡 Musk's hashtag suggestions: ([#\w\s]+)/i;
+    // More flexible pattern to match hashtag suggestions at the end
+    const hashtagPattern = /💡 Musk's hashtag suggestions:\s*([#\w\s]+)$/mi;
     const match = content.match(hashtagPattern);
     
     if (match) {
-      const hashtagsText = match[1];
+      const hashtagsText = match[1].trim();
       const hashtags = hashtagsText
         .split(/\s+/)
         .filter(tag => tag.startsWith('#'))
@@ -134,10 +135,22 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     return { cleanContent: content, hashtags: [] };
   };
 
-  const { cleanContent: muskTipContent, hashtags: socialHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
+  const { cleanContent: muskTipContent, hashtags: extractedHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
   
   // Check if this is a Social Quest (platform-specific social media quest)
   const isSocialQuest = ['post_linkedin_suggestion', 'post_instagram_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_facebook_suggestion', 'post_tiktok_suggestion'].includes(questDefinition.targetAction || '');
+  
+  // Debug logging (only for Social Quests)
+  if (isSocialQuest || extractedHashtags.length > 0) {
+    console.log('Quest Debug:', {
+      title: questDefinition.title,
+      targetAction: questDefinition.targetAction,
+      isSocialQuest,
+      hasHashtags: extractedHashtags.length > 0,
+      hashtags: extractedHashtags,
+      rawMuskTip: rawMuskTipContent
+    });
+  }
 
 
   // Get platform-specific icon for social_post quests
@@ -240,13 +253,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               )}
               
               {/* Add StaticHashtagSuggestions component for Social Quests */}
-              {isSocialQuest && socialHashtags.length > 0 && (
+              {isSocialQuest && extractedHashtags.length > 0 && (
                 <div className="mt-3">
                   <div className="text-sm font-medium text-white/70 mb-2">
                     <span className="mr-1">💡</span> Musk's hashtag suggestions:
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {socialHashtags.map((hashtag, index) => (
+                    {extractedHashtags.map((hashtag: string, index: number) => (
                       <button
                         key={index}
                         onClick={() => {
