@@ -201,7 +201,7 @@ function generateIndustrySpecificQuests(industry: string, domain: string, userDa
     quests.push(
       {
         title: 'Travel Cost Optimization Insights',
-        description: `Share your expertise on reducing corporate travel expenses. Create a detailed analysis of cost-saving strategies in ${domain}`,
+        description: `Write an article sharing your expertise on reducing corporate travel expenses. Create a detailed analysis of cost-saving strategies in ${domain}`,
         type: 'pulse_creation',
         targetAction: 'create_travel_insight',
         mediaSpecific: 'infographic: Travel expense comparison chart, cost-saving breakdown, or ROI analysis showing before/after optimization results',
@@ -211,7 +211,7 @@ function generateIndustrySpecificQuests(industry: string, domain: string, userDa
       },
       {
         title: 'Corporate Travel Policy Guide',
-        description: 'Document best practices for corporate travel management based on your hospitality industry experience',
+        description: 'Write an article outlining best practices for corporate travel management based on your hospitality industry experience',
         type: 'pulse_creation',
         targetAction: 'create_policy_guide',
         mediaSpecific: 'document: Travel policy template, compliance checklist, or vendor comparison spreadsheet',
@@ -247,7 +247,7 @@ function generateIndustrySpecificQuests(industry: string, domain: string, userDa
       },
       {
         title: 'Patient Care Case Study',
-        description: 'Document a successful patient outcome or care improvement initiative (anonymized)',
+        description: 'Write an article about a successful patient outcome or care improvement initiative (anonymized)',
         type: 'pulse_creation',
         targetAction: 'create_case_study',
         mediaSpecific: 'document: Care improvement metrics, patient satisfaction data, or treatment protocol flowchart',
@@ -263,7 +263,7 @@ function generateIndustrySpecificQuests(industry: string, domain: string, userDa
     quests.push(
       {
         title: 'Technical Solution Deep-Dive',
-        description: 'Share a detailed breakdown of a technical challenge you solved and the approach you used',
+        description: 'Write an article with a detailed breakdown of a technical challenge you solved and the approach you used',
         type: 'pulse_creation',
         targetAction: 'create_tech_solution',
         mediaSpecific: 'image: Code snippets, architecture diagrams, performance benchmarks, or before/after metrics',
@@ -273,7 +273,7 @@ function generateIndustrySpecificQuests(industry: string, domain: string, userDa
       },
       {
         title: 'Industry Tool Comparison',
-        description: 'Create a comprehensive comparison of tools or frameworks in your technology domain',
+        description: 'Write an article with a comprehensive comparison of tools or frameworks in your technology domain',
         type: 'pulse_creation',
         targetAction: 'create_tool_comparison',
         mediaSpecific: 'document: Feature comparison table, performance benchmarks, or implementation guide',
@@ -297,7 +297,7 @@ function generateProfessionalDevelopmentQuests(userData: any, skills: any[], exp
   if (experiences?.length >= 2) {
     quests.push({
       title: 'Industry Trend Analysis',
-      description: 'Share your perspective on emerging trends in your industry and their potential impact',
+      description: 'Write an article sharing your perspective on emerging trends in your industry and their potential impact',
       type: 'pulse_creation',
       targetAction: 'create_trend_analysis',
       mediaSpecific: 'image: Market trend charts, industry statistics infographic, or future predictions timeline',
@@ -311,7 +311,7 @@ function generateProfessionalDevelopmentQuests(userData: any, skills: any[], exp
   if (skills?.length >= 5) {
     quests.push({
       title: 'Skill Development Tutorial',
-      description: 'Create educational content teaching one of your core professional skills to others',
+      description: 'Write an article with educational content teaching one of your core professional skills to others',
       type: 'pulse_creation',
       targetAction: 'create_tutorial',
       mediaSpecific: 'document: Step-by-step guide, tutorial video script, or skill assessment checklist',
