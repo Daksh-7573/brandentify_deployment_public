@@ -209,7 +209,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Get user profile data for intelligent quest generation
-        const userData = await storage.getUserById(userId);
+        const userData = await storage.getUser(userId);
         if (!userData) {
           console.log(`[GET /users/${userId}/quests/current-week] User not found`);
           return res.status(404).json({ message: 'User not found' });
@@ -218,7 +218,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user's additional profile data
         const [skills, experiences, educations, projects] = await Promise.all([
           storage.getSkillsByUserId(userId),
-          storage.getExperiencesByUserId(userId), 
+          storage.getWorkExperiencesByUserId(userId), 
           storage.getEducationsByUserId(userId),
           storage.getProjectsByUserId(userId)
         ]);
