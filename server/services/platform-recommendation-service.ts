@@ -324,7 +324,13 @@ class PlatformRecommendationService {
   /**
    * Get platform-specific quest titles and descriptions
    */
-  getPlatformQuestData(targetAction: string): { title: string; description: string; muskTip: string } {
+  getPlatformQuestData(targetAction: string, userProfile?: UserProfile): { title: string; description: string; muskTip: string } {
+    // Get personalized content based on user profile
+    if (userProfile) {
+      return this.generatePersonalizedQuestData(targetAction, userProfile);
+    }
+
+    // Fallback to generic content
     const questData: { [key: string]: { title: string; description: string; muskTip: string } } = {
       'post_linkedin_suggestion': {
         title: "LinkedIn Thought Leadership",
@@ -362,6 +368,149 @@ class PlatformRecommendationService {
       title: "Social Media Content",
       description: "Create AI-suggested content for your chosen platform",
       muskTip: "Authentic, value-driven content always performs better than generic posts."
+    };
+  }
+
+  /**
+   * Generate personalized quest data based on user profile
+   */
+  private generatePersonalizedQuestData(targetAction: string, profile: UserProfile): { title: string; description: string; muskTip: string } {
+    const industry = profile.industry?.toLowerCase() || '';
+    const domain = profile.domain?.toLowerCase() || '';
+    const title = profile.title?.toLowerCase() || '';
+
+    // Industry-specific content templates
+    const industryData = this.getIndustrySpecificData(industry, domain);
+    
+    switch (targetAction) {
+      case 'post_linkedin_suggestion':
+        return {
+          title: `${industryData.industryName} Leadership Insights`,
+          description: `Share professional insights about ${industryData.trendTopics.join(' or ')} to establish thought leadership in ${industryData.industryName.toLowerCase()}`,
+          muskTip: `${industryData.industryName} posts with ${industryData.engagementTips} get 40% more engagement. Include specific data or case studies from your ${domain || industry} experience.`
+        };
+      
+      case 'post_twitter_suggestion':
+        return {
+          title: `${industryData.industryName} Trend Analysis`,
+          description: `Tweet about emerging trends in ${industryData.quickTopics.join(' or ')} to showcase your ${industryData.industryName.toLowerCase()} expertise`,
+          muskTip: `${industryData.industryName} Twitter threads about ${industryData.twitterTips} perform 3x better. Use industry hashtags and tag relevant companies or experts.`
+        };
+      
+      case 'post_instagram_suggestion':
+        return {
+          title: `Behind the Scenes in ${industryData.industryName}`,
+          description: `Share visual content showing ${industryData.visualContent.join(' or ')} to humanize your professional brand`,
+          muskTip: `${industryData.industryName} Instagram posts with ${industryData.visualTips} get 50% more engagement. Show authentic moments from your professional day.`
+        };
+      
+      case 'post_youtube_suggestion':
+        return {
+          title: `${industryData.industryName} Expert Insights`,
+          description: `Create educational videos about ${industryData.educationalTopics.join(' or ')} to demonstrate your expertise`,
+          muskTip: `${industryData.industryName} YouTube videos with ${industryData.youtubeTips} get 10x more views. Keep it under 5 minutes and use clear, benefit-focused titles.`
+        };
+      
+      default:
+        return {
+          title: `${industryData.industryName} Professional Content`,
+          description: `Share valuable ${industryData.industryName.toLowerCase()} insights to build your professional presence`,
+          muskTip: `${industryData.industryName} content performs best when it provides actionable insights that help others in your field.`
+        };
+    }
+  }
+
+  /**
+   * Get industry-specific content data
+   */
+  private getIndustrySpecificData(industry: string, domain: string) {
+    // Hospitality & Travel specific data
+    if (industry.includes('hospitality') || domain.includes('travel') || domain.includes('corporate')) {
+      return {
+        industryName: 'Hospitality & Travel',
+        trendTopics: [
+          'corporate travel policy changes',
+          'business travel recovery trends',
+          'hotel technology innovations',
+          'travel expense management',
+          'sustainable travel practices'
+        ],
+        quickTopics: [
+          'business travel costs',
+          'hotel booking strategies',
+          'travel compliance updates',
+          'corporate accommodation trends'
+        ],
+        visualContent: [
+          'corporate hotel partnerships',
+          'travel expense tracking tools',
+          'business traveler experiences',
+          'industry conference moments'
+        ],
+        educationalTopics: [
+          'travel policy best practices',
+          'cost-saving travel strategies',
+          'vendor management tips',
+          'travel safety protocols'
+        ],
+        engagementTips: 'cost-saving tips or policy updates',
+        twitterTips: 'travel cost comparisons or policy changes',
+        visualTips: 'real travel experiences or industry events',
+        youtubeTips: 'actionable travel management advice'
+      };
+    }
+
+    // Technology industry
+    if (industry.includes('technology') || industry.includes('software')) {
+      return {
+        industryName: 'Technology',
+        trendTopics: [
+          'emerging tech trends',
+          'software development practices',
+          'AI implementation strategies',
+          'digital transformation insights'
+        ],
+        quickTopics: ['tech innovations', 'coding best practices', 'industry disruptions'],
+        visualContent: ['coding setups', 'project demos', 'tech event moments'],
+        educationalTopics: ['programming tutorials', 'tech career advice', 'industry analysis'],
+        engagementTips: 'practical code examples or tech predictions',
+        twitterTips: 'tech predictions or development tips',
+        visualTips: 'coding processes or tech setups',
+        youtubeTips: 'step-by-step technical tutorials'
+      };
+    }
+
+    // Healthcare industry
+    if (industry.includes('healthcare') || industry.includes('medical')) {
+      return {
+        industryName: 'Healthcare',
+        trendTopics: [
+          'healthcare technology adoption',
+          'patient care innovations',
+          'medical industry trends',
+          'healthcare policy changes'
+        ],
+        quickTopics: ['patient care tips', 'healthcare innovations', 'medical best practices'],
+        visualContent: ['healthcare facilities', 'medical technology', 'patient success stories'],
+        educationalTopics: ['healthcare best practices', 'medical career advice', 'patient care tips'],
+        engagementTips: 'patient outcomes or healthcare innovations',
+        twitterTips: 'healthcare policy updates or medical breakthroughs',
+        visualTips: 'healthcare technology or patient care moments',
+        youtubeTips: 'healthcare education or career guidance'
+      };
+    }
+
+    // Default fallback for unknown industries
+    return {
+      industryName: 'Professional',
+      trendTopics: ['industry trends', 'professional insights', 'career development', 'business strategies'],
+      quickTopics: ['industry updates', 'professional tips', 'career advice'],
+      visualContent: ['workplace moments', 'professional achievements', 'industry events'],
+      educationalTopics: ['professional skills', 'career guidance', 'industry knowledge'],
+      engagementTips: 'practical advice or industry insights',
+      twitterTips: 'industry trends or professional tips',
+      visualTips: 'workplace culture or professional achievements',
+      youtubeTips: 'actionable professional advice'
     };
   }
 }
