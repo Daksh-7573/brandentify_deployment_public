@@ -20,8 +20,8 @@ export default function QuantumCardPage() {
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
-    queryKey: [`/api/users/${user?.uid}`],
-    enabled: !!user?.uid,
+    queryKey: [`/api/users/${user?.id}`],
+    enabled: !!user?.id,
   });
 
   if (isLoading) {
@@ -104,7 +104,7 @@ export default function QuantumCardPage() {
           onCancel={() => setShowEditContactInfo(false)}
           onSave={() => {
             setShowEditContactInfo(false);
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}`] });
           }}
         />
       )}
