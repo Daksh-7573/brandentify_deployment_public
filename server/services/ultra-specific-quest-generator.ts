@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { users, userSkills, skills } from '@shared/schema';
+import { users, skills } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 export interface UltraSpecificQuest {
@@ -61,19 +61,20 @@ class UltraSpecificQuestGenerator {
       
       const user = userResult[0];
 
-      // Get user skills
-      const userSkillsResult = await db
-        .select({
-          skillName: skills.name,
-          proficiency: userSkills.proficiency
-        })
-        .from(userSkills)
-        .leftJoin(skills, eq(userSkills.skillId, skills.id))
-        .where(eq(userSkills.userId, userId));
-
-      const skillNames = userSkillsResult
-        .filter(skill => skill.skillName)
-        .map(skill => skill.skillName!);
+      // For now, we'll use profile data to determine skills
+      // TODO: Implement proper user skills retrieval when schema is available
+      const skillNames: string[] = [];
+      
+      // Extract skills from profile data if available
+      if (user.whatIOffer) {
+        // Parse skills from whatIOffer field if it contains skill-related keywords
+        const skillKeywords = ['management', 'optimization', 'planning', 'service', 'revenue', 'travel', 'hospitality'];
+        skillKeywords.forEach(keyword => {
+          if (user.whatIOffer!.toLowerCase().includes(keyword)) {
+            skillNames.push(keyword);
+          }
+        });
+      }
 
       // Get top expertise areas based on industry/domain
       const topExpertiseAreas = this.getTopExpertiseAreas(user.industry, user.domain, skillNames);

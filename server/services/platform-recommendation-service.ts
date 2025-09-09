@@ -2,6 +2,7 @@ import { db } from '../db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { socialQuestPersonalizationService } from './social-quest-personalization-service';
+import { ultraSpecificQuestGenerator } from './ultra-specific-quest-generator';
 
 export interface PlatformRecommendation {
   platform: string;
@@ -326,10 +327,10 @@ class PlatformRecommendationService {
    * Get platform-specific quest titles and descriptions using new personalization service
    */
   async getPlatformQuestData(targetAction: string, userId?: number, userProfile?: UserProfile): Promise<{ title: string; description: string; muskTip: string }> {
-    // Use new personalization service if userId provided
+    // Use ultra-specific generator if userId provided
     if (userId) {
       const platform = this.extractPlatformFromTargetAction(targetAction);
-      return await socialQuestPersonalizationService.generatePersonalizedSocialQuest(userId, platform, targetAction);
+      return await ultraSpecificQuestGenerator.generateUltraSpecificQuest(userId, platform, targetAction);
     }
 
     // Fallback - Get personalized content based on user profile  
