@@ -44,10 +44,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   // Ensure targetCount has a minimum value of 1 to prevent division by zero
   const targetCount = questDefinition.targetCount || 1;
-  const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
   const isExpired = quest.status === 'expired';
   const isActive = quest.status === 'active';
+  
+  // Fix progress display logic: if completed, show full progress regardless of database value
+  const displayProgress = isComplete ? targetCount : quest.progress;
+  const progressPercentage = Math.min(100, Math.floor((displayProgress / targetCount) * 100));
   
   const handleActionClick = () => {
     if (onActionClick) {
@@ -229,7 +232,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       <div className="py-3">
         <div className="space-y-3">
           <div className="flex justify-between text-sm text-white/70 mb-2">
-            <span className="font-medium">Progress: {quest.progress} / {questDefinition.targetCount}</span>
+            <span className="font-medium">Progress: {displayProgress} / {questDefinition.targetCount}</span>
             <span className="text-blue-300 font-medium">+{questDefinition.xpReward} XP</span>
           </div>
           <div className="relative">
