@@ -284,7 +284,6 @@ function Router() {
           )} />
           <Route path="/search" component={SearchPage} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
-          <Route path="/portfolio/edit" component={PortfolioBuilder} />
           <Route path="/@:username">
             {(params) => <PublicProfile username={params.username} />}
           </Route>
