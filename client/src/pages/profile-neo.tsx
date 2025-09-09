@@ -356,8 +356,8 @@ export default function ProfileNeo() {
                         })
                       }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
                       
-                      // Redirect to portfolio edit page
-                      setLocation('/portfolio/edit');
+                      // Redirect to portfolio builder page
+                      setLocation('/portfolio-builder');
                     }}
                     id="portfolio-btn"
                     className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
