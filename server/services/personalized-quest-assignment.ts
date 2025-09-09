@@ -3,6 +3,7 @@ import { users, userQuests, questDefinitions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { platformRecommendationService } from './platform-recommendation-service';
 import { hashtagSuggestionService } from './hashtag-suggestion-service';
+import { socialQuestPersonalizationService } from './social-quest-personalization-service';
 
 export class PersonalizedQuestAssignment {
   
@@ -131,6 +132,13 @@ export class PersonalizedQuestAssignment {
 
         const recommendation = recommendations.find(r => r.targetAction === quest.targetAction);
         
+        // Generate personalized quest content for this user and platform
+        const personalizedContent = await socialQuestPersonalizationService.generatePersonalizedSocialQuest(
+          userId,
+          recommendation?.platform || 'LinkedIn',
+          quest.targetAction
+        );
+        
         // Generate hashtag suggestions for this quest
         const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
           userId, 
@@ -138,23 +146,25 @@ export class PersonalizedQuestAssignment {
           quest.targetAction
         );
 
-        // Enhance Musk tip with hashtag suggestions
-        const enhancedMuskTip = quest.muskTip + 
-          (hashtagSuggestion.hashtags.length > 0 
-            ? `\n\n💡 ${hashtagSuggestionService.formatHashtagsForTip(hashtagSuggestion.hashtags)}` 
-            : '');
+        // Use personalized content instead of generic quest definition
+        const personalizedQuest = {
+          ...quest,
+          title: personalizedContent.title,
+          description: personalizedContent.description,
+          muskTip: personalizedContent.muskTip + 
+            (hashtagSuggestion.hashtags.length > 0 
+              ? `\n\n💡 ${hashtagSuggestionService.formatHashtagsForTip(hashtagSuggestion.hashtags)}` 
+              : '')
+        };
 
         assignedQuests.push({
           ...assignedQuest,
-          questDefinition: {
-            ...quest,
-            muskTip: enhancedMuskTip
-          },
+          questDefinition: personalizedQuest,
           recommendation,
           hashtagSuggestion
         });
 
-        console.log(`[PersonalizedQuests] Assigned quest: ${quest.title} to user ${userId}`);
+        console.log(`[PersonalizedQuests] Assigned personalized quest: ${personalizedContent.title} to user ${userId}`);
       }
 
       return {
