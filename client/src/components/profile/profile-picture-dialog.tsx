@@ -80,7 +80,7 @@ export function ProfilePictureDialog({
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: async (data) => {
+    onSuccess: async (data, base64Image) => {
       setIsUploading(false);
       toast({
         title: "Success!",
@@ -88,16 +88,16 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Direct cache data update instead of invalidation
-      const newPhotoURL = (data as any)?.photoURL;
-      console.log('[PROFILE DIALOG] Updating cache with new photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
+      // Use the uploaded base64 image for immediate cache update
+      const newPhotoURL = (data as any)?.photoURL || base64Image;
+      console.log('[PROFILE DIALOG] Using uploaded image for instant cache update');
       
       queryClient.setQueryData(['/api/users', actualUserId], (oldData: any) => {
         if (oldData) {
-          console.log('[PROFILE DIALOG] Updating cached data with new photoURL');
+          console.log('[PROFILE DIALOG] ✅ Instant cache update with new image');
           return {
             ...oldData,
-            photoURL: newPhotoURL || oldData.photoURL
+            photoURL: newPhotoURL
           };
         }
         return oldData;
@@ -110,14 +110,14 @@ export function ProfilePictureDialog({
           if (oldData) {
             return {
               ...oldData,
-              photoURL: newPhotoURL || oldData.photoURL
+              photoURL: newPhotoURL
             };
           }
           return oldData;
         });
       }
       
-      // Force component re-renders immediately after cache update
+      // Force immediate re-render
       queryClient.invalidateQueries({ 
         queryKey: ['/api/users', actualUserId],
         exact: true,
