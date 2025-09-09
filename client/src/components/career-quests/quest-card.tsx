@@ -224,17 +224,17 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       
       {/* Confirmation Dialog for Completion */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-gray-900/90 border-white/10 text-white backdrop-blur-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Complete Quest</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-white">Complete Quest</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
               Are you sure you want to mark this quest as complete? You will earn {questDefinition.xpReward} XP
               {questDefinition.badgeReward ? ` and the ${getBadgeLabel(questDefinition.badgeReward)} badge` : ''}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete}>
+            <AlertDialogCancel className="bg-gray-800 text-white border-white/10 hover:bg-gray-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleComplete} className="bg-white/20 text-white hover:bg-white/30 border-white/10">
               Complete Quest
             </AlertDialogAction>
           </AlertDialogFooter>
