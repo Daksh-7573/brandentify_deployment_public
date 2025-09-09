@@ -4842,7 +4842,7 @@ export class MemStorage implements IStorage {
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
           features, image_url as "imageUrl", "order", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM services 
         WHERE user_id = $1 
         ORDER BY "order" ASC, created_at DESC
@@ -4865,7 +4865,7 @@ export class MemStorage implements IStorage {
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
           features, image_url as "imageUrl", "order", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM services 
         WHERE id = $1
       `, [id]);
@@ -4898,7 +4898,7 @@ export class MemStorage implements IStorage {
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
           features, image_url as "imageUrl", "order", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [
         serviceData.userId,
         serviceData.title,
@@ -4995,7 +4995,7 @@ export class MemStorage implements IStorage {
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
           features, image_url as "imageUrl", "order", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, params);
       
       if (result.rows.length === 0) {
@@ -5256,7 +5256,7 @@ export class MemStorage implements IStorage {
         `SELECT 
           id, goal_id as "goalId", skill_name as "skillName", 
           description, priority, status, 
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM goal_skills 
         WHERE goal_id = $1 
         ORDER BY 
@@ -5283,7 +5283,7 @@ export class MemStorage implements IStorage {
         `SELECT 
           id, goal_id as "goalId", skill_name as "skillName", 
           description, priority, status, 
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM goal_skills 
         WHERE id = $1`,
         [id]
@@ -5309,7 +5309,7 @@ export class MemStorage implements IStorage {
         RETURNING 
           id, goal_id as "goalId", skill_name as "skillName", 
           description, priority, status, 
-          created_at as "createdAt", updated_at as "updatedAt"`,
+          week_number as "weekNumber", year`,
         [
           skill.goalId,
           skill.skillName,
@@ -5355,7 +5355,7 @@ export class MemStorage implements IStorage {
         RETURNING 
           id, goal_id as "goalId", skill_name as "skillName", 
           description, priority, status, 
-          created_at as "createdAt", updated_at as "updatedAt"`;
+          week_number as "weekNumber", year`;
       
       const result = await executeQuery(query, values);
       
@@ -8086,7 +8086,7 @@ export class DatabaseStorage implements IStorage {
           likes, insightful_count as "insightfulCount",
           misinformed_count as "misinformedCount", share_count as "shareCount",
           comments, is_published as "isPublished", expires_at as "expiresAt",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [
         insertPulse.userId,
         insertPulse.type,
@@ -9198,7 +9198,7 @@ export class DatabaseStorage implements IStorage {
           SELECT id, user_id as "userId", title, description, start_date as "startDate",
                 project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
                 thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
-                created_at as "createdAt", updated_at as "updatedAt"
+                week_number as "weekNumber", year
           FROM projects
           WHERE user_id = $1
         `, [userId]);
@@ -10901,7 +10901,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM quest_definitions
         ORDER BY category, difficulty, title
       `);
@@ -10921,7 +10921,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM quest_definitions
         WHERE id = $1
       `, [id]);
@@ -10940,7 +10940,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM quest_definitions
         WHERE is_active = true
         ORDER BY category, difficulty, title
@@ -10960,7 +10960,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
         FROM quest_definitions
         WHERE category = $1 AND is_active = true
         ORDER BY difficulty, title
@@ -10984,7 +10984,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [
         quest.title, quest.description, quest.category, quest.difficulty,
         quest.xpReward, quest.estimatedTimeMinutes, quest.instructions,
@@ -11054,7 +11054,7 @@ export class DatabaseStorage implements IStorage {
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
           success_criteria as "successCriteria", is_active as "isActive",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, values);
 
       return result.rows[0];
@@ -11083,7 +11083,7 @@ export class DatabaseStorage implements IStorage {
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
-          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          uq.week_number as "weekNumber", uq.year,
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
@@ -11126,7 +11126,7 @@ export class DatabaseStorage implements IStorage {
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
-          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          uq.week_number as "weekNumber", uq.year,
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
@@ -11149,7 +11149,7 @@ export class DatabaseStorage implements IStorage {
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
-          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          uq.week_number as "weekNumber", uq.year,
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
@@ -11172,7 +11172,7 @@ export class DatabaseStorage implements IStorage {
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
-          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          uq.week_number as "weekNumber", uq.year,
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
@@ -11199,7 +11199,7 @@ export class DatabaseStorage implements IStorage {
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [
         quest.userId, quest.questDefinitionId, quest.status || 'active',
         quest.progress || 0, quest.startedAt || new Date()
@@ -11261,7 +11261,7 @@ export class DatabaseStorage implements IStorage {
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, values);
 
       return result.rows[0];
@@ -11283,7 +11283,7 @@ export class DatabaseStorage implements IStorage {
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [id, earnedXp]);
 
       return result.rows[0];
@@ -11305,7 +11305,7 @@ export class DatabaseStorage implements IStorage {
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [id, reason]);
 
       return result.rows[0];
@@ -11326,7 +11326,7 @@ export class DatabaseStorage implements IStorage {
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          created_at as "createdAt", updated_at as "updatedAt"
+          week_number as "weekNumber", year
       `, [id]);
 
       return result.rows[0];
@@ -11359,7 +11359,7 @@ export class DatabaseStorage implements IStorage {
             status, progress, assigned_at as "assignedAt", 
             completed_at as "completedAt", dismissed_at as "dismissedAt",
             earned_xp as "earnedXp", dismiss_reason as "dismissReason",
-            created_at as "createdAt", updated_at as "updatedAt"
+            week_number as "weekNumber", year
         `, [userId, questDef.id]);
         
         assignedQuests.push(result.rows[0]);

@@ -1,0 +1,61 @@
+Quest Debug: {title: 'Insight Sharer', targetAction: 'share_industry_insights', isSocialQuest: true, hasHashtags: true, hashtags: Array(5), …}
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/user-quests/81/complete
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/user-quests/81/complete 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ use-career-quests.ts:304
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+handleComplete @ quest-card.tsx:82
+handleEvent @ chunk-OD433RWB.js?v=1385e92d:4
+Nb @ chunk-E27YX2RL.js?v=1385e92d:975
+Tb @ chunk-E27YX2RL.js?v=1385e92d:991
+Ub @ chunk-E27YX2RL.js?v=1385e92d:994
+nf @ chunk-E27YX2RL.js?v=1385e92d:2017
+se @ chunk-E27YX2RL.js?v=1385e92d:2040
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:2312
+Qk @ chunk-E27YX2RL.js?v=1385e92d:5701
+Jb @ chunk-E27YX2RL.js?v=1385e92d:927
+hd @ chunk-E27YX2RL.js?v=1385e92d:2113
+fd @ chunk-E27YX2RL.js?v=1385e92d:1454
+ed @ chunk-E27YX2RL.js?v=1385e92d:1437Understand this error
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/user-quests/81/complete
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/user-quests/81/complete 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ use-career-quests.ts:304
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+handleComplete @ quest-card.tsx:82
+handleEvent @ chunk-OD433RWB.js?v=1385e92d:4
+Nb @ chunk-E27YX2RL.js?v=1385e92d:975
+Tb @ chunk-E27YX2RL.js?v=1385e92d:991
+Ub @ chunk-E27YX2RL.js?v=1385e92d:994
+nf @ chunk-E27YX2RL.js?v=1385e92d:2017
+se @ chunk-E27YX2RL.js?v=1385e92d:2040
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:2312
+Qk @ chunk-E27YX2RL.js?v=1385e92d:5701
+Jb @ chunk-E27YX2RL.js?v=1385e92d:927
+hd @ chunk-E27YX2RL.js?v=1385e92d:2113
+fd @ chunk-E27YX2RL.js?v=1385e92d:1454
+ed @ chunk-E27YX2RL.js?v=1385e92d:1437Understand this error
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Quest Debug: {title: 'Insight Sharer', targetAction: 'share_industry_insights', isSocialQuest: true, hasHashtags: true, hashtags: Array(5), …}
