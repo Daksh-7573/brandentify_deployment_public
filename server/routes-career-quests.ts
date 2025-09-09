@@ -2,9 +2,6 @@ import { Router } from "express";
 import { IStorage } from "./storage";
 import { pool, db, sql } from "./db";
 import { suggestHashtags } from './services/openai-service';
-import { socialQuestPersonalizationService } from './services/social-quest-personalization-service.js';
-import { hashtagSuggestionService } from './services/hashtag-suggestion-service.js';
-import { platformRecommendationService } from './services/platform-recommendation-service.js';
 
 // Helper function to get week number from date
 function getWeekNumber(date: Date): number {
@@ -16,60 +13,6 @@ function getWeekNumber(date: Date): number {
 
 // Import the service function instead of duplicating code
 import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
-
-// Import personalization service instances (they're already initialized in their respective files)
-
-// Helper function to personalize social quest data
-async function personalizeQuestData(questData: any, userId: number, storage: IStorage): Promise<any> {
-  try {
-    // Check if this is a social quest that needs personalization
-    const socialQuestActions = ['post_linkedin_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_instagram_suggestion'];
-    if (!questData.targetAction || !socialQuestActions.includes(questData.targetAction)) {
-      return questData;
-    }
-
-    // Get user profile for personalization (using IStorage parameter)
-    const userProfile = await storage.getUser(userId);
-    if (!userProfile) {
-      return questData;
-    }
-
-    // Determine the platform from targetAction
-    const platform = questData.targetAction.includes('linkedin') ? 'LinkedIn' :
-                    questData.targetAction.includes('twitter') ? 'Twitter' :
-                    questData.targetAction.includes('youtube') ? 'YouTube' :
-                    questData.targetAction.includes('instagram') ? 'Instagram' : 'LinkedIn';
-
-    // Generate personalized content
-    const personalizedContent = await socialQuestPersonalizationService.generatePersonalizedSocialQuest(
-      userId,
-      platform,
-      questData.targetAction
-    );
-    
-    // Generate hashtag suggestions
-    const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
-      userId, 
-      platform, 
-      questData.targetAction
-    );
-
-    // Return personalized quest data
-    return {
-      ...questData,
-      title: personalizedContent.title,
-      description: personalizedContent.description,
-      muskTip: personalizedContent.muskTip + 
-        (hashtagSuggestion.hashtags.length > 0 
-          ? `\n\n💡 ${hashtagSuggestionService.formatHashtagsForTip(hashtagSuggestion.hashtags)}` 
-          : '')
-    };
-
-  } catch (error) {
-    console.error('[personalizeQuestData] Error personalizing quest:', error);
-    return questData; // Return original data if personalization fails
-  }
-}
 
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
@@ -354,12 +297,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             console.log(`[GET /users/${userId}/quests/current-week] Filtered out ${weeklyQuests.length - validQuests.length} quests with missing definition data`);
           }
           
-          // Personalize social quest data
-          const personalizedQuests = await Promise.all(validQuests.map(async (quest) => {
-            return await personalizeQuestData(quest, userId, storage);
-          }));
-          
-          res.json(personalizedQuests);
+          res.json(validQuests);
         } catch (queryError) {
           console.error(`[GET /users/${userId}/quests/current-week] Query error:`, queryError);
           res.json([]);
@@ -518,20 +456,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           });
           
           console.log(`[GET /users/${userId}/quests-with-definitions] Found ${questsWithDefinitions.length} quests with definitions`);
-          
-          // Personalize social quest data
-          const personalizedQuestsWithDefinitions = await Promise.all(questsWithDefinitions.map(async (questData) => {
-            if (questData.definition) {
-              const personalizedDefinition = await personalizeQuestData(questData.definition, userId, storage);
-              return {
-                ...questData,
-                definition: personalizedDefinition
-              };
-            }
-            return questData;
-          }));
-          
-          res.json(personalizedQuestsWithDefinitions);
+          res.json(questsWithDefinitions);
         } catch (queryError) {
           console.error(`[GET /users/${userId}/quests-with-definitions] Query error:`, queryError);
           res.json([]);
