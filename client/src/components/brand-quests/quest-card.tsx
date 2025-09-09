@@ -322,12 +322,28 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             </Tooltip>
           </TooltipProvider>
           
-          {/* Show XP reward for active or expired quests */}
-          {!isComplete && (
-            <span className="text-xs font-semibold text-white/80">
-              {isExpired ? 'Missed ' : 'Reward: '}{questDefinition.xpReward} XP
-            </span>
-          )}
+          {/* Manual completion button and XP reward */}
+          <div className="flex items-center gap-2">
+            {/* Manual completion button for active quests */}
+            {isActive && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setConfirmOpen(true)}
+                className="text-xs px-2 py-1 h-auto bg-white/5 border-white/20 text-white/80 hover:bg-white/10 hover:border-white/30 hover:text-white"
+                disabled={completeQuestMutation.isPending}
+              >
+                {completeQuestMutation.isPending ? 'Completing...' : 'Mark Complete'}
+              </Button>
+            )}
+            
+            {/* Show XP reward for active or expired quests */}
+            {!isComplete && (
+              <span className="text-xs font-semibold text-white/80">
+                {isExpired ? 'Missed ' : 'Reward: '}{questDefinition.xpReward} XP
+              </span>
+            )}
+          </div>
         </div>
       </div>
       
