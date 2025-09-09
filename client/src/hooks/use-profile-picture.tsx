@@ -12,6 +12,7 @@ export function useProfilePicture(userId: number | string | null = null) {
   const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [currentUploadedImage, setCurrentUploadedImage] = useState<string | null>(null);
   
   // If userId is not provided, use the current user's ID
   const targetUserId = userId || user?.id || null;
@@ -40,6 +41,9 @@ export function useProfilePicture(userId: number | string | null = null) {
   const profilePictureMutation = useMutation({
     mutationFn: async (base64Image: string) => {
       console.log(`Updating profile picture for user ID: ${targetUserId}`);
+      // Store the uploaded image for cache update
+      setCurrentUploadedImage(base64Image);
+      
       // Ensure we have a valid user ID
       if (!targetUserId) {
         throw new Error("Invalid user ID. Please log in again.");
@@ -126,7 +130,8 @@ export function useProfilePicture(userId: number | string | null = null) {
       
       // Direct cache data update instead of invalidation to prevent wrong API calls
       if (targetUserId) {
-        const newPhotoURL = (data as any)?.photoURL;
+        // Use the stored uploaded image for cache update since API response doesn't include photoURL
+        const newPhotoURL = (data as any)?.photoURL || currentUploadedImage;
         console.log('[PROFILE PICTURE] About to update cache with photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
         
         // Update the cached data directly with the new profile picture
@@ -136,7 +141,7 @@ export function useProfilePicture(userId: number | string | null = null) {
             console.log('[PROFILE PICTURE] Updating cached data - new photoURL:', newPhotoURL ? 'EXISTS' : 'NULL');
             const updatedData = {
               ...oldData,
-              photoURL: newPhotoURL || oldData.photoURL
+              photoURL: newPhotoURL
             };
             console.log('[PROFILE PICTURE] ✅ Cache updated successfully for userId:', targetUserId);
             console.log('[PROFILE PICTURE] ✅ Updated data includes photoURL:', updatedData.photoURL ? 'YES' : 'NO');
@@ -152,7 +157,7 @@ export function useProfilePicture(userId: number | string | null = null) {
             if (oldData) {
               return {
                 ...oldData,
-                photoURL: newPhotoURL || oldData.photoURL
+                photoURL: newPhotoURL
               };
             }
             return oldData;
@@ -178,6 +183,9 @@ export function useProfilePicture(userId: number | string | null = null) {
         
         console.log('[PROFILE PICTURE] Cache data update complete');
       }
+      
+      // Clear the stored image after successful upload
+      setCurrentUploadedImage(null);
       
       toast({
         title: "Success!",
