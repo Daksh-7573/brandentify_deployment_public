@@ -301,14 +301,22 @@ export const useCompleteQuest = () => {
       questId: number,
       userId: number
     }) => {
-      const res = await fetch(`/api/users/${userId}/quests/${questId}/complete`, {
-        method: 'PUT',
+      const res = await fetch(`/api/user-quests/${questId}/complete`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         }
       });
       
-      if (!res.ok) throw new Error('Failed to complete quest');
+      if (!res.ok) {
+        const text = await res.text();
+        try {
+          const errorJson = JSON.parse(text);
+          throw new Error(errorJson.message || 'Failed to complete quest');
+        } catch (e) {
+          throw new Error(`Failed to complete quest: ${text.slice(0, 100)}`);
+        }
+      }
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {

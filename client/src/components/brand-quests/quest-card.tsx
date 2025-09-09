@@ -32,7 +32,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     description: quest.questDescription || '',
     type: (quest.questType as QuestType) || 'pulse_creation',
     targetCount: 1, // Default if not provided
-    targetAction: quest.targetAction || quest.questTargetAction || '',
+    targetAction: quest.targetAction || '',
     xpReward: 0,
     badgeReward: undefined,
     // For Musk tips, use any available field that might have it
