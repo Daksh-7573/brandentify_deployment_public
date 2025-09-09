@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { users, skills } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { strategicHashtagGenerator } from './strategic-hashtag-generator';
 
 export interface UltraSpecificQuest {
   title: string;

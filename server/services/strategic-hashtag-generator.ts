@@ -52,8 +52,8 @@ class StrategicHashtagGenerator {
       
       // Generate trending keywords for the industry/domain
       const trendingKeywords = this.getTrendingKeywords(
-        postContext.industry || userData.industry,
-        postContext.domain || userData.domain,
+        postContext.industry || userData.industry || '',
+        postContext.domain || userData.domain || '',
         platform
       );
       
