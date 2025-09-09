@@ -339,7 +339,8 @@ export const useCompleteQuest = () => {
       queryClient.setQueryData([`/api/users/${userId}/quests/current-week`], (old: any) => {
         if (!old || !Array.isArray(old)) return old;
         const filtered = old.filter((quest: any) => quest.id !== questId);
-        console.log(`Optimistic update: Removed quest ${questId} from weekly. Count: ${old.length} -> ${filtered.length}`);
+        console.log(`[OPTIMISTIC] Removed quest ${questId} from weekly cache. Count: ${old.length} -> ${filtered.length}`);
+        console.log(`[OPTIMISTIC] Remaining quest IDs:`, filtered.map((q: any) => q.id));
         return filtered;
       });
 
@@ -372,7 +373,13 @@ export const useCompleteQuest = () => {
 
     // Always refetch after error or success to ensure consistency
     onSettled: (data, error, variables) => {
-      // Force fresh data with immediate refetch and cache bypass
+      console.log(`[REFETCH] Starting refetch for quest ${variables.questId} completion`);
+      
+      // Remove any cached data first to force fresh fetch
+      queryClient.removeQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
+      queryClient.removeQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
+      
+      // Then force fresh data fetch
       queryClient.refetchQueries({ 
         queryKey: [`/api/users/${variables.userId}/quests/current-week`],
         type: 'active'
