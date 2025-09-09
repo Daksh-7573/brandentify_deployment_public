@@ -11080,9 +11080,9 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
-          uq.status, uq.progress, uq.started_at as "startedAt", 
-          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
-          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.created_at as "createdAt", uq.updated_at as "updatedAt",
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
@@ -11103,9 +11103,9 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
-          uq.status, uq.progress, uq.started_at as "startedAt", 
-          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
-          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.created_at as "createdAt", uq.updated_at as "updatedAt"
         FROM user_quests uq
         WHERE uq.id = $1
@@ -11123,9 +11123,9 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
-          uq.status, uq.progress, uq.started_at as "startedAt", 
-          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
-          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.created_at as "createdAt", uq.updated_at as "updatedAt",
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
@@ -11146,9 +11146,9 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
-          uq.status, uq.progress, uq.started_at as "startedAt", 
-          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
-          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.created_at as "createdAt", uq.updated_at as "updatedAt",
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
@@ -11169,9 +11169,9 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
-          uq.status, uq.progress, uq.started_at as "startedAt", 
-          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
-          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.created_at as "createdAt", uq.updated_at as "updatedAt",
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
@@ -11192,13 +11192,13 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO user_quests (
-          user_id, quest_definition_id, status, progress, started_at
+          user_id, quest_definition_id, status, progress, assigned_at
         ) VALUES ($1, $2, $3, $4, $5)
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
-          status, progress, started_at as "startedAt", 
-          completed_at as "completedAt", dismissed_at as "dismissedAt",
-          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          status, progress, assigned_at as "assignedAt", 
+          completed_at as "completedAt", xp_earned as "xpEarned", 
+          dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           created_at as "createdAt", updated_at as "updatedAt"
       `, [
         quest.userId, quest.questDefinitionId, quest.status || 'active',
@@ -11258,9 +11258,9 @@ export class DatabaseStorage implements IStorage {
         WHERE id = $${valueIndex}
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
-          status, progress, started_at as "startedAt", 
-          completed_at as "completedAt", dismissed_at as "dismissedAt",
-          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          status, progress, assigned_at as "assignedAt", 
+          completed_at as "completedAt", xp_earned as "xpEarned", 
+          dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           created_at as "createdAt", updated_at as "updatedAt"
       `, values);
 
@@ -11276,13 +11276,13 @@ export class DatabaseStorage implements IStorage {
       const result = await pool.query(`
         UPDATE user_quests 
         SET status = 'completed', completed_at = CURRENT_TIMESTAMP, 
-            earned_xp = $2, updated_at = CURRENT_TIMESTAMP
+            xp_earned = $2
         WHERE id = $1
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
-          status, progress, started_at as "startedAt", 
-          completed_at as "completedAt", dismissed_at as "dismissedAt",
-          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          status, progress, assigned_at as "assignedAt", 
+          completed_at as "completedAt", xp_earned as "xpEarned", 
+          dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           created_at as "createdAt", updated_at as "updatedAt"
       `, [id, earnedXp]);
 
@@ -11302,9 +11302,9 @@ export class DatabaseStorage implements IStorage {
         WHERE id = $1
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
-          status, progress, started_at as "startedAt", 
-          completed_at as "completedAt", dismissed_at as "dismissedAt",
-          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          status, progress, assigned_at as "assignedAt", 
+          completed_at as "completedAt", xp_earned as "xpEarned", 
+          dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           created_at as "createdAt", updated_at as "updatedAt"
       `, [id, reason]);
 
@@ -11323,9 +11323,9 @@ export class DatabaseStorage implements IStorage {
         WHERE id = $1
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
-          status, progress, started_at as "startedAt", 
-          completed_at as "completedAt", dismissed_at as "dismissedAt",
-          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          status, progress, assigned_at as "assignedAt", 
+          completed_at as "completedAt", xp_earned as "xpEarned", 
+          dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           created_at as "createdAt", updated_at as "updatedAt"
       `, [id]);
 
@@ -11352,11 +11352,11 @@ export class DatabaseStorage implements IStorage {
       
       for (const questDef of questDefinitions.rows) {
         const result = await pool.query(`
-          INSERT INTO user_quests (user_id, quest_definition_id, status, progress, started_at)
+          INSERT INTO user_quests (user_id, quest_definition_id, status, progress, assigned_at)
           VALUES ($1, $2, 'active', 0, CURRENT_TIMESTAMP)
           RETURNING 
             id, user_id as "userId", quest_definition_id as "questDefinitionId",
-            status, progress, started_at as "startedAt", 
+            status, progress, assigned_at as "assignedAt", 
             completed_at as "completedAt", dismissed_at as "dismissedAt",
             earned_xp as "earnedXp", dismiss_reason as "dismissReason",
             created_at as "createdAt", updated_at as "updatedAt"
