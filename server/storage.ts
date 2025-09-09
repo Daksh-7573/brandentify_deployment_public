@@ -11274,6 +11274,23 @@ export class DatabaseStorage implements IStorage {
 
   async completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined> {
     try {
+      // First get the quest to determine XP amount and user ID
+      const questResult = await pool.query(`
+        SELECT uq.*, qd.xp_reward as "xpReward"
+        FROM user_quests uq
+        LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.id = $1
+      `, [id]);
+
+      if (questResult.rows.length === 0) {
+        console.error(`[db.completeUserQuest] Quest with id ${id} not found`);
+        return undefined;
+      }
+
+      const quest = questResult.rows[0];
+      const xpToAward = earnedXp || quest.xpReward || 50; // Use provided XP, quest definition XP, or default 50
+
+      // Update quest status and xp_earned
       const result = await pool.query(`
         UPDATE user_quests 
         SET status = 'completed', completed_at = CURRENT_TIMESTAMP, 
@@ -11285,9 +11302,25 @@ export class DatabaseStorage implements IStorage {
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
           week_number as "weekNumber", year
-      `, [id, earnedXp]);
+      `, [id, xpToAward]);
 
-      return result.rows[0];
+      if (result.rows.length === 0) {
+        console.error(`[db.completeUserQuest] Failed to update quest ${id}`);
+        return undefined;
+      }
+
+      const completedQuest = result.rows[0];
+
+      // Award XP to user's total balance
+      try {
+        await this.incrementUserXp(quest.user_id, xpToAward, 'quest_completion', id);
+        console.log(`[db.completeUserQuest] Awarded ${xpToAward} XP to user ${quest.user_id} for completing quest ${id}`);
+      } catch (xpError) {
+        console.error(`[db.completeUserQuest] Failed to award XP for quest ${id}:`, xpError);
+        // Don't fail the quest completion if XP awarding fails
+      }
+
+      return completedQuest;
     } catch (error) {
       console.error(`[db.completeUserQuest] Error completing user quest ${id}:`, error);
       return undefined;
