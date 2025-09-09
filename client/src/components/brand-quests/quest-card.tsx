@@ -32,7 +32,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     description: quest.questDescription || '',
     type: (quest.questType as QuestType) || 'pulse_creation',
     targetCount: 1, // Default if not provided
-    targetAction: '',
+    targetAction: quest.targetAction || quest.questTargetAction || '',
     xpReward: 0,
     badgeReward: undefined,
     // For Musk tips, use any available field that might have it
@@ -138,7 +138,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const { cleanContent: muskTipContent, hashtags: extractedHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
   
   // Check if this is a Social Quest (platform-specific social media quest)
-  const isSocialQuest = ['post_linkedin_suggestion', 'post_instagram_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_facebook_suggestion', 'post_tiktok_suggestion'].includes(questDefinition.targetAction || '');
+  // Check both targetAction and quest title patterns since targetAction might be empty
+  const socialQuestActions = ['post_linkedin_suggestion', 'post_instagram_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_facebook_suggestion', 'post_tiktok_suggestion'];
+  const socialQuestTitles = ['LinkedIn', 'Instagram', 'Twitter', 'YouTube', 'Facebook', 'TikTok'];
+  
+  const isSocialQuest = socialQuestActions.includes(questDefinition.targetAction || '') ||
+    socialQuestTitles.some(platform => questDefinition.title?.includes(platform)) ||
+    extractedHashtags.length > 0; // If it has hashtag suggestions, it's likely a social quest
   
   // Debug logging (only for Social Quests)
   if (isSocialQuest || extractedHashtags.length > 0) {
@@ -148,7 +154,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       isSocialQuest,
       hasHashtags: extractedHashtags.length > 0,
       hashtags: extractedHashtags,
-      rawMuskTip: rawMuskTipContent
+      rawMuskTip: rawMuskTipContent,
+      // Additional debug info
+      definitionTargetAction: quest.definition?.targetAction,
+      questTargetAction: quest.targetAction,
+      questType: quest.definition?.type
     });
   }
 
