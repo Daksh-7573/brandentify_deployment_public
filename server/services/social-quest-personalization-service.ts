@@ -376,7 +376,7 @@ class SocialQuestPersonalizationService {
     const example = this.getRandomElement(industryData.examples);
     const tip = this.getRandomElement(industryData.professionalTips);
 
-    const platformTips = {
+    const platformTips: { [key: string]: string } = {
       linkedin: `LinkedIn posts with industry-specific insights get 5x more engagement. Share real examples like "${example}" and include 3-5 relevant hashtags.`,
       twitter: `Twitter threads with actionable tips perform best. Break down complex topics like "${tip}" into 3-4 digestible tweets with visual elements.`,
       instagram: `Instagram professional content works when you show process, not just results. Document your approach to "${tip}" with behind-the-scenes content.`,
