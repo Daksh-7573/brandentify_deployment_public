@@ -90,15 +90,15 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     return careerQuestTypes.includes(questType) || !socialQuestTypes.includes(questType);
   }) || [];
   
-  // Weekly quests filtered by type
+  // Weekly quests filtered by type and only show active status
   const weeklyCareerQuests = (weeklyQuests || []).filter(q => {
     const questType = getQuestType(q);
-    return !socialQuestTypes.includes(questType);
+    return q.status === 'active' && !socialQuestTypes.includes(questType);
   });
   
   const weeklySocialQuests = (weeklyQuests || []).filter(q => {
     const questType = getQuestType(q);
-    return socialQuestTypes.includes(questType);
+    return q.status === 'active' && socialQuestTypes.includes(questType);
   });
   
   // Status-based filtering for each category

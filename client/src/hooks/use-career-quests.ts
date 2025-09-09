@@ -319,17 +319,19 @@ export const useCompleteQuest = () => {
       }
       return res.json() as Promise<UserQuest>;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
-      });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp-transactions`] });
+    onSuccess: async (data) => {
+      // Invalidate all queries simultaneously for faster UI updates
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests/current-week`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests-with-definitions`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp-transactions`] })
+      ]);
+      
+      // Force immediate refetch for faster UI feedback
+      queryClient.refetchQueries({ queryKey: [`/api/users/${data.userId}/quests/current-week`] });
     }
   });
 };

@@ -11177,7 +11177,9 @@ export class DatabaseStorage implements IStorage {
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
-        AND uq.created_at >= date_trunc('week', CURRENT_DATE)
+        AND uq.status = 'active'
+        AND uq.week_number >= extract(week from CURRENT_DATE) - 1 
+        AND uq.year = extract(year from CURRENT_DATE)
         ORDER BY uq.created_at DESC
       `, [userId]);
       
