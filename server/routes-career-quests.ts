@@ -2,6 +2,11 @@ import { Router } from "express";
 import { IStorage } from "./storage";
 import { pool, db, sql } from "./db";
 import { suggestHashtags } from './services/openai-service';
+import { 
+  generateIntelligentCareerQuests, 
+  calculateProfileCompletion,
+  PersonalizedQuest
+} from './services/intelligent-career-quest-generator';
 
 // Helper function to get week number from date
 function getWeekNumber(date: Date): number {
@@ -203,7 +208,60 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       }
       
       try {
-        // Check if database tables exist first
+        // Get user profile data for intelligent quest generation
+        const userData = await storage.getUserById(userId);
+        if (!userData) {
+          console.log(`[GET /users/${userId}/quests/current-week] User not found`);
+          return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get user's additional profile data
+        const [skills, experiences, educations, projects] = await Promise.all([
+          storage.getSkillsByUserId(userId),
+          storage.getExperiencesByUserId(userId), 
+          storage.getEducationsByUserId(userId),
+          storage.getProjectsByUserId(userId)
+        ]);
+
+        // Calculate profile completion and generate intelligent quests
+        const profileCompletion = calculateProfileCompletion(userData, skills, experiences, educations, projects);
+        const intelligentQuests = generateIntelligentCareerQuests(userData, skills, experiences, educations, projects);
+
+        console.log(`[GET /users/${userId}/quests/current-week] Profile completion: ${profileCompletion.percentage}%`);
+        console.log(`[GET /users/${userId}/quests/current-week] Generated ${intelligentQuests.length} intelligent quests`);
+
+        // Convert PersonalizedQuest to format expected by frontend
+        const formattedQuests = intelligentQuests.map((quest: PersonalizedQuest, index: number) => ({
+          id: Date.now() + index, // Temporary ID for frontend
+          userId: userId,
+          questDefinitionId: index + 1000, // Temporary ID
+          status: 'active',
+          progress: 0,
+          assignedAt: new Date().toISOString(),
+          completedAt: null,
+          xpEarned: null,
+          badgeEarned: null,
+          weekNumber: getWeekNumber(new Date()),
+          year: new Date().getFullYear(),
+          // Quest definition fields
+          title: quest.title,
+          description: quest.description,
+          questType: quest.type,
+          targetCount: 1,
+          targetAction: quest.targetAction,
+          xpReward: quest.xpReward,
+          badgeReward: null,
+          muskTip: `💡 Smart Tip: ${quest.mediaSpecific}`,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          // Additional intelligent fields
+          mediaSpecific: quest.mediaSpecific,
+          priority: quest.priority,
+          difficulty: quest.difficulty
+        }));
+
+        // Also get existing database quests if any
         const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
@@ -212,21 +270,18 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           )
         `);
         
-        if (!tableCheck.rows[0].exists) {
-          console.log('[GET /quests/current-week] user_quests table does not exist, returning empty array');
-          return res.json([]);
-        }
-        
-        // Get current week number and year
-        const now = new Date();
-        const weekNumber = getWeekNumber(now);
-        const year = now.getFullYear();
-        
-        console.log(`[GET /users/${userId}/quests/current-week] Fetching quests for week ${weekNumber}, year ${year}`);
-        
-        // Also check for the previous week's quests in case they're relevant
-        const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
-        const prevYear = prevWeek === 52 ? year - 1 : year;
+        let dbQuests: any[] = [];
+        if (tableCheck.rows[0].exists) {
+          // Get current week number and year
+          const now = new Date();
+          const weekNumber = getWeekNumber(now);
+          const year = now.getFullYear();
+          
+          console.log(`[GET /users/${userId}/quests/current-week] Also fetching existing DB quests for week ${weekNumber}, year ${year}`);
+          
+          // Also check for the previous week's quests in case they're relevant
+          const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
+          const prevYear = prevWeek === 52 ? year - 1 : year;
         
         // First, let's mark any expired active quests with expired status
         // These would be quests from the previous week that weren't completed
@@ -297,14 +352,24 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             console.log(`[GET /users/${userId}/quests/current-week] Filtered out ${weeklyQuests.length - validQuests.length} quests with missing definition data`);
           }
           
-          res.json(validQuests);
+          dbQuests = validQuests;
         } catch (queryError) {
           console.error(`[GET /users/${userId}/quests/current-week] Query error:`, queryError);
-          res.json([]);
+          dbQuests = [];
         }
-      } catch (dbError) {
-        console.error(`[GET /users/${req.params.userId}/quests/current-week] Database error:`, dbError);
-        // Return empty array instead of error to prevent UI crashes
+      }
+
+      // Combine intelligent quests with existing database quests
+      // Prioritize intelligent quests, but include completed database quests
+      const completedDbQuests = dbQuests.filter(q => q.status === 'completed');
+      const allQuests = [...formattedQuests, ...completedDbQuests];
+
+      console.log(`[GET /users/${userId}/quests/current-week] Returning ${allQuests.length} total quests (${formattedQuests.length} intelligent + ${completedDbQuests.length} completed DB quests)`);
+      
+      res.json(allQuests);
+      } catch (error) {
+        console.error(`[GET /users/${userId}/quests/current-week] Error generating intelligent quests:`, error);
+        // Fallback to empty array
         res.json([]);
       }
     } catch (error) {
