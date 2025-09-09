@@ -79,20 +79,22 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   };
   
   const handleComplete = () => {
-    // Show immediate success feedback
-    toast({
-      title: 'Quest completed!',
-      description: `You've completed "${questDefinition.title}" and earned ${questDefinition.xpReward} XP!`,
-    });
     setConfirmOpen(false);
     
-    // Execute the mutation for server sync
+    // Execute the mutation with optimistic updates for immediate UI response
     completeQuestMutation.mutate({
       questId: quest.id,
       userId: quest.userId
     }, {
+      onSuccess: () => {
+        // Show success feedback only after successful server response
+        toast({
+          title: 'Quest completed!',
+          description: `You've completed "${questDefinition.title}" and earned ${questDefinition.xpReward} XP!`,
+        });
+      },
       onError: (error) => {
-        // Only show error toast if the optimistic update fails
+        // Show error toast if the server request fails
         toast({
           title: 'Error',
           description: `Failed to complete quest: ${error.message}`,

@@ -330,17 +330,23 @@ export const useCompleteQuest = () => {
       const previousWeeklyQuests = queryClient.getQueryData([`/api/users/${userId}/quests/current-week`]);
       const previousAllQuests = queryClient.getQueryData([`/api/users/${userId}/quests-with-definitions`]);
 
-      // Optimistically update the cache - remove quest from weekly and mark as completed
+      // Optimistically update the weekly cache - remove quest immediately
       queryClient.setQueryData([`/api/users/${userId}/quests/current-week`], (old: any) => {
         if (!old) return old;
         return old.filter((quest: any) => quest.id !== questId);
       });
 
+      // Optimistically update the all-quests cache - mark as completed with timestamp
       queryClient.setQueryData([`/api/users/${userId}/quests-with-definitions`], (old: any) => {
         if (!old) return old;
         return old.map((quest: any) => 
           quest.id === questId 
-            ? { ...quest, status: 'completed', completedAt: new Date().toISOString() }
+            ? { 
+                ...quest, 
+                status: 'completed', 
+                completedAt: new Date().toISOString(),
+                xpEarned: quest.questDefinition?.xpReward || quest.xpReward || 0
+              }
             : quest
         );
       });
@@ -359,8 +365,9 @@ export const useCompleteQuest = () => {
 
     // Always refetch after error or success to ensure consistency
     onSettled: (data, error, variables) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
+      // Force immediate refetch to sync with server state
+      queryClient.refetchQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
+      queryClient.refetchQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/xp`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/badges`] });
     }
