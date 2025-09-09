@@ -135,11 +135,9 @@ export const useUserXp = (userId?: number) => {
       if (!userId) {
         // Return default XP object if no user ID provided
         return { 
-          total: 0,
-          level: 0,
-          nextLevelXp: 100,
-          currentLevelXp: 0,
-          progressToNextLevel: 0
+          balance: 0,
+          lifetimeEarned: 0,
+          currentMonthEarned: 0
         } as UserXp;
       }
       
@@ -149,11 +147,9 @@ export const useUserXp = (userId?: number) => {
           console.error('Failed to fetch user XP, status:', res.status);
           // Return default XP object on error
           return { 
-            total: 0,
-            level: 0,
-            nextLevelXp: 100,
-            currentLevelXp: 0,
-            progressToNextLevel: 0
+            balance: 0,
+            lifetimeEarned: 0,
+            currentMonthEarned: 0
           } as UserXp;
         }
         const contentType = res.headers.get('content-type');
@@ -161,11 +157,9 @@ export const useUserXp = (userId?: number) => {
           console.error('Expected JSON but got', contentType);
           // Return default XP object on error
           return { 
-            total: 0,
-            level: 0,
-            nextLevelXp: 100,
-            currentLevelXp: 0,
-            progressToNextLevel: 0
+            balance: 0,
+            lifetimeEarned: 0,
+            currentMonthEarned: 0
           } as UserXp;
         }
         return res.json() as Promise<UserXp>;
