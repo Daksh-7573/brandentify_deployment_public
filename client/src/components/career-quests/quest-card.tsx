@@ -168,7 +168,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               
               {/* Display static hashtag suggestions for active quests related to content creation */}
               {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <StaticHashtagSuggestions questType={questDefinition.type as QuestType} />
+                <StaticHashtagSuggestions hashtags={['CareerGrowth', 'ProfessionalDevelopment', 'Networking', 'BrandBuilding', 'SkillDevelopment']} />
               )}
             </div>
           )}
