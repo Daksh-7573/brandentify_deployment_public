@@ -432,13 +432,16 @@ export default function ProfileNeo() {
                         )}
                       </div>
                       <button 
-                        onClick={() => {
-                          console.log("Camera button clicked");
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log("Camera button clicked - opening dialog");
                           setShowProfileDialog(true);
                         }}
-                        className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 p-1.5 sm:p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
+                        className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all cursor-pointer z-10 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                        title="Change profile picture"
                       >
-                        <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                       </button>
                     </div>
                     
