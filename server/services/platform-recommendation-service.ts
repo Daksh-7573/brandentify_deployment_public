@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { socialQuestPersonalizationService } from './social-quest-personalization-service';
 
 export interface PlatformRecommendation {
   platform: string;
@@ -322,15 +323,23 @@ class PlatformRecommendationService {
   }
 
   /**
-   * Get platform-specific quest titles and descriptions
+   * Get platform-specific quest titles and descriptions using new personalization service
    */
-  getPlatformQuestData(targetAction: string, userProfile?: UserProfile): { title: string; description: string; muskTip: string } {
-    // Get personalized content based on user profile
+  async getPlatformQuestData(targetAction: string, userId?: number, userProfile?: UserProfile): Promise<{ title: string; description: string; muskTip: string }> {
+    // Use new personalization service if userId provided
+    if (userId) {
+      const platform = this.extractPlatformFromTargetAction(targetAction);
+      return await socialQuestPersonalizationService.generatePersonalizedSocialQuest(userId, platform, targetAction);
+    }
+
+    // Fallback - Get personalized content based on user profile  
     if (userProfile) {
+      const platform = this.extractPlatformFromTargetAction(targetAction);
+      // For now, use the old method until we can refactor further
       return this.generatePersonalizedQuestData(targetAction, userProfile);
     }
 
-    // Fallback to generic content
+    // Last resort fallback to generic content
     const questData: { [key: string]: { title: string; description: string; muskTip: string } } = {
       'post_linkedin_suggestion': {
         title: "LinkedIn Thought Leadership",
@@ -365,10 +374,23 @@ class PlatformRecommendationService {
     };
 
     return questData[targetAction] || {
-      title: "Social Media Content",
+      title: "Social Media Content", 
       description: "Create AI-suggested content for your chosen platform",
       muskTip: "Authentic, value-driven content always performs better than generic posts."
     };
+  }
+
+  /**
+   * Extract platform name from target action
+   */
+  private extractPlatformFromTargetAction(targetAction: string): string {
+    if (targetAction.includes('linkedin')) return 'linkedin';
+    if (targetAction.includes('twitter')) return 'twitter';
+    if (targetAction.includes('instagram')) return 'instagram';
+    if (targetAction.includes('youtube')) return 'youtube';
+    if (targetAction.includes('facebook')) return 'facebook';
+    if (targetAction.includes('tiktok')) return 'tiktok';
+    return 'linkedin'; // default fallback
   }
 
   /**

@@ -61,7 +61,7 @@ export class PersonalizedQuestAssignment {
       );
 
       for (const missingRec of missingRecommendations) {
-        const questData = platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userProfile);
+        const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile);
         
         const [newQuest] = await db
           .insert(questDefinitions)
