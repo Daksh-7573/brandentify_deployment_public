@@ -325,7 +325,7 @@ export const useCompleteQuest = () => {
       // Cancel all outgoing queries that might interfere
       await queryClient.cancelQueries({ 
         predicate: (query) => 
-          query.queryKey[0]?.toString().includes(`/api/users/${userId}/quests`)
+          query.queryKey[0]?.toString()?.includes(`/api/users/${userId}/quests`) ?? false
       });
 
       // Snapshot the previous values for rollback
@@ -372,13 +372,17 @@ export const useCompleteQuest = () => {
 
     // Always refetch after error or success to ensure consistency
     onSettled: (data, error, variables) => {
-      // Add small delay to avoid race conditions with optimistic updates
-      setTimeout(() => {
-        queryClient.refetchQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
-        queryClient.refetchQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/xp`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/badges`] });
-      }, 100); // Small delay to let optimistic updates settle
+      // Force fresh data with immediate refetch and cache bypass
+      queryClient.refetchQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests/current-week`],
+        type: 'active'
+      });
+      queryClient.refetchQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests-with-definitions`],
+        type: 'active'  
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/xp`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/badges`] });
     }
   });
 };

@@ -11,9 +11,16 @@ export function performanceMiddleware() {
     res.removeHeader('X-Frame-Options');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     
-    // Cache static API responses for user data
-    if (req.method === 'GET' && req.path.includes('/users/')) {
+    // Cache static API responses for user data, but exclude quest endpoints
+    if (req.method === 'GET' && req.path.includes('/users/') && !req.path.includes('/quests')) {
       res.setHeader('Cache-Control', 'public, max-age=30'); // 30 seconds cache
+    }
+    
+    // Quest endpoints need fresh data to reflect completion state changes
+    if (req.method === 'GET' && req.path.includes('/quests')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
     }
     
     // Log slow requests
