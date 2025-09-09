@@ -129,12 +129,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const extractHashtagsAndCleanTip = (content: string) => {
     if (!content) return { cleanContent: '', hashtags: [] };
     
-    // More flexible pattern to match hashtag suggestions at the end
-    const hashtagPattern = /💡 Musk's hashtag suggestions:\s*([#\w\s]+)$/mi;
+    // Pattern to match both "hashtag suggestions" and "strategic hashtags"
+    const hashtagPattern = /💡 Musk's (hashtag suggestions|strategic hashtags):\s*([#\w\s]+)$/mi;
     const match = content.match(hashtagPattern);
     
     if (match) {
-      const hashtagsText = match[1].trim();
+      const hashtagsText = match[2].trim(); // Use match[2] since match[1] is the capture group for "hashtag suggestions|strategic hashtags"
       const hashtags = hashtagsText
         .split(/\s+/)
         .filter(tag => tag.startsWith('#'))
