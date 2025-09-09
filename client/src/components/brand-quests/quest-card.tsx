@@ -194,10 +194,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
 
   // Determine which icon to show
   const getQuestIcon = (): string => {
-    if (questDefinition.type === 'social_post' && questDefinition.targetAction) {
-      return getPlatformIcon(questDefinition.targetAction);
+    const questType = questDefinition?.type || quest.questType || 'pulse_creation';
+    const targetAction = questDefinition?.targetAction || quest.targetAction;
+    
+    if (questType === 'social_post' && targetAction) {
+      return getPlatformIcon(targetAction);
     }
-    return getQuestTypeIcon(questDefinition.type);
+    return getQuestTypeIcon(questType);
   };
   
   return (
@@ -207,11 +210,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="text-xl text-white">{getQuestIcon()}</span>
-              <h3 className="text-lg font-semibold text-white">{questDefinition.title}</h3>
+              <h3 className="text-lg font-semibold text-white">{questDefinition?.title || quest.title}</h3>
             </div>
-            {questDefinition.badgeReward && (
+            {(questDefinition?.badgeReward || quest.badgeReward) && (
               <Badge variant="outline" className="ml-7 mt-1 bg-black/30 text-white border-white/10 backdrop-blur-sm">
-                Award: {getBadgeLabel(questDefinition.badgeReward)}
+                Award: {getBadgeLabel(questDefinition?.badgeReward || quest.badgeReward)}
               </Badge>
             )}
           </div>
@@ -226,14 +229,14 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </Badge>
         </div>
         <p className="ml-7 mt-1 text-white/80 text-sm">
-          {questDefinition.description}
+          {questDefinition?.description || quest.description}
         </p>
       </div>
       <div className="py-3">
         <div className="space-y-3">
           <div className="flex justify-between text-sm text-white/70 mb-2">
-            <span className="font-medium">Progress: {displayProgress} / {questDefinition.targetCount}</span>
-            <span className="text-blue-300 font-medium">+{questDefinition.xpReward} XP</span>
+            <span className="font-medium">Progress: {displayProgress} / {questDefinition?.targetCount || quest.targetCount || 1}</span>
+            <span className="text-blue-300 font-medium">+{questDefinition?.xpReward || quest.xpReward || 50} XP</span>
           </div>
           <div className="relative">
             <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
