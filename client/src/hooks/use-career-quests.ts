@@ -291,7 +291,7 @@ export const useUpdateQuestProgress = () => {
   });
 };
 
-// Complete a quest
+// Complete a quest with optimistic updates
 export const useCompleteQuest = () => {
   return useMutation({
     mutationFn: async ({ 
@@ -319,19 +319,50 @@ export const useCompleteQuest = () => {
       }
       return res.json() as Promise<UserQuest>;
     },
-    onSuccess: async (data) => {
-      // Invalidate all queries simultaneously for faster UI updates
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests/current-week`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests-with-definitions`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/badges`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/xp-transactions`] })
-      ]);
-      
-      // Force immediate refetch for faster UI feedback
-      queryClient.refetchQueries({ queryKey: [`/api/users/${data.userId}/quests/current-week`] });
+    
+    // Optimistic updates for immediate UI feedback
+    onMutate: async ({ questId, userId }) => {
+      // Cancel outgoing refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: [`/api/users/${userId}/quests/current-week`] });
+      await queryClient.cancelQueries({ queryKey: [`/api/users/${userId}/quests-with-definitions`] });
+
+      // Snapshot the previous values
+      const previousWeeklyQuests = queryClient.getQueryData([`/api/users/${userId}/quests/current-week`]);
+      const previousAllQuests = queryClient.getQueryData([`/api/users/${userId}/quests-with-definitions`]);
+
+      // Optimistically update the cache - remove quest from weekly and mark as completed
+      queryClient.setQueryData([`/api/users/${userId}/quests/current-week`], (old: any) => {
+        if (!old) return old;
+        return old.filter((quest: any) => quest.id !== questId);
+      });
+
+      queryClient.setQueryData([`/api/users/${userId}/quests-with-definitions`], (old: any) => {
+        if (!old) return old;
+        return old.map((quest: any) => 
+          quest.id === questId 
+            ? { ...quest, status: 'completed', completedAt: new Date().toISOString() }
+            : quest
+        );
+      });
+
+      // Return context with previous data for rollback
+      return { previousWeeklyQuests, previousAllQuests, questId, userId };
+    },
+
+    // If mutation fails, use the context returned from onMutate to roll back
+    onError: (err, variables, context) => {
+      if (context) {
+        queryClient.setQueryData([`/api/users/${context.userId}/quests/current-week`], context.previousWeeklyQuests);
+        queryClient.setQueryData([`/api/users/${context.userId}/quests-with-definitions`], context.previousAllQuests);
+      }
+    },
+
+    // Always refetch after error or success to ensure consistency
+    onSettled: (data, error, variables) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/xp`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${variables.userId}/badges`] });
     }
   });
 };
