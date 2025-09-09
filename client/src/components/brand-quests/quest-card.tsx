@@ -79,6 +79,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   };
   
   const handleComplete = () => {
+    // Prevent multiple clicks by checking if already pending
+    if (completeQuestMutation.isPending) {
+      return; // Ignore if already processing
+    }
+    
     setConfirmOpen(false);
     
     // Execute the mutation with optimistic updates for immediate UI response
