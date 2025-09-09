@@ -18,6 +18,11 @@ export class PersonalizedQuestAssignment {
     try {
       console.log(`[PersonalizedQuests] Starting assignment for user ${userId}`);
       
+      // Get user profile for personalization
+      const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const userProfile = userResult.length > 0 ? userResult[0] : null;
+      console.log(`[PersonalizedQuests] User profile: ${userProfile?.name} - ${userProfile?.industry}/${userProfile?.domain}`);
+
       // Get platform recommendations for this user
       const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
       console.log(`[PersonalizedQuests] Got ${recommendations.length} platform recommendations:`, 
@@ -56,7 +61,7 @@ export class PersonalizedQuestAssignment {
       );
 
       for (const missingRec of missingRecommendations) {
-        const questData = platformRecommendationService.getPlatformQuestData(missingRec.targetAction);
+        const questData = platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userProfile);
         
         const [newQuest] = await db
           .insert(questDefinitions)
