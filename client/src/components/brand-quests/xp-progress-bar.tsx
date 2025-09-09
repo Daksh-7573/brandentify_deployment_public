@@ -72,10 +72,10 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
                 <span className="font-medium">{progressInCurrentLevel} / {xpRange} XP to Level {nextLevelInfo.level}</span>
               </TooltipTrigger>
               <TooltipContent className="space-y-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 text-white">
-                <p>Monthly XP: {monthlyEarned} XP</p>
-                <p>Lifetime earned: {lifetimeEarned} XP</p>
+                <p>Progress: +{progressInCurrentLevel} XP toward Level {nextLevelInfo.level}</p>
+                <p>Level completion: {progressPercentage}%</p>
                 <p>Current balance: {balance} XP</p>
-                <p>Next level at: {nextLevelInfo.xp} XP</p>
+                <p>Next milestone: {nextLevelInfo.xp} XP</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
