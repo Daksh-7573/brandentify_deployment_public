@@ -32,6 +32,7 @@ export function ProfilePictureDialog({
   const { user: authUser } = useAuth();
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [currentUploadedImage, setCurrentUploadedImage] = useState<string | null>(null);
   
   console.log("ProfilePictureDialog rendered with open:", open);
   
@@ -80,7 +81,7 @@ export function ProfilePictureDialog({
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: async (data, base64Image) => {
+    onSuccess: async (data) => {
       setIsUploading(false);
       toast({
         title: "Success!",
@@ -88,9 +89,9 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Use the uploaded base64 image for immediate cache update
-      const newPhotoURL = (data as any)?.photoURL || base64Image;
-      console.log('[PROFILE DIALOG] Using uploaded image for instant cache update');
+      // Use the stored uploaded image for immediate cache update
+      const newPhotoURL = (data as any)?.photoURL || currentUploadedImage;
+      console.log('[PROFILE DIALOG] ✅ Using uploaded image for instant cache update');
       
       queryClient.setQueryData(['/api/users', actualUserId], (oldData: any) => {
         if (oldData) {
@@ -131,6 +132,8 @@ export function ProfilePictureDialog({
         });
       }
       
+      // Clear the stored image and close dialog
+      setCurrentUploadedImage(null);
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -146,6 +149,10 @@ export function ProfilePictureDialog({
 
   // Handle saving the updated profile picture
   const handleSaveProfilePicture = (base64Image: string) => {
+    // Store the uploaded image for cache update
+    setCurrentUploadedImage(base64Image);
+    console.log('[PROFILE DIALOG] 🔄 Storing uploaded image for cache update');
+    
     // Show uploading state
     setIsUploading(true);
     
