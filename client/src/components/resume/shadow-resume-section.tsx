@@ -3,7 +3,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -344,14 +343,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   };
 
   return (
-    <Card className="w-full shadow-md">
-      <CardHeader className="pb-3">
+    <div className="neo-glass-card w-full rounded-lg border border-white/10 shadow-lg">
+      <div className="p-6 pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Shadow Resume</CardTitle>
-            <CardDescription>
+            <h3 className="text-xl font-semibold text-white">Shadow Resume</h3>
+            <p className="text-white/70 mt-2">
               Your living CV, automatically maintained by Musk
-            </CardDescription>
+            </p>
           </div>
           <div className="flex items-center gap-2">
             {resume?.lastUpdatedByMusk && (
@@ -415,14 +414,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             )}
           </div>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="space-y-4">
+      <div className="px-6 space-y-4">
         {!resume && (
-          <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-muted-foreground/20 rounded-md">
+          <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-white/20 rounded-md">
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
-            <h3 className="text-lg font-medium">Your Shadow Resume</h3>
-            <p className="text-sm text-muted-foreground mt-1 mb-3">
+            <h3 className="text-lg font-medium text-white">Your Shadow Resume</h3>
+            <p className="text-sm text-white/70 mt-1 mb-3">
               Complete your profile to generate your Shadow Resume. Add your work experiences, skills, and projects to qualify.
             </p>
             <Button 
@@ -445,7 +444,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && (
           <>
             {/* Resume Preview */}
-            <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="aspect-[3/4] bg-white/5 border border-white/10 rounded-lg flex items-center justify-center overflow-hidden">
               {resume?.fileData ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                   {/* Actual resume preview with PDF appearance */}
@@ -771,8 +770,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               </Button>
             </>
           )}
-        </CardFooter>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }
