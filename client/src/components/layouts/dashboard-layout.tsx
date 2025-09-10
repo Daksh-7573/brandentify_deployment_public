@@ -21,7 +21,7 @@ const navItems = [
   },
   {
     name: "Resume & CV",
-    href: "/resume-cv",
+    href: "/resume",
     icon: FileText
   },
   {

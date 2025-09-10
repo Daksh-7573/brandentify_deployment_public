@@ -50,90 +50,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     aboutMe: user?.aboutMe || '',
   });
   
-  // We should use the resume form data instead of directly fetching from profile
-  // This ensures the Shadow Resume shows what's in the Resume Editor, not the profile
-  
-  // ENHANCED DEBUGGING AND METADATA PARSING
-  
-  // Function to help with debugging objects
-  const safeStringify = (obj: any) => {
-    try {
-      return JSON.stringify(obj).substring(0, 100) + (JSON.stringify(obj).length > 100 ? '...' : '');
-    } catch (e) {
-      return 'Error stringifying object';
-    }
-  };
-  
-  // Enhanced logging about the resume object itself
-  console.log('ShadowResumeSection - Initial Resume Object:', {
-    resumeExists: !!resume,
-    resumeId: resume?.id,
-    hasFormDirectly: !!resume?.form,
-    hasMetadata: !!resume?.metadata,
-    metadataType: resume?.metadata ? typeof resume.metadata : 'N/A',
-    metadataLength: resume?.metadata ? 
-      (typeof resume.metadata === 'string' ? 
-        resume.metadata.length : 
-        safeStringify(resume.metadata).length) 
-      : 0,
-    metadataPreview: resume?.metadata ? 
-      (typeof resume.metadata === 'string' ? 
-        resume.metadata.substring(0, 50) + '...' : 
-        safeStringify(resume.metadata)) 
-      : 'No metadata'
-  });
-  
-  // Extract data from resume form if available - with enhanced parsing
-  // First try to use the form data directly from resume.form
-  let formData = resume?.form || null;
-  
-  // If no form data is available but we have metadata, try to parse it
-  // with comprehensive error handling and debugging
-  if (!formData && resume?.metadata) {
-    console.log('Attempting to parse form data from metadata');
-    
-    try {
-      // Handle both string and object metadata
-      if (typeof resume.metadata === 'string') {
-        formData = JSON.parse(resume.metadata);
-        console.log('Successfully parsed string metadata into formData');
-      } else if (typeof resume.metadata === 'object') {
-        // Already an object, just use it directly
-        formData = resume.metadata;
-        console.log('Metadata is already an object, using directly as formData');
-      }
-    } catch (e) {
-      console.error('Failed to parse metadata as JSON:', e);
-      
-      // Attempt to fix common JSON parsing issues
-      if (typeof resume.metadata === 'string') {
-        try {
-          // Try to clean the string and parse again
-          const cleanedMetadata = resume.metadata
-            .replace(/\\"/g, '"')
-            .replace(/^"/, '')
-            .replace(/"$/, '');
-          
-          console.log('Attempting to parse cleaned metadata:', cleanedMetadata.substring(0, 50) + '...');
-          formData = JSON.parse(cleanedMetadata);
-          console.log('Successfully parsed cleaned metadata');
-        } catch (cleanErr) {
-          console.error('Failed to parse cleaned metadata:', cleanErr);
-        }
-      }
-    }
-  }
-  
-  // Advanced logging to trace data flow
-  console.log('ShadowResumeSection - Resume Form Data Results:', {
-    hasFormData: !!formData,
-    formDataKeys: formData ? Object.keys(formData) : [],
-    formDataType: formData ? typeof formData : 'null',
-    hasPersonalInfo: formData?.personalInfo ? 'yes' : 'no',
-    hasExperiences: formData?.experiences ? 'yes' : 'no',
-    resumeId: resume?.id,
-    formDataPreview: formData ? safeStringify(formData) : 'No form data'
-  });
+  // Use only form data from resume.form - no metadata parsing or fallbacks
+  const formData = resume?.form || null;
   
   // DO NOT fetch or use profile data at all
   // Shadow Resume ONLY shows data from Resume Editor with no fallbacks
@@ -373,38 +291,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       description: "Opening the Resume Editor where you can make changes.",
                     });
                     
-                    // Simply go to the resume editor - with the new flow, changes from resume editor
-                    // will be saved to both resume and profile
-                    if (resume?.id) {
-                      // No need to refresh from profile anymore since data now flows in the opposite direction
-                      // Just navigate to the resume editor with the current data
-                      if (onTabChange) {
-                        onTabChange('resume-editor');
-                      } else {
-                        // Fallback to direct DOM manipulation
-                        const element = document.querySelector('[value="resume-editor"]');
-                        if (element instanceof HTMLElement) {
-                          element.click();
-                        }
-                      }
-                      
-                      // Provide instructions to the user about the new flow
-                      toast({
-                        title: "Resume Editor Instructions",
-                        description: "Make changes in the Resume Editor and click Save to update both your profile and resume.",
-                        duration: 5000, // Show for 5 seconds
-                      });
+                    // Navigate to resume editor tab or fallback to resume page
+                    if (onTabChange) {
+                      onTabChange('resume-editor');
                     } else {
-                      // Fallback when no resume ID is available
-                      if (onTabChange) {
-                        onTabChange('resume-editor');
-                      } else {
-                        // Fallback to direct DOM manipulation
-                        const element = document.querySelector('[value="resume-editor"]');
-                        if (element instanceof HTMLElement) {
-                          element.click();
-                        }
-                      }
+                      // Fallback navigation when onTabChange is not available
+                      navigate('/resume');
                     }
                   }}
                 >
@@ -423,22 +315,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
             <h3 className="text-lg font-medium text-white">Your Shadow Resume</h3>
             <p className="text-sm text-white/70 mt-1 mb-3">
-              Complete your profile to generate your Shadow Resume. Add your work experiences, skills, and projects to qualify.
+              Complete your profile to automatically generate your Shadow Resume. Add your work experiences, skills, and projects.
             </p>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => {
-                // Show toast with guidance
-                toast({
-                  title: "Complete Your Profile",
-                  description: "Add at least one work experience, skill, and project to generate your Shadow Resume.",
-                  variant: "default",
-                });
-              }}
-            >
-              How to Get Started
-            </Button>
           </div>
         )}
 
