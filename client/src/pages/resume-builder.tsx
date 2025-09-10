@@ -213,69 +213,67 @@ export default function ResumeBuilder() {
         backgroundImage: `url(${backgroundImage})`
       }}
     >
-      {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm -z-10 pointer-events-none"></div>
       <Header />
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 min-h-screen relative z-10">
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
+        <div className="flex-1 overflow-auto w-full">
+          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
             {/* Page Header */}
-            <div className="mb-6 sm:mb-8">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Resume Builder</h1>
-                  <p className="text-white/80 mt-1 text-sm sm:text-base">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Resume Builder</h1>
+                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight">
                     Create a professional resume by uploading your existing resume or starting from scratch
                   </p>
                 </div>
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                  <Button
-                    onClick={() => navigate('/profile')}
-                    variant="outline"
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-full md:w-auto"
-                  >
-                    Back to Profile
-                  </Button>
-                </div>
+                <Button
+                  onClick={() => navigate('/profile')}
+                  className="w-full sm:w-auto flex-shrink-0 h-8 sm:h-9"
+                  size="sm"
+                >
+                  Back to Profile
+                </Button>
               </div>
             </div>
 
             {/* Existing Resume Section (if available) */}
             {isResumeLoading ? (
-              <Card className="mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className="mb-4 sm:mb-6">
                 <CardContent className="flex items-center justify-center p-6 sm:p-8">
-                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-white/70" />
-                  <span className="ml-2 text-white/70 text-sm sm:text-base">Checking for existing resumes...</span>
+                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-muted-foreground text-sm sm:text-base">Checking for existing resumes...</span>
                 </CardContent>
               </Card>
             ) : resumeError ? (
-              <Card className="mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className="mb-4 sm:mb-6">
                 <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center space-x-2 text-amber-400">
+                  <div className="flex items-center space-x-2 text-amber-500">
                     <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                     <h3 className="font-medium text-sm sm:text-base">Error checking for existing resumes</h3>
                   </div>
-                  <p className="mt-2 text-white/70 text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
+                  <p className="mt-2 text-muted-foreground text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
                 </CardContent>
               </Card>
             ) : hasExistingResume ? (
-              <Card className="mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className="mb-4 sm:mb-6">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                      <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Your Shadow Resume</h2>
-                      <p className="text-white/70 text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
+                      <h2 className="text-lg sm:text-xl font-bold mb-2">Your Shadow Resume</h2>
+                      <p className="text-muted-foreground text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
                       <Button
                         onClick={handleViewShadowResume}
                         variant="outline"
-                        className="flex items-center bg-white/10 border-white/20 text-white hover:bg-white/20 w-full sm:w-auto justify-center"
+                        className="w-full sm:w-auto justify-center"
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         View Resume
                       </Button>
                       <Button
                         onClick={handleEditShadowResume}
-                        className="flex items-center bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black hover:shadow-lg w-full sm:w-auto justify-center"
+                        className="w-full sm:w-auto justify-center"
                       >
                         <Edit2 className="mr-2 h-4 w-4" />
                         Edit Resume
@@ -286,60 +284,54 @@ export default function ResumeBuilder() {
               </Card>
             ) : null}
 
-            {/* Main Content */}
-            <Card className="mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-4 sm:p-6">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="mb-4 sm:mb-6 grid w-full grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-0 bg-white/5 backdrop-blur-sm border border-white/10">
-                    <TabsTrigger 
-                      value="upload" 
-                      className="text-xs sm:text-sm bg-transparent border-0 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all duration-200"
-                    >
-                      <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">Upload Resume</span>
-                      <span className="sm:hidden">Upload</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="scratch" 
-                      className="text-xs sm:text-sm bg-transparent border-0 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all duration-200"
-                    >
-                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">Create From Scratch</span>
-                      <span className="sm:hidden">Create</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="profile" 
-                      className="text-xs sm:text-sm bg-transparent border-0 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all duration-200"
-                    >
-                      <Database className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">Use Profile Data</span>
-                      <span className="sm:hidden">Profile</span>
-                    </TabsTrigger>
-                  </TabsList>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <div className="mb-4 sm:mb-6 w-full overflow-x-auto">
+                <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+                  <TabsTrigger value="upload" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Upload Resume</span>
+                    <span className="sm:hidden">Upload</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="scratch" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Create From Scratch</span>
+                    <span className="sm:hidden">Create</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="profile" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                    <Database className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Use Profile Data</span>
+                    <span className="sm:hidden">Profile</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <div className="space-y-3 sm:space-y-4 md:space-y-6">
 
                 {/* Upload Resume Tab */}
-                <TabsContent value="upload" className="space-y-4 sm:space-y-6">
-                  <div className="space-y-3 sm:space-y-4">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white">Upload Your Resume</h3>
-                    <p className="text-white/70 text-sm sm:text-base">
-                      Upload your existing resume document and Musk AI will automatically extract and organize your information.
-                    </p>
+                <TabsContent value="upload" className="mt-0">
+                  <Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="space-y-3 sm:space-y-4">
+                        <h3 className="text-lg sm:text-xl font-semibold">Upload Your Resume</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">
+                          Upload your existing resume document and Musk AI will automatically extract and organize your information.
+                        </p>
 
-                    <div 
-                      className={`border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center cursor-pointer transition-all ${
-                        isDragging 
-                          ? 'border-white/60 bg-white/10 backdrop-blur-sm' 
-                          : selectedFile 
-                            ? 'border-white/30 bg-white/5 backdrop-blur-sm' 
-                            : uploadError 
-                              ? 'border-red-400/40 bg-red-950/20 backdrop-blur-sm' 
-                              : 'border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10'
-                      }`}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      onClick={() => document.getElementById('resume-file-input')?.click()}
-                    >
+                        <div 
+                          className={`border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center cursor-pointer transition-all ${
+                            isDragging 
+                              ? 'border-primary bg-primary/5' 
+                              : selectedFile 
+                                ? 'border-primary bg-primary/5' 
+                                : uploadError 
+                                  ? 'border-destructive bg-destructive/5' 
+                                  : 'border-muted-foreground/25 hover:border-primary/50'
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          onClick={() => document.getElementById('resume-file-input')?.click()}
+                        >
                       <input 
                         type="file" 
                         id="resume-file-input"
@@ -353,19 +345,19 @@ export default function ResumeBuilder() {
                           <>
                             <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-red-400" />
                             <p className="font-medium text-red-400 mt-2 text-sm sm:text-base px-2">{uploadError}</p>
-                            <p className="text-xs sm:text-sm text-white/60">Click or drag to try again</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Click or drag to try again</p>
                           </>
                         ) : selectedFile ? (
                           <>
-                            <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/60" />
-                            <p className="font-medium text-white mt-2 text-sm sm:text-base px-2">Selected: {selectedFile.name}</p>
-                            <p className="text-xs sm:text-sm text-white/60">Click or drag to change selection</p>
+                            <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
+                            <p className="font-medium text-foreground mt-2 text-sm sm:text-base px-2">Selected: {selectedFile.name}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Click or drag to change selection</p>
                           </>
                         ) : (
                           <>
-                            <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/60" />
-                            <p className="font-medium text-white mt-2 text-sm sm:text-base">Drag & drop or click to upload</p>
-                            <p className="text-xs sm:text-sm text-white/60">Supported formats: PDF, DOC, DOCX</p>
+                            <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
+                            <p className="font-medium text-foreground mt-2 text-sm sm:text-base">Drag & drop or click to upload</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Supported formats: PDF, DOC, DOCX</p>
                           </>
                         )}
                       </div>
@@ -373,13 +365,13 @@ export default function ResumeBuilder() {
 
                     {isLoading && (
                       <div className="space-y-2">
-                        <div className="h-2 bg-white/10 rounded-full">
+                        <div className="h-2 bg-muted rounded-full">
                           <div 
                             className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" 
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>
-                        <p className="text-sm text-white/60 text-center">
+                        <p className="text-sm text-muted-foreground text-center">
                           {uploadProgress < 100 ? 'Processing your resume...' : 'Complete! Redirecting...'}
                         </p>
                       </div>
@@ -389,7 +381,7 @@ export default function ResumeBuilder() {
                       <Button
                         onClick={handleUploadResume}
                         disabled={!selectedFile || isLoading || !!uploadError}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
+                        className="w-full sm:w-auto"
                       >
                         {isLoading ? (
                           <div className="flex items-center justify-center">
@@ -407,102 +399,110 @@ export default function ResumeBuilder() {
                 </TabsContent>
 
                 {/* Create From Scratch Tab */}
-                <TabsContent value="scratch" className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-                  <div className="space-y-3 sm:space-y-4">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white">Create A New Resume</h3>
-                    <p className="text-white/70 text-sm sm:text-base">
-                      Start with a blank canvas and build your resume step-by-step with our intuitive editor.
-                    </p>
+                <TabsContent value="scratch" className="mt-0">
+                  <Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="space-y-3 sm:space-y-4">
+                        <h3 className="text-lg sm:text-xl font-semibold">Create A New Resume</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">
+                          Start with a blank canvas and build your resume step-by-step with our intuitive editor.
+                        </p>
 
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 sm:p-6 mt-4">
-                      <h4 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">Resume Outline</h4>
-                      <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
-                        <li className="flex items-center">
-                          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-white/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">1</div>
-                          Personal Information
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-white/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">2</div>
-                          Work Experience
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-white/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">3</div>
-                          Education
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-white/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">4</div>
-                          Skills
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-white/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">5</div>
-                          Projects & Achievements
-                        </li>
-                      </ul>
-                    </div>
+                        <div className="bg-muted/50 rounded-lg p-4 sm:p-6 mt-4">
+                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">Resume Outline</h4>
+                          <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                            <li className="flex items-center">
+                              <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">1</div>
+                              Personal Information
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">2</div>
+                              Work Experience
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">3</div>
+                              Education
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">4</div>
+                              Skills
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">5</div>
+                              Projects & Achievements
+                            </li>
+                          </ul>
+                        </div>
 
-                    <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
-                      <Button
-                        onClick={handleCreateFromScratch}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
-                      >
-                        Create Fresh Resume <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                        <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
+                          <Button
+                            onClick={handleCreateFromScratch}
+                            className="w-full sm:w-auto"
+                          >
+                            Create Fresh Resume <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 {/* Use Profile Data Tab */}
-                <TabsContent value="profile" className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-                  <div className="space-y-3 sm:space-y-4">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white">Use Your Profile Data</h3>
-                    <p className="text-white/70 text-sm sm:text-base">
-                      Import data from your Brandentifier profile to quickly populate your resume.
-                    </p>
+                <TabsContent value="profile" className="mt-0">
+                  <Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="space-y-3 sm:space-y-4">
+                        <h3 className="text-lg sm:text-xl font-semibold">Use Your Profile Data</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">
+                          Import data from your Brandentifier profile to quickly populate your resume.
+                        </p>
 
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 sm:p-6 mt-4">
-                      <h4 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">Data That Will Be Imported</h4>
-                      <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Personal Information (Name, Title, Contact Details)
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Professional Summary
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Work Experience
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Education History
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Skills & Expertise
-                        </li>
-                        <li className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-white/60 mr-2 sm:mr-3"></div>
-                          Projects & Portfolio Items
-                        </li>
-                      </ul>
-                    </div>
+                        <div className="bg-muted/50 rounded-lg p-4 sm:p-6 mt-4">
+                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">Data That Will Be Imported</h4>
+                          <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Personal Information (Name, Title, Contact Details)
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Professional Summary
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Work Experience
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Education History
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Skills & Expertise
+                            </li>
+                            <li className="flex items-center">
+                              <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
+                              Projects & Portfolio Items
+                            </li>
+                          </ul>
+                        </div>
 
-                    <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
-                      <Button
-                        onClick={handleCreateFromProfile}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
-                      >
-                        Use Profile Data <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                        <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
+                          <Button
+                            onClick={handleCreateFromProfile}
+                            className="w-full sm:w-auto"
+                          >
+                            Use Profile Data <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+            </Tabs>
+          </div>
         </div>
+      </div>
     </div>
   );
 }
