@@ -3,11 +3,11 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 import { 
   Zap,
@@ -168,10 +168,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     []; // Default empty
     
   console.log('Effective data check:', {
-    expCount: Array.isArray(effectiveExperiences) ? effectiveExperiences.length : 0,
-    eduCount: Array.isArray(effectiveEducation) ? effectiveEducation.length : 0,
-    skillCount: Array.isArray(effectiveSkills) ? effectiveSkills.length : 0,
-    projCount: Array.isArray(effectiveProjects) ? effectiveProjects.length : 0
+    expCount: effectiveExperiences.length,
+    eduCount: effectiveEducation.length,
+    skillCount: effectiveSkills.length,
+    projCount: effectiveProjects.length
   });
   
   // ONLY use personal info from form data, never fallback to profile
@@ -344,14 +344,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   };
 
   return (
-    <div className="neo-glass-card w-full rounded-lg border border-white/10 shadow-lg">
-      <div className="p-6 pb-3">
+    <Card className="w-full shadow-md">
+      <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-xl font-semibold text-white">Shadow Resume</h3>
-            <p className="text-white/70 mt-2">
+            <CardTitle>Shadow Resume</CardTitle>
+            <CardDescription>
               Your living CV, automatically maintained by Musk
-            </p>
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2">
             {resume?.lastUpdatedByMusk && (
@@ -415,14 +415,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             )}
           </div>
         </div>
-      </div>
+      </CardHeader>
       
-      <CardContent className="px-6 space-y-4">
+      <CardContent className="space-y-4">
         {!resume && (
-          <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-white/20 rounded-md">
+          <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-muted-foreground/20 rounded-md">
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
-            <h3 className="text-lg font-medium text-white">Your Shadow Resume</h3>
-            <p className="text-sm text-white/70 mt-1 mb-3">
+            <h3 className="text-lg font-medium">Your Shadow Resume</h3>
+            <p className="text-sm text-muted-foreground mt-1 mb-3">
               Complete your profile to generate your Shadow Resume. Add your work experiences, skills, and projects to qualify.
             </p>
             <Button 
@@ -445,7 +445,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && (
           <>
             {/* Resume Preview */}
-            <div className="aspect-[3/4] bg-white/5 border border-white/10 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
               {resume?.fileData ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                   {/* Actual resume preview with PDF appearance */}
@@ -557,7 +557,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {Array.isArray(effectiveExperiences) && effectiveExperiences.length > 0 ? (
+                        {effectiveExperiences && effectiveExperiences.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveExperiences.map((experience: any, index: number) => (
                               <div key={index} className="pb-2">
@@ -594,7 +594,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {Array.isArray(effectiveEducation) && effectiveEducation.length > 0 ? (
+                        {effectiveEducation && effectiveEducation.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveEducation.map((edu: any, index: number) => (
                               <div key={index} className="pb-2">
@@ -647,7 +647,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {Array.isArray(effectiveSkills) && effectiveSkills.length > 0 ? (
+                        {effectiveSkills && effectiveSkills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {effectiveSkills.map((skill: any, index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
@@ -667,7 +667,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {Array.isArray(effectiveProjects) && effectiveProjects.length > 0 ? (
+                        {effectiveProjects && effectiveProjects.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveProjects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
@@ -773,6 +773,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
           )}
         </CardFooter>
       )}
-    </div>
+    </Card>
   );
 }
