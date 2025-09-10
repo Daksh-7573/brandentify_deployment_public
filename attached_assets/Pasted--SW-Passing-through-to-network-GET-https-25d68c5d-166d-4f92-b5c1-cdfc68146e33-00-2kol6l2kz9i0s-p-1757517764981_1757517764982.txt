@@ -1,0 +1,362 @@
+[SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/resume/musk-resume-writer.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/resume-editor.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-shadow-resume.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-user-profile.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/page-header.tsx
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858392
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858392
+Console.js:61 Forcing initial shadow resume fetch...
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/shadow-resume
+Console.js:61 Resume sources check: {fromResumeData: 'NO', fromManualFetch: 'NO', readyState: false}
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+2Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ resume.tsx:56
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Direct fetch result: {message: 'Internal server error', error: 'storage.getResumeByUserId is not a function'}
+Console.js:61 No shadow resume from direct fetch, will try creating one...
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858392
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858392
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Error creating shadow resume: Error: Failed to create shadow resume
+    at resume.tsx:103:28
+    at async Object.mutationFn (resume.tsx:96:14)
+Mt.forEach.n.<computed> @ Console.js:61
+onError @ resume.tsx:126
+execute @ @tanstack_react-query.js?v=1385e92d:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2

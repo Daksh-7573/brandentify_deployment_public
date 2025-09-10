@@ -1,0 +1,608 @@
+[SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/right-sidebar.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-label.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EYSAGQX5.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-Z7XBDXA4.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/popover.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/notifications/notification-list.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/musk/suggested-questions.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/date-fns.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-radio-group.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/common/skill-bar.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/profile-utils.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/nowboard/nowboard-panel-simple.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-P4QC2ZW2.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/skeleton.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/auth-context.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/nowboard/nowboard-menu.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/dropdown-menu.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/alert-dialog.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-diagnostics.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-alert-dialog.js?v=1385e92d
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-redirect-handler.ts
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkStoredAuth
+Console.js:61 AuthProvider: Current sessionStorage keys: ['brandentifier_user']
+Console.js:61 AuthProvider: Raw stored data: {"id":2,"username":"Unvhj38FHSg36vbagvGL8MvDJuL2","email":"nishant.brodos@gmail.com","name":"Nishant Chopra","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c","profileCompleted":0,"authProvider":"google","emailVerified":true}
+Console.js:61 AuthProvider: Parsed user data: {email: 'nishant.brodos@gmail.com', id: 2, name: 'Nishant Chopra'}
+Console.js:61 AuthProvider: User state set, isAuthenticated should be true
+Console.js:61 AuthProvider: Setting isLoading to false from checkStoredAuth
+Console.js:61 [PERF] React app rendered in 84.40 ms
+Console.js:61 [PERF] Total initialization time: 84.70 ms
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/resume.tsx
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4848.90ms
+Console.js:61 🔥 Firebase init time: 4848.90ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+sw.js:48 [SW] Passing through to network: GET https://replit.com/public/js/beacon.js
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 [PERF] Skeleton loader removed in 187.10 ms
+sw.js:48 [SW] Passing through to network: POST https://securetoken.googleapis.com/v1/token?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 220.00ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 5022.60ms
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/page-layout.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/resume/shadow-resume-section.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/resume/musk-resume-writer.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/resume-editor.tsx
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/page-header.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-shadow-resume.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-user-profile.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/switch.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/avatar.tsx
+sw.js:48 [SW] Passing through to network: POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-switch.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-avatar.js?v=1385e92d
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/attached_assets/Brandentifier%20Landing_1751376023002.png
+Console.js:61 Header mounted - invalidating user query
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+2Console.js:61 Fetching data from: /api/users
+Console.js:61 Forcing initial shadow resume fetch...
+Console.js:61 Resume sources check: {fromResumeData: 'NO', fromManualFetch: 'NO', readyState: false}
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858394
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/shadow-resume
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/experiences
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/skills
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/projects
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ resume.tsx:56
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Direct fetch result: {message: 'Internal server error', error: 'storage.getResumeByUserId is not a function'}
+Console.js:61 No shadow resume from direct fetch, will try creating one...
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:39
+setTimeout
+(anonymous) @ simple-auth-context.tsx:38
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this warning
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858394
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5858394
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Error creating shadow resume: Error: Failed to create shadow resume
+    at resume.tsx:103:28
+    at async Object.mutationFn (resume.tsx:96:14)
+Mt.forEach.n.<computed> @ Console.js:61
+onError @ resume.tsx:126
+execute @ @tanstack_react-query.js?v=1385e92d:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+(anonymous) @ resume.tsx:69
+Promise.then
+(anonymous) @ resume.tsx:58
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+9The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+onClick @ resume.tsx:289
+Nb @ chunk-E27YX2RL.js?v=1385e92d:975
+Tb @ chunk-E27YX2RL.js?v=1385e92d:991
+Ub @ chunk-E27YX2RL.js?v=1385e92d:994
+nf @ chunk-E27YX2RL.js?v=1385e92d:2017
+se @ chunk-E27YX2RL.js?v=1385e92d:2040
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:2312
+Qk @ chunk-E27YX2RL.js?v=1385e92d:5701
+Jb @ chunk-E27YX2RL.js?v=1385e92d:927
+hd @ chunk-E27YX2RL.js?v=1385e92d:2113
+fd @ chunk-E27YX2RL.js?v=1385e92d:1454
+ed @ chunk-E27YX2RL.js?v=1385e92d:1437Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+injected.js:278  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/create-shadow-resume 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+mutationFn @ resume.tsx:96
+fn @ @tanstack_react-query.js?v=1385e92d:1189
+run @ @tanstack_react-query.js?v=1385e92d:494
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:515
+Promise.catch
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+execute @ @tanstack_react-query.js?v=1385e92d:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+onClick @ resume.tsx:289
+Nb @ chunk-E27YX2RL.js?v=1385e92d:975
+Tb @ chunk-E27YX2RL.js?v=1385e92d:991
+Ub @ chunk-E27YX2RL.js?v=1385e92d:994
+nf @ chunk-E27YX2RL.js?v=1385e92d:2017
+se @ chunk-E27YX2RL.js?v=1385e92d:2040
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:2312
+Qk @ chunk-E27YX2RL.js?v=1385e92d:5701
+Jb @ chunk-E27YX2RL.js?v=1385e92d:927
+hd @ chunk-E27YX2RL.js?v=1385e92d:2113
+fd @ chunk-E27YX2RL.js?v=1385e92d:1454
+ed @ chunk-E27YX2RL.js?v=1385e92d:1437Understand this error
+Console.js:61 Error creating shadow resume: Error: Failed to create shadow resume
+    at resume.tsx:103:28
+    at async Object.mutationFn (resume.tsx:96:14)
+Mt.forEach.n.<computed> @ Console.js:61
+onError @ resume.tsx:126
+execute @ @tanstack_react-query.js?v=1385e92d:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=1385e92d:2630
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3295
+onClick @ resume.tsx:289
+Nb @ chunk-E27YX2RL.js?v=1385e92d:975
+Tb @ chunk-E27YX2RL.js?v=1385e92d:991
+Ub @ chunk-E27YX2RL.js?v=1385e92d:994
+nf @ chunk-E27YX2RL.js?v=1385e92d:2017
+se @ chunk-E27YX2RL.js?v=1385e92d:2040
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:2312
+Qk @ chunk-E27YX2RL.js?v=1385e92d:5701
+Jb @ chunk-E27YX2RL.js?v=1385e92d:927
+hd @ chunk-E27YX2RL.js?v=1385e92d:2113
+fd @ chunk-E27YX2RL.js?v=1385e92d:1454
+ed @ chunk-E27YX2RL.js?v=1385e92d:1437Understand this error
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Render condition check: {hasResumeData: false, hasResumeObject: undefined, resumeDataKeys: Array(0), resumeReadyState: false}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
