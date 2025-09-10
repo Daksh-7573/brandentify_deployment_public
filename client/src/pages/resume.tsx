@@ -231,15 +231,15 @@ export default function ResumePage() {
                 onTabChange={setActiveTab}
               />
             ) : isCreationRequested ? (
-              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
-                <Zap className={`h-16 w-16 mb-4 text-primary animate-pulse`} />
+              <div className="flex flex-col items-center justify-center p-10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+                <Zap className={`h-16 w-16 mb-4 text-blue-400 animate-pulse`} />
                 
                 <div className="space-y-4 text-center">
-                  <h3 className="text-2xl font-bold mb-2">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
+                  <h3 className="text-2xl font-bold mb-2 text-white">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
                   
                   {resumeReadyForViewing ? (
                     <>
-                      <p className="text-center text-muted-foreground mb-6">
+                      <p className="text-center text-white/70 mb-6">
                         Musk has analyzed your profile and created a tailored resume for you.
                         Click below to view your new Shadow Resume.
                       </p>
@@ -253,7 +253,7 @@ export default function ResumePage() {
                             });
                           });
                         }}
-                        className="gap-2"
+                        className="gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
                       >
                         <Eye className="h-4 w-4" />
                         <span>View Your Shadow Resume</span>
@@ -264,10 +264,10 @@ export default function ResumePage() {
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
-                      <p className="text-muted-foreground">
+                      <p className="text-white/70">
                         Musk is analyzing your professional profile and automatically creating your Shadow Resume...
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-white/60">
                         Your resume will be continuously updated as your career evolves.
                       </p>
                     </>
@@ -275,12 +275,12 @@ export default function ResumePage() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
-                <FileText className="h-16 w-16 mb-4 text-muted-foreground" />
+              <div className="flex flex-col items-center justify-center p-10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+                <FileText className="h-16 w-16 mb-4 text-white/60" />
                 
                 <div className="space-y-4 text-center">
-                  <h3 className="text-2xl font-bold mb-2">Resume Not Created Yet</h3>
-                  <p className="text-center text-muted-foreground mb-4">
+                  <h3 className="text-2xl font-bold mb-2 text-white">Resume Not Created Yet</h3>
+                  <p className="text-center text-white/70 mb-4">
                     Please complete your profile to generate a professional resume. You can also switch to the Resume Editor tab to create your resume manually.
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center">
@@ -288,7 +288,7 @@ export default function ResumePage() {
                       onClick={() => {
                         void createResumeMutation.mutate();
                       }}
-                      className="gap-2"
+                      className="gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
                     >
                       <Zap className="h-4 w-4" />
                       <span>Generate Resume Now</span>
@@ -296,7 +296,7 @@ export default function ResumePage() {
                     <Button 
                       variant="outline"
                       onClick={() => setActiveTab('resume-editor')}
-                      className="gap-2"
+                      className="gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
                     >
                       <Edit2 className="h-4 w-4" />
                       <span>Create Manually</span>
