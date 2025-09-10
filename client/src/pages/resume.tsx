@@ -3,7 +3,6 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
-import '@/styles/mobile-responsive.css';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useShadowResume } from '@/hooks/use-shadow-resume';
 import { Resume } from '@/types/resume';
@@ -118,13 +117,20 @@ export default function ResumePage() {
     >
 
       <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <div className="mb-4 sm:mb-6 w-full overflow-x-auto tabs-container-mobile">
-          <TabsList className="grid w-full grid-cols-3 h-auto p-1 tabs-list-mobile">
-            <TabsTrigger value="shadow-resume" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Shadow Resume</TabsTrigger>
-            <TabsTrigger value="resume-writer" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Resume Writer</TabsTrigger>
-            <TabsTrigger value="resume-editor" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Resume Editor</TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="shadow-resume" className="gap-2">
+            <Zap className="h-4 w-4" />
+            <span>Shadow Resume</span>
+          </TabsTrigger>
+          <TabsTrigger value="resume-writer" className="gap-2">
+            <FileText className="h-4 w-4" />
+            <span>Resume Writer</span>
+          </TabsTrigger>
+          <TabsTrigger value="resume-editor" className="gap-2">
+            <Edit2 className="h-4 w-4" />
+            <span>Resume Editor</span>
+          </TabsTrigger>
+        </TabsList>
 
         <TabsContent value="shadow-resume" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">

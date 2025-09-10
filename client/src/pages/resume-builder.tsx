@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
+import { NeoGlassLayout, NeoGlassSection } from '@/components/layout/neo-glass-layout';
 import Header from '@/components/layout/header';
-import "@/styles/mobile-responsive.css";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -216,84 +216,91 @@ export default function ResumeBuilder() {
     >
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top for fixed header */}
-        <div className="flex-1 overflow-auto w-full">
-          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
+        <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 relative z-10">
             {/* Page Header */}
-            <div className="mb-4 sm:mb-6 md:mb-8">
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">Resume Builder</h1>
-                  <p className="text-white/70 mt-1 text-xs sm:text-sm md:text-base leading-tight">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Resume Builder</h1>
+                  <p className="text-white/80 mt-1 text-sm sm:text-base">
                     Create a professional resume by uploading your existing resume or starting from scratch
                   </p>
                 </div>
-                <Button
-                  onClick={() => navigate('/profile')}
-                  variant="outline"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto flex-shrink-0"
-                >
-                  Back to Profile
-                </Button>
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                  <Button
+                    onClick={() => navigate('/profile')}
+                    variant="outline"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-full md:w-auto"
+                  >
+                    Back to Profile
+                  </Button>
+                </div>
               </div>
             </div>
 
             {/* Existing Resume Section (if available) */}
             {isResumeLoading ? (
-              <FeedSkeleton count={1} />
+              <NeoGlassSection className="mb-6 flex items-center justify-center p-6 sm:p-8">
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-white/70" />
+                <span className="ml-2 text-white/70 text-sm sm:text-base">Checking for existing resumes...</span>
+              </NeoGlassSection>
             ) : resumeError ? (
-              <Card className="mb-4 sm:mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center space-x-2 text-amber-400">
-                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <h3 className="font-medium text-sm sm:text-base">Error checking for existing resumes</h3>
-                  </div>
-                  <p className="mt-2 text-white/70 text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
-                </CardContent>
-              </Card>
+              <NeoGlassSection className="mb-6 p-4 sm:p-6">
+                <div className="flex items-center space-x-2 text-amber-400">
+                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <h3 className="font-medium text-sm sm:text-base">Error checking for existing resumes</h3>
+                </div>
+                <p className="mt-2 text-white/70 text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
+              </NeoGlassSection>
             ) : hasExistingResume ? (
-              <Card className="mb-4 sm:mb-6 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                      <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Your Shadow Resume</h2>
-                      <p className="text-white/70 text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
-                      <Button
-                        onClick={handleViewShadowResume}
-                        variant="outline"
-                        className="flex items-center bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto justify-center"
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Resume
-                      </Button>
-                      <Button
-                        onClick={handleEditShadowResume}
-                        className="flex items-center bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black hover:shadow-lg w-full sm:w-auto justify-center"
-                      >
-                        <Edit2 className="mr-2 h-4 w-4" />
-                        Edit Resume
-                      </Button>
-                    </div>
+              <NeoGlassSection className="mb-6 p-4 sm:p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-2">Your Shadow Resume</h2>
+                    <p className="text-white/70 text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
+                    <Button
+                      onClick={handleViewShadowResume}
+                      variant="outline"
+                      className="flex items-center bg-white/10 border-white/20 text-white hover:bg-white/20 w-full sm:w-auto justify-center"
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Resume
+                    </Button>
+                    <Button
+                      onClick={handleEditShadowResume}
+                      className="flex items-center bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black hover:shadow-lg w-full sm:w-auto justify-center"
+                    >
+                      <Edit2 className="mr-2 h-4 w-4" />
+                      Edit Resume
+                    </Button>
+                  </div>
+                </div>
+              </NeoGlassSection>
             ) : null}
 
             {/* Main Content */}
-            <Card className="bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 shadow-sm hover:shadow-md transition-all duration-300">
-              <CardContent className="p-0">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="mb-4 sm:mb-6 w-full overflow-x-auto tabs-container-mobile">
-                <TabsList className="grid w-full grid-cols-3 h-auto p-1 tabs-list-mobile">
-                  <TabsTrigger value="upload" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Shadow Resume</TabsTrigger>
-                  <TabsTrigger value="scratch" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Resume Writer</TabsTrigger>
-                  <TabsTrigger value="profile" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Resume Editor</TabsTrigger>
+            <NeoGlassSection className="mb-6">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="mb-4 sm:mb-6 dark-tabs-list grid w-full grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-0">
+                  <TabsTrigger value="upload" className="dark-tabs-trigger text-xs sm:text-sm">
+                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Upload Resume</span>
+                    <span className="sm:hidden">Upload</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="scratch" className="dark-tabs-trigger text-xs sm:text-sm">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Create From Scratch</span>
+                    <span className="sm:hidden">Create</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="profile" className="dark-tabs-trigger text-xs sm:text-sm">
+                    <Database className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Use Profile Data</span>
+                    <span className="sm:hidden">Profile</span>
+                  </TabsTrigger>
                 </TabsList>
-              </div>
 
                 {/* Upload Resume Tab */}
                 <TabsContent value="upload" className="space-y-4 sm:space-y-6 p-4 sm:p-6">
@@ -304,14 +311,14 @@ export default function ResumeBuilder() {
                     </p>
 
                     <div 
-                      className={`border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center cursor-pointer transition-all duration-300 ${
+                      className={`border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center cursor-pointer transition-all ${
                         isDragging 
-                          ? 'border-white/60 bg-gradient-to-b from-gray-700/40 to-gray-800/30 backdrop-blur-sm' 
+                          ? 'border-white/60 bg-white/10' 
                           : selectedFile 
-                            ? 'border-white/30 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm' 
+                            ? 'border-white/30 bg-white/5' 
                             : uploadError 
-                              ? 'border-red-400/40 bg-gradient-to-b from-red-900/20 to-red-950/10 backdrop-blur-sm' 
-                              : 'border-white/20 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm hover:from-gray-700/40 hover:to-gray-800/30'
+                              ? 'border-red-400/40 bg-red-950/20' 
+                              : 'border-white/20 bg-black/40 hover:bg-black/50'
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
@@ -351,9 +358,9 @@ export default function ResumeBuilder() {
 
                     {isLoading && (
                       <div className="space-y-2">
-                        <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                        <div className="h-2 bg-white/10 rounded-full">
                           <div 
-                            className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300" 
+                            className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" 
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>
@@ -367,7 +374,7 @@ export default function ResumeBuilder() {
                       <Button
                         onClick={handleUploadResume}
                         disabled={!selectedFile || isLoading || !!uploadError}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
                       >
                         {isLoading ? (
                           <div className="flex items-center justify-center">
@@ -392,7 +399,7 @@ export default function ResumeBuilder() {
                       Start with a blank canvas and build your resume step-by-step with our intuitive editor.
                     </p>
 
-                    <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 mt-4">
+                    <div className="bg-black/40 rounded-lg p-4 sm:p-6 mt-4">
                       <h4 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">Resume Outline</h4>
                       <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
                         <li className="flex items-center">
@@ -421,7 +428,7 @@ export default function ResumeBuilder() {
                     <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
                       <Button
                         onClick={handleCreateFromScratch}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
                       >
                         Create Fresh Resume <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -437,7 +444,7 @@ export default function ResumeBuilder() {
                       Import data from your Brandentifier profile to quickly populate your resume.
                     </p>
 
-                    <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 mt-4">
+                    <div className="bg-black/40 rounded-lg p-4 sm:p-6 mt-4">
                       <h4 className="text-base sm:text-lg font-medium text-white mb-3 sm:mb-4">Data That Will Be Imported</h4>
                       <ul className="space-y-2 sm:space-y-3 text-white/80 text-sm sm:text-base">
                         <li className="flex items-center">
@@ -470,7 +477,7 @@ export default function ResumeBuilder() {
                     <div className="flex justify-center sm:justify-end mt-4 sm:mt-6">
                       <Button
                         onClick={handleCreateFromProfile}
-                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105 w-full sm:w-auto"
                       >
                         Use Profile Data <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -478,11 +485,8 @@ export default function ResumeBuilder() {
                   </div>
                 </TabsContent>
               </Tabs>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
+            </NeoGlassSection>
+        </NeoGlassLayout>
     </div>
   );
 }
