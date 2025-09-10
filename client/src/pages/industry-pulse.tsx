@@ -69,7 +69,6 @@ interface PulseWithUser {
   content: string | null;
   mediaType: "image" | "video" | null;
   mediaUrls: string[]; // Array of media URLs
-  mediaLocalStorageKeys?: string[]; // Array of localStorage keys for media
   pollOptions: string[]; // Array of poll options
   projectId: number | null;
   likes: number;
@@ -545,52 +544,8 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   
   useEffect(() => {
-    // Log what we received from the server
-    console.log("Pulse received for carousel:", pulse);
-    console.log("Media URLs:", pulse.mediaUrls);
-    console.log("Media localStorage keys:", pulse.mediaLocalStorageKeys);
-    
-    let mediaImages: string[] = [];
-    
-    // First try to use mediaUrls if they exist
-    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      // Filter out any invalid URLs (empty strings, undefined, etc.)
-      mediaImages = pulse.mediaUrls.filter(url => url && url.trim() !== '');
-      console.log("Using mediaUrls for carousel:", mediaImages);
-    } 
-    // If no mediaUrls, try mediaLocalStorageKeys
-    else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-      // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
-      const allStartWithHttp = pulse.mediaLocalStorageKeys.every(
-        key => key && (key.startsWith('http://') || key.startsWith('https://'))
-      );
-      
-      if (allStartWithHttp) {
-        // These are already URLs (from server)
-        mediaImages = pulse.mediaLocalStorageKeys.filter(url => url && url.trim() !== '');
-        console.log("Using mediaLocalStorageKeys as direct URLs:", mediaImages);
-      } else {
-        // These might be old localStorage keys, try to retrieve them
-        pulse.mediaLocalStorageKeys.forEach(key => {
-          if (!key) return;
-          
-          try {
-            const storedData = localStorage.getItem(key);
-            if (storedData && storedData.startsWith('data:image')) {
-              mediaImages.push(storedData);
-            }
-          } catch (e) {
-            console.error("Error retrieving image from localStorage:", e);
-          }
-        });
-        console.log("Retrieved images from localStorage:", mediaImages.length);
-      }
-    }
-    
-    // Log an alert if we couldn't find any images
-    if (mediaImages.length === 0) {
-      console.warn("No images found for this pulse. This pulse might be missing image data.");
-    }
+    // Simplified media handling - only use mediaUrls
+    const mediaImages = pulse.mediaUrls?.filter(url => url && url.trim() !== '') || [];
     
     setImages(mediaImages);
     setIsLoading(false);
@@ -794,48 +749,8 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
   const [videoSrc, setVideoSrc] = useState<string>('');
   
   useEffect(() => {
-    // Log what we received from the server
-    console.log("Pulse received for video player:", pulse);
-    console.log("Video media URLs:", pulse.mediaUrls);
-    console.log("Video localStorage keys:", pulse.mediaLocalStorageKeys);
-    
-    let videoUrl = '';
-    
-    // First try to use mediaUrls if they exist
-    if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      // Get the first valid URL
-      const validUrl = pulse.mediaUrls.find(url => url && url.trim() !== '');
-      if (validUrl) {
-        videoUrl = validUrl;
-        console.log("Using mediaUrls for video:", videoUrl);
-      }
-    } 
-    // If no mediaUrls, try mediaLocalStorageKeys
-    else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
-      // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
-      const firstKey = pulse.mediaLocalStorageKeys[0];
-      
-      if (firstKey && (firstKey.startsWith('http://') || firstKey.startsWith('https://'))) {
-        videoUrl = firstKey;
-        console.log("Using mediaLocalStorageKeys as direct URL:", videoUrl);
-      } else if (firstKey) {
-        // These might be old localStorage keys, try to retrieve the first one
-        try {
-          const storedData = localStorage.getItem(firstKey);
-          if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('blob:'))) {
-            videoUrl = storedData;
-            console.log("Retrieved video from localStorage");
-          }
-        } catch (e) {
-          console.error("Error retrieving video from localStorage:", e);
-        }
-      }
-    }
-    
-    // Log if no video URL was found
-    if (!videoUrl) {
-      console.warn("No video URL found for this pulse. This pulse might be missing video data.");
-    }
+    // Simplified video handling - only use mediaUrls
+    const videoUrl = pulse.mediaUrls?.find(url => url && url.trim() !== '') || '';
     
     setVideoSrc(videoUrl);
     setIsLoading(false);

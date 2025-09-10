@@ -74,14 +74,7 @@ export default function EditProfilePage() {
         const userDataTyped = userData as UserData;
         setCompletionPercentage(userDataTyped.profileCompleted || 0);
         
-        // Cache userData in localStorage as a backup
-        try {
-          localStorage.setItem('cachedUserData', JSON.stringify(userDataTyped));
-          localStorage.setItem('cachedUserDataTimestamp', Date.now().toString());
-          console.log("Cached latest userData in localStorage");
-        } catch (err) {
-          console.error("Failed to cache userData in localStorage:", err);
-        }
+        // Removed localStorage caching for cleaner user experience
       }
     }
   }, [userData]);
@@ -96,22 +89,7 @@ export default function EditProfilePage() {
            typeof data.id === 'number';
   };
   
-  // Helper function to get cached userData from localStorage
-  const getCachedUserData = (): UserData | null => {
-    try {
-      const cachedUserDataStr = localStorage.getItem('cachedUserData');
-      if (cachedUserDataStr) {
-        const cachedUserData = JSON.parse(cachedUserDataStr);
-        if (isUserDataValid(cachedUserData)) {
-          console.log("Successfully retrieved cached userData from localStorage");
-          return cachedUserData;
-        }
-      }
-    } catch (err) {
-      console.error("Error retrieving cached userData:", err);
-    }
-    return null;
-  };
+  // Removed localStorage dependency for cleaner user experience
   
   const handleWhatIOfferTabSubmit = async (whatIOffer: string): Promise<boolean> => {
     if (!user) {
@@ -128,16 +106,9 @@ export default function EditProfilePage() {
     if (!isUserDataValid(userData)) {
       console.error("Error: userData missing or invalid for What I Offer update, trying to recover from cache");
       
-      // Try to recover from localStorage using our helper function
-      const cachedUserData = getCachedUserData();
-      if (cachedUserData) {
-        console.log("Successfully recovered userData from localStorage for WhatIOffer update");
-        numericUserId = cachedUserData.id;
-        localStorage.setItem('whatIOffer_recovery', 'true');
-      } else {
-        console.error("Failed to recover userData from cache for WhatIOffer update");
-        return false;
-      }
+      // Without localStorage fallback, we must have valid userData to proceed
+      console.error("Cannot save What I Offer without valid userData. Please refresh and try again.");
+      return false;
     } else {
       numericUserId = userData.id;
     }
@@ -214,21 +185,13 @@ export default function EditProfilePage() {
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
       await queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
       
-      // Store in localStorage as multiple backups
-      localStorage.setItem('whatIOffer_saved', whatIOffer);
-      localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
-      localStorage.setItem('whatIOffer_userId', numericUserId.toString());
-      localStorage.setItem('whatIOffer_verified', verifySuccess.toString());
+      // Removed localStorage backups for cleaner user experience
       
       return true;
     } catch (error) {
       console.error("Error with What I Offer dedicated endpoint:", error);
       
-      // Store in localStorage even on error as a fallback
-      localStorage.setItem('whatIOffer_saved', whatIOffer);
-      localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
-      localStorage.setItem('whatIOffer_userId', numericUserId.toString());
-      localStorage.setItem('whatIOffer_error', 'true');
+      // Removed localStorage fallback for cleaner user experience
       
       return false;
     }
@@ -353,10 +316,7 @@ export default function EditProfilePage() {
       setTimeout(() => {
         setShowSuccessMessage(false);
         
-        // Store the necessary data in localStorage to survive the refresh
-        localStorage.setItem('justEditedProfile', 'true');
-        localStorage.setItem('profileEditTimestamp', Date.now().toString());
-        localStorage.setItem('redirectToProfile', 'true');
+        // Removed localStorage flags for cleaner user experience
         
         // First, clear all React Query caches
         queryClient.clear();

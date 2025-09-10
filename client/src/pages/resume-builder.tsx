@@ -168,7 +168,7 @@ export default function ResumeBuilder() {
       setUploadProgress(100);
       
       // Store the parsed data in localStorage to pass to the editor
-      localStorage.setItem('parsedResumeData', JSON.stringify(parsedData));
+      // Removed localStorage dependency for better user experience
       
       // Navigate to the resume editor with parsed data
       setTimeout(() => {

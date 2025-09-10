@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(userData);
           // Update cache with fresh data
           try {
-            localStorage.setItem('brandentifier_auth_cache', JSON.stringify(userData));
+            // Removed localStorage auth cache for cleaner user experience
           } catch (e) {
             console.warn('[Cache] Failed to update auth cache:', e);
           }
@@ -664,7 +664,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     
     setIsDemoMode(true);
-    localStorage.setItem('demoMode', 'true');
+    // Removed demoMode localStorage flag for cleaner experience
     
     toast({
       title: "Demo mode activated",
