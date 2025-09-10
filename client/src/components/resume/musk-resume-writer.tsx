@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -160,22 +159,22 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
   };
 
   return (
-    <Card className="w-full shadow-md">
-      <CardHeader className="pb-3">
+    <div className="neo-glass-card w-full rounded-lg border border-white/10 shadow-lg">
+      <div className="p-6 pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-xl font-semibold text-white">
               <Zap className="h-5 w-5 text-primary" />
               <span>Musk Resume Writer</span>
-            </CardTitle>
-            <CardDescription>
+            </h3>
+            <p className="text-white/70 mt-2">
               Generate professional resume content with AI assistance
-            </CardDescription>
+            </p>
           </div>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="space-y-4">
+      <div className="px-6 space-y-4">
         <div className="flex flex-wrap gap-2">
           {Object.entries(sectionIcons).map(([section, icon]) => (
             <Button
@@ -191,13 +190,13 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           ))}
         </div>
         
-        <Separator className="my-4" />
+        <div className="h-px bg-white/10 my-4" />
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="resume-prompt" className="text-base font-medium">
+            <label htmlFor="resume-prompt" className="text-base font-medium text-white">
               What would you like Musk to help with?
-            </Label>
+            </label>
             <div className="flex flex-wrap gap-2 mt-2 mb-3">
               {sectionPrompts[selectedSection].map((promptTemplate, idx) => (
                 <Badge 
@@ -249,8 +248,8 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           
           {generatedContent && (
             <div className="mt-4 space-y-3">
-              <Label className="text-base font-medium">Generated Content</Label>
-              <div className="p-4 border rounded-md bg-muted/30 whitespace-pre-wrap">
+              <label className="text-base font-medium text-white">Generated Content</label>
+              <div className="p-4 border border-white/10 rounded-md bg-white/5 whitespace-pre-wrap text-white/90">
                 {generatedContent}
               </div>
               <div className="flex justify-end gap-2">
@@ -273,13 +272,13 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
             </div>
           )}
         </div>
-      </CardContent>
+      </div>
       
-      <CardFooter className="flex justify-center border-t pt-4">
-        <p className="text-sm text-muted-foreground text-center max-w-prose">
+      <div className="flex justify-center border-t border-white/10 pt-4 p-6">
+        <p className="text-sm text-white/60 text-center max-w-prose">
           Musk uses AI to help you craft professional resume content. For best results, provide specific details about your experience and goals.
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
