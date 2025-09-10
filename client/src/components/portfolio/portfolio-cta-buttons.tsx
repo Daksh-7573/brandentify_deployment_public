@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { FileText } from 'lucide-react';
+import { ResumeButton } from "@/components/shared/resume-button";
 
 export interface PortfolioCtaButtonsProps {
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
@@ -185,14 +185,22 @@ export default function PortfolioCtaButtons({
   return (
     <>
       <div className={styles.container}>
-        <Button 
-          onClick={handleDownloadResume}
-          className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
-          style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
-        >
-          <FileText size={16} />
-          Resume
-        </Button>
+        {userId ? (
+          <ResumeButton
+            userId={userId}
+            variant={variant}
+            className={`flex items-center gap-2 min-w-[120px] justify-center`}
+            buttonStyle={buttonStyle}
+          />
+        ) : (
+          <Button 
+            onClick={handleDownloadResume}
+            className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+            style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
+          >
+            Resume
+          </Button>
+        )}
         
         <Button 
           variant="outline" 
