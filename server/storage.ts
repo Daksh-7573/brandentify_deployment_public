@@ -11978,6 +11978,12 @@ export const storage = {
   createUser: (user: InsertUser) => dbStorage.createUser(user),
   updateUser: (id: number, userData: Partial<User>) => dbStorage.updateUser(id, userData),
   
+  // Resume methods
+  getResumeByUserId: (userId: number) => dbStorage.getResumeByUserId(userId),
+  getResumeById: (id: number) => dbStorage.getResumeById(id),
+  createResume: (resume: InsertResume) => dbStorage.createResume(resume),
+  updateResume: (id: number, resume: Partial<Resume>) => dbStorage.updateResume(id, resume),
+  
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
   createWorkExperience: (experience: InsertWorkExperience) => dbStorage.createWorkExperience(experience),
