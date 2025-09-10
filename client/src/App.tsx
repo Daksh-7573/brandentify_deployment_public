@@ -110,6 +110,7 @@ const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
 const ResumePage = lazy(() => import("@/pages/resume"));
 const ResumeCV = lazy(() => import("@/pages/resume-cv"));
 const ResumeEditor = lazy(() => import("@/pages/resume-editor"));
+const ResumeBuilderPage = lazy(() => import("@/pages/resume-builder"));
 const UnifiedProfilePage = lazy(() => import("@/pages/unified-profile"));
 const CareerQuestsPage = lazy(() => import("@/pages/career-quests"));
 const BrandQuestsPage = lazy(() => import("@/pages/brand-quests"));
@@ -402,6 +403,10 @@ function Router() {
       
       <Route path="/resume" component={() => (
         <ProtectedRoute path="/resume" component={ResumePage} />
+      )} />
+      
+      <Route path="/resume-builder" component={() => (
+        <ProtectedRoute path="/resume-builder" component={ResumeBuilderPage} />
       )} />
       
       <Route path="/brand-quests" component={() => (

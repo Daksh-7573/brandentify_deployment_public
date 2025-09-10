@@ -365,7 +365,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white shadow-sm border-gray-200"
                   onClick={() => {
                     // Navigate to resume editor using proper callback
                     if (onTabChange) {
@@ -449,7 +448,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             />
                             <input 
                               type="text" 
-                              className="text-sm text-gray-600 w-full bg-transparent border-b focus:outline-none" 
+                              className="text-sm text-foreground w-full bg-transparent border-b focus:outline-none" 
                               placeholder="Professional Title"
                               value={editValues.title}
                               onChange={(e) => setEditValues({...editValues, title: e.target.value})}
@@ -457,21 +456,21 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             <div className="flex flex-wrap gap-2 mt-1 text-xs">
                               <input 
                                 type="email" 
-                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                className="text-muted-foreground bg-transparent border-b focus:outline-none" 
                                 placeholder="Email"
                                 value={editValues.email}
                                 onChange={(e) => setEditValues({...editValues, email: e.target.value})}
                               />
                               <input 
                                 type="text" 
-                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                className="text-muted-foreground bg-transparent border-b focus:outline-none" 
                                 placeholder="Phone Number"
                                 value={editValues.phoneNumber}
                                 onChange={(e) => setEditValues({...editValues, phoneNumber: e.target.value})}
                               />
                               <input 
                                 type="text" 
-                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                className="text-muted-foreground bg-transparent border-b focus:outline-none" 
                                 placeholder="Location"
                                 value={editValues.location}
                                 onChange={(e) => setEditValues({...editValues, location: e.target.value})}
@@ -483,10 +482,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>
                               {effectivePersonalInfo.fullName || 'Professional Name'}
                             </h2>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-muted-foreground">
                               {effectivePersonalInfo.title || 'Professional Title'}
                             </p>
-                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
                               <span>{effectivePersonalInfo.email || 'Email'}</span>
                               {effectivePersonalInfo.phone && (
                                 <>
@@ -511,13 +510,13 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
                         {isEditing ? (
                           <textarea 
-                            className="text-xs text-gray-700 leading-relaxed w-full bg-transparent border rounded min-h-[60px] p-1 focus:outline-none"
+                            className="text-xs text-foreground leading-relaxed w-full bg-transparent border rounded min-h-[60px] p-1 focus:outline-none"
                             value={editValues.aboutMe}
                             onChange={(e) => setEditValues({...editValues, aboutMe: e.target.value})}
                             placeholder="Write a professional summary here..."
                           />
                         ) : (
-                          <p className="text-xs text-gray-700 leading-relaxed">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
                             {/* ONLY use form data - no fallback to profile data */}
                             {effectivePersonalInfo.summary || 'Professional summary will appear here. Edit in Resume Editor.'}
                           </p>
@@ -534,14 +533,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             {effectiveExperiences.map((experience: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{experience.title || experience.position}</div>
-                                <div className="text-gray-600 flex justify-between">
+                                <div className="text-muted-foreground flex justify-between">
                                   <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
                                   <span>
                                     {experience.startDate ? new Date(experience.startDate).getFullYear() : ''} - 
                                     {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
                                   </span>
                                 </div>
-                                <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                                <ul className="list-disc ml-4 mt-1 text-muted-foreground space-y-0.5">
                                   {experience.responsibilities && Array.isArray(experience.responsibilities) ? 
                                     experience.responsibilities.map((responsibility: string, i: number) => (
                                       <li key={i}>{responsibility}</li>
@@ -555,7 +554,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           </div>
                         ) : (
                           // Empty state when no experiences are available
-                          <div className="text-gray-500 italic mt-1">
+                          <div className="text-muted-foreground italic mt-1">
                             No work experience added yet. Add work experience in your profile.
                           </div>
                         )}
@@ -573,7 +572,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 <div className="font-semibold">
                                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
                                 </div>
-                                <div className="text-gray-600 flex justify-between">
+                                <div className="text-muted-foreground flex justify-between">
                                   <span>{edu.institution}</span>
                                   <span>
                                     {edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - 
@@ -582,7 +581,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 </div>
                                 
                                 {/* Additional education details */}
-                                <div className="mt-1 text-xs text-gray-600">
+                                <div className="mt-1 text-xs text-muted-foreground">
                                   {edu.location && (
                                     <div className="mt-0.5">
                                       <span className="font-medium">Location:</span> {edu.location}
@@ -608,7 +607,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           </div>
                         ) : (
                           // Empty state when no educations are available
-                          <div className="text-gray-500 italic mt-1">
+                          <div className="text-muted-foreground italic mt-1">
                             No education added yet. Add education in your profile.
                           </div>
                         )}
@@ -622,13 +621,13 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         {effectiveSkills && effectiveSkills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {effectiveSkills.map((skill: any, index: number) => (
-                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-muted text-foreground text-xs">
                                 {skill.name || skill}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-gray-500 italic mt-1">
+                          <div className="text-muted-foreground italic mt-1">
                             No skills added yet. Add skills in your profile.
                           </div>
                         )}
@@ -644,14 +643,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             {effectiveProjects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{project.title}</div>
-                                <div className="text-gray-600 mt-0.5 text-xs">
+                                <div className="text-muted-foreground mt-0.5 text-xs">
                                   {project.description && project.description.substring(0, 120)}
                                   {project.description && project.description.length > 120 ? '...' : ''}
                                 </div>
                                 {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     {project.technologies.map((tech: string, i: number) => (
-                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-700 text-xs">
+                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-muted text-foreground text-xs">
                                         {tech}
                                       </span>
                                     ))}
@@ -661,7 +660,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             ))}
                           </div>
                         ) : (
-                          <div className="text-gray-500 italic mt-1">
+                          <div className="text-muted-foreground italic mt-1">
                             No projects added yet. Add projects in your profile.
                           </div>
                         )}
@@ -670,7 +669,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     
                     {/* Document footer */}
                     <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-100 border-t flex items-center justify-center">
-                      <div className="text-xs text-gray-500">Generated by Musk AI</div>
+                      <div className="text-xs text-muted-foreground">Generated by Musk AI</div>
                     </div>
                   </div>
                   
@@ -678,9 +677,9 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 </div>
               ) : (
                 <div className="text-center p-6">
-                  <p className="text-white/70 text-sm">Resume Preview</p>
-                  <h2 className="text-xl font-bold mt-2 text-white">Resume Preview</h2>
-                  <p className="text-sm text-white/70">Resume data will appear here</p>
+                  <p className="text-muted-foreground text-sm">Resume Preview</p>
+                  <h2 className="text-xl font-bold mt-2">Resume Preview</h2>
+                  <p className="text-sm text-muted-foreground">Resume data will appear here</p>
                   
                   {/* Fallback if no PDF data is available */}
                   <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
