@@ -145,7 +145,11 @@ const resumeSchema = z.object({
 });
 
 // Separate component for error display to avoid hook ordering issues
-function ErrorDisplay({ resumeError, profileError, handleBack }) {
+function ErrorDisplay({ resumeError, profileError, handleBack }: { 
+  resumeError: any; 
+  profileError: any; 
+  handleBack: () => void; 
+}) {
   return (
     <div className="neo-glass-card w-full rounded-lg border border-white/10 shadow-lg">
       <div className="p-6 pb-3">
@@ -193,8 +197,8 @@ function ErrorDisplay({ resumeError, profileError, handleBack }) {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -346,22 +350,22 @@ export default function ResumeEditor() {
           // Use form data as fallback if available
           const currentFormValues = form.getValues();
           
-          if (currentFormValues?.experiences?.experiences?.length > 0) {
+          if (currentFormValues?.experiences?.experiences && Array.isArray(currentFormValues.experiences.experiences) && currentFormValues.experiences.experiences.length > 0) {
             workExperiences = currentFormValues.experiences.experiences;
             console.log('Using existing form work experiences:', workExperiences);
           }
           
-          if (currentFormValues?.education?.educations?.length > 0) {
+          if (currentFormValues?.education?.educations && Array.isArray(currentFormValues.education.educations) && currentFormValues.education.educations.length > 0) {
             educations = currentFormValues.education.educations;
             console.log('Using existing form education data:', educations);
           }
           
-          if (currentFormValues?.skills?.skills?.length > 0) {
+          if (currentFormValues?.skills?.skills && Array.isArray(currentFormValues.skills.skills) && currentFormValues.skills.skills.length > 0) {
             skills = currentFormValues.skills.skills;
             console.log('Using existing form skills data:', skills);
           }
           
-          if (currentFormValues?.projects?.projects?.length > 0) {
+          if (currentFormValues?.projects?.projects && Array.isArray(currentFormValues.projects.projects) && currentFormValues.projects.projects.length > 0) {
             projects = currentFormValues.projects.projects;
             console.log('Using existing form projects data:', projects);
           }
@@ -373,22 +377,22 @@ export default function ResumeEditor() {
         // Use form data as fallback if available
         const currentFormValues = form.getValues();
         
-        if (currentFormValues?.experiences?.experiences?.length > 0) {
+        if (currentFormValues?.experiences?.experiences && Array.isArray(currentFormValues.experiences.experiences) && currentFormValues.experiences.experiences.length > 0) {
           workExperiences = currentFormValues.experiences.experiences;
           console.log('Using existing form work experiences:', workExperiences);
         }
         
-        if (currentFormValues?.education?.educations?.length > 0) {
+        if (currentFormValues?.education?.educations && Array.isArray(currentFormValues.education.educations) && currentFormValues.education.educations.length > 0) {
           educations = currentFormValues.education.educations;
           console.log('Using existing form education data:', educations);
         }
         
-        if (currentFormValues?.skills?.skills?.length > 0) {
+        if (currentFormValues?.skills?.skills && Array.isArray(currentFormValues.skills.skills) && currentFormValues.skills.skills.length > 0) {
           skills = currentFormValues.skills.skills;
           console.log('Using existing form skills data:', skills);
         }
         
-        if (currentFormValues?.projects?.projects?.length > 0) {
+        if (currentFormValues?.projects?.projects && Array.isArray(currentFormValues.projects.projects) && currentFormValues.projects.projects.length > 0) {
           projects = currentFormValues.projects.projects;
           console.log('Using existing form projects data:', projects);
         }
@@ -428,7 +432,7 @@ export default function ResumeEditor() {
       };
       
       // Map work experiences to resume format
-      const mappedExperiences = workExperiences.map(exp => {
+      const mappedExperiences = workExperiences.map((exp: any) => {
         // Log raw date for debugging
         console.log('Mapping work experience:', {
           ...exp,
@@ -453,7 +457,7 @@ export default function ResumeEditor() {
       });
       
       // Map education to resume format
-      const mappedEducations = educations.map(edu => {
+      const mappedEducations = educations.map((edu: any) => {
         // Log raw date for debugging
         console.log('Mapping education:', { 
           ...edu,
@@ -478,14 +482,14 @@ export default function ResumeEditor() {
       });
       
       // Map skills to resume format
-      const mappedSkills = skills.map(skill => ({
+      const mappedSkills = skills.map((skill: any) => ({
         name: typeof skill === 'string' ? skill : skill.name || '',
         level: typeof skill === 'object' ? skill.level || 'Intermediate' : 'Intermediate',
         category: typeof skill === 'object' ? skill.category || '' : '',
       }));
       
       // Map projects to resume format
-      const mappedProjects = projects.map(proj => {
+      const mappedProjects = projects.map((proj: any) => {
         // Log raw date for debugging
         console.log('Mapping project:', {
           ...proj,
@@ -613,7 +617,7 @@ export default function ResumeEditor() {
           toast({
             title: 'Data updated but not saved',
             description: `Resume shows updated data but failed to save: ${error instanceof Error ? error.message : 'Unknown error'}. Please click Save to save changes.`,
-            variant: 'warning',
+            variant: 'destructive',
           });
         }
         
@@ -817,8 +821,8 @@ export default function ResumeEditor() {
           responseText = await response.text();
           serverResponse = responseText ? JSON.parse(responseText) : {};
         } catch (e) {
-          responseText = `Could not parse response: ${e.message}`;
-          serverResponse = { error: e.message };
+          responseText = `Could not parse response: ${(e as Error).message}`;
+          serverResponse = { error: (e as Error).message };
         }
         
         console.log(`Server response (${responseStatus}):`, responseText, serverResponse);
@@ -865,8 +869,8 @@ export default function ResumeEditor() {
           responseText = await response.text();
           serverResponse = responseText ? JSON.parse(responseText) : {};
         } catch (e) {
-          responseText = `Could not parse response: ${e.message}`;
-          serverResponse = { error: e.message };
+          responseText = `Could not parse response: ${(e as Error).message}`;
+          serverResponse = { error: (e as Error).message };
         }
         
         console.log(`Server response (${responseStatus}):`, responseText, serverResponse);
@@ -968,7 +972,7 @@ export default function ResumeEditor() {
             website: parsedData.personalInfo?.website || '',
           },
           experiences: { 
-            experiences: (parsedData.experiences || []).map(exp => ({
+            experiences: (parsedData.experiences || []).map((exp: any) => ({
               title: exp.title || '',
               company: exp.company || '',
               location: exp.location || '',
@@ -980,7 +984,7 @@ export default function ResumeEditor() {
             }))
           },
           education: { 
-            educations: (parsedData.education || []).map(edu => ({
+            educations: (parsedData.education || []).map((edu: any) => ({
               institution: edu.institution || '',
               degree: edu.degree || '',
               fieldOfStudy: edu.fieldOfStudy || '',
@@ -993,14 +997,14 @@ export default function ResumeEditor() {
             }))
           },
           skills: { 
-            skills: (parsedData.skills || []).map(skill => ({
+            skills: (parsedData.skills || []).map((skill: any) => ({
               name: typeof skill === 'string' ? skill : skill.name || '',
               level: typeof skill === 'object' ? skill.level || '' : '',
               category: typeof skill === 'object' ? skill.category || '' : '',
             }))
           },
           projects: { 
-            projects: (parsedData.projects || []).map(project => ({
+            projects: (parsedData.projects || []).map((project: any) => ({
               title: project.title || '',
               description: project.description || '',
               startDate: project.startDate || '',

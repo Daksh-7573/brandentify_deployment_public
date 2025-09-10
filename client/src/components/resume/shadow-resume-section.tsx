@@ -168,10 +168,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     []; // Default empty
     
   console.log('Effective data check:', {
-    expCount: effectiveExperiences.length,
-    eduCount: effectiveEducation.length,
-    skillCount: effectiveSkills.length,
-    projCount: effectiveProjects.length
+    expCount: Array.isArray(effectiveExperiences) ? effectiveExperiences.length : 0,
+    eduCount: Array.isArray(effectiveEducation) ? effectiveEducation.length : 0,
+    skillCount: Array.isArray(effectiveSkills) ? effectiveSkills.length : 0,
+    projCount: Array.isArray(effectiveProjects) ? effectiveProjects.length : 0
   });
   
   // ONLY use personal info from form data, never fallback to profile
@@ -557,7 +557,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {effectiveExperiences && effectiveExperiences.length > 0 ? (
+                        {Array.isArray(effectiveExperiences) && effectiveExperiences.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveExperiences.map((experience: any, index: number) => (
                               <div key={index} className="pb-2">
@@ -594,7 +594,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {effectiveEducation && effectiveEducation.length > 0 ? (
+                        {Array.isArray(effectiveEducation) && effectiveEducation.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveEducation.map((edu: any, index: number) => (
                               <div key={index} className="pb-2">
@@ -647,7 +647,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {effectiveSkills && effectiveSkills.length > 0 ? (
+                        {Array.isArray(effectiveSkills) && effectiveSkills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {effectiveSkills.map((skill: any, index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
@@ -667,7 +667,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
-                        {effectiveProjects && effectiveProjects.length > 0 ? (
+                        {Array.isArray(effectiveProjects) && effectiveProjects.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {effectiveProjects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
