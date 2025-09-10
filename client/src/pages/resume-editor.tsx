@@ -1301,7 +1301,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('experiences.experiences')?.map((_, index) => (
-                  <Card key={index} className="p-4">
+                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Experience {index + 1}</h4>
                       <Button
@@ -1480,7 +1480,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('education.educations')?.map((_, index) => (
-                  <Card key={index} className="p-4">
+                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Education {index + 1}</h4>
                       <Button
@@ -1692,7 +1692,7 @@ export default function ResumeEditor() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {form.watch('skills.skills')?.map((_, index) => (
-                    <Card key={index} className="p-4">
+                    <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="text-md font-medium">Skill {index + 1}</h4>
                         <Button
@@ -1797,7 +1797,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('projects.projects')?.map((_, index) => (
-                  <Card key={index} className="p-4">
+                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Project {index + 1}</h4>
                       <Button
