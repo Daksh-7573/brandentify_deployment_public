@@ -417,7 +417,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         </div>
       </div>
       
-      <div className="px-6 space-y-4">
+      <CardContent className="px-6 space-y-4">
         {!resume && (
           <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-white/20 rounded-md">
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
@@ -771,7 +771,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               </Button>
             </>
           )}
-        </div>
+        </CardFooter>
       )}
     </div>
   );
