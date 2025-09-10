@@ -344,12 +344,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   };
 
   return (
-    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-white">Shadow Resume</CardTitle>
-            <CardDescription className="text-white/70">
+            <CardTitle>Shadow Resume</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Your living CV, automatically maintained by Musk
             </CardDescription>
           </div>
@@ -393,8 +393,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {!resume && (
           <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-muted-foreground/20 rounded-md">
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
-            <h3 className="text-lg font-medium text-white">Your Shadow Resume</h3>
-            <p className="text-sm text-white/70 mt-1 mb-3">
+            <h3 className="text-lg font-medium">Your Shadow Resume</h3>
+            <p className="text-sm text-muted-foreground mt-1 mb-3">
               Complete your profile to generate your Shadow Resume. Add your work experiences, skills, and projects to qualify.
             </p>
             <Button 
@@ -417,7 +417,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && (
           <>
             {/* Resume Preview */}
-            <div className="aspect-[3/4] bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="aspect-[3/4] bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
               {resume?.fileData ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                   {/* Actual resume preview with PDF appearance */}
