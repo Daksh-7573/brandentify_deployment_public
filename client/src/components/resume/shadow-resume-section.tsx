@@ -367,44 +367,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   size="sm"
                   className="bg-white shadow-sm border-gray-200"
                   onClick={() => {
-                    // Show a toast notification that the resume editor is being opened
-                    toast({
-                      title: "Opening Resume Editor",
-                      description: "Opening the Resume Editor where you can make changes.",
-                    });
-                    
-                    // Simply go to the resume editor - with the new flow, changes from resume editor
-                    // will be saved to both resume and profile
-                    if (resume?.id) {
-                      // No need to refresh from profile anymore since data now flows in the opposite direction
-                      // Just navigate to the resume editor with the current data
-                      if (onTabChange) {
-                        onTabChange('resume-editor');
-                      } else {
-                        // Fallback to direct DOM manipulation
-                        const element = document.querySelector('[value="resume-editor"]');
-                        if (element instanceof HTMLElement) {
-                          element.click();
-                        }
-                      }
+                    // Navigate to resume editor using proper callback
+                    if (onTabChange) {
+                      onTabChange('resume-editor');
                       
-                      // Provide instructions to the user about the new flow
+                      // Show success toast
                       toast({
-                        title: "Resume Editor Instructions",
-                        description: "Make changes in the Resume Editor and click Save to update both your profile and resume.",
-                        duration: 5000, // Show for 5 seconds
+                        title: "Opening Resume Editor",
+                        description: "You can now edit your resume directly.",
+                        duration: 3000,
                       });
-                    } else {
-                      // Fallback when no resume ID is available
-                      if (onTabChange) {
-                        onTabChange('resume-editor');
-                      } else {
-                        // Fallback to direct DOM manipulation
-                        const element = document.querySelector('[value="resume-editor"]');
-                        if (element instanceof HTMLElement) {
-                          element.click();
-                        }
-                      }
                     }
                   }}
                 >

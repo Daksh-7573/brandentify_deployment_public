@@ -33,20 +33,10 @@ export default function ResumePage() {
   // Use the proper shadow resume hook
   const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useShadowResume(user?.id);
   
-  // Log data for debugging
-  useEffect(() => {
-    console.log('Shadow resume data loaded:', {
-      hasData: !!resumeData,
-      hasResume: !!resumeData?.resume,
-      hasForm: !!resumeData?.form,
-      resumeId: resumeData?.resume?.id
-    });
-  }, [resumeData]);
 
   // Create shadow resume mutation
   const createResumeMutation = useMutation<any, Error, void>({
     mutationFn: async () => {
-      console.log('Auto-creating shadow resume for user:', user?.id);
       return await fetch(`/api/users/${user?.id}/create-shadow-resume`, {
         method: 'POST',
         headers: {
@@ -59,7 +49,6 @@ export default function ResumePage() {
       });
     },
     onSuccess: (data) => {
-      console.log('Resume auto-generated successfully:', data);
       toast({
         title: 'Resume Generated!',
         description: 'Your professional resume has been created automatically.',
@@ -83,7 +72,6 @@ export default function ResumePage() {
   // Auto-generate resume if none exists and user profile is available
   useEffect(() => {
     if (user?.id && userData && !resumeData?.resume && !isResumeLoading && !createResumeMutation.isPending) {
-      console.log('Auto-generating resume for user with complete profile...');
       createResumeMutation.mutate();
     }
   }, [user?.id, userData, resumeData?.resume, isResumeLoading, createResumeMutation.isPending]);
@@ -94,14 +82,6 @@ export default function ResumePage() {
     form: resumeData.form // Include form data in resume object
   } : null;
   
-  // Log current resume state for debugging
-  useEffect(() => {
-    console.log('Resume state:', {
-      hasResumeData: !!resumeData?.resume,
-      hasFormData: !!resumeData?.form,
-      isLoading: isResumeLoading
-    });
-  }, [resumeData, isResumeLoading]);
 
   // Handle resume upload
   const handleUploadResume = () => {
