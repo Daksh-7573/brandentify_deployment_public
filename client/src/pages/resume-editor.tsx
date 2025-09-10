@@ -154,19 +154,19 @@ const resumeSchema = z.object({
 // Separate component for error display to avoid hook ordering issues
 function ErrorDisplay({ resumeError, profileError, handleBack }) {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-destructive">
+        <CardTitle className="flex items-center gap-2 text-red-400">
           <AlertCircle className="h-5 w-5" />
           Error Loading Resume Editor
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-white/70">
           We encountered a problem loading your data
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <p className="text-muted-foreground">
+          <p className="text-white/70">
             There was a problem loading your resume data. Please try again later.
           </p>
           {resumeError && (
@@ -208,10 +208,10 @@ function ErrorDisplay({ resumeError, profileError, handleBack }) {
 // Separate component for loading display
 function LoadingDisplay() {
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
       <CardHeader>
-        <CardTitle>Loading Resume Editor...</CardTitle>
-        <CardDescription>Please wait while we fetch your data</CardDescription>
+        <CardTitle className="text-white">Loading Resume Editor...</CardTitle>
+        <CardDescription className="text-white/70">Please wait while we fetch your data</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex justify-center items-center py-10">
@@ -1230,10 +1230,10 @@ export default function ResumeEditor() {
   
   // Main content render
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-white">
             <FileText className="h-5 w-5" />
             Resume Editor
           </CardTitle>
