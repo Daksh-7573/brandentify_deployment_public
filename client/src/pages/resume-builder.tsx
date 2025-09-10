@@ -214,11 +214,12 @@ export default function ResumeBuilder() {
       }}
     >
       {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm pointer-events-none"></div>
-      <div className="relative z-20">
-        <Header />
-      </div>
-        <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8 relative z-10">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <Header />
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top for fixed header */}
+        <div className="flex-1 overflow-auto w-full">
+          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
             {/* Page Header */}
             <div className="mb-4 sm:mb-6 md:mb-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
@@ -490,6 +491,7 @@ export default function ResumeBuilder() {
               </Tabs>
               </CardContent>
             </Card>
+          </div>
         </div>
       </div>
     </div>
