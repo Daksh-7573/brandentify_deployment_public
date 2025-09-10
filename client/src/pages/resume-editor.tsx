@@ -6,14 +6,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useShadowResume } from '@/hooks/use-shadow-resume';
 import { useUserProfile } from '@/hooks/use-user-profile';
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -154,17 +146,17 @@ const resumeSchema = z.object({
 // Separate component for error display to avoid hook ordering issues
 function ErrorDisplay({ resumeError, profileError, handleBack }) {
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-destructive">
+    <div className="neo-glass-card w-full rounded-lg border border-white/10 shadow-lg">
+      <div className="p-6 pb-3">
+        <h3 className="flex items-center gap-2 text-red-400 text-xl font-semibold">
           <AlertCircle className="h-5 w-5" />
           Error Loading Resume Editor
-        </CardTitle>
-        <CardDescription>
+        </h3>
+        <p className="text-white/70 mt-2">
           We encountered a problem loading your data
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="px-6">
         <div className="space-y-4">
           <p className="text-muted-foreground">
             There was a problem loading your resume data. Please try again later.
