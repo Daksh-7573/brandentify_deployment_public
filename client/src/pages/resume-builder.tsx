@@ -396,6 +396,8 @@ export default function ResumeBuilder() {
                       </Button>
                     </div>
                   </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 {/* Create From Scratch Tab */}
