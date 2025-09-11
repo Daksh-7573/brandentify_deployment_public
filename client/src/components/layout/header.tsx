@@ -330,15 +330,15 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="md:hidden neo-glass-card border-0 shadow-2xl">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/industry-pulse') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/industry-pulse');
@@ -354,8 +354,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/search') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/search');
@@ -371,8 +371,8 @@ export default function Header() {
               size="sm"
               className={`flex items-center py-2.5 text-sm font-medium rounded-md ${
                 isActive('/messages') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -398,8 +398,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/radar') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/radar');
@@ -416,8 +416,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/brand-quests') || isActive('/career-quests')
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/brand-quests');
@@ -433,8 +433,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/career-capsule') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/career-capsule');
@@ -450,8 +450,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/privacy') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-white/20 hover:bg-white/25' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/privacy');
@@ -466,14 +466,14 @@ export default function Header() {
             
 
 
-            <div className="pt-4 mt-2 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-white/20">
               <Button
                 variant="ghost"
                 size="sm"
                 className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                   isActive('/profile') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                    ? 'text-white bg-white/20 hover:bg-white/25' 
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
                 onClick={() => {
                   setLocation('/profile');
@@ -489,7 +489,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-primary"
+                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-white/80 hover:bg-white/10 hover:text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                 }}
