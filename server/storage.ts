@@ -7659,29 +7659,133 @@ export class MemStorage implements IStorage {
     // Day names array for assignment (0=Sunday, 1=Monday, etc.)
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
-    // Try to get at least one quest of each type if possible
-    const questTypes = [...new Set(eligibleQuests.map(q => q.type))];
+    // Normalize action for consistent categorization
+    const normalizeAction = (action: string): string => {
+      return action.toLowerCase().replace(/[-_]/g, '');
+    };
     
-    for (const type of questTypes) {
-      const typeQuests = eligibleQuests.filter(q => q.type === type);
-      if (typeQuests.length > 0) {
-        // Randomly select one quest of this type
-        const randomIndex = Math.floor(Math.random() * typeQuests.length);
-        selectedQuests.push(typeQuests[randomIndex]);
-        
-        // Break if we have enough quests
-        if (selectedQuests.length >= numQuests) break;
+    // Categorize quests based on actual target_action patterns from database
+    const categorizeQuest = (quest: QuestDefinition): string => {
+      const action = normalizeAction(quest.targetAction);
+      const type = quest.type?.toLowerCase() || '';
+      
+      // Social media posting (all platforms) - includes type social_post
+      if (type === 'social_post' || 
+          (action.includes('post') && (action.includes('linkedin') || action.includes('twitter') || 
+          action.includes('facebook') || action.includes('instagram') || action.includes('tiktok') || 
+          action.includes('youtube'))) || action.includes('social')) {
+        return 'social_media';
       }
+      
+      // Portfolio and projects
+      if (action.includes('project') || action.includes('portfolio') || type === 'portfolio') {
+        return 'portfolio';
+      }
+      
+      // Profile and branding
+      if (action.includes('profile') || action.includes('digitalpresence')) {
+        return 'profile_building';
+      }
+      
+      // Networking and connections
+      if (action.includes('connection') || action.includes('network') || action.includes('mentor') || 
+          type === 'networking') {
+        return 'networking';
+      }
+      
+      // Content creation and pulses
+      if (action.includes('pulse') || action.includes('content') || action.includes('insights') || 
+          type === 'pulse_creation') {
+        return 'content_creation';
+      }
+      
+      // Engagement and interactions
+      if (action.includes('react') || action.includes('comment') || action.includes('share') || 
+          action.includes('engagement')) {
+        return 'engagement';
+      }
+      
+      // Exploration and opportunities
+      if (action.includes('nowboard') || action.includes('opportunity') || type === 'exploration') {
+        return 'exploration';
+      }
+      
+      return 'other';
+    };
+    
+    // Group eligible quests by category
+    const questsByCategory = new Map<string, QuestDefinition[]>();
+    for (const quest of eligibleQuests) {
+      const category = categorizeQuest(quest);
+      if (!questsByCategory.has(category)) {
+        questsByCategory.set(category, []);
+      }
+      questsByCategory.get(category)!.push(quest);
     }
     
-    // If we still need more quests, randomly select from the remaining
-    if (selectedQuests.length < numQuests) {
-      const remainingQuests = eligibleQuests.filter(q => !selectedQuests.includes(q));
+    // Sort each category by value (XP reward descending)
+    for (const [category, quests] of questsByCategory) {
+      quests.sort((a, b) => (b.xpReward || 0) - (a.xpReward || 0));
+    }
+    
+    // Define category priorities and maximum limits for diversity
+    const categoryPriorities = [
+      { category: 'profile_building', maxCount: 2, priority: 1 },
+      { category: 'portfolio', maxCount: 2, priority: 2 },
+      { category: 'networking', maxCount: 2, priority: 3 },
+      { category: 'social_media', maxCount: 1, priority: 4 }, // Guarantee social media inclusion
+      { category: 'content_creation', maxCount: 1, priority: 5 },
+      { category: 'engagement', maxCount: 1, priority: 6 },
+      { category: 'exploration', maxCount: 1, priority: 7 },
+      { category: 'other', maxCount: 1, priority: 8 }
+    ];
+    
+    // Track used actions and category counts for deduplication
+    const usedActions = new Set<string>();
+    const categoryCounts = new Map<string, number>();
+    
+    // Round-robin selection to ensure diversity across categories
+    let selectionRound = 0;
+    const maxRounds = 3; // Limit rounds to prevent infinite loop
+    
+    while (selectedQuests.length < numQuests && selectionRound < maxRounds) {
+      let addedInRound = false;
       
-      while (selectedQuests.length < numQuests && remainingQuests.length > 0) {
-        const randomIndex = Math.floor(Math.random() * remainingQuests.length);
-        selectedQuests.push(remainingQuests[randomIndex]);
-        remainingQuests.splice(randomIndex, 1);
+      for (const { category, maxCount } of categoryPriorities) {
+        if (selectedQuests.length >= numQuests) break;
+        
+        const categoryQuests = questsByCategory.get(category) || [];
+        const currentCount = categoryCounts.get(category) || 0;
+        
+        // Skip if category limit reached
+        if (currentCount >= maxCount) continue;
+        
+        // Find next available quest in this category
+        for (const quest of categoryQuests) {
+          if (usedActions.has(quest.targetAction)) continue;
+          
+          selectedQuests.push(quest);
+          usedActions.add(quest.targetAction);
+          categoryCounts.set(category, currentCount + 1);
+          addedInRound = true;
+          break; // Only add one quest per category per round
+        }
+      }
+      
+      // If no quests added in this round, break to avoid infinite loop
+      if (!addedInRound) break;
+      selectionRound++;
+    }
+    
+    // If we still need more quests, fill with remaining diverse options
+    if (selectedQuests.length < numQuests) {
+      for (const quest of eligibleQuests) {
+        if (selectedQuests.length >= numQuests) break;
+        
+        if (!usedActions.has(quest.targetAction) && !selectedQuests.includes(quest)) {
+          selectedQuests.push(quest);
+          usedActions.add(quest.targetAction);
+        }
       }
     }
     
