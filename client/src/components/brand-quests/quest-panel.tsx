@@ -174,7 +174,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     
     // Group quests by day name
     const questsByDay = quests.reduce((acc, quest) => {
-      const day = quest.dayName || 'Unassigned';
+      // Use type assertion to access dayName property
+      const day = (quest as any).dayName || 'Unassigned';
       if (!acc[day]) {
         acc[day] = [];
       }
