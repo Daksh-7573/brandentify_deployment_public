@@ -208,12 +208,17 @@ export default function ResumeBuilder() {
 
   return (
     <div 
-      className="flex h-screen flex-col responsive-background"
+      className="flex h-screen flex-col responsive-background relative"
       style={{ 
         backgroundImage: `url(${backgroundImage})`
       }}
     >
-      <Header />
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm z-0"></div>
+      
+      <div className="relative z-20">
+        <Header />
+      </div>
       <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
         <div className="flex-1 overflow-auto w-full">
           <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
@@ -221,8 +226,8 @@ export default function ResumeBuilder() {
             <div className="mb-4 sm:mb-6 md:mb-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Resume Builder</h1>
-                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white">Resume Builder</h1>
+                  <p className="text-white/80 mt-1 text-xs sm:text-sm md:text-base leading-tight">
                     Create a professional resume by uploading your existing resume or starting from scratch
                   </p>
                 </div>
@@ -238,29 +243,29 @@ export default function ResumeBuilder() {
 
             {/* Existing Resume Section (if available) */}
             {isResumeLoading ? (
-              <Card className="mb-4 sm:mb-6">
+              <Card className="mb-4 sm:mb-6 neo-glass-card">
                 <CardContent className="flex items-center justify-center p-6 sm:p-8">
-                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground text-sm sm:text-base">Checking for existing resumes...</span>
+                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-white/70" />
+                  <span className="ml-2 text-white/70 text-sm sm:text-base">Checking for existing resumes...</span>
                 </CardContent>
               </Card>
             ) : resumeError ? (
-              <Card className="mb-4 sm:mb-6">
+              <Card className="mb-4 sm:mb-6 neo-glass-card">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center space-x-2 text-amber-500">
                     <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                     <h3 className="font-medium text-sm sm:text-base">Error checking for existing resumes</h3>
                   </div>
-                  <p className="mt-2 text-muted-foreground text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
+                  <p className="mt-2 text-white/70 text-sm sm:text-base">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
                 </CardContent>
               </Card>
             ) : hasExistingResume ? (
-              <Card className="mb-4 sm:mb-6">
+              <Card className="mb-4 sm:mb-6 neo-glass-card">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                      <h2 className="text-lg sm:text-xl font-bold mb-2">Your Shadow Resume</h2>
-                      <p className="text-muted-foreground text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
+                      <h2 className="text-lg sm:text-xl font-bold mb-2 text-white">Your Shadow Resume</h2>
+                      <p className="text-white/70 text-sm sm:text-base">You already have a resume that you can view, edit, or replace.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
                       <Button
@@ -286,18 +291,18 @@ export default function ResumeBuilder() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="mb-4 sm:mb-6 w-full overflow-x-auto">
-                <TabsList className="grid w-full grid-cols-3 h-auto p-1">
-                  <TabsTrigger value="upload" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-white/10 border border-white/20">
+                  <TabsTrigger value="upload" className="text-xs px-2 py-2 sm:text-sm sm:px-3 text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 hover:text-white hover:bg-white/10">
                     <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Upload Resume</span>
                     <span className="sm:hidden">Upload</span>
                   </TabsTrigger>
-                  <TabsTrigger value="scratch" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                  <TabsTrigger value="scratch" className="text-xs px-2 py-2 sm:text-sm sm:px-3 text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 hover:text-white hover:bg-white/10">
                     <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Create From Scratch</span>
                     <span className="sm:hidden">Create</span>
                   </TabsTrigger>
-                  <TabsTrigger value="profile" className="text-xs px-2 py-2 sm:text-sm sm:px-3">
+                  <TabsTrigger value="profile" className="text-xs px-2 py-2 sm:text-sm sm:px-3 text-white/80 data-[state=active]:text-white data-[state=active]:bg-white/20 hover:text-white hover:bg-white/10">
                     <Database className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Use Profile Data</span>
                     <span className="sm:hidden">Profile</span>
@@ -309,11 +314,11 @@ export default function ResumeBuilder() {
 
                 {/* Upload Resume Tab */}
                 <TabsContent value="upload" className="mt-0">
-                  <Card>
+                  <Card className="neo-glass-card">
                     <CardContent className="p-4 sm:p-6">
                       <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-lg sm:text-xl font-semibold">Upload Your Resume</h3>
-                        <p className="text-muted-foreground text-sm sm:text-base">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white">Upload Your Resume</h3>
+                        <p className="text-white/70 text-sm sm:text-base">
                           Upload your existing resume document and Musk AI will automatically extract and organize your information.
                         </p>
 
@@ -325,7 +330,7 @@ export default function ResumeBuilder() {
                                 ? 'border-primary bg-primary/5' 
                                 : uploadError 
                                   ? 'border-destructive bg-destructive/5' 
-                                  : 'border-muted-foreground/25 hover:border-primary/50'
+                                  : 'border-white/20 hover:border-white/40'
                           }`}
                           onDragOver={handleDragOver}
                           onDragLeave={handleDragLeave}
@@ -345,19 +350,19 @@ export default function ResumeBuilder() {
                           <>
                             <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-red-400" />
                             <p className="font-medium text-red-400 mt-2 text-sm sm:text-base px-2">{uploadError}</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Click or drag to try again</p>
+                            <p className="text-xs sm:text-sm text-white/70">Click or drag to try again</p>
                           </>
                         ) : selectedFile ? (
                           <>
-                            <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
-                            <p className="font-medium text-foreground mt-2 text-sm sm:text-base px-2">Selected: {selectedFile.name}</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Click or drag to change selection</p>
+                            <FileText className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/70" />
+                            <p className="font-medium text-white mt-2 text-sm sm:text-base px-2">Selected: {selectedFile.name}</p>
+                            <p className="text-xs sm:text-sm text-white/70">Click or drag to change selection</p>
                           </>
                         ) : (
                           <>
-                            <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-muted-foreground" />
-                            <p className="font-medium text-foreground mt-2 text-sm sm:text-base">Drag & drop or click to upload</p>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Supported formats: PDF, DOC, DOCX</p>
+                            <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/70" />
+                            <p className="font-medium text-white mt-2 text-sm sm:text-base">Drag & drop or click to upload</p>
+                            <p className="text-xs sm:text-sm text-white/70">Supported formats: PDF, DOC, DOCX</p>
                           </>
                         )}
                       </div>
@@ -365,13 +370,13 @@ export default function ResumeBuilder() {
 
                     {isLoading && (
                       <div className="space-y-2">
-                        <div className="h-2 bg-muted rounded-full">
+                        <div className="h-2 bg-white/20 rounded-full">
                           <div 
                             className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" 
                             style={{ width: `${uploadProgress}%` }}
                           ></div>
                         </div>
-                        <p className="text-sm text-muted-foreground text-center">
+                        <p className="text-sm text-white/70 text-center">
                           {uploadProgress < 100 ? 'Processing your resume...' : 'Complete! Redirecting...'}
                         </p>
                       </div>
@@ -402,17 +407,17 @@ export default function ResumeBuilder() {
 
                 {/* Create From Scratch Tab */}
                 <TabsContent value="scratch" className="mt-0">
-                  <Card>
+                  <Card className="neo-glass-card">
                     <CardContent className="p-4 sm:p-6">
                       <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-lg sm:text-xl font-semibold">Create A New Resume</h3>
-                        <p className="text-muted-foreground text-sm sm:text-base">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white">Create A New Resume</h3>
+                        <p className="text-white/70 text-sm sm:text-base">
                           Start with a blank canvas and build your resume step-by-step with our intuitive editor.
                         </p>
 
-                        <div className="bg-muted/50 rounded-lg p-4 sm:p-6 mt-4">
-                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">Resume Outline</h4>
-                          <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                        <div className="bg-white/5 rounded-lg p-4 sm:p-6 mt-4">
+                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4 text-white">Resume Outline</h4>
+                          <ul className="space-y-2 sm:space-y-3 text-white/70 text-sm sm:text-base">
                             <li className="flex items-center">
                               <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 sm:mr-3 text-xs sm:text-sm">1</div>
                               Personal Information
@@ -451,17 +456,17 @@ export default function ResumeBuilder() {
 
                 {/* Use Profile Data Tab */}
                 <TabsContent value="profile" className="mt-0">
-                  <Card>
+                  <Card className="neo-glass-card">
                     <CardContent className="p-4 sm:p-6">
                       <div className="space-y-3 sm:space-y-4">
-                        <h3 className="text-lg sm:text-xl font-semibold">Use Your Profile Data</h3>
-                        <p className="text-muted-foreground text-sm sm:text-base">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white">Use Your Profile Data</h3>
+                        <p className="text-white/70 text-sm sm:text-base">
                           Import data from your Brandentifier profile to quickly populate your resume.
                         </p>
 
-                        <div className="bg-muted/50 rounded-lg p-4 sm:p-6 mt-4">
-                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">Data That Will Be Imported</h4>
-                          <ul className="space-y-2 sm:space-y-3 text-muted-foreground text-sm sm:text-base">
+                        <div className="bg-white/5 rounded-lg p-4 sm:p-6 mt-4">
+                          <h4 className="text-base sm:text-lg font-medium mb-3 sm:mb-4 text-white">Data That Will Be Imported</h4>
+                          <ul className="space-y-2 sm:space-y-3 text-white/70 text-sm sm:text-base">
                             <li className="flex items-center">
                               <div className="h-2 w-2 rounded-full bg-primary mr-2 sm:mr-3"></div>
                               Personal Information (Name, Title, Contact Details)
