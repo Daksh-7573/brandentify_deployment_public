@@ -760,14 +760,25 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="neo-glass-card mb-8 bg-transparent border-0">
-                        <CardHeader className="pb-4">
+                      <Card 
+                        className="mb-8"
+                        style={{
+                          background: 'rgba(18, 18, 18, 0.95)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: 'white',
+                          backdropFilter: 'blur(15px)',
+                          WebkitBackdropFilter: 'blur(15px)',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 0, 0, 0.3)',
+                          borderRadius: '0.75rem'
+                        }}
+                      >
+                        <CardHeader className="pb-4 bg-transparent">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
                           <CardDescription className="text-white/70">
                             Define your criteria to discover the most relevant professional connections
                           </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="bg-transparent">
                           <form onSubmit={handleMatchSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div className="space-y-2">
@@ -886,7 +897,17 @@ function SearchPage() {
                     )}
                     
                     {showMatchResults && (
-                      <Card className="neo-glass-card bg-transparent border-0">
+                      <Card 
+                        style={{
+                          background: 'rgba(18, 18, 18, 0.95)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          color: 'white',
+                          backdropFilter: 'blur(15px)',
+                          WebkitBackdropFilter: 'blur(15px)',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 0, 0, 0.3)',
+                          borderRadius: '0.75rem'
+                        }}
+                      >
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
                           <CardDescription className="text-white/70">
