@@ -7492,6 +7492,8 @@ export class MemStorage implements IStorage {
       assignedAt,
       weekNumber,
       year,
+      assignedDay: quest.assignedDay,
+      dayName: quest.dayName,
       progress: quest.progress ?? 0,
       status: quest.status ?? "active",
       completedAt: null,
@@ -7650,9 +7652,12 @@ export class MemStorage implements IStorage {
       return true;
     });
     
-    // Randomly select 5 quests (or all if less than 5)
-    const numQuests = Math.min(5, eligibleQuests.length);
+    // Randomly select 7 quests for daily assignment (or all if less than 7)
+    const numQuests = Math.min(7, eligibleQuests.length);
     const selectedQuests: QuestDefinition[] = [];
+    
+    // Day names array for assignment (0=Sunday, 1=Monday, etc.)
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
     // Try to get at least one quest of each type if possible
     const questTypes = [...new Set(eligibleQuests.map(q => q.type))];
@@ -7680,17 +7685,23 @@ export class MemStorage implements IStorage {
       }
     }
     
-    // Create user quests for the selected quest definitions
+    // Create user quests for the selected quest definitions with daily assignments
     const createdQuests: UserQuest[] = [];
     
-    for (const questDef of selectedQuests) {
+    for (let i = 0; i < selectedQuests.length; i++) {
+      const questDef = selectedQuests[i];
+      const assignedDay = i; // 0=Sunday, 1=Monday, etc.
+      const dayName = dayNames[assignedDay];
+      
       const quest = await this.createUserQuest({
         userId,
         questDefinitionId: questDef.id,
         status: "active",
         progress: 0,
         weekNumber: currentWeek,
-        year: currentYear
+        year: currentYear,
+        assignedDay: assignedDay,
+        dayName: dayName
       });
       
       createdQuests.push(quest);
@@ -11193,17 +11204,18 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO user_quests (
-          user_id, quest_definition_id, status, progress, assigned_at
-        ) VALUES ($1, $2, $3, $4, $5)
+          user_id, quest_definition_id, status, progress, assigned_at, week_number, year, assigned_day, day_name
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          week_number as "weekNumber", year
+          week_number as "weekNumber", year, assigned_day as "assignedDay", day_name as "dayName"
       `, [
         quest.userId, quest.questDefinitionId, quest.status || 'active',
-        quest.progress || 0, quest.startedAt || new Date()
+        quest.progress || 0, quest.assignedAt || new Date(),
+        quest.weekNumber, quest.year, quest.assignedDay, quest.dayName
       ]);
       
       return result.rows[0];
