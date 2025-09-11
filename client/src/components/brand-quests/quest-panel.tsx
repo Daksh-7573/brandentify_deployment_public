@@ -150,6 +150,62 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     );
   };
   
+  const renderDailyQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
+    if (loading) {
+      return (
+        <div className="space-y-4 mt-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="w-full h-[220px] rounded-md" />
+          ))}
+        </div>
+      );
+    }
+    
+    if (!quests || quests.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <h3 className="text-lg font-medium text-white">No quests available</h3>
+          <p className="text-white/70 mt-2">
+            Check back later for new daily quests to be assigned.
+          </p>
+        </div>
+      );
+    }
+    
+    // Group quests by day name
+    const questsByDay = quests.reduce((acc, quest) => {
+      const day = quest.dayName || 'Unassigned';
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(quest);
+      return acc;
+    }, {} as Record<string, typeof quests>);
+    
+    // Order days of the week properly
+    const dayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Unassigned'];
+    const orderedDays = dayOrder.filter(day => questsByDay[day] && questsByDay[day].length > 0);
+    
+    return (
+      <div className="space-y-6 mt-4">
+        {orderedDays.map(day => (
+          <div key={day} className="border border-white/10 rounded-lg p-3 sm:p-4 bg-black/20 backdrop-blur-sm">
+            <h4 className="text-sm sm:text-base font-semibold text-white mb-3 flex items-center gap-2">
+              <span className="text-cyan-400">📅</span>
+              {day}
+              <span className="text-xs text-white/60">({questsByDay[day].length} quest{questsByDay[day].length !== 1 ? 's' : ''})</span>
+            </h4>
+            <div className="space-y-3">
+              {questsByDay[day].map(quest => (
+                <QuestCard key={quest.id} quest={quest} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
   // Log errors for debugging purposes
   useEffect(() => {
     if (weeklyError && !isLoadingWeekly) {
@@ -208,9 +264,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               
               <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
                 <div className="text-xs text-white/60 mb-2">
-                  Week {currentWeek}, {currentYear} - Weekly career quests
+                  Week {currentWeek}, {currentYear} - Daily career quests
                 </div>
-                {renderQuestsList(weeklyCareerQuests, isLoadingWeekly)}
+                {renderDailyQuestsList(weeklyCareerQuests, isLoadingWeekly)}
               </TabsContent>
               
               <TabsContent value="completed" className="space-y-3 sm:space-y-4">
@@ -253,9 +309,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               
               <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
                 <div className="text-xs text-white/60 mb-2">
-                  Week {currentWeek}, {currentYear} - Weekly social media quests
+                  Week {currentWeek}, {currentYear} - Daily social media quests
                 </div>
-                {renderQuestsList(weeklySocialQuests, isLoadingWeekly)}
+                {renderDailyQuestsList(weeklySocialQuests, isLoadingWeekly)}
               </TabsContent>
               
               <TabsContent value="completed" className="space-y-3 sm:space-y-4">
