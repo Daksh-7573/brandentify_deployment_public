@@ -20,7 +20,6 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import Header from "@/components/layout/header";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import "@/styles/neo-glass-spotify.css";
 
 // Constants for form options
 import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@shared/constants";
@@ -760,25 +759,14 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card 
-                        className="mb-8"
-                        style={{
-                          background: 'rgba(18, 18, 18, 0.95)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          color: 'white',
-                          backdropFilter: 'blur(15px)',
-                          WebkitBackdropFilter: 'blur(15px)',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 0, 0, 0.3)',
-                          borderRadius: '0.75rem'
-                        }}
-                      >
-                        <CardHeader className="pb-4 bg-transparent">
+                      <Card className="neo-glass-card mb-8">
+                        <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
                           <CardDescription className="text-white/70">
                             Define your criteria to discover the most relevant professional connections
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="bg-transparent">
+                        <CardContent>
                           <form onSubmit={handleMatchSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div className="space-y-2">
@@ -897,17 +885,7 @@ function SearchPage() {
                     )}
                     
                     {showMatchResults && (
-                      <Card 
-                        style={{
-                          background: 'rgba(18, 18, 18, 0.95)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          color: 'white',
-                          backdropFilter: 'blur(15px)',
-                          WebkitBackdropFilter: 'blur(15px)',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 0, 0, 0.3)',
-                          borderRadius: '0.75rem'
-                        }}
-                      >
+                      <Card className="neo-glass-card">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
                           <CardDescription className="text-white/70">
