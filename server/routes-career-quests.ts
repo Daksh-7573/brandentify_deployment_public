@@ -16,6 +16,222 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
+// Interface for quest categorization
+interface QuestWithCategory {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
+  targetAction: string;
+  xpReward: number;
+  category: 'social_media' | 'profile_building' | 'portfolio' | 'networking' | 'other';
+  isActive: boolean;
+}
+
+// Function to categorize quests based on target_action patterns
+function categorizeQuest(targetAction: string): 'social_media' | 'profile_building' | 'portfolio' | 'networking' | 'other' {
+  const action = targetAction.toLowerCase();
+  
+  // Social media pattern detection (enhanced)
+  if (action.includes('post_') && (
+    action.includes('linkedin') || 
+    action.includes('twitter') || 
+    action.includes('facebook') || 
+    action.includes('instagram') || 
+    action.includes('youtube') ||
+    action.includes('social') ||
+    action.includes('_suggestion') // Common pattern for social suggestions
+  )) {
+    return 'social_media';
+  }
+  
+  // Profile building patterns
+  if (action.includes('profile') || 
+      action.includes('update_') ||
+      action.includes('complete_') ||
+      action.includes('add_skill') ||
+      action.includes('add_experience') ||
+      action.includes('improve_bio')) {
+    return 'profile_building';
+  }
+  
+  // Portfolio patterns
+  if (action.includes('portfolio') || 
+      action.includes('project') ||
+      action.includes('showcase') ||
+      action.includes('upload') ||
+      action.includes('demo')) {
+    return 'portfolio';
+  }
+  
+  // Networking patterns
+  if (action.includes('network') || 
+      action.includes('connect') ||
+      action.includes('reach_out') ||
+      action.includes('mentor') ||
+      action.includes('community') ||
+      action.includes('event')) {
+    return 'networking';
+  }
+  
+  return 'other';
+}
+
+// Enhanced weekly quest assignment with category caps and deduplication
+async function createWeeklyQuestAssignments(userId: number, storage: IStorage, weekNumber: number, year: number): Promise<any[]> {
+  console.log(`[createWeeklyQuestAssignments] Creating weekly assignments for user ${userId}, week ${weekNumber}, year ${year}`);
+  
+  // Get all active quest definitions
+  const allQuestDefinitions = await storage.getActiveQuestDefinitions();
+  console.log(`[createWeeklyQuestAssignments] Found ${allQuestDefinitions.length} active quest definitions`);
+  
+  // Categorize and sort quests
+  const categorizedQuests: QuestWithCategory[] = allQuestDefinitions.map(quest => ({
+    ...quest,
+    category: categorizeQuest(quest.targetAction)
+  })).sort((a, b) => b.xpReward - a.xpReward); // Sort by XP descending for prioritization
+  
+  console.log(`[createWeeklyQuestAssignments] Quest categories:`, {
+    social_media: categorizedQuests.filter(q => q.category === 'social_media').length,
+    profile_building: categorizedQuests.filter(q => q.category === 'profile_building').length,
+    portfolio: categorizedQuests.filter(q => q.category === 'portfolio').length,
+    networking: categorizedQuests.filter(q => q.category === 'networking').length,
+    other: categorizedQuests.filter(q => q.category === 'other').length
+  });
+  
+  // Define category caps (total must be <= 7)
+  const categoryCaps = {
+    social_media: 1,
+    profile_building: 2,
+    portfolio: 2,
+    networking: 2
+    // 'other' gets remaining slots (0 in this case since 1+2+2+2=7)
+  };
+  
+  const selectedQuests: QuestWithCategory[] = [];
+  const usedTargetActions = new Set<string>();
+  
+  // Round-robin selection with category caps and deduplication
+  for (const [category, maxCount] of Object.entries(categoryCaps)) {
+    const categoryQuests = categorizedQuests
+      .filter(q => q.category === category && !usedTargetActions.has(q.targetAction))
+      .slice(0, maxCount);
+    
+    console.log(`[createWeeklyQuestAssignments] Selected ${categoryQuests.length}/${maxCount} ${category} quests`);
+    
+    for (const quest of categoryQuests) {
+      selectedQuests.push(quest);
+      usedTargetActions.add(quest.targetAction);
+    }
+  }
+  
+  // Fill remaining slots with 'other' category quests if we have less than 7
+  const remainingSlots = 7 - selectedQuests.length;
+  if (remainingSlots > 0) {
+    const otherQuests = categorizedQuests
+      .filter(q => q.category === 'other' && !usedTargetActions.has(q.targetAction))
+      .slice(0, remainingSlots);
+    
+    console.log(`[createWeeklyQuestAssignments] Selected ${otherQuests.length}/${remainingSlots} other quests to fill remaining slots`);
+    
+    for (const quest of otherQuests) {
+      selectedQuests.push(quest);
+      usedTargetActions.add(quest.targetAction);
+    }
+  }
+  
+  console.log(`[createWeeklyQuestAssignments] Final selection: ${selectedQuests.length} quests`);
+  console.log(`[createWeeklyQuestAssignments] Selected quest actions:`, selectedQuests.map(q => q.targetAction));
+  
+  // Assign to days (Sunday = 0, Monday = 1, ..., Saturday = 6)
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const assignedQuests: any[] = [];
+  
+  for (let dayIndex = 0; dayIndex < Math.min(selectedQuests.length, 7); dayIndex++) {
+    const quest = selectedQuests[dayIndex];
+    const dayName = dayNames[dayIndex];
+    
+    try {
+      // Insert quest assignment into database
+      const insertResult = await db.execute(sql`
+        INSERT INTO user_quests (
+          user_id, 
+          quest_definition_id, 
+          status, 
+          progress, 
+          assigned_at, 
+          week_number, 
+          year,
+          assigned_day,
+          day_name
+        )
+        VALUES (
+          ${userId}, 
+          ${quest.id}, 
+          'active', 
+          0, 
+          CURRENT_TIMESTAMP,
+          ${weekNumber},
+          ${year},
+          ${dayIndex},
+          ${dayName}
+        )
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year,
+          assigned_day as "assignedDay",
+          day_name as "dayName"
+      `);
+      
+      const assignedQuest = {
+        ...insertResult.rows[0],
+        // Quest definition fields
+        title: quest.title,
+        description: quest.description,
+        questType: quest.type,
+        targetCount: 1,
+        targetAction: quest.targetAction,
+        xpReward: quest.xpReward,
+        badgeReward: null,
+        muskTip: null,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      assignedQuests.push(assignedQuest);
+      console.log(`[createWeeklyQuestAssignments] Assigned quest "${quest.title}" to ${dayName} (day ${dayIndex})`);
+      
+    } catch (error) {
+      console.error(`[createWeeklyQuestAssignments] Error assigning quest ${quest.id} to day ${dayIndex}:`, error);
+    }
+  }
+  
+  console.log(`[createWeeklyQuestAssignments] Successfully assigned ${assignedQuests.length} quests`);
+  
+  // Log final category distribution for verification
+  const finalDistribution = {
+    social_media: assignedQuests.filter(q => categorizeQuest(q.targetAction) === 'social_media').length,
+    profile_building: assignedQuests.filter(q => categorizeQuest(q.targetAction) === 'profile_building').length,
+    portfolio: assignedQuests.filter(q => categorizeQuest(q.targetAction) === 'portfolio').length,
+    networking: assignedQuests.filter(q => categorizeQuest(q.targetAction) === 'networking').length,
+    other: assignedQuests.filter(q => categorizeQuest(q.targetAction) === 'other').length
+  };
+  console.log(`[createWeeklyQuestAssignments] Final category distribution:`, finalDistribution);
+  
+  return assignedQuests;
+}
+
 // Import the service function instead of duplicating code
 import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
 
@@ -292,56 +508,19 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             allQuests = activeAssignedQuests;
             console.log(`[GET /users/${userId}/quests/current-week] Returning ${allQuests.length} daily assigned quests`);
           } else {
-            // No daily assigned quests - fall back to intelligent quest generation
-            console.log(`[GET /users/${userId}/quests/current-week] No daily assigned quests found, generating intelligent quests`);
+            // No daily assigned quests - create weekly quest assignments
+            console.log(`[GET /users/${userId}/quests/current-week] No daily assigned quests found, creating weekly quest assignments`);
             
-            // Get user's additional profile data
-            const [skills, experiences, educations, projects] = await Promise.all([
-              storage.getSkillsByUserId(userId),
-              storage.getWorkExperiencesByUserId(userId), 
-              storage.getEducationsByUserId(userId),
-              storage.getProjectsByUserId(userId)
-            ]);
-
-            // Calculate profile completion and generate intelligent quests
-            const profileCompletion = calculateProfileCompletion(userData, skills, experiences, educations, projects);
-            const intelligentQuests = generateIntelligentCareerQuests(userData, skills, experiences, educations, projects);
-
-            console.log(`[GET /users/${userId}/quests/current-week] Profile completion: ${profileCompletion.percentage}%`);
-            console.log(`[GET /users/${userId}/quests/current-week] Generated ${intelligentQuests.length} intelligent quests`);
-
-            // Convert PersonalizedQuest to format expected by frontend
-            const formattedQuests = intelligentQuests.map((quest: PersonalizedQuest, index: number) => ({
-              id: Date.now() + index, // Temporary ID for frontend
-              userId: userId,
-              questDefinitionId: index + 1000, // Temporary ID
-              status: 'active',
-              progress: 0,
-              assignedAt: new Date().toISOString(),
-              completedAt: null,
-              xpEarned: null,
-              badgeEarned: null,
-              weekNumber: getWeekNumber(new Date()),
-              year: new Date().getFullYear(),
-              // Quest definition fields
-              title: quest.title,
-              description: quest.description,
-              questType: quest.type,
-              targetCount: 1,
-              targetAction: quest.targetAction,
-              xpReward: quest.xpReward,
-              badgeReward: null,
-              muskTip: `💡 Smart Tip: ${quest.mediaSpecific}`,
-              isActive: true,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              // Additional intelligent fields
-              mediaSpecific: quest.mediaSpecific,
-              priority: quest.priority,
-              difficulty: quest.difficulty
-            }));
-            
-            allQuests = formattedQuests;
+            try {
+              // Generate and assign exactly 7 quests for the week with category caps
+              const weeklyQuests = await createWeeklyQuestAssignments(userId, storage, weekNumber, year);
+              allQuests = weeklyQuests;
+              console.log(`[GET /users/${userId}/quests/current-week] Created ${allQuests.length} weekly quest assignments`);
+            } catch (error) {
+              console.error(`[GET /users/${userId}/quests/current-week] Error creating weekly assignments:`, error);
+              // Fallback to empty array to prevent crashes
+              allQuests = [];
+            }
           }
         } else {
           // Table doesn't exist - generate intelligent quests

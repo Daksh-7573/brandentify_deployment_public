@@ -11051,13 +11051,13 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await db.execute(sql`
         SELECT 
-          id, title, description, category, difficulty, xp_reward as "xpReward",
-          estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          id, title, description, type, target_count as "targetCount",
+          target_action as "targetAction", xp_reward as "xpReward",
+          badge_reward as "badgeReward", musk_tip as "muskTip",
+          is_active as "isActive", created_at as "createdAt", updated_at as "updatedAt"
         FROM quest_definitions
         WHERE is_active = true
-        ORDER BY category, difficulty, title
+        ORDER BY xp_reward DESC, title
       `);
       
       return result.rows;
@@ -11447,8 +11447,8 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         UPDATE user_quests 
-        SET status = 'dismissed', dismissed_at = CURRENT_TIMESTAMP, 
-            dismiss_reason = $2, updated_at = CURRENT_TIMESTAMP
+        SET status = 'dismissed', 
+            dismissed_reason = $2, updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
@@ -11507,8 +11507,8 @@ export class DatabaseStorage implements IStorage {
           RETURNING 
             id, user_id as "userId", quest_definition_id as "questDefinitionId",
             status, progress, assigned_at as "assignedAt", 
-            completed_at as "completedAt", dismissed_at as "dismissedAt",
-            earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+            completed_at as "completedAt", xp_earned as "xpEarned", 
+            dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
             week_number as "weekNumber", year
         `, [userId, questDef.id]);
         
