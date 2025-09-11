@@ -20,6 +20,7 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import Header from "@/components/layout/header";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import "@/styles/neo-glass-spotify.css";
 
 // Constants for form options
 import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@shared/constants";
