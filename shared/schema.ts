@@ -1072,8 +1072,6 @@ export const userQuests = pgTable("user_quests", {
   completedAt: timestamp("completed_at"), // When the quest was completed
   weekNumber: integer("week_number").notNull(), // Week of the year (1-52)
   year: integer("year").notNull(), // Year of the quest
-  assignedDay: integer("assigned_day"), // Day of week (0=Sunday, 1=Monday, ..., 6=Saturday)
-  dayName: text("day_name"), // Display name for the day (Sunday, Monday, etc.)
   xpEarned: integer("xp_earned"), // Actual XP earned upon completion
   badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
   muskResponse: text("musk_response"), // Custom response from Musk on completion
