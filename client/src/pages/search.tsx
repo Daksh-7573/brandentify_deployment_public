@@ -760,7 +760,7 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="neo-glass-card mb-8">
+                      <Card className="neo-glass-card mb-8 bg-transparent border-0">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
                           <CardDescription className="text-white/70">
@@ -886,7 +886,7 @@ function SearchPage() {
                     )}
                     
                     {showMatchResults && (
-                      <Card className="neo-glass-card">
+                      <Card className="neo-glass-card bg-transparent border-0">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
                           <CardDescription className="text-white/70">
