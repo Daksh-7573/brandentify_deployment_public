@@ -11182,7 +11182,7 @@ export class DatabaseStorage implements IStorage {
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
-          uq.week_number as "weekNumber", uq.year,
+          uq.week_number as "weekNumber", uq.year, uq.assigned_day as "assignedDay", uq.day_name as "dayName",
           qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
@@ -11190,7 +11190,7 @@ export class DatabaseStorage implements IStorage {
         AND uq.status = 'active'
         AND uq.week_number >= extract(week from CURRENT_DATE) - 1 
         AND uq.year = extract(year from CURRENT_DATE)
-        ORDER BY uq.created_at DESC
+        ORDER BY uq.assigned_day ASC NULLS LAST, uq.created_at DESC
       `, [userId]);
       
       return result.rows;
