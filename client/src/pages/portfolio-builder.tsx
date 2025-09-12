@@ -837,12 +837,26 @@ export default function PortfolioBuilder() {
                   directData: JSON.stringify(userServices)
                 })}
                 <MinimalistPro 
-                  userInfo={userInfo}
-                  userSkills={userSkills}
-                  userExperiences={userExperiences || []}
-                  userProjects={userProjects}
-                  userEducations={userEducations || []}
-                  userServices={userServices || []}
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    location: userData?.location || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    lookingFor: userData?.lookingFor || null,
+                    jobLevel: userData?.jobLevel || null,
+                    aboutMe: userData?.aboutMe || '',
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
+                  currentUserId={userNumericId}
                 />
               </>
             )}
@@ -946,11 +960,11 @@ export default function PortfolioBuilder() {
                   jobLevel: userData?.jobLevel || null,
                   aboutMe: userData?.aboutMe || ''
                 }}
-                userSkills={userSkills || []}
-                userExperiences={userExperiences || []}
-                userProjects={userProjects || []}
-                userEducations={userEducations || []}
-                userServices={userServices || []}
+                userSkills={skills || []}
+                userExperiences={experiences || []}
+                userProjects={projects || []}
+                userEducations={educations || []}
+                userServices={services || []}
               />
             )}
             
@@ -1137,11 +1151,11 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
-                    skills={userSkills || []}
-                    services={userServices || []}
-                    experiences={userExperiences || []}
-                    educations={userEducations || []}
-                    projects={userProjects?.map(p => ({
+                    skills={skills || []}
+                    services={services || []}
+                    experiences={experiences || []}
+                    educations={educations || []}
+                    projects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
