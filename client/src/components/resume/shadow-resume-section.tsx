@@ -312,12 +312,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   });
 
-  // Updated theme to match Industry Pulse page styling
+  // Updated theme to match header bar background color
   const fixedTheme = { 
     color: 'hsl(var(--foreground))', 
     accent: 'hsl(var(--border))', 
     fontClass: 'font-sans',
-    background: 'hsl(var(--card))',
+    background: 'rgba(18, 18, 18, 0.6)', // Same as header bar
     muted: 'hsl(var(--muted-foreground))'
   };
 
