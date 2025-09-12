@@ -759,14 +759,14 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <div className="mb-8">
-                        <div className="pb-4">
-                          <h3 className="text-white text-xl font-semibold">Smart Connection Preferences</h3>
-                          <p className="text-white/70">
+                      <Card className="neo-glass-card mb-8">
+                        <CardHeader className="pb-4">
+                          <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
+                          <CardDescription className="text-white/70">
                             Define your criteria to discover the most relevant professional connections
-                          </p>
-                        </div>
-                        <div>
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
                           <form onSubmit={handleMatchSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div className="space-y-2">
@@ -880,8 +880,8 @@ function SearchPage() {
                               </Button>
                             </div>
                           </form>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     )}
                     
                     {showMatchResults && (
