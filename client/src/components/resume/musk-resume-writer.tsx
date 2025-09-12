@@ -202,7 +202,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
               {sectionPrompts[selectedSection].map((promptTemplate, idx) => (
                 <Badge 
                   key={idx} 
-                  className="cursor-pointer bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors duration-200"
+                  className="cursor-pointer !bg-white/10 !border !border-white/20 !text-white hover:!bg-white/20 transition-colors duration-200"
                   onClick={() => handlePromptClick(promptTemplate)}
                 >
                   <Lightbulb className="h-3 w-3 mr-1" />
