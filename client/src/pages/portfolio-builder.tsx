@@ -130,6 +130,11 @@ export default function PortfolioBuilder() {
   // Fetch user profile numeric ID for use in other queries
   const userNumericId = userData?.id;
   
+  // Debug userNumericId
+  console.log("Portfolio Builder Debug - userData:", userData);
+  console.log("Portfolio Builder Debug - userNumericId:", userNumericId);
+  console.log("Portfolio Builder Debug - user?.id:", user?.id);
+  
   // State for whatIOffer value - placed at component top level to avoid hook rule violations
   const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
   
