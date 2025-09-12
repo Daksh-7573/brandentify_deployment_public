@@ -1284,11 +1284,19 @@ export default function PortfolioBuilder() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLocation('/profile')}
+              onClick={() => {
+                if (currentStep === STEPS.SELECT_LAYOUT) {
+                  // If on first step, go back to profile
+                  setLocation('/profile');
+                } else {
+                  // Otherwise go back one step
+                  setCurrentStep(currentStep - 1);
+                }
+              }}
               className="text-white hover:text-white hover:bg-white/20 bg-white/10 px-3 py-2 border border-white/20 flex items-center gap-2 self-start"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back to Profile</span>
+              <span className="hidden sm:inline">Back</span>
             </Button>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
