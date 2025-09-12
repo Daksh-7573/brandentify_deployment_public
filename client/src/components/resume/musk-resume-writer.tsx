@@ -198,7 +198,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
             <Label htmlFor="resume-prompt" className="text-base font-medium text-white">
               What would you like Musk to help with?
             </Label>
-            <div className="flex flex-wrap gap-2 mt-2 mb-3">
+            <div className="flex flex-wrap gap-2 mt-2 mb-3 musk-resume-writer-badges">
               {sectionPrompts[selectedSection].map((promptTemplate, idx) => (
                 <Badge 
                   key={idx} 
