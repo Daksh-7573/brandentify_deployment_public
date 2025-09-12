@@ -76,7 +76,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "animated-odyssey"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -967,7 +967,11 @@ export default function PortfolioBuilder() {
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
-                userProjects={projects || []}
+                userProjects={projects?.map(project => ({
+                  ...project,
+                  mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : [],
+                  industry: project.industry || ''
+                })) || []}
                 userEducations={educations || []}
                 userServices={services || []}
               />
@@ -1156,23 +1160,35 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
-                    skills={skills || []}
-                    services={services || []}
-                    experiences={experiences || []}
-                    educations={educations || []}
+                    skills={skills?.map(skill => ({
+                      ...skill,
+                      level: ['beginner', 'intermediate', 'advanced'].includes(skill.level) ? skill.level as 'beginner' | 'intermediate' | 'advanced' : 'intermediate'
+                    })) || []}
+                    services={services?.map(service => ({
+                      ...service,
+                      price: service.priceUsd ? parseFloat(service.priceUsd) : null,
+                      isHourly: service.isHourly || false,
+                      category: service.category || '',
+                      features: Array.isArray(service.features) ? service.features : []
+                    })) || []}
+                    experiences={experiences?.map(exp => ({
+                      ...exp,
+                      keyResponsibilities: Array.isArray(exp.keyResponsibilities) ? exp.keyResponsibilities : []
+                    })) || []}
+                    educations={educations?.map(edu => ({
+                      ...edu,
+                      skillsAcquired: Array.isArray(edu.skillsAcquired) ? edu.skillsAcquired : []
+                    })) || []}
                     projects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
-                      userId: p.userId,
-                      startDate: p.startDate,
-                      createdAt: null,
+                      startDate: p.startDate || '',
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
+                      industry: p.industry || null,
                       thumbnailUrl: p.thumbnailUrl || null,
-                      thumbnailFile: null,
-                      mediaUrls: p.mediaUrls || [],
-                      updatedAt: null
+                      mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : []
                     })) || []}
                   />
                 </CardContent>
