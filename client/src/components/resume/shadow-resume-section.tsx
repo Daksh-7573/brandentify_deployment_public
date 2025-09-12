@@ -312,11 +312,13 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   });
 
-  // Fixed theme for professional resume display
+  // Updated theme to match Industry Pulse page styling
   const fixedTheme = { 
-    color: '#2563eb', 
-    accent: '#dbeafe', 
-    fontClass: 'font-serif' 
+    color: 'hsl(var(--foreground))', 
+    accent: 'hsl(var(--border))', 
+    fontClass: 'font-sans',
+    background: 'hsl(var(--card))',
+    muted: 'hsl(var(--muted-foreground))'
   };
 
   // Effect to sync component state with server updates
@@ -423,15 +425,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 {resume?.fileData ? (
                   <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                     {/* Actual resume preview with PDF appearance */}
-                    <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
+                    <div className={`w-full h-full relative shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{backgroundColor: fixedTheme.background, borderTop: `4px solid ${fixedTheme.color}`}}>
                     {/* Document header */}
-                    <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
+                    <div className="absolute top-0 left-0 right-0 h-8 border-b flex items-center justify-between px-3" style={{backgroundColor: fixedTheme.background, borderColor: fixedTheme.accent}}>
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-red-400 rounded-full"></div>
                         <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs" style={{color: fixedTheme.muted}}>
                         {resume.fileName || `Resume_Professional.pdf`}
                       </div>
                     </div>
@@ -485,10 +487,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>
                               {effectivePersonalInfo.fullName || 'Professional Name'}
                             </h2>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm" style={{color: fixedTheme.muted}}>
                               {effectivePersonalInfo.title || 'Professional Title'}
                             </p>
-                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs" style={{color: fixedTheme.muted}}>
                               <span>{effectivePersonalInfo.email || 'Email'}</span>
                               {effectivePersonalInfo.phone && (
                                 <>
@@ -509,7 +511,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* About section - comprehensive profile */}
-                      <div className="mb-4 pb-3 border-b border-gray-100">
+                      <div className="mb-4 pb-3 border-b" style={{borderColor: fixedTheme.accent}}>
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
                         {isEditing ? (
                           <textarea 
@@ -519,7 +521,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             placeholder="Write a professional summary here..."
                           />
                         ) : (
-                          <p className="text-xs text-muted-foreground leading-relaxed">
+                          <p className="text-xs leading-relaxed" style={{color: fixedTheme.muted}}>
                             {/* ONLY use form data - no fallback to profile data */}
                             {effectivePersonalInfo.summary || 'Professional summary will appear here. Edit in Resume Editor.'}
                           </p>
@@ -527,7 +529,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* Work Experience - uses form data if available, otherwise profile data */}
-                      <div className="mb-4 pb-3 border-b border-gray-100">
+                      <div className="mb-4 pb-3 border-b" style={{borderColor: fixedTheme.accent}}>
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
@@ -564,7 +566,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* Education Section */}
-                      <div className="mb-4 pb-3 border-b border-gray-100">
+                      <div className="mb-4 pb-3 border-b" style={{borderColor: fixedTheme.accent}}>
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
@@ -575,7 +577,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 <div className="font-semibold">
                                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
                                 </div>
-                                <div className="text-muted-foreground flex justify-between">
+                                <div className="flex justify-between" style={{color: fixedTheme.muted}}>
                                   <span>{edu.institution}</span>
                                   <span>
                                     {edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - 
@@ -584,7 +586,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 </div>
                                 
                                 {/* Additional education details */}
-                                <div className="mt-1 text-xs text-muted-foreground">
+                                <div className="mt-1 text-xs" style={{color: fixedTheme.muted}}>
                                   {edu.location && (
                                     <div className="mt-0.5">
                                       <span className="font-medium">Location:</span> {edu.location}
@@ -610,27 +612,27 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           </div>
                         ) : (
                           // Empty state when no educations are available
-                          <div className="text-muted-foreground italic mt-1">
+                          <div className="italic mt-1" style={{color: fixedTheme.muted}}>
                             No education added yet. Add education in your profile.
                           </div>
                         )}
                       </div>
                       
                       {/* Skills Section */}
-                      <div className="mb-4 pb-3 border-b border-gray-100">
+                      <div className="mb-4 pb-3 border-b" style={{borderColor: fixedTheme.accent}}>
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
                         {/* Use the combined effective data with proper prioritization */}
                         {effectiveSkills && effectiveSkills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {effectiveSkills.map((skill: any, index: number) => (
-                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-muted text-foreground text-xs">
+                              <span key={index} className="inline-block px-2 py-0.5 rounded-full text-xs" style={{backgroundColor: fixedTheme.accent, color: fixedTheme.color}}>
                                 {skill.name || skill}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <div className="text-muted-foreground italic mt-1">
+                          <div className="italic mt-1" style={{color: fixedTheme.muted}}>
                             No skills added yet. Add skills in your profile.
                           </div>
                         )}
@@ -646,14 +648,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             {effectiveProjects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{project.title}</div>
-                                <div className="text-muted-foreground mt-0.5 text-xs">
+                                <div className="mt-0.5 text-xs" style={{color: fixedTheme.muted}}>
                                   {project.description && project.description.substring(0, 120)}
                                   {project.description && project.description.length > 120 ? '...' : ''}
                                 </div>
                                 {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mt-1">
                                     {project.technologies.map((tech: string, i: number) => (
-                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-muted text-foreground text-xs">
+                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm text-xs" style={{backgroundColor: fixedTheme.accent, color: fixedTheme.color}}>
                                         {tech}
                                       </span>
                                     ))}
@@ -663,7 +665,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             ))}
                           </div>
                         ) : (
-                          <div className="text-muted-foreground italic mt-1">
+                          <div className="italic mt-1" style={{color: fixedTheme.muted}}>
                             No projects added yet. Add projects in your profile.
                           </div>
                         )}
@@ -671,8 +673,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     </div>
                     
                     {/* Document footer */}
-                    <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-100 border-t flex items-center justify-center">
-                      <div className="text-xs text-muted-foreground">Generated by Musk AI</div>
+                    <div className="absolute bottom-0 left-0 right-0 h-6 border-t flex items-center justify-center" style={{backgroundColor: fixedTheme.background, borderColor: fixedTheme.accent}}>
+                      <div className="text-xs" style={{color: fixedTheme.muted}}>Generated by Musk AI</div>
                     </div>
                   </div>
                   
@@ -680,12 +682,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 </div>
                 ) : (
                   <div className="text-center p-6">
-                    <p className="text-muted-foreground text-sm">Resume Preview</p>
-                    <h2 className="text-xl font-bold mt-2">Resume Preview</h2>
-                    <p className="text-sm text-muted-foreground">Resume data will appear here</p>
+                    <p className="text-sm" style={{color: fixedTheme.muted}}>Resume Preview</p>
+                    <h2 className="text-xl font-bold mt-2" style={{color: fixedTheme.color}}>Resume Preview</h2>
+                    <p className="text-sm" style={{color: fixedTheme.muted}}>Resume data will appear here</p>
                     
                     {/* Fallback if no PDF data is available */}
-                    <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
+                    <div className="w-3/4 mx-auto mt-6 h-64 rounded opacity-30" style={{backgroundColor: fixedTheme.accent}}></div>
                   </div>
                 )}
               </CardContent>
