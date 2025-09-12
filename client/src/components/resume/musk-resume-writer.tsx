@@ -160,8 +160,8 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-2">
+    <Card className="w-full border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="pb-2 sm:pb-3 px-2 sm:px-4 md:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl flex items-center gap-2">
             <Zap className="h-5 w-5 text-primary" />
@@ -173,7 +173,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3 space-y-4">
         <div className="flex flex-wrap gap-2">
           {Object.entries(sectionIcons).map(([section, icon]) => (
             <Button
