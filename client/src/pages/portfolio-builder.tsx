@@ -122,7 +122,7 @@ export default function PortfolioBuilder() {
   
   // Fetch user profile data with proper typing
   const { data: userData, isLoading: isLoadingUser } = useQuery<User>({
-    queryKey: [`/api/users/${user?.uid}`], // This uses Firebase UID to get the numeric DB ID
+    queryKey: [`/api/users/${user?.id}`], // This uses user numeric ID to get the user data
     enabled: !!user,
     staleTime: 30000
   });
