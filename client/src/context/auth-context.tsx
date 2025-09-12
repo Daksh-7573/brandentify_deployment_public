@@ -720,8 +720,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('firebase:authUser');
       sessionStorage.removeItem('firebase:authUser');
       
-      // Clear all caches to prevent stale data
-      queryClient.clear();
+      // Clear specific caches but preserve user profile data for seamless re-authentication
+      // Only clear sensitive data that should not persist across sessions
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/messages'], 
+        refetchType: 'none' 
+      });
+      queryClient.removeQueries({ 
+        queryKey: ['/api/admin'],
+        exact: false 
+      });
+      // Do NOT clear user profile data to prevent profile picture disappearing on re-login
       
       // Always sign out from Firebase completely
       try {
