@@ -1202,27 +1202,12 @@ export default function ResumeEditor() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5 h-auto p-1 tabs-list-mobile neo-glass-tabs">
-                <TabsTrigger value="personal-info" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile flex items-center gap-1">
-                  <User2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Personal Info</span>
-                </TabsTrigger>
-                <TabsTrigger value="experience" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile flex items-center gap-1">
-                  <BriefcaseBusiness className="h-4 w-4" />
-                  <span className="hidden sm:inline">Experience</span>
-                </TabsTrigger>
-                <TabsTrigger value="education" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile flex items-center gap-1">
-                  <GraduationCap className="h-4 w-4" />
-                  <span className="hidden sm:inline">Education</span>
-                </TabsTrigger>
-                <TabsTrigger value="skills" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile flex items-center gap-1">
-                  <Trophy className="h-4 w-4" />
-                  <span className="hidden sm:inline">Skills</span>
-                </TabsTrigger>
-                <TabsTrigger value="projects" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile flex items-center gap-1">
-                  <Layout className="h-4 w-4" />
-                  <span className="hidden sm:inline">Projects</span>
-                </TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 h-auto p-1 tabs-list-mobile">
+                <TabsTrigger value="personal-info" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Personal Info</TabsTrigger>
+                <TabsTrigger value="experience" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Experience</TabsTrigger>
+                <TabsTrigger value="education" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Education</TabsTrigger>
+                <TabsTrigger value="skills" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Skills</TabsTrigger>
+                <TabsTrigger value="projects" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Projects</TabsTrigger>
               </TabsList>
               
               {/* Personal Information Tab */}
