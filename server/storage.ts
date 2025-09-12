@@ -12015,6 +12015,13 @@ export const storage = {
   // Resume parsing methods for projects
   addProject: (project: InsertProject) => dbStorage.createProject(project),
   
+  // Resume methods
+  getResumeByUserId: (userId: number) => dbStorage.getResumeByUserId(userId),
+  getResumeById: (id: number) => dbStorage.getResumeById(id),
+  createResume: (resume: InsertResume) => dbStorage.createResume(resume),
+  updateResume: (id: number, resume: Partial<Resume>) => dbStorage.updateResume(id, resume),
+  deleteResume: (id: number) => dbStorage.deleteResume(id),
+  
   // Career Goal methods
   getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
   getCareerGoalById: (id: number) => dbStorage.getCareerGoalById(id),
