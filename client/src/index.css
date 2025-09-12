@@ -815,3 +815,21 @@ input.smart-radar-input::placeholder {
     background-attachment: fixed !important;
   }
 }
+
+/* High-specificity overrides for dark tabs inside neo-glass sections */
+.neo-glass-section .dark-tabs-list {
+  background-color: rgba(30, 31, 35, 0.7) !important;
+  border-radius: var(--border-radius-pill, 9999px) !important;
+  padding: 4px !important;
+}
+
+.neo-glass-section .dark-tabs-trigger {
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.neo-glass-section .dark-tabs-trigger[data-state="active"] {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
