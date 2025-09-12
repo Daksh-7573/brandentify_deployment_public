@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
-import { NeoGlassSection } from '@/components/ui/neo-glass-section';
+import { NeoGlassSection } from '@/components/ui/neo-glass';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -146,26 +146,31 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   
   // ONLY use form data - NO FALLBACK to profile data
   // Shadow Resume should exclusively use data from the Resume Editor
-  // Handle both old and new form data structures
-  const effectiveExperiences = 
-    formData?.experiences?.experiences || // New nested structure
-    formData?.experiences || // Simple array structure
-    []; // Default empty
+  // Handle both old and new form data structures and ensure arrays
+  const getArrayFromFormData = (data: any): any[] => {
+    if (Array.isArray(data)) return data;
+    if (data && typeof data === 'object' && Array.isArray(data.experiences)) return data.experiences;
+    if (data && typeof data === 'object' && Array.isArray(data.educations)) return data.educations;
+    if (data && typeof data === 'object' && Array.isArray(data.skills)) return data.skills;
+    if (data && typeof data === 'object' && Array.isArray(data.projects)) return data.projects;
+    return [];
+  };
+
+  const effectiveExperiences: any[] = getArrayFromFormData(
+    formData?.experiences?.experiences || formData?.experiences
+  );
     
-  const effectiveEducation = 
-    formData?.education?.educations || // New nested structure
-    formData?.education || // Simple array structure
-    []; // Default empty
+  const effectiveEducation: any[] = getArrayFromFormData(
+    formData?.education?.educations || formData?.education
+  );
     
-  const effectiveSkills = 
-    formData?.skills?.skills || // New nested structure
-    formData?.skills || // Simple array structure
-    []; // Default empty
+  const effectiveSkills: any[] = getArrayFromFormData(
+    formData?.skills?.skills || formData?.skills
+  );
     
-  const effectiveProjects = 
-    formData?.projects?.projects || // New nested structure
-    formData?.projects || // Simple array structure
-    []; // Default empty
+  const effectiveProjects: any[] = getArrayFromFormData(
+    formData?.projects?.projects || formData?.projects
+  );
     
   console.log('Effective data check:', {
     expCount: effectiveExperiences.length,
