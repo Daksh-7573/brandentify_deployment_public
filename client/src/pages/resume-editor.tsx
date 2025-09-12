@@ -368,7 +368,7 @@ export default function ResumeEditor() {
         const profileResponse = await fetch(`/api/users/${userId}/profile`);
         
         if (profileResponse.ok) {
-          const comprehensiveData = await profileResponse.json();
+          const comprehensiveData = await validateAPIResponse(profileResponse);
           console.log('Comprehensive profile data fetched successfully:', comprehensiveData);
           
           // Update all data from the comprehensive response
@@ -392,7 +392,7 @@ export default function ResumeEditor() {
           try {
             const basicProfileResponse = await fetch(`/api/users/${userId}`);
             if (basicProfileResponse.ok) {
-              latestProfileData = await basicProfileResponse.json();
+              latestProfileData = await validateAPIResponse(basicProfileResponse);
               console.log('Basic profile data fetched as fallback:', latestProfileData);
             }
           } catch (error) {
@@ -590,14 +590,15 @@ export default function ResumeEditor() {
       
       console.log('Complete form data to be set:', updatedValues);
       
-      // Reset form with updated values
+      console.log('✅ Updating form with consolidated data - single reset call');
+      // Backup current form data before reset
+      backupCurrentFormData();
+      
+      // SINGLE form.reset call to prevent race conditions
       form.reset(updatedValues);
       
-      // Force re-render to ensure all fields display properly
+      // After updating form values, also save to the database
       setTimeout(async () => {
-        form.reset(updatedValues);
-        
-        // After updating form values, also save to the database
         try {
           // Create JSON string for metadata
           const metadata = JSON.stringify(updatedValues);
@@ -627,11 +628,8 @@ export default function ResumeEditor() {
               }),
             });
             
-            if (!response.ok) {
-              throw new Error(`Failed to update resume: ${response.statusText}`);
-            }
-            
-            console.log("Resume data saved successfully after profile update");
+            const result = await validateAPIResponse(response);
+            console.log("Resume data saved successfully after profile update", result);
             
             // Invalidate the queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
@@ -648,11 +646,8 @@ export default function ResumeEditor() {
               }),
             });
             
-            if (!response.ok) {
-              throw new Error(`Failed to create resume: ${response.statusText}`);
-            }
-            
-            console.log("New resume created successfully from profile data");
+            const result = await validateAPIResponse(response);
+            console.log("New resume created successfully from profile data", result);
             
             // Invalidate the queries to refresh data
             queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
@@ -1091,6 +1086,20 @@ export default function ResumeEditor() {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formInitialized]);
+
+  // Periodic backup mechanism - backup data every 30 seconds when user is actively editing
+  useEffect(() => {
+    if (!formInitialized) return;
+    
+    const periodicBackup = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        backupCurrentFormData();
+        console.log('🔄 Periodic backup completed');
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(periodicBackup);
   }, [formInitialized]);
   
   // Show error toast for partial data loading
