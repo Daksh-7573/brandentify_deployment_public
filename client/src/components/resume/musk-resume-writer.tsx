@@ -161,18 +161,16 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
-              <span>Musk Resume Writer</span>
-            </CardTitle>
-            <CardDescription>
-              Generate professional resume content with AI assistance
-            </CardDescription>
-          </div>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary" />
+            <span>Musk Resume Writer</span>
+          </CardTitle>
         </div>
+        <CardDescription>
+          Generate professional resume content with AI assistance
+        </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-4">
@@ -182,7 +180,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
               key={section}
               size="sm"
               variant={selectedSection === section ? "default" : "outline"}
-              className="gap-1"
+              className="h-8 gap-1"
               onClick={() => handleSelectSection(section as ResumeSection)}
             >
               {icon}
@@ -223,15 +221,18 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           <div className="flex justify-end gap-2">
             <Button 
               variant="outline" 
+              size="sm"
               onClick={() => setPrompt('')}
               disabled={isGenerating || !prompt}
+              className="h-8"
             >
               Clear
             </Button>
             <Button 
+              size="sm"
               onClick={handleGenerate}
               disabled={isGenerating || !prompt}
-              className="gap-1"
+              className="h-8 gap-1"
             >
               {isGenerating ? (
                 <>
@@ -256,15 +257,17 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
+                  size="sm"
                   onClick={() => setGeneratedContent('')}
-                  className="gap-1"
+                  className="h-8 gap-1"
                 >
                   <RotateCw className="h-4 w-4" />
                   <span>Regenerate</span>
                 </Button>
                 <Button 
+                  size="sm"
                   onClick={handleApply}
-                  className="gap-1"
+                  className="h-8 gap-1"
                 >
                   <Pencil className="h-4 w-4" />
                   <span>Apply to Resume</span>
