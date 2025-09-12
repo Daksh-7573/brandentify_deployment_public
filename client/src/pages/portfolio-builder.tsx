@@ -50,7 +50,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
-import { ProfileSkeleton, SectionSkeleton } from "@/components/ui/skeleton-loaders";
+// Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -76,7 +76,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -967,7 +967,10 @@ export default function PortfolioBuilder() {
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
-                userProjects={projects || []}
+                userProjects={projects?.map(project => ({
+                  ...project,
+                  mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : []
+                })) || []}
                 userEducations={educations || []}
                 userServices={services || []}
               />
@@ -1156,23 +1159,55 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
-                    skills={skills || []}
-                    services={services || []}
-                    experiences={experiences || []}
-                    educations={educations || []}
+                    skills={skills?.map(skill => ({
+                      id: skill.id,
+                      name: skill.name,
+                      level: (skill.level as "beginner" | "intermediate" | "advanced") || "beginner",
+                      proficiency: skill.proficiency || 0
+                    })) || []}
+                    services={services?.map(service => ({
+                      id: service.id,
+                      title: service.title,
+                      description: service.description,
+                      price: (service as any).price || null,
+                      isHourly: service.isHourly || false,
+                      category: service.category || 'other',
+                      features: Array.isArray(service.features) ? service.features : []
+                    })) || []}
+                    experiences={experiences?.map(exp => ({
+                      id: exp.id,
+                      title: exp.title,
+                      company: exp.company,
+                      location: exp.location || null,
+                      industry: exp.industry || null,
+                      domain: exp.domain || null,
+                      startDate: exp.startDate,
+                      endDate: exp.endDate || null,
+                      description: exp.description || null,
+                      keyResponsibilities: Array.isArray(exp.keyResponsibilities) ? exp.keyResponsibilities : []
+                    })) || []}
+                    educations={educations?.map(edu => ({
+                      id: edu.id,
+                      degree: edu.degree,
+                      institution: edu.institution,
+                      location: edu.location || null,
+                      startDate: edu.startDate,
+                      endDate: edu.endDate || null,
+                      fieldOfStudy: edu.fieldOfStudy || null,
+                      industry: edu.industry || null,
+                      domain: edu.domain || null,
+                      skillsAcquired: Array.isArray(edu.skillsAcquired) ? edu.skillsAcquired : []
+                    })) || []}
                     projects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
-                      userId: p.userId,
-                      startDate: p.startDate,
-                      createdAt: null,
+                      startDate: p.startDate || '',
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
+                      industry: p.industry || null,
                       thumbnailUrl: p.thumbnailUrl || null,
-                      thumbnailFile: null,
-                      mediaUrls: p.mediaUrls || [],
-                      updatedAt: null
+                      mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : []
                     })) || []}
                   />
                 </CardContent>
