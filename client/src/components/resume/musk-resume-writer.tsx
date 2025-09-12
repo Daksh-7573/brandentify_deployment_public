@@ -165,7 +165,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Zap className="h-5 w-5 text-blue-400" />
+              <Zap className="h-5 w-5 text-foreground" />
               <span>Musk Resume Writer</span>
             </CardTitle>
             <CardDescription className="text-white/70">

@@ -312,13 +312,13 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   });
 
-  // Updated theme to match header bar background color
+  // Updated theme to match neo-glass styling with proper white colors
   const fixedTheme = { 
-    color: 'hsl(var(--foreground))', 
-    accent: 'hsl(var(--border))', 
+    color: 'white', // Use white instead of blue foreground
+    accent: 'rgba(255, 255, 255, 0.1)', // Use white transparent border
     fontClass: 'font-sans',
     background: 'rgba(18, 18, 18, 0.6)', // Same as header bar
-    muted: 'hsl(var(--muted-foreground))'
+    muted: 'rgba(255, 255, 255, 0.6)' // Use white muted instead of blue
   };
 
   // Effect to sync component state with server updates
