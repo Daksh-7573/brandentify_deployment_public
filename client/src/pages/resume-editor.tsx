@@ -1123,7 +1123,7 @@ export default function ResumeEditor() {
           <Button 
             variant="outline" 
             onClick={updateFromProfile}
-            className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+            className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             <span>Update from Profile</span>
@@ -1138,24 +1138,24 @@ export default function ResumeEditor() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-5 w-full mb-6">
-                <TabsTrigger value="personal-info" className="flex items-center gap-1">
+              <TabsList className="grid grid-cols-5 w-full mb-6 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10">
+                <TabsTrigger value="personal-info" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
                   <User2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Personal Info</span>
                 </TabsTrigger>
-                <TabsTrigger value="experience" className="flex items-center gap-1">
+                <TabsTrigger value="experience" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
                   <BriefcaseBusiness className="h-4 w-4" />
                   <span className="hidden sm:inline">Experience</span>
                 </TabsTrigger>
-                <TabsTrigger value="education" className="flex items-center gap-1">
+                <TabsTrigger value="education" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
                   <GraduationCap className="h-4 w-4" />
                   <span className="hidden sm:inline">Education</span>
                 </TabsTrigger>
-                <TabsTrigger value="skills" className="flex items-center gap-1">
+                <TabsTrigger value="skills" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
                   <Trophy className="h-4 w-4" />
                   <span className="hidden sm:inline">Skills</span>
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="flex items-center gap-1">
+                <TabsTrigger value="projects" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
                   <Layout className="h-4 w-4" />
                   <span className="hidden sm:inline">Projects</span>
                 </TabsTrigger>
@@ -1293,7 +1293,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addExperience}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Experience</span>
@@ -1301,7 +1301,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('experiences.experiences')?.map((_, index) => (
-                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Card key={index} className="p-4 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Experience {index + 1}</h4>
                       <Button
@@ -1472,7 +1472,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addEducation}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Education</span>
@@ -1480,7 +1480,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('education.educations')?.map((_, index) => (
-                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Card key={index} className="p-4 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Education {index + 1}</h4>
                       <Button
@@ -1683,7 +1683,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addSkill}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Skill</span>
@@ -1692,7 +1692,7 @@ export default function ResumeEditor() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {form.watch('skills.skills')?.map((_, index) => (
-                    <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
+                    <Card key={index} className="p-4 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="text-md font-medium">Skill {index + 1}</h4>
                         <Button
@@ -1789,7 +1789,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addProject}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Project</span>
@@ -1797,7 +1797,7 @@ export default function ResumeEditor() {
                 </div>
                 
                 {form.watch('projects.projects')?.map((_, index) => (
-                  <Card key={index} className="p-4 bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
+                  <Card key={index} className="p-4 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 shadow-md hover:shadow-lg transition-all duration-300">
                     <div className="flex justify-between items-start mb-4">
                       <h4 className="text-md font-medium">Project {index + 1}</h4>
                       <Button
@@ -1976,14 +1976,14 @@ export default function ResumeEditor() {
                 variant="outline" 
                 type="button" 
                 onClick={handleBack}
-                className="px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 <span>Back</span>
               </Button>
               <Button 
                 type="button" 
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center"
+                className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center justify-center"
                 disabled={isSaving}
                 onClick={async () => {
                   console.log("Manual save triggered");
