@@ -50,7 +50,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
-import { ProfileCardSkeleton, Skeleton } from "@/components/ui/skeleton-components";
+import { ProfileSkeleton, SectionSkeleton } from "@/components/ui/skeleton-loaders";
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -76,7 +76,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "animated-odyssey"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -967,11 +967,7 @@ export default function PortfolioBuilder() {
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
-                userProjects={projects?.map(project => ({
-                  ...project,
-                  mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : [],
-                  industry: project.industry || ''
-                })) || []}
+                userProjects={projects || []}
                 userEducations={educations || []}
                 userServices={services || []}
               />
@@ -1160,35 +1156,23 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
-                    skills={skills?.map(skill => ({
-                      ...skill,
-                      level: ['beginner', 'intermediate', 'advanced'].includes(skill.level) ? skill.level as 'beginner' | 'intermediate' | 'advanced' : 'intermediate'
-                    })) || []}
-                    services={services?.map(service => ({
-                      ...service,
-                      price: service.priceUsd ? parseFloat(service.priceUsd) : null,
-                      isHourly: service.isHourly || false,
-                      category: service.category || '',
-                      features: Array.isArray(service.features) ? service.features : []
-                    })) || []}
-                    experiences={experiences?.map(exp => ({
-                      ...exp,
-                      keyResponsibilities: Array.isArray(exp.keyResponsibilities) ? exp.keyResponsibilities : []
-                    })) || []}
-                    educations={educations?.map(edu => ({
-                      ...edu,
-                      skillsAcquired: Array.isArray(edu.skillsAcquired) ? edu.skillsAcquired : []
-                    })) || []}
+                    skills={skills || []}
+                    services={services || []}
+                    experiences={experiences || []}
+                    educations={educations || []}
                     projects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
-                      startDate: p.startDate || '',
+                      userId: p.userId,
+                      startDate: p.startDate,
+                      createdAt: null,
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
-                      industry: p.industry || null,
                       thumbnailUrl: p.thumbnailUrl || null,
-                      mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : []
+                      thumbnailFile: null,
+                      mediaUrls: p.mediaUrls || [],
+                      updatedAt: null
                     })) || []}
                   />
                 </CardContent>

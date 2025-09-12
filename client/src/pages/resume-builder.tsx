@@ -501,7 +501,6 @@ export default function ResumeBuilder() {
                     </CardContent>
                   </Card>
                 </TabsContent>
-              </div>
             </Tabs>
           </div>
         </div>
