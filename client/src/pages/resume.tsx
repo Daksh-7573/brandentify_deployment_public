@@ -138,28 +138,19 @@ export default function ResumePage() {
                 {/* Tabs Section */}
                 <NeoGlassSection>
                   <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <div className="border-b border-white/10 px-6 pt-4">
-                      <TabsList className="grid w-full grid-cols-3 bg-transparent border border-white/20 h-auto p-1">
-                        <TabsTrigger 
-                          value="shadow-resume" 
-                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                        >
-                          <Zap className="h-4 w-4" />
-                          <span>Shadow Resume</span>
+                    <div className="px-6 pt-4">
+                      <TabsList className="mb-6 dark-tabs-list">
+                        <TabsTrigger value="shadow-resume" className="dark-tabs-trigger">
+                          <Zap className="h-4 w-4 mr-2" />
+                          Shadow Resume
                         </TabsTrigger>
-                        <TabsTrigger 
-                          value="resume-writer" 
-                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span>Resume Writer</span>
+                        <TabsTrigger value="resume-writer" className="dark-tabs-trigger">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Resume Writer
                         </TabsTrigger>
-                        <TabsTrigger 
-                          value="resume-editor" 
-                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                          <span>Resume Editor</span>
+                        <TabsTrigger value="resume-editor" className="dark-tabs-trigger">
+                          <Edit2 className="h-4 w-4 mr-2" />
+                          Resume Editor
                         </TabsTrigger>
                       </TabsList>
                     </div>
