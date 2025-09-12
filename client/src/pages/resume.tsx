@@ -7,14 +7,14 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useShadowResume } from '@/hooks/use-shadow-resume';
 import { Resume } from '@/types/resume';
 
-import { PageLayout } from '@/components/layout/page-layout';
-import { PageHeader } from '@/components/ui/page-header';
+import Header from "@/components/layout/header";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import ShadowResumeSection from '@/components/resume/shadow-resume-section';
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
 import ResumeEditor from '@/pages/resume-editor';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 import { Zap, Upload, FileText, Eye, Edit2 } from 'lucide-react';
 
@@ -102,90 +102,135 @@ export default function ResumePage() {
   };
 
   return (
-    <PageLayout
-      title="Resume & CV"
-      description="View and manage your professional resume"
-      actions={
-        <div className="flex gap-2">
-          <Button onClick={handleUploadResume} className="gap-2">
-            <Upload className="h-4 w-4" />
-            <span>Upload Resume</span>
-          </Button>
-          {/* "Drop & Define" button removed per request */}
-        </div>
-      }
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
     >
-
-      <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="shadow-resume" className="gap-2">
-            <Zap className="h-4 w-4" />
-            <span>Shadow Resume</span>
-          </TabsTrigger>
-          <TabsTrigger value="resume-writer" className="gap-2">
-            <FileText className="h-4 w-4" />
-            <span>Resume Writer</span>
-          </TabsTrigger>
-          <TabsTrigger value="resume-editor" className="gap-2">
-            <Edit2 className="h-4 w-4" />
-            <span>Resume Editor</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="shadow-resume" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            {resume ? (
-              <ShadowResumeSection 
-                user={userData || user} 
-                resume={resume}
-                isCurrentUser={true}
-                isOwner={true}
-                onTabChange={setActiveTab}
-              />
-            ) : createResumeMutation.isPending ? (
-              <div className="flex flex-col items-center justify-center p-10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
-                <Zap className={`h-16 w-16 mb-4 text-blue-400 animate-pulse`} />
-                <div className="space-y-4 text-center">
-                  <h3 className="text-2xl font-bold mb-2 text-white">Generating Your Resume</h3>
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 flex h-screen flex-col">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          {/* Main content area */}
+          <div className="flex-1 overflow-auto">
+            <NeoGlassLayout>
+              <div className="space-y-6">
+                
+                {/* Header Section */}
+                <NeoGlassSection className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h1 className="text-3xl font-bold text-white">Resume & CV</h1>
+                      <p className="text-white/70 mt-2">View and manage your professional resume</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={handleUploadResume} className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20">
+                        <Upload className="h-4 w-4" />
+                        <span>Upload Resume</span>
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-white/70">
-                    Auto-generating your professional resume based on your profile...
-                  </p>
-                </div>
-              </div>
-            ) : isResumeLoading ? (
-              <div className="flex flex-col items-center justify-center p-10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
-                <h3 className="text-xl font-semibold text-white">Loading Resume...</h3>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center p-10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
-                <FileText className="h-16 w-16 mb-4 text-white/60" />
-                <div className="space-y-4 text-center">
-                  <h3 className="text-2xl font-bold mb-2 text-white">Resume Will Auto-Generate</h3>
-                  <p className="text-center text-white/70 mb-4">
-                    Complete your profile and your resume will be automatically generated.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </TabsContent>
+                </NeoGlassSection>
 
-        <TabsContent value="resume-writer" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            <MuskResumeWriter onGenerate={handleGeneratedContent} />
-          </div>
-        </TabsContent>
+                {/* Tabs Section */}
+                <NeoGlassSection>
+                  <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <div className="border-b border-white/10 px-6 pt-4">
+                      <TabsList className="grid w-full grid-cols-3 bg-transparent border border-white/20 h-auto p-1">
+                        <TabsTrigger 
+                          value="shadow-resume" 
+                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                        >
+                          <Zap className="h-4 w-4" />
+                          <span>Shadow Resume</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="resume-writer" 
+                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                        >
+                          <FileText className="h-4 w-4" />
+                          <span>Resume Writer</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="resume-editor" 
+                          className="gap-2 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                          <span>Resume Editor</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
 
-        <TabsContent value="resume-editor" className="space-y-6">
-          {userData ? (
-            <ResumeEditor />
-          ) : null}
-        </TabsContent>
-      </Tabs>
-    </PageLayout>
+                    <TabsContent value="shadow-resume" className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 gap-6">
+                        {resume ? (
+                          <ShadowResumeSection 
+                            user={userData || user} 
+                            resume={resume}
+                            isCurrentUser={true}
+                            isOwner={true}
+                            onTabChange={setActiveTab}
+                          />
+                        ) : createResumeMutation.isPending ? (
+                          <NeoGlassSection className="p-10">
+                            <div className="flex flex-col items-center justify-center text-center">
+                              <Zap className="h-16 w-16 mb-4 text-blue-400 animate-pulse" />
+                              <div className="space-y-4">
+                                <h3 className="text-2xl font-bold mb-2 text-white">Generating Your Resume</h3>
+                                <div className="flex items-center justify-center">
+                                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                                </div>
+                                <p className="text-white/70">
+                                  Auto-generating your professional resume based on your profile...
+                                </p>
+                              </div>
+                            </div>
+                          </NeoGlassSection>
+                        ) : isResumeLoading ? (
+                          <NeoGlassSection className="p-10">
+                            <div className="flex flex-col items-center justify-center text-center">
+                              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                              <h3 className="text-xl font-semibold text-white">Loading Resume...</h3>
+                            </div>
+                          </NeoGlassSection>
+                        ) : (
+                          <NeoGlassSection className="p-10">
+                            <div className="flex flex-col items-center justify-center text-center">
+                              <FileText className="h-16 w-16 mb-4 text-white/60" />
+                              <div className="space-y-4">
+                                <h3 className="text-2xl font-bold mb-2 text-white">Resume Will Auto-Generate</h3>
+                                <p className="text-white/70 mb-4">
+                                  Complete your profile and your resume will be automatically generated.
+                                </p>
+                              </div>
+                            </div>
+                          </NeoGlassSection>
+                        )}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="resume-writer" className="p-6 space-y-6">
+                      <div className="grid grid-cols-1 gap-6">
+                        <MuskResumeWriter onGenerate={handleGeneratedContent} />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="resume-editor" className="p-6 space-y-6">
+                      {userData ? (
+                        <ResumeEditor />
+                      ) : null}
+                    </TabsContent>
+                  </Tabs>
+                </NeoGlassSection>
+
+              </div>
+            </NeoGlassLayout>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
