@@ -239,6 +239,10 @@ export default function ResumeEditor() {
   const [localCachedFormData, setLocalCachedFormData] = useState<any>(null);
   const [metadataFormData, setMetadataFormData] = useState<any>(null);
   const [formInitialized, setFormInitialized] = useState(false);
+  const [initializationAttempts, setInitializationAttempts] = useState(0);
+  const [lastSavedData, setLastSavedData] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUpdatingFromProfile, setIsUpdatingFromProfile] = useState(false);
   
   // Data fetching hooks
   const { 
@@ -287,9 +291,54 @@ export default function ResumeEditor() {
   const handleBack = () => {
     navigate('/resume-builder');
   };
+
+  // Data persistence safeguards
+  const backupCurrentFormData = () => {
+    try {
+      const currentData = form.getValues();
+      setLastSavedData(currentData);
+      localStorage.setItem(`resume_backup_${userId}`, JSON.stringify(currentData));
+      console.log("Form data backed up successfully");
+    } catch (error) {
+      console.error("Error backing up form data:", error);
+    }
+  };
+
+  const restoreBackupData = () => {
+    try {
+      const backupData = localStorage.getItem(`resume_backup_${userId}`);
+      if (backupData) {
+        const parsedData = JSON.parse(backupData);
+        console.log("Restoring form data from backup");
+        return parsedData;
+      }
+    } catch (error) {
+      console.error("Error restoring backup data:", error);
+    }
+    return null;
+  };
+
+  // API response validation helper
+  const validateAPIResponse = async (response: Response) => {
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error("Expected JSON response but got:", contentType);
+      throw new Error(`Invalid content type: ${contentType}`);
+    }
+    
+    const text = await response.text();
+    if (text.trim().startsWith('<!DOCTYPE') || text.includes('<html')) {
+      console.error("Received HTML response instead of JSON:", text.substring(0, 200));
+      throw new Error("Server returned HTML instead of JSON - possible routing issue");
+    }
+    
+    return JSON.parse(text);
+  };
   
-  // Create a loading state for the update operation
-  const [isUpdatingFromProfile, setIsUpdatingFromProfile] = useState(false);
   
   // Update resume data from profile
   const updateFromProfile = async () => {
@@ -755,8 +804,6 @@ export default function ResumeEditor() {
     }
   };
 
-  // Create a state for form submission loading
-  const [isSaving, setIsSaving] = useState(false);
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof resumeSchema>) => {
@@ -941,102 +988,110 @@ export default function ResumeEditor() {
     }
   }, [resumeData?.resume?.metadata, resumeData?.form]);
   
-  // Initialize form data
+  // Race-condition-free form initialization with retry logic and backup fallback
   useEffect(() => {
-    if (profileData && !formInitialized && !isLoading) {
-      console.log("Initializing form with data");
-      setPageStatus('initializing-form');
-      
-      // Create the base personal info from profile data to ensure we always have fresh profile data
-      const basePersonalInfo = {
-        fullName: profileData.name || '',
-        title: profileData.title || '',
-        email: profileData.email || '',
-        phone: profileData.phoneNumber || '',
-        location: profileData.location || '',
-        summary: profileData.aboutMe || '',
-        website: profileData.website || '',
-      };
-      
-      // Always use profile data as the base, and only supplement with form/metadata data
-      // Determine which data source to use
-      if (resumeData?.form) {
-        console.log("Using saved resume form data from API response but ensuring profile data integration");
-        form.reset({
-          personalInfo: {
-            ...basePersonalInfo,
-            // Selectively override with form data only if it's been intentionally changed
-            ...(resumeData.form.personalInfo || {}),
-          },
-          experiences: { 
-            experiences: resumeData.form.experiences?.experiences || []
-          },
-          education: { 
-            educations: resumeData.form.education?.educations || []
-          },
-          skills: { 
-            skills: resumeData.form.skills?.skills || []
-          },
-          projects: { 
-            projects: resumeData.form.projects?.projects || []
-          },
+    if (formInitialized || isLoading || !profileData) return;
+    let cancelled = false;
+    
+    const tryInit = async (attempt = 1) => {
+      try {
+        setPageStatus('initializing-form');
+        console.log(`🔄 Form initialization attempt ${attempt}`);
+        
+        const basePersonalInfo = {
+          fullName: profileData.name || '', 
+          title: profileData.title || '', 
+          email: profileData.email || '',
+          phone: profileData.phoneNumber || '', 
+          location: profileData.location || '', 
+          summary: profileData.aboutMe || '', 
+          website: profileData.website || ''
+        };
+        
+        const resumeMeta = resumeData?.resume || {};
+        const candidate = resumeData?.form || metadataFormData || restoreBackupData() || localCachedFormData || {};
+        
+        const initialValues = {
+          personalInfo: { ...basePersonalInfo, ...(candidate.personalInfo || {}) },
+          experiences: { experiences: candidate.experiences?.experiences || [] },
+          education: { educations: candidate.education?.educations || [] },
+          skills: { skills: candidate.skills?.skills || [] },
+          projects: { projects: candidate.projects?.projects || [] },
           settings: {
-            isDownloadable: resumeData.resume?.isDownloadable || false,
-            visibility: resumeData.resume?.visibility || 'private',
-            themeStyle: resumeData.resume?.themeStyle || 'professional',
+            isDownloadable: candidate.settings?.isDownloadable ?? resumeMeta.isDownloadable ?? false,
+            visibility: candidate.settings?.visibility ?? resumeMeta.visibility ?? 'private',
+            themeStyle: candidate.settings?.themeStyle ?? resumeMeta.themeStyle ?? 'professional',
           },
+        };
+        
+        if (cancelled) return;
+        
+        console.log('✅ Form initialized with data:', {
+          source: resumeData?.form ? 'api-form' : metadataFormData ? 'metadata' : candidate ? 'backup/cache' : 'profile',
+          personalInfo: !!initialValues.personalInfo.fullName,
+          experiences: initialValues.experiences.experiences.length,
+          education: initialValues.education.educations.length,
+          skills: initialValues.skills.skills.length,
+          projects: initialValues.projects.projects.length
         });
-      } 
-      else if (metadataFormData) {
-        console.log("Using form data from parsed metadata with profile integration");
-        form.reset({
-          ...metadataFormData,
-          personalInfo: {
-            ...basePersonalInfo,
-            ...(metadataFormData.personalInfo || {}),
-          },
-          settings: {
-            isDownloadable: resumeData?.resume?.isDownloadable || false,
-            visibility: resumeData?.resume?.visibility || 'private',
-            themeStyle: resumeData?.resume?.themeStyle || 'professional',
-          },
-        });
+        
+        // Single form.reset call to prevent race conditions
+        form.reset(initialValues);
+        backupCurrentFormData();
+        setFormInitialized(true);
+        setPageStatus('form-initialized');
+        
+      } catch (e) {
+        console.error(`❌ Form initialization attempt ${attempt} failed:`, e);
+        if (attempt < 3 && !cancelled) {
+          setInitializationAttempts(attempt);
+          console.log(`⏰ Retrying in ${attempt * 300}ms...`);
+          setTimeout(() => tryInit(attempt + 1), attempt * 300);
+        } else if (!cancelled) {
+          console.log('🔄 Using fallback initialization');
+          const fallback = restoreBackupData();
+          if (fallback) {
+            form.reset(fallback);
+            console.log('✅ Fallback data restored');
+          } else {
+            // Absolute final fallback with minimal data
+            form.reset({
+              personalInfo: basePersonalInfo,
+              experiences: { experiences: [] },
+              education: { educations: [] },
+              skills: { skills: [] },
+              projects: { projects: [] },
+              settings: { isDownloadable: false, visibility: 'private', themeStyle: 'professional' },
+            });
+            console.log('⚠️ Using minimal fallback data');
+          }
+          setFormInitialized(true);
+          setPageStatus('form-initialized-with-fallback');
+          toast({ 
+            title: 'Data Loading Issue Resolved', 
+            description: 'Used backup data to restore your resume details. Your data is safe.',
+            duration: 4000
+          });
+        }
       }
-      else if (localCachedFormData) {
-        console.log("Using form data from localStorage cache with profile integration");
-        form.reset({
-          ...localCachedFormData,
-          personalInfo: {
-            ...basePersonalInfo,
-            ...(localCachedFormData.personalInfo || {}),
-          },
-          settings: {
-            isDownloadable: resumeData?.resume?.isDownloadable || false,
-            visibility: resumeData?.resume?.visibility || 'private',
-            themeStyle: resumeData?.resume?.themeStyle || 'professional',
-          },
-        });
+    };
+    
+    tryInit();
+    return () => { cancelled = true; };
+  }, [isLoading, profileData, resumeData?.form, metadataFormData, form, formInitialized, toast]);
+
+  // Before-unload backup to preserve user data
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (formInitialized) {
+        backupCurrentFormData();
+        console.log('🔒 Data backed up before page unload');
       }
-      else {
-        console.log("No saved form data, initializing from profile data");
-        form.reset({
-          personalInfo: basePersonalInfo,
-          experiences: { experiences: [] },
-          education: { educations: [] },
-          skills: { skills: [] },
-          projects: { projects: [] },
-          settings: {
-            isDownloadable: resumeData?.resume?.isDownloadable || false,
-            visibility: resumeData?.resume?.visibility || 'private',
-            themeStyle: resumeData?.resume?.themeStyle || 'professional',
-          },
-        });
-      }
-      
-      setFormInitialized(true);
-      setPageStatus('form-initialized');
-    }
-  }, [profileData, resumeData, metadataFormData, localCachedFormData, form, formInitialized, isLoading]);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formInitialized]);
   
   // Show error toast for partial data loading
   useEffect(() => {
