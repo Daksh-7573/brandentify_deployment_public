@@ -1202,24 +1202,24 @@ export default function ResumeEditor() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="neo-glass-tabs grid grid-cols-5 w-full mb-6">
-                <TabsTrigger value="personal-info" className="flex items-center gap-1">
+              <TabsList className="dark-tabs-list grid grid-cols-5 w-full mb-6">
+                <TabsTrigger value="personal-info" className="dark-tabs-trigger flex items-center gap-1">
                   <User2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Personal Info</span>
                 </TabsTrigger>
-                <TabsTrigger value="experience" className="flex items-center gap-1">
+                <TabsTrigger value="experience" className="dark-tabs-trigger flex items-center gap-1">
                   <BriefcaseBusiness className="h-4 w-4" />
                   <span className="hidden sm:inline">Experience</span>
                 </TabsTrigger>
-                <TabsTrigger value="education" className="flex items-center gap-1">
+                <TabsTrigger value="education" className="dark-tabs-trigger flex items-center gap-1">
                   <GraduationCap className="h-4 w-4" />
                   <span className="hidden sm:inline">Education</span>
                 </TabsTrigger>
-                <TabsTrigger value="skills" className="flex items-center gap-1">
+                <TabsTrigger value="skills" className="dark-tabs-trigger flex items-center gap-1">
                   <Trophy className="h-4 w-4" />
                   <span className="hidden sm:inline">Skills</span>
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="flex items-center gap-1">
+                <TabsTrigger value="projects" className="dark-tabs-trigger flex items-center gap-1">
                   <Layout className="h-4 w-4" />
                   <span className="hidden sm:inline">Projects</span>
                 </TabsTrigger>
