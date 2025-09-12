@@ -404,6 +404,10 @@ function Router() {
         <ProtectedRoute path="/resume-builder" component={ResumePage} />
       )} />
       
+      <Route path="/resume-editor" component={() => (
+        <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
+      )} />
+      
       <Route path="/brand-quests" component={() => (
         <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
       )} />
