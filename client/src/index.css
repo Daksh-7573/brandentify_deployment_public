@@ -824,18 +824,31 @@ input.smart-radar-input::placeholder {
 }
 
 /* Force white styling for badges in Musk Resume Writer - Maximum specificity */
-.musk-resume-writer-badges .cursor-pointer {
+.musk-resume-writer-badges .cursor-pointer,
+.musk-resume-writer-badges .cursor-pointer *,
+.musk-resume-writer-badges [role="button"],
+.musk-resume-writer-badges [data-radix-collection-item] {
   background-color: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: white !important;
   --tw-border-opacity: 1 !important;
   --tw-bg-opacity: 1 !important;
   --tw-text-opacity: 1 !important;
+  --tw-text-slate-900: white !important;
+  --tw-text-blue-600: white !important;
+  --primary: white !important;
+  --primary-foreground: rgba(18, 18, 18, 0.9) !important;
+  --foreground: white !important;
+  --border: rgba(255, 255, 255, 0.2) !important;
 }
 
-.musk-resume-writer-badges .cursor-pointer:hover {
+.musk-resume-writer-badges .cursor-pointer:hover,
+.musk-resume-writer-badges .cursor-pointer:hover *,
+.musk-resume-writer-badges [role="button"]:hover,
+.musk-resume-writer-badges [data-radix-collection-item]:hover {
   background-color: rgba(255, 255, 255, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
 }
 
 .neo-glass-section .dark-tabs-trigger {
