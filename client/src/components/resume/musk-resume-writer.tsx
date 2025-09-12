@@ -160,7 +160,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
   };
 
   return (
-    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
@@ -251,7 +251,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           {generatedContent && (
             <div className="mt-4 space-y-3">
               <Label className="text-base font-medium text-white">Generated Content</Label>
-              <div className="p-4 rounded-md bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 whitespace-pre-wrap text-white/90">
+              <div className="p-4 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 whitespace-pre-wrap text-white/90">
                 {generatedContent}
               </div>
               <div className="flex justify-end gap-2">
@@ -277,7 +277,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
       </CardContent>
       
       <CardFooter className="flex justify-center border-t pt-4">
-        <p className="text-sm text-muted-foreground text-center max-w-prose">
+        <p className="text-sm text-white/60 text-center max-w-prose">
           Musk uses AI to help you craft professional resume content. For best results, provide specific details about your experience and goals.
         </p>
       </CardFooter>
