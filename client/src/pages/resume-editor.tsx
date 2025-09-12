@@ -2022,7 +2022,7 @@ export default function ResumeEditor() {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-white/20 data-[state=unchecked]:bg-[rgba(18,18,18,0.6)] border border-white/10 focus-visible:ring-2 focus-visible:ring-white/20"
+                        className="data-[state=checked]:bg-[rgba(81,69,205,0.9)] data-[state=unchecked]:bg-[rgba(18,18,18,0.6)] border border-white/10 focus-visible:ring-2 focus-visible:ring-white/20"
                       />
                     </FormControl>
                     <div>
@@ -2041,14 +2041,14 @@ export default function ResumeEditor() {
                 variant="outline" 
                 type="button" 
                 onClick={handleBack}
-                className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                className="neo-glass-button"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 <span>Back</span>
               </Button>
               <Button 
                 type="button" 
-                className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center justify-center"
+                className="neo-glass-button"
                 disabled={isSaving}
                 onClick={async () => {
                   console.log("Manual save triggered");
