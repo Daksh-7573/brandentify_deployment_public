@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 import { 
   Zap,
@@ -417,11 +418,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && (
           <>
             {/* Resume Preview */}
-            <div className="aspect-[3/4] bg-white/5 border border-white/20 rounded-lg flex items-center justify-center overflow-hidden">
-              {resume?.fileData ? (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
-                  {/* Actual resume preview with PDF appearance */}
-                  <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
+            <Card className="aspect-[3/4] bg-white/5 border border-white/20 rounded-lg overflow-hidden">
+              <CardContent className="p-0 h-full">
+                {resume?.fileData ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
+                    {/* Actual resume preview with PDF appearance */}
+                    <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
                     {/* Document header */}
                     <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
                       <div className="flex items-center space-x-2">
@@ -676,17 +678,18 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   
                   {/* Action buttons removed as requested */}
                 </div>
-              ) : (
-                <div className="text-center p-6">
-                  <p className="text-muted-foreground text-sm">Resume Preview</p>
-                  <h2 className="text-xl font-bold mt-2">Resume Preview</h2>
-                  <p className="text-sm text-muted-foreground">Resume data will appear here</p>
-                  
-                  {/* Fallback if no PDF data is available */}
-                  <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="text-center p-6">
+                    <p className="text-muted-foreground text-sm">Resume Preview</p>
+                    <h2 className="text-xl font-bold mt-2">Resume Preview</h2>
+                    <p className="text-sm text-muted-foreground">Resume data will appear here</p>
+                    
+                    {/* Fallback if no PDF data is available */}
+                    <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Download controls removed as requested */}
           </>
