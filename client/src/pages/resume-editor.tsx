@@ -285,7 +285,7 @@ export default function ResumeEditor() {
   
   // Navigation helpers
   const handleBack = () => {
-    navigate('/resume');
+    navigate('/resume-builder');
   };
   
   // Create a loading state for the update operation

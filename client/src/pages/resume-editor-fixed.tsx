@@ -284,7 +284,7 @@ export default function ResumeEditor() {
   
   // Navigation helpers
   const handleBack = () => {
-    navigate('/resume');
+    navigate('/resume-builder');
   };
   
   // Helper functions for form array management
