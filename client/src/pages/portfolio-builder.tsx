@@ -613,15 +613,15 @@ export default function PortfolioBuilder() {
               theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
               showContact: true
             },
-            featuredProjects: projects?.map((project: Project) => project.id) || [],
-            featuredSkills: skills?.map((skill: Skill) => skill.id) || [],
-            featuredExperiences: experiences?.map((exp: WorkExperience) => exp.id) || [],
+            featuredProjects: projectsData?.map((project: Project) => project.id) || [],
+            featuredSkills: skillsData?.map((skill: Skill) => skill.id) || [],
+            featuredExperiences: experiencesData?.map((exp: WorkExperience) => exp.id) || [],
             // Additional analyzed data fields
-            skills: skills || [],
-            experiences: experiences || [],
-            projects: projects || [],
-            educations: educations || [],
-            services: services || [],
+            skills: skillsData || [],
+            experiences: experiencesData || [],
+            projects: projectsData || [],
+            educations: educationsData || [],
+            services: servicesData || [],
             userData: userDetails,
           };
           
