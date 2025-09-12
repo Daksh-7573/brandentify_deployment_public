@@ -50,7 +50,7 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
-import { ProfileSkeleton, SectionSkeleton } from "@/components/ui/skeleton-loaders";
+import { ProfileCardSkeleton, Skeleton } from "@/components/ui/skeleton-components";
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
