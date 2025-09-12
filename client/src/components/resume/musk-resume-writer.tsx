@@ -160,27 +160,29 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
   };
 
   return (
-    <Card className="w-full border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2 sm:pb-3 px-2 sm:px-4 md:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            <span>Musk Resume Writer</span>
-          </CardTitle>
+    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Zap className="h-5 w-5 text-blue-400" />
+              <span>Musk Resume Writer</span>
+            </CardTitle>
+            <CardDescription className="text-white/70">
+              Generate professional resume content with AI assistance
+            </CardDescription>
+          </div>
         </div>
-        <CardDescription>
-          Generate professional resume content with AI assistance
-        </CardDescription>
       </CardHeader>
       
-      <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3 space-y-4">
+      <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
           {Object.entries(sectionIcons).map(([section, icon]) => (
             <Button
               key={section}
               size="sm"
               variant={selectedSection === section ? "default" : "outline"}
-              className="h-8 gap-1"
+              className={`gap-1 ${selectedSection === section ? 'bg-white/20 border-white/40 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
               onClick={() => handleSelectSection(section as ResumeSection)}
             >
               {icon}
@@ -193,7 +195,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="resume-prompt" className="text-base font-medium">
+            <Label htmlFor="resume-prompt" className="text-base font-medium text-white">
               What would you like Musk to help with?
             </Label>
             <div className="flex flex-wrap gap-2 mt-2 mb-3">
@@ -201,7 +203,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
                 <Badge 
                   key={idx} 
                   variant="outline" 
-                  className="cursor-pointer hover:bg-accent transition-colors duration-200"
+                  className="cursor-pointer bg-white/10 border-white/20 text-white hover:bg-white/20 transition-colors duration-200"
                   onClick={() => handlePromptClick(promptTemplate)}
                 >
                   <Lightbulb className="h-3 w-3 mr-1" />
@@ -221,18 +223,16 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           <div className="flex justify-end gap-2">
             <Button 
               variant="outline" 
-              size="sm"
               onClick={() => setPrompt('')}
               disabled={isGenerating || !prompt}
-              className="h-8"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               Clear
             </Button>
             <Button 
-              size="sm"
               onClick={handleGenerate}
               disabled={isGenerating || !prompt}
-              className="h-8 gap-1"
+              className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               {isGenerating ? (
                 <>
@@ -250,24 +250,22 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           
           {generatedContent && (
             <div className="mt-4 space-y-3">
-              <Label className="text-base font-medium">Generated Content</Label>
-              <div className="p-4 rounded-md border bg-muted whitespace-pre-wrap">
+              <Label className="text-base font-medium text-white">Generated Content</Label>
+              <div className="p-4 rounded-md bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 whitespace-pre-wrap text-white/90">
                 {generatedContent}
               </div>
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
-                  size="sm"
                   onClick={() => setGeneratedContent('')}
-                  className="h-8 gap-1"
+                  className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <RotateCw className="h-4 w-4" />
                   <span>Regenerate</span>
                 </Button>
                 <Button 
-                  size="sm"
                   onClick={handleApply}
-                  className="h-8 gap-1"
+                  className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
                 >
                   <Pencil className="h-4 w-4" />
                   <span>Apply to Resume</span>
