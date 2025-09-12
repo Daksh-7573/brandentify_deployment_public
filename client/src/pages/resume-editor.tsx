@@ -1187,7 +1187,7 @@ export default function ResumeEditor() {
           <Button 
             variant="outline" 
             onClick={updateFromProfile}
-            className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+            className="neo-glass-button"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             <span>Update from Profile</span>
@@ -1357,7 +1357,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addExperience}
-                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                    className="neo-glass-button"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Experience</span>
@@ -1519,7 +1519,7 @@ export default function ResumeEditor() {
                     <Button 
                       type="button" 
                       onClick={addExperience}
-                      className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                      className="neo-glass-button"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       <span>Add Experience</span>
@@ -1536,7 +1536,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addEducation}
-                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                    className="neo-glass-button"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Education</span>
@@ -1730,7 +1730,7 @@ export default function ResumeEditor() {
                     <Button 
                       type="button" 
                       onClick={addEducation}
-                      className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                      className="neo-glass-button"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       <span>Add Education</span>
@@ -1747,7 +1747,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addSkill}
-                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                    className="neo-glass-button"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Skill</span>
@@ -1836,7 +1836,7 @@ export default function ResumeEditor() {
                     <Button 
                       type="button" 
                       onClick={addSkill}
-                      className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                      className="neo-glass-button"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       <span>Add Skill</span>
@@ -1853,7 +1853,7 @@ export default function ResumeEditor() {
                     type="button" 
                     variant="outline" 
                     onClick={addProject}
-                    className="px-4 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                    className="neo-glass-button"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     <span>Add Project</span>
@@ -2000,7 +2000,7 @@ export default function ResumeEditor() {
                     <Button 
                       type="button" 
                       onClick={addProject}
-                      className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 shadow-sm font-medium transition-all flex items-center"
+                      className="neo-glass-button"
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       <span>Add Project</span>
