@@ -160,15 +160,15 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
   };
 
   return (
-    <Card className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Zap className="h-5 w-5 text-blue-400" />
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
               <span>Musk Resume Writer</span>
             </CardTitle>
-            <CardDescription className="text-white/70">
+            <CardDescription>
               Generate professional resume content with AI assistance
             </CardDescription>
           </div>
@@ -182,7 +182,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
               key={section}
               size="sm"
               variant={selectedSection === section ? "default" : "outline"}
-              className={`gap-1 ${selectedSection === section ? 'bg-white/20 border-white/40 text-white' : 'bg-white/10 border-white/20 text-white hover:bg-white/20'}`}
+              className="gap-1"
               onClick={() => handleSelectSection(section as ResumeSection)}
             >
               {icon}
@@ -195,7 +195,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="resume-prompt" className="text-base font-medium text-white">
+            <Label htmlFor="resume-prompt" className="text-base font-medium">
               What would you like Musk to help with?
             </Label>
             <div className="flex flex-wrap gap-2 mt-2 mb-3">
@@ -203,7 +203,7 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
                 <Badge 
                   key={idx} 
                   variant="outline" 
-                  className="cursor-pointer bg-white/10 border-white/20 text-white hover:bg-white/20 transition-colors duration-200"
+                  className="cursor-pointer hover:bg-accent transition-colors duration-200"
                   onClick={() => handlePromptClick(promptTemplate)}
                 >
                   <Lightbulb className="h-3 w-3 mr-1" />
@@ -225,14 +225,13 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
               variant="outline" 
               onClick={() => setPrompt('')}
               disabled={isGenerating || !prompt}
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
               Clear
             </Button>
             <Button 
               onClick={handleGenerate}
               disabled={isGenerating || !prompt}
-              className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="gap-1"
             >
               {isGenerating ? (
                 <>
@@ -250,22 +249,22 @@ export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) 
           
           {generatedContent && (
             <div className="mt-4 space-y-3">
-              <Label className="text-base font-medium text-white">Generated Content</Label>
-              <div className="p-4 rounded-md bg-gradient-to-b from-gray-800/20 to-gray-900/10 backdrop-blur-sm border border-white/10 whitespace-pre-wrap text-white/90">
+              <Label className="text-base font-medium">Generated Content</Label>
+              <div className="p-4 rounded-md border bg-muted whitespace-pre-wrap">
                 {generatedContent}
               </div>
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
                   onClick={() => setGeneratedContent('')}
-                  className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  className="gap-1"
                 >
                   <RotateCw className="h-4 w-4" />
                   <span>Regenerate</span>
                 </Button>
                 <Button 
                   onClick={handleApply}
-                  className="gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  className="gap-1"
                 >
                   <Pencil className="h-4 w-4" />
                   <span>Apply to Resume</span>
