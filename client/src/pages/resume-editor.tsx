@@ -1202,24 +1202,24 @@ export default function ResumeEditor() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-5 w-full mb-6 bg-[rgba(18,18,18,0.6)] backdrop-blur-sm border border-white/10">
-                <TabsTrigger value="personal-info" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
+              <TabsList className="neo-glass-tabs grid grid-cols-5 w-full mb-6">
+                <TabsTrigger value="personal-info" className="flex items-center gap-1">
                   <User2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Personal Info</span>
                 </TabsTrigger>
-                <TabsTrigger value="experience" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
+                <TabsTrigger value="experience" className="flex items-center gap-1">
                   <BriefcaseBusiness className="h-4 w-4" />
                   <span className="hidden sm:inline">Experience</span>
                 </TabsTrigger>
-                <TabsTrigger value="education" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
+                <TabsTrigger value="education" className="flex items-center gap-1">
                   <GraduationCap className="h-4 w-4" />
                   <span className="hidden sm:inline">Education</span>
                 </TabsTrigger>
-                <TabsTrigger value="skills" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
+                <TabsTrigger value="skills" className="flex items-center gap-1">
                   <Trophy className="h-4 w-4" />
                   <span className="hidden sm:inline">Skills</span>
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="flex items-center gap-1 data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10 transition-all border border-transparent data-[state=active]:border-white/20">
+                <TabsTrigger value="projects" className="flex items-center gap-1">
                   <Layout className="h-4 w-4" />
                   <span className="hidden sm:inline">Projects</span>
                 </TabsTrigger>
@@ -2022,7 +2022,7 @@ export default function ResumeEditor() {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-[rgba(81,69,205,0.9)] data-[state=unchecked]:bg-[rgba(18,18,18,0.6)] border border-white/10 focus-visible:ring-2 focus-visible:ring-white/20"
+                        className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 shadow-md border border-white/10 backdrop-blur-md"
                       />
                     </FormControl>
                     <div>
