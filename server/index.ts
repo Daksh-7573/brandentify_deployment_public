@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
@@ -81,6 +82,30 @@ app.use((req, res, next) => {
   
   next();
 });
+
+// 🔥 FIREBASE AUTH REVERSE PROXY - Critical for production authentication
+// This proxy forwards Firebase auth requests to keep everything on the same domain
+app.use('/__/auth/*', createProxyMiddleware({
+  target: 'https://brandentifier-app.firebaseapp.com',
+  changeOrigin: true,
+  secure: true,
+  onProxyReq: (proxyReq: any, req: any, res: any) => {
+    console.log(`🔥 [AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+    // Preserve original headers
+    proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+    proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+  },
+  onProxyRes: (proxyRes: any, req: any, res: any) => {
+    console.log(`🔥 [AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+    // Allow all origins for CORS on auth responses
+    proxyRes.headers['access-control-allow-origin'] = '*';
+    proxyRes.headers['access-control-allow-credentials'] = 'true';
+  },
+  onError: (err: any, req: any, res: any) => {
+    console.error(`🚨 [AUTH PROXY] Error proxying to Firebase:`, err);
+    res.status(500).json({ error: 'Firebase auth proxy error' });
+  }
+}));
 
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
 app.use('/api/users/:userId/career-capsule', (req, res, next) => {

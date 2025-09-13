@@ -76,9 +76,9 @@ if (!apiKey || !projectId || !appId) {
 
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // CRITICAL: Always use the official Firebase authDomain to avoid popup white screen
-  // Google OAuth servers need to recognize the authDomain as authorized
-  authDomain: `${projectId}.firebaseapp.com`,
+  // 🔥 REVERSE PROXY AUTH DOMAIN - Use same domain to avoid cross-domain issues
+  // The reverse proxy will forward /__/auth/* routes to Firebase
+  authDomain: currentHostname.includes('replit.app') ? 'brandentifier.replit.app' : `${projectId}.firebaseapp.com`,
   projectId,  
   storageBucket: `${projectId}.appspot.com`,
   appId,
