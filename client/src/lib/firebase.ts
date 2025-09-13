@@ -108,7 +108,7 @@ try {
   
   // Fallback to existing app if available
   if (!app) {
-    const { getApps } = require('firebase/app');
+    const { getApps } = await import('firebase/app');
     const existingApps = getApps();
     if (existingApps.length > 0) {
       app = existingApps[0];
