@@ -4,8 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Clean Google Authentication Button
- * Simple, reliable Firebase Google authentication with redirect flow
+ * Unified Google Authentication Button
+ * Uses shared Firebase instance with domain-aware auth strategy
  */
 export function GoogleAuthButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,114 +13,82 @@ export function GoogleAuthButton() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    console.log('Starting Google authentication...');
+    console.log('🚀 Starting Google authentication...');
 
     try {
-      // Check Firebase environment variables
-      const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-      const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-      const appId = import.meta.env.VITE_FIREBASE_APP_ID;
-
-      if (!apiKey || !projectId || !appId) {
-        throw new Error('Firebase configuration is missing. Please check environment variables.');
-      }
-
-      // Dynamic Firebase imports for optimal loading
-      const [
-        { initializeApp },
-        { getAuth, signInWithRedirect, GoogleAuthProvider }
-      ] = await Promise.all([
-        import('firebase/app'),
-        import('firebase/auth')
-      ]);
-
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey,
-        authDomain: `${projectId}.firebaseapp.com`,
-        projectId,
-        storageBucket: `${projectId}.appspot.com`,
-        appId
-      };
-
-      // Initialize Firebase - use consistent app name
-      const app = initializeApp(firebaseConfig, 'brandentifier-auth-main');
-      const auth = getAuth(app);
+      // Use shared Firebase instances from firebase.ts for consistency
+      const { auth, googleProvider } = await import('@/lib/firebase');
       
-      // Configure Google Provider
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
-      provider.setCustomParameters({
-        prompt: 'select_account',
-        access_type: 'online'
+      if (!auth || !googleProvider) {
+        throw new Error('Firebase authentication is not initialized. Please check your configuration.');
+      }
+      
+      // Type assertion for TypeScript
+      const firebaseAuth = auth as any;
+      const firebaseProvider = googleProvider as any;
+      
+      // Check current domain to determine auth strategy
+      const currentDomain = window.location.hostname;
+      const isReplitPreview = currentDomain.includes('replit.dev') || 
+                             currentDomain === 'localhost' || 
+                             currentDomain === '127.0.0.1';
+      const isPublishedDomain = currentDomain.includes('replit.app') || 
+                               currentDomain === 'brandentifier.com' || 
+                               currentDomain === 'www.brandentifier.com';
+      
+      console.log('🔥 Auth strategy determination:', {
+        currentDomain,
+        isReplitPreview,
+        isPublishedDomain,
+        strategy: isReplitPreview ? 'popup' : 'redirect'
       });
 
       // Store return URL for after authentication
       sessionStorage.setItem('auth_return_url', '/industry-pulse');
       sessionStorage.setItem('auth_timestamp', new Date().toISOString());
+      sessionStorage.setItem('auth_attempt_domain', currentDomain);
 
-      toast({
-        title: 'Redirecting to Google',
-        description: 'You will be redirected to complete authentication...',
-      });
-
-      console.log('Initiating Google redirect...');
+      let result;
       
-      // Use popup flow to avoid X-Frame-Options issues
-      const { signInWithPopup } = await import('firebase/auth');
-      
-      console.log('Opening Google popup...');
-      const result = await signInWithPopup(auth, provider);
+      if (isReplitPreview) {
+        // Use popup for preview domains (works better in development)
+        toast({
+          title: 'Opening Google Sign-In',
+          description: 'A popup window will open for authentication...',
+        });
+        
+        const { signInWithPopup } = await import('firebase/auth');
+        console.log('🚀 Using popup authentication for preview domain');
+        result = await signInWithPopup(firebaseAuth, firebaseProvider);
+      } else {
+        // Use redirect for published domains (more reliable for production)
+        toast({
+          title: 'Redirecting to Google',
+          description: 'You will be redirected to complete authentication...',
+        });
+        
+        const { signInWithRedirect } = await import('firebase/auth');
+        console.log('🚀 Using redirect authentication for published domain');
+        await signInWithRedirect(firebaseAuth, firebaseProvider);
+        return; // Exit here - redirect will handle the rest
+      }
       
       console.log('✅ Google authentication successful:', result.user.email);
+      console.log('🔥 Authentication completed via popup flow');
       
-      // Create Brandentifier account
-      const userData = {
-        firebaseUid: result.user.uid,
-        email: result.user.email || '',
-        name: result.user.displayName || 'Google User',
-        photoURL: result.user.photoURL || '',
-        googleId: result.user.uid,
-        authProvider: 'google',
-        emailVerified: result.user.emailVerified
-      };
-
-      console.log('Sending user data to backend:', userData.email);
-
-      // Call backend to create/get user (backend handles existing accounts)
-      const response = await fetch('/api/auth/google-signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
+      // Firebase auth state will automatically trigger onAuthStateChanged in auth context
+      // Auth context will handle user creation/update via its existing flow
+      console.log('🎉 Authentication successful - Firebase auth state will handle user creation');
+      
+      toast({
+        title: 'Authentication Successful!',
+        description: 'Completing your sign-in...',
+        variant: 'default'
       });
-
-      const data = await response.json();
       
-      if (data.success) {
-        // Trigger custom event for auth context to handle
-        const authEvent = new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        });
-        window.dispatchEvent(authEvent);
-        
-        const isExistingUser = data.user.profileCompleted > 20;
-        
-        toast({
-          title: isExistingUser ? 'Welcome back!' : 'Welcome to Brandentifier!',
-          description: `Signed in as ${data.user.name}`,
-          variant: 'default'
-        });
-        
-        console.log(`User ${isExistingUser ? 'signed in' : 'account created'} successfully`);
-        
-        // Navigate directly to Industry Pulse without delay
-        const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
-        sessionStorage.removeItem('auth_return_url');
-        window.location.href = returnUrl;
-      } else {
-        throw new Error(data.message || 'Authentication failed');
-      }
+      // Let auth context handle the rest via onAuthStateChanged
+      // No manual navigation needed - auth context will redirect appropriately
+      setIsLoading(false);
       
     } catch (error: any) {
       console.error('Google authentication error:', error);
@@ -131,6 +99,12 @@ export function GoogleAuthButton() {
         errorMessage = 'This domain is not authorized for Google authentication. Please contact support.';
       } else if (error.message.includes('Firebase configuration')) {
         errorMessage = 'Firebase is not properly configured. Please contact support.';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Popup was blocked. Please allow popups and try again.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Authentication cancelled. Please try again.';
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        errorMessage = 'Another sign-in popup is already open. Please try again.';
       }
       
       toast({
