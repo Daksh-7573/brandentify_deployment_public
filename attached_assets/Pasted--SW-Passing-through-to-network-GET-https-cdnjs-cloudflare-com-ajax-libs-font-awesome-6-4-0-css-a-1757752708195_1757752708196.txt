@@ -1,0 +1,566 @@
+[SW] Passing through to network: GET https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar6n%3A
+VM11 eruda.js:2 🔄 Starting Google authentication...
+VM11 eruda.js:2 🔧 Firebase auth instance ready
+VM11 eruda.js:2 🔄 Opening Google sign-in popup...
+sw.js:48 [SW] Passing through to network: GET https://apis.google.com/js/api.js?onload=__iframefcb523840
+sw.js:48 [SW] Passing through to network: GET https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PLtFj_-5DjQ.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo-J85zQk73PCqZPyWTydWEIq3_4KA/cb=gapi.loaded_0?le=scs
+sw.js:48 [SW] Passing through to network: GET https://identitytoolkit.googleapis.com/v1/projects?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+sw.js:48 [SW] Passing through to network: POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+sw.js:48 [SW] Passing through to network: POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+VM11 eruda.js:2 ✅ Google popup completed successfully!
+VM11 eruda.js:2 ✅ Google auth result: {email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', uid: 'Unvhj38FHSg36vbagvGL8MvDJuL2'}
+VM11 eruda.js:2 📡 Sending to backend: {email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', authProvider: 'google'}
+sw.js:48 [SW] Passing through to network: POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google-signin
+VM11 eruda.js:2 ✅ Backend response: {success: true, message: 'Authentication successful', user: {…}}
+VM11 eruda.js:2 ✅ Authentication successful - storing user data
+VM11 eruda.js:2 ✅ Redirecting to dashboard...
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/dashboard
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@vite/client
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx?v=-zcKWx_2QDE84HH1BtbFV
+dashboard:99 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+dashboard:100 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/vite/dist/client/env.mjs
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react_jsx-runtime.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-dom_client.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=-zcKWx_2QDE84HH1BtbFV
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/simple-app.tsx?v=-zcKWx_2QDE84HH1BtbFV
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=-zcKWx_2QDE84HH1BtbFV
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/firebase.ts?v=-zcKWx_2QDE84HH1BtbFV
+Console.js:61 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+Console.js:61 [PERF] Service Worker registered in 19.00 ms
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-JXBEF5Z3.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-BFWF7B2R.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WOOG5QLI.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-E27YX2RL.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/firebase_app.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/firebase_auth.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-BYJYLGTN.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-UMWMWBIR.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/queryClient.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/toaster.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/simple-auth-context.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-auth.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/musk/global-musk-button.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/domain-helper.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/firebase/DomainAuthHelper.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/skeleton-components.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/routes/CatchAllAuthHandler.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/add-service.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/ChatPage.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/privacy.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/privacy/cookie-consent-banner.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/direct-users.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/direct-content.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/direct-content-management.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/pitch-deck-download.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-SWNB7ZSQ.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-toast.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/toast.tsx
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=95i4CctX8dlU' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=95i4CctX8dlU' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/musk/musk-button.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/utils.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/firebase.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/lucide-react.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-hook-form.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@hookform_resolvers_zod.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/zod.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/input.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/textarea.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/select.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/form.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/header.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/neo-glass-layout.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IIVLH55Q.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/contexts/ChatContext.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/messaging/Chat.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/attached_assets/Brandentifier%20Landing_1751376023002.png?import
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/privacy/data-request-form.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/tabs.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/card.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/alert.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/button.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/separator.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/dashboard-layout.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/checkbox.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/label.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/dialog.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/table.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/pagination.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/badge.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-toast.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/class-variance-authority.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-MFHZ5U3T.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-ZHDH3PGO.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXLMYNR3.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-3P6OSFRQ.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-44HS2CEP.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-K575VDRE.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OD433RWB.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-ZUO4IXSZ.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-S6RFYFU5.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-HQQ7Q372.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/musk/musk-chat-panel.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/clsx.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/tailwind-merge.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-U7P2NEEE.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-select.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NB7HLLRV.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-6ZMM2PAV.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YGLIHXVI.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5KEUWJQM.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-ACNI6IHD.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-T6T3GSEW.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-B5MGVHF6.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-slot.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/notifications/notification-bell.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/messaging/ConversationList.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/messaging/MessageList.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/messaging/MessageInput.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/scroll-area.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/radio-group.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IQG7ZFGC.js?v=1385e92d
+Console.js:61 [Skeleton] Backup removal after 3s
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-separator.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/right-sidebar.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-label.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-checkbox.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EYSAGQX5.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-Z7XBDXA4.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/musk/suggested-questions.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/popover.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/notifications/notification-list.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/date-fns.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-scroll-area.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-radio-group.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/common/skill-bar.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/profile-utils.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/nowboard/nowboard-panel-simple.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-P4QC2ZW2.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/skeleton.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/auth-context.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/nowboard/nowboard-menu.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-diagnostics.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/dropdown-menu.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/alert-dialog.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-alert-dialog.js?v=1385e92d
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-redirect-handler.ts
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkStoredAuth
+Console.js:61 AuthProvider: Current sessionStorage keys: ['brandentifier_user']
+Console.js:61 AuthProvider: Raw stored data: {"id":2,"username":"Unvhj38FHSg36vbagvGL8MvDJuL2","email":"nishant.brodos@gmail.com","name":"Nishant Chopra","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c","profileCompleted":0,"authProvider":"google","emailVerified":true}
+Console.js:61 AuthProvider: Parsed user data: {email: 'nishant.brodos@gmail.com', id: 2, name: 'Nishant Chopra'}
+Console.js:61 AuthProvider: User state set, isAuthenticated should be true
+Console.js:61 AuthProvider: Setting isLoading to false from checkStoredAuth
+Console.js:61 [PERF] React app rendered in 71.50 ms
+Console.js:61 [PERF] Total initialization time: 71.80 ms
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/industry-pulse-new.tsx
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4833.20ms
+Console.js:61 🔥 Firebase init time: 4833.20ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+sw.js:48 [SW] Passing through to network: GET https://replit.com/public/js/beacon.js
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [PERF] Skeleton loader removed in 166.20 ms
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+sw.js:48 [SW] Passing through to network: POST https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 207.50ms
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4998.50ms
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/avatar.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/carousel.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/industry-pulse/pulse-menu.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/tooltip.tsx
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-avatar.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/embla-carousel-react.js?v=1385e92d
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=1385e92d
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/attached_assets/Brandentifier%20Landing_1751376023002.png
+Console.js:61 Header mounted - invalidating user query
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/nowboard-items
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/nowboard-items?t=1757752702332
+Console.js:61 Fetching data from: /api/pulses
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses?t=1757752702334
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/experiences
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/skills
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/projects
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 13083
+Console.js:61 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:39
+setTimeout
+(anonymous) @ simple-auth-context.tsx:38
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this warning
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+Console.js:61 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+Console.js:61 Fetching data from: /api/users/1/reaction-quota
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/1/reaction-quota?t=5859175
+Console.js:61 Fetching data from: /api/pulses/90/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/90/reactions?t=1757752704082
+Console.js:61 Fetching data from: /api/pulses/89/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/89/reactions?t=1757752704085
+Console.js:61 Fetching data from: /api/pulses/88/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/88/reactions?t=1757752704087
+Console.js:61 Fetching data from: /api/pulses/87/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/87/reactions?t=1757752704089
+Console.js:61 Fetching data from: /api/pulses/86/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/86/reactions?t=1757752704091
+Console.js:61 Fetching data from: /api/pulses/85/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/85/reactions?t=1757752704094
+Console.js:61 Fetching data from: /api/pulses/84/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/84/reactions?t=1757752704097
+Console.js:61 Fetching data from: /api/pulses/83/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/83/reactions?t=1757752704100
+Console.js:61 Fetching data from: /api/pulses/82/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/82/reactions?t=1757752704102
+Console.js:61 Fetching data from: /api/pulses/81/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/81/reactions?t=1757752704104
+Console.js:61 Fetching data from: /api/pulses/80/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/80/reactions?t=1757752704106
+Console.js:61 Fetching data from: /api/pulses/79/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/79/reactions?t=1757752704108
+Console.js:61 Fetching data from: /api/pulses/78/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/78/reactions?t=1757752704110
+Console.js:61 Fetching data from: /api/pulses/77/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/77/reactions?t=1757752704113
+Console.js:61 Fetching data from: /api/pulses/76/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/76/reactions?t=1757752704115
+Console.js:61 Fetching data from: /api/pulses/75/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/75/reactions?t=1757752704118
+Console.js:61 Fetching data from: /api/pulses/74/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/74/reactions?t=1757752704120
+Console.js:61 Fetching data from: /api/pulses/73/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/73/reactions?t=1757752704122
+Console.js:61 Fetching data from: /api/pulses/72/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/72/reactions?t=1757752704124
+Console.js:61 Fetching data from: /api/pulses/71/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/71/reactions?t=1757752704126
+Console.js:61 Fetching data from: /api/pulses/70/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/70/reactions?t=1757752704129
+Console.js:61 Fetching data from: /api/pulses/69/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/69/reactions?t=1757752704131
+Console.js:61 Fetching data from: /api/pulses/68/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/68/reactions?t=1757752704133
+Console.js:61 Fetching data from: /api/pulses/67/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/67/reactions?t=1757752704135
+Console.js:61 Fetching data from: /api/pulses/66/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/66/reactions?t=1757752704138
+Console.js:61 Fetching data from: /api/pulses/65/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/65/reactions?t=1757752704141
+Console.js:61 Fetching data from: /api/pulses/64/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/64/reactions?t=1757752704144
+Console.js:61 Fetching data from: /api/pulses/63/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/63/reactions?t=1757752704146
+Console.js:61 Fetching data from: /api/pulses/62/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/62/reactions?t=1757752704149
+Console.js:61 Fetching data from: /api/pulses/61/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/61/reactions?t=1757752704151
+Console.js:61 Fetching data from: /api/pulses/60/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/60/reactions?t=1757752704154
+Console.js:61 Fetching data from: /api/pulses/59/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/59/reactions?t=1757752704157
+Console.js:61 Fetching data from: /api/pulses/58/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/58/reactions?t=1757752704159
+Console.js:61 Fetching data from: /api/pulses/57/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/57/reactions?t=1757752704161
+Console.js:61 Fetching data from: /api/pulses/56/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/56/reactions?t=1757752704163
+Console.js:61 Fetching data from: /api/pulses/55/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/55/reactions?t=1757752704166
+Console.js:61 Fetching data from: /api/pulses/54/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/54/reactions?t=1757752704168
+Console.js:61 Fetching data from: /api/pulses/53/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/53/reactions?t=1757752704170
+Console.js:61 Fetching data from: /api/pulses/52/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/52/reactions?t=1757752704173
+Console.js:61 Fetching data from: /api/pulses/51/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/51/reactions?t=1757752704175
+Console.js:61 Fetching data from: /api/pulses/50/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/50/reactions?t=1757752704178
+Console.js:61 Fetching data from: /api/pulses/49/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/49/reactions?t=1757752704180
+Console.js:61 Fetching data from: /api/pulses/48/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/48/reactions?t=1757752704183
+Console.js:61 Fetching data from: /api/pulses/47/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/47/reactions?t=1757752704185
+Console.js:61 Fetching data from: /api/pulses/46/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/46/reactions?t=1757752704188
+Console.js:61 Fetching data from: /api/pulses/45/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/45/reactions?t=1757752704190
+Console.js:61 Fetching data from: /api/pulses/44/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/44/reactions?t=1757752704192
+Console.js:61 Fetching data from: /api/pulses/43/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/43/reactions?t=1757752704193
+Console.js:61 Fetching data from: /api/pulses/42/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/42/reactions?t=1757752704195
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/41
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/41?t=1757752704197
+Console.js:61 Fetching data from: /api/pulses/41/poll-votes
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/41/poll-votes?t=1757752704200
+Console.js:61 Fetching data from: /api/pulses/41/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/41/reactions?t=1757752704202
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/40
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1757752704204
+Console.js:61 Fetching data from: /api/pulses/40/poll-votes
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/40/poll-votes?t=1757752704206
+Console.js:61 Fetching data from: /api/pulses/40/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/40/reactions?t=1757752704208
+Console.js:61 Fetching data from: /api/pulses/39/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/39/reactions?t=1757752704210
+Console.js:61 Fetching data from: /api/pulses/38/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/38/reactions?t=1757752704211
+Console.js:61 Fetching data from: /api/pulses/37/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/37/reactions?t=1757752704213
+Console.js:61 Fetching data from: /api/pulses/36/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/36/reactions?t=1757752704216
+Console.js:61 Fetching data from: /api/pulses/35/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/35/reactions?t=1757752704219
+Console.js:61 Fetching data from: /api/pulses/34/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/34/reactions?t=1757752704221
+Console.js:61 Fetching data from: /api/pulses/33/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/33/reactions?t=1757752704223
+Console.js:61 Fetching data from: /api/pulses/32/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/32/reactions?t=1757752704225
+Console.js:61 Fetching data from: /api/pulses/31/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/31/reactions?t=1757752704227
+Console.js:61 Fetching data from: /api/pulses/30/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/30/reactions?t=1757752704228
+Console.js:61 Fetching data from: /api/pulses/29/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/29/reactions?t=1757752704231
+Console.js:61 Fetching data from: /api/pulses/28/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/28/reactions?t=1757752704233
+Console.js:61 Fetching data from: /api/pulses/27/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/27/reactions?t=1757752704236
+Console.js:61 Fetching data from: /api/pulses/26/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/26/reactions?t=1757752704239
+Console.js:61 Fetching data from: /api/pulses/25/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/25/reactions?t=1757752704241
+Console.js:61 Fetching data from: /api/pulses/24/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/24/reactions?t=1757752704244
+Console.js:61 Fetching data from: /api/pulses/23/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/23/reactions?t=1757752704246
+Console.js:61 Fetching data from: /api/pulses/22/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/22/reactions?t=1757752704248
+Console.js:61 Fetching data from: /api/pulses/21/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/21/reactions?t=1757752704251
+Console.js:61 Fetching data from: /api/pulses/20/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/20/reactions?t=1757752704254
+Console.js:61 Fetching data from: /api/pulses/19/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/19/reactions?t=1757752704256
+Console.js:61 Fetching data from: /api/pulses/18/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/18/reactions?t=1757752704259
+Console.js:61 Fetching data from: /api/pulses/17/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/17/reactions?t=1757752704261
+Console.js:61 Fetching data from: /api/pulses/16/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/16/reactions?t=1757752704264
+Console.js:61 Fetching data from: /api/pulses/15/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/15/reactions?t=1757752704266
+Console.js:61 Fetching data from: /api/pulses/14/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/14/reactions?t=1757752704270
+Console.js:61 Fetching data from: /api/pulses/13/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/13/reactions?t=1757752704273
+Console.js:61 Fetching data from: /api/pulses/12/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/12/reactions?t=1757752704275
+Console.js:61 Fetching data from: /api/pulses/11/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/11/reactions?t=1757752704277
+Console.js:61 Fetching data from: /api/pulses/10/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/10/reactions?t=1757752704280
+Console.js:61 Fetching data from: /api/pulses/9/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/9/reactions?t=1757752704282
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/40
+Console.js:61 Fetching data from: /api/pulses/7/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/7/reactions?t=1757752704288
+Console.js:61 Pulse received for carousel: {id: 6, userId: 4, type: 'media-pulse', category: null, title: ' file extension not allowed. I try to upload JPG image. But it still shows error.', …}
+Console.js:61 Media URLs: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+Console.js:61 Media localStorage keys: []
+Console.js:61 Using mediaUrls for carousel: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+Console.js:61 Fetching data from: /api/pulses/6/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/6/reactions?t=1757752704291
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/4
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1757752704293
+Console.js:61 Fetching data from: /api/pulses/4/poll-votes
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/4/poll-votes?t=1757752704295
+Console.js:61 Fetching data from: /api/pulses/4/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/4/reactions?t=1757752704297
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/3
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1757752704300
+Console.js:61 Fetching data from: /api/pulses/3/poll-votes
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/3/poll-votes?t=1757752704303
+Console.js:61 Fetching data from: /api/pulses/3/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/3/reactions?t=1757752704305
+Console.js:61 Fetching data from: /api/pulses/2/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/2/reactions?t=1757752704308
+Console.js:61 Fetching data from: /api/pulses/1/reactions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/1/reactions?t=1757752704310
+sw.js:48 [SW] Passing through to network: GET https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/media/media_4_1748642270806.JPG
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/media/media_4_1748642270808.JPG
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/media/media_4_1748642270809.jpg
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/media/media_4_1748642270811.jpg
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/media/media_4_1748642270812.jpg
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1757752704204 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=1385e92d:840
+run @ @tanstack_react-query.js?v=1385e92d:494
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6018
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5693
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+(anonymous) @ chunk-E27YX2RL.js?v=1385e92d:5515
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1385e92d:555
+flush @ @tanstack_react-query.js?v=1385e92d:569
+batch @ @tanstack_react-query.js?v=1385e92d:587
+dispatch_fn @ @tanstack_react-query.js?v=1385e92d:996
+setData @ @tanstack_react-query.js?v=1385e92d:696
+onSuccess @ @tanstack_react-query.js?v=1385e92d:897
+resolve @ @tanstack_react-query.js?v=1385e92d:456
+Promise.then
+run @ @tanstack_react-query.js?v=1385e92d:498
+start @ @tanstack_react-query.js?v=1385e92d:536
+fetch @ @tanstack_react-query.js?v=1385e92d:926
+executeFetch_fn @ @tanstack_react-query.js?v=1385e92d:2211
+onSubscribe @ @tanstack_react-query.js?v=1385e92d:1898
+subscribe @ @tanstack_react-query.js?v=1385e92d:24
+(anonymous) @ @tanstack_react-query.js?v=1385e92d:3022
+ai @ chunk-E27YX2RL.js?v=1385e92d:3392
+Qj @ chunk-E27YX2RL.js?v=1385e92d:4852
+Hk @ chunk-E27YX2RL.js?v=1385e92d:6117
+Ek @ chunk-E27YX2RL.js?v=1385e92d:5681
+jg @ chunk-E27YX2RL.js?v=1385e92d:2527
+Wk @ chunk-E27YX2RL.js?v=1385e92d:6021
+Pk @ chunk-E27YX2RL.js?v=1385e92d:5964
+Gk @ chunk-E27YX2RL.js?v=1385e92d:5620
+J @ chunk-E27YX2RL.js?v=1385e92d:97
+R @ chunk-E27YX2RL.js?v=1385e92d:129Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/40
