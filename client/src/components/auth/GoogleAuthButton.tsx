@@ -17,7 +17,8 @@ export function GoogleAuthButton() {
 
     try {
       // Use shared Firebase instances from firebase.ts for consistency
-      const { auth, googleProvider } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
+      const { auth, googleProvider }: { auth: any; googleProvider: any } = firebaseModule;
       
       if (!auth || !googleProvider) {
         throw new Error('Firebase authentication is not initialized. Please check your configuration.');

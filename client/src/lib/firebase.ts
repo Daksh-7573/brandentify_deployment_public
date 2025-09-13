@@ -2,7 +2,7 @@
  * Firebase Configuration and Initialization
  * Contains core Firebase setup, authentication, and providers
  */
-import { initializeApp, FirebaseOptions } from "firebase/app";
+import { initializeApp, FirebaseOptions, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Get current hostname for domain-specific configuration 
@@ -108,7 +108,6 @@ try {
   
   // Fallback to existing app if available
   if (!app) {
-    const { getApps } = await import('firebase/app');
     const existingApps = getApps();
     if (existingApps.length > 0) {
       app = existingApps[0];
