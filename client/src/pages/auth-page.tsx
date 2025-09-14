@@ -48,12 +48,22 @@ export default function AuthPage() {
   //   checkRedirect();
   // }, []);
 
-  // Handle authenticated user redirect - prevent redirect loops
+  // Handle authenticated user redirect - prevent redirect loops with flag system
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      console.log("✅ User is authenticated, redirecting to dashboard");
-      // Use React Router navigation instead of window.location to prevent loops
-      setLocation('/dashboard');
+      const redirectKey = 'auth_redirect_performed';
+      const alreadyRedirected = sessionStorage.getItem(redirectKey);
+      
+      console.log("✅ User is authenticated, checking redirect status");
+      console.log("Already redirected?", alreadyRedirected);
+      
+      if (!alreadyRedirected) {
+        console.log("Performing auth page redirect to dashboard");
+        sessionStorage.setItem(redirectKey, 'true');
+        setLocation('/dashboard');
+      } else {
+        console.log("Redirect already performed, skipping auth page redirect");
+      }
     }
   }, [isAuthenticated, isLoading, setLocation]);
 
