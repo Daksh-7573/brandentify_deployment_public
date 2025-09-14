@@ -196,7 +196,29 @@
       }
     };
     
-    // Progressive Service Worker Registration
+    // ⚠️ EMERGENCY FIX: Unregister all service workers on published domain
+    // This fixes the redirect loop issue caused by cached service worker
+    if ('serviceWorker' in navigator && window.location.hostname.includes('replit.app')) {
+      console.log('[SW EMERGENCY FIX] Unregistering all service workers on published domain to fix redirect loops');
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        registrations.forEach(function(registration) {
+          console.log('[SW EMERGENCY FIX] Unregistering:', registration.scope);
+          registration.unregister();
+        });
+        // Clear all caches too
+        caches.keys().then(function(cacheNames) {
+          return Promise.all(
+            cacheNames.map(function(cacheName) {
+              console.log('[SW EMERGENCY FIX] Deleting cache:', cacheName);
+              return caches.delete(cacheName);
+            })
+          );
+        });
+      });
+      return; // Skip normal service worker registration on published domain
+    }
+    
+    // Progressive Service Worker Registration (development only for now)
     if ('serviceWorker' in navigator) {
       // Register immediately for maximum caching benefit
       navigator.serviceWorker.register('/sw.js')

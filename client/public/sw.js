@@ -1,8 +1,9 @@
-// Enhanced Service Worker v2 for Maximum Performance
-const CACHE_NAME = 'brandentifier-v2';
-const STATIC_CACHE_NAME = 'brandentifier-static-v2';
-const API_CACHE_NAME = 'brandentifier-api-v2';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v2';
+// Enhanced Service Worker v3 - FIXED NAVIGATION HANDLING
+const SW_VERSION = 'v3'; // Bumped version to force update
+const CACHE_NAME = 'brandentifier-v3';
+const STATIC_CACHE_NAME = 'brandentifier-static-v3';
+const API_CACHE_NAME = 'brandentifier-api-v3';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v3';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -63,8 +64,8 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v2')) {
-              console.log('[SW v2] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v3')) {
+              console.log('[SW v3] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -76,13 +77,20 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Enhanced fetch strategy with multiple cache layers
+// Enhanced fetch strategy with FIXED navigation handling
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
   
   // Skip non-GET requests and non-http protocols
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
+    return;
+  }
+  
+  // ⚠️ CRITICAL FIX: Never intercept navigation requests to prevent redirect loops
+  if (request.mode === 'navigate') {
+    console.log('[SW v3] Navigation request - passing through to network:', request.url);
+    event.respondWith(fetch(request));
     return;
   }
   
