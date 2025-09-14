@@ -16,59 +16,66 @@ export function FastGoogleAuth() {
     try {
       console.log('🔄 Starting Google authentication...');
       
-      // 🔥 PRODUCTION FIX - Use redirect auth for published domain  
-      const isPublishedDomain = window.location.hostname === 'brandentifier.replit.app';
+      // 🔥 PRODUCTION FIX - Use custom OAuth for all non-development domains  
+      const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
+      const useCustomOAuth = !isDevelopment;
+      
       console.log("Auth domain check:", {
         hostname: window.location.hostname,
-        isPublishedDomain,
-        authMethod: isPublishedDomain ? 'redirect' : 'popup'
+        isDevelopment,
+        useCustomOAuth,
+        authMethod: useCustomOAuth ? 'custom-oauth' : 'firebase-popup'
       });
       
-      // Import Firebase auth
-      const { GoogleAuthProvider } = await import('firebase/auth');
-      const firebaseModule = await import('@/lib/firebase');
-      const auth: any = firebaseModule.auth;
-      
-      if (!auth) {
-        throw new Error('Firebase auth not initialized');
-      }
-
-      console.log('🔧 Firebase auth instance ready');
-
-      // Create Google provider with proper configuration
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
-      
-      // Set custom parameters for consistent behavior
-      provider.setCustomParameters({
-        prompt: 'select_account',
-        access_type: 'online'
-      });
-
-      if (isPublishedDomain) {
-        // Use redirect authentication for published domain to avoid Replit routing issues
-        console.log('🚀 Using redirect authentication for published domain');
-        const { signInWithRedirect } = await import('firebase/auth');
+      if (useCustomOAuth) {
+        // Use custom OAuth flow for published domain to avoid Firebase routing issues
+        console.log('🚀 Using custom OAuth flow for published domain');
         
-        // Clear any old auth flags
-        sessionStorage.removeItem('authAttemptInProgress');
-        localStorage.removeItem('authAttemptInProgress');
+        // Get OAuth URL from our server
+        const response = await fetch('/api/auth/google/url', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
         
-        // Mark redirect attempt
-        sessionStorage.setItem('redirectAuthAttempt', Date.now().toString());
+        if (!response.ok) {
+          throw new Error('Failed to get OAuth URL');
+        }
         
-        await signInWithRedirect(auth, provider);
-        return; // signInWithRedirect doesn't return a result
+        const data = await response.json();
+        console.log('✅ Got OAuth URL, redirecting...');
+        
+        // Redirect to Google OAuth (will come back to our callback)
+        window.location.href = data.oauthUrl;
+        return; // Will redirect
+        
       } else {
-        // Use popup for development domains  
-        console.log('🔄 Opening Google sign-in popup...');
-        const { signInWithPopup } = await import('firebase/auth');
+        // Use Firebase popup for development domains  
+        console.log('🔄 Using Firebase popup for development...');
         
-        // Sign in with popup - this is where the 9-12 second hang happens
+        // Import Firebase auth
+        const { GoogleAuthProvider } = await import('firebase/auth');
+        const firebaseModule = await import('@/lib/firebase');
+        const auth: any = firebaseModule.auth;
+        
+        if (!auth) {
+          throw new Error('Firebase auth not initialized');
+        }
+
+        // Create Google provider with proper configuration
+        const provider = new GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
+        
+        // Set custom parameters for consistent behavior
+        provider.setCustomParameters({
+          prompt: 'select_account',
+          access_type: 'online'
+        });
+        
+        const { signInWithPopup } = await import('firebase/auth');
         const result = await signInWithPopup(auth, provider);
         
-        console.log('✅ Google popup completed successfully!');
+        console.log('✅ Firebase popup completed successfully!');
         console.log('✅ Google auth result:', {
           email: result.user.email,
           name: result.user.displayName,

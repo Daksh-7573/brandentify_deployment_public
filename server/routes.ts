@@ -62,6 +62,7 @@ import { personalizedQuestAssignment } from "./services/personalized-quest-assig
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7265,6 +7266,11 @@ ${extractedText.substring(0, 5000)}
   // Clean Google Authentication routes
   app.use('/api/auth', authRoutes);
   console.log("Clean Google authentication routes loaded");
+  
+  // Custom OAuth routes (bypasses Firebase blocked routes)
+  app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
+  app.get("/auth/google/callback", handleGoogleOAuthCallbackRoute);
+  console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed
   // app.use('/api', careerCapsuleRoutes);
