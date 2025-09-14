@@ -84,25 +84,49 @@ app.use((req, res, next) => {
 });
 
 // 🔥 FIREBASE AUTH REVERSE PROXY - Critical for production authentication
-// This proxy forwards Firebase auth requests to keep everything on the same domain
-app.use('/__/auth/*', createProxyMiddleware({
+// Replit's infrastructure blocks /__/auth/* routes, so we use /api/firebase-auth/* instead
+app.use('/api/firebase-auth/*', createProxyMiddleware({
   target: 'https://brandentifier-app.firebaseapp.com',
   changeOrigin: true,
   secure: true,
+  pathRewrite: {
+    '^/api/firebase-auth': '/__/auth' // Convert our route to Firebase's expected route
+  },
   onProxyReq: (proxyReq: any, req: any, res: any) => {
-    console.log(`🔥 [AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+    console.log(`🔥 [AUTH PROXY] Proxying ${req.method} ${req.originalUrl} -> ${proxyReq.path}`);
     // Preserve original headers
     proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
     proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
   },
   onProxyRes: (proxyRes: any, req: any, res: any) => {
-    console.log(`🔥 [AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+    console.log(`🔥 [AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.originalUrl}`);
     // Allow all origins for CORS on auth responses
     proxyRes.headers['access-control-allow-origin'] = '*';
     proxyRes.headers['access-control-allow-credentials'] = 'true';
   },
   onError: (err: any, req: any, res: any) => {
     console.error(`🚨 [AUTH PROXY] Error proxying to Firebase:`, err);
+    res.status(500).json({ error: 'Firebase auth proxy error' });
+  }
+}));
+
+// 🔥 BACKUP: Keep original /__/auth/* proxy for development environments
+app.use('/__/auth/*', createProxyMiddleware({
+  target: 'https://brandentifier-app.firebaseapp.com',
+  changeOrigin: true,
+  secure: true,
+  onProxyReq: (proxyReq: any, req: any, res: any) => {
+    console.log(`🔥 [BACKUP AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+    proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+    proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+  },
+  onProxyRes: (proxyRes: any, req: any, res: any) => {
+    console.log(`🔥 [BACKUP AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+    proxyRes.headers['access-control-allow-origin'] = '*';
+    proxyRes.headers['access-control-allow-credentials'] = 'true';
+  },
+  onError: (err: any, req: any, res: any) => {
+    console.error(`🚨 [BACKUP AUTH PROXY] Error proxying to Firebase:`, err);
     res.status(500).json({ error: 'Firebase auth proxy error' });
   }
 }));

@@ -76,8 +76,8 @@ if (!apiKey || !projectId || !appId) {
 
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // 🔥 REVERSE PROXY AUTH DOMAIN - Use same domain to avoid cross-domain issues
-  // The reverse proxy will forward /__/auth/* routes to Firebase
+  // 🔥 PRODUCTION FIX - Use same domain but with redirect auth instead of popup
+  // Popup auth requires /__/auth/* routes which Replit's infrastructure blocks
   authDomain: currentHostname.includes('replit.app') ? 'brandentifier.replit.app' : `${projectId}.firebaseapp.com`,
   projectId,  
   storageBucket: `${projectId}.appspot.com`,

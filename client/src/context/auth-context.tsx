@@ -545,60 +545,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Starting Google sign-in");
       
-      // Use the globally configured provider from firebase.ts
-      const { auth, googleProvider } = await import('@/lib/firebase');
-      const { signInWithPopup } = await import('firebase/auth');
+      // 🔥 REPLIT ROUTING FIX - Use redirect auth for published domain
+      const isPublishedDomain = window.location.hostname === 'brandentifier.replit.app';
+      const isDevDomain = window.location.hostname.includes('replit.dev') || window.location.hostname === 'localhost';
       
       console.log("Auth environment:", {
         domain: window.location.hostname,
-        isReplitDomain: window.location.hostname.includes('replit'),
-        usingPopup: true
+        isPublishedDomain,
+        isDevDomain,
+        authMethod: isPublishedDomain ? 'redirect' : 'popup'
       });
       
-      // Clear any old auth flags before starting clean authentication
-      console.log("🔧 Clearing old auth flags for clean start...");
-      sessionStorage.removeItem('redirect_auth_attempt');
-      sessionStorage.removeItem('redirect_auth_time');
-      sessionStorage.removeItem('redirect_auth_success');
-      localStorage.removeItem('redirect_auth_attempt');
-      localStorage.removeItem('redirect_auth_time');
-      localStorage.removeItem('redirect_auth_success');
-      
-      console.log("🔧 Old auth flags cleared, ready for clean popup authentication");
-      
-      // Configure popup with better parameters
+      // Use the globally configured provider from firebase.ts
+      const { auth } = await import('@/lib/firebase');
       const { GoogleAuthProvider } = await import('firebase/auth');
+      
+      // Create enhanced provider with proper scopes
       const enhancedProvider = new GoogleAuthProvider();
       enhancedProvider.addScope('email');
       enhancedProvider.addScope('profile');
       enhancedProvider.setCustomParameters({
         prompt: 'select_account',
-        display: 'popup'
+        access_type: 'online'
       });
 
-      // Use popup method with enhanced error handling and timeout
-      console.log("🚀 Initiating signInWithPopup with enhanced settings...");
-      
-      // Set up popup with specific dimensions for better UX
-      const popupFeatures = 'width=500,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,directories=no,status=no';
-      
-      // Use signInWithPopup with custom popup features
-      const result = await signInWithPopup(auth as any, enhancedProvider);
-      
-      if (result && result.user) {
-        console.log("🎉 Popup authentication successful:", result.user.email);
+      // 🔥 PRODUCTION FIX - Use redirect auth for published domain to avoid Replit routing issues
+      if (isPublishedDomain) {
+        console.log("🚀 Using redirect authentication for published domain");
+        const { signInWithRedirect } = await import('firebase/auth');
         
-        // Show success toast immediately
-        toast({
-          title: "Authentication successful",
-          description: `Welcome ${result.user.displayName || result.user.email}!`,
-        });
+        // Clear any old auth flags
+        sessionStorage.removeItem('authAttemptInProgress');
+        localStorage.removeItem('authAttemptInProgress');
         
-        // The onAuthStateChanged listener will handle the rest
-        return;
+        // Mark redirect attempt
+        sessionStorage.setItem('redirectAuthAttempt', Date.now().toString());
+        
+        await signInWithRedirect(auth as any, enhancedProvider);
+        return; // signInWithRedirect doesn't return a result, handled by onAuthStateChanged
+      } else {
+        // Use popup for development domains
+        console.log("🚀 Using popup authentication for development domain");
+        const { signInWithPopup } = await import('firebase/auth');
+        
+        const result = await signInWithPopup(auth as any, enhancedProvider);
+        
+        if (result && result.user) {
+          console.log("🎉 Popup authentication successful:", result.user.email);
+          // User data will be handled by onAuthStateChanged
+        }
       }
       
-      console.log("Popup authentication completed successfully");
+      console.log("Authentication completed successfully");
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
