@@ -67,10 +67,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Enhanced Firebase auth optimization with caching
+  // Check for server-side JWT sessions on published domains
   useEffect(() => {
-    console.log('[Firebase Auth] Initializing with cached state optimization');
+    console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
+    
+    // Check domain to determine auth method
+    const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
+    console.log('[Auth Context] Domain check:', { 
+      hostname: window.location.hostname, 
+      isDevelopment,
+      authMethod: isDevelopment ? 'firebase' : 'jwt-session-first'
+    });
+    
+    if (!isDevelopment) {
+      // For published domains, check server-side session first
+      console.log('[Auth Context] Checking server-side JWT session...');
+      
+      fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include' // Include cookies
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('No valid session');
+        }
+      })
+      .then(sessionData => {
+        if (sessionData.success && sessionData.user) {
+          console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
+          setUser({
+            uid: sessionData.user.id.toString(),
+            ...sessionData.user
+          });
+          setIsLoading(false);
+          
+          // Store in session storage for consistency
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
+          return; // Skip Firebase auth setup
+        }
+        throw new Error('Invalid session data');
+      })
+      .catch(error => {
+        console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+        console.log('[Auth Context] Falling back to cached state optimization...');
+        
+        // Fall back to cached state check for published domains too
+        const cachedAuth = (window as any).__brandentifier_cached_auth?.();
+        if (cachedAuth) {
+          console.log('[Auth Context] Using cached auth state for instant load');
+          setUser(cachedAuth);
+          setIsLoading(false);
+        } else {
+          console.log('[Auth Context] No cached state, setting loading to false');
+          setIsLoading(false);
+        }
+      });
+      
+      console.log(`[Auth Context] Published domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
+      return; // Skip Firebase-specific logic for published domains
+    }
+    
+    // Development domain - use Firebase with caching
+    console.log('[Auth Context] Development domain - initializing Firebase with cached state optimization');
     
     // Check for cached auth state for immediate load
     const cachedAuth = (window as any).__brandentifier_cached_auth?.();

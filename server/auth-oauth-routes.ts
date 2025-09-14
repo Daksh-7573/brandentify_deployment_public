@@ -364,3 +364,72 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     res.redirect(`/auth?error=callback_error&message=${encodeURIComponent(error.message)}`);
   }
 }
+
+/**
+ * Check current session validity - for client-side auth state detection
+ */
+export async function checkSessionRoute(req: Request, res: Response) {
+  try {
+    console.log('🔍 Checking session validity');
+    
+    // Check if JWT session cookie exists
+    const sessionToken = req.cookies?.brandentifier_session;
+    
+    if (!sessionToken) {
+      console.log('❌ No session cookie found');
+      return res.status(401).json({
+        success: false,
+        error: 'No session found'
+      });
+    }
+    
+    // Verify JWT token
+    try {
+      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+      console.log('✅ Valid session found for user:', decoded.email);
+      
+      // Get fresh user data from database
+      const user = await storage.getUserById(decoded.userId);
+      
+      if (!user) {
+        console.log('❌ User not found in database');
+        return res.status(401).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+      
+      // Return sanitized user data (same format as OAuth callback)
+      const clientUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+        photoURL: user.photoURL,
+        profileCompleted: user.profileCompleted || 0,
+        authProvider: 'google',
+        emailVerified: user.emailVerified
+      };
+      
+      console.log('✅ Session valid, returning user data');
+      return res.json({
+        success: true,
+        user: clientUser
+      });
+      
+    } catch (jwtError) {
+      console.log('❌ Invalid or expired JWT token:', jwtError);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid session token'
+      });
+    }
+    
+  } catch (error: any) {
+    console.error('❌ Session check error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Session check failed'
+    });
+  }
+}
