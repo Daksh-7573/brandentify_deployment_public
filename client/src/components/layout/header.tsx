@@ -116,12 +116,8 @@ export default function Header() {
                   className="flex items-center gap-1.5 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
-                    <img 
-                      src="/brandentifier-logo.png" 
-                      alt="Brandentifier Logo" 
-                      className="w-6 h-6 object-contain"
-                    />
+                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                    <span className="text-black font-bold text-lg">B</span>
                   </div>
                   <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
                     Brandentifier
