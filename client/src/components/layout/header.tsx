@@ -7,7 +7,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
-import brandentifierLogo from "@assets/Brandentifier Icon Logo_1757828181422.png";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -119,7 +118,7 @@ export default function Header() {
                 >
                   <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
                     <img 
-                      src={brandentifierLogo} 
+                      src="/brandentifier-logo.png" 
                       alt="Brandentifier Logo" 
                       className="w-6 h-6 object-contain"
                     />
