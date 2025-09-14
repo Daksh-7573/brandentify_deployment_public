@@ -116,8 +116,16 @@ export default function Header() {
                   className="flex items-center gap-1.5 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
+                    {/* Logo image - currently using B fallback until Borcelle logo is provided */}
                     <span className="text-black font-bold text-lg">B</span>
+                    {/* Uncomment below when logo is available:
+                    <img 
+                      src="/path/to/logo.png" 
+                      alt="Brandentifier Logo" 
+                      className="h-full w-full object-contain"
+                    />
+                    */}
                   </div>
                   <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
                     Brandentifier
