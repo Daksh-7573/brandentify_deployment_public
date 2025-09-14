@@ -272,7 +272,6 @@ function Router() {
       }} />
 
       <Route path="/auth-callback" component={AuthCallbackPage} />
-      <Route path="/__/auth/handler" component={AuthCallbackPage} />
       <Route path="/_/auth/callback" component={AuthCallbackPage} />
       <Route path="/auth/callback" component={AuthCallbackPage} />
       
@@ -612,9 +611,6 @@ function Router() {
       {/* Brand of the Day is now integrated into Nowboard panel */}
       
       {/* Add catch-all route for handling any Google Auth redirects with common Firebase paths */}
-      <Route path="/__/auth/handler">
-        <CatchAllAuthHandler />
-      </Route>
       <Route path="/_/auth/*">
         <CatchAllAuthHandler />
       </Route>
