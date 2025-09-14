@@ -9,6 +9,9 @@ import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trop
 import NotificationBell from "@/components/notifications/notification-bell";
 import logoImage from "@assets/Picture logo_1757829426583.png";
 
+// Add console log to verify the logo path is resolved correctly
+console.log('🔍 Logo image path resolved to:', logoImage);
+
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
   const [path, setLocation] = useLocation();
@@ -118,11 +121,27 @@ export default function Header() {
                   onClick={() => setLocation('/dashboard')}
                 >
                   <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 overflow-hidden">
-                    <img 
-                      src={logoImage} 
-                      alt="Brandentifier Logo" 
-                      className="h-6 w-6 object-contain"
-                    />
+                    {logoImage ? (
+                      <img 
+                        src={logoImage} 
+                        alt="Brandentifier Logo" 
+                        className="h-6 w-6 object-contain"
+                        onLoad={() => console.log('✅ Logo loaded successfully:', logoImage)}
+                        onError={(e) => {
+                          console.error('❌ Logo failed to load:', logoImage);
+                          console.error('Error details:', e);
+                          // Fallback to text logo if image fails
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'block';
+                        }}
+                      />
+                    ) : null}
+                    <span 
+                      className="text-black font-bold text-lg" 
+                      style={{ display: logoImage ? 'none' : 'block' }}
+                    >
+                      B
+                    </span>
                   </div>
                   <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
                     Brandentifier
