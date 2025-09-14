@@ -107,6 +107,21 @@ app.use('/__/auth/*', createProxyMiddleware({
   }
 }));
 
+// 🔧 DEPLOYMENT TEST ENDPOINT - Verify published app is working
+app.get('/api/deployment-test', (req, res) => {
+  console.log(`🚀 [DEPLOYMENT TEST] Request from: ${req.get('host')}`);
+  res.json({
+    status: 'SUCCESS',
+    message: 'Published app is running correctly!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    host: req.get('host'),
+    url: req.originalUrl,
+    proxy_status: 'Firebase auth proxy active',
+    build_version: 'latest'
+  });
+});
+
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
 app.use('/api/users/:userId/career-capsule', (req, res, next) => {
   if (req.method === 'POST') {
