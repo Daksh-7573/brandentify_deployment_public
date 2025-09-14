@@ -48,14 +48,14 @@ export default function AuthPage() {
   //   checkRedirect();
   // }, []);
 
-  // Handle authenticated user redirect with force reload
+  // Handle authenticated user redirect - prevent redirect loops
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      console.log("✅ User is authenticated, forcing redirect to dashboard");
-      // Force a hard redirect to ensure proper navigation
-      window.location.href = '/dashboard';
+      console.log("✅ User is authenticated, redirecting to dashboard");
+      // Use React Router navigation instead of window.location to prevent loops
+      setLocation('/dashboard');
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, setLocation]);
 
   return (
     <div 

@@ -441,16 +441,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
                 
-                // Navigate to industry pulse after successful authentication
-                console.log("🚀 Navigating to industry pulse after successful authentication");
+                // Only redirect if we're on the auth page to prevent loops
+                console.log("🚀 Checking if redirect needed after successful authentication");
                 console.log("Current path:", window.location.pathname);
-                console.log("Current URL:", window.location.href);
                 
-                // Always redirect to industry pulse after successful auth, regardless of current path
-                console.log("✅ Executing immediate redirect to industry pulse");
-                // Use multiple redirect methods to ensure it works
-                window.history.pushState(null, '', '/industry-pulse');
-                window.location.href = '/industry-pulse';
+                if (window.location.pathname === '/auth' || window.location.pathname === '/') {
+                  console.log("✅ Redirecting to dashboard from auth page");
+                  window.location.href = '/dashboard';
+                } else {
+                  console.log("User already on a valid page, skipping redirect");
+                }
               }
             } else {
               console.log("Creating fallback user");
@@ -476,16 +476,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
                 
-                // Navigate to industry pulse after successful authentication
-                console.log("🚀 Navigating to industry pulse after successful authentication (fallback user)");
+                // Only redirect if we're on the auth page to prevent loops (fallback user)
+                console.log("🚀 Checking if redirect needed after successful authentication (fallback user)");
                 console.log("Current path:", window.location.pathname);
-                console.log("Current URL:", window.location.href);
                 
-                // Always redirect to industry pulse after successful auth (fallback user)
-                console.log("✅ Executing immediate redirect to industry pulse (fallback)");
-                // Use multiple redirect methods to ensure it works
-                window.history.pushState(null, '', '/industry-pulse');
-                window.location.href = '/industry-pulse';
+                if (window.location.pathname === '/auth' || window.location.pathname === '/') {
+                  console.log("✅ Redirecting to dashboard from auth page (fallback)");
+                  window.location.href = '/dashboard';
+                } else {
+                  console.log("User already on a valid page, skipping redirect (fallback)");
+                }
               }
             }
           }
