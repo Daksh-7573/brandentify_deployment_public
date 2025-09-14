@@ -48,21 +48,17 @@ export default function AuthPage() {
   //   checkRedirect();
   // }, []);
 
-  // Handle authenticated user redirect - prevent redirect loops with flag system
+  // Simple redirect without loops - only redirect if explicitly on auth page
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      const redirectKey = 'auth_redirect_performed';
-      const alreadyRedirected = sessionStorage.getItem(redirectKey);
-      
-      console.log("✅ User is authenticated, checking redirect status");
-      console.log("Already redirected?", alreadyRedirected);
-      
-      if (!alreadyRedirected) {
-        console.log("Performing auth page redirect to dashboard");
-        sessionStorage.setItem(redirectKey, 'true');
-        setLocation('/dashboard');
-      } else {
-        console.log("Redirect already performed, skipping auth page redirect");
+      // Only redirect if we're specifically on the auth page
+      const currentPath = window.location.pathname;
+      if (currentPath === '/auth') {
+        console.log("✅ User authenticated on auth page, redirecting to dashboard");
+        // Use setTimeout to avoid any timing issues
+        setTimeout(() => {
+          setLocation('/dashboard');
+        }, 100);
       }
     }
   }, [isAuthenticated, isLoading, setLocation]);

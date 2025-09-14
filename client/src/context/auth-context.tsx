@@ -441,20 +441,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
                 
-                // Use a flag to prevent multiple redirects
-                const redirectKey = 'auth_redirect_performed';
-                const alreadyRedirected = sessionStorage.getItem(redirectKey);
-                
-                console.log("🚀 Checking if redirect needed after successful authentication");
+                // Simple conditional redirect - only from auth or root
+                console.log("🚀 User authenticated, checking if redirect needed");
                 console.log("Current path:", window.location.pathname);
-                console.log("Already redirected?", alreadyRedirected);
                 
-                if (!alreadyRedirected && (window.location.pathname === '/auth' || window.location.pathname === '/')) {
-                  console.log("✅ Performing one-time redirect to dashboard");
-                  sessionStorage.setItem(redirectKey, 'true');
-                  window.location.href = '/dashboard';
+                const currentPath = window.location.pathname;
+                if (currentPath === '/auth' || currentPath === '/') {
+                  console.log("✅ Redirecting from auth/root to dashboard");
+                  // Use setTimeout to prevent race conditions
+                  setTimeout(() => {
+                    window.location.href = '/dashboard';
+                  }, 200);
                 } else {
-                  console.log("Skipping redirect - either already done or on valid page");
+                  console.log("User already on valid page, no redirect needed");
                 }
               }
             } else {
@@ -481,20 +480,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
                 
-                // Use a flag to prevent multiple redirects (fallback user)
-                const redirectKey = 'auth_redirect_performed';
-                const alreadyRedirected = sessionStorage.getItem(redirectKey);
-                
-                console.log("🚀 Checking if redirect needed after successful authentication (fallback user)");
+                // Simple conditional redirect - only from auth or root (fallback)
+                console.log("🚀 User authenticated (fallback), checking if redirect needed");
                 console.log("Current path:", window.location.pathname);
-                console.log("Already redirected?", alreadyRedirected);
                 
-                if (!alreadyRedirected && (window.location.pathname === '/auth' || window.location.pathname === '/')) {
-                  console.log("✅ Performing one-time redirect to dashboard (fallback)");
-                  sessionStorage.setItem(redirectKey, 'true');
-                  window.location.href = '/dashboard';
+                const currentPath = window.location.pathname;
+                if (currentPath === '/auth' || currentPath === '/') {
+                  console.log("✅ Redirecting from auth/root to dashboard (fallback)");
+                  // Use setTimeout to prevent race conditions
+                  setTimeout(() => {
+                    window.location.href = '/dashboard';
+                  }, 200);
                 } else {
-                  console.log("Skipping redirect - either already done or on valid page (fallback)");
+                  console.log("User already on valid page, no redirect needed (fallback)");
                 }
               }
             }
