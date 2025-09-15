@@ -288,19 +288,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     const currentHost = req.get('host') || 'localhost:5000';
     const isProduction = currentHost.includes('replit.app');
     
-    // Set session cookie with exact domain for published Replit app
+    // Set session cookie with correct domain for published Replit app
     const cookieOptions = {
       httpOnly: true,
-      secure: true,        // Required on HTTPS
-      sameSite: isProduction ? 'none' as const : 'lax' as const,  // SameSite=None for third-party OAuth on production
+      secure: isProduction,        // Secure only on HTTPS
+      sameSite: 'lax' as const,    // Use 'lax' for same-site requests to work properly
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
     
-    // For production, set exact domain; for dev, omit domain
-    if (isProduction) {
-      (cookieOptions as any).domain = 'brandentifier.replit.app';
-    }
+    // DO NOT set domain for Replit - let browser handle it automatically
+    // Setting domain can cause cross-subdomain issues on replit.app
     
     console.log('🍪 Setting cookie with options:', {
       domain: (cookieOptions as any).domain || 'omitted',
