@@ -197,4 +197,13 @@ router.get('/user', async (req, res) => {
   }
 });
 
+/**
+ * Replit Auth Login Redirect
+ * Redirects from /api/auth/login to /api/login to match the Replit auth system
+ */
+router.get('/login', (req, res) => {
+  console.log('🔄 Redirecting /api/auth/login to /api/login for Replit auth');
+  res.redirect('/api/login');
+});
+
 export { router as authRoutes };
