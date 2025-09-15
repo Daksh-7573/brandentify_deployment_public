@@ -1,26 +1,8 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
-import { 
-  signInWithRedirect,
-  signInWithPopup,
-  getRedirectResult,
-  signOut as firebaseSignOut, 
-  onAuthStateChanged, 
-  GoogleAuthProvider, 
-  User as FirebaseUser,
-  AuthErrorCodes
-} from "firebase/auth";
-// Firebase imports will be done dynamically to avoid type issues
+// CRITICAL: NO static Firebase imports in production - all dynamic imports only
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
-import { logDetailedAuthError } from "@/utils/auth-error-logger";
-import { logAuthError, checkFirebaseConfig } from "@/utils/auth-diagnostics";
-import { 
-  createEnhancedGoogleProvider, 
-  isReplitDomain, 
-  shouldUseRedirectAuth, 
-  clearAuthStorageData 
-} from "@/utils/auth-popup-fix";
 
 // Define our auth user type
 type AuthUser = {
