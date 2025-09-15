@@ -82,8 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid OAuth response');
       }
 
-      // Redirect to Google OAuth
-      window.location.href = data.oauthUrl;
+      // Redirect to Google OAuth - use replace to ensure proper navigation
+      console.log("🔄 Redirecting to Google OAuth:", data.oauthUrl);
+      window.location.replace(data.oauthUrl);
       
     } catch (error) {
       console.error('Google sign in failed:', error);
