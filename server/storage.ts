@@ -110,6 +110,7 @@ async function executeQuery(queryText: string, params: any[] = []) {
 }
 import { 
   users, User, InsertUser, 
+  userAuthMapping, UserAuthMapping, InsertUserAuthMapping,  // Added for Replit Auth
   resumes, Resume, InsertResume,
   workExperiences, WorkExperience, InsertWorkExperience,
   educations, Education, InsertEducation,
@@ -262,6 +263,10 @@ export interface IStorage {
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
+  
+  // Replit Auth operations - blueprint:javascript_log_in_with_replit
+  getUserByReplitUserId(replitUserId: string): Promise<User | undefined>;
+  upsertUserAuthMapping(data: { replitUserId: string; email?: string; firstName?: string; lastName?: string; profileImageUrl?: string; }): Promise<User>;
   getAllUsers(): Promise<User[]>;
   
   // Poll Vote operations
@@ -8887,6 +8892,118 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Replit Auth operations - blueprint:javascript_log_in_with_replit
+  async getUserByReplitUserId(replitUserId: string): Promise<User | undefined> {
+    try {
+      console.log(`[DatabaseStorage.getUserByReplitUserId] Looking up user with Replit User ID: ${replitUserId}`);
+      
+      // Join userAuthMapping with users table to get the full user record
+      const query = `
+        SELECT u.* 
+        FROM users u 
+        INNER JOIN user_auth_mapping uam ON u.id = uam.user_id 
+        WHERE uam.replit_user_id = $1
+      `;
+      
+      const result = await pool.query(query, [replitUserId]);
+      
+      if (result.rows.length > 0) {
+        console.log(`[DatabaseStorage.getUserByReplitUserId] Found user for Replit ID ${replitUserId}:`, result.rows[0]);
+        return result.rows[0] as User;
+      }
+      
+      console.log(`[DatabaseStorage.getUserByReplitUserId] No user found for Replit ID ${replitUserId}`);
+      return undefined;
+    } catch (error) {
+      console.error(`[DatabaseStorage.getUserByReplitUserId] Error:`, error);
+      throw error;
+    }
+  }
+
+  async upsertUserAuthMapping(data: { 
+    replitUserId: string; 
+    email?: string; 
+    firstName?: string; 
+    lastName?: string; 
+    profileImageUrl?: string; 
+  }): Promise<User> {
+    try {
+      console.log(`[DatabaseStorage.upsertUserAuthMapping] Upserting auth mapping for Replit ID: ${data.replitUserId}`);
+      
+      // First, check if mapping already exists
+      const existingUser = await this.getUserByReplitUserId(data.replitUserId);
+      if (existingUser) {
+        console.log(`[DatabaseStorage.upsertUserAuthMapping] Found existing user:`, existingUser);
+        
+        // Update the auth mapping with new data
+        const updateMappingQuery = `
+          UPDATE user_auth_mapping 
+          SET email = $2, first_name = $3, last_name = $4, profile_image_url = $5, updated_at = NOW()
+          WHERE replit_user_id = $1
+        `;
+        
+        await pool.query(updateMappingQuery, [
+          data.replitUserId,
+          data.email || null,
+          data.firstName || null,
+          data.lastName || null,
+          data.profileImageUrl || null
+        ]);
+        
+        // Update the user record with any new profile data
+        if (data.email || data.firstName || data.lastName || data.profileImageUrl) {
+          const userUpdateData: Partial<User> = {};
+          if (data.email) userUpdateData.email = data.email;
+          if (data.firstName || data.lastName) {
+            userUpdateData.name = `${data.firstName || ''} ${data.lastName || ''}`.trim() || null;
+          }
+          if (data.profileImageUrl) userUpdateData.photoURL = data.profileImageUrl;
+          
+          const updatedUser = await this.updateUser(existingUser.id, userUpdateData);
+          return updatedUser || existingUser;
+        }
+        
+        return existingUser;
+      }
+      
+      // Create new user if mapping doesn't exist
+      console.log(`[DatabaseStorage.upsertUserAuthMapping] Creating new user for Replit ID: ${data.replitUserId}`);
+      
+      // Generate username based on email or Replit ID
+      const username = data.email ? data.email.split('@')[0] : `user_${data.replitUserId}`;
+      const name = `${data.firstName || ''} ${data.lastName || ''}`.trim() || null;
+      
+      // Create the user first
+      const newUser = await this.createUser({
+        username,
+        email: data.email || `${data.replitUserId}@replit.local`,
+        name,
+        photoURL: data.profileImageUrl || null,
+      });
+      
+      // Create the auth mapping
+      const createMappingQuery = `
+        INSERT INTO user_auth_mapping (user_id, replit_user_id, email, first_name, last_name, profile_image_url)
+        VALUES ($1, $2, $3, $4, $5, $6)
+      `;
+      
+      await pool.query(createMappingQuery, [
+        newUser.id,
+        data.replitUserId,
+        data.email || null,
+        data.firstName || null,
+        data.lastName || null,
+        data.profileImageUrl || null
+      ]);
+      
+      console.log(`[DatabaseStorage.upsertUserAuthMapping] Created new user and mapping:`, newUser);
+      return newUser;
+    } catch (error) {
+      console.error(`[DatabaseStorage.upsertUserAuthMapping] Error:`, error);
+      throw error;
+    }
+  }
+
   async getAllUsers(): Promise<User[]> {
     return db.select().from(users);
   }
@@ -11977,6 +12094,10 @@ export const storage = {
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
   createUser: (user: InsertUser) => dbStorage.createUser(user),
   updateUser: (id: number, userData: Partial<User>) => dbStorage.updateUser(id, userData),
+  
+  // Replit Auth operations - blueprint:javascript_log_in_with_replit
+  getUserByReplitUserId: (replitUserId: string) => dbStorage.getUserByReplitUserId(replitUserId),
+  upsertUserAuthMapping: (data: { replitUserId: string; email?: string; firstName?: string; lastName?: string; profileImageUrl?: string; }) => dbStorage.upsertUserAuthMapping(data),
   
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
