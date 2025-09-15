@@ -173,7 +173,8 @@ app.use((req, res, next) => {
   res.header('Content-Security-Policy', 
     `frame-ancestors 'self' ${trustedFrameOrigins.join(' ')}; ` +
     `connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; ` +
-    `form-action 'self' https://accounts.google.com;`
+    `form-action 'self' https://accounts.google.com; ` +
+    `navigate-to https://accounts.google.com;`
   );
   
   // Handle preflight requests
