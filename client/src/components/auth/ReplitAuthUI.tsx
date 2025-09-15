@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
  * Uses Replit's OIDC authentication system
  */
 export function ReplitAuthUI() {
+  console.log('🔧 ReplitAuthUI component is rendering!');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
