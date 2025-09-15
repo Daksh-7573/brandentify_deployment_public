@@ -1,108 +1,24 @@
-// Bootstrap pattern to surface startup errors and prevent pre-log crashes
-console.log("🚀 Server bootstrap started");
+import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
+import fileUpload from "express-fileupload";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import { registerRoutes } from "./routes";
+import { setupVite, serveStatic, log } from "./vite";
+import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
+import { setupSecurity, validateFileUpload } from "./security";
+import { setupInfrastructureSecurity } from "./infrastructure-security";
+import { setupPrivacyRoutes } from "./privacy-compliance";
+import { aiSecurityMiddleware } from "./ai-security";
+import { securityMonitoringMiddleware } from "./security-monitoring";
+import securityDashboardRoutes from "./security-dashboard";
+import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
+import { apiGateway } from "./services/api-gateway";
+import { messageQueue, TaskTypes } from "./services/message-queue";
+import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
+import { cacheMiddleware } from "./middleware/cache-middleware";
+import { performanceMiddleware } from "./middleware/performance-middleware";
 
-// Type-only imports for TypeScript
-import type { Request, Response, NextFunction } from 'express';
-
-// Process-level error handlers MUST be first
-process.on('uncaughtException', (error) => {
-  console.error('🚨 UNCAUGHT EXCEPTION:', error);
-  console.error(error.stack);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('🚨 UNHANDLED REJECTION:', reason);
-  console.error('Promise:', promise);
-  process.exit(1);
-});
-
-// Main async bootstrap function with dynamic imports
-async function main() {
-  try {
-    console.log("📦 Loading core dependencies...");
-    
-    // Dynamic imports to prevent startup crashes from missing deps
-    const express = (await import("express")).default;
-    const path = await import("path");
-    const fileUpload = (await import("express-fileupload")).default;
-    const { createProxyMiddleware } = await import("http-proxy-middleware");
-    const { registerRoutes } = await import("./routes");
-    const { setupVite, serveStatic, log } = await import("./vite");
-    const { questProgressMiddleware } = await import("./middleware/quest-progress-tracker");
-    const { setupSecurity, validateFileUpload } = await import("./security");
-    const { setupInfrastructureSecurity } = await import("./infrastructure-security");
-    const { setupPrivacyRoutes } = await import("./privacy-compliance");
-    const { aiSecurityMiddleware } = await import("./ai-security");
-    const { securityMonitoringMiddleware } = await import("./security-monitoring");
-    const sdr = await import("./security-dashboard"); 
-    const securityDashboardRoutes = sdr.default ?? sdr;
-    const { firebaseAuthRedirectHandler } = await import("./firebase-auth-handler");
-    const { apiGateway } = await import("./services/api-gateway");
-    const { messageQueue, TaskTypes } = await import("./services/message-queue");
-    const { muskPulseScheduler } = await import("./services/musk-pulse-scheduler");
-    const { cacheMiddleware } = await import("./middleware/cache-middleware");
-    const { performanceMiddleware } = await import("./middleware/performance-middleware");
-    const fs = await import("fs");
-    const cookieParser = (await import("cookie-parser")).default;
-    
-    console.log("✅ All dependencies loaded");
-    
-    const app = express();
-    console.log("✅ Express app created");
-
-    // 🚫 DISABLE Firebase proxies in production - they cause redirect loops
-    // Force development mode when source files exist (Replit sets NODE_ENV=production even in dev)
-    const hasSourceFiles = (() => {
-      try {
-        const clientSrcExists = fs.existsSync('client/src');
-        const viteConfigExists = fs.existsSync('vite.config.ts');
-        console.log(`🔍 Source file check: client/src=${clientSrcExists}, vite.config.ts=${viteConfigExists}`);
-        return clientSrcExists && viteConfigExists;
-      } catch (error) {
-        console.log(`🚨 Source file check error:`, error);
-        return false;
-      }
-    })();
-    const isDevelopment = hasSourceFiles || process.env.NODE_ENV !== 'production';
-    console.log(`🔍 Environment check: hasSourceFiles=${hasSourceFiles}, NODE_ENV=${process.env.NODE_ENV}, isDevelopment=${isDevelopment}`);
-
-    if (isDevelopment) {
-      // 🔧 Development only: Keep Firebase auth proxy for local development
-      console.log("🔧 Development mode: Enabling Firebase auth proxy");
-      
-      app.use('/__/auth/*', createProxyMiddleware({
-        target: 'https://brandentifier-app.firebaseapp.com',
-        changeOrigin: true,
-        secure: true,
-        onProxyReq: (proxyReq: any, req: any, res: any) => {
-          console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
-          proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
-          proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
-        },
-        onProxyRes: (proxyRes: any, req: any, res: any) => {
-          console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-          proxyRes.headers['access-control-allow-origin'] = '*';
-          proxyRes.headers['access-control-allow-credentials'] = 'true';
-        },
-        onError: (err: any, req: any, res: any) => {
-          console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
-          res.status(500).json({ error: 'Firebase auth proxy error' });
-        }
-      }));
-    } else {
-      // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
-      console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
-      
-      app.use('/__/auth/*', (req, res) => {
-        console.log(`🚫 Blocked Firebase auth route: ${req.method} ${req.path}`);
-        res.status(410).json({
-          error: 'Firebase auth disabled',
-          message: 'Firebase authentication is disabled on published domains. Please use /api/auth/google/url for authentication.',
-          redirect: '/auth'
-        });
-      });
-    }
+const app = express();
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
@@ -119,8 +35,33 @@ app.use((req, res, next) => {
     console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
     return next();
   }
+
+  // Force removal of X-Frame-Options header - this must run before all other middleware
+  // Remove any existing X-Frame-Options header
+  res.removeHeader('X-Frame-Options');
   
-  console.log(`🔧 Request: ${req.method} ${req.path} - security headers applied`);
+  // Override the setHeader method to prevent X-Frame-Options from being set
+  const originalSetHeader = res.setHeader.bind(res);
+  res.setHeader = function(name: string, value: any) {
+    if (name.toLowerCase() === 'x-frame-options') {
+      console.log(`🚫 Blocked attempt to set X-Frame-Options: ${value}`);
+      return this; // Don't set the header
+    }
+    return originalSetHeader(name, value);
+  };
+  
+  // Also override res.end to ensure no headers are set at response time
+  const originalEnd = res.end.bind(res);
+  res.end = function(chunk?: any, encoding?: any) {
+    // Final removal of X-Frame-Options right before sending response (only if headers haven't been sent)
+    if (!this.headersSent) {
+      this.removeHeader('X-Frame-Options');
+      console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
+    }
+    return originalEnd.call(this, chunk, encoding);
+  };
+  
+  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
   next();
 });
 
@@ -159,22 +100,9 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   
-  // Security headers with proper X-Frame-Options protection
-  res.header('X-Frame-Options', 'SAMEORIGIN'); // Allow same-origin framing by default
+  // Forcibly remove X-Frame-Options to allow iframe embedding
+  res.removeHeader('X-Frame-Options');
   res.header('X-Content-Type-Options', 'nosniff');
-  
-  // Content Security Policy with frame-ancestors allowlist and Google OAuth support
-  const trustedFrameOrigins = [
-    'https://brandentifier.com',
-    'https://www.brandentifier.com',
-    'https://brandentifier.replit.app'
-  ];
-  
-  res.header('Content-Security-Policy', 
-    `frame-ancestors 'self' ${trustedFrameOrigins.join(' ')}; ` +
-    `connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; ` +
-    `form-action 'self' https://accounts.google.com;`
-  );
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -185,6 +113,54 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🚫 DISABLE Firebase proxies in production - they cause redirect loops
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+if (isDevelopment) {
+  // 🔧 Development only: Keep Firebase auth proxy for local development
+  console.log("🔧 Development mode: Enabling Firebase auth proxy");
+  
+  app.use('/__/auth/*', createProxyMiddleware({
+    target: 'https://brandentifier-app.firebaseapp.com',
+    changeOrigin: true,
+    secure: true,
+    onProxyReq: (proxyReq: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+      proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+      proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+    },
+    onProxyRes: (proxyRes: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      proxyRes.headers['access-control-allow-credentials'] = 'true';
+    },
+    onError: (err: any, req: any, res: any) => {
+      console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
+      res.status(500).json({ error: 'Firebase auth proxy error' });
+    }
+  }));
+} else {
+  // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
+  console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
+  
+  app.use('/__/auth/*', (req, res) => {
+    console.log(`🚫 Blocked Firebase auth route: ${req.method} ${req.path}`);
+    res.status(410).json({
+      error: 'Firebase auth disabled',
+      message: 'Firebase authentication is disabled on published domains. Please use /api/auth/google/url for authentication.',
+      redirect: '/auth'
+    });
+  });
+  
+  app.use('/api/firebase-auth/*', (req, res) => {
+    console.log(`🚫 Blocked Firebase proxy route: ${req.method} ${req.path}`);
+    res.status(410).json({
+      error: 'Firebase auth disabled', 
+      message: 'Firebase authentication is disabled on published domains. Please use /api/auth/google/url for authentication.',
+      redirect: '/auth'
+    });
+  });
+}
 
 // 🔧 DEPLOYMENT TEST ENDPOINT - Verify published app is working
 app.get('/api/deployment-test', (req, res) => {
@@ -388,25 +364,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-    // Create uploads directory if it doesn't exist
-    console.log("📁 Setting up upload directories...");
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    const projectDir = path.join(uploadsDir, 'projects');
-    const mediaDir = path.join(uploadsDir, 'media');
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+const projectDir = path.join(uploadsDir, 'projects');
+const mediaDir = path.join(uploadsDir, 'media');
 
-    // Use fs from main imports
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-      console.log("✅ Created uploads directory");
-    }
-    if (!fs.existsSync(projectDir)) {
-      fs.mkdirSync(projectDir, { recursive: true });
-      console.log("✅ Created projects directory");
-    }
-    if (!fs.existsSync(mediaDir)) {
-      fs.mkdirSync(mediaDir, { recursive: true });
-      console.log("✅ Created media directory");
-    }
+// Ensure directories exist
+import fs from 'fs';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(projectDir)) {
+  fs.mkdirSync(projectDir, { recursive: true });
+}
+if (!fs.existsSync(mediaDir)) {
+  fs.mkdirSync(mediaDir, { recursive: true });
+}
 
 // Serve static files from public directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
@@ -468,10 +441,6 @@ app.use((req, res, next) => {
   }
   next();
 });
-
-// Cookie parsing middleware for secure session management
-app.use(cookieParser());
-console.log("✅ Cookie parser middleware configured");
 
 // Standard body parsers for all other routes
 app.use(express.json({ limit: '50mb' }));
@@ -538,7 +507,7 @@ console.log("Starting Musk Pulse automation system...");
 muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
-  // Create server with all routes
+(async () => {
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -552,7 +521,8 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  // Use isDevelopment from earlier declaration
+  // Properly detect development vs production mode
+  const isDevelopment = process.env.NODE_ENV !== 'production';
   if (isDevelopment) {
     console.log("🔧 Setting up Vite development server");
     await setupVite(app, server);
@@ -580,16 +550,4 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   server.on('error', (err) => {
     console.error('Server error:', err);
   });
-  
-  } catch (error) {
-    console.error('🚨 Server startup failed:', error);
-    console.error(error.stack);
-    process.exit(1);
-  }
-}
-
-// Start the server
-main().catch((error) => {
-  console.error('🚨 Bootstrap failed:', error);
-  process.exit(1);
-});
+})();

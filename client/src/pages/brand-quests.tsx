@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useContext, useState, useEffect } from 'react';
+import { AuthContext } from '@/context/simple-auth-context';
 import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
@@ -27,7 +27,7 @@ import { NeoGlassSection } from '@/components/ui/neo-glass/index';
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function BrandQuestsPage() {
-  const { user } = useAuth();
+  const { user } = useContext(AuthContext);
   const { toast } = useToast();
   
   // Use actual user ID from authentication

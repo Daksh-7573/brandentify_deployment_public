@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/google-auth-context';
+import { useAuth } from '@/hooks/use-auth';
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
+import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 /**
@@ -14,7 +15,27 @@ export function GoogleLoginButton({ className = '' }: { className?: string }) {
   
   const handleGoogleLogin = async () => {
     try {
-      console.log("🚀 Starting Google login via auth context");
+      // First check if already logged in
+      if (auth.currentUser) {
+        console.log("User already logged in, signing out first to ensure Google provider is used");
+        
+        // Set a flag to indicate we're forcing Google auth
+        localStorage.setItem('force_google_auth', 'true');
+        
+        // Sign out first
+        await auth.signOut();
+        
+        // Clear all auth-related storage
+        localStorage.removeItem('firebase:authUser');
+        sessionStorage.removeItem('firebase:authUser');
+        localStorage.removeItem('auth_state');
+        localStorage.removeItem('auth_user');
+        
+        // Small delay to ensure sign out completes
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
+      // Now perform Google sign in with a fresh state
       await signInWithGoogle();
     } catch (error) {
       console.error('Google login error:', error);
@@ -23,65 +44,25 @@ export function GoogleLoginButton({ className = '' }: { className?: string }) {
         description: "There was a problem signing in with Google. Please try again.",
         variant: "destructive"
       });
-    }
-  };
-
-  const handleOpenInNewTab = async () => {
-    try {
-      // Get OAuth URL and force open in new tab
-      const response = await fetch('/api/auth/google/url', {
-        method: 'GET',
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get OAuth URL');
-      }
-
-      const data = await response.json();
-      
-      if (!data.success || !data.oauthUrl) {
-        throw new Error('Invalid OAuth response');
-      }
-
-      console.log("🔄 Opening Google OAuth in new tab manually");
-      window.open(data.oauthUrl, '_blank', 'noopener,noreferrer');
-    } catch (error) {
-      console.error('Manual Google login error:', error);
-      toast({
-        title: "Failed to open login",
-        description: "Could not open Google login in new tab. Please try again.",
-        variant: "destructive"
-      });
+    } finally {
+      // Clear the forcing flag
+      localStorage.removeItem('force_google_auth');
     }
   };
   
   return (
-    <div className="space-y-2">
-      <button 
-        onClick={handleGoogleLogin} 
-        disabled={isLoading}
-        className={`neo-glass-button w-full flex items-center justify-center gap-2 ${className}`}
-        data-testid="button-google-login"
-      >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <FaGoogle className="h-4 w-4" />
-        )}
-        Continue with Google
-      </button>
-      
-      {/* Fallback button for iframe issues */}
-      <button 
-        onClick={handleOpenInNewTab}
-        disabled={isLoading}
-        className="text-xs text-muted-foreground hover:text-foreground underline w-full py-1"
-        data-testid="button-google-new-tab"
-      >
-        Or open Google login in new tab
-      </button>
-    </div>
+    <button 
+      onClick={handleGoogleLogin} 
+      disabled={isLoading}
+      className={`neo-glass-button w-full flex items-center justify-center gap-2 ${className}`}
+    >
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <FaGoogle className="h-4 w-4" />
+      )}
+      Continue with Google
+    </button>
   );
 }
 

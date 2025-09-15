@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Redirect } from 'wouter';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/auth-context';
 
 // List of user IDs with admin access
 const ADMIN_USER_IDS = [4]; // Adding user ID 4 which is the Firebase user

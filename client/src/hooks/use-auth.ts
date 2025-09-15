@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { AuthContext } from '@/context/google-auth-context';
+import { AuthContext } from '@/context/simple-auth-context';
 
 /**
- * Hook to access Google-only authentication context
- * Provides user data, authentication state, and Google OAuth functions
+ * Hook to access simplified authentication context
+ * Provides user data, authentication state, and auth functions
  */
 export function useAuth() {
   const context = useContext(AuthContext);

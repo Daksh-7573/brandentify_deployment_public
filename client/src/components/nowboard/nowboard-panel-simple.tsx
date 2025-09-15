@@ -5,7 +5,7 @@ import { Loader2, Lightbulb } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/context/auth-context";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { NowboardMenu } from "./nowboard-menu";
 

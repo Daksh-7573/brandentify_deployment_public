@@ -17,7 +17,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/context/auth-context";
 import { FeedSkeleton, PulseCardSkeleton } from "@/components/ui/skeleton-components";
 import { cn } from "@/lib/utils";
 

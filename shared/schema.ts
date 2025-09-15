@@ -1,8 +1,7 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique, index } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { sql } from 'drizzle-orm';
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
 // User model  
@@ -1439,31 +1438,3 @@ export type InsertItemView = z.infer<typeof insertItemViewSchema>;
 
 export type UserRestriction = typeof userRestrictions.$inferSelect;
 export type InsertUserRestriction = z.infer<typeof insertUserRestrictionSchema>;
-
-// Session storage table for Replit Auth - blueprint:javascript_log_in_with_replit
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
-
-// Add a field to connect Replit Auth user IDs to existing users
-// This allows us to keep the existing serial ID structure while supporting Replit Auth
-export const userAuthMapping = pgTable("user_auth_mapping", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  replitUserId: varchar("replit_user_id").unique().notNull(), // From Replit Auth claims.sub
-  email: varchar("email"),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export type UserAuthMapping = typeof userAuthMapping.$inferSelect;
-export type InsertUserAuthMapping = typeof userAuthMapping.$inferInsert;

@@ -2,14 +2,15 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/google-auth-context";
+import { AuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
-// Firebase domain helpers removed - using server-side Google OAuth only
+import { DomainHelper } from "./lib/domain-helper";
+import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
-// CatchAllAuthHandler removed - using server-side Google OAuth only
+import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
 // Enhanced progressive loading state management
 const useProgressiveLoading = () => {
@@ -100,7 +101,7 @@ const GoogleRedirectOnly = lazy(() => import("@/pages/google-redirect-only"));
 const DomainDebug = lazy(() => import("@/pages/domain-debug"));
 const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
-// Firebase auth test removed - using Google OAuth only
+const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
 const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
 const GoogleAuthDebug = lazy(() => import("@/pages/google-auth-debug"));
 const AuthCleaner = lazy(() => import("@/pages/auth-cleaner"));
@@ -315,7 +316,7 @@ function Router() {
           </Suspense>
         );
       }} />
-      {/* Firebase auth test removed - using Google OAuth only */}
+      <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
       <Route path="/google-auth-debug" component={GoogleAuthDebug} />
       <Route path="/auth-cleaner" component={AuthCleaner} />
@@ -610,11 +611,21 @@ function Router() {
       {/* Brand of the Day is now integrated into Nowboard panel */}
       
       {/* Add catch-all route for handling any Google Auth redirects with common Firebase paths */}
-      <Route path="/_/auth/*" component={AuthCallbackPage} />
-      <Route path="/auth/callback/*" component={AuthCallbackPage} />
-      <Route path="/oauth/callback/*" component={AuthCallbackPage} />
-      <Route path="/auth-callback/*" component={AuthCallbackPage} />
-      <Route path="/signin-callback" component={AuthCallbackPage} />
+      <Route path="/_/auth/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/auth/callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/oauth/callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/auth-callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/signin-callback">
+        <CatchAllAuthHandler />
+      </Route>
       
       {/* Brand name public profile route - must be last to avoid conflicts */}
       <Route path="/:brandName">
@@ -635,7 +646,8 @@ function App() {
         <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
           <GlobalMuskButton />
-          {/* Firebase domain helpers removed - using server-side Google OAuth only */}
+          <DomainHelper />
+          <DomainAuthHelper />
           <Toaster />
           {/* Cookie Consent Banner - shown based on user's consent status */}
           <CookieConsentBanner />

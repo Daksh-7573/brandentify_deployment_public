@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { GoogleLoginButton } from "@/components/auth/login-buttons";
+import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
+import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -90,31 +91,59 @@ export default function AuthPage() {
           {/* Left column - Auth forms */}
           <NeoGlassSection>
             <div className="space-y-4 md:space-y-6">
-              {/* TEMPORARY: Direct render to test ReplitAuthUI */}
-              <div className="space-y-4 md:space-y-6">
-                <div className="space-y-6">
-                  <div className="text-center space-y-3">
-                    <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
-                    <p className="text-gray-300">Your AI-powered career development platform</p>
-                  </div>
-                  
-                  {/* Google Authentication */}
-                  <div className="space-y-4">
-                    <GoogleLoginButton />
-                    <div className="text-center">
-                      <p className="text-sm text-gray-400">
-                        Secure authentication powered by Google
-                      </p>
+              <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
+                <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
+                  <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
+                    <Mail className="h-3 w-3 md:h-4 md:w-4" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
+                    <Phone className="h-3 w-3 md:h-4 md:w-4" />
+                    <span>Phone</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Email Authentication */}
+                <TabsContent value="email">
+                  <div className="space-y-4 md:space-y-6">
+                    {/* Clean Google Authentication Only */}
+                    <div className="space-y-6">
+                      <div className="text-center space-y-3">
+                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
+                        <p className="text-gray-300">Your AI-powered career development platform</p>
+                      </div>
+                      
+                      <FastGoogleAuth />
+                      
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-white/20" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-black/50 px-2 text-gray-300">or</span>
+                        </div>
+                      </div>
+                      
+                      <FastQuickAuth />
+                      
+                      <div className="text-center">
+                        <p className="text-sm text-gray-400">
+                          By continuing, you agree to our Terms of Service and Privacy Policy
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-gray-400">
-                      By continuing, you agree to our Terms of Service and Privacy Policy
-                    </p>
+                </TabsContent>
+
+                {/* Phone Authentication */}
+                <TabsContent value="phone">
+                  <div className="text-center space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
+                    <p className="text-gray-300">Phone auth coming soon - use Google for now</p>
+                    <FastGoogleAuth />
                   </div>
-                </div>
-              </div>
+                </TabsContent>
+              </Tabs>
             </div>
           </NeoGlassSection>
 
