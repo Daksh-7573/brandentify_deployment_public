@@ -43,10 +43,18 @@ const getGoogleOAuthConfig = () => {
   return { clientId, clientSecret };
 };
 
-// Get base URL for redirects
+// Get base URL for redirects - always use published domain for OAuth
 const getBaseUrl = (req: any) => {
+  const currentHost = req.get('Host') || req.headers.host;
+  
+  // If on a .replit.dev domain, use the published domain for OAuth
+  if (currentHost && currentHost.includes('.replit.dev') && !currentHost.includes('brandentifier.replit.app')) {
+    console.log(`[OAUTH] Redirecting .replit.dev domain to published domain for OAuth: ${currentHost} -> brandentifier.replit.app`);
+    return 'https://brandentifier.replit.app';
+  }
+  
   const protocol = req.get('X-Forwarded-Proto') || req.protocol || 'https';
-  const host = req.get('Host') || req.headers.host;
+  const host = currentHost;
   return `${protocol}://${host}`;
 };
 
