@@ -50,8 +50,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   // Check domain to determine auth method
-  const isDevelopment = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')) && !window.location.hostname.includes('replit.dev');
-  const isPublishedDomain = window.location.hostname.includes('replit.app') || window.location.hostname.includes('replit.dev');
+  const hostname = window.location.hostname;
+  const isDevelopment = (hostname.includes('localhost') || hostname.includes('127.0.0.1')) && !hostname.includes('replit.dev');
+  const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
+  
+  // EXPLICIT DEBUG LOGGING
+  console.log('🔧 [AUTH CONTEXT] Domain Detection Debug:', {
+    hostname,
+    isDevelopment,
+    isPublishedDomain,
+    includesReplitApp: hostname.includes('replit.app'),
+    includesReplitDev: hostname.includes('replit.dev'),
+    includesLocalhost: hostname.includes('localhost'),
+    authMethod: isPublishedDomain ? 'server-oauth-only' : (isDevelopment ? 'firebase' : 'jwt-session-first')
+  });
 
   // Initialize authentication system based on domain
   useEffect(() => {
