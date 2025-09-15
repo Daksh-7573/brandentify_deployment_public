@@ -29,6 +29,13 @@ console.log("Firebase Environment Check:", {
   }
 });
 
+// Enhanced debugging for production troubleshooting
+console.log("🔧 Firebase Domain Check:", {
+  currentDomain: window.location.hostname,
+  isReplitDomain: currentHostname.includes('replit'),
+  authDomain: `${projectId}.firebaseapp.com`
+});
+
 // Create an array of all authorized domains for this project
 const authDomains = [
   `${projectId}.firebaseapp.com`, // Default Firebase domain

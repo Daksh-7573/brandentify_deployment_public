@@ -198,7 +198,10 @@
     
     // ⚠️ EMERGENCY FIX: Unregister all service workers on published domain
     // This fixes the redirect loop issue caused by cached service worker
-    if ('serviceWorker' in navigator && window.location.hostname.includes('replit.app')) {
+    if ('serviceWorker' in navigator && 
+       (window.location.hostname.includes('replit.app') || 
+        window.location.hostname.includes('.repl.co') ||
+        window.location.hostname.includes('.repl.run'))) {
       console.log('[SW EMERGENCY FIX] Unregistering all service workers on published domain to fix redirect loops');
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         registrations.forEach(function(registration) {
