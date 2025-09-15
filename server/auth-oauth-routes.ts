@@ -53,6 +53,14 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
   try {
     console.log('🚀 Creating Google OAuth URL');
     
+    // Set cache control headers for auth endpoint
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+    
     if (!CLIENT_ID) {
       throw new Error('Google Client ID not configured');
     }
@@ -120,8 +128,12 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('🔄 Processing Google OAuth callback');
     console.log('Query params:', req.query);
     
-    // Add debug headers for troubleshooting authentication flows
+    // Set cache control headers for auth callback endpoint
     res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
       'X-Auth-Handler': 'server-oauth-callback',
       'X-Auth-Timestamp': new Date().toISOString(),
       'X-Auth-Host': req.get('host') || 'unknown',
@@ -338,6 +350,14 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
 export async function checkSessionRoute(req: Request, res: Response) {
   try {
     console.log('🔍 Checking session validity');
+    
+    // Set cache control headers for session endpoint
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
     
     // Debug logging for session validation
     const requestHost = req.get('host');
