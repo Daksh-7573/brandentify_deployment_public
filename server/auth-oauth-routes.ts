@@ -272,12 +272,14 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       expiresIn: '7d'
     });
     
-    // Set secure session cookie
+    // Set secure session cookie (Replit.app compatible)
     res.cookie('brandentifier_session', sessionToken, {
       httpOnly: true,
-      secure: !isDevelopment, // HTTPS only in production
-      sameSite: 'strict', // More secure
+      secure: true, // Always secure for production
+      sameSite: 'lax', // Required for OAuth redirects on Replit domains
+      path: '/', // Explicit path
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      // NO domain attribute - defaults to current host (fixes Replit .app cookie rejection)
     });
     
     // Store user data for client-side access (sanitized)
