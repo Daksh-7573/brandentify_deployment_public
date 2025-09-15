@@ -7270,6 +7270,7 @@ ${extractedText.substring(0, 5000)}
   // Custom OAuth routes (bypasses Firebase blocked routes)
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/auth/google/callback", handleGoogleOAuthCallbackRoute);
+  app.get("/auth-callback", handleGoogleOAuthCallbackRoute); // Support client-side expected route
   app.get("/api/auth/session", checkSessionRoute);
   console.log("Custom OAuth routes loaded");
   

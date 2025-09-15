@@ -21,8 +21,11 @@ const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('he
 
 // Allowed redirect URIs (whitelist for security)
 const ALLOWED_REDIRECT_URIS = [
-  'https://brandentifier.replit.app/auth/google/callback',
+  'https://brandentifier.replit.app/auth-callback',
+  'https://brandentifier.replit.app/auth/google/callback', // Keep old for compatibility
+  'http://localhost:5000/auth-callback',
   'http://localhost:5000/auth/google/callback',
+  'http://127.0.0.1:5000/auth-callback',
   'http://127.0.0.1:5000/auth/google/callback'
 ];
 
@@ -61,11 +64,11 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     // Support both brandentifier.replit.app and brandentifier.com
     let redirectUri;
     if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/auth/google/callback';
+      redirectUri = 'http://localhost:5000/auth-callback';
     } else if (host.includes('brandentifier.com')) {
-      redirectUri = 'https://brandentifier.com/auth/google/callback';
+      redirectUri = 'https://brandentifier.com/auth-callback';
     } else {
-      redirectUri = 'https://brandentifier.replit.app/auth/google/callback';
+      redirectUri = 'https://brandentifier.replit.app/auth-callback';
     }
     
     console.log('OAuth redirect URI:', redirectUri);
@@ -167,11 +170,11 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     // Support both brandentifier.replit.app and brandentifier.com
     let redirectUri;
     if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/auth/google/callback';
+      redirectUri = 'http://localhost:5000/auth-callback';
     } else if (host.includes('brandentifier.com')) {
-      redirectUri = 'https://brandentifier.com/auth/google/callback';
+      redirectUri = 'https://brandentifier.com/auth-callback';
     } else {
-      redirectUri = 'https://brandentifier.replit.app/auth/google/callback';
+      redirectUri = 'https://brandentifier.replit.app/auth-callback';
     }
     
     console.log('🔄 Exchanging code for token...');

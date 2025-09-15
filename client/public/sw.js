@@ -88,7 +88,7 @@ self.addEventListener('fetch', event => {
   }
   
   // 🚀 CRITICAL FIX: NEVER intercept OAuth callback routes - pass directly to server
-  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/__/auth/')) {
+  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/__/auth/') || url.pathname === '/auth-callback') {
     console.log('[SW v5] 🚀 OAuth/Auth route detected - BYPASSING service worker completely:', request.url);
     // ALWAYS pass through to server for authentication routes
     event.respondWith(
