@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { ReplitAuthUI } from "@/components/auth/ReplitAuthUI";
+import { GoogleLoginButton } from "@/components/auth/login-buttons";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -98,11 +98,14 @@ export default function AuthPage() {
                     <p className="text-gray-300">Your AI-powered career development platform</p>
                   </div>
                   
-                  {/* Test ReplitAuthUI directly without tabs */}
-                  <div>
-                    {(() => { console.log('🧪 Direct ReplitAuthUI test is rendering!'); return null; })()}
-                    <ReplitAuthUI />
-                    {(() => { console.log('🧪 After ReplitAuthUI component'); return null; })()}
+                  {/* Google Authentication */}
+                  <div className="space-y-4">
+                    <GoogleLoginButton />
+                    <div className="text-center">
+                      <p className="text-sm text-gray-400">
+                        Secure authentication powered by Google
+                      </p>
+                    </div>
                   </div>
                   
                   <div className="text-center">
