@@ -7267,10 +7267,9 @@ ${extractedText.substring(0, 5000)}
   app.use('/api/auth', authRoutes);
   console.log("Clean Google authentication routes loaded");
   
-  // Custom OAuth routes (bypasses Firebase blocked routes)
+  // Custom OAuth routes (bypasses Firebase blocked routes) - API route avoids client collision
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
-  app.get("/auth/google/callback", handleGoogleOAuthCallbackRoute);
-  app.get("/auth-callback", handleGoogleOAuthCallbackRoute); // Support client-side expected route
+  app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
   app.get("/api/auth/session", checkSessionRoute);
   console.log("Custom OAuth routes loaded");
   

@@ -19,14 +19,12 @@ const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
-// Allowed redirect URIs (whitelist for security)
+// Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
-  'https://brandentifier.replit.app/auth-callback',
-  'https://brandentifier.replit.app/auth/google/callback', // Keep old for compatibility
-  'http://localhost:5000/auth-callback',
-  'http://localhost:5000/auth/google/callback',
-  'http://127.0.0.1:5000/auth-callback',
-  'http://127.0.0.1:5000/auth/google/callback'
+  'https://brandentifier.replit.app/api/auth/google/callback',
+  'https://brandentifier.com/api/auth/google/callback',
+  'http://localhost:5000/api/auth/google/callback',
+  'http://127.0.0.1:5000/api/auth/google/callback'
 ];
 
 // In-memory state storage (in production, use Redis or database)
@@ -65,18 +63,18 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       throw new Error('Google Client ID not configured');
     }
     
-    // Use environment-based redirect URI determination
+    // Use environment-based redirect URI determination - API route to avoid client collision
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
     
     // Support both brandentifier.replit.app and brandentifier.com
     let redirectUri;
     if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/auth-callback';
+      redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
-      redirectUri = 'https://brandentifier.com/auth-callback';
+      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else {
-      redirectUri = 'https://brandentifier.replit.app/auth-callback';
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
     console.log('OAuth redirect URI:', redirectUri);
@@ -183,18 +181,18 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       throw new Error('Google OAuth credentials not configured');
     }
     
-    // Use environment-based redirect URI determination
+    // Use environment-based redirect URI determination - API route to avoid client collision
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
     
     // Support both brandentifier.replit.app and brandentifier.com
     let redirectUri;
     if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/auth-callback';
+      redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
-      redirectUri = 'https://brandentifier.com/auth-callback';
+      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else {
-      redirectUri = 'https://brandentifier.replit.app/auth-callback';
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
     console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
