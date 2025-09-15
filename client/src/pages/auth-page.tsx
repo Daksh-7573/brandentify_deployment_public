@@ -90,52 +90,28 @@ export default function AuthPage() {
           {/* Left column - Auth forms */}
           <NeoGlassSection>
             <div className="space-y-4 md:space-y-6">
-              <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
-                  <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Email</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="phone" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Phone className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Phone</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Email Authentication */}
-                <TabsContent value="email" className="hidden data-[state=active]:block">
-                  <div className="space-y-4 md:space-y-6">
-                    {/* Clean Google Authentication Only */}
-                    <div className="space-y-6">
-                      <div className="text-center space-y-3">
-                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
-                        <p className="text-gray-300">Your AI-powered career development platform</p>
-                      </div>
-                      
-                      {/* Replit Authentication - supports Google, GitHub, X, Apple, Email */}
-                      <div>
-                        {(() => { console.log('🧪 Email tab content is rendering!'); return null; })()}
-                        <ReplitAuthUI />
-                        {(() => { console.log('🧪 After ReplitAuthUI component'); return null; })()}
-                      </div>
-                      
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">
-                          By continuing, you agree to our Terms of Service and Privacy Policy
-                        </p>
-                      </div>
-                    </div>
+              {/* TEMPORARY: Direct render to test ReplitAuthUI */}
+              <div className="space-y-4 md:space-y-6">
+                <div className="space-y-6">
+                  <div className="text-center space-y-3">
+                    <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
+                    <p className="text-gray-300">Your AI-powered career development platform</p>
                   </div>
-                </TabsContent>
-
-                {/* Phone Authentication */}
-                <TabsContent value="phone">
-                  <div className="text-center space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
-                    <p className="text-gray-300">Phone auth coming soon - using Replit Auth</p>
+                  
+                  {/* Test ReplitAuthUI directly without tabs */}
+                  <div>
+                    {(() => { console.log('🧪 Direct ReplitAuthUI test is rendering!'); return null; })()}
+                    <ReplitAuthUI />
+                    {(() => { console.log('🧪 After ReplitAuthUI component'); return null; })()}
                   </div>
-                </TabsContent>
-              </Tabs>
+                  
+                  <div className="text-center">
+                    <p className="text-sm text-gray-400">
+                      By continuing, you agree to our Terms of Service and Privacy Policy
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </NeoGlassSection>
 
