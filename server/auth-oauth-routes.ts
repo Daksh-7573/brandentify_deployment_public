@@ -323,10 +323,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       emailVerified: user.emailVerified
     };
     
-    console.log('✅ Authentication completed successfully, redirecting to dashboard');
+    console.log('✅ Authentication completed successfully, redirecting to Industry Pulse');
     
-    // Use 303 redirect to avoid accidental re-POST/caching and redirect directly to dashboard
-    return res.redirect(303, '/dashboard');
+    // Use 303 redirect to avoid accidental re-POST/caching and redirect directly to Industry Pulse
+    return res.redirect(303, '/industry-pulse');
     
   } catch (error: any) {
     console.error('❌ OAuth callback error:', error);
