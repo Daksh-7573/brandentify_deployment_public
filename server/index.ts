@@ -113,53 +113,54 @@ app.use((req, res, next) => {
   next();
 });
 
-// 🔥 FIREBASE AUTH REVERSE PROXY - Critical for production authentication
-// Replit's infrastructure blocks /__/auth/* routes, so we use /api/firebase-auth/* instead
-app.use('/api/firebase-auth/*', createProxyMiddleware({
-  target: 'https://brandentifier-app.firebaseapp.com',
-  changeOrigin: true,
-  secure: true,
-  pathRewrite: {
-    '^/api/firebase-auth': '/__/auth' // Convert our route to Firebase's expected route
-  },
-  onProxyReq: (proxyReq: any, req: any, res: any) => {
-    console.log(`🔥 [AUTH PROXY] Proxying ${req.method} ${req.originalUrl} -> ${proxyReq.path}`);
-    // Preserve original headers
-    proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
-    proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
-  },
-  onProxyRes: (proxyRes: any, req: any, res: any) => {
-    console.log(`🔥 [AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.originalUrl}`);
-    // Allow all origins for CORS on auth responses
-    proxyRes.headers['access-control-allow-origin'] = '*';
-    proxyRes.headers['access-control-allow-credentials'] = 'true';
-  },
-  onError: (err: any, req: any, res: any) => {
-    console.error(`🚨 [AUTH PROXY] Error proxying to Firebase:`, err);
-    res.status(500).json({ error: 'Firebase auth proxy error' });
-  }
-}));
+// 🚫 DISABLE Firebase proxies in production - they cause redirect loops
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// 🔥 BACKUP: Keep original /__/auth/* proxy for development environments
-app.use('/__/auth/*', createProxyMiddleware({
-  target: 'https://brandentifier-app.firebaseapp.com',
-  changeOrigin: true,
-  secure: true,
-  onProxyReq: (proxyReq: any, req: any, res: any) => {
-    console.log(`🔥 [BACKUP AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
-    proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
-    proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
-  },
-  onProxyRes: (proxyRes: any, req: any, res: any) => {
-    console.log(`🔥 [BACKUP AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-    proxyRes.headers['access-control-allow-origin'] = '*';
-    proxyRes.headers['access-control-allow-credentials'] = 'true';
-  },
-  onError: (err: any, req: any, res: any) => {
-    console.error(`🚨 [BACKUP AUTH PROXY] Error proxying to Firebase:`, err);
-    res.status(500).json({ error: 'Firebase auth proxy error' });
-  }
-}));
+if (isDevelopment) {
+  // 🔧 Development only: Keep Firebase auth proxy for local development
+  console.log("🔧 Development mode: Enabling Firebase auth proxy");
+  
+  app.use('/__/auth/*', createProxyMiddleware({
+    target: 'https://brandentifier-app.firebaseapp.com',
+    changeOrigin: true,
+    secure: true,
+    onProxyReq: (proxyReq: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+      proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+      proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+    },
+    onProxyRes: (proxyRes: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      proxyRes.headers['access-control-allow-credentials'] = 'true';
+    },
+    onError: (err: any, req: any, res: any) => {
+      console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
+      res.status(500).json({ error: 'Firebase auth proxy error' });
+    }
+  }));
+} else {
+  // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
+  console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
+  
+  app.use('/__/auth/*', (req, res) => {
+    console.log(`🚫 Blocked Firebase auth route: ${req.method} ${req.path}`);
+    res.status(410).json({
+      error: 'Firebase auth disabled',
+      message: 'Firebase authentication is disabled on published domains. Please use /api/auth/google/url for authentication.',
+      redirect: '/auth'
+    });
+  });
+  
+  app.use('/api/firebase-auth/*', (req, res) => {
+    console.log(`🚫 Blocked Firebase proxy route: ${req.method} ${req.path}`);
+    res.status(410).json({
+      error: 'Firebase auth disabled', 
+      message: 'Firebase authentication is disabled on published domains. Please use /api/auth/google/url for authentication.',
+      redirect: '/auth'
+    });
+  });
+}
 
 // 🔧 DEPLOYMENT TEST ENDPOINT - Verify published app is working
 app.get('/api/deployment-test', (req, res) => {

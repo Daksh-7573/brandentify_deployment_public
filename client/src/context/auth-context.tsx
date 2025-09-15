@@ -49,22 +49,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Check for server-side JWT sessions on published domains
+  // Check domain to determine auth method
+  const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
+  const isPublishedDomain = window.location.hostname.includes('replit.app');
+
+  // Initialize authentication system based on domain
   useEffect(() => {
     console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
     
-    // Check domain to determine auth method
-    const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
     console.log('[Auth Context] Domain check:', { 
       hostname: window.location.hostname, 
       isDevelopment,
-      authMethod: isDevelopment ? 'firebase' : 'jwt-session-first'
+      isPublishedDomain,
+      authMethod: isPublishedDomain ? 'server-oauth-only' : (isDevelopment ? 'firebase' : 'jwt-session-first')
     });
     
-    if (!isDevelopment) {
-      // For published domains, check server-side session first
-      console.log('[Auth Context] Checking server-side JWT session...');
+    if (isPublishedDomain) {
+      // PRODUCTION: Use server-side session only, NO Firebase
+      console.log('[Auth Context] 🚀 Published domain - using server-side JWT session only');
       
       fetch('/api/auth/session', {
         method: 'GET',
@@ -88,210 +91,171 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           // Store in session storage for consistency
           sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
-          return; // Skip Firebase auth setup
+        } else {
+          throw new Error('Invalid session data');
+        }
+      })
+      .catch(error => {
+        console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+        console.log('[Auth Context] User needs to authenticate via server OAuth');
+        setIsLoading(false);
+      });
+      
+      console.log(`[Auth Context] Published domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
+      return; // Skip Firebase completely for published domains
+    }
+    
+    if (!isDevelopment) {
+      // Non-replit production domain - check server-side session first
+      console.log('[Auth Context] Checking server-side JWT session...');
+      
+      fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include' 
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('No valid session');
+        }
+      })
+      .then(sessionData => {
+        if (sessionData.success && sessionData.user) {
+          console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
+          setUser({
+            uid: sessionData.user.id.toString(),
+            ...sessionData.user
+          });
+          setIsLoading(false);
+          
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
+          return;
         }
         throw new Error('Invalid session data');
       })
       .catch(error => {
         console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
-        console.log('[Auth Context] Falling back to cached state optimization...');
-        
-        // Fall back to cached state check for published domains too
-        const cachedAuth = (window as any).__brandentifier_cached_auth?.();
-        if (cachedAuth) {
-          console.log('[Auth Context] Using cached auth state for instant load');
-          setUser(cachedAuth);
-          setIsLoading(false);
-        } else {
-          console.log('[Auth Context] No cached state, setting loading to false');
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       });
       
-      console.log(`[Auth Context] Published domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
-      return; // Skip Firebase-specific logic for published domains
+      console.log(`[Auth Context] Production domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
+      return;
     }
     
     // Development domain - use Firebase with caching
-    console.log('[Auth Context] Development domain - initializing Firebase with cached state optimization');
+    console.log('[Auth Context] 🔧 Development domain - initializing Firebase');
     
-    // Check for cached auth state for immediate load
-    const cachedAuth = (window as any).__brandentifier_cached_auth?.();
-    if (cachedAuth) {
-      console.log('[PERF] Using cached auth state for instant load');
-      setUser(cachedAuth);
-      setIsLoading(false);
-      
-      // Background refresh to ensure data is current
-      fetchUserData(cachedAuth.uid || cachedAuth.id, cachedAuth.email).then(userData => {
-        if (userData) {
-          setUser(userData);
-          // Update cache with fresh data
-          try {
-            // Removed localStorage auth cache for cleaner user experience
-          } catch (e) {
-            console.warn('[Cache] Failed to update auth cache:', e);
-          }
+    // Set up Firebase auth listener for development only
+    const setupFirebaseAuth = async () => {
+      try {
+        console.log("Setting up Firebase auth state listener...");
+        const { auth } = await import('@/lib/firebase');
+        
+        if (!auth) {
+          console.error("Auth object is null - Firebase initialization failed");
+          setIsLoading(false);
+          return () => {};
         }
-      }).catch(err => {
-        console.warn('[Auth] Background refresh failed:', err);
-      });
-    } else {
-      console.log('[Firebase Auth] No cached state, initializing fresh');
-      setIsLoading(false);
-    }
+        
+        const { onAuthStateChanged } = await import('firebase/auth');
+        const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
+          console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+          
+          if (firebaseUser) {
+            // Process Firebase user for development
+            const userData = await processFirebaseUser(firebaseUser);
+            if (userData) {
+              setUser(userData);
+              
+              const isNewLogin = !user || user.uid !== userData.uid;
+              if (isNewLogin) {
+                toast({
+                  title: "Signed in successfully",
+                  description: `Welcome ${userData.name || userData.email}!`,
+                });
+                
+                const currentPath = window.location.pathname;
+                if (currentPath === '/auth' || currentPath === '/') {
+                  setTimeout(() => {
+                    window.location.href = '/dashboard';
+                  }, 200);
+                }
+              }
+            }
+          } else {
+            setUser(null);
+          }
+          
+          setIsLoading(false);
+        });
+        
+        return unsubscribe;
+      } catch (error) {
+        console.error("Failed to setup Firebase auth listener:", error);
+        setIsLoading(false);
+        return () => {};
+      }
+    };
     
-    console.log(`[PERF] Auth context initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
+    // Setup Firebase and cleanup for development
+    let unsubscribe: (() => void) | null = null;
+    
+    setupFirebaseAuth().then((unsub) => {
+      unsubscribe = unsub;
+    }).catch((error) => {
+      console.error("Failed to setup Firebase auth:", error);
+      setIsLoading(false);
+    });
+    
+    return () => {
+      if (unsubscribe) {
+        console.log("Cleaning up Firebase auth state listener");
+        unsubscribe();
+      }
+    };
+    
+    console.log(`[Auth Context] Development initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
   }, []);
+
+  // Process Firebase user (development only)
+  const processFirebaseUser = async (firebaseUser: any): Promise<AuthUser | null> => {
+    try {
+      // Create user data from Firebase user
+      const userData = {
+        uid: firebaseUser.uid,
+        id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+        username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL
+      };
+      
+      // Try to create/update user in backend
+      await apiRequest('POST', '/api/users', userData);
+      
+      return userData;
+    } catch (error) {
+      console.error("Error processing Firebase user:", error);
+      return null;
+    }
+  };
 
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {
-      // Check if this is a Google/Firebase user
-      const isGoogleIdentifier = typeof userId === 'string' && 
-        (userId.includes('@') && userId.split('@')[1].includes('.'));
-      const isFirebaseUid = typeof userId === 'string' && userId.length > 20;
-      const isGoogleEmail = userEmail && userEmail.includes('@gmail.com');
-      
-      console.log(`Fetching user data for user ${isGoogleIdentifier ? 'email' : (isFirebaseUid ? 'Firebase UID' : 'ID')}: ${userId}`);
-      console.log(`Google authentication detected: ${isGoogleEmail}`);
-      
-      // Include email as query parameter if provided, to help with Google authentication
       let url = `/api/users/${userId}`;
       if (userEmail) {
-        console.log(`Including email in user lookup: ${userEmail}`);
         url += `?email=${encodeURIComponent(userEmail)}`;
       }
       
-      // Try to fetch user data
       const response = await apiRequest('GET', url);
       
       if (response.status === 404) {
-        console.log('User not found in backend by direct ID lookup');
-        
-        // If email is available but wasn't in the URL yet, try again with email
-        if (userEmail && !url.includes('email=')) {
-          console.log(`Trying again with email parameter: ${userEmail}`);
-          const retryResponse = await apiRequest('GET', `/api/users/${userId}?email=${encodeURIComponent(userEmail)}`);
-          
-          if (retryResponse.status === 404) {
-            console.log('User not found even with email parameter');
-            return null;
-          }
-          
-          const userData = await retryResponse.json();
-          console.log('Backend user data (found with email parameter):', userData);
-          
-          // If the user has a generic "Firebase User" name but we're using a Google account, try to update
-          if (isGoogleEmail && userData.name === "Firebase User") {
-            console.log("Found Firebase User for Google account - will attempt to update with Google profile data");
-            
-            try {
-              // Get the current Firebase user  
-              const { auth } = await import('@/lib/firebase');
-              const currentUser = auth.currentUser;
-              if (currentUser) {
-                // Try to get Google provider data
-                const googleProviderData = currentUser.providerData?.find((provider: any) => 
-                  provider.providerId === "google.com"
-                );
-                
-                if (googleProviderData && googleProviderData.displayName) {
-                  console.log("Updating user with Google display name:", googleProviderData.displayName);
-                  
-                  // Update the user with Google profile data
-                  const updateResponse = await apiRequest('PUT', `/api/users/${userData.id}`, {
-                    name: googleProviderData.displayName,
-                    photoURL: googleProviderData.photoURL || currentUser.photoURL
-                  });
-                  
-                  if (updateResponse.ok) {
-                    const updatedUser = await updateResponse.json();
-                    console.log("User updated with Google data:", updatedUser);
-                    
-                    // Return the updated user data
-                    return {
-                      uid: userId.toString(),
-                      id: updatedUser.id,
-                      username: updatedUser.username,
-                      email: updatedUser.email,
-                      name: updatedUser.name,
-                      photoURL: updatedUser.photoURL || null,
-                      title: updatedUser.title,
-                      location: updatedUser.location
-                    };
-                  }
-                }
-              }
-            } catch (updateError) {
-              console.error("Error updating user with Google data:", updateError);
-              // Continue with original data if update fails
-            }
-          }
-          
-          return {
-            uid: userId.toString(),
-            id: userData.id,
-            username: userData.username,
-            email: userData.email,
-            name: userData.name,
-            photoURL: userData.photoURL || null,
-            title: userData.title,
-            location: userData.location
-          };
-        }
-        
         return null;
       }
       
       const userData = await response.json();
-      console.log('Backend user data:', userData);
-      
-      // If the user has a generic "Firebase User" name but we're using a Google account, try to update
-      if (isGoogleEmail && userData.name === "Firebase User") {
-        console.log("Found Firebase User for Google account - will attempt to update with Google profile data");
-        
-        try {
-          // Get the current Firebase user
-          const currentUser = auth.currentUser;
-          if (currentUser) {
-            // Try to get Google provider data
-            const googleProvider = currentUser.providerData?.find(provider => 
-              provider.providerId === "google.com"
-            );
-            
-            if (googleProvider && googleProvider.displayName) {
-              console.log("Updating user with Google display name:", googleProvider.displayName);
-              
-              // Update the user with Google profile data
-              const updateResponse = await apiRequest('PUT', `/api/users/${userData.id}`, {
-                name: googleProvider.displayName,
-                photoURL: googleProvider.photoURL || currentUser.photoURL
-              });
-              
-              if (updateResponse.ok) {
-                const updatedUser = await updateResponse.json();
-                console.log("User updated with Google data:", updatedUser);
-                
-                // Return the updated user data
-                return {
-                  uid: userId.toString(),
-                  id: updatedUser.id,
-                  username: updatedUser.username,
-                  email: updatedUser.email,
-                  name: updatedUser.name,
-                  photoURL: updatedUser.photoURL || null,
-                  title: updatedUser.title,
-                  location: updatedUser.location
-                };
-              }
-            }
-          }
-        } catch (updateError) {
-          console.error("Error updating user with Google data:", updateError);
-          // Continue with original data if update fails
-        }
-      }
       
       return {
         uid: userId.toString(),
@@ -309,285 +273,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Create or update a user in our backend
-  const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
-    try {
-      // Check if we're logging in with a Google provider
-      const isGoogleProvider = firebaseUser.providerData && 
-        firebaseUser.providerData.some(provider => provider.providerId === "google.com");
-      
-      console.log(`Creating/updating user with ${isGoogleProvider ? 'Google' : 'Firebase'} profile:`, {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-        providerData: firebaseUser.providerData
-      });
-      
-      // If we have Google provider data, get the first Google provider
-      const googleProvider = isGoogleProvider ? 
-        firebaseUser.providerData.find(provider => provider.providerId === "google.com") : null;
-      
-      // Make sure required fields exist and use Google provider data when possible
-      const userData = {
-        // Use the Google email as username when available, fallback to UID for non-Google accounts
-        username: isGoogleProvider && googleProvider?.email ? 
-          googleProvider.email.split('@')[0] : firebaseUser.uid,
-        
-        // Use Google email when available
-        email: isGoogleProvider && googleProvider?.email ? 
-          googleProvider.email : 
-          (firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`),
-        
-        // Use Google display name when available
-        name: isGoogleProvider && googleProvider?.displayName ? 
-          googleProvider.displayName : 
-          (firebaseUser.displayName || null),
-        
-        // Use Google photo when available
-        photoURL: isGoogleProvider && googleProvider?.photoURL ? 
-          googleProvider.photoURL : 
-          firebaseUser.photoURL,
-          
-        // Add additional profile fields
-        title: null,
-        location: null,
-        
-        // Pass the display name directly to help with the server-side update
-        displayName: isGoogleProvider && googleProvider?.displayName ? 
-          googleProvider.displayName : firebaseUser.displayName,
-        
-        // Include provider data
-        provider: isGoogleProvider ? "google.com" : firebaseUser.providerId || "firebase",
-        emailVerified: firebaseUser.emailVerified || false,
-        
-        // For Google accounts, explicitly flag it to enable special handling on the server
-        isGoogleAccount: isGoogleProvider
-      };
-      
-      // Create the user
-      const response = await apiRequest('POST', '/api/users', userData);
-      
-      // If the user was created, return the user data from the backend
-      if (response.ok) {
-        const createdUser = await response.json();
-        console.log("User created in backend successfully:", createdUser);
-        return createdUser;
-      }
-      
-      // If post fails (likely because user already exists), try updating instead
-      console.log("User POST failed, trying to update existing user with PUT");
-      const updateResponse = await apiRequest('PUT', `/api/users/${firebaseUser.uid}`, userData);
-      
-      if (updateResponse.ok) {
-        const updatedUser = await updateResponse.json();
-        console.log("User updated in backend successfully:", updatedUser);
-        return updatedUser;
-      }
-      
-      // If we get here, just fetch the user data instead
-      console.log("Falling back to fetching existing user data");
-      return await fetchUserData(
-        firebaseUser.uid, 
-        userData.email // Pass the email as well to help with Google auth
-      );
-    } catch (error) {
-      console.error("Error in createOrUpdateUserInBackend:", error);
-      return null;
-    }
-  };
-
-  // Simplified authentication setup - single source of truth
-  useEffect(() => {
-    setIsLoading(true);
-    console.log("Setting up simplified auth state listener");
-    
-    // Clear demo mode from localStorage to ensure Firebase auth is used
-    localStorage.removeItem('demoMode');
-    
-    // Set up auth state listener with async import
-    const setupAuth = async () => {
-      try {
-        console.log("Setting up auth state listener...");
-        const { auth } = await import('@/lib/firebase');
-        
-        if (!auth) {
-          console.error("Auth object is null - Firebase initialization failed");
-          setIsLoading(false);
-          return () => {};
-        }
-        
-        // Set up redirect result checking for fallback authentication
-        console.log("📍 Setting up authentication result handling for popup and redirect modes");
-        
-        // Check for redirect results (in case popup fell back to redirect)
-        try {
-          const { getRedirectResult } = await import('firebase/auth');
-          const redirectResult = await getRedirectResult(auth as any);
-          
-          if (redirectResult?.user) {
-            console.log("🎉 REDIRECT RESULT FOUND:", redirectResult.user.email);
-            // Don't process here - let onAuthStateChanged handle it
-          }
-        } catch (redirectError) {
-          console.log("No redirect result or redirect error:", redirectError.message);
-        }
-        
-        console.log("Auth object available, setting up listener");
-        const { onAuthStateChanged } = await import('firebase/auth');
-        const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
-          console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-        
-        if (firebaseUser) {
-        // User is signed in 
-        try {
-          // Only update if we don't already have this user
-          if (!user || user.uid !== firebaseUser.uid) {
-            console.log("Processing user authentication:", firebaseUser.uid, {
-              email: firebaseUser.email,
-              displayName: firebaseUser.displayName
-            });
-            
-            // Clear any auth attempt markers since we have a successful sign-in
-            localStorage.removeItem('authAttemptInProgress');
-            localStorage.removeItem('authAttemptTime');
-            
-            // Create or update the user in our backend
-            console.log("Creating/updating user in backend");
-            await createOrUpdateUserInBackend(firebaseUser);
-            
-            // Get user data from backend 
-            console.log("Fetching user data from backend");
-            
-            // Check for Google provider data to get email
-            const googleProvider = firebaseUser.providerData?.find((provider: any) => 
-              provider.providerId === "google.com"
-            );
-            const userEmail = googleProvider?.email || firebaseUser.email || undefined;
-              
-            console.log(`Fetching user data for user ID: ${firebaseUser.uid}${userEmail ? ` with email: ${userEmail}` : ''}`);
-            const userData = await fetchUserData(firebaseUser.uid, userEmail);
-            
-            if (userData) {
-              console.log("Setting user state with backend data");
-              setUser(userData);
-              
-              // Always show toast for new authentication (check by comparing UIDs)
-              const isNewLogin = !user || user.uid !== userData.uid;
-              if (isNewLogin) {
-                console.log("New login detected, showing welcome message and redirecting");
-                toast({
-                  title: "Signed in successfully",
-                  description: `Welcome ${userData.name || userData.email}!`,
-                });
-                
-                // Clear the auth success flag
-                sessionStorage.removeItem('authSuccess');
-                
-                // Simple conditional redirect - only from auth or root
-                console.log("🚀 User authenticated, checking if redirect needed");
-                console.log("Current path:", window.location.pathname);
-                
-                const currentPath = window.location.pathname;
-                if (currentPath === '/auth' || currentPath === '/') {
-                  console.log("✅ Redirecting from auth/root to dashboard");
-                  // Use setTimeout to prevent race conditions
-                  setTimeout(() => {
-                    window.location.href = '/dashboard';
-                  }, 200);
-                } else {
-                  console.log("User already on valid page, no redirect needed");
-                }
-              }
-            } else {
-              console.log("Creating fallback user");
-              
-              const fallbackUser = {
-                uid: firebaseUser.uid,
-                id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                username: googleProvider?.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
-                email: googleProvider?.email || firebaseUser.email,
-                name: googleProvider?.displayName || firebaseUser.displayName,
-                photoURL: googleProvider?.photoURL || firebaseUser.photoURL
-              };
-              
-              setUser(fallbackUser);
-              
-              // Only show toast if this is a new login (not a page refresh)
-              if (!user) {
-                toast({
-                  title: "Signed in successfully",
-                  description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
-                });
-                
-                // Clear the auth success flag
-                sessionStorage.removeItem('authSuccess');
-                
-                // Simple conditional redirect - only from auth or root (fallback)
-                console.log("🚀 User authenticated (fallback), checking if redirect needed");
-                console.log("Current path:", window.location.pathname);
-                
-                const currentPath = window.location.pathname;
-                if (currentPath === '/auth' || currentPath === '/') {
-                  console.log("✅ Redirecting from auth/root to dashboard (fallback)");
-                  // Use setTimeout to prevent race conditions
-                  setTimeout(() => {
-                    window.location.href = '/dashboard';
-                  }, 200);
-                } else {
-                  console.log("User already on valid page, no redirect needed (fallback)");
-                }
-              }
-            }
-          }
-        } catch (error) {
-          console.error("Error in auth state change handler:", error);
-          logAuthError(error, "onAuthStateChanged");
-        }
-      } else {
-        // User is signed out
-        if (user) {
-          console.log("User signed out, clearing state");
-          setUser(null);
-          
-          toast({
-            title: "Signed out",
-            description: "You have been signed out successfully.",
-          });
-        }
-      }
-      
-      setIsLoading(false);
-        });
-        
-        console.log("Auth state listener set up successfully");
-        return unsubscribe;
-      } catch (error) {
-        console.error("Failed to setup auth listener:", error);
-        setIsLoading(false);
-        return () => {};
-      }
-    };
-    
-    // Setup auth and cleanup
-    let unsubscribe: (() => void) | null = null;
-    
-    setupAuth().then((unsub) => {
-      unsubscribe = unsub;
-    }).catch((error) => {
-      console.error("Failed to setup auth:", error);
-      setIsLoading(false);
-    });
-    
-    return () => {
-      if (unsubscribe) {
-        console.log("Cleaning up auth state listener");
-        unsubscribe();
-      }
-    };
-  }, []); // Remove dependencies to prevent listener recreation
-
-  // Sign in with Google - clean implementation
+  // Sign in with Google - domain-aware implementation
   const signInWithGoogle = async () => {
     if (isLoading) return;
     
@@ -596,102 +282,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Starting Google sign-in");
       
-      // 🔥 REPLIT ROUTING FIX - Use redirect auth for published domain
-      const isPublishedDomain = window.location.hostname === 'brandentifier.replit.app';
-      const isDevDomain = window.location.hostname.includes('replit.dev') || window.location.hostname === 'localhost';
-      
-      console.log("Auth environment:", {
-        domain: window.location.hostname,
-        isPublishedDomain,
-        isDevDomain,
-        authMethod: isPublishedDomain ? 'redirect' : 'popup'
-      });
-      
-      // Use the globally configured provider from firebase.ts
-      const { auth } = await import('@/lib/firebase');
-      const { GoogleAuthProvider } = await import('firebase/auth');
-      
-      // Create enhanced provider with proper scopes
-      const enhancedProvider = new GoogleAuthProvider();
-      enhancedProvider.addScope('email');
-      enhancedProvider.addScope('profile');
-      enhancedProvider.setCustomParameters({
-        prompt: 'select_account',
-        access_type: 'online'
-      });
-
-      // 🔥 PRODUCTION FIX - Use redirect auth for published domain to avoid Replit routing issues
       if (isPublishedDomain) {
-        console.log("🚀 Using redirect authentication for published domain");
-        const { signInWithRedirect } = await import('firebase/auth');
+        // PRODUCTION: Use server-side OAuth flow only
+        console.log("🚀 Published domain - using server-side OAuth flow");
         
-        // Clear any old auth flags
-        sessionStorage.removeItem('authAttemptInProgress');
-        localStorage.removeItem('authAttemptInProgress');
+        // Get OAuth URL from our server
+        const response = await fetch('/api/auth/google/url', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
         
-        // Mark redirect attempt
-        sessionStorage.setItem('redirectAuthAttempt', Date.now().toString());
+        if (!response.ok) {
+          throw new Error('Failed to get OAuth URL');
+        }
         
-        await signInWithRedirect(auth as any, enhancedProvider);
-        return; // signInWithRedirect doesn't return a result, handled by onAuthStateChanged
-      } else {
-        // Use popup for development domains
-        console.log("🚀 Using popup authentication for development domain");
-        const { signInWithPopup } = await import('firebase/auth');
+        const data = await response.json();
+        console.log('✅ Got OAuth URL, redirecting to Google...');
         
-        const result = await signInWithPopup(auth as any, enhancedProvider);
+        // Redirect to Google OAuth (will come back to our callback)
+        window.location.href = data.oauthUrl;
+        return; // Will redirect
+        
+      } else if (isDevelopment) {
+        // DEVELOPMENT: Use Firebase popup for development
+        console.log("🔧 Development domain - using Firebase popup");
+        
+        const { auth } = await import('@/lib/firebase');
+        const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+        
+        if (!auth) {
+          throw new Error('Firebase auth not initialized');
+        }
+
+        const provider = new GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
+        provider.setCustomParameters({
+          prompt: 'select_account',
+          access_type: 'online'
+        });
+        
+        const result = await signInWithPopup(auth as any, provider);
         
         if (result && result.user) {
-          console.log("🎉 Popup authentication successful:", result.user.email);
-          // User data will be handled by onAuthStateChanged
+          console.log("🎉 Firebase authentication successful:", result.user.email);
         }
+      } else {
+        // OTHER PRODUCTION: Use server-side OAuth
+        console.log("🚀 Production domain - using server-side OAuth flow");
+        
+        const response = await fetch('/api/auth/google/url', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to get OAuth URL');
+        }
+        
+        const data = await response.json();
+        window.location.href = data.oauthUrl;
+        return;
       }
-      
-      console.log("Authentication completed successfully");
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
-      // Check for specific popup errors and show helpful messages
       let errorMessage = "There was a problem with Google sign-in. Please try again.";
       
       if (error.code === 'auth/popup-blocked') {
         errorMessage = "The login popup was blocked by your browser. Please allow popups and try again.";
       } else if (error.code === 'auth/popup-closed-by-user') {
-        console.log("Popup closed by user - implementing automatic redirect fallback");
-        
-        // Show a more user-friendly message and automatically try redirect
-        toast({
-          title: "Popup was closed",
-          description: "Switching to redirect authentication...",
-          variant: "default",
-        });
-        
-        try {
-          console.log("Automatically trying redirect authentication as fallback...");
-          const { signInWithRedirect } = await import('firebase/auth');
-          const { GoogleAuthProvider } = await import('firebase/auth');
-          const redirectProvider = new GoogleAuthProvider();
-          redirectProvider.addScope('email');
-          redirectProvider.addScope('profile');
-          
-          await signInWithRedirect(auth as any, redirectProvider);
-          return; // Exit here as redirect will handle the rest
-        } catch (redirectError) {
-          console.error("Redirect fallback also failed:", redirectError);
-          errorMessage = "Both popup and redirect authentication failed. Please check your browser settings or try again.";
-        }
-      } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = "Authentication isn't configured for this domain. Please contact support.";
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        errorMessage = "Another sign-in popup is already open. Please complete or close it first.";
+        errorMessage = "The login popup was closed. Please try again.";
       }
       
-      // Show detailed error message to user
       toast({
         title: "Authentication Error",
-        description: `${errorMessage} (Code: ${error.code || 'unknown'})`,
-        variant: "destructive"
+        description: errorMessage,
+        variant: "destructive",
       });
       
     } finally {
@@ -699,112 +367,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Demo mode sign in
-  const signInWithPhone = (userData: User) => {
-    setUser({
-      uid: userData.id.toString(),
-      id: userData.id,
-      username: userData.username,
-      email: userData.email,
-      name: userData.name,
-      photoURL: userData.photoURL,
-      title: userData.title || undefined,
-      location: userData.location || undefined
-    });
-    
-    setIsDemoMode(true);
-    // Removed demoMode localStorage flag for cleaner experience
-    
-    toast({
-      title: "Demo mode activated",
-      description: `Welcome ${userData.name || 'to the demo'}!`,
-    });
-  };
-
-  // Email authentication
-  const signInWithEmail = (userData: User) => {
-    setUser({
-      uid: userData.id.toString(),
-      id: userData.id,
-      username: userData.username,
-      email: userData.email,
-      name: userData.name,
-      photoURL: userData.photoURL,
-      title: userData.title || undefined,
-      location: userData.location || undefined
-    });
-    
-    toast({
-      title: "Signed in with email",
-      description: `Welcome ${userData.name || ''}!`,
-    });
-  };
-
-  // Sign out
+  // Sign out function
   const signOut = async () => {
     try {
       setIsLoading(true);
-      console.log("Performing complete user sign-out and clearing all auth states");
       
-      // Clear user state first
-      setUser(null);
-      
-      // Clear demo mode
-      setIsDemoMode(false);
-      localStorage.removeItem('demoMode');
-      
-      // Remove all authentication attempts and data
-      localStorage.removeItem('authAttemptInProgress');
-      localStorage.removeItem('authAttemptTime');
-      localStorage.removeItem('auth_state');
-      localStorage.removeItem('auth_user');
-      localStorage.removeItem('auth_provider');
-      localStorage.removeItem('auth_redirect_attempt');
-      localStorage.removeItem('auth_redirect_time');
-      localStorage.removeItem('popup_auth_attempt');
-      localStorage.removeItem('popup_auth_time');
-      localStorage.removeItem('using_google_auth');
-      
-      // Clear any Firebase-specific storage
-      localStorage.removeItem('firebase:authUser');
-      sessionStorage.removeItem('firebase:authUser');
-      
-      // Clear specific caches but preserve user profile data for seamless re-authentication
-      // Only clear sensitive data that should not persist across sessions
-      queryClient.invalidateQueries({ 
-        queryKey: ['/api/messages'], 
-        refetchType: 'none' 
-      });
-      queryClient.removeQueries({ 
-        queryKey: ['/api/admin'],
-        exact: false 
-      });
-      // Do NOT clear user profile data to prevent profile picture disappearing on re-login
-      
-      // Always sign out from Firebase completely
-      try {
+      if (isPublishedDomain || !isDevelopment) {
+        // Clear server-side session
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } else {
+        // Development: sign out from Firebase
         const { auth } = await import('@/lib/firebase');
-        await firebaseSignOut(auth as any);
-        console.log("Firebase sign-out successful");
-      } catch (firebaseError) {
-        console.error("Firebase sign-out error:", firebaseError);
-        // Continue with local sign-out even if Firebase fails
+        if (auth) {
+          const { signOut: firebaseSignOut } = await import('firebase/auth');
+          await firebaseSignOut(auth as any);
+        }
       }
       
-      // This short timeout ensures all Firebase operations complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Clear local state
+      setUser(null);
+      sessionStorage.removeItem('brandentifier_user');
       
       toast({
         title: "Signed out",
-        description: "You have been successfully signed out.",
+        description: "You have been signed out successfully.",
       });
+      
+      // Redirect to auth page
+      window.location.href = '/auth';
+      
     } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Error signing out",
-        description: "There was a problem signing out. Please try again.",
-        variant: "destructive"
-      });
+      console.error("Sign out error:", error);
+      
+      // Clear local state anyway
+      setUser(null);
+      sessionStorage.removeItem('brandentifier_user');
+      window.location.href = '/auth';
     } finally {
       setIsLoading(false);
     }
@@ -815,19 +416,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     
     try {
-      setIsLoading(true);
-      
-      // Include email in the refresh request to help with Google auth
-      const refreshedData = await fetchUserData(user.uid, user.email || undefined);
-      
-      if (refreshedData) {
-        setUser(refreshedData);
+      const userData = await fetchUserData(user.uid, user.email || undefined);
+      if (userData) {
+        setUser(userData);
       }
     } catch (error) {
       console.error("Error refreshing user data:", error);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  // Placeholder functions for compatibility
+  const signInWithPhone = (user: User) => {
+    console.log("Phone sign-in not implemented");
+  };
+
+  const signInWithEmail = (user: User) => {
+    console.log("Email sign-in not implemented");
   };
 
   return (
@@ -849,7 +453,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Custom hook for using the auth context
+// Export hook to use auth context
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
