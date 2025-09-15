@@ -57,25 +57,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isPublishedDomain) {
         console.log('AuthProvider: Published domain detected, checking server session');
         try {
+          console.log('AuthProvider: Fetching server session for published domain...');
           const response = await fetch('/api/auth/session', {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-store', // Never cache auth requests
+            headers: {
+              'Accept': 'application/json',
+            }
+          });
+          
+          console.log('AuthProvider: Server session response:', {
+            status: response.status,
+            ok: response.ok,
+            url: response.url
           });
           
           if (response.ok) {
-            const userData = await response.json();
-            console.log('AuthProvider: Server session found:', userData.email);
+            const data = await response.json();
+            console.log('AuthProvider: Raw server response:', data);
+            
+            // Handle both direct user object and wrapped {success, user} response
+            let userData;
+            if (data.success !== undefined && data.user) {
+              // Wrapped response format: {success: true, user: {...}}
+              userData = data.user;
+              console.log('AuthProvider: Unwrapped user from server response');
+            } else if (data.id || data.email) {
+              // Direct user object format
+              userData = data;
+              console.log('AuthProvider: Direct user object from server');
+            } else {
+              console.warn('AuthProvider: Unexpected server response format:', data);
+              throw new Error('Invalid session response format');
+            }
+            
+            console.log('AuthProvider: Server session found for user:', userData.email);
             setUser(userData);
-            // Also store in sessionStorage for consistency
+            // Store in sessionStorage for consistency
             sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
             return;
           } else {
-            console.log('AuthProvider: No server session found');
+            console.log('AuthProvider: No server session found, status:', response.status);
             // Clear any stale sessionStorage
             sessionStorage.removeItem('brandentifier_user');
           }
         } catch (error) {
           console.error('AuthProvider: Error checking server session:', error);
+          console.log('AuthProvider: Falling back to sessionStorage check');
           // Fall back to sessionStorage check
         }
       }
