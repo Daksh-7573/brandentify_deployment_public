@@ -1,9 +1,9 @@
-// Enhanced Service Worker v5 - FIXED OAUTH CALLBACK INTERCEPTION  
-const SW_VERSION = 'v5'; // Bumped version to force OAuth callback fix
-const CACHE_NAME = 'brandentifier-v5';
-const STATIC_CACHE_NAME = 'brandentifier-static-v5';
-const API_CACHE_NAME = 'brandentifier-api-v5';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v5';
+// Enhanced Service Worker v6 - COMPLETE OAUTH AUTHENTICATION FIX  
+const SW_VERSION = 'v6'; // Bumped version to force complete OAuth fix
+const CACHE_NAME = 'brandentifier-v6';
+const STATIC_CACHE_NAME = 'brandentifier-static-v6';
+const API_CACHE_NAME = 'brandentifier-api-v6';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v6';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -33,7 +33,7 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // Install event - cache critical files with enhanced strategy
 self.addEventListener('install', event => {
-  console.log('[SW v5] Installing enhanced service worker with OAuth callback fix...');
+  console.log('[SW v6] Installing complete OAuth authentication fix...');
   event.waitUntil(
     Promise.all([
       // Cache static files
@@ -57,15 +57,15 @@ self.addEventListener('install', event => {
 
 // Activate event - enhanced cleanup and immediate claiming
 self.addEventListener('activate', event => {
-  console.log('[SW v5] Activating enhanced service worker with OAuth callback fix...');
+  console.log('[SW v6] Activating complete OAuth authentication fix...');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v5')) {
-              console.log('[SW v5] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v6')) {
+              console.log('[SW v6] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -87,17 +87,34 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // 🚀 CRITICAL FIX: NEVER intercept OAuth callback routes or API auth endpoints - pass directly to server
-  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/__/auth/') || url.pathname === '/auth-callback' || url.pathname.startsWith('/api/auth/')) {
-    console.log('[SW v5] 🚀 OAuth/Auth route detected - BYPASSING service worker completely:', request.url);
-    // ALWAYS pass through to server for authentication routes
+  // 🚀 CRITICAL FIX: COMPLETE AUTH BYPASS - Never intercept ANY authentication-related routes
+  const isAuthRoute = url.pathname.startsWith('/auth/') || 
+                     url.pathname.startsWith('/__/auth/') || 
+                     url.pathname === '/auth-callback' || 
+                     url.pathname.startsWith('/api/auth/') ||
+                     url.pathname.startsWith('/oauth') ||
+                     url.pathname.includes('callback');
+  
+  if (isAuthRoute) {
+    console.log('[SW v6] 🚀 AUTHENTICATION ROUTE BYPASS - Direct to server:', request.url);
+    console.log('[SW v6] 🔍 Route details:', {
+      pathname: url.pathname,
+      method: request.method,
+      mode: request.mode,
+      credentials: request.credentials
+    });
+    
+    // COMPLETE BYPASS - No service worker interference
     event.respondWith(
       fetch(request, { 
         cache: 'no-store', // Never cache auth requests
         credentials: 'include', // Include cookies for sessions
         redirect: 'follow' // Allow OAuth redirects
+      }).then(response => {
+        console.log('[SW v6] ✅ Auth request successful:', response.status, response.url);
+        return response;
       }).catch(error => {
-        console.error('[SW v5] ❌ Auth request failed:', error);
+        console.error('[SW v6] ❌ Auth request failed:', error);
         return new Response('Authentication Error - Please try again', {
           status: 503,
           headers: { 'Content-Type': 'text/html' }
@@ -107,17 +124,29 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // ⚠️ CRITICAL FIX: Enhanced navigation handling to prevent redirect loops on Replit domains
+  // ⚠️ CRITICAL FIX: Enhanced navigation handling for published domains
   if (request.mode === 'navigate') {
-    console.log('[SW v5] Navigation request detected - bypassing service worker:', request.url);
-    // NEVER intercept navigation requests - this prevents redirect loops
+    console.log('[SW v6] 🧭 Navigation request - checking for auth context:', request.url);
+    
+    // Enhanced logging for published domain debugging
+    const isPublishedDomain = url.hostname.includes('replit.app');
+    console.log('[SW v6] 🌐 Domain context:', {
+      hostname: url.hostname,
+      isPublished: isPublishedDomain,
+      pathname: url.pathname
+    });
+    
+    // NEVER intercept navigation requests - prevents redirect loops
     event.respondWith(
       fetch(request, { 
         cache: 'no-store', // Force fresh request
+        credentials: 'include', // Include cookies for auth
         redirect: 'follow' // Allow redirects
+      }).then(response => {
+        console.log('[SW v6] ✅ Navigation successful:', response.status, response.url);
+        return response;
       }).catch(error => {
-        console.error('[SW v5] Navigation request failed:', error);
-        // Return a minimal error page instead of crashing
+        console.error('[SW v6] ❌ Navigation failed:', error);
         return new Response('<!DOCTYPE html><html><body><h1>Network Error</h1><p>Please check your connection and try again.</p></body></html>', {
           status: 503,
           headers: { 'Content-Type': 'text/html' }
