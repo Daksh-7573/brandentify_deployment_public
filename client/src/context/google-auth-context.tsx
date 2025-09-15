@@ -82,9 +82,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Invalid OAuth response');
       }
 
-      // Redirect to Google OAuth - use replace to ensure proper navigation
+      // Handle iframe navigation properly - escape iframe or fallback to new tab
       console.log("🔄 Redirecting to Google OAuth:", data.oauthUrl);
-      window.location.replace(data.oauthUrl);
+      
+      // Check if we're in an iframe (Replit editor preview)
+      if (window.top && window.top !== window.self) {
+        try {
+          // Try to navigate the top window
+          window.top.location.href = data.oauthUrl;
+        } catch (error) {
+          // If that fails, open in new tab
+          console.log("🔄 Opening Google OAuth in new tab due to iframe restrictions");
+          window.open(data.oauthUrl, '_blank', 'noopener,noreferrer');
+        }
+      } else {
+        // Not in iframe, normal navigation
+        window.location.assign(data.oauthUrl);
+      }
       
     } catch (error) {
       console.error('Google sign in failed:', error);
