@@ -32,7 +32,7 @@ const stateStore = new Map<string, { timestamp: number, ip: string }>();
 // Clean up expired states every 10 minutes
 setInterval(() => {
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-  for (const [state, data] of stateStore.entries()) {
+  for (const [state, data] of Array.from(stateStore.entries())) {
     if (data.timestamp < fiveMinutesAgo) {
       stateStore.delete(state);
     }
@@ -234,20 +234,21 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       // Update existing user
       user = await storage.updateUser(existingUser.id, {
         name: userData.name,
-        photoURL: userData.photoURL,
-        emailVerified: userData.emailVerified
+        photoURL: userData.photoURL
       });
     } else {
       console.log('✅ Creating new user');
       // Create new user
-      const newUser = await storage.createUser({
+      user = await storage.createUser({
         username: userData.firebaseUid,
         email: userData.email,
         name: userData.name,
-        photoURL: userData.photoURL,
-        emailVerified: userData.emailVerified
+        photoURL: userData.photoURL
       });
-      user = newUser;
+    }
+    
+    if (!user) {
+      throw new Error('Failed to create or update user');
     }
     
     console.log('✅ User saved successfully:', {
@@ -391,7 +392,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
       console.log('✅ Valid session found for user:', decoded.email);
       
       // Get fresh user data from database
-      const user = await storage.getUserById(decoded.userId);
+      const user = await storage.getUserByEmail(decoded.email);
       
       if (!user) {
         console.log('❌ User not found in database');
