@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
@@ -113,7 +112,7 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      <FastGoogleAuth />
+                      {/* Google Auth removed - using Replit Auth instead */}
                       
                       <div className="relative">
                         <div className="absolute inset-0 flex items-center">
@@ -139,8 +138,7 @@ export default function AuthPage() {
                 <TabsContent value="phone">
                   <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
-                    <p className="text-gray-300">Phone auth coming soon - use Google for now</p>
-                    <FastGoogleAuth />
+                    <p className="text-gray-300">Phone auth coming soon - using Replit Auth</p>
                   </div>
                 </TabsContent>
               </Tabs>
