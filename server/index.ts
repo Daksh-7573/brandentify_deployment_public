@@ -44,6 +44,7 @@ async function main() {
     const { cacheMiddleware } = await import("./middleware/cache-middleware");
     const { performanceMiddleware } = await import("./middleware/performance-middleware");
     const fs = await import("fs");
+    const cookieParser = (await import("cookie-parser")).default;
     
     console.log("✅ All dependencies loaded");
     
@@ -465,6 +466,10 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Cookie parsing middleware for secure session management
+app.use(cookieParser());
+console.log("✅ Cookie parser middleware configured");
 
 // Standard body parsers for all other routes
 app.use(express.json({ limit: '50mb' }));
