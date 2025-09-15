@@ -1,5 +1,5 @@
-// Enhanced Service Worker v3 - FIXED NAVIGATION HANDLING
-const SW_VERSION = 'v3'; // Bumped version to force update
+// Enhanced Service Worker v4 - ENHANCED REPLIT DOMAIN NAVIGATION FIX  
+const SW_VERSION = 'v4'; // Bumped version to force update
 const CACHE_NAME = 'brandentifier-v3';
 const STATIC_CACHE_NAME = 'brandentifier-static-v3';
 const API_CACHE_NAME = 'brandentifier-api-v3';
@@ -33,12 +33,12 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // Install event - cache critical files with enhanced strategy
 self.addEventListener('install', event => {
-  console.log('[SW v2] Installing enhanced service worker...');
+  console.log('[SW v4] Installing enhanced service worker with navigation fix...');
   event.waitUntil(
     Promise.all([
       // Cache static files
       caches.open(STATIC_CACHE_NAME).then(cache => {
-        console.log('[SW v2] Caching static files...');
+        console.log('[SW v4] Caching static files...');
         return cache.addAll(STATIC_FILES.map(url => {
           // Add cache-busting for external resources
           if (url.startsWith('http')) {
@@ -57,15 +57,15 @@ self.addEventListener('install', event => {
 
 // Activate event - enhanced cleanup and immediate claiming
 self.addEventListener('activate', event => {
-  console.log('[SW v2] Activating enhanced service worker...');
+  console.log('[SW v4] Activating enhanced service worker with navigation fix...');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v3')) {
-              console.log('[SW v3] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v4')) {
+              console.log('[SW v4] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -87,10 +87,23 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // ⚠️ CRITICAL FIX: Never intercept navigation requests to prevent redirect loops
+  // ⚠️ CRITICAL FIX: Enhanced navigation handling to prevent redirect loops on Replit domains
   if (request.mode === 'navigate') {
-    console.log('[SW v3] Navigation request - passing through to network:', request.url);
-    event.respondWith(fetch(request));
+    console.log('[SW v4] Navigation request detected - bypassing service worker:', request.url);
+    // NEVER intercept navigation requests - this prevents redirect loops
+    event.respondWith(
+      fetch(request, { 
+        cache: 'no-store', // Force fresh request
+        redirect: 'follow' // Allow redirects
+      }).catch(error => {
+        console.error('[SW v4] Navigation request failed:', error);
+        // Return a minimal error page instead of crashing
+        return new Response('<!DOCTYPE html><html><body><h1>Network Error</h1><p>Please check your connection and try again.</p></body></html>', {
+          status: 503,
+          headers: { 'Content-Type': 'text/html' }
+        });
+      })
+    );
     return;
   }
   
@@ -100,7 +113,7 @@ self.addEventListener('fetch', event => {
       caches.open(STATIC_CACHE_NAME).then(cache => {
         return cache.match(request).then(response => {
           if (response) {
-            console.log('[SW v2] ⚡ Instant cache hit:', request.url);
+            console.log('[SW v4] ⚡ Instant cache hit:', request.url);
             
             // Background update for fresh content
             fetch(request).then(networkResponse => {
@@ -144,7 +157,7 @@ self.addEventListener('fetch', event => {
           
           // Return cached version immediately if available, update in background
           if (cachedResponse) {
-            console.log('[SW v2] 🔄 Stale-while-revalidate:', request.url);
+            console.log('[SW v4] 🔄 Stale-while-revalidate:', request.url);
             return cachedResponse;
           }
           
@@ -165,7 +178,7 @@ self.addEventListener('fetch', event => {
       caches.open(RUNTIME_CACHE_NAME).then(cache => {
         return cache.match(request).then(response => {
           if (response) {
-            console.log('[SW v2] 🚀 Runtime cache hit:', request.url);
+            console.log('[SW v4] 🚀 Runtime cache hit:', request.url);
             return response;
           }
           
@@ -198,11 +211,11 @@ self.addEventListener('fetch', event => {
 
 // Background sync for offline actions
 self.addEventListener('sync', event => {
-  console.log('[SW v2] Background sync:', event.tag);
+  console.log('[SW v4] Background sync:', event.tag);
   if (event.tag === 'background-sync') {
     event.waitUntil(
       // Handle background sync operations
-      console.log('[SW v2] Performing background sync operations')
+      console.log('[SW v4] Performing background sync operations')
     );
   }
 });

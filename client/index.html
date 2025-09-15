@@ -196,29 +196,52 @@
       }
     };
     
-    // ⚠️ EMERGENCY FIX: Unregister all service workers on published domain
-    // This fixes the redirect loop issue caused by cached service worker
-    if ('serviceWorker' in navigator && 
-       (window.location.hostname.includes('replit.app') || 
-        window.location.hostname.includes('.repl.co') ||
-        window.location.hostname.includes('.repl.run'))) {
-      console.log('[SW EMERGENCY FIX] Unregistering all service workers on published domain to fix redirect loops');
+    // ⚠️ ENHANCED EMERGENCY FIX: Comprehensive Service Worker unregistration for all Replit domains
+    // This prevents redirect loops caused by cached service workers on published domains
+    function isReplitDomain() {
+      const hostname = window.location.hostname.toLowerCase();
+      const replitPatterns = [
+        'replit.app',     // Published apps
+        '.repl.co',       // Alternative domain
+        '.repl.run',      // Legacy domain
+        'repl.it',        // Legacy domain
+        'replit.dev',     // Development domain
+        'picard.replit.dev' // Specific dev pattern
+      ];
+      return replitPatterns.some(pattern => hostname.includes(pattern));
+    }
+
+    if ('serviceWorker' in navigator && isReplitDomain()) {
+      console.log('[SW EMERGENCY FIX v4] Detected Replit domain:', window.location.hostname);
+      console.log('[SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops');
+      
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        registrations.forEach(function(registration) {
-          console.log('[SW EMERGENCY FIX] Unregistering:', registration.scope);
-          registration.unregister();
+        const unregisterPromises = registrations.map(function(registration) {
+          console.log('[SW EMERGENCY FIX v4] Unregistering SW:', registration.scope);
+          return registration.unregister().catch(function(error) {
+            console.warn('[SW EMERGENCY FIX v4] Failed to unregister SW:', error);
+          });
         });
-        // Clear all caches too
-        caches.keys().then(function(cacheNames) {
-          return Promise.all(
-            cacheNames.map(function(cacheName) {
-              console.log('[SW EMERGENCY FIX] Deleting cache:', cacheName);
-              return caches.delete(cacheName);
-            })
-          );
+        
+        return Promise.all(unregisterPromises);
+      }).then(function() {
+        // Clear ALL caches after unregistering service workers
+        return caches.keys().then(function(cacheNames) {
+          const deletePromises = cacheNames.map(function(cacheName) {
+            console.log('[SW EMERGENCY FIX v4] Deleting cache:', cacheName);
+            return caches.delete(cacheName).catch(function(error) {
+              console.warn('[SW EMERGENCY FIX v4] Failed to delete cache:', cacheName, error);
+            });
+          });
+          return Promise.all(deletePromises);
         });
+      }).then(function() {
+        console.log('[SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully');
+      }).catch(function(error) {
+        console.error('[SW EMERGENCY FIX v4] Error during cleanup:', error);
       });
-      return; // Skip normal service worker registration on published domain
+      
+      return; // Skip normal service worker registration on Replit domains
     }
     
     // Progressive Service Worker Registration (development only for now)
@@ -226,7 +249,7 @@
       // Register immediately for maximum caching benefit
       navigator.serviceWorker.register('/sw.js')
         .then(function(registration) {
-          console.log('[SW] Service Worker v2 registered:', registration.scope);
+          console.log('[SW] Service Worker v4 registered:', registration.scope);
           console.log('[PERF] Service Worker registered in', (performance.now() - window.__performance_start).toFixed(2), 'ms');
           
           // Check for updates immediately
