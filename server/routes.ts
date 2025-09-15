@@ -53,6 +53,7 @@ import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
 import muskPulseAutomationRoutes from "./routes-musk-pulse-automation";
 import aiMonitoringRoutes from "./routes-ai-monitoring";
+import googleAuthRoutes from "./google-auth";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
@@ -166,10 +167,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   let isAuthenticated: any;
   if (enableReplitAuth) {
     try {
-      const { setupAuth, isAuthenticated: auth } = await import('./replitAuth');
-      await setupAuth(app);
-      isAuthenticated = auth;
-      console.log("[AUTH] Replit Auth initialized successfully");
+      // Replit auth disabled - using Google OAuth only
+      console.log('[AUTH] Replit Auth disabled - using Google OAuth only');
+      isAuthenticated = devBypassAuth; // Use development bypass since Replit auth is disabled
     } catch (error) {
       console.error("[AUTH] Replit Auth initialization failed:", error);
       // SECURITY: Fail closed in production, allow bypass only in development
@@ -7334,7 +7334,7 @@ ${extractedText.substring(0, 5000)}
   console.log("Universal authentication routes loaded");
   
   // Clean Google Authentication routes
-  app.use('/api/auth', authRoutes);
+  app.use('/', googleAuthRoutes);  // Clean Google-only authentication
   console.log("Clean Google authentication routes loaded");
   
   // Google OAuth routes removed - using Replit Auth instead

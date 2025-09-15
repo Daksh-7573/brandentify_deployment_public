@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 // Internal components and utilities
 import { queryClient, apiRequest } from '@/lib/queryClient';
-import { useAuth } from '@/context/auth-context';
+import { useAuth } from '@/hooks/use-auth';
 import { IndustryCombobox } from '@/components/ui/industry-combobox';
 
 // Project Schema
@@ -70,8 +70,8 @@ export default function ProjectForm({
   useDarkMode = false,
   className = ''
 }: ProjectFormProps) {
-  const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.id || user?.uid || 0);
+  const { user } = useAuth();
+  const userId = user?.id || 0;
   const { toast } = useToast();
   
   // Media state

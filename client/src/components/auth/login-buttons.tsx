@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/google-auth-context';
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';

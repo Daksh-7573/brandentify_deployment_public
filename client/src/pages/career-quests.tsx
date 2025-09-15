@@ -1,5 +1,4 @@
-import { useContext } from 'react';
-import { AuthContext } from '@/context/auth-context';
+import { useAuth } from '@/hooks/use-auth';
 import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/career-quests/quest-panel';
 import { BadgeDisplay } from '@/components/career-quests/badge-display';
@@ -22,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Renamed from CareerQuestsPage to BrandQuestsPage
 export default function BrandQuestsPage() {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const userId = user?.id;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
