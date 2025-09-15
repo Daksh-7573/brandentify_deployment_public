@@ -281,7 +281,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     const cookieOptions = {
       httpOnly: true,
       secure: true,        // Required on HTTPS
-      sameSite: 'lax' as const,     // Safe for OAuth redirects, avoids Strict
+      sameSite: isProduction ? 'none' as const : 'lax' as const,  // SameSite=None for third-party OAuth on production
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
