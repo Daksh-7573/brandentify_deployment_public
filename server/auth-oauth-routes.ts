@@ -273,15 +273,32 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       expiresIn: '7d'
     });
     
-    // Set secure session cookie (Replit.app compatible)
-    res.cookie('brandentifier_session', sessionToken, {
+    // Determine exact domain for production cookie
+    const currentHost = req.get('host') || 'localhost:5000';
+    const isProduction = currentHost.includes('replit.app');
+    
+    // Set session cookie with exact domain for published Replit app
+    const cookieOptions = {
       httpOnly: true,
-      secure: true, // Always secure for production
-      sameSite: 'lax', // Required for OAuth redirects on Replit domains
-      path: '/', // Explicit path
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      // NO domain attribute - defaults to current host (fixes Replit .app cookie rejection)
+      secure: true,        // Required on HTTPS
+      sameSite: 'lax' as const,     // Safe for OAuth redirects, avoids Strict
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+    
+    // For production, set exact domain; for dev, omit domain
+    if (isProduction) {
+      (cookieOptions as any).domain = 'brandentifier.replit.app';
+    }
+    
+    console.log('🍪 Setting cookie with options:', {
+      domain: (cookieOptions as any).domain || 'omitted',
+      sameSite: cookieOptions.sameSite,
+      secure: cookieOptions.secure,
+      host: currentHost
     });
+    
+    res.cookie('brandentifier_session', sessionToken, cookieOptions);
     
     // Store user data for client-side access (sanitized)
     const clientUser = {
@@ -295,72 +312,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       emailVerified: user.emailVerified
     };
     
-    // Generate secure success page (no inline scripts)
-    const successPage = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Authentication Successful</title>
-      <meta http-equiv="refresh" content="2;url=/dashboard">
-      <style>
-        body { 
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-          margin: 0;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-        }
-        .container {
-          text-align: center;
-          background: rgba(255,255,255,0.1);
-          padding: 2rem;
-          border-radius: 12px;
-          backdrop-filter: blur(10px);
-        }
-        .spinner {
-          border: 3px solid rgba(255,255,255,0.3);
-          border-radius: 50%;
-          border-top: 3px solid white;
-          width: 30px;
-          height: 30px;
-          animation: spin 1s linear infinite;
-          margin: 1rem auto;
-        }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>✅ Authentication Successful!</h1>
-        <div class="spinner"></div>
-        <p>Redirecting to dashboard...</p>
-      </div>
-      <script>
-        // Store sanitized user data for client access
-        sessionStorage.setItem('brandentifier_user', ${JSON.stringify(JSON.stringify(clientUser))});
-        
-        // Trigger auth event
-        window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
-          detail: { success: true }
-        }));
-        
-        // Redirect immediately
-        setTimeout(function() {
-          window.location.replace('/dashboard');
-        }, 1500);
-      </script>
-    </body>
-    </html>
-    `;
+    console.log('✅ Authentication completed successfully, redirecting to dashboard');
     
-    console.log('✅ Authentication completed successfully');
-    res.send(successPage);
+    // Use 303 redirect to avoid accidental re-POST/caching and redirect directly to dashboard
+    return res.redirect(303, '/dashboard');
     
   } catch (error: any) {
     console.error('❌ OAuth callback error:', error);
@@ -374,6 +329,15 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
 export async function checkSessionRoute(req: Request, res: Response) {
   try {
     console.log('🔍 Checking session validity');
+    
+    // Debug logging for session validation
+    const requestHost = req.get('host');
+    console.log('🍪 Session Debug:', {
+      host: requestHost,
+      cookiePresent: !!req.cookies?.brandentifier_session,
+      cookieStart: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.substring(0, 20) + '...' : 'none',
+      userAgent: req.get('user-agent')?.substring(0, 50)
+    });
     
     // Check if JWT session cookie exists
     const sessionToken = req.cookies?.brandentifier_session;
