@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
+import { ReplitAuthUI } from "@/components/auth/ReplitAuthUI";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -112,18 +112,8 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      {/* Google Auth removed - using Replit Auth instead */}
-                      
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-white/20" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">or</span>
-                        </div>
-                      </div>
-                      
-                      <FastQuickAuth />
+                      {/* Replit Authentication - supports Google, GitHub, X, Apple, Email */}
+                      <ReplitAuthUI />
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
