@@ -125,8 +125,16 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
   try {
-    console.log('🔄 Processing Google OAuth callback');
-    console.log('Query params:', req.query);
+    console.log('🔄 [OAUTH CALLBACK] Processing Google OAuth callback');
+    console.log('🔄 [OAUTH CALLBACK] Query params:', req.query);
+    console.log('🔄 [OAUTH CALLBACK] Request URL:', req.url);
+    console.log('🔄 [OAUTH CALLBACK] Request method:', req.method);
+    console.log('🔄 [OAUTH CALLBACK] Request headers:', {
+      host: req.get('host'),
+      'user-agent': req.get('user-agent'),
+      referer: req.get('referer'),
+      origin: req.get('origin')
+    });
     
     // Set cache control headers for auth callback endpoint
     res.set({
@@ -189,7 +197,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       redirectUri = 'https://brandentifier.replit.app/auth-callback';
     }
     
-    console.log('🔄 Exchanging code for token...');
+    console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
+    console.log('🔄 [OAUTH CALLBACK] Using redirect URI:', redirectUri);
+    console.log('🔄 [OAUTH CALLBACK] Host detected:', host);
+    console.log('🔄 [OAUTH CALLBACK] Development mode:', isDevelopment);
     
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
@@ -333,7 +344,15 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       emailVerified: user.emailVerified
     };
     
-    console.log('✅ Authentication completed successfully, redirecting to Industry Pulse');
+    console.log('✅ [OAUTH CALLBACK] Authentication completed successfully, redirecting to Industry Pulse');
+    console.log('✅ [OAUTH CALLBACK] User authenticated:', {
+      email: user.email,
+      id: user.id,
+      username: user.username,
+      authProvider: 'google'
+    });
+    console.log('✅ [OAUTH CALLBACK] Cookie set with session token');
+    console.log('✅ [OAUTH CALLBACK] Redirecting to /industry-pulse');
     
     // Use 303 redirect to avoid accidental re-POST/caching and redirect directly to Industry Pulse
     return res.redirect(303, '/industry-pulse');
