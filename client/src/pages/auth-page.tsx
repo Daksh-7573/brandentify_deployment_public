@@ -90,7 +90,7 @@ export default function AuthPage() {
           {/* Left column - Auth forms */}
           <NeoGlassSection>
             <div className="space-y-4 md:space-y-6">
-              <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
+              <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
                 <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
                   <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
                     <Mail className="h-3 w-3 md:h-4 md:w-4" />
@@ -103,7 +103,7 @@ export default function AuthPage() {
                 </TabsList>
 
                 {/* Email Authentication */}
-                <TabsContent value="email">
+                <TabsContent value="email" className="hidden data-[state=active]:block">
                   <div className="space-y-4 md:space-y-6">
                     {/* Clean Google Authentication Only */}
                     <div className="space-y-6">
