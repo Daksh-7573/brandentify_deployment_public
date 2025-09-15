@@ -1,5 +1,5 @@
 console.log("Loaded routes.ts");
-import express, { type Express, Request, Response } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
@@ -62,6 +62,7 @@ import { personalizedQuestAssignment } from "./services/personalized-quest-assig
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
+// Replit Auth will be dynamically imported to prevent startup crashes
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -109,7 +110,77 @@ import { getJobTitleSuggestions } from "./services/title-suggestions";
 import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
 import * as xaiService from "./services/xai-service";
 
+// Auth adapter middleware to map Replit users to internal users
+async function ensureAuthUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    // Get Replit user from session (set by isAuthenticated middleware)
+    const user = req.user as any;
+    if (!user?.claims?.sub) {
+      return res.status(401).json({ message: "No Replit user found in session" });
+    }
+    
+    const replitUserId = user.claims.sub;
+    console.log(`[AUTH] Mapping Replit user ID: ${replitUserId}`);
+    
+    // Get or create internal user via Replit Auth mapping
+    const internalUser = await storage.getUserByReplitUserId(replitUserId);
+    if (!internalUser) {
+      return res.status(401).json({ message: "User not found in system" });
+    }
+    
+    // Attach internal user to request for use by route handlers
+    (req as any).authUser = { id: internalUser.id, username: internalUser.username };
+    console.log(`[AUTH] Mapped to internal user ID: ${internalUser.id}`);
+    next();
+  } catch (error) {
+    console.error('[AUTH] Error mapping user:', error);
+    res.status(401).json({ message: "Authentication failed" });
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Lazy loading Replit Auth to prevent startup crashes
+  const enableReplitAuth = Boolean(
+    process.env.REPLIT_DOMAINS && 
+    process.env.REPL_ID && 
+    process.env.SESSION_SECRET
+  );
+  
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Fail-closed authentication middleware for production
+  const failClosedAuth = (req: Request, res: Response) => {
+    console.error("[AUTH] Authentication service unavailable - blocking request");
+    return res.status(503).json({ 
+      code: 'AUTH_CONFIG_ERROR', 
+      message: 'Authentication service unavailable. Please contact support.'
+    });
+  };
+  
+  // Development-only no-op for local development
+  const devBypassAuth = (req: any, res: any, next: any) => {
+    console.warn("[AUTH] Using development bypass - DO NOT USE IN PRODUCTION");
+    next();
+  };
+  
+  let isAuthenticated: any;
+  if (enableReplitAuth) {
+    try {
+      const { setupAuth, isAuthenticated: auth } = await import('./replitAuth');
+      await setupAuth(app);
+      isAuthenticated = auth;
+      console.log("[AUTH] Replit Auth initialized successfully");
+    } catch (error) {
+      console.error("[AUTH] Replit Auth initialization failed:", error);
+      // SECURITY: Fail closed in production, allow bypass only in development
+      isAuthenticated = isProduction ? failClosedAuth : devBypassAuth;
+    }
+  } else {
+    console.log("[AUTH] Replit Auth disabled (missing env vars)");
+    // SECURITY: Fail closed in production, allow bypass only in development
+    isAuthenticated = isProduction ? failClosedAuth : devBypassAuth;
+  }
+
   // Auth cleaner endpoint - MUST be before any other routes
   app.get('/fix-auth', (req: Request, res: Response) => {
     console.log("[AUTH-FIX] Serving auth cleaner HTML inline");
@@ -1177,7 +1248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/users/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/users/:id", isAuthenticated, async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');

@@ -9,15 +9,18 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
+// Environment check moved to setupAuth function to avoid startup crashes
 
 const getOidcConfig = memoize(
   async () => {
+    // Validate REPL_ID is available before making OIDC discovery call
+    if (!process.env.REPL_ID) {
+      throw new Error('REPL_ID environment variable is required for OIDC configuration');
+    }
+    
     return await client.discovery(
       new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
+      process.env.REPL_ID
     );
   },
   { maxAge: 3600 * 1000 }
@@ -39,7 +42,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
       maxAge: sessionTtl,
     },
   });
@@ -70,6 +73,60 @@ async function upsertUser(
 }
 
 export async function setupAuth(app: Express) {
+  // Environment validation - critical auth variables must be present
+  const requiredEnvVars = {
+    REPLIT_DOMAINS: process.env.REPLIT_DOMAINS,
+    REPL_ID: process.env.REPL_ID,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+    DATABASE_URL: process.env.DATABASE_URL
+  };
+  
+  const missingVars = Object.entries(requiredEnvVars)
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+  
+  if (missingVars.length > 0) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const errorMessage = `Missing critical auth environment variables: ${missingVars.join(', ')}`;
+    
+    console.error(`🚨 AUTH SECURITY ERROR: ${errorMessage}`);
+    
+    if (isProduction) {
+      // In production, fail closed - add middleware that returns 503 for protected routes
+      console.error('🚨 PRODUCTION SECURITY: Auth disabled due to missing env vars');
+      
+      app.use('/api/login', (req, res) => {
+        res.status(503).json({
+          error: 'Authentication Service Unavailable',
+          message: 'Authentication is temporarily unavailable due to configuration issues.',
+          code: 'AUTH_CONFIG_ERROR'
+        });
+      });
+      
+      app.use('/api/callback', (req, res) => {
+        res.status(503).json({
+          error: 'Authentication Service Unavailable',
+          message: 'Authentication is temporarily unavailable due to configuration issues.',
+          code: 'AUTH_CONFIG_ERROR'
+        });
+      });
+      
+      app.use('/api/logout', (req, res) => {
+        res.status(503).json({
+          error: 'Authentication Service Unavailable',
+          message: 'Authentication is temporarily unavailable due to configuration issues.',
+          code: 'AUTH_CONFIG_ERROR'
+        });
+      });
+      
+      console.log('🔒 Production auth endpoints disabled - returning 503 Service Unavailable');
+      return; // Skip setting up auth
+    } else {
+      // In development, throw error to help developers fix the issue
+      throw new Error(errorMessage);
+    }
+  }
+  
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
@@ -131,9 +188,34 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Check if auth is properly configured first
+  const requiredEnvVars = ['REPL_ID', 'SESSION_SECRET', 'REPLIT_DOMAINS'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    console.error(`🚨 AUTH MIDDLEWARE ERROR: Missing env vars: ${missingVars.join(', ')}`);
+    
+    if (isProduction) {
+      // Fail closed in production
+      return res.status(503).json({
+        error: 'Authentication Service Unavailable',
+        message: 'Authentication is temporarily unavailable.',
+        code: 'AUTH_CONFIG_ERROR'
+      });
+    } else {
+      // More detailed error in development
+      return res.status(500).json({
+        error: 'Authentication Configuration Error',
+        message: `Missing required environment variables: ${missingVars.join(', ')}`,
+        code: 'AUTH_CONFIG_ERROR'
+      });
+    }
+  }
+  
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!user || !user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -154,6 +236,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     updateUserSession(user, tokenResponse);
     return next();
   } catch (error) {
+    console.error('🚨 Token refresh failed:', error);
     res.status(401).json({ message: "Unauthorized" });
     return;
   }

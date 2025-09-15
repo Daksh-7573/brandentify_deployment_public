@@ -1,24 +1,54 @@
-import express, { type Request, Response, NextFunction } from "express";
-import path from "path";
-import fileUpload from "express-fileupload";
-import { createProxyMiddleware } from "http-proxy-middleware";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
-import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
-import { setupSecurity, validateFileUpload } from "./security";
-import { setupInfrastructureSecurity } from "./infrastructure-security";
-import { setupPrivacyRoutes } from "./privacy-compliance";
-import { aiSecurityMiddleware } from "./ai-security";
-import { securityMonitoringMiddleware } from "./security-monitoring";
-import securityDashboardRoutes from "./security-dashboard";
-import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
-import { apiGateway } from "./services/api-gateway";
-import { messageQueue, TaskTypes } from "./services/message-queue";
-import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
-import { cacheMiddleware } from "./middleware/cache-middleware";
-import { performanceMiddleware } from "./middleware/performance-middleware";
+// Bootstrap pattern to surface startup errors and prevent pre-log crashes
+console.log("🚀 Server bootstrap started");
 
-const app = express();
+// Type-only imports for TypeScript
+import type { Request, Response, NextFunction } from 'express';
+
+// Process-level error handlers MUST be first
+process.on('uncaughtException', (error) => {
+  console.error('🚨 UNCAUGHT EXCEPTION:', error);
+  console.error(error.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🚨 UNHANDLED REJECTION:', reason);
+  console.error('Promise:', promise);
+  process.exit(1);
+});
+
+// Main async bootstrap function with dynamic imports
+async function main() {
+  try {
+    console.log("📦 Loading core dependencies...");
+    
+    // Dynamic imports to prevent startup crashes from missing deps
+    const express = (await import("express")).default;
+    const path = await import("path");
+    const fileUpload = (await import("express-fileupload")).default;
+    const { createProxyMiddleware } = await import("http-proxy-middleware");
+    const { registerRoutes } = await import("./routes");
+    const { setupVite, serveStatic, log } = await import("./vite");
+    const { questProgressMiddleware } = await import("./middleware/quest-progress-tracker");
+    const { setupSecurity, validateFileUpload } = await import("./security");
+    const { setupInfrastructureSecurity } = await import("./infrastructure-security");
+    const { setupPrivacyRoutes } = await import("./privacy-compliance");
+    const { aiSecurityMiddleware } = await import("./ai-security");
+    const { securityMonitoringMiddleware } = await import("./security-monitoring");
+    const sdr = await import("./security-dashboard"); 
+    const securityDashboardRoutes = sdr.default ?? sdr;
+    const { firebaseAuthRedirectHandler } = await import("./firebase-auth-handler");
+    const { apiGateway } = await import("./services/api-gateway");
+    const { messageQueue, TaskTypes } = await import("./services/message-queue");
+    const { muskPulseScheduler } = await import("./services/musk-pulse-scheduler");
+    const { cacheMiddleware } = await import("./middleware/cache-middleware");
+    const { performanceMiddleware } = await import("./middleware/performance-middleware");
+    const fs = await import("fs");
+    
+    console.log("✅ All dependencies loaded");
+    
+    const app = express();
+    console.log("✅ Express app created");
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
@@ -35,33 +65,8 @@ app.use((req, res, next) => {
     console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
     return next();
   }
-
-  // Force removal of X-Frame-Options header - this must run before all other middleware
-  // Remove any existing X-Frame-Options header
-  res.removeHeader('X-Frame-Options');
   
-  // Override the setHeader method to prevent X-Frame-Options from being set
-  const originalSetHeader = res.setHeader.bind(res);
-  res.setHeader = function(name: string, value: any) {
-    if (name.toLowerCase() === 'x-frame-options') {
-      console.log(`🚫 Blocked attempt to set X-Frame-Options: ${value}`);
-      return this; // Don't set the header
-    }
-    return originalSetHeader(name, value);
-  };
-  
-  // Also override res.end to ensure no headers are set at response time
-  const originalEnd = res.end.bind(res);
-  res.end = function(chunk?: any, encoding?: any) {
-    // Final removal of X-Frame-Options right before sending response (only if headers haven't been sent)
-    if (!this.headersSent) {
-      this.removeHeader('X-Frame-Options');
-      console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
-    }
-    return originalEnd.call(this, chunk, encoding);
-  };
-  
-  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
+  console.log(`🔧 Request: ${req.method} ${req.path} - security headers applied`);
   next();
 });
 
@@ -100,9 +105,20 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   
-  // Forcibly remove X-Frame-Options to allow iframe embedding
-  res.removeHeader('X-Frame-Options');
+  // Security headers with proper X-Frame-Options protection
+  res.header('X-Frame-Options', 'SAMEORIGIN'); // Allow same-origin framing by default
   res.header('X-Content-Type-Options', 'nosniff');
+  
+  // Content Security Policy with frame-ancestors allowlist for specific trusted domains
+  const trustedFrameOrigins = [
+    'https://brandentifier.com',
+    'https://www.brandentifier.com',
+    'https://brandentifier.replit.app'
+  ];
+  
+  res.header('Content-Security-Policy', 
+    `frame-ancestors 'self' ${trustedFrameOrigins.join(' ')};`
+  );
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -364,22 +380,25 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-const projectDir = path.join(uploadsDir, 'projects');
-const mediaDir = path.join(uploadsDir, 'media');
+    // Create uploads directory if it doesn't exist
+    console.log("📁 Setting up upload directories...");
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    const projectDir = path.join(uploadsDir, 'projects');
+    const mediaDir = path.join(uploadsDir, 'media');
 
-// Ensure directories exist
-import fs from 'fs';
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-if (!fs.existsSync(projectDir)) {
-  fs.mkdirSync(projectDir, { recursive: true });
-}
-if (!fs.existsSync(mediaDir)) {
-  fs.mkdirSync(mediaDir, { recursive: true });
-}
+    // Use fs from main imports
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+      console.log("✅ Created uploads directory");
+    }
+    if (!fs.existsSync(projectDir)) {
+      fs.mkdirSync(projectDir, { recursive: true });
+      console.log("✅ Created projects directory");
+    }
+    if (!fs.existsSync(mediaDir)) {
+      fs.mkdirSync(mediaDir, { recursive: true });
+      console.log("✅ Created media directory");
+    }
 
 // Serve static files from public directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
@@ -507,7 +526,7 @@ console.log("Starting Musk Pulse automation system...");
 muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
-(async () => {
+  // Create server with all routes
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -521,8 +540,7 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  // Properly detect development vs production mode
-  const isDevelopment = process.env.NODE_ENV !== 'production';
+  // Use isDevelopment from earlier declaration
   if (isDevelopment) {
     console.log("🔧 Setting up Vite development server");
     await setupVite(app, server);
@@ -550,4 +568,16 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   server.on('error', (err) => {
     console.error('Server error:', err);
   });
-})();
+  
+  } catch (error) {
+    console.error('🚨 Server startup failed:', error);
+    console.error(error.stack);
+    process.exit(1);
+  }
+}
+
+// Start the server
+main().catch((error) => {
+  console.error('🚨 Bootstrap failed:', error);
+  process.exit(1);
+});
