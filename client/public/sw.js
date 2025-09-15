@@ -1,9 +1,9 @@
-// Enhanced Service Worker v4 - ENHANCED REPLIT DOMAIN NAVIGATION FIX  
-const SW_VERSION = 'v4'; // Bumped version to force update
-const CACHE_NAME = 'brandentifier-v3';
-const STATIC_CACHE_NAME = 'brandentifier-static-v3';
-const API_CACHE_NAME = 'brandentifier-api-v3';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v3';
+// Enhanced Service Worker v5 - FIXED OAUTH CALLBACK INTERCEPTION  
+const SW_VERSION = 'v5'; // Bumped version to force OAuth callback fix
+const CACHE_NAME = 'brandentifier-v5';
+const STATIC_CACHE_NAME = 'brandentifier-static-v5';
+const API_CACHE_NAME = 'brandentifier-api-v5';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v5';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -33,12 +33,12 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // Install event - cache critical files with enhanced strategy
 self.addEventListener('install', event => {
-  console.log('[SW v4] Installing enhanced service worker with navigation fix...');
+  console.log('[SW v5] Installing enhanced service worker with OAuth callback fix...');
   event.waitUntil(
     Promise.all([
       // Cache static files
       caches.open(STATIC_CACHE_NAME).then(cache => {
-        console.log('[SW v4] Caching static files...');
+        console.log('[SW v5] Caching static files...');
         return cache.addAll(STATIC_FILES.map(url => {
           // Add cache-busting for external resources
           if (url.startsWith('http')) {
@@ -57,15 +57,15 @@ self.addEventListener('install', event => {
 
 // Activate event - enhanced cleanup and immediate claiming
 self.addEventListener('activate', event => {
-  console.log('[SW v4] Activating enhanced service worker with navigation fix...');
+  console.log('[SW v5] Activating enhanced service worker with OAuth callback fix...');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v4')) {
-              console.log('[SW v4] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v5')) {
+              console.log('[SW v5] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -77,26 +77,46 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Enhanced fetch strategy with FIXED navigation handling
+// Enhanced fetch strategy with OAUTH CALLBACK FIX
 self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
   
   // Skip non-GET requests and non-http protocols
-  if (request.method !== 'GET' || !request.url.startsWith('http')) {
+  if (request.method !== 'GET' && request.method !== 'POST' || !request.url.startsWith('http')) {
+    return;
+  }
+  
+  // 🚀 CRITICAL FIX: NEVER intercept OAuth callback routes - pass directly to server
+  if (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/__/auth/')) {
+    console.log('[SW v5] 🚀 OAuth/Auth route detected - BYPASSING service worker completely:', request.url);
+    // ALWAYS pass through to server for authentication routes
+    event.respondWith(
+      fetch(request, { 
+        cache: 'no-store', // Never cache auth requests
+        credentials: 'include', // Include cookies for sessions
+        redirect: 'follow' // Allow OAuth redirects
+      }).catch(error => {
+        console.error('[SW v5] ❌ Auth request failed:', error);
+        return new Response('Authentication Error - Please try again', {
+          status: 503,
+          headers: { 'Content-Type': 'text/html' }
+        });
+      })
+    );
     return;
   }
   
   // ⚠️ CRITICAL FIX: Enhanced navigation handling to prevent redirect loops on Replit domains
   if (request.mode === 'navigate') {
-    console.log('[SW v4] Navigation request detected - bypassing service worker:', request.url);
+    console.log('[SW v5] Navigation request detected - bypassing service worker:', request.url);
     // NEVER intercept navigation requests - this prevents redirect loops
     event.respondWith(
       fetch(request, { 
         cache: 'no-store', // Force fresh request
         redirect: 'follow' // Allow redirects
       }).catch(error => {
-        console.error('[SW v4] Navigation request failed:', error);
+        console.error('[SW v5] Navigation request failed:', error);
         // Return a minimal error page instead of crashing
         return new Response('<!DOCTYPE html><html><body><h1>Network Error</h1><p>Please check your connection and try again.</p></body></html>', {
           status: 503,
