@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   // Check domain to determine auth method
-  const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-  const isPublishedDomain = window.location.hostname.includes('replit.app');
+  const isDevelopment = (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')) && !window.location.hostname.includes('replit.dev');
+  const isPublishedDomain = window.location.hostname.includes('replit.app') || window.location.hostname.includes('replit.dev');
 
   // Initialize authentication system based on domain
   useEffect(() => {
