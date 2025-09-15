@@ -43,12 +43,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(failsafeTimeout);
   }, []);
 
-  // Ultra-fast stored user check
+  // Check authentication from server session (published domain) or sessionStorage (dev)
   useEffect(() => {
     console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
     
-    const checkStoredAuth = () => {
-      console.log('AuthProvider: Running checkStoredAuth');
+    const checkAuth = async () => {
+      console.log('AuthProvider: Running checkAuth');
+      
+      // Check if we're on published domain and should use server session
+      const hostname = window.location.hostname;
+      const isPublishedDomain = hostname.includes('replit.app');
+      
+      if (isPublishedDomain) {
+        console.log('AuthProvider: Published domain detected, checking server session');
+        try {
+          const response = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            console.log('AuthProvider: Server session found:', userData.email);
+            setUser(userData);
+            // Also store in sessionStorage for consistency
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+            return;
+          } else {
+            console.log('AuthProvider: No server session found');
+            // Clear any stale sessionStorage
+            sessionStorage.removeItem('brandentifier_user');
+          }
+        } catch (error) {
+          console.error('AuthProvider: Error checking server session:', error);
+          // Fall back to sessionStorage check
+        }
+      }
+      
+      // Fallback to sessionStorage check (development or no server session)
+      console.log('AuthProvider: Checking sessionStorage');
       console.log('AuthProvider: Current sessionStorage keys:', Object.keys(sessionStorage));
       
       try {
@@ -72,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Clear any corrupted data
         sessionStorage.removeItem('brandentifier_user');
       } finally {
-        console.log('AuthProvider: Setting isLoading to false from checkStoredAuth');
+        console.log('AuthProvider: Setting isLoading to false from checkAuth');
         setIsLoading(false);
       }
     };
@@ -88,8 +121,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
     
-    // Run immediately instead of with timeout
-    checkStoredAuth();
+    // Run auth check (async for server session support)
+    checkAuth();
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
