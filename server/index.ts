@@ -163,7 +163,7 @@ app.use((req, res, next) => {
   res.header('X-Frame-Options', 'SAMEORIGIN'); // Allow same-origin framing by default
   res.header('X-Content-Type-Options', 'nosniff');
   
-  // Content Security Policy with frame-ancestors allowlist for specific trusted domains
+  // Content Security Policy with frame-ancestors allowlist and Google OAuth support
   const trustedFrameOrigins = [
     'https://brandentifier.com',
     'https://www.brandentifier.com',
@@ -171,7 +171,9 @@ app.use((req, res, next) => {
   ];
   
   res.header('Content-Security-Policy', 
-    `frame-ancestors 'self' ${trustedFrameOrigins.join(' ')};`
+    `frame-ancestors 'self' ${trustedFrameOrigins.join(' ')}; ` +
+    `connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; ` +
+    `form-action 'self' https://accounts.google.com;`
   );
   
   // Handle preflight requests
