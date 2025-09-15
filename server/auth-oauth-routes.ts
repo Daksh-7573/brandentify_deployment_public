@@ -117,6 +117,14 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('🔄 Processing Google OAuth callback');
     console.log('Query params:', req.query);
     
+    // Add debug headers for troubleshooting authentication flows
+    res.set({
+      'X-Auth-Handler': 'server-oauth-callback',
+      'X-Auth-Timestamp': new Date().toISOString(),
+      'X-Auth-Host': req.get('host') || 'unknown',
+      'X-Debug-Firebase-Disabled': 'true'
+    });
+    
     const { code, state, error } = req.query;
     
     // Handle OAuth errors
