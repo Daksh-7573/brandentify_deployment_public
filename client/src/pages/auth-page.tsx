@@ -113,7 +113,11 @@ export default function AuthPage() {
                       </div>
                       
                       {/* Replit Authentication - supports Google, GitHub, X, Apple, Email */}
-                      <ReplitAuthUI />
+                      <div>
+                        {console.log('🧪 Email tab content is rendering!')}
+                        <ReplitAuthUI />
+                        {console.log('🧪 After ReplitAuthUI component')}
+                      </div>
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
