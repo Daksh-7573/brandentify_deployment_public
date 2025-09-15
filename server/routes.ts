@@ -62,7 +62,7 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
-import { authRoutes } from "./auth-routes";
+// import { authRoutes } from "./auth-routes"; // DISABLED: Conflicts with googleAuthRoutes
 // Replit Auth will be dynamically imported to prevent startup crashes
 import { 
   handleSmartConnect, 
