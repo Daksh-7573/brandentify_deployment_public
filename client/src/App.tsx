@@ -647,7 +647,7 @@ function App() {
         <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
           <GlobalMuskButton />
-          <DomainHelper />
+          {/* DomainHelper removed - Firebase disabled */}
           <DomainAuthHelper />
           <Toaster />
           {/* Cookie Consent Banner - shown based on user's consent status */}

@@ -102,9 +102,10 @@ export function AuthCallback() {
             }
           }
           
-          // Check if user is already authenticated
-          if (auth.currentUser) {
-            console.log('User already authenticated, redirecting...');
+          // Check if user is already authenticated via custom OAuth
+          const authCheck = await fetch('/api/auth/me', { credentials: 'include' });
+          if (authCheck.ok) {
+            console.log('User already authenticated via custom OAuth, redirecting...');
             window.location.href = '/industry-pulse';
             return;
           }
