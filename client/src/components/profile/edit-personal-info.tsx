@@ -107,7 +107,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       });
       
       // Invalidate related queries to refetch the updated data
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userData.id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/users/by-username', userData.username] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
       

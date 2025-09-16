@@ -85,7 +85,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         
         const res = await apiRequest(
           'PUT',
-          `/api/users/${targetUserId}`,
+          `/api/users/${targetUserId}/photo`,
           {
             photoURL: base64Image
           }
@@ -164,21 +164,8 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }
         
-        // Force all components to re-render immediately after cache update
-        console.log('[PROFILE PICTURE] 🔄 Triggering component re-renders for userId:', targetUserId);
-        queryClient.invalidateQueries({ 
-          queryKey: ['/api/users', targetUserId],
-          exact: true,
-          refetchType: 'none' // Don't refetch, just trigger re-renders
-        });
-        if (numericUserId && numericUserId !== targetUserId) {
-          console.log('[PROFILE PICTURE] 🔄 Also triggering re-renders for numericUserId:', numericUserId);
-          queryClient.invalidateQueries({ 
-            queryKey: ['/api/users', numericUserId],
-            exact: true,
-            refetchType: 'none'
-          });
-        }
+        // Cache update alone triggers re-renders - no need to invalidate
+        console.log('[PROFILE PICTURE] ✅ Cache updated, components will re-render automatically');
         console.log('[PROFILE PICTURE] 🎉 All cache updates and re-renders completed!');
         
         console.log('[PROFILE PICTURE] Cache data update complete');

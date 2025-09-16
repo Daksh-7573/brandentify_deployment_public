@@ -63,34 +63,54 @@ export async function apiRequest(
   // Helper for sleeping between retries
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   
-  // 🚨 CRITICAL: CACHE ELIMINATION - NO CLIENT-SIDE API CACHING
+  // Try to get from cache for GET requests during retries
   const tryGetFromCache = (attemptNumber: number): Response | null => {
-    // COMPLETE CACHE BYPASS - Never return cached data for API requests
-    console.log(`🚨 [CACHE ELIMINATION] Bypassing cache for ${url} (attempt ${attemptNumber}) - Direct server request only`);
+    if (method === 'GET' && attemptNumber > 0) {
+      try {
+        const cacheKey = `api_cache_${url}`;
+        const cachedData = localStorage.getItem(cacheKey);
+        
+        if (cachedData) {
+          console.log(`Using cached data for ${url} (attempt ${attemptNumber})...`);
+          
+          // Create a fake Response from the cached data
+          return new Response(cachedData, {
+            status: 200,
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Cache': 'HIT'
+            }
+          });
+        }
+      } catch (e) {
+        // Ignore localStorage access errors
+        console.warn('Error accessing localStorage cache:', e);
+      }
+    }
     return null;
   };
   
-  // 🚨 CRITICAL: CACHE ELIMINATION - NO CLIENT-SIDE API CACHING ALLOWED
+  // Try to save successful GET response to cache
   const trySaveToCache = async (response: Response): Promise<void> => {
-    // COMPLETE CACHE BYPASS - Never save API responses to localStorage
-    console.log(`🚨 [CACHE ELIMINATION] NOT caching response for ${url} - Cache elimination active`);
-    
-    // EMERGENCY: Clear any existing API cache entries on successful request
-    try {
-      // Remove any existing cache entries for this URL
-      const cacheKey = `api_cache_${url}`;
-      localStorage.removeItem(cacheKey);
-      
-      // Clear any legacy cache entries
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.startsWith('api_cache_') || key.startsWith('query_cache_')) {
-          localStorage.removeItem(key);
-          console.log(`🗑️ [CACHE PURGE] Removed legacy cache key: ${key}`);
+    if (method === 'GET' && response.ok) {
+      try {
+        const cacheKey = `api_cache_${url}`;
+        const clonedResponse = response.clone();
+        const responseText = await clonedResponse.text();
+        
+        // Only save valid JSON
+        try {
+          JSON.parse(responseText); // Verify it's valid JSON  
+          localStorage.setItem(cacheKey, responseText);
+          console.log(`Cached response for ${url}`);
+        } catch (e) {
+          // Not valid JSON, don't cache
+          console.warn(`Not caching non-JSON response for ${url}`);
         }
-      });
-    } catch (e) {
-      // Ignore localStorage errors
+      } catch (e) {
+        // Ignore cache errors
+        console.warn('Error saving to cache:', e);
+      }
     }
   };
   
@@ -116,28 +136,15 @@ export async function apiRequest(
       // Support for passing FormData objects
       const isFormData = data instanceof FormData;
       
-      // NUCLEAR cache busting for API requests
-      const nuclearUrl = url.includes('?') 
-        ? `${url}&__nuclear=${Date.now()}&__cb=${Math.random().toString(36).substring(2)}` 
-        : `${url}?__nuclear=${Date.now()}&__cb=${Math.random().toString(36).substring(2)}`;
-      
       // Setup headers and body based on content type
       const requestOptions: RequestInit = {
         method: method,
-        cache: 'no-store', // Force no browser cache
-        headers: {
-          ...(!isFormData && data ? { "Content-Type": "application/json" } : {}),
-          'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        },
+        headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
         body: isFormData ? (data as FormData) : 
               data ? JSON.stringify(data) : 
               undefined,
         credentials: "include",
       };
-      
-      console.log(`🚨 [NUCLEAR API] Cache-busted request: ${nuclearUrl}`);
       
       // Special debugging for profile picture updates
       if (url.includes('/users/') && method === 'PUT') {
@@ -153,7 +160,7 @@ export async function apiRequest(
         console.log(`[API CLIENT DEBUG] About to send fetch request...`);
       }
       
-      const res = await fetch(nuclearUrl, requestOptions);
+      const res = await fetch(url, requestOptions);
       
       // Log response for profile picture updates
       if (url.includes('/users/') && method === 'PUT') {
@@ -252,11 +259,11 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 /**
  * Enhanced query function with better error handling and robust fault tolerance
  */
-export const getQueryFn = <T>(options: {
+export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
-}): QueryFunction<T> =>
+}) => QueryFunction<T> =
+  ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const { on401: unauthorizedBehavior } = options;
     try {
       // Validate the queryKey to prevent fetch errors
       if (!queryKey || !queryKey[0] || typeof queryKey[0] !== 'string') {
@@ -278,28 +285,29 @@ export const getQueryFn = <T>(options: {
         return null as unknown as T;
       }
       
-      // 🚨 NUCLEAR CACHE ELIMINATION - AGGRESSIVE CACHE BUSTING FOR ALL REQUESTS
+      console.log("Fetching data from:", queryKey[0]);
+      
+      // Add cache busting for GET requests, but with reduced frequency for profile data
       const url = queryKey[0] as string;
       
-      // Special logging for messaging endpoint 
-      if (url.includes('/messaging/unread/count')) {
-        console.log("🚨 [NUCLEAR] Fresh messaging request (cache bypassed):", queryKey[0]);
-      } else {
-        console.log("Fetching data from:", queryKey[0]);
-      }
-      
-      // NUCLEAR cache busting with multiple parameters to defeat ALL caching layers
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(2);
-      const nuclear = `__nuclear=${timestamp}&__cb=${random}&__bypass=${Date.now()}`;
-      
+      // Reduce cache busting frequency for profile-related endpoints to prevent network congestion
+      // Use a timestamp that changes less frequently (once per 5 minutes) for skills/profile endpoints
+      const isSkillsEndpoint = url.includes('/skills') || url.includes('/projects') || 
+                               url.includes('/experiences') || url.includes('/educations') ||
+                               url.includes('/services');
+      const isProfileEndpoint = url.includes('/api/users') || 
+                                url.includes('/enhanced-user') || 
+                                url.includes('/what-i-offer');
+                                
+      const cacheBusterTimestamp = (isProfileEndpoint || isSkillsEndpoint)
+        ? Math.floor(Date.now() / 300000) // Only changes once per 5 minutes for profile/skills endpoints
+        : Date.now(); // Regular timestamp for other endpoints
+        
       const cacheBuster = url.includes('?') 
-        ? `&${nuclear}` 
-        : `?${nuclear}`;
+        ? `&t=${cacheBusterTimestamp}` 
+        : `?t=${cacheBusterTimestamp}`;
         
       const fetchUrl = `${url}${cacheBuster}`;
-      
-      console.log(`🚨 [NUCLEAR CACHE ELIMINATION] Force fresh request with multi-layer cache busting: ${timestamp}`);
       
       // Add timeout protection (only for slow endpoints)
       const controller = new AbortController();
@@ -319,13 +327,10 @@ export const getQueryFn = <T>(options: {
       try {
         const res = await fetch(fetchUrl, {
           credentials: "include",
-          cache: 'no-store', // Force no browser cache
           headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0',
-            'If-Modified-Since': 'Mon, 26 Jul 1997 05:00:00 GMT',
-            'If-None-Match': '*'
+            'Expires': '0'
           },
           signal: controller.signal
         });
@@ -437,16 +442,16 @@ export const getQueryFn = <T>(options: {
             return [] as unknown as T;
           }
           
-          // 🚨 CRITICAL: NO CACHE RECOVERY - Force server requests only
-          console.log(`🚨 [CACHE ELIMINATION] NOT recovering from localStorage cache for: ${queryKey[0]} - Force server request`);
-          
-          // EMERGENCY: Clear any existing query cache entries
+          // Try to recover from localStorage cache if available
           try {
             const cacheKey = `query_cache_${queryKey[0]}`;
-            localStorage.removeItem(cacheKey);
-            console.log(`🗑️ [CACHE PURGE] Cleared query cache for: ${queryKey[0]}`);
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+              console.log("Recovering data from localStorage cache for:", queryKey[0]);
+              return JSON.parse(cachedData) as T;
+            }
           } catch (cacheError) {
-            // Ignore errors
+            console.error("Error reading from cache:", cacheError);
           }
           
           throw new Error(`Failed to load data: Network error`);
@@ -477,10 +482,8 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: true, // Force refetch on window focus
-      // 🚨 CRITICAL: ZERO STALE TIME - FORCE FRESH REQUESTS ALWAYS
-      staleTime: 0, // NEVER consider queries stale - always fetch fresh data
-      gcTime: 0, // Immediate garbage collection (replaces deprecated cacheTime)
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 15, // 15 minutes instead of 5 minutes
       retry: (failureCount, error) => {
         // Don't retry 404s for poll-votes (expected when user hasn't voted)
         if (error && error.message && error.message.includes('404') && error.message.includes('poll-votes')) {
@@ -492,9 +495,8 @@ export const queryClient = new QueryClient({
       retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10000), // Faster, shorter exponential backoff
       // Add network mode to avoid multiple simultaneous requests
       networkMode: 'always', // Keep trying even if browser is offline
-      // 🚨 CRITICAL: FORCE REFETCH ON EVERY MOUNT
-      refetchOnMount: 'always',
-      refetchOnReconnect: true,
+      // Reduce query cache size to avoid memory issues
+      gcTime: 1000 * 60 * 30, // 30 minutes before garbage collection
     },
     mutations: {
       retry: 1, // Allow one retry for mutations
