@@ -322,8 +322,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     // Sign JWT with secret
     const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
-      algorithm: 'HS256',
-      expiresIn: '7d'
+      algorithm: 'HS256'
     });
     
     // Determine exact domain for production cookie
