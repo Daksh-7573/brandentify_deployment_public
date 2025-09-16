@@ -54,12 +54,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
     
+    // 🚨 NUCLEAR CACHE ELIMINATION - COMPLETE BROWSER CACHE WIPE
+    console.log('[Auth Context] 🚨 NUCLEAR CACHE ELIMINATION - Complete browser cache wipe');
+    
+    // 1. Unregister ALL service workers immediately
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          console.log('🗑️ [NUCLEAR] Unregistering service worker:', registration.scope);
+          registration.unregister();
+        });
+      }).catch(e => console.warn('SW unregister error:', e));
+    }
+    
+    // 2. Delete ALL CacheStorage
+    if ('caches' in window) {
+      caches.keys().then(cacheNames => {
+        cacheNames.forEach(cacheName => {
+          console.log('🗑️ [NUCLEAR] Deleting cache:', cacheName);
+          caches.delete(cacheName);
+        });
+      }).catch(e => console.warn('CacheStorage purge error:', e));
+    }
+    
+    // 3. Clear ALL localStorage/sessionStorage
+    try {
+      const localKeys = Object.keys(localStorage);
+      localKeys.forEach(key => {
+        localStorage.removeItem(key);
+        console.log('🗑️ [NUCLEAR] Removed localStorage key:', key);
+      });
+      
+      const sessionKeys = Object.keys(sessionStorage);
+      sessionKeys.forEach(key => {
+        if (key !== 'brandentifier_user') { // Keep current session
+          sessionStorage.removeItem(key);
+          console.log('🗑️ [NUCLEAR] Removed sessionStorage key:', key);
+        }
+      });
+    } catch (e) {
+      console.warn('Storage purge error:', e);
+    }
+    
+    // 4. Completely recreate React Query client
+    queryClient.clear();
+    queryClient.invalidateQueries();
+    queryClient.removeQueries();
+    console.log('🚨 [NUCLEAR] Completely destroyed React Query cache');
+    
     console.log('[Auth Context] Using server-side JWT session for all domains');
     
-    // Check server-side session for all domains
-    fetch('/api/auth/session', {
+    // Check server-side session for all domains with aggressive cache busting
+    const cacheBuster = Date.now() + Math.random();
+    fetch(`/api/auth/session?t=${cacheBuster}`, {
       method: 'GET',
-      credentials: 'include' // Include cookies
+      credentials: 'include', // Include cookies
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     })
     .then(response => {
       if (response.ok) {

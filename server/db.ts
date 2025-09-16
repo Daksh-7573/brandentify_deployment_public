@@ -4,26 +4,11 @@ import { sql } from 'drizzle-orm';
 export { sql };
 import ws from "ws";
 import * as schema from "@shared/schema";
+import crypto from "crypto";
 
 neonConfig.webSocketConstructor = ws;
 
-// Check for DATABASE_URL in both locations (environment variable and deployment path)
-let databaseUrl = process.env.DATABASE_URL;
-
-// For deployments, check /tmp/replitdb if environment variable is not set
-if (!databaseUrl) {
-  try {
-    const fs = require('fs');
-    if (fs.existsSync('/tmp/replitdb')) {
-      databaseUrl = fs.readFileSync('/tmp/replitdb', 'utf8').trim();
-      console.log('🔧 Using DATABASE_URL from /tmp/replitdb for deployment');
-    }
-  } catch (error) {
-    console.error('Failed to read DATABASE_URL from /tmp/replitdb:', error);
-  }
-}
-
-if (!databaseUrl) {
+if (!process.env.DATABASE_URL) {
   throw new Error(
     "DATABASE_URL must be set. Did you forget to provision a database?",
   );
@@ -31,7 +16,7 @@ if (!databaseUrl) {
 
 // Configure the pool for maximum performance
 export const pool = new Pool({ 
-  connectionString: databaseUrl,
+  connectionString: process.env.DATABASE_URL,
   // Optimize for fast connections
   connectionTimeoutMillis: 5000, // 5 seconds
   idleTimeoutMillis: 30000, // 30 seconds
@@ -104,4 +89,108 @@ export async function executeRawQuery(query: string, params: any[] = []) {
       throw error;
     }
   });
+}
+
+// 🔍 DATABASE FINGERPRINTING SYSTEM - Secure verification without exposing credentials
+export function createDatabaseFingerprint(): string {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return 'NO_DATABASE_URL';
+  
+  try {
+    const url = new URL(databaseUrl);
+    // Create secure fingerprint from host + database + port combination
+    const fingerprintData = `${url.hostname}:${url.port || '5432'}:${url.pathname}`;
+    return crypto.createHash('sha256').update(fingerprintData).digest('hex').substring(0, 16);
+  } catch (error) {
+    console.error('Error creating database fingerprint:', error);
+    return 'FINGERPRINT_ERROR';
+  }
+}
+
+export function getMaskedDatabaseInfo() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return { error: 'NO_DATABASE_URL' };
+  
+  try {
+    const url = new URL(databaseUrl);
+    return {
+      fingerprint: createDatabaseFingerprint(),
+      host: url.hostname,
+      port: url.port || '5432',
+      database: url.pathname.replace('/', ''),
+      masked_host: url.hostname.substring(0, 8) + '***',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error getting masked database info:', error);
+    return { error: 'DATABASE_INFO_ERROR', details: error.message };
+  }
+}
+
+export async function getDatabaseFingerprint() {
+  try {
+    const maskedInfo = getMaskedDatabaseInfo();
+    
+    // Get additional database metadata
+    const dbResult = await pool.query(`
+      SELECT 
+        current_database() as database_name,
+        current_schema() as schema_name,
+        version() as postgres_version,
+        inet_server_addr() as server_ip,
+        inet_server_port() as server_port,
+        NOW() as current_time
+    `);
+    
+    const dbInfo = dbResult.rows[0];
+    
+    return {
+      ...maskedInfo,
+      database_name: dbInfo.database_name,
+      schema_name: dbInfo.schema_name,
+      postgres_version: dbInfo.postgres_version?.substring(0, 20) + '...',
+      server_ip: dbInfo.server_ip,
+      server_port: dbInfo.server_port,
+      current_time: dbInfo.current_time,
+      connection_pool: {
+        max_connections: 10,
+        min_connections: 2,
+        total_count: pool.totalCount,
+        idle_count: pool.idleCount,
+        waiting_count: pool.waitingCount
+      }
+    };
+  } catch (error) {
+    console.error('Error getting database fingerprint:', error);
+    return { 
+      ...getMaskedDatabaseInfo(),
+      error: 'DATABASE_QUERY_ERROR', 
+      details: error.message 
+    };
+  }
+}
+
+export async function logDatabaseStartupInfo() {
+  console.log('\n🔍 DATABASE STARTUP VERIFICATION');
+  console.log('=====================================');
+  
+  const fingerprint = await getDatabaseFingerprint();
+  
+  console.log(`Database Fingerprint: ${fingerprint.fingerprint}`);
+  console.log(`Masked Host: ${fingerprint.masked_host}`);
+  console.log(`Database Name: ${fingerprint.database_name}`);
+  console.log(`Environment: ${fingerprint.environment}`);
+  console.log(`Connection Pool: ${fingerprint.connection_pool?.total_count || 'N/A'} total, ${fingerprint.connection_pool?.idle_count || 'N/A'} idle`);
+  
+  if (fingerprint.error) {
+    console.error(`⚠️ Database Error: ${fingerprint.error}`);
+    if (fingerprint.details) {
+      console.error(`Error Details: ${fingerprint.details}`);
+    }
+  } else {
+    console.log('✅ Database connection verified');
+  }
+  
+  console.log('=====================================\n');
 }
