@@ -7,7 +7,23 @@ import * as schema from "@shared/schema";
 
 neonConfig.webSocketConstructor = ws;
 
-if (!process.env.DATABASE_URL) {
+// Check for DATABASE_URL in both locations (environment variable and deployment path)
+let databaseUrl = process.env.DATABASE_URL;
+
+// For deployments, check /tmp/replitdb if environment variable is not set
+if (!databaseUrl) {
+  try {
+    const fs = require('fs');
+    if (fs.existsSync('/tmp/replitdb')) {
+      databaseUrl = fs.readFileSync('/tmp/replitdb', 'utf8').trim();
+      console.log('🔧 Using DATABASE_URL from /tmp/replitdb for deployment');
+    }
+  } catch (error) {
+    console.error('Failed to read DATABASE_URL from /tmp/replitdb:', error);
+  }
+}
+
+if (!databaseUrl) {
   throw new Error(
     "DATABASE_URL must be set. Did you forget to provision a database?",
   );
@@ -15,7 +31,7 @@ if (!process.env.DATABASE_URL) {
 
 // Configure the pool for maximum performance
 export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
+  connectionString: databaseUrl,
   // Optimize for fast connections
   connectionTimeoutMillis: 5000, // 5 seconds
   idleTimeoutMillis: 30000, // 30 seconds
