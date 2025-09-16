@@ -18,7 +18,6 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
-import { logDatabaseStartupInfo } from "./db";
 
 const app = express();
 
@@ -81,20 +80,40 @@ const ALLOWED_ORIGINS = [
   'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev'
 ];
 
-// ✅ CORS SECURITY FIX COMPLETED - Now handled by security.ts
-// Removed duplicate CORS configuration to prevent conflicts
-// The comprehensive CORS setup in security.ts properly handles:
-// - Origin validation with conditional credentials
-// - Wildcard origin only for requests without credentials 
-// - Proper Vary: Origin headers for caching
-
 app.use((req, res, next) => {
-  // Only handle X-Frame-Options removal here
+  const origin = req.get('origin');
+  
+  console.log('CORS: Checking origin:', origin);
+  console.log('CORS: ALLOWED_ORIGINS:', ALLOWED_ORIGINS);
+  console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
+  
+  // Set CORS headers based on allowlist or for no-origin requests (direct access)
+  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('CORS: Allowing origin:', origin);
+    } else {
+      res.header('Access-Control-Allow-Origin', '*');
+      console.log('CORS: Allowing request with no origin');
+    }
+    res.header('Access-Control-Allow-Credentials', 'true');
+  } else {
+    console.log('CORS: Blocking unauthorized origin:', origin);
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
+  
   // Forcibly remove X-Frame-Options to allow iframe embedding
   res.removeHeader('X-Frame-Options');
   res.header('X-Content-Type-Options', 'nosniff');
   
-  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
   next();
 });
 
@@ -105,34 +124,25 @@ if (isDevelopment) {
   // 🔧 Development only: Keep Firebase auth proxy for local development
   console.log("🔧 Development mode: Enabling Firebase auth proxy");
   
-  const proxyOptions: any = {
+  app.use('/__/auth/*', createProxyMiddleware({
     target: 'https://brandentifier-app.firebaseapp.com',
     changeOrigin: true,
     secure: true,
-    onProxyReq: (proxyReq: any, req: any, res: any): void => {
+    onProxyReq: (proxyReq: any, req: any, res: any) => {
       console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
       proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
       proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
     },
     onProxyRes: (proxyRes: any, req: any, res: any) => {
       console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-      // SECURITY FIX: Use proper origin instead of wildcard with credentials
-      const origin = req.get('origin');
-      if (origin && ALLOWED_ORIGINS.includes(origin)) {
-        proxyRes.headers['access-control-allow-origin'] = origin;
-        proxyRes.headers['access-control-allow-credentials'] = 'true';
-      } else {
-        proxyRes.headers['access-control-allow-origin'] = '*';
-        // Don't set credentials for wildcard origin
-      }
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      proxyRes.headers['access-control-allow-credentials'] = 'true';
     },
     onError: (err: any, req: any, res: any) => {
       console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
       res.status(500).json({ error: 'Firebase auth proxy error' });
     }
-  };
-  
-  app.use('/__/auth/*', createProxyMiddleware(proxyOptions));
+  }));
 } else {
   // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
   console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
@@ -169,213 +179,6 @@ app.get('/api/deployment-test', (req, res) => {
     proxy_status: 'Firebase auth proxy active',
     build_version: 'latest'
   });
-});
-
-// 🔍 DATABASE UNIFICATION DIAGNOSTIC ENDPOINT
-app.get('/api/database-diagnostic', async (req, res) => {
-  try {
-    console.log(`🔍 [DB DIAGNOSTIC] Request from: ${req.get('host')}`);
-    
-    // Get database connection info (safely without exposing credentials)
-    const databaseUrl = process.env.DATABASE_URL;
-    const urlParts = databaseUrl ? new URL(databaseUrl) : null;
-    
-    // Import the pool from db.ts
-    const { pool } = await import('./db');
-    
-    // Test database connection
-    const dbTest = await pool.query("SELECT 'DB_CONNECTED' as status, NOW() as timestamp, current_database() as database_name, current_schema() as schema_name");
-    
-    // Get user data stats with proper Google auth analysis
-    const userStats = await pool.query(`
-      SELECT 
-        COUNT(*) as total_users,
-        COUNT(DISTINCT email) as unique_emails,
-        COUNT(DISTINCT google_id) as unique_google_ids,
-        COUNT(DISTINCT firebase_uid) as unique_firebase_uids,
-        COUNT(CASE WHEN auth_provider = 'google' THEN 1 END) as google_auth_users,
-        COUNT(CASE WHEN auth_provider = 'email' THEN 1 END) as email_auth_users,
-        COUNT(CASE WHEN google_id IS NOT NULL AND firebase_uid IS NOT NULL THEN 1 END) as complete_google_auth,
-        MAX(last_login_at) as latest_login
-      FROM users
-    `);
-    
-    // Get sample user data for debugging (anonymized)
-    const sampleUsers = await pool.query(`
-      SELECT 
-        id, 
-        LEFT(username, 3) || '***' as username_sample,
-        LEFT(email, 3) || '***@' || SPLIT_PART(email, '@', 2) as email_sample,
-        auth_provider,
-        CASE WHEN google_id IS NOT NULL THEN 'YES' ELSE 'NO' END as has_google_id,
-        CASE WHEN firebase_uid IS NOT NULL THEN 'YES' ELSE 'NO' END as has_firebase_uid,
-        created_at
-      FROM users 
-      ORDER BY id 
-      LIMIT 8
-    `);
-    
-    // Check for any duplicate Google accounts
-    const duplicateGoogleAccounts = await pool.query(`
-      SELECT google_id, COUNT(*) as count
-      FROM users 
-      WHERE google_id IS NOT NULL 
-      GROUP BY google_id 
-      HAVING COUNT(*) > 1
-    `);
-    
-    // Check for duplicate emails
-    const duplicateEmails = await pool.query(`
-      SELECT email, COUNT(*) as count
-      FROM users 
-      WHERE email IS NOT NULL 
-      GROUP BY email 
-      HAVING COUNT(*) > 1
-    `);
-    
-    const diagnostics = {
-      request_info: {
-        requesting_host: req.get('host'),
-        timestamp: new Date().toISOString(),
-        user_agent: req.get('user-agent')?.substring(0, 50) + '...',
-        environment: process.env.NODE_ENV || 'development'
-      },
-      database_connection: {
-        status: dbTest.rows[0].status,
-        timestamp: dbTest.rows[0].timestamp,
-        database_name: dbTest.rows[0].database_name,
-        schema_name: dbTest.rows[0].schema_name,
-        host: urlParts?.hostname || 'unknown',
-        database_path: urlParts?.pathname?.replace('/', '') || 'unknown',
-        port: urlParts?.port || 'default'
-      },
-      user_statistics: userStats.rows[0],
-      sample_users: sampleUsers.rows,
-      data_quality: {
-        duplicate_google_accounts: duplicateGoogleAccounts.rows,
-        duplicate_emails: duplicateEmails.rows,
-        google_auth_integrity: userStats.rows[0].complete_google_auth === userStats.rows[0].google_auth_users
-      },
-      unification_status: {
-        database_unified: true,
-        connection_verified: true,
-        same_schema: dbTest.rows[0].schema_name === 'public',
-        ready_for_testing: true
-      }
-    };
-    
-    console.log(`🔍 [DB DIAGNOSTIC] Database: ${dbTest.rows[0].database_name}, Schema: ${dbTest.rows[0].schema_name}`);
-    console.log(`🔍 [DB DIAGNOSTIC] Total users: ${userStats.rows[0].total_users}, Google auth: ${userStats.rows[0].google_auth_users}`);
-    
-    res.json({
-      status: 'SUCCESS',
-      message: 'Database diagnostic completed - Unified database verified',
-      diagnostics
-    });
-    
-  } catch (error) {
-    console.error(`🚨 [DB DIAGNOSTIC] Error:`, error);
-    res.status(500).json({
-      status: 'ERROR',
-      message: 'Database diagnostic failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-// ✅ DATABASE UNIFICATION VERIFICATION ENDPOINT
-app.get('/api/database-unification-test', async (req, res) => {
-  try {
-    console.log(`✅ [UNIFICATION TEST] Request from: ${req.get('host')}`);
-    
-    // Import the pool from db.ts
-    const { pool } = await import('./db');
-    
-    // Create a unique timestamp for this test
-    const testTimestamp = new Date().toISOString();
-    const testId = `unification_test_${Date.now()}`;
-    
-    // Test 1: Verify database connection details
-    const connectionTest = await pool.query(`
-      SELECT 
-        current_database() as db_name,
-        current_schema() as schema_name,
-        current_user as db_user,
-        inet_server_addr() as server_ip,
-        version() as postgres_version
-    `);
-    
-    // Test 2: Get current user count before any operations
-    const beforeCount = await pool.query("SELECT COUNT(*) as count FROM users");
-    
-    // Test 3: Check Google auth users specifically
-    const googleAuthUsers = await pool.query(`
-      SELECT id, username, email, google_id, firebase_uid, auth_provider 
-      FROM users 
-      WHERE auth_provider = 'google' 
-      ORDER BY id
-    `);
-    
-    // Test 4: Verify unique constraints exist
-    const constraints = await pool.query(`
-      SELECT conname, contype, pg_get_constraintdef(oid) as definition
-      FROM pg_constraint 
-      WHERE conrelid = 'users'::regclass 
-      AND contype = 'u'
-      ORDER BY conname
-    `);
-    
-    const testResults = {
-      test_info: {
-        test_id: testId,
-        timestamp: testTimestamp,
-        requesting_host: req.get('host'),
-        test_purpose: 'Verify database unification across domains'
-      },
-      connection_details: connectionTest.rows[0],
-      user_data_verification: {
-        total_users: parseInt(beforeCount.rows[0].count),
-        google_auth_users: googleAuthUsers.rows.length,
-        google_users_sample: googleAuthUsers.rows.map(user => ({
-          id: user.id,
-          username: user.username.substring(0, 10) + '***',
-          email_domain: user.email.split('@')[1],
-          has_google_id: !!user.google_id,
-          has_firebase_uid: !!user.firebase_uid
-        }))
-      },
-      unique_constraints: constraints.rows,
-      unification_verification: {
-        database_consistent: connectionTest.rows[0].db_name === 'neondb',
-        schema_consistent: connectionTest.rows[0].schema_name === 'public',
-        constraints_present: constraints.rows.length >= 4, // Should have at least email, google_id, firebase_uid, username
-        google_auth_working: googleAuthUsers.rows.length > 0,
-        data_integrity_verified: true
-      },
-      final_status: {
-        unified: true,
-        verified: true,
-        ready_for_production: true,
-        same_data_across_domains: true
-      }
-    };
-    
-    console.log(`✅ [UNIFICATION TEST] Database: ${connectionTest.rows[0].db_name}, Users: ${beforeCount.rows[0].count}, Google Auth: ${googleAuthUsers.rows.length}`);
-    
-    res.json({
-      status: 'SUCCESS',
-      message: 'Database unification verification completed successfully',
-      test_results: testResults
-    });
-    
-  } catch (error) {
-    console.error(`🚨 [UNIFICATION TEST] Error:`, error);
-    res.status(500).json({
-      status: 'ERROR',
-      message: 'Database unification test failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
 });
 
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
@@ -751,7 +554,7 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen(port, "0.0.0.0", async () => {
+  server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
     console.log(`🚀 Server accessible at:`);
     console.log(`   - Local: http://localhost:${port}`);
@@ -761,9 +564,6 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
     console.log(`🔍 Debugging: REPLIT_DOMAINS=${process.env.REPLIT_DOMAINS}`);
     console.log(`🔍 Server listening on all interfaces (0.0.0.0:${port})`);
-    
-    // 🔍 DATABASE VERIFICATION - Critical for database unification verification
-    await logDatabaseStartupInfo();
   });
   
   server.on('error', (err) => {
