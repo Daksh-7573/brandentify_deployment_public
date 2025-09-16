@@ -1127,56 +1127,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Debug PUT endpoint reached", id: req.params.id, body: req.body });
   });
 
-  // PROFILE PICTURE UPLOAD FIX - Using storage layer
-  apiRouter.put("/users/:id/photo", async (req: Request, res: Response) => {
-    try {
-      const { photoURL } = req.body;
-      const userId = req.params.id;
-      
-      console.log(`[PUT /users/:id/photo] PROFILE PICTURE UPDATE - User: ${userId}`);
-      console.log(`[PUT /users/:id/photo] PhotoURL length: ${photoURL ? photoURL.length : 'NULL'}`);
-      
-      if (!photoURL) {
-        return res.status(400).json({ message: "photoURL is required" });
-      }
-      
-      // Handle both Firebase UID and numeric ID
-      let user;
-      const isFirebaseUid = userId.length > 20 && /[^0-9]/.test(userId);
-      
-      if (isFirebaseUid) {
-        console.log(`[PUT /users/:id/photo] Looking up user by Firebase UID: ${userId}`);
-        user = await storage.getUserByUsername(userId);
-      } else {
-        console.log(`[PUT /users/:id/photo] Looking up user by numeric ID: ${userId}`);
-        const numericUserId = parseInt(userId);
-        if (!isNaN(numericUserId)) {
-          user = await storage.getUser(numericUserId);
-        }
-      }
-      
-      if (!user) {
-        console.log(`[PUT /users/:id/photo] User not found: ${userId}`);
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      console.log(`[PUT /users/:id/photo] Found user ID ${user.id}, updating photoURL...`);
-      
-      // Update the user's photoURL using storage layer
-      const updatedUser = await storage.updateUser(user.id, { photoURL });
-      
-      if (!updatedUser) {
-        console.log(`[PUT /users/:id/photo] Update failed for user ID: ${user.id}`);
-        return res.status(500).json({ message: "Failed to update user" });
-      }
-      
-      console.log(`[PUT /users/:id/photo] SUCCESS - Updated photoURL for user ${user.id}`);
-      res.json(updatedUser);
-    } catch (error) {
-      console.error(`[PUT /users/:id/photo] ERROR:`, error);
-      res.status(500).json({ message: "Failed to update profile picture" });
-    }
-  });
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);

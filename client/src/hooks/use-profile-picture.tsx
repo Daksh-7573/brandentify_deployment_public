@@ -85,7 +85,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         
         const res = await apiRequest(
           'PUT',
-          `/api/users/${targetUserId}/photo`,
+          `/api/users/${targetUserId}`,
           {
             photoURL: base64Image
           }
