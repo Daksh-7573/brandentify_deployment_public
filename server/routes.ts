@@ -1664,46 +1664,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.get("/users/:userId/resume", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/resume] Request for resume with userId: ${userIdParam}`);
+      // SECURITY FIX: Resume is private data - require authentication  
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/resume] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/resume] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/resume] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/resume] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/resume] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required", 
+          message: "Please log in to view your resume",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      const resume = await storage.getResumeByUserId(userId);
+      console.log(`[SECURE GET /resume] Authenticated user ${currentUser.id} requesting their resume`);
+      
+      const resume = await storage.getResumeByUserId(currentUser.id);
       
       if (!resume) {
-        console.log(`[GET /users/:userId/resume] No resume found for userId: ${userId}`);
+        console.log(`[SECURE GET /resume] No resume found for authenticated user`);
         return res.status(404).json({ message: "Resume not found" });
       }
       
-      console.log(`[GET /users/:userId/resume] Found resume:`, resume);
+      console.log(`[SECURE GET /resume] Found resume for authenticated user`);
       res.json(resume);
     } catch (error) {
       console.error("Error fetching resume:", error);
@@ -1780,37 +1762,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Work Experience routes
   apiRouter.get("/users/:userId/experiences", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/experiences] Request for experiences with userId: ${userIdParam}`);
+      // SECURITY FIX: Work experiences are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/experiences] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/experiences] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/experiences] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/experiences] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/experiences] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your work experiences",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /experiences] Authenticated user ${currentUser.id} requesting their work experiences`);
+      const userId = currentUser.id;
       
       const experiences = await storage.getWorkExperiencesByUserId(userId);
       console.log(`[GET /users/:userId/experiences] Found ${experiences.length} experiences for userId: ${userId}`);
@@ -2229,37 +2194,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skills routes
   apiRouter.get("/users/:userId/skills", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/skills] Request for skills with userId: ${userIdParam}`);
+      // SECURITY FIX: Skills are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/skills] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/skills] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/skills] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/skills] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/skills] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your skills",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /skills] Authenticated user ${currentUser.id} requesting their skills`);
+      const userId = currentUser.id;
       
       const skills = await storage.getSkillsByUserId(userId);
       console.log(`[GET /users/:userId/skills] Found ${skills.length} skills for userId: ${userId}`);
@@ -2341,37 +2289,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Project routes
   apiRouter.get("/users/:userId/projects", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}`);
+      // SECURITY FIX: Projects are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/projects] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/projects] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/projects] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/projects] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/projects] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your projects",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /projects] Authenticated user ${currentUser.id} requesting their projects`);
+      const userId = currentUser.id;
       
       const projects = await storage.getProjectsByUserId(userId);
       console.log(`[GET /users/:userId/projects] Found ${projects.length} projects for userId: ${userId}`);
@@ -3521,40 +3452,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat Message routes
   apiRouter.get("/users/:userId/chat-messages", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/chat-messages] Request for chat messages with userId: ${userIdParam}`);
+      // SECURITY FIX: Chat messages are private - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/chat-messages] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/chat-messages] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/chat-messages] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/chat-messages] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/chat-messages] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your chat messages",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      const messages = await storage.getChatMessagesByUserId(userId);
-      console.log(`[GET /users/:userId/chat-messages] Found ${messages.length} chat messages for userId: ${userId}`);
+      console.log(`[SECURE GET /chat-messages] Authenticated user ${currentUser.id} requesting their chat messages`);
+      
+      const messages = await storage.getChatMessagesByUserId(currentUser.id);
+      console.log(`[SECURE GET /chat-messages] Found ${messages.length} chat messages for authenticated user`);
       res.json(messages);
     } catch (error) {
       console.error("Error fetching chat messages:", error);
@@ -5931,35 +5844,23 @@ ${extractedText.substring(0, 5000)}
   
   apiRouter.get("/users/:userId/followed-hashtags", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: Followed hashtags are private user preferences - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      console.log(`[GET /users/:userId/followed-hashtags] Getting followed hashtags for user ${userIdParam}`);
-      
-      // Check if we have a numeric ID or a Firebase UID
-      if (userIdParam.length > 20) {
-        console.log(`[GET /users/:userId/followed-hashtags] ID appears to be a Firebase UID: ${userIdParam}`);
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/followed-hashtags] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        userId = user.id;
-        console.log(`[GET /users/:userId/followed-hashtags] Found user with numeric ID: ${userId}`);
-      } else {
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/followed-hashtags] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your followed hashtags",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      // Get followed hashtags
-      const hashtags = await storage.getFollowedHashtagsByUserId(userId);
-      console.log(`[GET /users/:userId/followed-hashtags] Found ${hashtags.length} followed hashtags for user ${userId}`);
+      console.log(`[SECURE GET /followed-hashtags] Authenticated user ${currentUser.id} requesting their followed hashtags`);
+      
+      // Get followed hashtags for authenticated user only
+      const hashtags = await storage.getFollowedHashtagsByUserId(currentUser.id);
+      console.log(`[SECURE GET /followed-hashtags] Found ${hashtags.length} followed hashtags for authenticated user`);
       
       return res.json(hashtags);
     } catch (error) {
@@ -6283,23 +6184,20 @@ ${extractedText.substring(0, 5000)}
   // News User Preference routes
   apiRouter.get("/users/:userId/news-preferences", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: News preferences are private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        const user = await storage.getUserByUsername(userIdParam);
-        if (!user) {
-          return res.status(404).json({ error: "User not found" });
-        }
-        userId = user.id;
-      } else {
-        userId = parseInt(userIdParam);
-        if (isNaN(userId)) {
-          return res.status(400).json({ error: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your news preferences",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /news-preferences] Authenticated user ${currentUser.id} requesting their news preferences`);
+      const userId = currentUser.id;
       
       const preferences = await storage.getNewsUserPreferenceByUserId(userId);
       if (!preferences) {
@@ -6837,29 +6735,20 @@ ${extractedText.substring(0, 5000)}
   
   apiRouter.get("/users/:userId/reaction-quota", async (req: Request, res: Response) => {
     try {
-      let userId: number;
-      const userIdParam = req.params.userId;
+      // SECURITY FIX: Reaction quota is private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your reaction quota",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /reaction-quota] Authenticated user ${currentUser.id} requesting their reaction quota`);
+      const userId = currentUser.id;
       
       // Direct database query for reaction quota to fix the issue
       const result = await pool.query(`
@@ -7463,29 +7352,20 @@ ${extractedText.substring(0, 5000)}
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
     try {
-      console.log('Handling GET /users/:userId/career-goals request');
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: Career goals are private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`Resolving Firebase UID: ${userIdParam}`);
-        const user = await storage.getUserByUsername(userIdParam);
-        if (!user) {
-          console.log(`User not found for Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ error: "User not found" });
-        }
-        userId = user.id;
-        console.log(`Firebase UID resolved to user ID: ${userId}`);
-      } else {
-        userId = parseInt(userIdParam);
-        if (isNaN(userId)) {
-          console.log(`Invalid user ID format: ${userIdParam}`);
-          return res.status(400).json({ error: "Invalid user ID format" });
-        }
-        console.log(`Using numeric user ID: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your career goals",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /career-goals] Authenticated user ${currentUser.id} requesting their career goals`);
+      const userId = currentUser.id;
       
       console.log(`Resolved user ID: ${userId}, calling storage.getCareerGoalsByUserId`);
       

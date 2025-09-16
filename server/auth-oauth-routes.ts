@@ -342,9 +342,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       name: user.name
     });
     
-    // Create secure JWT session
+    // Create secure JWT session with firebaseUid for consistent lookups
     const tokenPayload = {
       userId: user.id,
+      firebaseUid: user.firebaseUid || user.username, // Include Firebase UID for lookups
       email: user.email,
       name: user.name,
       authProvider: 'google',
