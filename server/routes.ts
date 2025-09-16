@@ -217,12 +217,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const apiRouter = express.Router();
   
-  // Health check endpoint for enterprise scaling
-  apiRouter.get("/health", (req: Request, res: Response) => {
-    // Add Cache-Control headers to prevent API caching
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  // 🚨 CRITICAL: GLOBAL API NO-CACHE MIDDLEWARE - ELIMINATE ALL CLIENT-SIDE API CACHING
+  apiRouter.use((req: Request, res: Response, next) => {
+    console.log(`🚨 [API NO-CACHE] Setting comprehensive no-cache headers for: ${req.method} ${req.path}`);
+    
+    // COMPREHENSIVE CACHE ELIMINATION HEADERS
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Last-Modified', new Date().toUTCString());
+    res.setHeader('ETag', ''); // Clear ETag to prevent 304 responses
+    
+    // DEBUG HEADERS FOR VERIFICATION
+    res.setHeader('X-Cache-Elimination', 'v8-emergency');
+    res.setHeader('X-Timestamp', Date.now().toString());
+    res.setHeader('X-Request-ID', crypto.randomBytes(16).toString('hex'));
+    
+    console.log(`🚀 [API NO-CACHE] No-cache headers applied to: ${req.method} ${req.path}`);
+    next();
+  });
+  
+  // Health check endpoint for enterprise scaling
+  apiRouter.get("/health", (req: Request, res: Response) => {
+    // Additional headers for health endpoint
     res.setHeader('X-DB-Fingerprint', createDatabaseFingerprint());
     
     res.status(200).json({

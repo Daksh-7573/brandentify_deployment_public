@@ -54,12 +54,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
     
+    // 🚨 CRITICAL: EMERGENCY CACHE PURGE ON APP START
+    console.log('[Auth Context] 🚨 EMERGENCY CACHE PURGE - Clearing all API caches');
+    
+    // Clear localStorage API cache entries
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('api_cache_') || key.startsWith('query_cache_') || 
+            key.includes('brandentifier_user') || key.includes('user_data')) {
+          localStorage.removeItem(key);
+          console.log('🗑️ [CACHE PURGE] Removed cache key:', key);
+        }
+      });
+    } catch (e) {
+      console.warn('localStorage purge error:', e);
+    }
+    
+    // Force React Query cache invalidation
+    queryClient.clear();
+    console.log('🚨 [CACHE PURGE] Cleared React Query cache');
+    
     console.log('[Auth Context] Using server-side JWT session for all domains');
     
-    // Check server-side session for all domains
-    fetch('/api/auth/session', {
+    // Check server-side session for all domains with aggressive cache busting
+    const cacheBuster = Date.now() + Math.random();
+    fetch(`/api/auth/session?t=${cacheBuster}`, {
       method: 'GET',
-      credentials: 'include' // Include cookies
+      credentials: 'include', // Include cookies
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     })
     .then(response => {
       if (response.ok) {

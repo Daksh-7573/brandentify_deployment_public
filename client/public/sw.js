@@ -1,9 +1,9 @@
-// Enhanced Service Worker v7 - COMPLETE API CACHING BYPASS FIX  
-const SW_VERSION = 'v7'; // Bumped version to force API cache bypass activation
-const CACHE_NAME = 'brandentifier-v7';
-const STATIC_CACHE_NAME = 'brandentifier-static-v7';
-const API_CACHE_NAME = 'brandentifier-api-v7';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v7';
+// 🚨 EMERGENCY CACHE ELIMINATION FIX v9 - ZERO API CACHING TOLERANCE
+const SW_VERSION = 'v9'; // FORCED VERSION BUMP - COMPLETE API CACHE PURGE ACTIVATION
+const CACHE_NAME = 'brandentifier-v9';
+const STATIC_CACHE_NAME = 'brandentifier-static-v9';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v9';
+// REMOVED: API_CACHE_NAME - NO API CACHING ALLOWED
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -31,14 +31,14 @@ const RUNTIME_CACHE_PATTERNS = [
   /\.js$/, /\.css$/, /\.tsx$/, /\.ts$/
 ];
 
-// Install event - cache critical files with enhanced strategy
+// 🚨 EMERGENCY INSTALL - COMPLETE API CACHE PURGE
 self.addEventListener('install', event => {
-  console.log('[SW v6] Installing complete OAuth authentication fix...');
+  console.log('🚨 [SW v8] EMERGENCY CACHE ELIMINATION - Installing complete API cache purge...');
   event.waitUntil(
     Promise.all([
-      // Cache static files
+      // Cache static files only
       caches.open(STATIC_CACHE_NAME).then(cache => {
-        console.log('[SW v5] Caching static files...');
+        console.log('🚀 [SW v8] Caching static files only (NO API CACHING)...');
         return cache.addAll(STATIC_FILES.map(url => {
           // Add cache-busting for external resources
           if (url.startsWith('http')) {
@@ -47,34 +47,74 @@ self.addEventListener('install', event => {
           return url;
         }));
       }),
-      // Pre-warm runtime cache
+      // Pre-warm runtime cache (NON-API ONLY)
       caches.open(RUNTIME_CACHE_NAME),
-      caches.open(API_CACHE_NAME),
-      self.skipWaiting()
-    ])
-  );
-});
-
-// Activate event - enhanced cleanup and immediate claiming
-self.addEventListener('activate', event => {
-  console.log('[SW v6] Activating complete OAuth authentication fix...');
-  event.waitUntil(
-    Promise.all([
-      // Clean up old caches
+      // 🚨 CRITICAL: IMMEDIATE API CACHE PURGE
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v7')) {
-              console.log('[SW v7] Deleting old cache:', cacheName);
+            if (cacheName.includes('api') || cacheName.includes('brandentifier-api')) {
+              console.log('🗑️ [SW v8] PURGING API CACHE:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       }),
-      // Immediate control claiming for faster activation
+      // 🚨 EMERGENCY: Force immediate activation and bypass waiting
+      self.skipWaiting(),
+      // Send immediate cache purge message to all clients
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ 
+            type: 'FORCE_CACHE_PURGE', 
+            version: 'v9',
+            message: 'Emergency cache elimination active'
+          });
+        });
+      })
+    ])
+  );
+});
+
+// 🚨 EMERGENCY ACTIVATE - COMPLETE API CACHE ELIMINATION
+self.addEventListener('activate', event => {
+  console.log('🚨 [SW v8] EMERGENCY ACTIVATION - Complete API cache elimination...');
+  event.waitUntil(
+    Promise.all([
+      // Aggressive cache cleanup - delete ALL old versions and ALL API caches
+      caches.keys().then(cacheNames => {
+        console.log('🧹 [SW v8] Found caches:', cacheNames);
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            // Delete all old versions
+            if (!cacheName.includes('v8')) {
+              console.log('🗑️ [SW v8] Deleting old cache version:', cacheName);
+              return caches.delete(cacheName);
+            }
+            // CRITICAL: Delete ANY cache that could contain API responses
+            if (cacheName.includes('api') || cacheName.includes('API') || 
+                cacheName.includes('brandentifier-api') || cacheName.includes('users') ||
+                cacheName.includes('profiles') || cacheName.includes('messaging')) {
+              console.log('🚨 [SW v8] PURGING API-RELATED CACHE:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // 🚨 CRITICAL: Force immediate cache takeover for all clients
       self.clients.claim()
     ])
   );
+  
+  // 🚨 EMERGENCY: Clear any existing API responses from browser cache
+  console.log('🚨 [SW v8] FORCING IMMEDIATE CLIENT CACHE PURGE');
+  
+  // Send message to all clients to clear API caches
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({ type: 'EMERGENCY_CACHE_PURGE', version: 'v8' });
+    });
+  });
 });
 
 // Enhanced fetch strategy with OAUTH CALLBACK FIX
@@ -191,30 +231,16 @@ self.addEventListener('fetch', event => {
     );
   }
   
-  // 🚀 CRITICAL FIX: COMPLETE API BYPASS - Never cache API responses to prevent stale data
+  // 🚨 CRITICAL: ABSOLUTE API BYPASS - NO SERVICE WORKER INTERFERENCE WHATSOEVER
   else if (request.url.includes('/api/')) {
-    console.log('[SW v6] 🚀 API ROUTE BYPASS - Direct to server (no cache):', request.url);
+    console.log('🚨 [SW v8] ABSOLUTE API BYPASS - SERVICE WORKER COMPLETELY DISABLED:', request.url);
     
-    // COMPLETE BYPASS - No service worker caching interference
-    event.respondWith(
-      fetch(request, { 
-        cache: 'no-store', // Never cache API requests
-        credentials: 'include' // Include cookies for sessions
-      }).then(response => {
-        console.log('[SW v6] ✅ API request successful:', response.status, request.url);
-        return response;
-      }).catch(error => {
-        console.error('[SW v6] ❌ API request failed:', error);
-        return new Response(JSON.stringify({ 
-          error: 'API request failed', 
-          message: 'Please check your connection and try again',
-          timestamp: new Date().toISOString()
-        }), {
-          status: 503,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      })
-    );
+    // 🚨 CRITICAL: Do absolutely NOTHING for API requests - let browser handle directly
+    // This ensures zero service worker interference with API calls
+    
+    // COMPLETELY BYPASS SERVICE WORKER - NO event.respondWith() CALLED
+    // This allows the browser to handle the request directly as if no SW exists
+    return; // Browser will handle this request directly without SW interference
   }
   
   // Runtime caching for dynamic content

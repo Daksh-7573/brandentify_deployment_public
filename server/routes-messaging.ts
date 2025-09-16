@@ -313,6 +313,17 @@ router.get("/unread/count", async (req, res) => {
     }
     
     const result = await messageService.getTotalUnreadMessageCount(userId);
+    
+    // 🚨 DEBUG HEADERS for user/profile verification across domains
+    res.setHeader('X-User-Id', userId.toString());
+    res.setHeader('X-Firebase-UID', userIdParam);
+    const { getDatabaseFingerprint } = await import('./db');
+    const dbFingerprint = await getDatabaseFingerprint();
+    res.setHeader('X-DB-Fingerprint', dbFingerprint.fingerprint);
+    res.setHeader('X-Domain-Debug', 'messaging-unread-count');
+    
+    console.log(`🔍 [DEBUG HEADERS] Unread count for user ${userId} (Firebase: ${userIdParam}) - DB: ${dbFingerprint.fingerprint}`);
+    
     res.json(result);
   } catch (error) {
     console.error("Error getting unread message count:", error);
