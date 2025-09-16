@@ -1,34 +1,21 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
-import TestFirebase from "@/components/test-firebase";
+// TestFirebase removed - Firebase disabled, using custom OAuth only
 
 export default function AuthTest() {
   const { user, isAuthenticated, isLoading, signInWithGoogle, signOut } = useAuth();
   const [authStatus, setAuthStatus] = useState<string>("Checking...");
-  const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  // firebaseUser removed - Firebase disabled
 
   useEffect(() => {
-    const checkFirebaseAuth = async () => {
-      try {
-        const { auth } = await import('@/lib/firebase');
-        const currentUser = auth.currentUser;
-        setFirebaseUser(currentUser);
-        
-        const status = `
-          Context User: ${user ? `${user.email} (${user.uid})` : 'None'}
-          Firebase User: ${currentUser ? `${currentUser.email} (${currentUser.uid})` : 'None'}
-          IsAuthenticated: ${isAuthenticated}
-          IsLoading: ${isLoading}
-        `;
-        setAuthStatus(status);
-      } catch (error) {
-        setAuthStatus(`Error: ${error}`);
-      }
-    };
-
-    checkFirebaseAuth();
-    const interval = setInterval(checkFirebaseAuth, 1000);
-    return () => clearInterval(interval);
+    // Firebase check removed - using custom OAuth only
+    const status = `
+      Context User: ${user ? `${user.email} (${user.uid})` : 'None'}
+      Firebase User: DISABLED - Using Custom OAuth Only
+      IsAuthenticated: ${isAuthenticated}
+      IsLoading: ${isLoading}
+    `;
+    setAuthStatus(status);
   }, [user, isAuthenticated, isLoading]);
 
   const handleGoogleSignIn = async () => {
@@ -92,7 +79,10 @@ export default function AuthTest() {
           </pre>
         </div>
         
-        <TestFirebase />
+        <div className="bg-gray-800 p-4 rounded">
+          <h3 className="text-lg font-bold mb-2">🚫 Firebase Testing Disabled</h3>
+          <p>Firebase authentication has been disabled in favor of unified custom OAuth.</p>
+        </div>
       </div>
     </div>
   );
