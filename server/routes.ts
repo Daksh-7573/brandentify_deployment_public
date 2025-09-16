@@ -1255,35 +1255,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
             paramIndex++;
           }
           
-          // Add WHERE clause and returning
-          updateQuery += updateParts.join(', ');
-          updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-          updateValues.push(user.id);
-          
-          console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
-          console.log(`[PUT /users/:id] Firebase UID Direct DB params:`, updateValues);
-          
-          const result = await pool.query(updateQuery, updateValues);
-          
-          if (result.rows.length === 0) {
-            console.log(`[PUT /users/:id] Firebase UID Direct DB update failed - no user found`);
-            updatedUser = await storage.updateUser(user.id, userData);
+          // Check if there are any fields to update before constructing SQL
+          if (updateParts.length === 0) {
+            console.log(`[PUT /users/:id] Firebase UID No fields to update, returning existing user data`);
+            updatedUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              password: user.password,
+              phoneNumber: user.phoneNumber,
+              name: user.name,
+              brandName: user.brandName,
+              photoURL: user.photoURL,
+              title: user.title,
+              aboutMe: user.aboutMe,
+              location: user.location,
+              industry: user.industry,
+              domain: user.domain,
+              lookingFor: user.lookingFor,
+              whatIOffer: user.whatIOffer,
+              visitingCardType: user.visitingCardType,
+              profileCompleted: user.profileCompleted,
+              emailVerified: user.emailVerified,
+              emailVerificationToken: user.emailVerificationToken,
+              emailVerificationExpires: user.emailVerificationExpires,
+              createdAt: user.createdAt
+            };
           } else {
-            updatedUser = result.rows[0];
-            console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            // Construct and execute SQL update query
+            updateQuery += updateParts.join(', ');
+            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+            updateValues.push(user.id);
             
-            // FORCE CACHE INVALIDATION - Clear all caching layers
-            if (global.gc) {
-              global.gc();
-            }
+            console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
+            console.log(`[PUT /users/:id] Firebase UID Direct DB params:`, updateValues);
             
-            // Invalidate cache service if available
-            try {
-              const { cacheService } = require('./services/cache-service');
-              await cacheService.invalidatePattern(`user:${user.id}:*`);
-              await cacheService.invalidatePattern(`users:*`);
-            } catch (cacheError) {
-              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+            const result = await pool.query(updateQuery, updateValues);
+            
+            if (result.rows.length === 0) {
+              console.log(`[PUT /users/:id] Firebase UID Direct DB update failed - no user found`);
+              updatedUser = await storage.updateUser(user.id, userData);
+            } else {
+              updatedUser = result.rows[0];
+              console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+              
+              // FORCE CACHE INVALIDATION - Clear all caching layers
+              if (global.gc) {
+                global.gc();
+              }
+              
+              // Invalidate cache service if available
+              try {
+                const { cacheService } = require('./services/cache-service');
+                await cacheService.invalidatePattern(`user:${user.id}:*`);
+                await cacheService.invalidatePattern(`users:*`);
+              } catch (cacheError) {
+                console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+              }
             }
           }
         } catch (directError) {
@@ -1324,6 +1352,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (key === 'photoURL') {
               columnName = 'photo_url';
               console.log(`[PUT /users/:id] *** PHOTO URL FIELD MAPPING FIX *** - ${key} -> ${columnName}`);
+            } else if (key === 'aboutMe') {
+              columnName = 'about_me';
+            } else if (key === 'phoneNumber') {
+              columnName = 'phone_number';
+            } else if (key === 'brandName') {
+              columnName = 'brand_name';
+            } else if (key === 'lookingFor') {
+              columnName = 'looking_for';
+            } else if (key === 'whatIOffer') {
+              columnName = 'what_i_offer';
+            } else if (key === 'visitingCardType') {
+              columnName = 'visiting_card_type';
+            } else if (key === 'profileCompleted') {
+              columnName = 'profile_completed';
+            } else if (key === 'emailVerified') {
+              columnName = 'email_verified';
+            } else if (key === 'emailVerificationToken') {
+              columnName = 'email_verification_token';
+            } else if (key === 'emailVerificationExpires') {
+              columnName = 'email_verification_expires';
+            } else if (key === 'createdAt') {
+              columnName = 'created_at';
             } else {
               columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
             }
@@ -1332,22 +1382,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
             paramIndex++;
           }
           
-          // Add WHERE clause and returning
-          updateQuery += updateParts.join(', ');
-          updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-          updateValues.push(userId);
-          
-          console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
-          console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
-          
-          const result = await pool.query(updateQuery, updateValues);
-          
-          if (result.rows.length === 0) {
-            console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
-            updatedUser = await storage.updateUser(userId, userData);
+          // Check if there are any fields to update before constructing SQL
+          if (updateParts.length === 0) {
+            console.log(`[PUT /users/:id] Numeric ID No fields to update, returning existing user data`);
+            updatedUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              password: user.password,
+              phoneNumber: user.phoneNumber,
+              name: user.name,
+              brandName: user.brandName,
+              photoURL: user.photoURL,
+              title: user.title,
+              aboutMe: user.aboutMe,
+              location: user.location,
+              industry: user.industry,
+              domain: user.domain,
+              lookingFor: user.lookingFor,
+              whatIOffer: user.whatIOffer,
+              visitingCardType: user.visitingCardType,
+              profileCompleted: user.profileCompleted,
+              emailVerified: user.emailVerified,
+              emailVerificationToken: user.emailVerificationToken,
+              emailVerificationExpires: user.emailVerificationExpires,
+              createdAt: user.createdAt
+            };
           } else {
-            updatedUser = result.rows[0];
-            console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            // Construct and execute SQL update query
+            updateQuery += updateParts.join(', ');
+            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+            updateValues.push(userId);
+            
+            console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
+            console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
+            
+            const result = await pool.query(updateQuery, updateValues);
+            
+            if (result.rows.length === 0) {
+              console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
+              updatedUser = await storage.updateUser(userId, userData);
+            } else {
+              updatedUser = result.rows[0];
+              console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            }
           }
         } catch (directError) {
           console.error(`[PUT /users/:id] Direct DB update failed:`, directError);
