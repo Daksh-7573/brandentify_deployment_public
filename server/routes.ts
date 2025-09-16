@@ -109,6 +109,7 @@ import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
 import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
 import * as xaiService from "./services/xai-service";
+import { getDatabaseFingerprint, createDatabaseFingerprint } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth cleaner endpoint - MUST be before any other routes
@@ -216,14 +217,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const apiRouter = express.Router();
   
+  // 🚨 CRITICAL: GLOBAL API NO-CACHE MIDDLEWARE - ELIMINATE ALL CLIENT-SIDE API CACHING
+  apiRouter.use((req: Request, res: Response, next) => {
+    console.log(`🚨 [API NO-CACHE] Setting comprehensive no-cache headers for: ${req.method} ${req.path}`);
+    
+    // COMPREHENSIVE CACHE ELIMINATION HEADERS
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Last-Modified', new Date().toUTCString());
+    res.setHeader('ETag', ''); // Clear ETag to prevent 304 responses
+    
+    // DEBUG HEADERS FOR VERIFICATION
+    res.setHeader('X-Cache-Elimination', 'v8-emergency');
+    res.setHeader('X-Timestamp', Date.now().toString());
+    res.setHeader('X-Request-ID', crypto.randomBytes(16).toString('hex'));
+    
+    console.log(`🚀 [API NO-CACHE] No-cache headers applied to: ${req.method} ${req.path}`);
+    next();
+  });
+  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
+    // Additional headers for health endpoint
+    res.setHeader('X-DB-Fingerprint', createDatabaseFingerprint());
+    
     res.status(200).json({
       status: "healthy",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: "1.0.0"
     });
+  });
+
+  // 🔍 DATABASE FINGERPRINTING ENDPOINT - Critical for database unification verification
+  apiRouter.get("/db-fingerprint", async (req: Request, res: Response) => {
+    try {
+      console.log(`🔍 [DB FINGERPRINT] Request from host: ${req.get('host')}`);
+      
+      // Add Cache-Control headers to prevent API caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      const fingerprint = await getDatabaseFingerprint();
+      
+      // Add fingerprint to response headers for easy verification
+      res.setHeader('X-DB-Fingerprint', fingerprint.fingerprint);
+      res.setHeader('X-DB-Host', fingerprint.masked_host);
+      
+      console.log(`🔍 [DB FINGERPRINT] Returning fingerprint: ${fingerprint.fingerprint} for host: ${fingerprint.masked_host}`);
+      
+      res.status(200).json({
+        ...fingerprint,
+        request_host: req.get('host'),
+        user_agent: req.get('user-agent')?.substring(0, 50) + '...'
+      });
+    } catch (error) {
+      console.error(`🚨 [DB FINGERPRINT] Error:`, error);
+      res.status(500).json({
+        error: 'Database fingerprint error',
+        details: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // Job title options endpoint
@@ -1127,56 +1185,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Debug PUT endpoint reached", id: req.params.id, body: req.body });
   });
 
-  // PROFILE PICTURE UPLOAD FIX - Using storage layer
-  apiRouter.put("/users/:id/photo", async (req: Request, res: Response) => {
-    try {
-      const { photoURL } = req.body;
-      const userId = req.params.id;
-      
-      console.log(`[PUT /users/:id/photo] PROFILE PICTURE UPDATE - User: ${userId}`);
-      console.log(`[PUT /users/:id/photo] PhotoURL length: ${photoURL ? photoURL.length : 'NULL'}`);
-      
-      if (!photoURL) {
-        return res.status(400).json({ message: "photoURL is required" });
-      }
-      
-      // Handle both Firebase UID and numeric ID
-      let user;
-      const isFirebaseUid = userId.length > 20 && /[^0-9]/.test(userId);
-      
-      if (isFirebaseUid) {
-        console.log(`[PUT /users/:id/photo] Looking up user by Firebase UID: ${userId}`);
-        user = await storage.getUserByUsername(userId);
-      } else {
-        console.log(`[PUT /users/:id/photo] Looking up user by numeric ID: ${userId}`);
-        const numericUserId = parseInt(userId);
-        if (!isNaN(numericUserId)) {
-          user = await storage.getUser(numericUserId);
-        }
-      }
-      
-      if (!user) {
-        console.log(`[PUT /users/:id/photo] User not found: ${userId}`);
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      console.log(`[PUT /users/:id/photo] Found user ID ${user.id}, updating photoURL...`);
-      
-      // Update the user's photoURL using storage layer
-      const updatedUser = await storage.updateUser(user.id, { photoURL });
-      
-      if (!updatedUser) {
-        console.log(`[PUT /users/:id/photo] Update failed for user ID: ${user.id}`);
-        return res.status(500).json({ message: "Failed to update user" });
-      }
-      
-      console.log(`[PUT /users/:id/photo] SUCCESS - Updated photoURL for user ${user.id}`);
-      res.json(updatedUser);
-    } catch (error) {
-      console.error(`[PUT /users/:id/photo] ERROR:`, error);
-      res.status(500).json({ message: "Failed to update profile picture" });
-    }
-  });
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
@@ -1305,35 +1313,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
             paramIndex++;
           }
           
-          // Add WHERE clause and returning
-          updateQuery += updateParts.join(', ');
-          updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-          updateValues.push(user.id);
-          
-          console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
-          console.log(`[PUT /users/:id] Firebase UID Direct DB params:`, updateValues);
-          
-          const result = await pool.query(updateQuery, updateValues);
-          
-          if (result.rows.length === 0) {
-            console.log(`[PUT /users/:id] Firebase UID Direct DB update failed - no user found`);
-            updatedUser = await storage.updateUser(user.id, userData);
+          // Check if there are any fields to update before constructing SQL
+          if (updateParts.length === 0) {
+            console.log(`[PUT /users/:id] Firebase UID No fields to update, returning existing user data`);
+            updatedUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              password: user.password,
+              phoneNumber: user.phoneNumber,
+              name: user.name,
+              brandName: user.brandName,
+              photoURL: user.photoURL,
+              title: user.title,
+              aboutMe: user.aboutMe,
+              location: user.location,
+              industry: user.industry,
+              domain: user.domain,
+              lookingFor: user.lookingFor,
+              whatIOffer: user.whatIOffer,
+              visitingCardType: user.visitingCardType,
+              profileCompleted: user.profileCompleted,
+              emailVerified: user.emailVerified,
+              emailVerificationToken: user.emailVerificationToken,
+              emailVerificationExpires: user.emailVerificationExpires,
+              createdAt: user.createdAt
+            };
           } else {
-            updatedUser = result.rows[0];
-            console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            // Construct and execute SQL update query
+            updateQuery += updateParts.join(', ');
+            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+            updateValues.push(user.id);
             
-            // FORCE CACHE INVALIDATION - Clear all caching layers
-            if (global.gc) {
-              global.gc();
-            }
+            console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
+            console.log(`[PUT /users/:id] Firebase UID Direct DB params:`, updateValues);
             
-            // Invalidate cache service if available
-            try {
-              const { cacheService } = require('./services/cache-service');
-              await cacheService.invalidatePattern(`user:${user.id}:*`);
-              await cacheService.invalidatePattern(`users:*`);
-            } catch (cacheError) {
-              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+            const result = await pool.query(updateQuery, updateValues);
+            
+            if (result.rows.length === 0) {
+              console.log(`[PUT /users/:id] Firebase UID Direct DB update failed - no user found`);
+              updatedUser = await storage.updateUser(user.id, userData);
+            } else {
+              updatedUser = result.rows[0];
+              console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+              
+              // FORCE CACHE INVALIDATION - Clear all caching layers
+              if (global.gc) {
+                global.gc();
+              }
+              
+              // Invalidate cache service if available
+              try {
+                const { cacheService } = require('./services/cache-service');
+                await cacheService.invalidatePattern(`user:${user.id}:*`);
+                await cacheService.invalidatePattern(`users:*`);
+              } catch (cacheError) {
+                console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+              }
             }
           }
         } catch (directError) {
@@ -1374,6 +1410,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (key === 'photoURL') {
               columnName = 'photo_url';
               console.log(`[PUT /users/:id] *** PHOTO URL FIELD MAPPING FIX *** - ${key} -> ${columnName}`);
+            } else if (key === 'aboutMe') {
+              columnName = 'about_me';
+            } else if (key === 'phoneNumber') {
+              columnName = 'phone_number';
+            } else if (key === 'brandName') {
+              columnName = 'brand_name';
+            } else if (key === 'lookingFor') {
+              columnName = 'looking_for';
+            } else if (key === 'whatIOffer') {
+              columnName = 'what_i_offer';
+            } else if (key === 'visitingCardType') {
+              columnName = 'visiting_card_type';
+            } else if (key === 'profileCompleted') {
+              columnName = 'profile_completed';
+            } else if (key === 'emailVerified') {
+              columnName = 'email_verified';
+            } else if (key === 'emailVerificationToken') {
+              columnName = 'email_verification_token';
+            } else if (key === 'emailVerificationExpires') {
+              columnName = 'email_verification_expires';
+            } else if (key === 'createdAt') {
+              columnName = 'created_at';
             } else {
               columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
             }
@@ -1382,22 +1440,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
             paramIndex++;
           }
           
-          // Add WHERE clause and returning
-          updateQuery += updateParts.join(', ');
-          updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-          updateValues.push(userId);
-          
-          console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
-          console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
-          
-          const result = await pool.query(updateQuery, updateValues);
-          
-          if (result.rows.length === 0) {
-            console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
-            updatedUser = await storage.updateUser(userId, userData);
+          // Check if there are any fields to update before constructing SQL
+          if (updateParts.length === 0) {
+            console.log(`[PUT /users/:id] Numeric ID No fields to update, returning existing user data`);
+            updatedUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              password: user.password,
+              phoneNumber: user.phoneNumber,
+              name: user.name,
+              brandName: user.brandName,
+              photoURL: user.photoURL,
+              title: user.title,
+              aboutMe: user.aboutMe,
+              location: user.location,
+              industry: user.industry,
+              domain: user.domain,
+              lookingFor: user.lookingFor,
+              whatIOffer: user.whatIOffer,
+              visitingCardType: user.visitingCardType,
+              profileCompleted: user.profileCompleted,
+              emailVerified: user.emailVerified,
+              emailVerificationToken: user.emailVerificationToken,
+              emailVerificationExpires: user.emailVerificationExpires,
+              createdAt: user.createdAt
+            };
           } else {
-            updatedUser = result.rows[0];
-            console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            // Construct and execute SQL update query
+            updateQuery += updateParts.join(', ');
+            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+            updateValues.push(userId);
+            
+            console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
+            console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
+            
+            const result = await pool.query(updateQuery, updateValues);
+            
+            if (result.rows.length === 0) {
+              console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
+              updatedUser = await storage.updateUser(userId, userData);
+            } else {
+              updatedUser = result.rows[0];
+              console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            }
           }
         } catch (directError) {
           console.error(`[PUT /users/:id] Direct DB update failed:`, directError);
@@ -1578,46 +1664,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.get("/users/:userId/resume", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/resume] Request for resume with userId: ${userIdParam}`);
+      // SECURITY FIX: Resume is private data - require authentication  
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/resume] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/resume] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/resume] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/resume] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/resume] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required", 
+          message: "Please log in to view your resume",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      const resume = await storage.getResumeByUserId(userId);
+      console.log(`[SECURE GET /resume] Authenticated user ${currentUser.id} requesting their resume`);
+      
+      const resume = await storage.getResumeByUserId(currentUser.id);
       
       if (!resume) {
-        console.log(`[GET /users/:userId/resume] No resume found for userId: ${userId}`);
+        console.log(`[SECURE GET /resume] No resume found for authenticated user`);
         return res.status(404).json({ message: "Resume not found" });
       }
       
-      console.log(`[GET /users/:userId/resume] Found resume:`, resume);
+      console.log(`[SECURE GET /resume] Found resume for authenticated user`);
       res.json(resume);
     } catch (error) {
       console.error("Error fetching resume:", error);
@@ -1694,37 +1762,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Work Experience routes
   apiRouter.get("/users/:userId/experiences", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/experiences] Request for experiences with userId: ${userIdParam}`);
+      // SECURITY FIX: Work experiences are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/experiences] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/experiences] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/experiences] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/experiences] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/experiences] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your work experiences",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /experiences] Authenticated user ${currentUser.id} requesting their work experiences`);
+      const userId = currentUser.id;
       
       const experiences = await storage.getWorkExperiencesByUserId(userId);
       console.log(`[GET /users/:userId/experiences] Found ${experiences.length} experiences for userId: ${userId}`);
@@ -2143,37 +2194,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skills routes
   apiRouter.get("/users/:userId/skills", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/skills] Request for skills with userId: ${userIdParam}`);
+      // SECURITY FIX: Skills are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/skills] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/skills] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/skills] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/skills] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/skills] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your skills",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /skills] Authenticated user ${currentUser.id} requesting their skills`);
+      const userId = currentUser.id;
       
       const skills = await storage.getSkillsByUserId(userId);
       console.log(`[GET /users/:userId/skills] Found ${skills.length} skills for userId: ${userId}`);
@@ -2255,37 +2289,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Project routes
   apiRouter.get("/users/:userId/projects", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}`);
+      // SECURITY FIX: Projects are personal profile data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/projects] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/projects] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/projects] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/projects] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/projects] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your projects",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /projects] Authenticated user ${currentUser.id} requesting their projects`);
+      const userId = currentUser.id;
       
       const projects = await storage.getProjectsByUserId(userId);
       console.log(`[GET /users/:userId/projects] Found ${projects.length} projects for userId: ${userId}`);
@@ -3435,40 +3452,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat Message routes
   apiRouter.get("/users/:userId/chat-messages", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/chat-messages] Request for chat messages with userId: ${userIdParam}`);
+      // SECURITY FIX: Chat messages are private - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      let userId: number;
-      
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`[GET /users/:userId/chat-messages] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/chat-messages] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        console.log(`[GET /users/:userId/chat-messages] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/chat-messages] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
-        
-        console.log(`[GET /users/:userId/chat-messages] Using numeric userId: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your chat messages",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      const messages = await storage.getChatMessagesByUserId(userId);
-      console.log(`[GET /users/:userId/chat-messages] Found ${messages.length} chat messages for userId: ${userId}`);
+      console.log(`[SECURE GET /chat-messages] Authenticated user ${currentUser.id} requesting their chat messages`);
+      
+      const messages = await storage.getChatMessagesByUserId(currentUser.id);
+      console.log(`[SECURE GET /chat-messages] Found ${messages.length} chat messages for authenticated user`);
       res.json(messages);
     } catch (error) {
       console.error("Error fetching chat messages:", error);
@@ -5845,35 +5844,23 @@ ${extractedText.substring(0, 5000)}
   
   apiRouter.get("/users/:userId/followed-hashtags", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: Followed hashtags are private user preferences - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      console.log(`[GET /users/:userId/followed-hashtags] Getting followed hashtags for user ${userIdParam}`);
-      
-      // Check if we have a numeric ID or a Firebase UID
-      if (userIdParam.length > 20) {
-        console.log(`[GET /users/:userId/followed-hashtags] ID appears to be a Firebase UID: ${userIdParam}`);
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          console.log(`[GET /users/:userId/followed-hashtags] No user found with Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        userId = user.id;
-        console.log(`[GET /users/:userId/followed-hashtags] Found user with numeric ID: ${userId}`);
-      } else {
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          console.log(`[GET /users/:userId/followed-hashtags] ID is not a valid numeric ID: ${userIdParam}`);
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your followed hashtags",
+          code: "AUTH_REQUIRED"
+        });
       }
       
-      // Get followed hashtags
-      const hashtags = await storage.getFollowedHashtagsByUserId(userId);
-      console.log(`[GET /users/:userId/followed-hashtags] Found ${hashtags.length} followed hashtags for user ${userId}`);
+      console.log(`[SECURE GET /followed-hashtags] Authenticated user ${currentUser.id} requesting their followed hashtags`);
+      
+      // Get followed hashtags for authenticated user only
+      const hashtags = await storage.getFollowedHashtagsByUserId(currentUser.id);
+      console.log(`[SECURE GET /followed-hashtags] Found ${hashtags.length} followed hashtags for authenticated user`);
       
       return res.json(hashtags);
     } catch (error) {
@@ -6197,23 +6184,20 @@ ${extractedText.substring(0, 5000)}
   // News User Preference routes
   apiRouter.get("/users/:userId/news-preferences", async (req: Request, res: Response) => {
     try {
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: News preferences are private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        const user = await storage.getUserByUsername(userIdParam);
-        if (!user) {
-          return res.status(404).json({ error: "User not found" });
-        }
-        userId = user.id;
-      } else {
-        userId = parseInt(userIdParam);
-        if (isNaN(userId)) {
-          return res.status(400).json({ error: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your news preferences",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /news-preferences] Authenticated user ${currentUser.id} requesting their news preferences`);
+      const userId = currentUser.id;
       
       const preferences = await storage.getNewsUserPreferenceByUserId(userId);
       if (!preferences) {
@@ -6751,29 +6735,20 @@ ${extractedText.substring(0, 5000)}
   
   apiRouter.get("/users/:userId/reaction-quota", async (req: Request, res: Response) => {
     try {
-      let userId: number;
-      const userIdParam = req.params.userId;
+      // SECURITY FIX: Reaction quota is private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        // Try to find user with this username (Firebase UID)
-        const user = await storage.getUserByUsername(userIdParam);
-        
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-        
-        userId = user.id;
-      } else {
-        // Try to parse as numeric ID
-        userId = parseInt(userIdParam);
-        
-        if (isNaN(userId)) {
-          return res.status(400).json({ message: "Invalid user ID format" });
-        }
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your reaction quota",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /reaction-quota] Authenticated user ${currentUser.id} requesting their reaction quota`);
+      const userId = currentUser.id;
       
       // Direct database query for reaction quota to fix the issue
       const result = await pool.query(`
@@ -7377,29 +7352,20 @@ ${extractedText.substring(0, 5000)}
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
     try {
-      console.log('Handling GET /users/:userId/career-goals request');
-      const userIdParam = req.params.userId;
-      let userId: number;
+      // SECURITY FIX: Career goals are private user data - require authentication
+      const { getCurrentUser } = await import('./middleware/secure-auth');
       
-      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
-      
-      if (isFirebaseUid) {
-        console.log(`Resolving Firebase UID: ${userIdParam}`);
-        const user = await storage.getUserByUsername(userIdParam);
-        if (!user) {
-          console.log(`User not found for Firebase UID: ${userIdParam}`);
-          return res.status(404).json({ error: "User not found" });
-        }
-        userId = user.id;
-        console.log(`Firebase UID resolved to user ID: ${userId}`);
-      } else {
-        userId = parseInt(userIdParam);
-        if (isNaN(userId)) {
-          console.log(`Invalid user ID format: ${userIdParam}`);
-          return res.status(400).json({ error: "Invalid user ID format" });
-        }
-        console.log(`Using numeric user ID: ${userId}`);
+      const currentUser = await getCurrentUser(req, res);
+      if (!currentUser) {
+        return res.status(401).json({
+          error: "Authentication required",
+          message: "Please log in to view your career goals",
+          code: "AUTH_REQUIRED"
+        });
       }
+      
+      console.log(`[SECURE GET /career-goals] Authenticated user ${currentUser.id} requesting their career goals`);
+      const userId = currentUser.id;
       
       console.log(`Resolved user ID: ${userId}, calling storage.getCareerGoalsByUserId`);
       
@@ -7932,14 +7898,54 @@ ${extractedText.substring(0, 5000)}
   httpServer.keepAliveTimeout = 65000; // 65 seconds
   httpServer.headersTimeout = 66000; // 66 seconds
   
-  // Setup WebSocket server for real-time messaging
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  // Add error handling for server startup stability
+  httpServer.on('error', (err: any) => {
+    console.error('HTTP Server error:', err);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${err.port} is already in use. Server will retry...`);
+      // Allow graceful retry instead of crashing
+    }
+  });
+  
+  // Setup WebSocket server for real-time messaging with error handling
+  let wss: WebSocketServer;
+  try {
+    wss = new WebSocketServer({ 
+      server: httpServer, 
+      path: '/ws',
+      // Add options to prevent binding conflicts
+      perMessageDeflate: false,
+      clientTracking: true
+    });
+    console.log('✅ WebSocket server created successfully');
+  } catch (error) {
+    console.error('❌ Error creating WebSocket server:', error);
+    throw error;
+  }
   
   // Map to store active connections by user ID
   const clients = new Map<number, WebSocket>();
   
+  // Add WebSocket server error handling for stability
+  wss.on('error', (error: Error) => {
+    console.error('WebSocket server error:', error);
+  });
+
   wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
+    
+    // Add connection-level error handling
+    ws.on('error', (error: Error) => {
+      console.error('WebSocket connection error:', error);
+      // Remove client from clients map on error
+      for (const [userId, client] of clients.entries()) {
+        if (client === ws) {
+          clients.delete(userId);
+          console.log(`User ${userId} removed from WebSocket due to error`);
+          break;
+        }
+      }
+    });
     
     // Expect an authentication message first with user ID
     ws.on('message', (message) => {
@@ -7953,11 +7959,15 @@ ${extractedText.substring(0, 5000)}
             clients.set(userId, ws);
             console.log(`User ${userId} authenticated on WebSocket`);
             
-            // Send confirmation
-            ws.send(JSON.stringify({
-              type: 'auth_success',
-              message: 'Authentication successful'
-            }));
+            // Send confirmation safely
+            try {
+              ws.send(JSON.stringify({
+                type: 'auth_success',
+                message: 'Authentication successful'
+              }));
+            } catch (sendError) {
+              console.error('Error sending auth confirmation:', sendError);
+            }
           }
         } else if (data.type === 'message') {
           // Handle new message
@@ -7965,15 +7975,27 @@ ${extractedText.substring(0, 5000)}
             const recipientId = parseInt(data.recipientId);
             
             // If recipient is connected, send them the message
-            if (clients.has(recipientId) && clients.get(recipientId).readyState === WebSocket.OPEN) {
-              clients.get(recipientId).send(JSON.stringify({
-                type: 'new_message',
-                senderId: data.senderId,
-                senderName: data.senderName,
-                conversationId: data.conversationId,
-                content: data.content,
-                timestamp: new Date().toISOString()
-              }));
+            if (clients.has(recipientId)) {
+              const recipientWs = clients.get(recipientId);
+              if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+                try {
+                  recipientWs.send(JSON.stringify({
+                    type: 'new_message',
+                    senderId: data.senderId,
+                    senderName: data.senderName,
+                    conversationId: data.conversationId,
+                    content: data.content,
+                    timestamp: new Date().toISOString()
+                  }));
+                } catch (sendError) {
+                  console.error('Error sending message to recipient:', sendError);
+                  // Remove stale connection
+                  clients.delete(recipientId);
+                }
+              } else {
+                // Remove stale connection
+                clients.delete(recipientId);
+              }
             }
           }
         }
@@ -7982,9 +8004,9 @@ ${extractedText.substring(0, 5000)}
       }
     });
     
-    // Handle disconnection
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
+    // Handle disconnection with improved cleanup
+    ws.on('close', (code: number, reason: Buffer) => {
+      console.log(`WebSocket client disconnected (code: ${code}, reason: ${reason.toString()})`);
       // Remove client from clients map
       for (const [userId, client] of clients.entries()) {
         if (client === ws) {

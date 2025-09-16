@@ -1,290 +1,112 @@
-// Enhanced Service Worker v6 - COMPLETE OAUTH AUTHENTICATION FIX  
-const SW_VERSION = 'v6'; // Bumped version to force complete OAuth fix
-const CACHE_NAME = 'brandentifier-v6';
-const STATIC_CACHE_NAME = 'brandentifier-static-v6';
-const API_CACHE_NAME = 'brandentifier-api-v6';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v6';
+// 🚨 SERVICE WORKER KILL-SWITCH v10 - IMMEDIATE CACHE ELIMINATION
+const SW_VERSION = 'KILL_SWITCH_v10';
 
-// Enhanced critical files for aggressive caching
-const STATIC_FILES = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/index.css',
-  '/src/App.tsx',
-  '/src/components/ui/skeleton-components.tsx',
-  '/src/context/auth-context.tsx',
-  '/src/lib/firebase.ts',
-  '/src/lib/queryClient.ts',
-  '/src/components/layout/header.tsx',
-  '/src/pages/landing.tsx',
-  '/src/pages/industry-pulse-new.tsx',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
-];
+console.log(`🚨 [${SW_VERSION}] SERVICE WORKER KILL-SWITCH ACTIVATED - IMMEDIATE CACHE ELIMINATION`);
 
-// Runtime cache patterns for dynamic content
-const RUNTIME_CACHE_PATTERNS = [
-  /\/src\/pages\/.+\.tsx$/,
-  /\/src\/components\/.+\.tsx$/,
-  /\/uploads\/.+\.(jpg|jpeg|png|gif|webp)$/,
-  /\.js$/, /\.css$/, /\.tsx$/, /\.ts$/
-];
-
-// Install event - cache critical files with enhanced strategy
+// ⚡ IMMEDIATE ACTIVATION - No waiting for user refresh
 self.addEventListener('install', event => {
-  console.log('[SW v6] Installing complete OAuth authentication fix...');
+  console.log(`🚨 [${SW_VERSION}] INSTALL: Force immediate activation and cache purge`);
+  
   event.waitUntil(
     Promise.all([
-      // Cache static files
-      caches.open(STATIC_CACHE_NAME).then(cache => {
-        console.log('[SW v5] Caching static files...');
-        return cache.addAll(STATIC_FILES.map(url => {
-          // Add cache-busting for external resources
-          if (url.startsWith('http')) {
-            return new Request(url, { cache: 'reload' });
-          }
-          return url;
-        }));
-      }),
-      // Pre-warm runtime cache
-      caches.open(RUNTIME_CACHE_NAME),
-      caches.open(API_CACHE_NAME),
-      self.skipWaiting()
-    ])
-  );
-});
-
-// Activate event - enhanced cleanup and immediate claiming
-self.addEventListener('activate', event => {
-  console.log('[SW v6] Activating complete OAuth authentication fix...');
-  event.waitUntil(
-    Promise.all([
-      // Clean up old caches
+      // 1. Force immediate activation
+      self.skipWaiting(),
+      
+      // 2. Delete ALL cache storage immediately
       caches.keys().then(cacheNames => {
+        console.log(`🗑️ [${SW_VERSION}] PURGING ALL ${cacheNames.length} CACHES:`, cacheNames);
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v6')) {
-              console.log('[SW v6] Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
+            console.log(`🗑️ [${SW_VERSION}] Deleting cache: ${cacheName}`);
+            return caches.delete(cacheName);
           })
         );
       }),
-      // Immediate control claiming for faster activation
-      self.clients.claim()
+      
+      // 3. Notify all clients immediately
+      self.clients.matchAll().then(clients => {
+        console.log(`📢 [${SW_VERSION}] Notifying ${clients.length} clients of cache elimination`);
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'KILL_SWITCH_ACTIVATED',
+            version: SW_VERSION,
+            message: 'All cache storage eliminated - API requests now fresh'
+          });
+        });
+      })
     ])
   );
 });
 
-// Enhanced fetch strategy with OAUTH CALLBACK FIX
+// ⚡ IMMEDIATE TAKEOVER - Control existing clients immediately
+self.addEventListener('activate', event => {
+  console.log(`🚨 [${SW_VERSION}] ACTIVATE: Take control of all clients immediately`);
+  
+  event.waitUntil(
+    Promise.all([
+      // 1. Take control of all existing clients immediately
+      self.clients.claim(),
+      
+      // 2. Final cache purge to ensure nothing remains
+      caches.keys().then(cacheNames => {
+        if (cacheNames.length > 0) {
+          console.log(`🧹 [${SW_VERSION}] FINAL PURGE: Deleting remaining ${cacheNames.length} caches`);
+          return Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        console.log(`✅ [${SW_VERSION}] CONFIRMED: No cache storage remaining`);
+      })
+    ])
+  );
+});
+
+// 🚨 CRITICAL: ZERO API INTERFERENCE - Complete bypass for all /api/** requests
 self.addEventListener('fetch', event => {
-  const request = event.request;
-  const url = new URL(request.url);
+  const url = new URL(event.request.url);
   
-  // Skip non-GET requests and non-http protocols
-  if (request.method !== 'GET' && request.method !== 'POST' || !request.url.startsWith('http')) {
+  // ABSOLUTE RULE: Never intercept API requests - let browser handle directly
+  if (url.pathname.startsWith('/api/')) {
+    console.log(`🚫 [${SW_VERSION}] API BYPASS: ${event.request.url}`);
+    // Do NOT call event.respondWith() - let browser handle directly
     return;
   }
   
-  // 🚀 CRITICAL FIX: COMPLETE AUTH BYPASS - Never intercept ANY authentication-related routes
-  const isAuthRoute = url.pathname.startsWith('/auth/') || 
-                     url.pathname.startsWith('/__/auth/') || 
-                     url.pathname === '/auth-callback' || 
-                     url.pathname.startsWith('/api/auth/') ||
-                     url.pathname.startsWith('/oauth') ||
-                     url.pathname.includes('callback');
-  
-  if (isAuthRoute) {
-    console.log('[SW v6] 🚀 AUTHENTICATION ROUTE BYPASS - Direct to server:', request.url);
-    console.log('[SW v6] 🔍 Route details:', {
-      pathname: url.pathname,
-      method: request.method,
-      mode: request.mode,
-      credentials: request.credentials
-    });
-    
-    // COMPLETE BYPASS - No service worker interference
-    event.respondWith(
-      fetch(request, { 
-        cache: 'no-store', // Never cache auth requests
-        credentials: 'include', // Include cookies for sessions
-        redirect: 'follow' // Allow OAuth redirects
-      }).then(response => {
-        console.log('[SW v6] ✅ Auth request successful:', response.status, response.url);
-        return response;
-      }).catch(error => {
-        console.error('[SW v6] ❌ Auth request failed:', error);
-        return new Response('Authentication Error - Please try again', {
-          status: 503,
-          headers: { 'Content-Type': 'text/html' }
-        });
-      })
-    );
-    return;
-  }
-  
-  // ⚠️ CRITICAL FIX: Enhanced navigation handling for published domains
-  if (request.mode === 'navigate') {
-    console.log('[SW v6] 🧭 Navigation request - checking for auth context:', request.url);
-    
-    // Enhanced logging for published domain debugging
-    const isPublishedDomain = url.hostname.includes('replit.app');
-    console.log('[SW v6] 🌐 Domain context:', {
-      hostname: url.hostname,
-      isPublished: isPublishedDomain,
-      pathname: url.pathname
-    });
-    
-    // NEVER intercept navigation requests - prevents redirect loops
-    event.respondWith(
-      fetch(request, { 
-        cache: 'no-store', // Force fresh request
-        credentials: 'include', // Include cookies for auth
-        redirect: 'follow' // Allow redirects
-      }).then(response => {
-        console.log('[SW v6] ✅ Navigation successful:', response.status, response.url);
-        return response;
-      }).catch(error => {
-        console.error('[SW v6] ❌ Navigation failed:', error);
-        return new Response('<!DOCTYPE html><html><body><h1>Network Error</h1><p>Please check your connection and try again.</p></body></html>', {
-          status: 503,
-          headers: { 'Content-Type': 'text/html' }
-        });
-      })
-    );
-    return;
-  }
-  
-  // Enhanced static file caching (cache-first with network fallback)
-  if (STATIC_FILES.some(file => request.url.includes(file))) {
-    event.respondWith(
-      caches.open(STATIC_CACHE_NAME).then(cache => {
-        return cache.match(request).then(response => {
-          if (response) {
-            console.log('[SW v4] ⚡ Instant cache hit:', request.url);
-            
-            // Background update for fresh content
-            fetch(request).then(networkResponse => {
-              if (networkResponse.status === 200) {
-                cache.put(request, networkResponse.clone());
-              }
-            }).catch(() => {});
-            
-            return response;
-          }
-          
-          // Network with caching
-          return fetch(request).then(networkResponse => {
-            if (networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(() => {
-            return new Response('Resource unavailable offline', {
-              status: 503,
-              headers: { 'Content-Type': 'text/plain' }
-            });
-          });
-        });
-      })
-    );
-  }
-  
-  // API caching with stale-while-revalidate strategy
-  else if (request.url.includes('/api/')) {
-    event.respondWith(
-      caches.open(API_CACHE_NAME).then(cache => {
-        return cache.match(request).then(cachedResponse => {
-          const fetchPromise = fetch(request).then(networkResponse => {
-            // Cache successful responses
-            if (networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          });
-          
-          // Return cached version immediately if available, update in background
-          if (cachedResponse) {
-            console.log('[SW v4] 🔄 Stale-while-revalidate:', request.url);
-            return cachedResponse;
-          }
-          
-          return fetchPromise.catch(() => {
-            return new Response(JSON.stringify({ error: 'API unavailable offline' }), {
-              status: 503,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          });
-        });
-      })
-    );
-  }
-  
-  // Runtime caching for dynamic content
-  else if (RUNTIME_CACHE_PATTERNS.some(pattern => pattern.test(request.url))) {
-    event.respondWith(
-      caches.open(RUNTIME_CACHE_NAME).then(cache => {
-        return cache.match(request).then(response => {
-          if (response) {
-            console.log('[SW v4] 🚀 Runtime cache hit:', request.url);
-            return response;
-          }
-          
-          return fetch(request).then(networkResponse => {
-            if (networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          });
-        });
-      })
-    );
-  }
-  
-  // Default network-first for everything else
-  else {
-    event.respondWith(
-      fetch(request).catch(() => {
-        // Try any cache as fallback
-        return caches.match(request).then(response => {
-          return response || new Response('Content unavailable offline', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain' }
-          });
-        });
-      })
-    );
-  }
+  // For all other requests, provide network-only strategy (no caching)
+  event.respondWith(
+    fetch(event.request, {
+      cache: 'no-store' // Force fresh requests for everything
+    }).catch(() => {
+      // Simple fallback for offline scenarios
+      return new Response('Content unavailable offline', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain' }
+      });
+    })
+  );
 });
 
-// Background sync for offline actions
-self.addEventListener('sync', event => {
-  console.log('[SW v4] Background sync:', event.tag);
-  if (event.tag === 'background-sync') {
-    event.waitUntil(
-      // Handle background sync operations
-      console.log('[SW v4] Performing background sync operations')
-    );
-  }
-});
-
-// Enhanced message handling
+// 📞 Message handling for debugging and status
 self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+  if (event.data && event.data.type === 'STATUS_CHECK') {
+    caches.keys().then(cacheNames => {
+      event.ports[0].postMessage({
+        version: SW_VERSION,
+        cacheCount: cacheNames.length,
+        caches: cacheNames,
+        message: cacheNames.length === 0 ? 'All caches eliminated successfully' : 'WARNING: Caches still exist'
+      });
+    });
   }
   
-  if (event.data && event.data.type === 'GET_CACHE_SIZE') {
+  if (event.data && event.data.type === 'FORCE_PURGE') {
     caches.keys().then(cacheNames => {
-      Promise.all(
-        cacheNames.map(cacheName => 
-          caches.open(cacheName).then(cache => cache.keys())
-        )
-      ).then(allKeys => {
-        const totalCached = allKeys.reduce((total, keys) => total + keys.length, 0);
-        event.ports[0].postMessage({ totalCached });
+      Promise.all(cacheNames.map(name => caches.delete(name))).then(() => {
+        event.ports[0].postMessage({
+          type: 'PURGE_COMPLETE',
+          message: `Manually purged ${cacheNames.length} caches`
+        });
       });
     });
   }
 });
+
+console.log(`✅ [${SW_VERSION}] SERVICE WORKER KILL-SWITCH READY - Zero API caching guaranteed`);

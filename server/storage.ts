@@ -257,6 +257,7 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByBrandName(brandName: string): Promise<User | undefined>;
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
@@ -1023,7 +1024,28 @@ export class MemStorage implements IStorage {
       emailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      firebaseUid: null,
+      googleId: null,
+      authProvider: null,
+      lastLoginAt: null,
+      aboutMe: null,
+      companyName: null,
+      workMode: null,
+      skills: null,
+      interests: null,
+      socialLinks: null,
+      profileUrl: null,
+      visibility: "public",
+      brandName: null,
+      personalityType: null,
+      whatIAmWorkingOn: null,
+      whatIOffer: null,
+      currentFocus: null,
+      radarVisibility: null,
+      geoLatitude: null,
+      geoLongitude: null,
+      geoLastUpdated: null
     };
     this.users.set(demoUser.id, demoUser);
     this.currentUserId++;
@@ -1717,6 +1739,51 @@ export class MemStorage implements IStorage {
     }
   }
   
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    console.log(`[db.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
+    
+    try {
+      // Query database by Google ID (primary lookup) or Firebase UID (fallback for legacy users)
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        brand_name as "brandName", visiting_card_type as "visitingCardType", 
+        profile_completed as "profileCompleted", email_verified as "emailVerified", 
+        email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", 
+        firebase_uid as "firebaseUid", google_id as "googleId", 
+        auth_provider as "authProvider", last_login_at as "lastLoginAt", 
+        created_at as "createdAt"
+        FROM users 
+        WHERE google_id = $1 OR firebase_uid = $1
+      `;
+      
+      const result = await pool.query(query, [googleId]);
+      console.log(`[db.getUserByGoogleId] Query returned ${result.rows.length} rows`);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+        return undefined;
+      }
+      
+      const user = result.rows[0] as User;
+      console.log(`[db.getUserByGoogleId] Found user:`, {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        googleId: user.googleId,
+        firebaseUid: user.firebaseUid,
+        authProvider: user.authProvider
+      });
+      
+      return user;
+    } catch (error) {
+      console.error(`[db.getUserByGoogleId] Error fetching user with Google ID ${googleId}:`, error);
+      return undefined;
+    }
+  }
+
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
   }
@@ -1742,6 +1809,11 @@ export class MemStorage implements IStorage {
       lookingFor: insertUser.lookingFor ?? null,
       visitingCardType: insertUser.visitingCardType ?? null,
       profileCompleted: insertUser.profileCompleted ?? null,
+      firebaseUid: insertUser.firebaseUid ?? null,
+      googleId: insertUser.googleId ?? null,
+      authProvider: insertUser.authProvider ?? null,
+      lastLoginAt: insertUser.lastLoginAt ?? null,
+      brandName: insertUser.brandName ?? null,
       emailVerified: false,
       emailVerificationToken: null,
       emailVerificationExpires: null
@@ -7914,7 +7986,6 @@ export class MemStorage implements IStorage {
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
 import { eq, desc, and, sql as drizzleSql } from 'drizzle-orm';
-import { brandsOfTheDay } from '@shared/schema';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -8644,7 +8715,8 @@ export class DatabaseStorage implements IStorage {
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+            firebase_uid as "firebaseUid", google_id as "googleId", auth_provider as "authProvider"
           FROM users
           WHERE email = $1
         `, [email]);
@@ -8661,6 +8733,49 @@ export class DatabaseStorage implements IStorage {
       }
     }, 3, 800).catch(error => {
       console.error(`[db.getUserByEmail] All retries failed for email ${email}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    console.log(`[db.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+            firebase_uid as "firebaseUid", google_id as "googleId", auth_provider as "authProvider"
+          FROM users
+          WHERE google_id = $1 OR firebase_uid = $1
+        `, [googleId]);
+        
+        console.log(`[db.getUserByGoogleId] Query returned ${result.rows.length} rows`);
+        
+        if (result.rows.length > 0) {
+          const user = result.rows[0] as User;
+          console.log(`[db.getUserByGoogleId] Found user:`, {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            googleId: user.googleId,
+            firebaseUid: user.firebaseUid
+          });
+          return user;
+        }
+        console.log(`[db.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUserByGoogleId] Error fetching user with Google ID ${googleId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUserByGoogleId] All retries failed for Google ID ${googleId}:`, error);
       return undefined; // Final fallback to prevent UI from breaking
     });
   }
@@ -11972,6 +12087,7 @@ export const storage = {
   // User methods
   getUser: (id: number) => dbStorage.getUser(id),
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
+  getUserByGoogleId: (googleId: string) => dbStorage.getUserByGoogleId(googleId),
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
   getUserByBrandName: (brandName: string) => dbStorage.getUserByBrandName(brandName),
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),

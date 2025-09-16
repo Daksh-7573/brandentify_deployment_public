@@ -1,0 +1,1 @@
+import{j as s}from"./index-kczp_S5U.js";const t=({children:r,className:e="",style:o})=>s.jsx("div",{className:`neo-glass-panel p-6 mb-6 rounded-xl border border-white/5 backdrop-blur-md bg-gray-900/60 ${e}`,style:o,children:r});export{t as N};
