@@ -277,27 +277,59 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     console.log('📡 Saving user to database...');
+    console.log('🔍 [AUTH-FIX] Looking up user by Google ID first:', userData.googleId);
     
-    // Use existing auth logic
-    const existingUser = await storage.getUserByEmail(userData.email);
+    // FIXED: Check by Google ID first to prevent duplicate users across domains
+    let existingUser = await storage.getUserByGoogleId(userData.googleId);
     let user;
     
     if (existingUser) {
-      console.log('✅ User exists, updating profile');
-      // Update existing user
+      console.log('✅ [AUTH-FIX] Found existing user by Google ID:', {
+        id: existingUser.id,
+        email: existingUser.email,
+        name: existingUser.name,
+        googleId: existingUser.googleId
+      });
+      // Update existing user with latest Google info
       user = await storage.updateUser(existingUser.id, {
         name: userData.name,
-        photoURL: userData.photoURL
+        photoURL: userData.photoURL,
+        googleId: userData.googleId,
+        firebaseUid: userData.firebaseUid,
+        authProvider: 'google',
+        lastLoginAt: new Date()
       });
+      console.log('✅ [AUTH-FIX] Updated existing user profile');
     } else {
-      console.log('✅ Creating new user');
-      // Create new user
-      user = await storage.createUser({
-        username: userData.firebaseUid,
-        email: userData.email,
-        name: userData.name,
-        photoURL: userData.photoURL
-      });
+      // Fallback: check by email for legacy users who may not have googleId stored
+      console.log('🔍 [AUTH-FIX] No user found by Google ID, checking by email as fallback');
+      const userByEmail = await storage.getUserByEmail(userData.email);
+      
+      if (userByEmail) {
+        console.log('✅ [AUTH-FIX] Found legacy user by email, updating with Google ID');
+        // Update legacy user with Google ID fields
+        user = await storage.updateUser(userByEmail.id, {
+          name: userData.name,
+          photoURL: userData.photoURL,
+          googleId: userData.googleId,
+          firebaseUid: userData.firebaseUid,
+          authProvider: 'google',
+          lastLoginAt: new Date()
+        });
+      } else {
+        console.log('✅ [AUTH-FIX] Creating new user with Google ID');
+        // Create new user with all Google fields
+        user = await storage.createUser({
+          username: userData.firebaseUid,
+          email: userData.email,
+          name: userData.name,
+          photoURL: userData.photoURL,
+          googleId: userData.googleId,
+          firebaseUid: userData.firebaseUid,
+          authProvider: 'google',
+          lastLoginAt: new Date()
+        });
+      }
     }
     
     if (!user) {
@@ -442,17 +474,41 @@ export async function checkSessionRoute(req: Request, res: Response) {
     try {
       const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
       console.log('✅ Valid session found for user:', decoded.email);
+      console.log('🔍 [SESSION-CHECK] Token payload:', {
+        userId: decoded.userId,
+        email: decoded.email,
+        authProvider: decoded.authProvider
+      });
       
-      // Get fresh user data from database
-      const user = await storage.getUserByEmail(decoded.email);
+      // Get fresh user data from database - try multiple lookup methods
+      let user;
+      
+      // If we have userId in token, try that first (most reliable)
+      if (decoded.userId) {
+        console.log('🔍 [SESSION-CHECK] Looking up user by ID:', decoded.userId);
+        user = await storage.getUser(decoded.userId);
+      }
+      
+      // Fallback to email lookup if no user found by ID
+      if (!user) {
+        console.log('🔍 [SESSION-CHECK] Fallback: Looking up user by email:', decoded.email);
+        user = await storage.getUserByEmail(decoded.email);
+      }
       
       if (!user) {
-        console.log('❌ User not found in database');
+        console.log('❌ [SESSION-CHECK] User not found in database with ID or email');
         return res.status(401).json({
           success: false,
           error: 'User not found'
         });
       }
+      
+      console.log('✅ [SESSION-CHECK] Found user:', {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        authProvider: user.authProvider || 'unknown'
+      });
       
       // Return sanitized user data (same format as OAuth callback)
       const clientUser = {
