@@ -54,26 +54,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
     
-    // 🚨 CRITICAL: EMERGENCY CACHE PURGE ON APP START
-    console.log('[Auth Context] 🚨 EMERGENCY CACHE PURGE - Clearing all API caches');
+    // 🚨 NUCLEAR CACHE ELIMINATION - COMPLETE BROWSER CACHE WIPE
+    console.log('[Auth Context] 🚨 NUCLEAR CACHE ELIMINATION - Complete browser cache wipe');
     
-    // Clear localStorage API cache entries
+    // 1. Unregister ALL service workers immediately
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          console.log('🗑️ [NUCLEAR] Unregistering service worker:', registration.scope);
+          registration.unregister();
+        });
+      }).catch(e => console.warn('SW unregister error:', e));
+    }
+    
+    // 2. Delete ALL CacheStorage
+    if ('caches' in window) {
+      caches.keys().then(cacheNames => {
+        cacheNames.forEach(cacheName => {
+          console.log('🗑️ [NUCLEAR] Deleting cache:', cacheName);
+          caches.delete(cacheName);
+        });
+      }).catch(e => console.warn('CacheStorage purge error:', e));
+    }
+    
+    // 3. Clear ALL localStorage/sessionStorage
     try {
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.startsWith('api_cache_') || key.startsWith('query_cache_') || 
-            key.includes('brandentifier_user') || key.includes('user_data')) {
-          localStorage.removeItem(key);
-          console.log('🗑️ [CACHE PURGE] Removed cache key:', key);
+      const localKeys = Object.keys(localStorage);
+      localKeys.forEach(key => {
+        localStorage.removeItem(key);
+        console.log('🗑️ [NUCLEAR] Removed localStorage key:', key);
+      });
+      
+      const sessionKeys = Object.keys(sessionStorage);
+      sessionKeys.forEach(key => {
+        if (key !== 'brandentifier_user') { // Keep current session
+          sessionStorage.removeItem(key);
+          console.log('🗑️ [NUCLEAR] Removed sessionStorage key:', key);
         }
       });
     } catch (e) {
-      console.warn('localStorage purge error:', e);
+      console.warn('Storage purge error:', e);
     }
     
-    // Force React Query cache invalidation
+    // 4. Completely recreate React Query client
     queryClient.clear();
-    console.log('🚨 [CACHE PURGE] Cleared React Query cache');
+    queryClient.invalidateQueries();
+    queryClient.removeQueries();
+    console.log('🚨 [NUCLEAR] Completely destroyed React Query cache');
     
     console.log('[Auth Context] Using server-side JWT session for all domains');
     

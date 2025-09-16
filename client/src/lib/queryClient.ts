@@ -116,15 +116,28 @@ export async function apiRequest(
       // Support for passing FormData objects
       const isFormData = data instanceof FormData;
       
+      // NUCLEAR cache busting for API requests
+      const nuclearUrl = url.includes('?') 
+        ? `${url}&__nuclear=${Date.now()}&__cb=${Math.random().toString(36).substring(2)}` 
+        : `${url}?__nuclear=${Date.now()}&__cb=${Math.random().toString(36).substring(2)}`;
+      
       // Setup headers and body based on content type
       const requestOptions: RequestInit = {
         method: method,
-        headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
+        cache: 'no-store', // Force no browser cache
+        headers: {
+          ...(!isFormData && data ? { "Content-Type": "application/json" } : {}),
+          'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
         body: isFormData ? (data as FormData) : 
               data ? JSON.stringify(data) : 
               undefined,
         credentials: "include",
       };
+      
+      console.log(`🚨 [NUCLEAR API] Cache-busted request: ${nuclearUrl}`);
       
       // Special debugging for profile picture updates
       if (url.includes('/users/') && method === 'PUT') {
@@ -140,7 +153,7 @@ export async function apiRequest(
         console.log(`[API CLIENT DEBUG] About to send fetch request...`);
       }
       
-      const res = await fetch(url, requestOptions);
+      const res = await fetch(nuclearUrl, requestOptions);
       
       // Log response for profile picture updates
       if (url.includes('/users/') && method === 'PUT') {
@@ -267,20 +280,21 @@ export const getQueryFn: <T>(options: {
       
       console.log("Fetching data from:", queryKey[0]);
       
-      // 🚨 CRITICAL: CACHE ELIMINATION - IMMEDIATE CACHE BUSTING FOR ALL REQUESTS
+      // 🚨 NUCLEAR CACHE ELIMINATION - AGGRESSIVE CACHE BUSTING FOR ALL REQUESTS
       const url = queryKey[0] as string;
       
-      // FORCE immediate cache busting for ALL endpoints (especially user/profile endpoints)
-      // Use real-time timestamp to ensure every request is unique
-      const cacheBusterTimestamp = Date.now() + Math.random(); // Extra randomness for complete uniqueness
-        
+      // NUCLEAR cache busting with multiple parameters to defeat ALL caching layers
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2);
+      const nuclear = `__nuclear=${timestamp}&__cb=${random}&__bypass=${Date.now()}`;
+      
       const cacheBuster = url.includes('?') 
-        ? `&t=${cacheBusterTimestamp}` 
-        : `?t=${cacheBusterTimestamp}`;
+        ? `&${nuclear}` 
+        : `?${nuclear}`;
         
       const fetchUrl = `${url}${cacheBuster}`;
       
-      console.log(`🚨 [CACHE ELIMINATION] Force fresh request with timestamp: ${cacheBusterTimestamp}`);
+      console.log(`🚨 [NUCLEAR CACHE ELIMINATION] Force fresh request with multi-layer cache busting: ${timestamp}`);
       
       // Add timeout protection (only for slow endpoints)
       const controller = new AbortController();
@@ -300,10 +314,13 @@ export const getQueryFn: <T>(options: {
       try {
         const res = await fetch(fetchUrl, {
           credentials: "include",
+          cache: 'no-store', // Force no browser cache
           headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
+            'Expires': '0',
+            'If-Modified-Since': 'Mon, 26 Jul 1997 05:00:00 GMT',
+            'If-None-Match': '*'
           },
           signal: controller.signal
         });

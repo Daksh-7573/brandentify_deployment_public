@@ -33,12 +33,12 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // 🚨 EMERGENCY INSTALL - COMPLETE API CACHE PURGE
 self.addEventListener('install', event => {
-  console.log('🚨 [SW v8] EMERGENCY CACHE ELIMINATION - Installing complete API cache purge...');
+  console.log('🚨 [SW v9] EMERGENCY CACHE ELIMINATION - Installing complete API cache purge...');
   event.waitUntil(
     Promise.all([
       // Cache static files only
       caches.open(STATIC_CACHE_NAME).then(cache => {
-        console.log('🚀 [SW v8] Caching static files only (NO API CACHING)...');
+        console.log('🚀 [SW v9] Caching static files only (NO API CACHING)...');
         return cache.addAll(STATIC_FILES.map(url => {
           // Add cache-busting for external resources
           if (url.startsWith('http')) {
@@ -54,7 +54,7 @@ self.addEventListener('install', event => {
         return Promise.all(
           cacheNames.map(cacheName => {
             if (cacheName.includes('api') || cacheName.includes('brandentifier-api')) {
-              console.log('🗑️ [SW v8] PURGING API CACHE:', cacheName);
+              console.log('🗑️ [SW v9] PURGING API CACHE:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -78,24 +78,24 @@ self.addEventListener('install', event => {
 
 // 🚨 EMERGENCY ACTIVATE - COMPLETE API CACHE ELIMINATION
 self.addEventListener('activate', event => {
-  console.log('🚨 [SW v8] EMERGENCY ACTIVATION - Complete API cache elimination...');
+  console.log('🚨 [SW v9] EMERGENCY ACTIVATION - Complete API cache elimination...');
   event.waitUntil(
     Promise.all([
       // Aggressive cache cleanup - delete ALL old versions and ALL API caches
       caches.keys().then(cacheNames => {
-        console.log('🧹 [SW v8] Found caches:', cacheNames);
+        console.log('🧹 [SW v9] Found caches:', cacheNames);
         return Promise.all(
           cacheNames.map(cacheName => {
             // Delete all old versions
-            if (!cacheName.includes('v8')) {
-              console.log('🗑️ [SW v8] Deleting old cache version:', cacheName);
+            if (!cacheName.includes('v9')) {
+              console.log('🗑️ [SW v9] Deleting old cache version:', cacheName);
               return caches.delete(cacheName);
             }
             // CRITICAL: Delete ANY cache that could contain API responses
             if (cacheName.includes('api') || cacheName.includes('API') || 
                 cacheName.includes('brandentifier-api') || cacheName.includes('users') ||
                 cacheName.includes('profiles') || cacheName.includes('messaging')) {
-              console.log('🚨 [SW v8] PURGING API-RELATED CACHE:', cacheName);
+              console.log('🚨 [SW v9] PURGING API-RELATED CACHE:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -107,12 +107,12 @@ self.addEventListener('activate', event => {
   );
   
   // 🚨 EMERGENCY: Clear any existing API responses from browser cache
-  console.log('🚨 [SW v8] FORCING IMMEDIATE CLIENT CACHE PURGE');
+  console.log('🚨 [SW v9] FORCING IMMEDIATE CLIENT CACHE PURGE');
   
   // Send message to all clients to clear API caches
   self.clients.matchAll().then(clients => {
     clients.forEach(client => {
-      client.postMessage({ type: 'EMERGENCY_CACHE_PURGE', version: 'v8' });
+      client.postMessage({ type: 'EMERGENCY_CACHE_PURGE', version: 'v9' });
     });
   });
 });
@@ -233,7 +233,7 @@ self.addEventListener('fetch', event => {
   
   // 🚨 CRITICAL: ABSOLUTE API BYPASS - NO SERVICE WORKER INTERFERENCE WHATSOEVER
   else if (request.url.includes('/api/')) {
-    console.log('🚨 [SW v8] ABSOLUTE API BYPASS - SERVICE WORKER COMPLETELY DISABLED:', request.url);
+    console.log('🚨 [SW v9] ABSOLUTE API BYPASS - SERVICE WORKER COMPLETELY DISABLED:', request.url);
     
     // 🚨 CRITICAL: Do absolutely NOTHING for API requests - let browser handle directly
     // This ensures zero service worker interference with API calls
