@@ -1024,7 +1024,28 @@ export class MemStorage implements IStorage {
       emailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      firebaseUid: null,
+      googleId: null,
+      authProvider: null,
+      lastLoginAt: null,
+      aboutMe: null,
+      companyName: null,
+      workMode: null,
+      skills: null,
+      interests: null,
+      socialLinks: null,
+      profileUrl: null,
+      visibility: "public",
+      brandName: null,
+      personalityType: null,
+      whatIAmWorkingOn: null,
+      whatIOffer: null,
+      currentFocus: null,
+      radarVisibility: null,
+      geoLatitude: null,
+      geoLongitude: null,
+      geoLastUpdated: null
     };
     this.users.set(demoUser.id, demoUser);
     this.currentUserId++;
@@ -7939,7 +7960,6 @@ export class MemStorage implements IStorage {
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
 import { eq, desc, and, sql as drizzleSql } from 'drizzle-orm';
-import { brandsOfTheDay } from '@shared/schema';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
