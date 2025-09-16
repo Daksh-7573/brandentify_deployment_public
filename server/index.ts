@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
+import cookieParser from "cookie-parser";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -22,6 +23,9 @@ const app = express();
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
+
+// Add cookie parser to handle session cookies
+app.use(cookieParser());
 
 // Add performance middleware first
 app.use(performanceMiddleware());
