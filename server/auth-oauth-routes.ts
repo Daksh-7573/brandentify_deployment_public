@@ -17,10 +17,7 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error('FATAL: JWT_SECRET environment variable is required for OAuth authentication. Application cannot start without it.');
-}
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
@@ -280,59 +277,27 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     console.log('📡 Saving user to database...');
-    console.log('🔍 [AUTH-FIX] Looking up user by Google ID first:', userData.googleId);
     
-    // FIXED: Check by Google ID first to prevent duplicate users across domains
-    let existingUser = await storage.getUserByGoogleId(userData.googleId);
+    // Use existing auth logic
+    const existingUser = await storage.getUserByEmail(userData.email);
     let user;
     
     if (existingUser) {
-      console.log('✅ [AUTH-FIX] Found existing user by Google ID:', {
-        id: existingUser.id,
-        email: existingUser.email,
-        name: existingUser.name,
-        googleId: existingUser.googleId
-      });
-      // Update existing user with latest Google info
+      console.log('✅ User exists, updating profile');
+      // Update existing user
       user = await storage.updateUser(existingUser.id, {
         name: userData.name,
-        photoURL: userData.photoURL,
-        googleId: userData.googleId,
-        firebaseUid: userData.firebaseUid,
-        authProvider: 'google',
-        lastLoginAt: new Date()
+        photoURL: userData.photoURL
       });
-      console.log('✅ [AUTH-FIX] Updated existing user profile');
     } else {
-      // Fallback: check by email for legacy users who may not have googleId stored
-      console.log('🔍 [AUTH-FIX] No user found by Google ID, checking by email as fallback');
-      const userByEmail = await storage.getUserByEmail(userData.email);
-      
-      if (userByEmail) {
-        console.log('✅ [AUTH-FIX] Found legacy user by email, updating with Google ID');
-        // Update legacy user with Google ID fields
-        user = await storage.updateUser(userByEmail.id, {
-          name: userData.name,
-          photoURL: userData.photoURL,
-          googleId: userData.googleId,
-          firebaseUid: userData.firebaseUid,
-          authProvider: 'google',
-          lastLoginAt: new Date()
-        });
-      } else {
-        console.log('✅ [AUTH-FIX] Creating new user with Google ID');
-        // Create new user with all Google fields
-        user = await storage.createUser({
-          username: userData.firebaseUid,
-          email: userData.email,
-          name: userData.name,
-          photoURL: userData.photoURL,
-          googleId: userData.googleId,
-          firebaseUid: userData.firebaseUid,
-          authProvider: 'google',
-          lastLoginAt: new Date()
-        });
-      }
+      console.log('✅ Creating new user');
+      // Create new user
+      user = await storage.createUser({
+        username: userData.firebaseUid,
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL
+      });
     }
     
     if (!user) {
@@ -345,10 +310,9 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       name: user.name
     });
     
-    // Create secure JWT session with firebaseUid for consistent lookups
+    // Create secure JWT session
     const tokenPayload = {
       userId: user.id,
-      firebaseUid: user.firebaseUid || user.username, // Include Firebase UID for lookups
       email: user.email,
       name: user.name,
       authProvider: 'google',
@@ -356,40 +320,32 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
     };
     
-    // Sign JWT with secret (use consistent algorithm and options)
-    // Note: exp is already set in tokenPayload, so don't use expiresIn option
-    if (!JWT_SECRET) {
-      throw new Error('JWT_SECRET is not configured');
-    }
-    
+    // Sign JWT with secret
     const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
       algorithm: 'HS256'
     });
     
-    // Determine exact domain for production cookie - include brandentifier.com as production
+    // Determine exact domain for production cookie
     const currentHost = req.get('host') || 'localhost:5000';
-    const isProduction = currentHost.includes('replit.app') || currentHost.includes('brandentifier.com') || currentHost.includes('replit.dev');
+    const isProduction = currentHost.includes('replit.app');
     
-    // Set session cookie with correct domain settings for cross-domain compatibility
+    // Set session cookie with correct domain for published Replit app
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,        // Secure for HTTPS on both domains
-      sameSite: 'lax' as const,    // Use 'lax' for cross-site OAuth redirects to work
+      secure: isProduction,        // Secure only on HTTPS
+      sameSite: 'lax' as const,    // Use 'lax' for same-site requests to work properly
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      // DO NOT set domain explicitly - let browser handle automatically for cross-domain compatibility
     };
     
     // DO NOT set domain for Replit - let browser handle it automatically
     // Setting domain can cause cross-subdomain issues on replit.app
     
-    console.log('🍪 [OAUTH CALLBACK] Setting session cookie:', {
-      domain: 'auto-detect (no explicit domain for cross-domain compatibility)',
+    console.log('🍪 Setting cookie with options:', {
+      domain: (cookieOptions as any).domain || 'omitted',
       sameSite: cookieOptions.sameSite,
       secure: cookieOptions.secure,
-      httpOnly: cookieOptions.httpOnly,
-      host: currentHost,
-      isProduction: isProduction
+      host: currentHost
     });
     
     res.cookie('brandentifier_session', sessionToken, cookieOptions);
@@ -482,49 +438,21 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
     }
     
-    // Verify JWT token with same secret as other middleware
-    if (!JWT_SECRET) {
-      throw new Error('JWT_SECRET is not configured');
-    }
-    
+    // Verify JWT token
     try {
-      const decoded = jwt.verify(sessionToken, JWT_SECRET, { algorithms: ['HS256'] }) as any;
+      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
       console.log('✅ Valid session found for user:', decoded.email);
-      console.log('🔍 [SESSION-CHECK] Token payload:', {
-        userId: decoded.userId,
-        email: decoded.email,
-        authProvider: decoded.authProvider
-      });
       
-      // Get fresh user data from database - try multiple lookup methods
-      let user;
-      
-      // If we have userId in token, try that first (most reliable)
-      if (decoded.userId) {
-        console.log('🔍 [SESSION-CHECK] Looking up user by ID:', decoded.userId);
-        user = await storage.getUser(decoded.userId);
-      }
-      
-      // Fallback to email lookup if no user found by ID
-      if (!user) {
-        console.log('🔍 [SESSION-CHECK] Fallback: Looking up user by email:', decoded.email);
-        user = await storage.getUserByEmail(decoded.email);
-      }
+      // Get fresh user data from database
+      const user = await storage.getUserByEmail(decoded.email);
       
       if (!user) {
-        console.log('❌ [SESSION-CHECK] User not found in database with ID or email');
+        console.log('❌ User not found in database');
         return res.status(401).json({
           success: false,
           error: 'User not found'
         });
       }
-      
-      console.log('✅ [SESSION-CHECK] Found user:', {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        authProvider: user.authProvider || 'unknown'
-      });
       
       // Return sanitized user data (same format as OAuth callback)
       const clientUser = {
