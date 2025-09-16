@@ -7270,6 +7270,20 @@ ${extractedText.substring(0, 5000)}
   // Custom OAuth routes (bypasses Firebase blocked routes) - API route avoids client collision
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
+  
+  // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
+  app.get('/auth-callback', (req: Request, res: Response) => {
+    console.log('🔄 [AUTH BRIDGE] Redirecting /auth-callback to API endpoint');
+    console.log('🔄 [AUTH BRIDGE] Query params:', req.query);
+    
+    // Preserve all query parameters (state, code, etc.)
+    const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+    const redirectUrl = `/api/auth/google/callback${queryString ? '?' + queryString : ''}`;
+    
+    console.log('🔄 [AUTH BRIDGE] Redirecting to:', redirectUrl);
+    res.redirect(redirectUrl);
+  });
+  
   app.get("/api/auth/session", checkSessionRoute);
   console.log("Custom OAuth routes loaded");
   

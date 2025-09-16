@@ -12,41 +12,10 @@ import { Request, Response, NextFunction } from 'express';
  * and handles it appropriately by redirecting to our auth-callback route
  */
 export function firebaseAuthRedirectHandler(req: Request, res: Response, next: NextFunction) {
-  const url = req.url;
+  // FIREBASE COMPLETELY DISABLED - No longer intercept auth redirects
+  console.log(`🚫 [Firebase Auth Handler] DISABLED - Firebase auth handler bypassed for: ${req.url}`);
   
-  // Common Firebase auth redirect paths
-  const authPaths = [
-    '/__/auth/handler',
-    '/_/auth/callback',
-    '/auth/action'
-  ];
-  
-  // Check if this request looks like a Firebase auth redirect
-  const isAuthPath = authPaths.some(path => url.startsWith(path));
-  
-  // Check for auth parameters in the URL
-  const hasAuthParams = req.query.apiKey || 
-                        req.query.mode || 
-                        req.query.oobCode ||
-                        req.query.state || 
-                        req.query.code;
-  
-  if (isAuthPath || hasAuthParams) {
-    console.log(`[Firebase Auth Handler] Detected auth redirect to: ${url}`);
-    
-    // Rebuild the query string
-    const queryString = Object.keys(req.query)
-      .map(key => `${key}=${encodeURIComponent(String(req.query[key]))}`)
-      .join('&');
-    
-    // Redirect to our SPA auth-callback route
-    const redirectTo = `/auth-callback${queryString ? '?' + queryString : ''}`;
-    console.log(`[Firebase Auth Handler] Redirecting to: ${redirectTo}`);
-    
-    return res.redirect(redirectTo);
-  }
-  
-  // Not an auth redirect, continue
+  // Always continue to next middleware - no interception
   next();
 }
 
