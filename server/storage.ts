@@ -1740,22 +1740,48 @@ export class MemStorage implements IStorage {
   }
   
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    console.log(`[MemStorage.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
-    const user = Array.from(this.users.values()).find(user => 
-      user.googleId === googleId || user.firebaseUid === googleId
-    );
-    if (user) {
-      console.log(`[MemStorage.getUserByGoogleId] Found user:`, {
+    console.log(`[db.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
+    
+    try {
+      // Query database by Google ID (primary lookup) or Firebase UID (fallback for legacy users)
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        brand_name as "brandName", visiting_card_type as "visitingCardType", 
+        profile_completed as "profileCompleted", email_verified as "emailVerified", 
+        email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", 
+        firebase_uid as "firebaseUid", google_id as "googleId", 
+        auth_provider as "authProvider", last_login_at as "lastLoginAt", 
+        created_at as "createdAt"
+        FROM users 
+        WHERE google_id = $1 OR firebase_uid = $1
+      `;
+      
+      const result = await pool.query(query, [googleId]);
+      console.log(`[db.getUserByGoogleId] Query returned ${result.rows.length} rows`);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+        return undefined;
+      }
+      
+      const user = result.rows[0] as User;
+      console.log(`[db.getUserByGoogleId] Found user:`, {
         id: user.id,
         email: user.email,
         name: user.name,
         googleId: user.googleId,
-        firebaseUid: user.firebaseUid
+        firebaseUid: user.firebaseUid,
+        authProvider: user.authProvider
       });
-    } else {
-      console.log(`[MemStorage.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+      
+      return user;
+    } catch (error) {
+      console.error(`[db.getUserByGoogleId] Error fetching user with Google ID ${googleId}:`, error);
+      return undefined;
     }
-    return user;
   }
 
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {

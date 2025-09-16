@@ -11,7 +11,10 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { storage } from '../storage';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required for secure authentication. Application cannot start without it.');
+}
 
 // Extend Express Request interface to include authenticated user
 declare global {
@@ -63,8 +66,8 @@ function extractAndVerifyToken(req: Request): any | null {
       return null;
     }
     
-    // Verify and decode JWT
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Verify and decode JWT with consistent algorithm specification
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     return decoded;
     
   } catch (error) {

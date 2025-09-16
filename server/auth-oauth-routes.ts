@@ -17,7 +17,10 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required for OAuth authentication. Application cannot start without it.');
+}
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
@@ -353,32 +356,36 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
     };
     
-    // Sign JWT with secret
+    // Sign JWT with secret (use consistent algorithm and options)
     const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
-      algorithm: 'HS256'
+      algorithm: 'HS256',
+      expiresIn: '7d'
     });
     
-    // Determine exact domain for production cookie
+    // Determine exact domain for production cookie - include brandentifier.com as production
     const currentHost = req.get('host') || 'localhost:5000';
-    const isProduction = currentHost.includes('replit.app');
+    const isProduction = currentHost.includes('replit.app') || currentHost.includes('brandentifier.com') || currentHost.includes('replit.dev');
     
-    // Set session cookie with correct domain for published Replit app
+    // Set session cookie with correct domain settings for cross-domain compatibility
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,        // Secure only on HTTPS
-      sameSite: 'lax' as const,    // Use 'lax' for same-site requests to work properly
+      secure: isProduction,        // Secure for HTTPS on both domains
+      sameSite: 'lax' as const,    // Use 'lax' for cross-site OAuth redirects to work
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      // DO NOT set domain explicitly - let browser handle automatically for cross-domain compatibility
     };
     
     // DO NOT set domain for Replit - let browser handle it automatically
     // Setting domain can cause cross-subdomain issues on replit.app
     
-    console.log('🍪 Setting cookie with options:', {
-      domain: (cookieOptions as any).domain || 'omitted',
+    console.log('🍪 [OAUTH CALLBACK] Setting session cookie:', {
+      domain: 'auto-detect (no explicit domain for cross-domain compatibility)',
       sameSite: cookieOptions.sameSite,
       secure: cookieOptions.secure,
-      host: currentHost
+      httpOnly: cookieOptions.httpOnly,
+      host: currentHost,
+      isProduction: isProduction
     });
     
     res.cookie('brandentifier_session', sessionToken, cookieOptions);
@@ -471,9 +478,9 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
     }
     
-    // Verify JWT token
+    // Verify JWT token with same secret as other middleware
     try {
-      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+      const decoded = jwt.verify(sessionToken, JWT_SECRET, { algorithms: ['HS256'] }) as any;
       console.log('✅ Valid session found for user:', decoded.email);
       console.log('🔍 [SESSION-CHECK] Token payload:', {
         userId: decoded.userId,

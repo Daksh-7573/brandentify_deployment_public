@@ -25,8 +25,11 @@ import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
-// Secure JWT signing key (in production, this should be in environment variables)
-const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+// Secure JWT signing key - MUST be provided via environment variable
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required for security. Application cannot start without it.');
+}
 const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
@@ -235,21 +238,20 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
       return next();
     }
     
-    // For now, allow all requests to pass through to maintain compatibility
-    // with the existing authentication system
-    return next();
-    
-    // In a full JWT implementation, we would return:
-    // return res.status(401).json({ message: 'No authentication token provided' });
+    return res.status(401).json({ 
+      message: 'No authentication token provided',
+      error: 'Authentication required',
+      code: 'NO_TOKEN'
+    });
   }
   
   const decoded = verifyToken(token);
   if (!decoded) {
-    // For now, allow all requests to pass through to maintain compatibility
-    return next();
-    
-    // In a full JWT implementation, we would return:
-    // return res.status(401).json({ message: 'Invalid or expired token' });
+    return res.status(401).json({ 
+      message: 'Invalid or expired token',
+      error: 'Authentication failed',
+      code: 'INVALID_TOKEN'
+    });
   }
   
   // Attach user info to request object
