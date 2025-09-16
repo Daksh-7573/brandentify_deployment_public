@@ -5,16 +5,7 @@ import "./index.css";
 
 // Note: Firebase removed - using custom OAuth only
 
-// 🚨 FINAL SECURITY: Block any legacy cache messages permanently
-const originalConsoleLog = console.log;
-console.log = (...args: any[]) => {
-  const message = args.join(' ');
-  if (message.includes('Cached response for')) {
-    // Permanently block legacy cache messages
-    return;
-  }
-  originalConsoleLog.apply(console, args);
-};
+// Note: Console.log suppression removed - cache messages should stop naturally
 
 // Performance measurement
 const appStartTime = performance.now();
