@@ -357,9 +357,9 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     // Sign JWT with secret (use consistent algorithm and options)
+    // Note: exp is already set in tokenPayload, so don't use expiresIn option
     const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
-      algorithm: 'HS256',
-      expiresIn: '7d'
+      algorithm: 'HS256'
     });
     
     // Determine exact domain for production cookie - include brandentifier.com as production
