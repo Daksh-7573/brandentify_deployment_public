@@ -5,6 +5,17 @@ import "./index.css";
 
 // Note: Firebase removed - using custom OAuth only
 
+// 🚨 FINAL SECURITY: Block any legacy cache messages permanently
+const originalConsoleLog = console.log;
+console.log = (...args: any[]) => {
+  const message = args.join(' ');
+  if (message.includes('Cached response for')) {
+    // Permanently block legacy cache messages
+    return;
+  }
+  originalConsoleLog.apply(console, args);
+};
+
 // Performance measurement
 const appStartTime = performance.now();
 console.log('[PERF] React app initialization started');

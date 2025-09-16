@@ -252,11 +252,11 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 /**
  * Enhanced query function with better error handling and robust fault tolerance
  */
-export const getQueryFn: <T>(options: {
+export const getQueryFn = <T>(options: {
   on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
+}): QueryFunction<T> =>
   async ({ queryKey }) => {
+    const { on401: unauthorizedBehavior } = options;
     try {
       // Validate the queryKey to prevent fetch errors
       if (!queryKey || !queryKey[0] || typeof queryKey[0] !== 'string') {
@@ -278,10 +278,15 @@ export const getQueryFn: <T>(options: {
         return null as unknown as T;
       }
       
-      console.log("Fetching data from:", queryKey[0]);
-      
       // 🚨 NUCLEAR CACHE ELIMINATION - AGGRESSIVE CACHE BUSTING FOR ALL REQUESTS
       const url = queryKey[0] as string;
+      
+      // Special logging for messaging endpoint 
+      if (url.includes('/messaging/unread/count')) {
+        console.log("🚨 [NUCLEAR] Fresh messaging request (cache bypassed):", queryKey[0]);
+      } else {
+        console.log("Fetching data from:", queryKey[0]);
+      }
       
       // NUCLEAR cache busting with multiple parameters to defeat ALL caching layers
       const timestamp = Date.now();
@@ -475,8 +480,7 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: true, // Force refetch on window focus
       // 🚨 CRITICAL: ZERO STALE TIME - FORCE FRESH REQUESTS ALWAYS
       staleTime: 0, // NEVER consider queries stale - always fetch fresh data
-      cacheTime: 0, // Don't keep any cache data
-      gcTime: 0, // Immediate garbage collection
+      gcTime: 0, // Immediate garbage collection (replaces deprecated cacheTime)
       retry: (failureCount, error) => {
         // Don't retry 404s for poll-votes (expected when user hasn't voted)
         if (error && error.message && error.message.includes('404') && error.message.includes('poll-votes')) {
