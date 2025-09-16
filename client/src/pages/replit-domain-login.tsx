@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  signInWithRedirect, 
-  GoogleAuthProvider, 
-  getRedirectResult,
-  signOut
-} from 'firebase/auth';
+// Firebase imports removed - using custom OAuth only
+// import { initializeApp } from 'firebase/app';
+// import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -32,71 +27,38 @@ const ReplitDomainLogin: React.FC = () => {
   // Get hostname for display
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   
-  // Initialize Firebase
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  };
+  // Firebase initialization removed - using custom OAuth only
   
-  const app = initializeApp(firebaseConfig, 'replit-domain-instance');
-  const auth = getAuth(app);
-  
-  // On load, check for redirect results and set up auth state listener
+  // Firebase removed - using custom OAuth only
   useEffect(() => {
-    console.log("Firebase initialization:", {
+    console.log("Custom OAuth initialization:", {
       environment: import.meta.env.MODE,
       hostname,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      apiKeyPresent: !!import.meta.env.VITE_FIREBASE_API_KEY,
-      apiKeyLength: import.meta.env.VITE_FIREBASE_API_KEY?.length,
-      appIdPresent: !!import.meta.env.VITE_FIREBASE_APP_ID,
-      appIdLength: import.meta.env.VITE_FIREBASE_APP_ID?.length,
-      domains: [
-        `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-        hostname,
-        `${hostname}.replit.app`,
-        'localhost',
-        '*.replit.dev',
-        '*.replit.app',
-        hostname,
-        '127.0.0.1'
-      ]
+      authEndpoint: '/api/auth/oauth/google'
     });
     
-    console.log("Using simplified Google auth configuration for maximum compatibility");
+    console.log("Using custom OAuth for Google authentication");
     
-    // Listen for auth state changes
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log("User signed in:", user.displayName || user.email);
-        setUser(user);
-      }
-    });
-    
-    // Check for redirect result on page load
-    checkRedirectResult();
-    
-    // Clean up
-    return () => unsubscribe();
+    // Check if we're returning from OAuth callback
+    checkOAuthCallback();
   }, []);
   
-  const checkRedirectResult = async () => {
+  const checkOAuthCallback = async () => {
     try {
       setAuthInProgress(true);
       
-      // Check for existing redirect result
-      const result = await getRedirectResult(auth);
+      // Check if user is already authenticated via our custom OAuth
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
       
-      if (result) {
-        // User just got redirected back from auth provider
-        const user = result.user;
-        setUser(user);
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
         
         toast({
           title: "Login Successful!",
-          description: `Welcome back, ${user.displayName || user.email}`,
+          description: `Welcome back, ${userData.name || userData.email}`,
         });
         
         // Redirect to dashboard
@@ -105,12 +67,12 @@ const ReplitDomainLogin: React.FC = () => {
         }, 1500);
       }
     } catch (error: any) {
-      console.error("Redirect result error:", error);
-      setError("Error processing authentication redirect. Please try again.");
+      console.error("OAuth callback error:", error);
+      setError("Error processing authentication. Please try again.");
       
       toast({
         title: "Authentication Error",
-        description: "Error processing authentication redirect. Please try again.",
+        description: "Error processing authentication. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -123,47 +85,20 @@ const ReplitDomainLogin: React.FC = () => {
     setError(null);
     
     try {
-      // For Replit domains, we use a special configuration
-      const provider = new GoogleAuthProvider();
-      
-      // Critical settings for Replit domains
-      provider.setCustomParameters({
-        // Always show account selection to avoid session issues
-        prompt: 'select_account',
-        // Allow less restricted redirect URIs
-        auth_type: 'rerequest',
-        // Include all scopes we previously granted
-        include_granted_scopes: 'true'
-      });
-      
-      // Add standard scopes
-      provider.addScope('profile');
-      provider.addScope('email');
-      
-      console.log("Starting Google sign-in redirect flow...");
+      console.log("Starting custom OAuth Google sign-in...");
       setRedirectAttempted(true);
       
-      // Use redirect method which is more reliable on Replit domains
-      await signInWithRedirect(auth, provider);
+      // Use custom OAuth endpoint - this handles all domains properly
+      window.location.href = '/api/auth/oauth/google';
       
-      // Note: control should leave this page as the redirect happens
     } catch (error: any) {
-      console.error("Google Sign In Error:", error);
+      console.error("Custom OAuth Sign In Error:", error);
       
-      let errorMessage = "Failed to sign in with Google";
-      
-      if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = `This domain (${hostname}) is not authorized in Firebase. Please add it to your Firebase project's authorized domains.`;
-      } else if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = "Google sign-in is not enabled for this Firebase project.";
-      } else if (error.message && error.message.includes('domain')) {
-        errorMessage = "Domain verification issue. Please make sure this domain is authorized in Firebase.";
-      }
-      
+      let errorMessage = "Failed to sign in with Google using custom OAuth";
       setError(errorMessage);
       
       toast({
-        title: "Authentication Error",
+        title: "Authentication Error", 
         description: errorMessage,
         variant: "destructive"
       });
@@ -174,13 +109,21 @@ const ReplitDomainLogin: React.FC = () => {
   
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
-      setUser(null);
-      
-      toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out."
+      // Use custom OAuth logout endpoint
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
       });
+      
+      if (response.ok) {
+        setUser(null);
+        toast({
+          title: "Signed Out",
+          description: "You have been successfully signed out."
+        });
+      } else {
+        throw new Error('Logout failed');
+      }
     } catch (error) {
       console.error("Sign out error:", error);
       toast({
@@ -191,21 +134,21 @@ const ReplitDomainLogin: React.FC = () => {
     }
   };
   
-  // Render console setup instructions
+  // Render OAuth setup information
   const renderSetupInstructions = () => (
     <div className="p-4 text-sm">
       <div className="mb-4 text-yellow-400 font-semibold">
-        ✨ Firebase Domain Setup
+        ✨ Custom OAuth Setup
       </div>
-      <p className="mb-2 text-gray-300">Add these domains to your Firebase Console:</p>
+      <p className="mb-2 text-gray-300">Using unified custom OAuth for all domains:</p>
       <ol className="list-decimal pl-5 space-y-1 text-gray-400">
         <li><code className="bg-gray-800 px-1 rounded">{hostname}</code></li>
-        <li><code className="bg-gray-800 px-1 rounded">{hostname}.replit.app</code></li>
         <li><code className="bg-gray-800 px-1 rounded">*.replit.dev</code></li>
         <li><code className="bg-gray-800 px-1 rounded">*.replit.app</code></li>
+        <li><code className="bg-gray-800 px-1 rounded">localhost</code></li>
       </ol>
       <div className="mt-3 text-xs text-gray-500">
-        Go to Firebase Console &gt; Authentication &gt; Settings &gt; Authorized Domains
+        Custom OAuth handles all domain configurations automatically
       </div>
     </div>
   );

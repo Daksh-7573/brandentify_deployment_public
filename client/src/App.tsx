@@ -6,7 +6,8 @@ import { AuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
-import { DomainHelper } from "./lib/domain-helper";
+// DomainHelper removed - Firebase disabled, using custom OAuth only
+// import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";

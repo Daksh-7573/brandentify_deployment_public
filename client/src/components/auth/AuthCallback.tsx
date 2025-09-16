@@ -32,74 +32,34 @@ export function AuthCallback() {
           return;
         }
         
-        // Dynamic Firebase imports
-        const [
-          { initializeApp },
-          { getAuth, getRedirectResult }
-        ] = await Promise.all([
-          import('firebase/app'),
-          import('firebase/auth')
-        ]);
-
-        // Firebase configuration
-        const firebaseConfig = {
-          apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-          authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-          storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-          appId: import.meta.env.VITE_FIREBASE_APP_ID
-        };
-
-        console.log('🔄 Firebase config:', {
-          projectId: firebaseConfig.projectId,
-          authDomain: firebaseConfig.authDomain
+        // Firebase imports removed - using custom OAuth only
+        console.log('🔄 Custom OAuth callback handler started...');
+        
+        // Check if user is already authenticated via custom OAuth
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include'
         });
-
-        // Initialize Firebase - use consistent app name
-        const app = initializeApp(firebaseConfig, 'brandentifier-auth-main');
-        const auth = getAuth(app);
-
-        console.log('🔄 Getting redirect result...');
-        const result = await getRedirectResult(auth);
-        console.log('🔄 Redirect result:', result ? 'Found user data' : 'No result');
+        
+        let result = null;
+        if (response.ok) {
+          result = { user: await response.json() };
+          console.log('🔄 Custom OAuth user found:', result.user ? 'User data available' : 'No result');
+        } else {
+          console.log('🔄 No authenticated user found via custom OAuth');
+        }
 
         if (result && result.user) {
-          console.log('Firebase authentication successful:', result.user.email);
-          setMessage('Creating your Brandentifier account...');
+          console.log('Custom OAuth authentication successful:', result.user.email);
+          setMessage('Accessing your Brandentifier account...');
 
-          // Extract user data from Google
-          const userData = {
-            firebaseUid: result.user.uid,
-            email: result.user.email!,
-            name: result.user.displayName || '',
-            photoURL: result.user.photoURL || '',
-            googleId: result.user.providerData.find(p => p.providerId === 'google.com')?.uid || '',
-            authProvider: 'google',
-            emailVerified: result.user.emailVerified
-          };
+          // User data from custom OAuth
+          const userData = result.user;
 
-          console.log('Creating/updating Brandentifier user:', userData.email);
-
-          // Create or update user in Brandentifier database
-          const response = await fetch('/api/auth/google-signin', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData)
-          });
-
-          if (!response.ok) {
-            throw new Error(`Failed to create user account: ${response.statusText}`);
-          }
-
-          const brandentifierUser = await response.json();
-          console.log('Brandentifier user created/updated:', brandentifierUser.user);
+          console.log('User already authenticated via custom OAuth:', userData.email);
 
           // Store authentication data
           sessionStorage.setItem('user_authenticated', 'true');
-          sessionStorage.setItem('firebase_user', JSON.stringify(result.user));
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(brandentifierUser.user));
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
           localStorage.setItem('auth_success', 'true');
 
           setStatus('success');

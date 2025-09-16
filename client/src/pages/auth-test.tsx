@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 // TestFirebase removed - Firebase disabled, using custom OAuth only
 
 export default function AuthTest() {
-  const { user, isAuthenticated, isLoading, signInWithGoogle, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useAuth();
   const [authStatus, setAuthStatus] = useState<string>("Checking...");
   // firebaseUser removed - Firebase disabled
 
@@ -19,12 +19,12 @@ export default function AuthTest() {
   }, [user, isAuthenticated, isLoading]);
 
   const handleGoogleSignIn = async () => {
-    console.log("Starting Google sign in test...");
+    console.log("Custom OAuth sign in test - redirecting to /api/auth/oauth/google...");
     try {
-      await signInWithGoogle();
-      console.log("Google sign in completed");
+      // Use custom OAuth instead of Firebase
+      window.location.href = '/api/auth/oauth/google';
     } catch (error) {
-      console.error("Google sign in failed:", error);
+      console.error("Custom OAuth sign in failed:", error);
     }
   };
 
@@ -63,19 +63,10 @@ export default function AuthTest() {
         </div>
 
         <div className="bg-gray-800 p-6 rounded-lg mb-6">
-          <h2 className="text-lg font-semibold mb-4">Firebase User Details</h2>
+          <h2 className="text-lg font-semibold mb-4">🚫 Firebase User Details Disabled</h2>
           <pre className="whitespace-pre-wrap text-sm text-gray-300">
-            {firebaseUser ? JSON.stringify({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              displayName: firebaseUser.displayName,
-              emailVerified: firebaseUser.emailVerified,
-              providerData: firebaseUser.providerData?.map((p: any) => ({
-                providerId: p.providerId,
-                email: p.email,
-                displayName: p.displayName
-              }))
-            }, null, 2) : 'No Firebase user'}
+            Firebase authentication has been completely disabled.
+            Using custom OAuth authentication only.
           </pre>
         </div>
         
