@@ -358,6 +358,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     // Sign JWT with secret (use consistent algorithm and options)
     // Note: exp is already set in tokenPayload, so don't use expiresIn option
+    if (!JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+    
     const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
       algorithm: 'HS256'
     });
@@ -479,6 +483,10 @@ export async function checkSessionRoute(req: Request, res: Response) {
     }
     
     // Verify JWT token with same secret as other middleware
+    if (!JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+    
     try {
       const decoded = jwt.verify(sessionToken, JWT_SECRET, { algorithms: ['HS256'] }) as any;
       console.log('✅ Valid session found for user:', decoded.email);
