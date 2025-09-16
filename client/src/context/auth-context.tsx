@@ -49,197 +49,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Check domain to determine auth method
-  const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-  const isPublishedDomain = window.location.hostname.includes('replit.app');
-
-  // Initialize authentication system based on domain
+  // Initialize authentication system with server-side session check only
   useEffect(() => {
     console.log('[Auth Context] Initializing authentication system');
     const startTime = performance.now();
     
-    console.log('[Auth Context] Domain check:', { 
-      hostname: window.location.hostname, 
-      isDevelopment,
-      isPublishedDomain,
-      authMethod: isPublishedDomain ? 'server-oauth-only' : (isDevelopment ? 'firebase' : 'jwt-session-first')
-    });
+    console.log('[Auth Context] Using server-side JWT session for all domains');
     
-    if (isPublishedDomain) {
-      // PRODUCTION: Use server-side session only, NO Firebase
-      console.log('[Auth Context] 🚀 Published domain - using server-side JWT session only');
-      
-      fetch('/api/auth/session', {
-        method: 'GET',
-        credentials: 'include' // Include cookies
-      })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('No valid session');
-        }
-      })
-      .then(sessionData => {
-        if (sessionData.success && sessionData.user) {
-          console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
-          setUser({
-            uid: sessionData.user.id.toString(),
-            ...sessionData.user
-          });
-          setIsLoading(false);
-          
-          // Store in session storage for consistency
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
-        } else {
-          throw new Error('Invalid session data');
-        }
-      })
-      .catch(error => {
-        console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
-        console.log('[Auth Context] User needs to authenticate via server OAuth');
-        setIsLoading(false);
-      });
-      
-      console.log(`[Auth Context] Published domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
-      return; // Skip Firebase completely for published domains
-    }
-    
-    if (!isDevelopment) {
-      // Non-replit production domain - check server-side session first
-      console.log('[Auth Context] Checking server-side JWT session...');
-      
-      fetch('/api/auth/session', {
-        method: 'GET',
-        credentials: 'include' 
-      })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('No valid session');
-        }
-      })
-      .then(sessionData => {
-        if (sessionData.success && sessionData.user) {
-          console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
-          setUser({
-            uid: sessionData.user.id.toString(),
-            ...sessionData.user
-          });
-          setIsLoading(false);
-          
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
-          return;
-        }
-        throw new Error('Invalid session data');
-      })
-      .catch(error => {
-        console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
-        setIsLoading(false);
-      });
-      
-      console.log(`[Auth Context] Production domain initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
-      return;
-    }
-    
-    // Development domain - use Firebase with caching
-    console.log('[Auth Context] 🔧 Development domain - initializing Firebase');
-    
-    // Set up Firebase auth listener for development only
-    const setupFirebaseAuth = async () => {
-      try {
-        console.log("Setting up Firebase auth state listener...");
-        const { auth } = await import('@/lib/firebase');
-        
-        if (!auth) {
-          console.error("Auth object is null - Firebase initialization failed");
-          setIsLoading(false);
-          return () => {};
-        }
-        
-        const { onAuthStateChanged } = await import('firebase/auth');
-        const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
-          console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-          
-          if (firebaseUser) {
-            // Process Firebase user for development
-            const userData = await processFirebaseUser(firebaseUser);
-            if (userData) {
-              setUser(userData);
-              
-              const isNewLogin = !user || user.uid !== userData.uid;
-              if (isNewLogin) {
-                toast({
-                  title: "Signed in successfully",
-                  description: `Welcome ${userData.name || userData.email}!`,
-                });
-                
-                const currentPath = window.location.pathname;
-                if (currentPath === '/auth' || currentPath === '/') {
-                  setTimeout(() => {
-                    window.location.href = '/dashboard';
-                  }, 200);
-                }
-              }
-            }
-          } else {
-            setUser(null);
-          }
-          
-          setIsLoading(false);
-        });
-        
-        return unsubscribe;
-      } catch (error) {
-        console.error("Failed to setup Firebase auth listener:", error);
-        setIsLoading(false);
-        return () => {};
+    // Check server-side session for all domains
+    fetch('/api/auth/session', {
+      method: 'GET',
+      credentials: 'include' // Include cookies
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('No valid session');
       }
-    };
-    
-    // Setup Firebase and cleanup for development
-    let unsubscribe: (() => void) | null = null;
-    
-    setupFirebaseAuth().then((unsub) => {
-      unsubscribe = unsub;
-    }).catch((error) => {
-      console.error("Failed to setup Firebase auth:", error);
+    })
+    .then(sessionData => {
+      if (sessionData.success && sessionData.user) {
+        console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
+        setUser({
+          uid: sessionData.user.id.toString(),
+          ...sessionData.user
+        });
+        setIsLoading(false);
+        
+        // Store in session storage for consistency
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
+      } else {
+        throw new Error('Invalid session data');
+      }
+    })
+    .catch(error => {
+      console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+      console.log('[Auth Context] User needs to authenticate via server OAuth');
       setIsLoading(false);
     });
     
-    return () => {
-      if (unsubscribe) {
-        console.log("Cleaning up Firebase auth state listener");
-        unsubscribe();
-      }
-    };
-    
-    console.log(`[Auth Context] Development initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
   }, []);
-
-  // Process Firebase user (development only)
-  const processFirebaseUser = async (firebaseUser: any): Promise<AuthUser | null> => {
-    try {
-      // Create user data from Firebase user
-      const userData = {
-        uid: firebaseUser.uid,
-        id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-        username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
-        email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
-      };
-      
-      // Try to create/update user in backend
-      await apiRequest('POST', '/api/users', userData);
-      
-      return userData;
-    } catch (error) {
-      console.error("Error processing Firebase user:", error);
-      return null;
-    }
-  };
 
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
@@ -273,87 +123,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign in with Google - domain-aware implementation
+  // Sign in with Google - simplified custom OAuth only
   const signInWithGoogle = async () => {
     if (isLoading) return;
     
     setIsLoading(true);
     
     try {
-      console.log("Starting Google sign-in");
+      console.log("Starting Google sign-in with custom OAuth");
       
-      if (isPublishedDomain) {
-        // PRODUCTION: Use server-side OAuth flow only
-        console.log("🚀 Published domain - using server-side OAuth flow");
-        
-        // Get OAuth URL from our server
-        const response = await fetch('/api/auth/google/url', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to get OAuth URL');
-        }
-        
-        const data = await response.json();
-        console.log('✅ Got OAuth URL, redirecting to Google...');
-        
-        // Redirect to Google OAuth (will come back to our callback)
-        window.location.href = data.oauthUrl;
-        return; // Will redirect
-        
-      } else if (isDevelopment) {
-        // DEVELOPMENT: Use Firebase popup for development
-        console.log("🔧 Development domain - using Firebase popup");
-        
-        const { auth } = await import('@/lib/firebase');
-        const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
-        
-        if (!auth) {
-          throw new Error('Firebase auth not initialized');
-        }
-
-        const provider = new GoogleAuthProvider();
-        provider.addScope('email');
-        provider.addScope('profile');
-        provider.setCustomParameters({
-          prompt: 'select_account',
-          access_type: 'online'
-        });
-        
-        const result = await signInWithPopup(auth as any, provider);
-        
-        if (result && result.user) {
-          console.log("🎉 Firebase authentication successful:", result.user.email);
-        }
-      } else {
-        // OTHER PRODUCTION: Use server-side OAuth
-        console.log("🚀 Production domain - using server-side OAuth flow");
-        
-        const response = await fetch('/api/auth/google/url', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to get OAuth URL');
-        }
-        
-        const data = await response.json();
-        window.location.href = data.oauthUrl;
-        return;
+      // Use server-side OAuth flow for all domains
+      console.log("🚀 Using server-side OAuth flow for all domains");
+      
+      // Get OAuth URL from our server
+      const response = await fetch('/api/auth/google/url', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to get OAuth URL');
       }
+      
+      const data = await response.json();
+      console.log('✅ Got OAuth URL, redirecting to Google...');
+      
+      // Redirect to Google OAuth (will come back to our callback)
+      window.location.href = data.oauthUrl;
+      return; // Will redirect
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
       let errorMessage = "There was a problem with Google sign-in. Please try again.";
       
-      if (error.code === 'auth/popup-blocked') {
-        errorMessage = "The login popup was blocked by your browser. Please allow popups and try again.";
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "The login popup was closed. Please try again.";
+      if (error.message && error.message.includes('OAuth URL')) {
+        errorMessage = "Unable to start authentication. Please try again.";
       }
       
       toast({
@@ -367,25 +172,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign out function
+  // Sign out function - simplified for all domains
   const signOut = async () => {
     try {
       setIsLoading(true);
       
-      if (isPublishedDomain || !isDevelopment) {
-        // Clear server-side session
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          credentials: 'include'
-        });
-      } else {
-        // Development: sign out from Firebase
-        const { auth } = await import('@/lib/firebase');
-        if (auth) {
-          const { signOut: firebaseSignOut } = await import('firebase/auth');
-          await firebaseSignOut(auth as any);
-        }
-      }
+      // Clear server-side session for all domains
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
       
       // Clear local state
       setUser(null);

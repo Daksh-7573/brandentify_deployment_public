@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * Google Authentication Component - Fixed
+ * Google Authentication Component - Simplified Custom OAuth Only
  */
 export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,164 +15,36 @@ export function FastGoogleAuth() {
     
     try {
       console.log('🔄 Starting Google authentication...');
+      console.log('🚀 Using custom OAuth flow for all domains');
       
-      // 🔥 PRODUCTION FIX - Use custom OAuth for all non-development domains  
-      const isDevelopment = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-      const useCustomOAuth = !isDevelopment;
-      
-      console.log("Auth domain check:", {
-        hostname: window.location.hostname,
-        isDevelopment,
-        useCustomOAuth,
-        authMethod: useCustomOAuth ? 'custom-oauth' : 'firebase-popup'
+      // Get OAuth URL from our server
+      const response = await fetch('/api/auth/google/url', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       });
       
-      if (useCustomOAuth) {
-        // Use custom OAuth flow for published domain to avoid Firebase routing issues
-        console.log('🚀 Using custom OAuth flow for published domain');
-        
-        // Get OAuth URL from our server
-        const response = await fetch('/api/auth/google/url', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to get OAuth URL');
-        }
-        
-        const data = await response.json();
-        console.log('✅ Got OAuth URL, redirecting...');
-        
-        // Redirect to Google OAuth (will come back to our callback)
-        window.location.href = data.oauthUrl;
-        return; // Will redirect
-        
-      } else {
-        // Use Firebase popup for development domains  
-        console.log('🔄 Using Firebase popup for development...');
-        
-        // Import Firebase auth
-        const { GoogleAuthProvider } = await import('firebase/auth');
-        const firebaseModule = await import('@/lib/firebase');
-        const auth: any = firebaseModule.auth;
-        
-        if (!auth) {
-          throw new Error('Firebase auth not initialized');
-        }
-
-        // Create Google provider with proper configuration
-        const provider = new GoogleAuthProvider();
-        provider.addScope('email');
-        provider.addScope('profile');
-        
-        // Set custom parameters for consistent behavior
-        provider.setCustomParameters({
-          prompt: 'select_account',
-          access_type: 'online'
-        });
-        
-        const { signInWithPopup } = await import('firebase/auth');
-        const result = await signInWithPopup(auth, provider);
-        
-        console.log('✅ Firebase popup completed successfully!');
-        console.log('✅ Google auth result:', {
-          email: result.user.email,
-          name: result.user.displayName,
-          uid: result.user.uid
-        });
-        
-        // Prepare user data for backend
-        const userData = {
-          firebaseUid: result.user.uid,
-          email: result.user.email || '',
-          name: result.user.displayName || 'Google User',
-          photoURL: result.user.photoURL || '',
-          googleId: result.user.uid,
-          authProvider: 'google',
-          emailVerified: result.user.emailVerified || false
-        };
-
-        console.log('📡 Sending to backend:', {
-          email: userData.email,
-          name: userData.name,
-          authProvider: userData.authProvider
-        });
-        
-        // Send to backend with longer timeout to handle slow responses
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-        
-        const response = await fetch('/api/auth/google-signin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userData),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('❌ Backend error:', response.status, errorText);
-          throw new Error(`Backend error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('✅ Backend response:', data);
-        
-        if (data.success && data.user) {
-          console.log('✅ Authentication successful - storing user data');
-          
-          // Store user data in session storage
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
-          
-          // Force immediate redirect
-          console.log('✅ Redirecting to dashboard...');
-          window.location.href = '/dashboard';
-        } else {
-          throw new Error(data.message || 'Authentication failed - no user data');
-        }
+      if (!response.ok) {
+        throw new Error('Failed to get OAuth URL');
       }
+      
+      const data = await response.json();
+      console.log('✅ Got OAuth URL, redirecting...');
+      
+      // Redirect to Google OAuth (will come back to our callback)
+      window.location.href = data.oauthUrl;
+      return; // Will redirect
       
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
       
-      // Handle specific Firebase auth errors
-      if (error.code === 'auth/popup-closed-by-user') {
-        console.log('ℹ️ User closed popup');
-        setIsLoading(false);
-        return;
-      }
-      
-      if (error.code === 'auth/cancelled-popup-request') {
-        console.log('ℹ️ Popup cancelled');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Handle timeout errors
-      if (error.name === 'AbortError') {
-        console.error('❌ Backend request timed out');
-        toast({
-          title: 'Request Timeout',
-          description: 'The authentication request took too long. Please try again.',
-          variant: 'destructive'
-        });
-        setIsLoading(false);
-        return;
-      }
-      
-      // Handle other errors
+      // Handle OAuth errors
       let errorMessage = 'Authentication failed. Please try again.';
       
-      if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup was blocked. Please allow popups and try again.';
-      } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = 'Network error. Please check your connection.';
-      } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for Google sign-in.';
-      } else if (error.message && !error.message.includes('cancelled')) {
+      if (error.message.includes('Failed to get OAuth URL')) {
+        errorMessage = 'Unable to start authentication. Please try again.';
+      } else if (error.name === 'AbortError') {
+        errorMessage = 'The authentication request took too long. Please try again.';
+      } else if (error.message) {
         errorMessage = error.message;
       }
       

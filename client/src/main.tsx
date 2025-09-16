@@ -3,8 +3,7 @@ import App from "./App";
 import SimpleApp from "./simple-app";
 import "./index.css";
 
-// Initialize Firebase and other services
-import "./lib/firebase";
+// Note: Firebase removed - using custom OAuth only
 
 // Performance measurement
 const appStartTime = performance.now();

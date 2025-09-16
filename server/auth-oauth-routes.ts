@@ -66,23 +66,37 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     // Use environment-based redirect URI determination - API route to avoid client collision
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isPreviewDomain = host.includes('replit.dev');
+    const isPublishedDomain = host.includes('replit.app');
     
-    // Support both brandentifier.replit.app and brandentifier.com
+    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
+    // Store original host in state for post-auth redirect
     let redirectUri;
+    let returnHost = host;
+    
     if (isDevelopment) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else {
+      // Use published domain as static redirect URI for all Replit domains
+      // This works for both *.replit.dev and *.replit.app
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
     console.log('OAuth redirect URI:', redirectUri);
     
-    // Create cryptographically secure state parameter
-    const state = crypto.randomBytes(32).toString('base64url');
+    // Create cryptographically secure state parameter with return host
+    const stateData = {
+      nonce: crypto.randomBytes(16).toString('base64url'),
+      returnHost: returnHost,
+      timestamp: Date.now(),
+      ip: req.ip || req.connection.remoteAddress || 'unknown'
+    };
     
-    // Store state with timestamp and IP for validation
+    const state = Buffer.from(JSON.stringify(stateData)).toString('base64url');
+    
+    // Store state for validation (simplified since data is in state)
     stateStore.set(state, { 
       timestamp: Date.now(), 
       ip: req.ip || req.connection.remoteAddress || 'unknown'
@@ -184,14 +198,21 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     // Use environment-based redirect URI determination - API route to avoid client collision
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isPreviewDomain = host.includes('replit.dev');
+    const isPublishedDomain = host.includes('replit.app');
     
-    // Support both brandentifier.replit.app and brandentifier.com
+    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
+    // Store original host in state for post-auth redirect
     let redirectUri;
+    let returnHost = host;
+    
     if (isDevelopment) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else {
+      // Use published domain as static redirect URI for all Replit domains
+      // This works for both *.replit.dev and *.replit.app
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
@@ -352,8 +373,30 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('✅ [OAUTH CALLBACK] Cookie set with session token');
     console.log('✅ [OAUTH CALLBACK] Redirecting to /industry-pulse');
     
-    // Use 303 redirect to avoid accidental re-POST/caching and redirect directly to Industry Pulse
-    return res.redirect(303, '/industry-pulse');
+    // Parse state to get return host and redirect to correct domain
+    let finalRedirectUrl = '/dashboard'; // Default fallback
+    
+    try {
+      const decodedState = JSON.parse(Buffer.from(state as string, 'base64url').toString());
+      const returnHost = decodedState.returnHost;
+      
+      if (returnHost && returnHost !== req.get('host')) {
+        // Redirect to original domain if different from current
+        if (returnHost.includes('localhost')) {
+          finalRedirectUrl = `http://${returnHost}/dashboard`;
+        } else {
+          finalRedirectUrl = `https://${returnHost}/dashboard`;
+        }
+        console.log('🔄 [OAUTH CALLBACK] Cross-domain redirect to:', finalRedirectUrl);
+        return res.redirect(303, finalRedirectUrl);
+      }
+    } catch (error) {
+      console.log('⚠️ [OAUTH CALLBACK] Could not parse state for return host, using default redirect');
+    }
+    
+    // Same domain redirect - go to dashboard
+    console.log('✅ [OAUTH CALLBACK] Same domain redirect to:', finalRedirectUrl);
+    return res.redirect(303, finalRedirectUrl);
     
   } catch (error: any) {
     console.error('❌ OAuth callback error:', error);
