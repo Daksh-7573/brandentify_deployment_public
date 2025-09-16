@@ -18,6 +18,7 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
+import { logDatabaseStartupInfo } from "./db";
 
 const app = express();
 
@@ -761,7 +762,7 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen(port, "0.0.0.0", () => {
+  server.listen(port, "0.0.0.0", async () => {
     log(`serving on port ${port}`);
     console.log(`🚀 Server accessible at:`);
     console.log(`   - Local: http://localhost:${port}`);
@@ -771,6 +772,9 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
     console.log(`🔍 Debugging: REPLIT_DOMAINS=${process.env.REPLIT_DOMAINS}`);
     console.log(`🔍 Server listening on all interfaces (0.0.0.0:${port})`);
+    
+    // 🔍 DATABASE VERIFICATION - Critical for database unification verification
+    await logDatabaseStartupInfo();
   });
   
   server.on('error', (err) => {

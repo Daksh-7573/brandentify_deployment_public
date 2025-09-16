@@ -109,6 +109,7 @@ import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
 import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
 import * as xaiService from "./services/xai-service";
+import { getDatabaseFingerprint, createDatabaseFingerprint } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth cleaner endpoint - MUST be before any other routes
@@ -218,12 +219,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
+    // Add Cache-Control headers to prevent API caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('X-DB-Fingerprint', createDatabaseFingerprint());
+    
     res.status(200).json({
       status: "healthy",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: "1.0.0"
     });
+  });
+
+  // 🔍 DATABASE FINGERPRINTING ENDPOINT - Critical for database unification verification
+  apiRouter.get("/db-fingerprint", async (req: Request, res: Response) => {
+    try {
+      console.log(`🔍 [DB FINGERPRINT] Request from host: ${req.get('host')}`);
+      
+      // Add Cache-Control headers to prevent API caching
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      const fingerprint = await getDatabaseFingerprint();
+      
+      // Add fingerprint to response headers for easy verification
+      res.setHeader('X-DB-Fingerprint', fingerprint.fingerprint);
+      res.setHeader('X-DB-Host', fingerprint.masked_host);
+      
+      console.log(`🔍 [DB FINGERPRINT] Returning fingerprint: ${fingerprint.fingerprint} for host: ${fingerprint.masked_host}`);
+      
+      res.status(200).json({
+        ...fingerprint,
+        request_host: req.get('host'),
+        user_agent: req.get('user-agent')?.substring(0, 50) + '...'
+      });
+    } catch (error) {
+      console.error(`🚨 [DB FINGERPRINT] Error:`, error);
+      res.status(500).json({
+        error: 'Database fingerprint error',
+        details: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 
   // Job title options endpoint

@@ -1,9 +1,9 @@
-// Enhanced Service Worker v6 - COMPLETE OAUTH AUTHENTICATION FIX  
-const SW_VERSION = 'v6'; // Bumped version to force complete OAuth fix
-const CACHE_NAME = 'brandentifier-v6';
-const STATIC_CACHE_NAME = 'brandentifier-static-v6';
-const API_CACHE_NAME = 'brandentifier-api-v6';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v6';
+// Enhanced Service Worker v7 - COMPLETE API CACHING BYPASS FIX  
+const SW_VERSION = 'v7'; // Bumped version to force API cache bypass activation
+const CACHE_NAME = 'brandentifier-v7';
+const STATIC_CACHE_NAME = 'brandentifier-static-v7';
+const API_CACHE_NAME = 'brandentifier-api-v7';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v7';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -64,8 +64,8 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v6')) {
-              console.log('[SW v6] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v7')) {
+              console.log('[SW v7] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -191,31 +191,27 @@ self.addEventListener('fetch', event => {
     );
   }
   
-  // API caching with stale-while-revalidate strategy
+  // 🚀 CRITICAL FIX: COMPLETE API BYPASS - Never cache API responses to prevent stale data
   else if (request.url.includes('/api/')) {
+    console.log('[SW v6] 🚀 API ROUTE BYPASS - Direct to server (no cache):', request.url);
+    
+    // COMPLETE BYPASS - No service worker caching interference
     event.respondWith(
-      caches.open(API_CACHE_NAME).then(cache => {
-        return cache.match(request).then(cachedResponse => {
-          const fetchPromise = fetch(request).then(networkResponse => {
-            // Cache successful responses
-            if (networkResponse.status === 200) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          });
-          
-          // Return cached version immediately if available, update in background
-          if (cachedResponse) {
-            console.log('[SW v4] 🔄 Stale-while-revalidate:', request.url);
-            return cachedResponse;
-          }
-          
-          return fetchPromise.catch(() => {
-            return new Response(JSON.stringify({ error: 'API unavailable offline' }), {
-              status: 503,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          });
+      fetch(request, { 
+        cache: 'no-store', // Never cache API requests
+        credentials: 'include' // Include cookies for sessions
+      }).then(response => {
+        console.log('[SW v6] ✅ API request successful:', response.status, request.url);
+        return response;
+      }).catch(error => {
+        console.error('[SW v6] ❌ API request failed:', error);
+        return new Response(JSON.stringify({ 
+          error: 'API request failed', 
+          message: 'Please check your connection and try again',
+          timestamp: new Date().toISOString()
+        }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
         });
       })
     );
