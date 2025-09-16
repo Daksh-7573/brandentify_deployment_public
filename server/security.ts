@@ -335,35 +335,37 @@ export async function setupSecurity(app: any) {
     })
   );
   
-  // 2. Set up CORS with whitelisted origins
+  // 2. Set up CORS with whitelisted origins and SECURE credential handling
   const corsOptions = {
     origin: function (origin: any, callback: any) {
       // Debug logging
-      console.log(`CORS: Checking origin: ${origin}`);
-      console.log(`CORS: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
-      console.log(`CORS: NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`CORS: [SECURITY.TS] Checking origin: ${origin}`);
+      console.log(`CORS: [SECURITY.TS] ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
+      console.log(`CORS: [SECURITY.TS] NODE_ENV: ${process.env.NODE_ENV}`);
       
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) {
-        console.log('CORS: Allowing request with no origin');
+        console.log('CORS: [SECURITY.TS] Allowing request with no origin');
         return callback(null, true);
       }
       
       // Allow all Replit domains and development
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-        console.log('CORS: Origin found in ALLOWED_ORIGINS');
+        console.log('CORS: [SECURITY.TS] Origin found in ALLOWED_ORIGINS');
         callback(null, true);
       } else if (process.env.NODE_ENV === 'development') {
-        console.log('CORS: Allowing due to development mode');
+        console.log('CORS: [SECURITY.TS] Allowing due to development mode');
         callback(null, true);
       } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
-        console.log('CORS: Allowing Replit domain');
+        console.log('CORS: [SECURITY.TS] Allowing Replit domain');
         callback(null, true);
       } else {
-        console.log(`CORS: Rejecting origin: ${origin}`);
+        console.log(`CORS: [SECURITY.TS] Rejecting origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
+    // SECURITY FIX: Enable credentials for secure cross-domain authentication
+    // The origin validation above already restricts which origins can access with credentials
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']

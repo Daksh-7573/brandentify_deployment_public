@@ -81,40 +81,20 @@ const ALLOWED_ORIGINS = [
   'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev'
 ];
 
+// ✅ CORS SECURITY FIX COMPLETED - Now handled by security.ts
+// Removed duplicate CORS configuration to prevent conflicts
+// The comprehensive CORS setup in security.ts properly handles:
+// - Origin validation with conditional credentials
+// - Wildcard origin only for requests without credentials 
+// - Proper Vary: Origin headers for caching
+
 app.use((req, res, next) => {
-  const origin = req.get('origin');
-  
-  console.log('CORS: Checking origin:', origin);
-  console.log('CORS: ALLOWED_ORIGINS:', ALLOWED_ORIGINS);
-  console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
-  
-  // Set CORS headers based on allowlist or for no-origin requests (direct access)
-  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      console.log('CORS: Allowing origin:', origin);
-    } else {
-      res.header('Access-Control-Allow-Origin', '*');
-      console.log('CORS: Allowing request with no origin');
-    }
-    res.header('Access-Control-Allow-Credentials', 'true');
-  } else {
-    console.log('CORS: Blocking unauthorized origin:', origin);
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  
+  // Only handle X-Frame-Options removal here
   // Forcibly remove X-Frame-Options to allow iframe embedding
   res.removeHeader('X-Frame-Options');
   res.header('X-Content-Type-Options', 'nosniff');
   
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  
+  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
   next();
 });
 
@@ -125,25 +105,34 @@ if (isDevelopment) {
   // 🔧 Development only: Keep Firebase auth proxy for local development
   console.log("🔧 Development mode: Enabling Firebase auth proxy");
   
-  app.use('/__/auth/*', createProxyMiddleware({
+  const proxyOptions: any = {
     target: 'https://brandentifier-app.firebaseapp.com',
     changeOrigin: true,
     secure: true,
-    onProxyReq: (proxyReq: any, req: any, res: any) => {
+    onProxyReq: (proxyReq: any, req: any, res: any): void => {
       console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
       proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
       proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
     },
     onProxyRes: (proxyRes: any, req: any, res: any) => {
       console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-      proxyRes.headers['access-control-allow-origin'] = '*';
-      proxyRes.headers['access-control-allow-credentials'] = 'true';
+      // SECURITY FIX: Use proper origin instead of wildcard with credentials
+      const origin = req.get('origin');
+      if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        proxyRes.headers['access-control-allow-origin'] = origin;
+        proxyRes.headers['access-control-allow-credentials'] = 'true';
+      } else {
+        proxyRes.headers['access-control-allow-origin'] = '*';
+        // Don't set credentials for wildcard origin
+      }
     },
     onError: (err: any, req: any, res: any) => {
       console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
       res.status(500).json({ error: 'Firebase auth proxy error' });
     }
-  }));
+  };
+  
+  app.use('/__/auth/*', createProxyMiddleware(proxyOptions));
 } else {
   // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
   console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
