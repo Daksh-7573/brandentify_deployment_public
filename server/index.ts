@@ -381,10 +381,25 @@ if (!fs.existsSync(mediaDir)) {
   fs.mkdirSync(mediaDir, { recursive: true });
 }
 
-// Serve static files from public directory
-app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
-// Serve the public directory directly for things like upload-test.html
-app.use(express.static(path.join(process.cwd(), 'public')));
+// Serve static files from public directory with proper MIME types
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
+  setHeaders: (res, filePath) => {
+    // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
+    if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    }
+  }
+}));
+
+// Serve the public directory directly for things like upload-test.html with proper MIME types
+app.use(express.static(path.join(process.cwd(), 'public'), {
+  setHeaders: (res, filePath) => {
+    // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
+    if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    }
+  }
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();

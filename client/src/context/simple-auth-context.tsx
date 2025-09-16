@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode, useRef } from "react";
 
 // Simple auth user type
 type AuthUser = {
@@ -32,20 +32,21 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Failsafe timeout to prevent infinite loading
-  useEffect(() => {
-    const failsafeTimeout = setTimeout(() => {
-      console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
-      setIsLoading(false);
-    }, 2000); // 2 second maximum loading time
-
-    return () => clearTimeout(failsafeTimeout);
-  }, []);
+  const loadingRef = useRef(true);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Check authentication from server session (published domain) or sessionStorage (dev)
   useEffect(() => {
     console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
+    
+    // Failsafe timeout to prevent infinite loading - cleared when auth check completes
+    timeoutRef.current = setTimeout(() => {
+      if (loadingRef.current) {
+        console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
+        setIsLoading(false);
+        loadingRef.current = false;
+      }
+    }, 3000); // 3 second maximum loading time
     
     const checkAuth = async () => {
       console.log('AuthProvider: Running checkAuth');
@@ -136,6 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } finally {
         console.log('AuthProvider: Setting isLoading to false from checkAuth');
         setIsLoading(false);
+        loadingRef.current = false;
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current); // Clear the failsafe timeout since auth check completed
+          timeoutRef.current = null;
+        }
       }
     };
 
@@ -155,6 +161,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current); // Clean up timeout on component unmount
+        timeoutRef.current = null;
+      }
     };
   }, []);
 

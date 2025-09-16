@@ -75,7 +75,10 @@ export function initializeRedirectHandler() {
   // Check if we have a redirect attempt flag
   const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
   
-  console.log("🔧 initializeRedirectHandler: hasRedirectAttempt =", hasRedirectAttempt);
+  // Only log in debug mode to avoid console noise
+  if (sessionStorage.getItem('auth_debug') === 'true') {
+    console.log("🔧 initializeRedirectHandler: hasRedirectAttempt =", hasRedirectAttempt);
+  }
   
   if (hasRedirectAttempt) {
     console.log("📍 Found redirect attempt flag - initializing handler");
@@ -104,6 +107,9 @@ export function initializeRedirectHandler() {
       }
     }, 1000);
   } else {
-    console.log("❌ No redirect attempt flag found - not initializing handler");
+    // This is normal for direct page visits - only log in debug mode
+    if (sessionStorage.getItem('auth_debug') === 'true') {
+      console.log("ℹ️ No redirect attempt flag found - not initializing handler (normal for direct visits)");
+    }
   }
 }
