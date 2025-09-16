@@ -7960,14 +7960,54 @@ ${extractedText.substring(0, 5000)}
   httpServer.keepAliveTimeout = 65000; // 65 seconds
   httpServer.headersTimeout = 66000; // 66 seconds
   
-  // Setup WebSocket server for real-time messaging
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  // Add error handling for server startup stability
+  httpServer.on('error', (err: any) => {
+    console.error('HTTP Server error:', err);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${err.port} is already in use. Server will retry...`);
+      // Allow graceful retry instead of crashing
+    }
+  });
+  
+  // Setup WebSocket server for real-time messaging with error handling
+  let wss: WebSocketServer;
+  try {
+    wss = new WebSocketServer({ 
+      server: httpServer, 
+      path: '/ws',
+      // Add options to prevent binding conflicts
+      perMessageDeflate: false,
+      clientTracking: true
+    });
+    console.log('✅ WebSocket server created successfully');
+  } catch (error) {
+    console.error('❌ Error creating WebSocket server:', error);
+    throw error;
+  }
   
   // Map to store active connections by user ID
   const clients = new Map<number, WebSocket>();
   
+  // Add WebSocket server error handling for stability
+  wss.on('error', (error: Error) => {
+    console.error('WebSocket server error:', error);
+  });
+
   wss.on('connection', (ws) => {
     console.log('WebSocket client connected');
+    
+    // Add connection-level error handling
+    ws.on('error', (error: Error) => {
+      console.error('WebSocket connection error:', error);
+      // Remove client from clients map on error
+      for (const [userId, client] of clients.entries()) {
+        if (client === ws) {
+          clients.delete(userId);
+          console.log(`User ${userId} removed from WebSocket due to error`);
+          break;
+        }
+      }
+    });
     
     // Expect an authentication message first with user ID
     ws.on('message', (message) => {
@@ -7981,11 +8021,15 @@ ${extractedText.substring(0, 5000)}
             clients.set(userId, ws);
             console.log(`User ${userId} authenticated on WebSocket`);
             
-            // Send confirmation
-            ws.send(JSON.stringify({
-              type: 'auth_success',
-              message: 'Authentication successful'
-            }));
+            // Send confirmation safely
+            try {
+              ws.send(JSON.stringify({
+                type: 'auth_success',
+                message: 'Authentication successful'
+              }));
+            } catch (sendError) {
+              console.error('Error sending auth confirmation:', sendError);
+            }
           }
         } else if (data.type === 'message') {
           // Handle new message
@@ -7993,15 +8037,27 @@ ${extractedText.substring(0, 5000)}
             const recipientId = parseInt(data.recipientId);
             
             // If recipient is connected, send them the message
-            if (clients.has(recipientId) && clients.get(recipientId).readyState === WebSocket.OPEN) {
-              clients.get(recipientId).send(JSON.stringify({
-                type: 'new_message',
-                senderId: data.senderId,
-                senderName: data.senderName,
-                conversationId: data.conversationId,
-                content: data.content,
-                timestamp: new Date().toISOString()
-              }));
+            if (clients.has(recipientId)) {
+              const recipientWs = clients.get(recipientId);
+              if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+                try {
+                  recipientWs.send(JSON.stringify({
+                    type: 'new_message',
+                    senderId: data.senderId,
+                    senderName: data.senderName,
+                    conversationId: data.conversationId,
+                    content: data.content,
+                    timestamp: new Date().toISOString()
+                  }));
+                } catch (sendError) {
+                  console.error('Error sending message to recipient:', sendError);
+                  // Remove stale connection
+                  clients.delete(recipientId);
+                }
+              } else {
+                // Remove stale connection
+                clients.delete(recipientId);
+              }
             }
           }
         }
@@ -8010,9 +8066,9 @@ ${extractedText.substring(0, 5000)}
       }
     });
     
-    // Handle disconnection
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
+    // Handle disconnection with improved cleanup
+    ws.on('close', (code: number, reason: Buffer) => {
+      console.log(`WebSocket client disconnected (code: ${code}, reason: ${reason.toString()})`);
       // Remove client from clients map
       for (const [userId, client] of clients.entries()) {
         if (client === ws) {
