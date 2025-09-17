@@ -535,11 +535,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
 
 /**
  * Check current session validity - for client-side auth state detection
- * Enhanced with Firebase-to-JWT migration support
  */
 export async function checkSessionRoute(req: Request, res: Response) {
   try {
-    console.log('🔍 [SESSION CHECK] Checking session validity');
+    console.log('🔍 Checking session validity');
     
     // Set cache control headers for session endpoint
     res.set({
@@ -551,93 +550,71 @@ export async function checkSessionRoute(req: Request, res: Response) {
     
     // Debug logging for session validation
     const requestHost = req.get('host');
-    console.log('🍪 [SESSION CHECK] Session Debug:', {
+    console.log('🍪 Session Debug:', {
       host: requestHost,
       cookiePresent: !!req.cookies?.brandentifier_session,
       tokenLength: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.length : 0,
       userAgent: req.get('user-agent')?.substring(0, 50)
     });
     
-    // STEP 1: Check if JWT session cookie exists (primary auth method)
+    // Check if JWT session cookie exists
     const sessionToken = req.cookies?.brandentifier_session;
     
-    if (sessionToken) {
-      console.log('🔍 [SESSION CHECK] JWT session cookie found, validating...');
-      
-      // Verify JWT token
-      try {
-        const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
-        console.log('✅ [SESSION CHECK] Valid JWT session found for user:', decoded.email);
-        
-        // Get fresh user data from database
-        const user = await storage.getUserByEmail(decoded.email);
-        
-        if (!user) {
-          console.log('❌ [SESSION CHECK] User not found in database for JWT token');
-          // Clear invalid session cookie
-          clearSessionCookie(req, res);
-          return res.status(401).json({
-            success: false,
-            error: 'User not found'
-          });
-        }
-        
-        // Return sanitized user data (same format as OAuth callback)
-        const clientUser = {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          name: user.name,
-          photoURL: user.photoURL,
-          profileCompleted: user.profileCompleted || 0,
-          authProvider: 'google',
-          emailVerified: user.emailVerified
-        };
-        
-        console.log('✅ [SESSION CHECK] JWT session valid, returning user data');
-        return res.json({
-          success: true,
-          user: clientUser,
-          sessionType: 'jwt'
-        });
-        
-      } catch (jwtError) {
-        console.log('❌ [SESSION CHECK] Invalid or expired JWT token - checking for Firebase fallback');
-        // Don't return error yet, check for Firebase data first
-        clearSessionCookie(req, res);
-      }
-    }
-    
-    // STEP 2: SECURITY FIX - Firebase migration disabled to prevent account spoofing
-    // The previous Firebase migration code accepted unverified user data from clients,
-    // allowing account spoofing by simply knowing someone's email address.
-    // Since Firebase authentication is being phased out, this migration path is now disabled.
-    
-    const firebaseUserData = req.body?.firebaseUser;
-    if (firebaseUserData) {
-      console.log('🚨 [SECURITY] Blocked insecure Firebase migration attempt:', {
-        email: firebaseUserData.email || 'unknown',
-        ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        timestamp: new Date().toISOString()
-      });
-      
-      return res.status(403).json({
+    if (!sessionToken) {
+      console.log('❌ No JWT session cookie found');
+      // Clear any stale cookies that might exist
+      clearSessionCookie(req, res);
+      return res.status(401).json({
         success: false,
-        error: 'Firebase migration is disabled for security',
-        message: 'Please sign in using Google OAuth to create a secure JWT session.',
-        redirectToOAuth: true
+        error: 'No session found'
       });
     }
     
-    // STEP 3: No JWT token and no Firebase data - user needs to authenticate
-    console.log('❌ [SESSION CHECK] No valid session found');
-    clearSessionCookie(req, res);
-    return res.status(401).json({
-      success: false,
-      error: 'No session found',
-      requiresAuth: true
-    });
+    // Verify JWT token
+    try {
+      const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
+      console.log('✅ Valid session found for user:', decoded.email);
+      
+      // Get fresh user data from database
+      const user = await storage.getUserByEmail(decoded.email);
+      
+      if (!user) {
+        console.log('❌ User not found in database');
+        // Clear invalid session cookie
+        clearSessionCookie(req, res);
+        return res.status(401).json({
+          success: false,
+          error: 'User not found'
+        });
+      }
+      
+      // Return sanitized user data (same format as OAuth callback)
+      const clientUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+        photoURL: user.photoURL,
+        profileCompleted: user.profileCompleted || 0,
+        authProvider: 'google',
+        emailVerified: user.emailVerified
+      };
+      
+      console.log('✅ Session valid, returning user data');
+      return res.json({
+        success: true,
+        user: clientUser
+      });
+      
+    } catch (jwtError) {
+      console.log('❌ Invalid or expired JWT token - validation failed');
+      // Clear invalid/expired session cookie
+      clearSessionCookie(req, res);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid session token'
+      });
+    }
     
   } catch (error: any) {
     console.error('❌ Session check error:', error);

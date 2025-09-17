@@ -10,23 +10,22 @@ export function SimpleGoogleButton() {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleClick = async () => {
-    console.log("🟢 [SIMPLE-BUTTON] JWT OAuth button clicked!");
+    console.log("🟢 SIMPLE BUTTON: Click detected!");
+    
+    // Immediately set flag for testing
+    // Clear any old auth flags for clean authentication
+    sessionStorage.removeItem('redirect_auth_attempt');
+    sessionStorage.removeItem('redirect_auth_time');
+    sessionStorage.removeItem('redirect_auth_success');
+    
+    console.log("🟢 SIMPLE BUTTON: Flags set - attempting auth");
     
     try {
       setIsLoading(true);
-      
-      // Clear any existing auth data for fresh login
-      sessionStorage.removeItem('brandentifier_user');
-      localStorage.removeItem('brandentifier_user');
-      console.log("🧹 [SIMPLE-BUTTON] Cleared auth data, starting OAuth flow");
-      
-      // Use JWT OAuth flow from useAuth hook
       await signInWithGoogle();
-      
-      console.log("✅ [SIMPLE-BUTTON] OAuth redirect initiated");
-      
     } catch (error) {
-      console.error("❌ [SIMPLE-BUTTON] OAuth error:", error);
+      console.error("🟢 SIMPLE BUTTON: Error:", error);
+    } finally {
       setIsLoading(false);
     }
   };

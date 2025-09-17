@@ -1,5 +1,4 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import { getCSRFToken, clearCSRFTokenCache } from "@/hooks/use-csrf-token";
 
 /**
  * Utility function to check response and throw error with better formatting
@@ -137,35 +136,10 @@ export async function apiRequest(
       // Support for passing FormData objects
       const isFormData = data instanceof FormData;
       
-      // Setup base headers
-      const headers: Record<string, string> = {};
-      
-      // Add content type for JSON data
-      if (!isFormData && data) {
-        headers["Content-Type"] = "application/json";
-      }
-      
-      // Add CSRF token for state-changing methods
-      const stateChangingMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
-      if (stateChangingMethods.includes(method)) {
-        try {
-          const csrfToken = await getCSRFToken();
-          if (csrfToken) {
-            headers["X-CSRF-Token"] = csrfToken;
-            console.log(`🔐 [CSRF] Added CSRF token to ${method} ${url}`);
-          } else {
-            console.warn(`⚠️ [CSRF] No CSRF token available for ${method} ${url}`);
-          }
-        } catch (csrfError) {
-          console.error(`❌ [CSRF] Error fetching CSRF token for ${method} ${url}:`, csrfError);
-          // Don't block the request - let the server handle the missing token
-        }
-      }
-      
-      // Setup request options with headers
+      // Setup headers and body based on content type
       const requestOptions: RequestInit = {
         method: method,
-        headers: headers,
+        headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
         body: isFormData ? (data as FormData) : 
               data ? JSON.stringify(data) : 
               undefined,
@@ -200,33 +174,6 @@ export async function apiRequest(
       if (!res.ok) {
         // Log error details for debugging
         console.warn(`API request failed: ${method} ${url} - Status: ${res.status}`);
-        
-        // Handle CSRF token errors (403 with specific CSRF error codes)
-        if (res.status === 403) {
-          try {
-            const errorData = await res.json();
-            const isCSRFError = errorData.code === 'CSRF_TOKEN_MISSING' || 
-                               errorData.code === 'CSRF_TOKEN_INVALID' ||
-                               errorData.error?.includes('CSRF');
-                               
-            if (isCSRFError && attempt < retries) {
-              console.warn(`🔄 [CSRF] CSRF token error detected, clearing cache and retrying: ${errorData.message}`);
-              
-              // Clear CSRF token cache to force refresh
-              clearCSRFTokenCache();
-              
-              // Retry the request (this will fetch a new CSRF token)
-              attempt++;
-              continue;
-            }
-            
-            // Attach error data for non-CSRF 403 errors or exhausted retries
-            (res as any).data = errorData;
-            return res;
-          } catch (jsonError) {
-            console.error("Failed to parse 403 error response:", jsonError);
-          }
-        }
         
         // For specific API errors, maintain the response object with the error data
         if (res.status === 413 || res.status === 429) {
@@ -312,11 +259,11 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 /**
  * Enhanced query function with better error handling and robust fault tolerance
  */
-export const getQueryFn = <T>(options: {
+export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
-}): QueryFunction<T> =>
+}) => QueryFunction<T> =
+  ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const { on401: unauthorizedBehavior } = options;
     try {
       // Validate the queryKey to prevent fetch errors
       if (!queryKey || !queryKey[0] || typeof queryKey[0] !== 'string') {

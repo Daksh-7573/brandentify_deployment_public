@@ -10,11 +10,9 @@ import { validateCSRFMiddleware, provideCSRFToken } from "./middleware/csrf-midd
 
 const router = Router();
 
-// Apply authentication to all routes
+// Apply authentication and CSRF protection to all routes
 router.use(requireAuth as any);
-// Provide CSRF tokens for authenticated users
 router.use(provideCSRFToken as any);
-// Apply CSRF validation (middleware automatically exempts GET requests)
 router.use(validateCSRFMiddleware as any);
 
 /**

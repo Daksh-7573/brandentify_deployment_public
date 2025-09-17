@@ -10,20 +10,20 @@ import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
 export default function RightSidebar() {
   const { user, isDemoMode } = useAuth();
   
-  // Get the JWT user ID for API queries
-  const userId = isDemoMode ? 1 : user?.id;
+  // Get the Firebase UID for initial query
+  const firebaseUid = isDemoMode ? 1 : user?.uid;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData } = useQuery({
-    queryKey: [`/api/users/${userId}`],
+    queryKey: [`/api/users/${firebaseUid}`],
     queryFn: async () => {
-      if (!userId) return null;
+      if (!firebaseUid) return null;
       
-      console.log(`RightSidebar: Fetching user data with JWT ID: ${userId}`);
-      const response = await apiRequest('GET', `/api/users/${userId}`);
+      console.log(`RightSidebar: Fetching user data with ID: ${firebaseUid}`);
+      const response = await apiRequest('GET', `/api/users/${firebaseUid}`);
       
       if (response.status === 404) {
-        console.error(`User with ID ${userId} not found in backend`);
+        console.error(`User with ID ${firebaseUid} not found in backend`);
         return null;
       }
       
@@ -31,12 +31,12 @@ export default function RightSidebar() {
       console.log("RightSidebar: Fetched user data:", data);
       return data;
     },
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!firebaseUid, // Only run query if firebaseUid exists
     staleTime: 10000 // Consider data fresh for 10 seconds
   });
   
-  // Use the same JWT user ID for all API calls
-  const userNumericId = userId;
+  // Extract the numeric user ID from the fetched user data
+  const userNumericId = userData?.id || (isDemoMode ? 1 : null);
 
   // Determine which photo URL to use (prioritize userData if available)
   const photoURL = userData?.photoURL || user?.photoURL;

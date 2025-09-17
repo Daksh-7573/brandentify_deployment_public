@@ -9,7 +9,7 @@ import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trop
 import NotificationBell from "@/components/notifications/notification-bell";
 
 export default function Header() {
-  const { user, signOut } = useAuth();
+  const { user, isDemoMode, signOut, refreshUserData } = useAuth();
   const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
@@ -17,11 +17,8 @@ export default function Header() {
   // Helper function to check if current path matches
   const isActive = (routePath: string) => path === routePath;
   
-  // Get the user ID for queries - use JWT user data only (no Firebase UIDs)
-  const userId = user?.id;
-  
-  // Demo mode detection based on user ID (demo users typically have ID 1 or 2)
-  const isDemoMode = userId === 1 || userId === 2;
+  // Get the user ID for queries - use same logic as profile page for consistency
+  const userId = isDemoMode ? 1 : (user?.username || user?.id?.toString() || user?.uid || '');
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
@@ -60,8 +57,7 @@ export default function Header() {
     if (!userId) return;
     
     try {
-      // Messaging unread count endpoint uses authenticated JWT user - no userId param needed
-      const response = await apiRequest('GET', '/api/messaging/unread/count');
+      const response = await apiRequest('GET', `/api/messaging/unread/count?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setHasUnreadMessages(data.count > 0);
@@ -94,8 +90,7 @@ export default function Header() {
       
       // Mark all messages as read when visiting the messages page
       if (userId) {
-        // Mark all read endpoint uses authenticated JWT user - no userId param needed
-        apiRequest('POST', '/api/messaging/conversations/mark-all-read');
+        apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
       }
     }
   }, [path, checkUnreadMessages, userId]);

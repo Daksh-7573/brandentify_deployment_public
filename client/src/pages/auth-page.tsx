@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, Check, Sparkles, Target, Users, Loader2 } from "lucide-react";
-import { GoogleLoginButton } from "@/components/auth/login-buttons";
+import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
+import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
+import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -112,11 +113,18 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      <GoogleLoginButton className="w-full" />
+                      <FastGoogleAuth />
                       
-                      <div className="text-center text-sm text-gray-400">
-                        <p>More authentication options coming soon</p>
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-white/20" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-black/50 px-2 text-gray-300">or</span>
+                        </div>
                       </div>
+                      
+                      <FastQuickAuth />
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
@@ -132,7 +140,7 @@ export default function AuthPage() {
                   <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
                     <p className="text-gray-300">Phone auth coming soon - use Google for now</p>
-                    <GoogleLoginButton className="w-full" />
+                    <FastGoogleAuth />
                   </div>
                 </TabsContent>
               </Tabs>

@@ -1,9 +1,9 @@
-// Enhanced Service Worker v7 - HTML PRELOAD & STATIC ASSET SERVING FIX  
-const SW_VERSION = 'v7'; // Bumped version to force cache clear after HTML/asset fixes
-const CACHE_NAME = 'brandentifier-v7';
-const STATIC_CACHE_NAME = 'brandentifier-static-v7';
-const API_CACHE_NAME = 'brandentifier-api-v7';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v7';
+// Enhanced Service Worker v6 - COMPLETE OAUTH AUTHENTICATION FIX  
+const SW_VERSION = 'v6'; // Bumped version to force complete OAuth fix
+const CACHE_NAME = 'brandentifier-v6';
+const STATIC_CACHE_NAME = 'brandentifier-static-v6';
+const API_CACHE_NAME = 'brandentifier-api-v6';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v6';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -33,7 +33,7 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // Install event - cache critical files with enhanced strategy
 self.addEventListener('install', event => {
-  console.log('[SW v7] Installing HTML preload & static asset serving fix...');
+  console.log('[SW v6] Installing complete OAuth authentication fix...');
   event.waitUntil(
     Promise.all([
       // Cache static files
@@ -57,15 +57,15 @@ self.addEventListener('install', event => {
 
 // Activate event - enhanced cleanup and immediate claiming
 self.addEventListener('activate', event => {
-  console.log('[SW v7] Activating HTML preload & static asset serving fix...');
+  console.log('[SW v6] Activating complete OAuth authentication fix...');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v7')) {
-              console.log('[SW v7] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v6')) {
+              console.log('[SW v6] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
