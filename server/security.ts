@@ -213,7 +213,8 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     '/api/brands-of-the-day',
     '/api/demo',
     '/api/nowboard-items',
-    '/api/pulses'
+    '/api/pulses',
+    '/api/messaging'
   ];
   
   // Check if the route is public
