@@ -18,6 +18,7 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
+import { initializeJWTConfiguration } from "./jwt-secret-manager";
 
 const app = express();
 
@@ -541,6 +542,18 @@ muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
 (async () => {
+  // CRITICAL: Initialize JWT configuration before server starts
+  // This validates JWT_SECRET in production and exits if missing
+  console.log("🔐 Initializing JWT secret management...");
+  try {
+    initializeJWTConfiguration();
+    console.log("✅ JWT secret management initialized successfully");
+  } catch (error) {
+    console.error("❌ FATAL: JWT configuration failed:", error instanceof Error ? error.message : error);
+    console.error("❌ Server startup aborted due to JWT configuration error");
+    process.exit(1);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

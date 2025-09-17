@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 import { storage } from "./storage";
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { getJWTSecret, JWT_EXPIRATION } from './jwt-secret-manager';
 
 // Google OAuth URLs
 const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -17,7 +18,6 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
@@ -352,8 +352,9 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     // Sign JWT with secret
-    const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
-      algorithm: 'HS256'
+    const sessionToken = jwt.sign(tokenPayload, getJWTSecret(), { 
+      algorithm: 'HS256',
+      expiresIn: JWT_EXPIRATION
     });
     
     // Determine exact domain for production cookie
@@ -474,7 +475,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
     
     // Verify JWT token
     try {
-      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+      const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
       console.log('✅ Valid session found for user:', decoded.email);
       
       // Get fresh user data from database
@@ -586,7 +587,7 @@ export async function logoutRoute(req: Request, res: Response) {
     if (sessionToken) {
       try {
         // Try to decode the token to get user info for logging
-        const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+        const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
         console.log('🚪 Logging out user:', decoded.email);
       } catch (jwtError) {
         console.log('🚪 Clearing invalid/expired session during logout');

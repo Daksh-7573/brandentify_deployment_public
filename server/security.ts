@@ -24,10 +24,7 @@ import cors from 'cors';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
-
-// Secure JWT signing key (in production, this should be in environment variables)
-const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
-const JWT_EXPIRES = '24h';
+import { getJWTSecret, JWT_EXPIRATION } from './jwt-secret-manager';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'brandentifier-secure-encryption-key-2025';
@@ -185,7 +182,7 @@ export function generateToken(user: any): string {
     email: user.email
   };
   
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+  return jwt.sign(payload, getJWTSecret(), { expiresIn: JWT_EXPIRATION });
 }
 
 /**
@@ -195,7 +192,7 @@ export function generateToken(user: any): string {
  */
 export function verifyToken(token: string): any {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, getJWTSecret());
   } catch (error) {
     return null;
   }
