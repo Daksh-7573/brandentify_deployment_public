@@ -2084,7 +2084,7 @@ export class MemStorage implements IStorage {
   }
   
   async verifyEmail(email: string, token: string): Promise<boolean> {
-    console.log(`[storage] verifyEmail: Verifying ${email} with token ${token}`);
+    console.log(`[storage] verifyEmail: Starting verification for ${email}`);
     
     const verification = await this.getEmailVerificationByEmail(email);
     if (!verification) {
@@ -2097,13 +2097,13 @@ export class MemStorage implements IStorage {
     // Check if the token has expired using the expiresAt field
     const now = new Date();
     if (now > verification.expiresAt) {
-      console.log(`[storage] verifyEmail: Token expired. Current time: ${now}, Expires at: ${verification.expiresAt}`);
+      console.log(`[storage] verifyEmail: Token has expired - validation failed`);
       return false;
     }
     
     // Check if the token matches
     if (verification.token !== token) {
-      console.log(`[storage] verifyEmail: Token mismatch. Expected: ${verification.token}, Received: ${token}`);
+      console.log(`[storage] verifyEmail: Token validation failed - token mismatch detected`);
       return false;
     }
     

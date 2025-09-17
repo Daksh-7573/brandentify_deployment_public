@@ -633,7 +633,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         emailVerificationExpires: expiresAt
       });
       
-      console.log(`Created verification token for user ${user.email}: ${token}`);
+      console.log(`Created verification token for user ${user.email} - token generated successfully`);
       
       // Send a verification email using Ethereal
       try {
@@ -5082,7 +5082,7 @@ ${extractedText.substring(0, 5000)}
     try {
       const { token } = req.params;
       
-      console.log(`Email verification attempt with token: ${token}`);
+      console.log(`Email verification attempt for token - validation starting`);
       
       if (!token) {
         return res.status(400).json({ message: "Verification token is required" });
@@ -5198,7 +5198,7 @@ ${extractedText.substring(0, 5000)}
         emailVerificationExpires: expiresAt
       });
       
-      console.log(`Created new verification token for user ${email}: ${token}`);
+      console.log(`Created new verification token for user ${email} - regeneration completed`);
       
       // Send a verification email using Ethereal
       try {

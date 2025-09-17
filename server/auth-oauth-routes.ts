@@ -470,7 +470,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       username: user.username,
       authProvider: 'google'
     });
-    console.log('✅ [OAUTH CALLBACK] Cookie set with session token');
+    console.log('✅ [OAUTH CALLBACK] Session cookie set successfully');
     console.log('✅ [OAUTH CALLBACK] Redirecting to /industry-pulse');
     
     // SECURITY: Parse state to get return host and validate against trusted domains before redirecting
@@ -553,7 +553,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
     console.log('🍪 Session Debug:', {
       host: requestHost,
       cookiePresent: !!req.cookies?.brandentifier_session,
-      cookieStart: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.substring(0, 20) + '...' : 'none',
+      tokenLength: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.length : 0,
       userAgent: req.get('user-agent')?.substring(0, 50)
     });
     
@@ -607,7 +607,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
       
     } catch (jwtError) {
-      console.log('❌ Invalid or expired JWT token:', jwtError);
+      console.log('❌ Invalid or expired JWT token - validation failed');
       // Clear invalid/expired session cookie
       clearSessionCookie(req, res);
       return res.status(401).json({

@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     .then(sessionData => {
       if (sessionData.success && sessionData.user) {
-        console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
+        console.log('[Auth Context] ✅ Found valid JWT session - user authenticated successfully');
         setUser({
           uid: sessionData.user.id.toString(),
           ...sessionData.user
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
     .catch(error => {
-      console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+      console.log('[Auth Context] ❌ No valid JWT session found - authentication required');
       console.log('[Auth Context] User needs to authenticate via server OAuth');
       setIsLoading(false);
     });
