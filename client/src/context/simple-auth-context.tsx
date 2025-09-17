@@ -35,9 +35,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadingRef = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Check authentication from server session (published domain) or sessionStorage (dev)
+  // JWT authentication system with aggressive Firebase UID cleanup
   useEffect(() => {
-    console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
+    console.log('[JWT Auth] 🔐 Initializing JWT authentication system');
     
     // Failsafe timeout to prevent infinite loading - cleared when auth check completes
     timeoutRef.current = setTimeout(() => {
@@ -49,97 +49,129 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 3000); // 3 second maximum loading time
     
     const checkAuth = async () => {
-      console.log('AuthProvider: Running checkAuth');
+      console.log('[JWT Auth] 🔍 Starting authentication check');
       
-      // Check if we're on published domain and should use server session
-      const hostname = window.location.hostname;
-      const isPublishedDomain = hostname.includes('replit.app');
+      // AGGRESSIVE CLEANUP: Always detect and clear old Firebase UID authentication data first
+      const storedUser = sessionStorage.getItem('brandentifier_user');
+      let shouldForceReauth = false;
       
-      if (isPublishedDomain) {
-        console.log('AuthProvider: Published domain detected, checking server session');
+      if (storedUser) {
         try {
-          console.log('AuthProvider: Fetching server session for published domain...');
-          
-          // Simple headers for JWT session check
-          const requestHeaders: Record<string, string> = {
-            'Accept': 'application/json',
-          };
-          
-          const response = await fetch('/api/auth/session', {
-            method: 'GET',
-            credentials: 'include',
-            cache: 'no-store', // Never cache auth requests
-            headers: requestHeaders
+          const userData = JSON.parse(storedUser);
+          console.log('[JWT Auth] 🔍 Analyzing stored auth data:', {
+            hasId: !!userData.id,
+            idType: typeof userData.id,
+            idLength: userData.id ? userData.id.toString().length : 0,
+            hasUsername: !!userData.username,
+            isFirebaseUID: userData.id && typeof userData.id === 'string' && userData.id.length > 20,
+            usernameFormat: userData.username ? userData.username.substring(0, 10) + '...' : null
           });
           
-          console.log('AuthProvider: Server session response:', {
-            status: response.status,
-            ok: response.ok,
-            url: response.url
-          });
+          // Check if stored user has Firebase UID format in either ID or username
+          const hasFirebaseUID = (userData.id && typeof userData.id === 'string' && userData.id.length > 20) ||
+                                (userData.username && typeof userData.username === 'string' && userData.username.length > 20);
           
-          if (response.ok) {
-            const data = await response.json();
-            console.log('AuthProvider: Raw server response:', data);
-            
-            // Handle both direct user object and wrapped {success, user} response
-            let userData;
-            if (data.success !== undefined && data.user) {
-              // Wrapped response format: {success: true, user: {...}}
-              userData = data.user;
-              console.log('AuthProvider: Unwrapped user from server response');
-            } else if (data.id || data.email) {
-              // Direct user object format
-              userData = data;
-              console.log('AuthProvider: Direct user object from server');
-            } else {
-              console.warn('AuthProvider: Unexpected server response format:', data);
-              throw new Error('Invalid session response format');
-            }
-            
-            console.log('AuthProvider: Server session found for user:', userData.email);
-            setUser(userData);
-            // Store in sessionStorage for consistency
-            sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-            return;
-          } else {
-            console.log('AuthProvider: No server session found, status:', response.status);
-            // Clear any stale sessionStorage
+          if (hasFirebaseUID) {
+            console.log('[JWT Auth] 🧹 DETECTED OLD FIREBASE UID AUTH DATA - forcing complete re-authentication');
             sessionStorage.removeItem('brandentifier_user');
+            localStorage.removeItem('brandentifier_user'); // Clear both storage types
+            shouldForceReauth = true;
           }
-        } catch (error) {
-          console.error('AuthProvider: Error checking server session:', error);
-          console.log('AuthProvider: Falling back to sessionStorage check');
-          // Fall back to sessionStorage check
+        } catch (e) {
+          console.warn('[JWT Auth] ⚠️ Error parsing stored user data, clearing:', e);
+          sessionStorage.removeItem('brandentifier_user');
+          localStorage.removeItem('brandentifier_user');
+          shouldForceReauth = true;
         }
       }
       
-      // Fallback to sessionStorage check (development or no server session)
-      console.log('AuthProvider: Checking sessionStorage');
-      console.log('AuthProvider: Current sessionStorage keys:', Object.keys(sessionStorage));
+      if (shouldForceReauth) {
+        console.log('[JWT Auth] 🚨 FORCING AUTHENTICATION RESET - clearing all auth state');
+        setUser(null);
+        setIsLoading(false);
+        loadingRef.current = false;
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        console.log('[JWT Auth] 📤 Ready for fresh OAuth authentication flow');
+        return; // Skip JWT validation, user needs to authenticate fresh
+      }
+      
+      // Always check server-side JWT session first (for all domains, not just published)
+      console.log('[JWT Auth] 🍪 Validating JWT session with server for all domains');
       
       try {
-        const storedUser = sessionStorage.getItem('brandentifier_user');
-        console.log('AuthProvider: Raw stored data:', storedUser);
+        const response = await fetch('/api/auth/session', {
+          method: 'GET',
+          credentials: 'include', // CRITICAL: Include JWT cookies
+          cache: 'no-store', // Never cache auth requests
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
         
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          console.log('AuthProvider: Parsed user data:', {
-            email: userData.email,
+        console.log('[JWT Auth] 📊 JWT session validation response:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url,
+          ok: response.ok
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('[JWT Auth] 📊 Raw JWT session response:', data);
+          
+          // Handle both direct user object and wrapped {success, user} response
+          let userData;
+          if (data.success !== undefined && data.user) {
+            // Wrapped response format: {success: true, user: {...}}
+            userData = data.user;
+            console.log('[JWT Auth] ✅ Unwrapped user from JWT session response');
+          } else if (data.id || data.email) {
+            // Direct user object format
+            userData = data;
+            console.log('[JWT Auth] ✅ Direct user object from JWT session');
+          } else {
+            console.warn('[JWT Auth] ⚠️ Unexpected JWT session response format:', data);
+            throw new Error('Invalid JWT session response format');
+          }
+          
+          // Ensure user ID is numeric (proper format for JWT system)
+          if (typeof userData.id !== 'number') {
+            console.error('[JWT Auth] ⚠️ Invalid user ID format in JWT response, forcing re-auth');
+            throw new Error('Invalid user ID format in JWT session');
+          }
+          
+          console.log('[JWT Auth] ✅ VALID JWT SESSION - user authenticated successfully:', {
             id: userData.id,
-            name: userData.name
+            email: userData.email,
+            name: userData.name,
+            idType: typeof userData.id
           });
+          
           setUser(userData);
-          console.log('AuthProvider: User state set, isAuthenticated should be true');
+          // Store in sessionStorage for consistency (with proper numeric ID)
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+          
+          console.log('[JWT Auth] 🎉 JWT authentication complete - ready for authenticated requests');
+          return;
         } else {
-          console.log('AuthProvider: No stored user found in sessionStorage');
+          console.log('[JWT Auth] ❌ JWT session validation failed with status:', response.status);
+          // Clear any stale sessionStorage
+          sessionStorage.removeItem('brandentifier_user');
+          localStorage.removeItem('brandentifier_user');
         }
       } catch (error) {
-        console.error('AuthProvider: Error checking stored auth:', error);
-        // Clear any corrupted data
+        console.error('[JWT Auth] ❌ JWT session validation error:', error);
+        console.log('[JWT Auth] 🔄 User must authenticate via OAuth to obtain JWT tokens');
+        
+        // Clear any stale data completely
         sessionStorage.removeItem('brandentifier_user');
+        localStorage.removeItem('brandentifier_user');
       } finally {
-        console.log('AuthProvider: Setting isLoading to false from checkAuth');
+        console.log('[JWT Auth] 📤 Ready for fresh OAuth authentication flow');
         setIsLoading(false);
         loadingRef.current = false;
         if (timeoutRef.current) {

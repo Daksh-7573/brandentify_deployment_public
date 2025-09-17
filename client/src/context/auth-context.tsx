@@ -49,45 +49,120 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Initialize authentication system with server-side session check only
+  // Initialize authentication system with JWT session validation and force cleanup
   useEffect(() => {
-    console.log('[Auth Context] Initializing authentication system');
-    const startTime = performance.now();
+    console.log('[Auth Context] 🔐 Initializing JWT authentication system');
     
-    console.log('[Auth Context] Using server-side JWT session for all domains');
+    // AGGRESSIVE CLEANUP: Always clear old Firebase UID authentication data first
+    const storedUser = sessionStorage.getItem('brandentifier_user');
+    let shouldForceReauth = false;
     
-    // Check server-side session for all domains
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        console.log('[Auth Context] 🔍 Analyzing stored auth data:', {
+          hasId: !!userData.id,
+          idType: typeof userData.id,
+          idLength: userData.id ? userData.id.toString().length : 0,
+          isFirebaseUID: userData.id && typeof userData.id === 'string' && userData.id.length > 20
+        });
+        
+        // Check if stored user has Firebase UID format (long string) instead of numeric ID
+        if (userData.id && typeof userData.id === 'string' && userData.id.length > 20) {
+          console.log('[Auth Context] 🧹 DETECTED OLD FIREBASE UID AUTH DATA - forcing complete re-authentication');
+          sessionStorage.removeItem('brandentifier_user');
+          shouldForceReauth = true;
+        }
+      } catch (e) {
+        console.warn('[Auth Context] ⚠️ Error parsing stored user data, clearing:', e);
+        sessionStorage.removeItem('brandentifier_user');
+        shouldForceReauth = true;
+      }
+    }
     
+    if (shouldForceReauth) {
+      console.log('[Auth Context] 🚨 FORCING AUTHENTICATION RESET - clearing all auth state');
+      setUser(null);
+      setIsLoading(false);
+      return; // Skip JWT validation, user needs to authenticate fresh
+    }
+    
+    console.log('[Auth Context] 🍪 Validating JWT session with server');
+    
+    // Always check server-side JWT session first - this is the authoritative source
     fetch('/api/auth/session', {
       method: 'GET',
-      credentials: 'include' // Include JWT cookies
+      credentials: 'include', // CRITICAL: Include JWT cookies
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     })
     .then(response => {
+      console.log('[Auth Context] 📊 JWT session validation response:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        ok: response.ok
+      });
+      
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('No valid session');
+        throw new Error(`JWT session validation failed: ${response.status}`);
       }
     })
     .then(sessionData => {
       if (sessionData.success && sessionData.user) {
-        console.log('[Auth Context] ✅ Found valid JWT session - user authenticated successfully');
-        setUser({
-          uid: sessionData.user.id.toString(),
-          ...sessionData.user
+        console.log('[Auth Context] ✅ VALID JWT SESSION - user authenticated successfully');
+        console.log('[Auth Context] 📊 JWT Session user data:', {
+          id: sessionData.user.id,
+          email: sessionData.user.email,
+          name: sessionData.user.name,
+          idType: typeof sessionData.user.id
         });
+        
+        // Ensure user ID is numeric (proper format for JWT system)
+        if (typeof sessionData.user.id !== 'number') {
+          console.error('[Auth Context] ⚠️ Invalid user ID format in JWT response, forcing re-auth');
+          throw new Error('Invalid user ID format in JWT session');
+        }
+        
+        const authenticatedUser = {
+          uid: sessionData.user.id.toString(),
+          id: sessionData.user.id,
+          username: sessionData.user.username,
+          email: sessionData.user.email,
+          name: sessionData.user.name,
+          photoURL: sessionData.user.photoURL,
+          title: sessionData.user.title,
+          location: sessionData.user.location
+        };
+        
+        setUser(authenticatedUser);
         setIsLoading(false);
         
-        // Store in session storage for consistency
+        // Store in session storage for consistency (with proper numeric ID)
         sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
+        
+        console.log('[Auth Context] 🎉 JWT authentication complete - ready for authenticated requests');
       } else {
-        throw new Error('Invalid session data');
+        throw new Error('Invalid JWT session data structure');
       }
     })
     .catch(error => {
-      console.log('[Auth Context] ❌ No valid JWT session found - authentication required');
-      console.log('[Auth Context] User needs to authenticate via server OAuth');
+      console.log('[Auth Context] ❌ JWT session validation failed:', error.message);
+      console.log('[Auth Context] 🔄 User must authenticate via OAuth to obtain JWT tokens');
+      
+      // Clear any stale data completely
+      sessionStorage.removeItem('brandentifier_user');
+      localStorage.removeItem('brandentifier_user'); // Clear both storage types
+      
+      // Set unauthenticated state
+      setUser(null);
       setIsLoading(false);
+      
+      console.log('[Auth Context] 📤 Ready for fresh OAuth authentication flow');
     });
     
   }, []);

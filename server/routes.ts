@@ -63,6 +63,7 @@ import { platformRecommendationService } from "./services/platform-recommendatio
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, logoutRoute } from "./auth-oauth-routes";
+import { requireAuth, optionalAuth, type AuthenticatedRequest, type OptionalAuthRequest } from "./middleware/jwt-auth-middleware";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -1128,7 +1129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PROFILE PICTURE UPLOAD FIX - Using storage layer
-  apiRouter.put("/users/:id/photo", async (req: Request, res: Response) => {
+  apiRouter.put("/users/:id/photo", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { photoURL } = req.body;
       const userId = req.params.id;
@@ -1178,7 +1179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/users/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/users/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');
@@ -1449,7 +1450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // PATCH endpoint for user updates (partial updates like Contact Information)
-  apiRouter.patch("/users/:id", async (req: Request, res: Response) => {
+  apiRouter.patch("/users/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     // Disable all caching for user updates
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
@@ -1823,7 +1824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/experiences", async (req: Request, res: Response) => {
+  apiRouter.post("/experiences", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /experiences] Creating experience with data:`, req.body);
       
@@ -1874,7 +1875,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/experiences/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/experiences/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[PUT /experiences/:id] Updating experience with data:`, req.body);
       const experienceId = parseInt(req.params.id);
@@ -1931,7 +1932,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Add PATCH route to handle update mutations from client
-  apiRouter.patch("/experiences/:id", async (req: Request, res: Response) => {
+  apiRouter.patch("/experiences/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[PATCH /experiences/:id] Updating experience with data:`, req.body);
       const experienceId = parseInt(req.params.id);
@@ -1988,7 +1989,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.delete("/experiences/:id", async (req: Request, res: Response) => {
+  apiRouter.delete("/experiences/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const experienceId = parseInt(req.params.id);
       const success = await storage.deleteWorkExperience(experienceId);
@@ -2047,7 +2048,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/educations", async (req: Request, res: Response) => {
+  apiRouter.post("/educations", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /educations] Creating education with data:`, req.body);
       
@@ -2084,7 +2085,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/educations/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/educations/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const educationId = parseInt(req.params.id);
       const educationData = req.body;
@@ -2101,7 +2102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Add PATCH endpoint for education updates (partial updates)
-  apiRouter.patch("/educations/:id", async (req: Request, res: Response) => {
+  apiRouter.patch("/educations/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[PATCH /educations/:id] Updating education with data:`, req.body);
       const educationId = parseInt(req.params.id);
@@ -2125,7 +2126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.delete("/educations/:id", async (req: Request, res: Response) => {
+  apiRouter.delete("/educations/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const educationId = parseInt(req.params.id);
       const success = await storage.deleteEducation(educationId);
@@ -2184,7 +2185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/skills", async (req: Request, res: Response) => {
+  apiRouter.post("/skills", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /skills] Creating skill with data:`, req.body);
       
@@ -2221,7 +2222,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/skills/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/skills/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const skillId = parseInt(req.params.id);
       const skillData = req.body;
@@ -2237,7 +2238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.delete("/skills/:id", async (req: Request, res: Response) => {
+  apiRouter.delete("/skills/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const skillId = parseInt(req.params.id);
       const success = await storage.deleteSkill(skillId);
@@ -2337,7 +2338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Handle file uploads for project thumbnails
-  apiRouter.post("/projects/upload-thumbnail", async (req: Request, res: Response) => {
+  apiRouter.post("/projects/upload-thumbnail", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /projects/upload-thumbnail] Received upload request`);
       
@@ -2586,7 +2587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  apiRouter.post("/projects/upload-media", async (req: Request, res: Response) => {
+  apiRouter.post("/projects/upload-media", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /projects/upload-media] Received upload request:`, req.files);
       
@@ -2767,7 +2768,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.post("/projects", async (req: Request, res: Response) => {
+  apiRouter.post("/projects", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /projects] Creating project with data:`, JSON.stringify(req.body));
       
@@ -2854,7 +2855,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.put("/projects/:id", async (req: Request, res: Response) => {
+  apiRouter.put("/projects/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[PUT /projects/:id] Updating project with data:`, req.body);
       const projectId = parseInt(req.params.id);
@@ -2894,7 +2895,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Update only the thumbnail of a project
-  apiRouter.patch("/projects/:id/thumbnail", async (req: Request, res: Response) => {
+  apiRouter.patch("/projects/:id/thumbnail", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[PATCH /projects/:id/thumbnail] Received request to update thumbnail:`, req.body);
       
@@ -3145,7 +3146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  apiRouter.delete("/projects/:id", async (req: Request, res: Response) => {
+  apiRouter.delete("/projects/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const projectId = parseInt(req.params.id);
       
@@ -3526,7 +3527,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // POST /api/pulses/upload-media - Upload media files for pulses
-  apiRouter.post("/pulses/upload-media", async (req: Request, res: Response) => {
+  apiRouter.post("/pulses/upload-media", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(`[POST /pulses/upload-media] Received upload request:`, req.files);
       
@@ -3678,7 +3679,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // POST /api/pulses - Create a new pulse
-  apiRouter.post("/pulses", async (req: Request, res: Response) => {
+  apiRouter.post("/pulses", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log('[POST /pulses] Creating new pulse:', JSON.stringify(req.body, null, 2));
       
@@ -3756,7 +3757,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // POST /api/pulse-comments - Create a new comment on a pulse
-  apiRouter.post("/pulse-comments", async (req: Request, res: Response) => {
+  apiRouter.post("/pulse-comments", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log('[POST /pulse-comments] Creating new comment:', req.body);
       
