@@ -83,7 +83,8 @@ const ProjectsFixed = () => {
   };
 
   // Fetch projects from the backend
-  const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+  const { user } = useContext(AuthContext);
+  const userId = user?.id; // Use JWT user ID from auth context
   const { data: projects = [], isLoading: isProjectsLoading } = useQuery({
     queryKey: ['/api/users', userId, 'projects'],
     queryFn: async () => {
@@ -286,8 +287,8 @@ const ProjectsFixed = () => {
 
   const onProjectSubmit = async (values: any) => {
     try {
-      // Use the current authenticated user's Firebase UID
-      const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+      // Use the current authenticated user's ID from JWT session
+      const userId = user?.id; // Use JWT user ID from auth context
       
       // Prepare the project data matching the database schema
       const projectData = {

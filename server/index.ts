@@ -31,31 +31,60 @@ app.use(cookieParser());
 // Add performance middleware first
 app.use(performanceMiddleware());
 
-// CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
+// CRITICAL: Static asset bypass for heavy middleware but allow MIME type configuration
 app.use((req, res, next) => {
-  // Skip ALL middleware interference for static assets - let Vite handle them directly
+  // For static assets, skip heavy middleware but allow MIME type and caching configuration
   if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
       req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx') ||
       req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs')) {
-    console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
+    console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping heavy middleware only`);
+    
+    // Set a flag to indicate this is a static asset request
+    (req as any).isStaticAsset = true;
     return next();
   }
 
-  // SECURITY: Apply clickjacking protection for all pages
+  // SECURITY: Apply clickjacking protection and comprehensive CSP for all pages
   // Only allow Replit development environment embedding for preview functionality
   const isReplitDev = req.headers.host?.includes('.replit.dev') || req.headers.host?.includes('picard.replit.dev');
   
   if (isReplitDev) {
     // Allow iframe embedding only within Replit development environment
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.replit.dev https://replit.com");
+    // Comprehensive CSP for Replit development
+    res.setHeader('Content-Security-Policy', [
+      "default-src 'self' https://*.replit.dev https://*.replit.app https://*.replit.co",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.replit.dev https://*.replit.app https://*.replit.co https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://*.replit.dev https://*.replit.app https://*.replit.co https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
+      "img-src 'self' data: blob: https://*.replit.dev https://*.replit.app https://*.replit.co https://lh3.googleusercontent.com",
+      "connect-src 'self' https://*.replit.dev https://*.replit.app https://*.replit.co wss://*.replit.dev wss://*.replit.app",
+      "frame-ancestors 'self' https://*.replit.dev https://replit.com"
+    ].join('; '));
   } else {
-    // Production: Strong clickjacking protection
+    // Production: Strong clickjacking protection with comprehensive CSP
     res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
+    res.setHeader('Content-Security-Policy', [
+      "default-src 'self' https://brandentifier.com https://www.brandentifier.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+      "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:",
+      "img-src 'self' data: blob: https://lh3.googleusercontent.com",
+      "connect-src 'self' https://brandentifier.com https://www.brandentifier.com",
+      "frame-ancestors 'none'"
+    ].join('; '));
   }
   
   console.log(`🔒 SECURITY: Clickjacking protection applied for ${req.method} ${req.path}`);
+  next();
+});
+
+// Skip heavy middleware processing for static assets
+app.use((req, res, next) => {
+  if ((req as any).isStaticAsset) {
+    console.log(`⏩ STATIC ASSET: Skipping heavy middleware for ${req.method} ${req.path}`);
+    return next();
+  }
   next();
 });
 
@@ -146,7 +175,7 @@ if (isDevelopment) {
       console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
       res.status(500).json({ error: 'Firebase auth proxy error' });
     }
-  }));
+  } as any));
 } else {
   // 🚫 Production: Block Firebase auth routes with defensive 410 Gone responses
   console.log("🚫 Production mode: Blocking Firebase auth routes to prevent redirect loops");
@@ -409,6 +438,77 @@ app.use(express.static(path.join(process.cwd(), 'public'), {
   }
 }));
 
+// PRODUCTION STATIC ASSET SERVING: Add dedicated serving for built assets with proper MIME types
+const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction) {
+  const distPath = path.join(process.cwd(), 'dist', 'public');
+  console.log(`🔧 Setting up production static asset serving from: ${distPath}`);
+  
+  // Serve production built assets with comprehensive MIME type configuration
+  app.use('/assets', express.static(path.join(distPath, 'assets'), {
+    setHeaders: (res, filePath) => {
+      // Comprehensive MIME type configuration for all asset types
+      if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      } else if (filePath.endsWith('.tsx')) {
+        res.setHeader('Content-Type', 'application/typescript; charset=utf-8');
+      } else if (filePath.endsWith('.ts')) {
+        res.setHeader('Content-Type', 'application/typescript; charset=utf-8');
+      } else if (filePath.endsWith('.jsx')) {
+        res.setHeader('Content-Type', 'text/jsx; charset=utf-8');
+      } else if (filePath.endsWith('.json')) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      } else if (filePath.endsWith('.woff') || filePath.endsWith('.woff2')) {
+        res.setHeader('Content-Type', 'font/woff');
+      } else if (filePath.endsWith('.ttf')) {
+        res.setHeader('Content-Type', 'font/ttf');
+      } else if (filePath.endsWith('.svg')) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+      } else if (filePath.endsWith('.png')) {
+        res.setHeader('Content-Type', 'image/png');
+      } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+        res.setHeader('Content-Type', 'image/jpeg');
+      } else if (filePath.endsWith('.ico')) {
+        res.setHeader('Content-Type', 'image/x-icon');
+      }
+      
+      // Add cache headers for static assets
+      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
+      res.setHeader('ETag', 'strong'); // Enable ETag for better caching
+      
+      console.log(`📁 Production asset served: ${path.basename(filePath)} (${res.getHeader('Content-Type')})`);
+    },
+    // Enable compression
+    index: false,
+    redirect: false,
+    maxAge: '1y' // 1 year max age for static assets
+  }));
+  
+  // Also serve other static files from dist/public root
+  app.use(express.static(distPath, {
+    setHeaders: (res, filePath) => {
+      // Same comprehensive MIME type configuration
+      if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      } else if (filePath.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache'); // Don't cache HTML files
+      }
+      
+      if (!filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+      }
+    },
+    index: false // Prevent directory listing, let the app handle routing
+  }));
+  
+  console.log(`✅ Production static asset serving configured with proper MIME types`);
+}
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -471,9 +571,14 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
 
-// Apply the optimized quest progress tracking middleware
+// Apply the optimized quest progress tracking middleware (skip for static assets)
 console.log("Setting up Optimized Quest Progress Tracking Middleware");
-app.use(questProgressMiddleware);
+app.use((req, res, next) => {
+  if ((req as any).isStaticAsset) {
+    return next();
+  }
+  return questProgressMiddleware(req, res, next);
+});
 
 // Setup security features (in a non-breaking way)
 console.log("Setting up Enhanced Security Features");
@@ -563,6 +668,41 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     await setupVite(app, server);
   } else {
     console.log("🔧 Setting up static file serving for production");
+    
+    // CRITICAL: Add explicit asset serving BEFORE serveStatic to prevent MIME errors
+    // This prevents missing assets from serving index.html (which causes MIME type violations)
+    const assetsPath = path.resolve(process.cwd(), "public", "assets");
+    
+    app.use("/assets", express.static(assetsPath, {
+      fallthrough: false, // Return 404 for missing assets instead of falling through to SPA
+      maxAge: "1y", // Cache hashed assets for 1 year
+      immutable: true, // Assets with hashes are immutable
+      setHeaders: (res, filePath) => {
+        // Immutable cache for hashed assets
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        
+        // Set explicit MIME types to prevent confusion
+        const ext = path.extname(filePath).toLowerCase();
+        if (ext === '.js' || ext === '.mjs') {
+          res.setHeader('Content-Type', 'application/javascript');
+        } else if (ext === '.css') {
+          res.setHeader('Content-Type', 'text/css');
+        }
+        
+        console.log(`📦 ASSET SERVED: ${path.basename(filePath)} with immutable cache`);
+      }
+    }));
+    
+    // Add 404 handler for missing assets to prevent SPA fallback
+    app.use("/assets/*", (req, res) => {
+      console.log(`⚠️ ASSET 404: ${req.path} not found - returning 404 instead of SPA fallback`);
+      res.status(404).json({ 
+        error: 'Asset not found',
+        message: `Asset ${req.path} does not exist - check for invalid preload entries in HTML`,
+        path: req.path 
+      });
+    });
+    
     serveStatic(app);
   }
 

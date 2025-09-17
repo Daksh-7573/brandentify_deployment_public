@@ -2,9 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser, Auth, GoogleAuthProvider } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from '@/lib/queryClient';
+import { clearCSRFTokenCache } from '@/hooks/use-csrf-token';
 
 interface User {
-  uid: string;
+  uid?: string; // Make uid optional for JWT users
   id: number;
   username: string;
   email: string | null;
@@ -12,6 +13,9 @@ interface User {
   photoURL?: string | null;
   title?: string | null;
   location?: string | null;
+  profileCompleted?: number;
+  authProvider?: string;
+  emailVerified?: boolean;
 }
 
 interface AuthContextType {
@@ -21,6 +25,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (phoneNumber: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -30,191 +35,267 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signInWithPhone: async () => {},
   logout: async () => {},
+  refreshSession: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [auth, setAuth] = useState<Auth | null>(null);
+  const [googleProvider, setGoogleProvider] = useState<GoogleAuthProvider | null>(null);
   const { toast } = useToast();
 
-  // Create or update user in backend
-  const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
+  // JWT Session Management Functions
+
+  // Check if JWT session exists and is valid
+  const checkJWTSession = async (): Promise<User | null> => {
     try {
-      const googleProvider = firebaseUser.providerData?.find(
-        (provider) => provider.providerId === "google.com"
-      );
-
-      const userData = {
-        uid: firebaseUser.uid,
-        email: googleProvider?.email || firebaseUser.email,
-        name: googleProvider?.displayName || firebaseUser.displayName || "Firebase User",
-        photoURL: googleProvider?.photoURL || firebaseUser.photoURL,
-      };
-
-      console.log("Creating/updating user in backend:", userData);
+      console.log('🔍 [AUTH CONTEXT] Checking JWT session...');
       
-      const response = await apiRequest('POST', '/api/users', userData);
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include', // Include cookies
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       
       if (response.ok) {
-        const backendUser = await response.json();
-        console.log("User created/updated successfully:", backendUser);
-        return backendUser;
+        const data = await response.json();
+        if (data.success && data.user) {
+          console.log('✅ [AUTH CONTEXT] Valid JWT session found:', data.user.email);
+          return data.user;
+        }
+      } else if (response.status === 401) {
+        console.log('❌ [AUTH CONTEXT] No valid JWT session found');
       } else {
-        console.log("User creation/update failed, status:", response.status);
-        return null;
+        console.warn('⚠️ [AUTH CONTEXT] Session check failed:', response.status);
       }
-    } catch (error) {
-      console.error("Error creating/updating user:", error);
-      return null;
-    }
-  };
-
-  // Fetch user data from backend
-  const fetchUserData = async (uid: string, email?: string | null): Promise<User | null> => {
-    try {
-      let url = `/api/users/${uid}`;
-      if (email) {
-        url += `?email=${encodeURIComponent(email)}`;
-      }
-
-      const response = await apiRequest('GET', url);
       
-      if (response.ok) {
-        const userData = await response.json();
-        return {
-          uid: uid,
-          id: userData.id,
-          username: userData.username,
-          email: userData.email,
-          name: userData.name,
-          photoURL: userData.photoURL || null,
-          title: userData.title,
-          location: userData.location
-        };
-      }
       return null;
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('❌ [AUTH CONTEXT] Error checking JWT session:', error);
       return null;
     }
   };
 
-  // Setup auth state listener - simplified, single handler
+  // SECURITY: Firebase migration disabled to prevent account spoofing
+  // This function is kept for backwards compatibility but should never be called
+  const migrateFirebaseToJWT = async (firebaseUser: FirebaseUser): Promise<User | null> => {
+    console.log('🚨 [SECURITY] Firebase migration is disabled for security - use Google OAuth instead');
+    return null;
+  };
+
+  // Refresh session - check current JWT status
+  const refreshSession = async (): Promise<void> => {
+    console.log('🔄 [AUTH CONTEXT] Refreshing session...');
+    const jwtUser = await checkJWTSession();
+    if (jwtUser) {
+      setUser(jwtUser);
+    } else {
+      setUser(null);
+    }
+  };
+
+  // Legacy Firebase functions - kept for migration compatibility but not actively used
+
+  // OAuth completion detection - check for JWT session after OAuth redirect
   useEffect(() => {
-    console.log("Setting up simplified auth state listener");
+    const handleOAuthCompletion = async () => {
+      // Check if we're returning from an OAuth flow (URL contains success indicators)
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPath = window.location.pathname;
+      
+      // Check for OAuth completion indicators
+      const isOAuthReturn = (
+        currentPath === '/dashboard' ||
+        currentPath === '/industry-pulse' ||
+        urlParams.has('auth_success') ||
+        localStorage.getItem('oauth_in_progress')
+      );
+      
+      if (isOAuthReturn) {
+        console.log('🔍 [AUTH CONTEXT] Detected potential OAuth return, checking JWT session...');
+        localStorage.removeItem('oauth_in_progress'); // Clean up
+        
+        // Give the backend a moment to set cookies
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const jwtUser = await checkJWTSession();
+        if (jwtUser) {
+          console.log('✅ [AUTH CONTEXT] OAuth success - JWT session found');
+          setUser(jwtUser);
+          setIsLoading(false);
+          
+          toast({
+            title: "Signed in successfully",
+            description: `Welcome ${jwtUser.name || jwtUser.email}!`,
+          });
+          return true; // OAuth completed successfully
+        }
+      }
+      return false; // No OAuth completion detected
+    };
     
-    // Import auth and googleProvider dynamically to avoid import issues
-    const setupAuth = async () => {
-      const { auth, googleProvider } = await import('@/lib/firebase');
-      
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-      
-      if (firebaseUser) {
-        try {
-          // Only process if we don't already have this user
-          if (!user || user.uid !== firebaseUser.uid) {
-            console.log("Processing new user:", firebaseUser.uid);
-            
-            // Create/update user in backend first
-            await createOrUpdateUserInBackend(firebaseUser);
-            
-            // Get Google provider data for email
-            const googleProvider = firebaseUser.providerData?.find(
-              provider => provider.providerId === "google.com"
-            );
-            const userEmail = googleProvider?.email || firebaseUser.email;
-            
-            // Fetch complete user data from backend
-            const userData = await fetchUserData(firebaseUser.uid, userEmail);
-            
-            if (userData) {
-              console.log("Setting user state with backend data");
-              setUser(userData);
+    // Run OAuth completion check on component mount
+    handleOAuthCompletion();
+    
+    // Also listen for page focus events (user returning from OAuth redirect)
+    const handleFocus = () => {
+      handleOAuthCompletion();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [toast]);
+
+  // Setup authentication state management - JWT first, Firebase fallback
+  useEffect(() => {
+    console.log("🚀 [AUTH CONTEXT] Setting up JWT-first authentication");
+    
+    const initializeAuth = async () => {
+      try {
+        // STEP 1: Check for existing JWT session
+        console.log("🔍 [AUTH CONTEXT] Checking for existing JWT session...");
+        const jwtUser = await checkJWTSession();
+        
+        if (jwtUser) {
+          console.log("✅ [AUTH CONTEXT] JWT session found, user authenticated");
+          setUser(jwtUser);
+          setIsLoading(false);
+          return; // Don't set up Firebase listener if JWT session exists
+        }
+        
+        console.log("❌ [AUTH CONTEXT] No JWT session found, setting up Firebase fallback...");
+        
+        // STEP 2: Set up Firebase authentication as fallback/migration path
+        const { auth: firebaseAuth, googleProvider: firebaseGoogleProvider } = await import('@/lib/firebase');
+        
+        if (!firebaseAuth) {
+          console.error('Firebase auth failed to initialize');
+          setIsLoading(false);
+          return;
+        }
+        
+        setAuth(firebaseAuth);
+        setGoogleProvider(firebaseGoogleProvider);
+        
+        // Firebase state listener for migration
+        const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser: FirebaseUser | null) => {
+          console.log("🔄 [FIREBASE] Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+          
+          if (firebaseUser) {
+            try {
+              // Check if we already have a JWT session first
+              const existingJWTUser = await checkJWTSession();
+              if (existingJWTUser) {
+                console.log("✅ [AUTH CONTEXT] JWT session already exists, skipping Firebase migration");
+                setUser(existingJWTUser);
+                setIsLoading(false);
+                return;
+              }
               
-              if (!user) {
+              // Migrate Firebase user to JWT session
+              console.log("🔄 [AUTH CONTEXT] Migrating Firebase user to JWT session...");
+              const migratedUser = await migrateFirebaseToJWT(firebaseUser);
+              
+              if (migratedUser) {
+                console.log("✅ [AUTH CONTEXT] Firebase to JWT migration successful");
+                setUser(migratedUser);
+                
                 toast({
                   title: "Signed in successfully",
-                  description: `Welcome ${userData.name || userData.email}!`,
+                  description: `Welcome ${migratedUser.name || migratedUser.email}!`,
                 });
-              }
-            } else {
-              // Fallback user if backend fails
-              console.log("Using fallback user data");
-              const fallbackUser = {
-                uid: firebaseUser.uid,
-                id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                username: userEmail?.split('@')[0] || firebaseUser.uid.substring(0, 8),
-                email: userEmail,
-                name: googleProvider?.displayName || firebaseUser.displayName,
-                photoURL: googleProvider?.photoURL || firebaseUser.photoURL
-              };
-              
-              setUser(fallbackUser);
-              
-              if (!user) {
+              } else {
+                console.error("❌ [AUTH CONTEXT] Firebase to JWT migration failed");
+                // Keep Firebase user as fallback (this should not happen in production)
+                const fallbackUser = {
+                  uid: firebaseUser.uid,
+                  id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+                  username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
+                  email: firebaseUser.email,
+                  name: firebaseUser.displayName,
+                  photoURL: firebaseUser.photoURL
+                };
+                
+                setUser(fallbackUser);
+                
                 toast({
-                  title: "Signed in successfully", 
+                  title: "Signed in (fallback mode)",
                   description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
+                  variant: "default"
                 });
               }
+            } catch (error) {
+              console.error("❌ [AUTH CONTEXT] Error processing Firebase user:", error);
+            }
+          } else {
+            // Firebase user signed out - check if JWT session still exists
+            const jwtUser = await checkJWTSession();
+            if (!jwtUser && user) {
+              console.log("🔄 [AUTH CONTEXT] User signed out from both Firebase and JWT");
+              setUser(null);
+              toast({
+                title: "Signed out",
+                description: "You have been signed out successfully.",
+              });
             }
           }
-        } catch (error) {
-          console.error("Error processing auth state change:", error);
-        }
-      } else {
-        // User signed out
-        if (user) {
-          console.log("User signed out");
-          setUser(null);
-          toast({
-            title: "Signed out",
-            description: "You have been signed out successfully.",
-          });
-        }
+          
+          setIsLoading(false);
+        });
+
+        return () => unsubscribe();
+        
+      } catch (error) {
+        console.error("❌ [AUTH CONTEXT] Error initializing authentication:", error);
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
-    });
+    };
+    
+    initializeAuth();
+  }, [toast]); // Removed 'user' dependency to prevent loops
 
-    return () => unsubscribe();
-  }, [user, toast]);
-
-  // Simplified Google sign-in
+  // Updated Google sign-in with JWT session creation
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
-      console.log("Starting Google sign-in");
+      console.log("🚀 [AUTH CONTEXT] Starting Google OAuth sign-in...");
       
-      try {
-        // Try popup first
-        const result = await signInWithPopup(auth, googleProvider);
-        console.log("Popup sign-in successful:", result.user.email);
-      } catch (popupError: any) {
-        console.log("Popup failed, trying redirect:", popupError.code);
-        
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user') {
-          await signInWithRedirect(auth, googleProvider);
-          return; // Don't set loading false - redirect will handle it
-        } else {
-          throw popupError;
-        }
+      // Mark OAuth as in progress for completion detection
+      localStorage.setItem('oauth_in_progress', 'true');
+      
+      // Get OAuth URL from backend
+      const oauthResponse = await fetch('/api/auth/google', {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      if (!oauthResponse.ok) {
+        throw new Error('Failed to get OAuth URL');
       }
+      
+      const oauthData = await oauthResponse.json();
+      if (!oauthData.success || !oauthData.oauthUrl) {
+        throw new Error('Invalid OAuth response');
+      }
+      
+      console.log("🔗 [AUTH CONTEXT] Redirecting to Google OAuth...");
+      console.log("🔗 [AUTH CONTEXT] OAuth completion will be detected on return");
+      
+      // Redirect to Google OAuth (backend handles JWT session creation)
+      window.location.href = oauthData.oauthUrl;
+      
     } catch (error: any) {
-      console.error("Google sign-in error:", error);
+      console.error("❌ [AUTH CONTEXT] Google sign-in error:", error);
       
-      let errorMessage = "There was a problem with Google sign-in. Please try again.";
-      if (error.code === 'auth/popup-blocked') {
-        errorMessage = "Please allow popups for this site.";
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "Sign-in was cancelled.";
-      }
+      // Clean up OAuth progress flag on error
+      localStorage.removeItem('oauth_in_progress');
       
       toast({
         title: "Authentication error",
-        description: errorMessage,
+        description: error.message || "There was a problem with Google sign-in. Please try again.",
         variant: "destructive",
       });
       
@@ -231,18 +312,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Logout
+  // Updated logout with JWT session clearing
   const logout = async () => {
     try {
-      await signOut(auth);
-      console.log("User signed out successfully");
-    } catch (error) {
-      console.error("Error signing out:", error);
+      console.log("🔄 [AUTH CONTEXT] Starting logout process...");
+      setIsLoading(true);
+      
+      // Call backend logout endpoint to clear JWT session
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        console.log("✅ [AUTH CONTEXT] JWT session cleared successfully");
+      } else {
+        console.warn("⚠️ [AUTH CONTEXT] Backend logout returned:", response.status);
+      }
+      
+      // Sign out from Firebase if auth exists (for migration cases)
+      if (auth) {
+        try {
+          await signOut(auth);
+          console.log("✅ [AUTH CONTEXT] Firebase sign-out successful");
+        } catch (firebaseError) {
+          console.warn("⚠️ [AUTH CONTEXT] Firebase sign-out error:", firebaseError);
+          // Don't block logout if Firebase fails
+        }
+      }
+      
+      // Clear user state and CSRF token cache
+      setUser(null);
+      clearCSRFTokenCache();
+      console.log("✅ [AUTH CONTEXT] User state cleared");
+      
       toast({
-        title: "Error",
-        description: "There was a problem signing out.",
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+      
+    } catch (error) {
+      console.error("❌ [AUTH CONTEXT] Error during logout:", error);
+      
+      // Still clear user state and CSRF token cache even if logout fails
+      setUser(null);
+      clearCSRFTokenCache();
+      
+      toast({
+        title: "Signed out",
+        description: "You have been signed out (with errors).",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -255,6 +377,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithGoogle,
         signInWithPhone,
         logout,
+        refreshSession,
       }}
     >
       {children}

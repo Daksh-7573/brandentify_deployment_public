@@ -1,52 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
-import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * Set of authentication buttons for the application
+ * JWT-based authentication buttons (no Firebase dependencies)
  */
 export function GoogleLoginButton({ className = '' }: { className?: string }) {
-  const { signInWithGoogle, isLoading } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleGoogleLogin = async () => {
+    console.log('🚀 [LOGIN-BUTTON] Google login button clicked');
+    
     try {
-      // First check if already logged in
-      if (auth.currentUser) {
-        console.log("User already logged in, signing out first to ensure Google provider is used");
-        
-        // Set a flag to indicate we're forcing Google auth
-        localStorage.setItem('force_google_auth', 'true');
-        
-        // Sign out first
-        await auth.signOut();
-        
-        // Clear all auth-related storage
-        localStorage.removeItem('firebase:authUser');
-        sessionStorage.removeItem('firebase:authUser');
-        localStorage.removeItem('auth_state');
-        localStorage.removeItem('auth_user');
-        
-        // Small delay to ensure sign out completes
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
+      setIsLoading(true);
       
-      // Now perform Google sign in with a fresh state
+      // Clear any existing auth data to ensure fresh login
+      sessionStorage.removeItem('brandentifier_user');
+      localStorage.removeItem('brandentifier_user');
+      console.log('🧹 [LOGIN-BUTTON] Cleared existing auth data for fresh login');
+      
+      // Use the JWT OAuth flow from useAuth hook
       await signInWithGoogle();
-    } catch (error) {
-      console.error('Google login error:', error);
+      
+      console.log('✅ [LOGIN-BUTTON] OAuth redirect initiated successfully');
+      
+    } catch (error: any) {
+      console.error('❌ [LOGIN-BUTTON] Google login error:', error);
+      
       toast({
         title: "Google login failed",
-        description: "There was a problem signing in with Google. Please try again.",
+        description: error.message || "There was a problem signing in with Google. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      // Clear the forcing flag
-      localStorage.removeItem('force_google_auth');
+      
+      setIsLoading(false);
     }
   };
   

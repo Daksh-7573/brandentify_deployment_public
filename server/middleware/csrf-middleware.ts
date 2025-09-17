@@ -7,6 +7,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
+import type { AuthenticatedRequest } from './jwt-auth-middleware';
 
 // CSRF token store (in production, use Redis or database)
 const csrfTokenStore = new Map<string, { token: string, timestamp: number, userId?: number }>();
@@ -163,8 +164,9 @@ export function validateCSRFMiddleware(req: Request, res: Response, next: NextFu
 /**
  * Route to get CSRF token for authenticated users
  */
-export function getCSRFTokenRoute(req: Request, res: Response) {
-  if (!(req as any).user) {
+export function getCSRFTokenRoute(req: AuthenticatedRequest, res: Response) {
+  // req.user is guaranteed to exist due to requireAuth middleware
+  if (!req.user) {
     return res.status(401).json({
       error: 'Authentication required',
       message: 'You must be logged in to get a CSRF token'

@@ -93,7 +93,7 @@ export default function ProfileNeo() {
   }
 
   // Get the correct user identifier for API calls
-  const userIdentifier = user?.username || user?.id?.toString() || user?.uid || '';
+  const userIdentifier = user?.username || user?.id?.toString() || '';
   
   // Get user profile data with optimized error handling
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({

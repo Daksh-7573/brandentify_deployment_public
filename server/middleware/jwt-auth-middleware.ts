@@ -110,7 +110,7 @@ async function validateJWTToken(token: string): Promise<JWTTokenPayload | null> 
  */
 async function fetchUserFromToken(tokenPayload: JWTTokenPayload): Promise<User | null> {
   try {
-    const user = await storage.getUserById(tokenPayload.userId);
+    const user = await storage.getUser(tokenPayload.userId);
     
     if (!user) {
       console.error('🔐 [JWT Auth] User not found in database for ID:', tokenPayload.userId);
@@ -156,36 +156,39 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
     const token = extractJWTToken(req);
     if (!token) {
       console.log('❌ [JWT Auth] requireAuth - No JWT token found');
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Authentication required',
         message: 'No authentication token provided. Please log in.',
         code: 'NO_TOKEN'
       });
+      return;
     }
     
     // Validate JWT token
     const tokenPayload = await validateJWTToken(token);
     if (!tokenPayload) {
       console.log('❌ [JWT Auth] requireAuth - Invalid JWT token');
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Authentication failed',
         message: 'Invalid or expired authentication token. Please log in again.',
         code: 'INVALID_TOKEN'
       });
+      return;
     }
     
     // Fetch full user data from database
     const user = await fetchUserFromToken(tokenPayload);
     if (!user) {
       console.log('❌ [JWT Auth] requireAuth - User not found or email mismatch');
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Authentication failed',
         message: 'User account not found or invalid. Please log in again.',
         code: 'USER_NOT_FOUND'
       });
+      return;
     }
     
     // Attach user and token data to request
