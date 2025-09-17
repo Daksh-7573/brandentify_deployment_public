@@ -324,6 +324,7 @@ export interface IStorage {
   // Project operations
   getProjectsByUserId(userId: number): Promise<Project[]>;
   getProjectById(id: number): Promise<Project | undefined>;
+  getAllProjects(): Promise<Project[]>;
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, project: Partial<Project>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<boolean>;
@@ -2136,6 +2137,10 @@ export class MemStorage implements IStorage {
   
   async getProjectById(id: number): Promise<Project | undefined> {
     return this.projects.get(id);
+  }
+  
+  async getAllProjects(): Promise<Project[]> {
+    return Array.from(this.projects.values());
   }
   
   async createProject(insertProject: InsertProject): Promise<Project> {
@@ -9221,6 +9226,26 @@ export class DatabaseStorage implements IStorage {
     return project || undefined;
   }
 
+  async getAllProjects(): Promise<Project[]> {
+    console.log(`[db.getAllProjects] Fetching all projects`);
+    try {
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", title, description, start_date as "startDate",
+               project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
+               thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
+               created_at as "createdAt", updated_at as "updatedAt"
+        FROM projects
+        ORDER BY created_at DESC
+      `);
+      
+      console.log(`[db.getAllProjects] Found ${result.rows.length} total projects`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getAllProjects] Error fetching all projects:`, error);
+      return [];
+    }
+  }
+
   async createProject(insertProject: InsertProject): Promise<Project> {
     const [project] = await db.insert(projects).values(insertProject).returning();
     return project;
@@ -11971,6 +11996,7 @@ export const storage = {
   
   // User methods
   getUser: (id: number) => dbStorage.getUser(id),
+  getAllUsers: () => dbStorage.getAllUsers(),
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
   getUserByBrandName: (brandName: string) => dbStorage.getUserByBrandName(brandName),
@@ -12008,6 +12034,7 @@ export const storage = {
   // Project methods
   getProjectsByUserId: (userId: number) => dbStorage.getProjectsByUserId(userId),
   getProjectById: (id: number) => dbStorage.getProjectById(id),
+  getAllProjects: () => dbStorage.getAllProjects(),
   createProject: (project: InsertProject) => dbStorage.createProject(project),
   updateProject: (id: number, project: Partial<Project>) => dbStorage.updateProject(id, project),
   deleteProject: (id: number) => dbStorage.deleteProject(id),
@@ -12228,6 +12255,14 @@ export const storage = {
   // Pulse methods
   getPulses: () => dbStorage.getPulses(),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
+  
+  // Hashtag methods
+  getHashtags: () => dbStorage.getHashtags(),
+  
+  // Search methods
+  searchPulses: (query: string) => dbStorage.searchPulses(query),
+  searchProfiles: (query: string) => dbStorage.searchProfiles(query),
+  searchHashtags: (query: string) => dbStorage.searchHashtags(query),
   
   // Poll Vote methods
   getPollVoteByUserAndPulse: (userId: number, pulseId: number) => dbStorage.getPollVoteByUserAndPulse(userId, pulseId),

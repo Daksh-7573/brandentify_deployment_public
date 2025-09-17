@@ -7286,6 +7286,246 @@ ${extractedText.substring(0, 5000)}
   
   app.get("/api/auth/session", checkSessionRoute);
   console.log("Custom OAuth routes loaded");
+
+  // Comprehensive Search API endpoint
+  app.get('/api/search', async (req: Request, res: Response) => {
+    try {
+      const { q: query, category = 'all', limit = 10 } = req.query;
+      
+      // Validate input
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: 'Search query is required'
+        });
+      }
+
+      if (query.trim().length < 2) {
+        return res.status(400).json({
+          success: false,
+          message: 'Search query must be at least 2 characters'
+        });
+      }
+
+      const searchTerm = query.trim().toLowerCase();
+      const searchLimit = Math.min(parseInt(limit as string) || 10, 50);
+      const searchCategory = category as string;
+      
+      console.log(`[SEARCH API] Query: "${searchTerm}", Category: ${searchCategory}, Limit: ${searchLimit}`);
+
+      const results: any = {
+        pulses: [],
+        profiles: [],
+        hashtags: [],
+        smartConnect: []
+      };
+
+      // Search Users/Profiles
+      if (searchCategory === 'all' || searchCategory === 'profiles') {
+        try {
+          const allUsers = await storage.getAllUsers();
+          const userMatches = allUsers
+            .filter(user => {
+              if (!user.name && !user.title && !user.industry) return false;
+              
+              const searchableFields = [
+                user.name?.toLowerCase() || '',
+                user.title?.toLowerCase() || '',
+                user.industry?.toLowerCase() || '',
+                user.whatIOffer?.toLowerCase() || '',
+                user.aboutMe?.toLowerCase() || ''
+              ].join(' ');
+              
+              return searchableFields.includes(searchTerm);
+            })
+            .slice(0, searchLimit)
+            .map(user => ({
+              id: user.id,
+              name: user.name || 'Anonymous',
+              title: user.title || null,
+              photoURL: user.photoURL || null,
+              location: user.location || null,
+              industry: user.industry || null
+            }));
+          
+          results.profiles = userMatches;
+          console.log(`[SEARCH API] Found ${userMatches.length} profile matches`);
+        } catch (error) {
+          console.error('[SEARCH API] Error searching profiles:', error);
+        }
+      }
+
+      // Search Pulses/Content
+      if (searchCategory === 'all' || searchCategory === 'pulses') {
+        try {
+          const allPulses = await storage.getPulses();
+          const pulseMatches = allPulses
+            .filter(pulse => {
+              const searchableContent = [
+                pulse.title?.toLowerCase() || '',
+                pulse.content?.toLowerCase() || '',
+                pulse.type?.toLowerCase() || ''
+              ].join(' ');
+              
+              return searchableContent.includes(searchTerm);
+            })
+            .slice(0, searchLimit)
+            .map(pulse => ({
+              id: pulse.id,
+              title: pulse.title || 'Untitled',
+              content: pulse.content || '',
+              type: pulse.type || 'pulse',
+              createdAt: pulse.createdAt,
+              user: {
+                name: 'User',  // Would need to join with users table
+                photoURL: null
+              }
+            }));
+          
+          results.pulses = pulseMatches;
+          console.log(`[SEARCH API] Found ${pulseMatches.length} pulse matches`);
+        } catch (error) {
+          console.error('[SEARCH API] Error searching pulses:', error);
+        }
+      }
+
+      // Search Projects
+      if (searchCategory === 'all' || searchCategory === 'projects') {
+        try {
+          // Get all projects by getting all users and their projects
+          const allUsers = await storage.getAllUsers();
+          let allProjects: any[] = [];
+          for (const user of allUsers) {
+            const userProjects = await storage.getProjectsByUserId(user.id);
+            allProjects = allProjects.concat(userProjects);
+          }
+          const projectMatches = allProjects
+            .filter(project => {
+              const searchableFields = [
+                project.title?.toLowerCase() || '',
+                project.description?.toLowerCase() || '',
+                project.technologies?.toLowerCase() || ''
+              ].join(' ');
+              
+              return searchableFields.includes(searchTerm);
+            })
+            .slice(0, searchLimit)
+            .map(project => ({
+              id: project.id,
+              title: project.title || 'Untitled Project',
+              description: project.description || '',
+              technologies: project.technologies || '',
+              createdAt: project.createdAt
+            }));
+          
+          results.projects = projectMatches;
+          console.log(`[SEARCH API] Found ${projectMatches.length} project matches`);
+        } catch (error) {
+          console.error('[SEARCH API] Error searching projects:', error);
+        }
+      }
+
+      // Search Hashtags
+      if (searchCategory === 'all' || searchCategory === 'hashtags') {
+        try {
+          const allHashtags = await storage.getHashtags();
+          const hashtagMatches = allHashtags
+            .filter(hashtag => {
+              return hashtag.tag?.toLowerCase().includes(searchTerm);
+            })
+            .slice(0, searchLimit)
+            .map(hashtag => ({
+              id: hashtag.id,
+              name: hashtag.tag || '',
+              count: hashtag.count || 0
+            }));
+          
+          results.hashtags = hashtagMatches;
+          console.log(`[SEARCH API] Found ${hashtagMatches.length} hashtag matches`);
+        } catch (error) {
+          console.error('[SEARCH API] Error searching hashtags:', error);
+        }
+      }
+
+      // Smart Connect (Enhanced profile matching)
+      if (searchCategory === 'smart-connect') {
+        try {
+          const allUsers = await storage.getAllUsers();
+          const smartMatches = allUsers
+            .filter(user => {
+              if (!user.name && !user.title) return false;
+              
+              const searchableFields = [
+                user.name?.toLowerCase() || '',
+                user.title?.toLowerCase() || '',
+                user.industry?.toLowerCase() || '',
+                user.domain?.toLowerCase() || '',
+                user.whatIOffer?.toLowerCase() || ''
+              ].join(' ');
+              
+              return searchableFields.includes(searchTerm);
+            })
+            .slice(0, searchLimit)
+            .map(user => {
+              // Calculate match percentage (simplified scoring)
+              let matchPercentage = 0;
+              const userText = [user.name, user.title, user.industry, user.domain, user.whatIOffer].join(' ').toLowerCase();
+              
+              if (user.name?.toLowerCase().includes(searchTerm)) matchPercentage += 40;
+              if (user.title?.toLowerCase().includes(searchTerm)) matchPercentage += 35;
+              if (user.industry?.toLowerCase().includes(searchTerm)) matchPercentage += 15;
+              if (user.whatIOffer?.toLowerCase().includes(searchTerm)) matchPercentage += 10;
+              
+              matchPercentage = Math.min(matchPercentage, 95);
+              
+              return {
+                id: user.id,
+                name: user.name || 'Anonymous',
+                title: user.title || null,
+                location: user.location || null,
+                photoURL: user.photoURL || null,
+                skills: user.whatIOffer ? [user.whatIOffer] : [],
+                matchPercentage,
+                matchDetails: {
+                  industryMatch: user.industry?.toLowerCase().includes(searchTerm) ? 85 : 20,
+                  domainMatch: user.domain?.toLowerCase().includes(searchTerm) ? 80 : 15,
+                  experienceMatch: user.title?.toLowerCase().includes(searchTerm) ? 90 : 25,
+                  complementaryMatch: user.whatIOffer?.toLowerCase().includes(searchTerm) ? 75 : 10
+                }
+              };
+            })
+            .sort((a, b) => b.matchPercentage - a.matchPercentage);
+          
+          results.smartConnect = smartMatches;
+          console.log(`[SEARCH API] Found ${smartMatches.length} smart connect matches`);
+        } catch (error) {
+          console.error('[SEARCH API] Error in smart connect search:', error);
+        }
+      }
+
+      // Return results
+      const totalResults = Object.values(results).reduce((sum: number, arr: any[]) => sum + arr.length, 0);
+      
+      console.log(`[SEARCH API] Search completed. Total results: ${totalResults}`);
+      
+      res.json({
+        success: true,
+        query: searchTerm,
+        category: searchCategory,
+        totalResults,
+        ...results
+      });
+
+    } catch (error) {
+      console.error('[SEARCH API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error during search',
+        error: String(error)
+      });
+    }
+  });
+  console.log("Comprehensive Search API endpoint loaded");
   
   // Career Capsule routes - removed
   // app.use('/api', careerCapsuleRoutes);
