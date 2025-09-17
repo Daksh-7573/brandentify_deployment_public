@@ -64,6 +64,7 @@ import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, logoutRoute } from "./auth-oauth-routes";
 import { requireAuth, optionalAuth, type AuthenticatedRequest, type OptionalAuthRequest } from "./middleware/jwt-auth-middleware";
+import { validateCSRFMiddleware, provideCSRFToken, getCSRFTokenRoute } from "./middleware/csrf-middleware";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -216,6 +217,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const apiRouter = express.Router();
+  
+  // Add CSRF token endpoint for authenticated users
+  apiRouter.get("/auth/csrf-token", requireAuth, getCSRFTokenRoute);
+  
+  // Apply CSRF protection to all API routes (GET requests are exempt)
+  apiRouter.use(provideCSRFToken);
+  apiRouter.use(validateCSRFMiddleware);
   
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
@@ -1267,8 +1275,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Special debug for photoURL field
             if (key === 'photoURL') {
               console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
-              console.log(`[PUT /users/:id] photoURL value length:`, value ? value.length : 'NULL');
-              console.log(`[PUT /users/:id] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
+              console.log(`[PUT /users/:id] photoURL value length:`, value && typeof value === 'string' ? value.length : 'NULL');
+              console.log(`[PUT /users/:id] photoURL starts with:`, value && typeof value === 'string' ? value.substring(0, 50) + '...' : 'NULL');
             }
             
             // Convert camelCase to snake_case for PostgreSQL with proper field mapping
@@ -1334,7 +1342,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               await cacheService.invalidatePattern(`user:${user.id}:*`);
               await cacheService.invalidatePattern(`users:*`);
             } catch (cacheError) {
-              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError instanceof Error ? cacheError.message : String(cacheError));
             }
           }
         } catch (directError) {
@@ -3814,46 +3822,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // GET /api/poll-votes/user/:userId/pulse/:pulseId - Check if a user has voted on a specific poll
-  apiRouter.get("/poll-votes/user/:userId/pulse/:pulseId", async (req: Request, res: Response) => {
+  // GET /api/poll-votes/pulse/:pulseId/my-vote - Check if current authenticated user has voted on a specific poll
+  apiRouter.get("/poll-votes/pulse/:pulseId/my-vote", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const userId = Number(req.params.userId);
+      // SECURITY: Use authenticated user ID only, never client-supplied ID
+      const userId = req.user.id;
       const pulseId = Number(req.params.pulseId);
       
-      if (isNaN(userId) || isNaN(pulseId)) {
-        return res.status(400).json({ message: 'Invalid user ID or pulse ID' });
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: 'Invalid pulse ID' });
       }
       
-      console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] Checking if user has voted`);
+      console.log(`[GET /poll-votes/pulse/${pulseId}/my-vote] Checking if authenticated user ${userId} has voted`);
       const vote = await storage.getPollVoteByUserAndPulse(userId, pulseId);
       
       if (vote) {
-        console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] User has voted for option: ${vote.optionIndex}`);
+        console.log(`[GET /poll-votes/pulse/${pulseId}/my-vote] User has voted for option: ${vote.optionIndex}`);
         res.json(vote);
       } else {
-        console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] User has not voted`);
+        console.log(`[GET /poll-votes/pulse/${pulseId}/my-vote] User has not voted`);
         res.status(404).json({ message: 'No vote found' });
       }
     } catch (error) {
-      console.error(`[GET /poll-votes/user/:userId/pulse/:pulseId] Error:`, error);
+      console.error(`[GET /poll-votes/pulse/:pulseId/my-vote] Error:`, error);
       res.status(500).json({ message: 'Error checking poll vote' });
     }
   });
   
   // POST /api/poll-votes - Create or update a poll vote
-  apiRouter.post("/poll-votes", async (req: Request, res: Response) => {
+  apiRouter.post("/poll-votes", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      console.log('[POST /poll-votes] Processing vote:', req.body);
-      console.log('[POST /poll-votes] Storage object available:', typeof storage);
-      console.log('[POST /poll-votes] Storage methods:', Object.keys(storage).filter(key => key.includes('Poll')));
+      console.log('[POST /poll-votes] Processing vote from authenticated user:', req.user.id);
       
-      // Parse and validate the vote data
-      const voteData = insertPollVoteSchema.parse(req.body);
-      console.log('[POST /poll-votes] Validated vote data:', voteData);
+      // SECURITY: Use authenticated user ID, ignore any client-supplied userId
+      const voteData = {
+        userId: req.user.id,  // Always use authenticated user ID
+        pulseId: Number(req.body.pulseId),
+        optionIndex: Number(req.body.optionIndex)
+      };
+      
+      // Validate the data
+      const validatedVoteData = insertPollVoteSchema.parse(voteData);
+      console.log('[POST /poll-votes] Validated vote data:', validatedVoteData);
       
       // Check if the user has already voted on this poll
       console.log('[POST /poll-votes] Checking for existing vote...');
-      const existingVote = await storage.getPollVoteByUserAndPulse(voteData.userId, voteData.pulseId);
+      const existingVote = await storage.getPollVoteByUserAndPulse(validatedVoteData.userId, validatedVoteData.pulseId);
       console.log('[POST /poll-votes] Existing vote result:', existingVote);
       
       let vote;
