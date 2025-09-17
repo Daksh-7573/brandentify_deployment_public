@@ -27,6 +27,74 @@ const ALLOWED_REDIRECT_URIS = [
   'http://127.0.0.1:5000/api/auth/google/callback'
 ];
 
+// Trusted domains allowlist for post-OAuth redirects (SECURITY: prevents open-redirect attacks)
+const TRUSTED_REDIRECT_DOMAINS = [
+  'brandentifier.com',
+  'www.brandentifier.com',
+  // All Replit domains
+  'brandentifier.replit.app',
+  // Development domains
+  'localhost',
+  '127.0.0.1'
+];
+
+// Trusted domain patterns (for wildcard matching)
+const TRUSTED_DOMAIN_PATTERNS = [
+  /^[a-zA-Z0-9-]+\.replit\.app$/,     // *.replit.app
+  /^[a-zA-Z0-9-]+\.replit\.dev$/      // *.replit.dev
+];
+
+/**
+ * SECURITY: Validates if a domain is trusted for post-OAuth redirects
+ * This prevents open-redirect attacks by ensuring we only redirect to our own domains
+ * 
+ * @param hostOrUrl - Can be just a hostname or a full URL
+ * @returns boolean - true if the domain is trusted, false otherwise
+ */
+function isTrustedRedirectDomain(hostOrUrl: string): boolean {
+  try {
+    // Handle both hostnames and full URLs
+    let hostname: string;
+    
+    if (hostOrUrl.includes('://')) {
+      // It's a URL, extract the hostname
+      const url = new URL(hostOrUrl);
+      hostname = url.hostname;
+    } else {
+      // It's just a hostname (may include port)
+      hostname = hostOrUrl.split(':')[0]; // Remove port if present
+    }
+    
+    // Normalize to lowercase for case-insensitive comparison
+    hostname = hostname.toLowerCase();
+    
+    // Check exact matches against trusted domains
+    if (TRUSTED_REDIRECT_DOMAINS.includes(hostname)) {
+      return true;
+    }
+    
+    // Check against wildcard patterns (*.replit.app, *.replit.dev)
+    for (const pattern of TRUSTED_DOMAIN_PATTERNS) {
+      if (pattern.test(hostname)) {
+        return true;
+      }
+    }
+    
+    // Special handling for localhost with any port
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return true;
+    }
+    
+    // Not a trusted domain
+    return false;
+    
+  } catch (error) {
+    // If there's any error parsing the domain/URL, reject it for security
+    console.error('🚨 [SECURITY] Error parsing domain for validation:', error);
+    return false;
+  }
+}
+
 // Function to determine if a redirect URI is valid
 function isValidRedirectUri(uri: string): boolean {
   // Check exact matches first
@@ -405,25 +473,54 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('✅ [OAUTH CALLBACK] Cookie set with session token');
     console.log('✅ [OAUTH CALLBACK] Redirecting to /industry-pulse');
     
-    // Parse state to get return host and redirect to correct domain
-    let finalRedirectUrl = '/dashboard'; // Default fallback
+    // SECURITY: Parse state to get return host and validate against trusted domains before redirecting
+    let finalRedirectUrl = '/dashboard'; // Default safe fallback
     
     try {
       const decodedState = JSON.parse(Buffer.from(state as string, 'base64url').toString());
       const returnHost = decodedState.returnHost;
       
       if (returnHost && returnHost !== req.get('host')) {
-        // Redirect to original domain if different from current
-        if (returnHost.includes('localhost')) {
-          finalRedirectUrl = `http://${returnHost}/dashboard`;
+        // SECURITY: Validate returnHost against trusted domains to prevent open-redirect attacks
+        if (isTrustedRedirectDomain(returnHost)) {
+          // Domain is trusted, construct redirect URL
+          if (returnHost.includes('localhost') || returnHost.includes('127.0.0.1')) {
+            finalRedirectUrl = `http://${returnHost}/dashboard`;
+          } else {
+            finalRedirectUrl = `https://${returnHost}/dashboard`;
+          }
+          console.log('✅ [OAUTH CALLBACK] Validated cross-domain redirect to:', finalRedirectUrl);
+          console.log('✅ [OAUTH CALLBACK] Trusted domain confirmed:', returnHost);
+          return res.redirect(303, finalRedirectUrl);
         } else {
-          finalRedirectUrl = `https://${returnHost}/dashboard`;
+          // SECURITY: Block untrusted domain redirect attempt and log for monitoring
+          console.error('🚨 [SECURITY ALERT] Blocked open-redirect attempt!');
+          console.error('🚨 [SECURITY] Untrusted returnHost blocked:', returnHost);
+          console.error('🚨 [SECURITY] Request details:', {
+            ip: req.ip || req.connection.remoteAddress,
+            userAgent: req.get('user-agent'),
+            referer: req.get('referer'),
+            timestamp: new Date().toISOString(),
+            requestHost: req.get('host')
+          });
+          
+          // Use safe fallback redirect instead of potentially malicious domain
+          console.log('🛡️ [SECURITY] Using safe fallback redirect instead of untrusted domain');
+          finalRedirectUrl = '/dashboard';
         }
-        console.log('🔄 [OAUTH CALLBACK] Cross-domain redirect to:', finalRedirectUrl);
-        return res.redirect(303, finalRedirectUrl);
       }
     } catch (error) {
-      console.log('⚠️ [OAUTH CALLBACK] Could not parse state for return host, using default redirect');
+      // SECURITY: If state parsing fails, log the attempt and use safe fallback
+      console.error('🚨 [SECURITY] Could not parse state for return host - potential tampering attempt');
+      console.error('🚨 [SECURITY] State parsing error:', error);
+      console.error('🚨 [SECURITY] Request details:', {
+        ip: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('user-agent'),
+        referer: req.get('referer'),
+        timestamp: new Date().toISOString()
+      });
+      console.log('⚠️ [OAUTH CALLBACK] Using safe default redirect due to state parsing failure');
+      finalRedirectUrl = '/dashboard';
     }
     
     // Same domain redirect - go to dashboard
