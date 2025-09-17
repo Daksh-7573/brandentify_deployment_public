@@ -464,6 +464,8 @@ export async function checkSessionRoute(req: Request, res: Response) {
     
     if (!sessionToken) {
       console.log('❌ No JWT session cookie found');
+      // Clear any stale cookies that might exist
+      clearSessionCookie(req, res);
       return res.status(401).json({
         success: false,
         error: 'No session found'
@@ -480,6 +482,8 @@ export async function checkSessionRoute(req: Request, res: Response) {
       
       if (!user) {
         console.log('❌ User not found in database');
+        // Clear invalid session cookie
+        clearSessionCookie(req, res);
         return res.status(401).json({
           success: false,
           error: 'User not found'
@@ -506,6 +510,8 @@ export async function checkSessionRoute(req: Request, res: Response) {
       
     } catch (jwtError) {
       console.log('❌ Invalid or expired JWT token:', jwtError);
+      // Clear invalid/expired session cookie
+      clearSessionCookie(req, res);
       return res.status(401).json({
         success: false,
         error: 'Invalid session token'
@@ -517,6 +523,104 @@ export async function checkSessionRoute(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: 'Session check failed'
+    });
+  }
+}
+
+/**
+ * Helper function to clear session cookie with proper security settings
+ */
+function clearSessionCookie(req: Request, res: Response) {
+  const currentHost = req.get('host') || 'localhost:5000';
+  const isLocalDev = currentHost.includes('localhost') || currentHost.includes('127.0.0.1');
+  const isHttps = !isLocalDev; // All Replit domains (.replit.app and .replit.dev) use HTTPS
+  
+  // Clear cookie with same settings as when it was set
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isHttps,
+    sameSite: 'lax' as const,
+    path: '/',
+    expires: new Date(0), // Set expiration to past date to clear cookie
+  };
+  
+  res.clearCookie('brandentifier_session', cookieOptions);
+  console.log('🍪 Session cookie cleared with options:', {
+    domain: (cookieOptions as any).domain || 'omitted',
+    sameSite: cookieOptions.sameSite,
+    secure: cookieOptions.secure,
+    host: currentHost
+  });
+}
+
+/**
+ * Logout endpoint - securely clears JWT session cookie
+ */
+export async function logoutRoute(req: Request, res: Response) {
+  try {
+    console.log('🚪 Processing logout request');
+    
+    // Set cache control headers for logout endpoint
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+      'X-Auth-Handler': 'server-logout',
+      'X-Auth-Timestamp': new Date().toISOString(),
+      'X-Auth-Host': req.get('host') || 'unknown'
+    });
+    
+    // Debug logging for logout
+    const requestHost = req.get('host');
+    const sessionToken = req.cookies?.brandentifier_session;
+    
+    console.log('🍪 Logout Debug:', {
+      host: requestHost,
+      cookiePresent: !!sessionToken,
+      method: req.method,
+      userAgent: req.get('user-agent')?.substring(0, 50)
+    });
+    
+    // Check if we have a session to clear
+    if (sessionToken) {
+      try {
+        // Try to decode the token to get user info for logging
+        const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+        console.log('🚪 Logging out user:', decoded.email);
+      } catch (jwtError) {
+        console.log('🚪 Clearing invalid/expired session during logout');
+      }
+    } else {
+      console.log('🚪 No session cookie found, but proceeding with logout');
+    }
+    
+    // Always clear the session cookie (even if it doesn't exist or is invalid)
+    clearSessionCookie(req, res);
+    
+    console.log('✅ Logout completed successfully');
+    
+    // Return success response
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+    
+  } catch (error: any) {
+    console.error('❌ Logout error:', error);
+    
+    // Even if there's an error, try to clear the cookie
+    try {
+      clearSessionCookie(req, res);
+    } catch (clearError) {
+      console.error('❌ Error clearing cookie during logout error:', clearError);
+    }
+    
+    // Return success anyway - logout should be idempotent
+    res.json({
+      success: true,
+      message: 'Logged out successfully',
+      note: 'Logout completed despite error'
     });
   }
 }

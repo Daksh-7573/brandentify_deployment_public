@@ -179,13 +179,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
   };
 
-  const signOut = () => {
-    console.log('Signing out user');
+  const signOut = async () => {
+    console.log('AuthProvider: Signing out user');
+    
+    // Check if we're on published domain and should call server logout
+    const hostname = window.location.hostname;
+    const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('brandentifier.com');
+    
+    if (isPublishedDomain) {
+      console.log('AuthProvider: Published domain detected, calling server logout');
+      try {
+        const response = await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+        
+        console.log('AuthProvider: Logout response:', {
+          status: response.status,
+          ok: response.ok
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('AuthProvider: ✅ Server logout successful:', data.message);
+        } else {
+          console.warn('AuthProvider: ⚠️ Server logout response not OK, but proceeding with cleanup');
+        }
+      } catch (error) {
+        console.error('AuthProvider: ❌ Server logout error:', error);
+        console.log('AuthProvider: Continuing with local cleanup despite server error');
+      }
+    } else {
+      console.log('AuthProvider: Development domain, skipping server logout call');
+    }
+    
+    // Always clear local state
+    console.log('AuthProvider: Clearing local authentication state');
     setUser(null);
     sessionStorage.removeItem('brandentifier_user');
     sessionStorage.removeItem('auth_return_url');
     sessionStorage.removeItem('auth_timestamp');
     sessionStorage.removeItem('auth_initiated');
+    console.log('AuthProvider: ✅ Local logout cleanup completed');
   };
 
   const contextValue: AuthContextType = {

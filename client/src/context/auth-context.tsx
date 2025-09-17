@@ -173,38 +173,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign out function - simplified for all domains
+  // Sign out function - enhanced with proper error handling
   const signOut = async () => {
     try {
       setIsLoading(true);
+      console.log('[Auth Context] Starting logout process');
       
       // Clear server-side session for all domains
-      await fetch('/api/auth/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include', // Include JWT cookies
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
+      
+      console.log('[Auth Context] Logout response:', {
+        status: response.status,
+        ok: response.ok
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Auth Context] ✅ Logout successful:', data.message);
+        
+        toast({
+          title: "Signed out",
+          description: "You have been signed out successfully.",
+        });
+      } else {
+        console.warn('[Auth Context] ⚠️ Logout response not OK, but proceeding with cleanup');
+      }
+      
+    } catch (error: any) {
+      console.error("[Auth Context] ❌ Sign out error:", error);
+      
+      // Show toast for network errors only - still proceed with cleanup
+      if (error.message?.includes('fetch')) {
+        toast({
+          title: "Network Error",
+          description: "Couldn't reach server, but you've been signed out locally.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      // Always clear local state and redirect, regardless of server response
+      console.log('[Auth Context] Clearing local authentication state');
       
       // Clear local state
       setUser(null);
       sessionStorage.removeItem('brandentifier_user');
       
-      toast({
-        title: "Signed out",
-        description: "You have been signed out successfully.",
-      });
+      // Clear any cached queries that might contain user data
+      queryClient.clear();
+      
+      // Stop loading before redirect
+      setIsLoading(false);
+      
+      console.log('[Auth Context] ✅ Logout cleanup completed, redirecting to /auth');
       
       // Redirect to auth page
       window.location.href = '/auth';
-      
-    } catch (error) {
-      console.error("Sign out error:", error);
-      
-      // Clear local state anyway
-      setUser(null);
-      sessionStorage.removeItem('brandentifier_user');
-      window.location.href = '/auth';
-    } finally {
-      setIsLoading(false);
     }
   };
 
