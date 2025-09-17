@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
+import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -106,7 +107,7 @@ export default function AuthPage() {
                 {/* Email Authentication */}
                 <TabsContent value="email">
                   <div className="space-y-4 md:space-y-6">
-                    {/* Clean Google Authentication Only */}
+                    {/* All Authentication Options */}
                     <div className="space-y-6">
                       <div className="text-center space-y-3">
                         <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
@@ -120,11 +121,14 @@ export default function AuthPage() {
                           <span className="w-full border-t border-white/20" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">or</span>
+                          <span className="bg-black/50 px-2 text-gray-300">For Testing</span>
                         </div>
                       </div>
                       
-                      <FastQuickAuth />
+                      <div className="space-y-3">
+                        <FastQuickAuth />
+                        <DemoLogin />
+                      </div>
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">

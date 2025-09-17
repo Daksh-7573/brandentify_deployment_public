@@ -11850,6 +11850,29 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getHashtags(): Promise<Hashtag[]> {
+    try {
+      console.log('[db.getHashtags] Fetching all hashtags');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          tag,
+          COALESCE(count, 0) as count,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM hashtags
+        ORDER BY count DESC, tag ASC
+      `);
+      
+      console.log(`[db.getHashtags] Found ${result.rows.length} hashtags`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getHashtags] Error fetching hashtags:', error);
+      return [];
+    }
+  }
+
   async getPulsesByInterests(interests: string[], includeTypes?: string[]): Promise<any[]> {
     if (!interests.length) return [];
     
