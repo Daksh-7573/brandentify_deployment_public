@@ -59,13 +59,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('AuthProvider: Published domain detected, checking server session');
         try {
           console.log('AuthProvider: Fetching server session for published domain...');
+          
+          // Check for existing user data in sessionStorage to send as fallback auth
+          const existingUserData = sessionStorage.getItem('brandentifier_user');
+          let requestHeaders: Record<string, string> = {
+            'Accept': 'application/json',
+          };
+          
+          if (existingUserData) {
+            try {
+              const userData = JSON.parse(existingUserData);
+              // Send Firebase UID for fallback authentication
+              if (userData.uid || userData.username || userData.id) {
+                requestHeaders['firebase-uid'] = userData.uid || userData.username || userData.id?.toString();
+              }
+              // Also send full user data as backup
+              requestHeaders['x-user-data'] = existingUserData;
+              console.log('AuthProvider: Including fallback auth data for session check');
+            } catch (parseError) {
+              console.log('AuthProvider: Could not parse existing user data for headers');
+            }
+          }
+          
           const response = await fetch('/api/auth/session', {
             method: 'GET',
             credentials: 'include',
             cache: 'no-store', // Never cache auth requests
-            headers: {
-              'Accept': 'application/json',
-            }
+            headers: requestHeaders
           });
           
           console.log('AuthProvider: Server session response:', {
