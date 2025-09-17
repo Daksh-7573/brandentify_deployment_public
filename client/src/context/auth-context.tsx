@@ -57,29 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log('[Auth Context] Using server-side JWT session for all domains');
     
     // Check server-side session for all domains
-    // CRITICAL FIX: Include fallback authentication data
-    const existingUserData = sessionStorage.getItem('brandentifier_user');
-    let requestHeaders: Record<string, string> = {};
-    
-    if (existingUserData) {
-      try {
-        const userData = JSON.parse(existingUserData);
-        // Send Firebase UID for fallback authentication
-        if (userData.uid || userData.id) {
-          requestHeaders['x-firebase-uid'] = userData.uid || userData.id?.toString();
-        }
-        // Also send full user data as backup
-        requestHeaders['x-user-data'] = existingUserData;
-        console.log('[Auth Context] Including fallback auth data for session check');
-      } catch (e) {
-        console.log('[Auth Context] Could not parse existing user data for fallback auth');
-      }
-    }
-    
     fetch('/api/auth/session', {
       method: 'GET',
-      credentials: 'include', // Include cookies
-      headers: requestHeaders
+      credentials: 'include' // Include cookies
     })
     .then(response => {
       if (response.ok) {

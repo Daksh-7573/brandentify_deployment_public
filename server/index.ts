@@ -30,15 +30,13 @@ app.use(cookieParser());
 // Add performance middleware first
 app.use(performanceMiddleware());
 
-// CRITICAL: Static asset bypass ONLY in development mode
+// CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
 app.use((req, res, next) => {
-  // Only bypass in development - production needs proper static serving
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  
-  if (isDevelopment && (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
+  // Skip ALL middleware interference for static assets - let Vite handle them directly
+  if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
       req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx') ||
-      req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs'))) {
-    console.log(`🚀 DEV STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
+      req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs')) {
+    console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
     return next();
   }
 
@@ -404,21 +402,9 @@ if (!fs.existsSync(mediaDir)) {
 // Serve static files from public directory with proper MIME types
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
   setHeaders: (res, filePath) => {
-    // Comprehensive MIME type configuration
-    if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    } else if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+    // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
+    if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.jsx') || filePath.endsWith('.tsx')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.json')) {
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    } else if (filePath.endsWith('.svg')) {
-      res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
-    } else if (filePath.endsWith('.woff2')) {
-      res.setHeader('Content-Type', 'font/woff2');
-    } else if (filePath.endsWith('.woff')) {
-      res.setHeader('Content-Type', 'font/woff');
     }
   }
 }));
@@ -426,21 +412,9 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')
 // Serve the public directory directly for things like upload-test.html with proper MIME types
 app.use(express.static(path.join(process.cwd(), 'public'), {
   setHeaders: (res, filePath) => {
-    // Comprehensive MIME type configuration
-    if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css; charset=utf-8');
-    } else if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
+    // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
+    if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.jsx') || filePath.endsWith('.tsx')) {
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-    } else if (filePath.endsWith('.json')) {
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    } else if (filePath.endsWith('.svg')) {
-      res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
-    } else if (filePath.endsWith('.woff2')) {
-      res.setHeader('Content-Type', 'font/woff2');
-    } else if (filePath.endsWith('.woff')) {
-      res.setHeader('Content-Type', 'font/woff');
     }
   }
 }));
@@ -587,44 +561,7 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     await setupVite(app, server);
   } else {
     console.log("🔧 Setting up static file serving for production");
-    
-    // Fix: Vite builds to dist/public in repo root, not server/public
-    const distPath = path.resolve(process.cwd(), 'dist/public');
-    
-    if (fs.existsSync(distPath)) {
-      console.log(`🔧 Production: Serving static assets from ${distPath}`);
-      
-      // Serve static assets with proper MIME types
-      app.use(express.static(distPath, {
-        setHeaders: (res, filePath) => {
-          if (filePath.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css; charset=utf-8');
-            console.log(`📄 Serving CSS: ${filePath} with text/css MIME type`);
-          } else if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
-            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-            console.log(`📄 Serving JS: ${filePath} with application/javascript MIME type`);
-          } else if (filePath.endsWith('.jsx') || filePath.endsWith('.tsx')) {
-            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-          } else if (filePath.endsWith('.json')) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-          } else if (filePath.endsWith('.svg')) {
-            res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
-          } else if (filePath.endsWith('.woff2')) {
-            res.setHeader('Content-Type', 'font/woff2');
-          } else if (filePath.endsWith('.woff')) {
-            res.setHeader('Content-Type', 'font/woff');
-          }
-        }
-      }));
-
-      // Fall through to index.html if file doesn't exist
-      app.use("*", (_req, res) => {
-        res.sendFile(path.join(distPath, "index.html"));
-      });
-    } else {
-      console.warn(`🚨 dist/public not found at ${distPath}, falling back to development mode`);
-      await setupVite(app, server);
-    }
+    serveStatic(app);
   }
 
   // ALWAYS serve the app on port 5000
