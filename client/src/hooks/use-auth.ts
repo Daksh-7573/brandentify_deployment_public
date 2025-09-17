@@ -18,7 +18,7 @@ export function useAuth() {
     
     try {
       // Call backend OAuth endpoint to get OAuth URL
-      const response = await fetch('/api/auth/google', {
+      const response = await fetch('/api/auth/google/url', {
         method: 'GET',
         credentials: 'include',
         headers: {
