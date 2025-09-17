@@ -179,9 +179,9 @@ function Router() {
   return (
     <Switch>
       {/* Tier 1: Critical Routes (Always Available) */}
-      <Route path="/" component={Landing} />
-      <Route path="/nav-test" component={NavigationTest} />
-      <Route path="/url-demo" component={URLInputDemo} />
+      <Route path="/" component={() => <Landing />} />
+      <Route path="/nav-test" component={() => <NavigationTest />} />
+      <Route path="/url-demo" component={() => <URLInputDemo />} />
       <Route path="/industry-pulse" component={() => (
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       )} />
@@ -191,7 +191,7 @@ function Router() {
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
-      <Route path="/auth" component={AuthPage} />
+      <Route path="/auth" component={() => <AuthPage />} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
@@ -272,9 +272,9 @@ function Router() {
         );
       }} />
 
-      <Route path="/auth-callback" component={AuthCallbackPage} />
-      <Route path="/_/auth/callback" component={AuthCallbackPage} />
-      <Route path="/auth/callback" component={AuthCallbackPage} />
+      <Route path="/auth-callback" component={() => <AuthCallbackPage />} />
+      <Route path="/_/auth/callback" component={() => <AuthCallbackPage />} />
+      <Route path="/auth/callback" component={() => <AuthCallbackPage />} />
       
       {/* Tier 2: Secondary Routes (Load after 50ms) */}
       {secondaryLoaded && (
@@ -282,8 +282,8 @@ function Router() {
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
           )} />
-          <Route path="/search" component={SearchPage} />
-          <Route path="/portfolio-builder" component={PortfolioBuilder} />
+          <Route path="/search" component={() => <SearchPage />} />
+          <Route path="/portfolio-builder" component={() => <PortfolioBuilder />} />
           <Route path="/@:username">
             {(params) => <PublicProfile username={params.username} />}
           </Route>
@@ -293,14 +293,14 @@ function Router() {
       {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
       {adminLoaded && (
         <>
-          <Route path="/login" component={LoginPage} />
-          <Route path="/auth-status" component={AuthStatusPage} />
-          <Route path="/dev-login" component={DevLoginPage} />
-          <Route path="/simple-login" component={SimpleLoginPage} />
-          <Route path="/reliable-login" component={ReliableLoginPage} />
-          <Route path="/universal-login" component={UniversalLoginPage} />
-          <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
-          <Route path="/easy-login" component={EasyLoginPage} />
+          <Route path="/login" component={() => <LoginPage />} />
+          <Route path="/auth-status" component={() => <AuthStatusPage />} />
+          <Route path="/dev-login" component={() => <DevLoginPage />} />
+          <Route path="/simple-login" component={() => <SimpleLoginPage />} />
+          <Route path="/reliable-login" component={() => <ReliableLoginPage />} />
+          <Route path="/universal-login" component={() => <UniversalLoginPage />} />
+          <Route path="/simple-universal-login" component={() => <SimpleUniversalLoginPage />} />
+          <Route path="/easy-login" component={() => <EasyLoginPage />} />
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
@@ -317,18 +317,18 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/auth-test" component={FirebaseAuthTest} />
-      <Route path="/google-auth-test" component={GoogleAuthTest} />
-      <Route path="/google-auth-debug" component={GoogleAuthDebug} />
-      <Route path="/auth-cleaner" component={AuthCleaner} />
-      <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
-      <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
-      <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
-      <Route path="/replit-login" component={ReplitDomainLogin} />
-      <Route path="/replit-redirect-auth" component={ReplitRedirectAuth} />
-      <Route path="/google-login" component={GoogleRedirectOnly} />
-      <Route path="/domain-debug" component={DomainDebug} />
-      <Route path="/replit-auth" component={FinalReplitAuth} />
+      <Route path="/auth-test" component={() => <FirebaseAuthTest />} />
+      <Route path="/google-auth-test" component={() => <GoogleAuthTest />} />
+      <Route path="/google-auth-debug" component={() => <GoogleAuthDebug />} />
+      <Route path="/auth-cleaner" component={() => <AuthCleaner />} />
+      <Route path="/google-auth-fix" component={() => <GoogleAuthFixPage />} />
+      <Route path="/universal-google-auth" component={() => <UniversalGoogleAuthPage />} />
+      <Route path="/cross-domain-google-auth" component={() => <CrossDomainGoogleAuth />} />
+      <Route path="/replit-login" component={() => <ReplitDomainLogin />} />
+      <Route path="/replit-redirect-auth" component={() => <ReplitRedirectAuth />} />
+      <Route path="/google-login" component={() => <GoogleRedirectOnly />} />
+      <Route path="/domain-debug" component={() => <DomainDebug />} />
+      <Route path="/replit-auth" component={() => <FinalReplitAuth />} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
@@ -345,7 +345,7 @@ function Router() {
           </Suspense>
         );
       }} />
-          <Route path="/verify-email" component={EmailVerification} />
+          <Route path="/verify-email" component={() => <EmailVerification />} />
         </>
       )}
       
@@ -599,7 +599,7 @@ function Router() {
       </Route>
       
       {/* Pitch Deck Download page */}
-      <Route path="/pitch-deck-download" component={PitchDeckDownload} />
+      <Route path="/pitch-deck-download" component={() => <PitchDeckDownload />} />
       
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
@@ -634,7 +634,7 @@ function Router() {
       </Route>
       
       {/* Default 404 route */}
-      <Route component={NotFound} />
+      <Route component={() => <NotFound />} />
     </Switch>
   );
 }
