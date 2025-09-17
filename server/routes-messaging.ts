@@ -1,27 +1,23 @@
 /**
  * Messaging API Routes
  */
-import { Router, Request, Response, NextFunction } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { insertMessageSchema } from "@shared/message-schema";
 import * as messageService from "./services/message-service";
-import { requireAuth, type AuthenticatedRequest } from "./middleware/jwt-auth-middleware";
-import { validateCSRFMiddleware, provideCSRFToken } from "./middleware/csrf-middleware";
 
 const router = Router();
-
-// Apply authentication and CSRF protection to all routes
-router.use(requireAuth as any);
-router.use(provideCSRFToken as any);
-router.use(validateCSRFMiddleware as any);
 
 /**
  * Get all conversations for the current user
  */
 router.get("/conversations", async (req, res) => {
   try {
-    // SECURITY: Use authenticated user ID only, never client-supplied ID
-    const userId = (req as AuthenticatedRequest).user.id;
+    const userId = Number(req.query.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
     
     const conversations = await messageService.getConversationsForUser(userId);
     res.json(conversations);
@@ -62,14 +58,12 @@ router.post("/conversations", async (req, res) => {
   try {
     const schema = z.object({
       name: z.string().min(1),
+      creatorId: z.number(),
       isGroup: z.boolean().default(false),
       participantIds: z.array(z.number()).min(1)
     });
     
-    const { name, isGroup, participantIds } = schema.parse(req.body);
-    
-    // SECURITY: Use authenticated user as creator, never trust client-supplied ID
-    const creatorId = (req as AuthenticatedRequest).user.id;
+    const { name, creatorId, isGroup, participantIds } = schema.parse(req.body);
     
     // Ensure creator is in participants
     if (!participantIds.includes(creatorId)) {
@@ -108,19 +102,17 @@ router.post("/conversations", async (req, res) => {
 router.post("/conversations/direct", async (req, res) => {
   try {
     const schema = z.object({
-      otherUserId: z.number()
+      user1Id: z.number(),
+      user2Id: z.number()
     });
     
-    const { otherUserId } = schema.parse(req.body);
+    const { user1Id, user2Id } = schema.parse(req.body);
     
-    // SECURITY: Use authenticated user as one participant, client only provides the other user
-    const currentUserId = (req as AuthenticatedRequest).user.id;
-    
-    if (currentUserId === otherUserId) {
+    if (user1Id === user2Id) {
       return res.status(400).json({ error: "Cannot create a conversation with yourself" });
     }
     
-    const conversation = await messageService.getOrCreateDirectConversation(currentUserId, otherUserId);
+    const conversation = await messageService.getOrCreateDirectConversation(user1Id, user2Id);
     res.json(conversation);
   } catch (error) {
     console.error("Error with direct conversation:", error);
@@ -216,13 +208,11 @@ router.post("/conversations/:id/participants", async (req, res) => {
     }
     
     const schema = z.object({
-      userIds: z.array(z.number()).min(1)
+      userIds: z.array(z.number()).min(1),
+      addedByUserId: z.number()
     });
     
-    const { userIds } = schema.parse(req.body);
-    
-    // SECURITY: Use authenticated user as the one adding participants
-    const addedByUserId = (req as AuthenticatedRequest).user.id;
+    const { userIds, addedByUserId } = schema.parse(req.body);
     
     const result = await messageService.addUsersToConversation(
       conversationId,
@@ -246,13 +236,11 @@ router.post("/conversations/:id/participants", async (req, res) => {
 router.delete("/conversations/:id/participants", async (req, res) => {
   try {
     const conversationId = Number(req.params.id);
+    const userId = Number(req.query.userId);
     
-    if (isNaN(conversationId)) {
-      return res.status(400).json({ error: "Invalid conversation ID" });
+    if (isNaN(conversationId) || isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid IDs" });
     }
-    
-    // SECURITY: User can only leave conversations themselves, not specify another user
-    const userId = (req as AuthenticatedRequest).user.id;
     
     const result = await messageService.leaveConversation(conversationId, userId);
     res.json(result);
@@ -268,9 +256,11 @@ router.delete("/conversations/:id/participants", async (req, res) => {
 router.delete("/messages/:id", async (req, res) => {
   try {
     const messageId = req.params.id;
+    const userId = Number(req.query.userId);
     
-    // SECURITY: User can only delete their own messages
-    const userId = (req as AuthenticatedRequest).user.id;
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
     
     const result = await messageService.deleteMessage(messageId, userId);
     res.json(result);
@@ -285,10 +275,42 @@ router.delete("/messages/:id", async (req, res) => {
  */
 router.get("/unread/count", async (req, res) => {
   try {
-    // SECURITY: Use authenticated user ID only, never client-supplied ID
-    const userId = (req as AuthenticatedRequest).user.id;
+    const userIdParam = req.query.userId as string;
     
-    console.log(`[GET /messaging/unread/count] Getting unread count for authenticated user: ${userId}`);
+    // First check if this is a Firebase UID (string) or a numeric ID
+    const isFirebaseUid = /^[A-Za-z0-9]{20,}$/.test(userIdParam);
+    let userId: number;
+    
+    if (isFirebaseUid) {
+      // If this is a Firebase UID, try to find the user in the database
+      console.log(`[GET /messaging/unread/count] Looking up user with Firebase UID: ${userIdParam}`);
+      
+      try {
+        // Look up the user by the Firebase UID which is stored as the username
+        const storage = (await import('./storage')).storage;
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /messaging/unread/count] No user found with Firebase UID: ${userIdParam}`);
+          // Return 0 count rather than error for better UX
+          return res.json({ count: 0 });
+        }
+        
+        // Use the numeric user ID from the database
+        userId = user.id;
+        console.log(`[GET /messaging/unread/count] Found user with ID: ${userId} for Firebase UID: ${userIdParam}`);
+      } catch (lookupError) {
+        console.error('Error looking up user by Firebase UID:', lookupError);
+        // Return 0 count rather than error for better UX
+        return res.json({ count: 0 });
+      }
+    } else {
+      // If this is a numeric ID, parse it
+      userId = Number(userIdParam);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+    }
     
     const result = await messageService.getTotalUnreadMessageCount(userId);
     res.json(result);

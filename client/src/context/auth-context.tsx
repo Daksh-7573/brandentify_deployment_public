@@ -49,120 +49,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Initialize authentication system with JWT session validation and force cleanup
+  // Initialize authentication system with server-side session check only
   useEffect(() => {
-    console.log('[Auth Context] 🔐 Initializing JWT authentication system');
+    console.log('[Auth Context] Initializing authentication system');
+    const startTime = performance.now();
     
-    // AGGRESSIVE CLEANUP: Always clear old Firebase UID authentication data first
-    const storedUser = sessionStorage.getItem('brandentifier_user');
-    let shouldForceReauth = false;
+    console.log('[Auth Context] Using server-side JWT session for all domains');
     
-    if (storedUser) {
+    // Check server-side session for all domains
+    // CRITICAL FIX: Include fallback authentication data
+    const existingUserData = sessionStorage.getItem('brandentifier_user');
+    let requestHeaders: Record<string, string> = {};
+    
+    if (existingUserData) {
       try {
-        const userData = JSON.parse(storedUser);
-        console.log('[Auth Context] 🔍 Analyzing stored auth data:', {
-          hasId: !!userData.id,
-          idType: typeof userData.id,
-          idLength: userData.id ? userData.id.toString().length : 0,
-          isFirebaseUID: userData.id && typeof userData.id === 'string' && userData.id.length > 20
-        });
-        
-        // Check if stored user has Firebase UID format (long string) instead of numeric ID
-        if (userData.id && typeof userData.id === 'string' && userData.id.length > 20) {
-          console.log('[Auth Context] 🧹 DETECTED OLD FIREBASE UID AUTH DATA - forcing complete re-authentication');
-          sessionStorage.removeItem('brandentifier_user');
-          shouldForceReauth = true;
+        const userData = JSON.parse(existingUserData);
+        // Send Firebase UID for fallback authentication
+        if (userData.uid || userData.id) {
+          requestHeaders['x-firebase-uid'] = userData.uid || userData.id?.toString();
         }
+        // Also send full user data as backup
+        requestHeaders['x-user-data'] = existingUserData;
+        console.log('[Auth Context] Including fallback auth data for session check');
       } catch (e) {
-        console.warn('[Auth Context] ⚠️ Error parsing stored user data, clearing:', e);
-        sessionStorage.removeItem('brandentifier_user');
-        shouldForceReauth = true;
+        console.log('[Auth Context] Could not parse existing user data for fallback auth');
       }
     }
     
-    if (shouldForceReauth) {
-      console.log('[Auth Context] 🚨 FORCING AUTHENTICATION RESET - clearing all auth state');
-      setUser(null);
-      setIsLoading(false);
-      return; // Skip JWT validation, user needs to authenticate fresh
-    }
-    
-    console.log('[Auth Context] 🍪 Validating JWT session with server');
-    
-    // Always check server-side JWT session first - this is the authoritative source
     fetch('/api/auth/session', {
       method: 'GET',
-      credentials: 'include', // CRITICAL: Include JWT cookies
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+      credentials: 'include', // Include cookies
+      headers: requestHeaders
     })
     .then(response => {
-      console.log('[Auth Context] 📊 JWT session validation response:', {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-        ok: response.ok
-      });
-      
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error(`JWT session validation failed: ${response.status}`);
+        throw new Error('No valid session');
       }
     })
     .then(sessionData => {
       if (sessionData.success && sessionData.user) {
-        console.log('[Auth Context] ✅ VALID JWT SESSION - user authenticated successfully');
-        console.log('[Auth Context] 📊 JWT Session user data:', {
-          id: sessionData.user.id,
-          email: sessionData.user.email,
-          name: sessionData.user.name,
-          idType: typeof sessionData.user.id
-        });
-        
-        // Ensure user ID is numeric (proper format for JWT system)
-        if (typeof sessionData.user.id !== 'number') {
-          console.error('[Auth Context] ⚠️ Invalid user ID format in JWT response, forcing re-auth');
-          throw new Error('Invalid user ID format in JWT session');
-        }
-        
-        const authenticatedUser = {
+        console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
+        setUser({
           uid: sessionData.user.id.toString(),
-          id: sessionData.user.id,
-          username: sessionData.user.username,
-          email: sessionData.user.email,
-          name: sessionData.user.name,
-          photoURL: sessionData.user.photoURL,
-          title: sessionData.user.title,
-          location: sessionData.user.location
-        };
-        
-        setUser(authenticatedUser);
+          ...sessionData.user
+        });
         setIsLoading(false);
         
-        // Store in session storage for consistency (with proper numeric ID)
+        // Store in session storage for consistency
         sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
-        
-        console.log('[Auth Context] 🎉 JWT authentication complete - ready for authenticated requests');
       } else {
-        throw new Error('Invalid JWT session data structure');
+        throw new Error('Invalid session data');
       }
     })
     .catch(error => {
-      console.log('[Auth Context] ❌ JWT session validation failed:', error.message);
-      console.log('[Auth Context] 🔄 User must authenticate via OAuth to obtain JWT tokens');
-      
-      // Clear any stale data completely
-      sessionStorage.removeItem('brandentifier_user');
-      localStorage.removeItem('brandentifier_user'); // Clear both storage types
-      
-      // Set unauthenticated state
-      setUser(null);
+      console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+      console.log('[Auth Context] User needs to authenticate via server OAuth');
       setIsLoading(false);
-      
-      console.log('[Auth Context] 📤 Ready for fresh OAuth authentication flow');
     });
     
   }, []);
@@ -248,68 +192,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign out function - enhanced with proper error handling
+  // Sign out function - simplified for all domains
   const signOut = async () => {
     try {
       setIsLoading(true);
-      console.log('[Auth Context] Starting logout process');
       
       // Clear server-side session for all domains
-      const response = await fetch('/api/auth/logout', {
+      await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include', // Include JWT cookies
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+        credentials: 'include'
       });
-      
-      console.log('[Auth Context] Logout response:', {
-        status: response.status,
-        ok: response.ok
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('[Auth Context] ✅ Logout successful:', data.message);
-        
-        toast({
-          title: "Signed out",
-          description: "You have been signed out successfully.",
-        });
-      } else {
-        console.warn('[Auth Context] ⚠️ Logout response not OK, but proceeding with cleanup');
-      }
-      
-    } catch (error: any) {
-      console.error("[Auth Context] ❌ Sign out error:", error);
-      
-      // Show toast for network errors only - still proceed with cleanup
-      if (error.message?.includes('fetch')) {
-        toast({
-          title: "Network Error",
-          description: "Couldn't reach server, but you've been signed out locally.",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      // Always clear local state and redirect, regardless of server response
-      console.log('[Auth Context] Clearing local authentication state');
       
       // Clear local state
       setUser(null);
       sessionStorage.removeItem('brandentifier_user');
       
-      // Clear any cached queries that might contain user data
-      queryClient.clear();
-      
-      // Stop loading before redirect
-      setIsLoading(false);
-      
-      console.log('[Auth Context] ✅ Logout cleanup completed, redirecting to /auth');
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
       
       // Redirect to auth page
       window.location.href = '/auth';
+      
+    } catch (error) {
+      console.error("Sign out error:", error);
+      
+      // Clear local state anyway
+      setUser(null);
+      sessionStorage.removeItem('brandentifier_user');
+      window.location.href = '/auth';
+    } finally {
+      setIsLoading(false);
     }
   };
 

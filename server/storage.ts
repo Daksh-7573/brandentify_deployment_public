@@ -304,7 +304,6 @@ export interface IStorage {
   
   // Work Experience operations
   getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]>;
-  getWorkExperienceById(id: number): Promise<WorkExperience | undefined>;
   createWorkExperience(experience: InsertWorkExperience): Promise<WorkExperience>;
   updateWorkExperience(id: number, experience: Partial<WorkExperience>): Promise<WorkExperience | undefined>;
   deleteWorkExperience(id: number): Promise<boolean>;
@@ -312,7 +311,6 @@ export interface IStorage {
   
   // Education operations
   getEducationsByUserId(userId: number): Promise<Education[]>;
-  getEducationById(id: number): Promise<Education | undefined>;
   createEducation(education: InsertEducation): Promise<Education>;
   updateEducation(id: number, education: Partial<Education>): Promise<Education | undefined>;
   deleteEducation(id: number): Promise<boolean>;
@@ -2086,7 +2084,7 @@ export class MemStorage implements IStorage {
   }
   
   async verifyEmail(email: string, token: string): Promise<boolean> {
-    console.log(`[storage] verifyEmail: Starting verification for ${email}`);
+    console.log(`[storage] verifyEmail: Verifying ${email} with token ${token}`);
     
     const verification = await this.getEmailVerificationByEmail(email);
     if (!verification) {
@@ -2099,13 +2097,13 @@ export class MemStorage implements IStorage {
     // Check if the token has expired using the expiresAt field
     const now = new Date();
     if (now > verification.expiresAt) {
-      console.log(`[storage] verifyEmail: Token has expired - validation failed`);
+      console.log(`[storage] verifyEmail: Token expired. Current time: ${now}, Expires at: ${verification.expiresAt}`);
       return false;
     }
     
     // Check if the token matches
     if (verification.token !== token) {
-      console.log(`[storage] verifyEmail: Token validation failed - token mismatch detected`);
+      console.log(`[storage] verifyEmail: Token mismatch. Expected: ${verification.token}, Received: ${token}`);
       return false;
     }
     

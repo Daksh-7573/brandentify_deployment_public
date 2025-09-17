@@ -24,7 +24,10 @@ import cors from 'cors';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
-import { getJWTSecret, JWT_EXPIRATION } from './jwt-secret-manager';
+
+// Secure JWT signing key (in production, this should be in environment variables)
+const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'brandentifier-secure-encryption-key-2025';
@@ -182,7 +185,7 @@ export function generateToken(user: any): string {
     email: user.email
   };
   
-  return jwt.sign(payload, getJWTSecret(), { expiresIn: JWT_EXPIRATION });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
 }
 
 /**
@@ -192,7 +195,7 @@ export function generateToken(user: any): string {
  */
 export function verifyToken(token: string): any {
   try {
-    return jwt.verify(token, getJWTSecret());
+    return jwt.verify(token, JWT_SECRET);
   } catch (error) {
     return null;
   }
@@ -323,24 +326,12 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
  * @param app Express application
  */
 export async function setupSecurity(app: any) {
-  // 1. Enable helmet for secure headers with proper Content Security Policy
+  // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for some frameworks
-          imgSrc: ["'self'", "data:", "https:", "blob:"],
-          connectSrc: ["'self'", "wss:", "https:"],
-          frameSrc: ["'self'"],
-          // CRITICAL: Prevent clickjacking by restricting frame embedding
-          frameAncestors: ["'self'", "https://*.replit.dev", "https://replit.com"]
-        }
-      },
-      crossOriginEmbedderPolicy: false, // Keep disabled for compatibility
-      frameguard: { action: 'sameorigin' }, // Enable frame protection with SAMEORIGIN
+      contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
+      crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
+      frameguard: false, // Disable X-Frame-Options to allow iframe embedding for Replit preview
     })
   );
   
@@ -455,8 +446,8 @@ export async function setupSecurity(app: any) {
     // Security headers that won't break existing functionality
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    // Set secure X-Frame-Options for clickjacking protection
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    // Explicitly remove X-Frame-Options to allow iframe embedding
+    res.removeHeader('X-Frame-Options');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();

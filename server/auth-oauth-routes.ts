@@ -8,7 +8,6 @@ import { Request, Response } from "express";
 import { storage } from "./storage";
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { getJWTSecret, JWT_EXPIRATION } from './jwt-secret-manager';
 
 // Google OAuth URLs
 const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -18,6 +17,7 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
@@ -26,74 +26,6 @@ const ALLOWED_REDIRECT_URIS = [
   'http://localhost:5000/api/auth/google/callback',
   'http://127.0.0.1:5000/api/auth/google/callback'
 ];
-
-// Trusted domains allowlist for post-OAuth redirects (SECURITY: prevents open-redirect attacks)
-const TRUSTED_REDIRECT_DOMAINS = [
-  'brandentifier.com',
-  'www.brandentifier.com',
-  // All Replit domains
-  'brandentifier.replit.app',
-  // Development domains
-  'localhost',
-  '127.0.0.1'
-];
-
-// Trusted domain patterns (for wildcard matching)
-const TRUSTED_DOMAIN_PATTERNS = [
-  /^[a-zA-Z0-9-]+\.replit\.app$/,     // *.replit.app
-  /^[a-zA-Z0-9-]+\.replit\.dev$/      // *.replit.dev
-];
-
-/**
- * SECURITY: Validates if a domain is trusted for post-OAuth redirects
- * This prevents open-redirect attacks by ensuring we only redirect to our own domains
- * 
- * @param hostOrUrl - Can be just a hostname or a full URL
- * @returns boolean - true if the domain is trusted, false otherwise
- */
-function isTrustedRedirectDomain(hostOrUrl: string): boolean {
-  try {
-    // Handle both hostnames and full URLs
-    let hostname: string;
-    
-    if (hostOrUrl.includes('://')) {
-      // It's a URL, extract the hostname
-      const url = new URL(hostOrUrl);
-      hostname = url.hostname;
-    } else {
-      // It's just a hostname (may include port)
-      hostname = hostOrUrl.split(':')[0]; // Remove port if present
-    }
-    
-    // Normalize to lowercase for case-insensitive comparison
-    hostname = hostname.toLowerCase();
-    
-    // Check exact matches against trusted domains
-    if (TRUSTED_REDIRECT_DOMAINS.includes(hostname)) {
-      return true;
-    }
-    
-    // Check against wildcard patterns (*.replit.app, *.replit.dev)
-    for (const pattern of TRUSTED_DOMAIN_PATTERNS) {
-      if (pattern.test(hostname)) {
-        return true;
-      }
-    }
-    
-    // Special handling for localhost with any port
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return true;
-    }
-    
-    // Not a trusted domain
-    return false;
-    
-  } catch (error) {
-    // If there's any error parsing the domain/URL, reject it for security
-    console.error('🚨 [SECURITY] Error parsing domain for validation:', error);
-    return false;
-  }
-}
 
 // Function to determine if a redirect URI is valid
 function isValidRedirectUri(uri: string): boolean {
@@ -420,9 +352,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     // Sign JWT with secret
-    const sessionToken = jwt.sign(tokenPayload, getJWTSecret(), { 
-      algorithm: 'HS256',
-      expiresIn: JWT_EXPIRATION
+    const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
+      algorithm: 'HS256'
     });
     
     // Determine exact domain for production cookie
@@ -470,57 +401,28 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       username: user.username,
       authProvider: 'google'
     });
-    console.log('✅ [OAUTH CALLBACK] Session cookie set successfully');
+    console.log('✅ [OAUTH CALLBACK] Cookie set with session token');
     console.log('✅ [OAUTH CALLBACK] Redirecting to /industry-pulse');
     
-    // SECURITY: Parse state to get return host and validate against trusted domains before redirecting
-    let finalRedirectUrl = '/dashboard'; // Default safe fallback
+    // Parse state to get return host and redirect to correct domain
+    let finalRedirectUrl = '/dashboard'; // Default fallback
     
     try {
       const decodedState = JSON.parse(Buffer.from(state as string, 'base64url').toString());
       const returnHost = decodedState.returnHost;
       
       if (returnHost && returnHost !== req.get('host')) {
-        // SECURITY: Validate returnHost against trusted domains to prevent open-redirect attacks
-        if (isTrustedRedirectDomain(returnHost)) {
-          // Domain is trusted, construct redirect URL
-          if (returnHost.includes('localhost') || returnHost.includes('127.0.0.1')) {
-            finalRedirectUrl = `http://${returnHost}/dashboard`;
-          } else {
-            finalRedirectUrl = `https://${returnHost}/dashboard`;
-          }
-          console.log('✅ [OAUTH CALLBACK] Validated cross-domain redirect to:', finalRedirectUrl);
-          console.log('✅ [OAUTH CALLBACK] Trusted domain confirmed:', returnHost);
-          return res.redirect(303, finalRedirectUrl);
+        // Redirect to original domain if different from current
+        if (returnHost.includes('localhost')) {
+          finalRedirectUrl = `http://${returnHost}/dashboard`;
         } else {
-          // SECURITY: Block untrusted domain redirect attempt and log for monitoring
-          console.error('🚨 [SECURITY ALERT] Blocked open-redirect attempt!');
-          console.error('🚨 [SECURITY] Untrusted returnHost blocked:', returnHost);
-          console.error('🚨 [SECURITY] Request details:', {
-            ip: req.ip || req.connection.remoteAddress,
-            userAgent: req.get('user-agent'),
-            referer: req.get('referer'),
-            timestamp: new Date().toISOString(),
-            requestHost: req.get('host')
-          });
-          
-          // Use safe fallback redirect instead of potentially malicious domain
-          console.log('🛡️ [SECURITY] Using safe fallback redirect instead of untrusted domain');
-          finalRedirectUrl = '/dashboard';
+          finalRedirectUrl = `https://${returnHost}/dashboard`;
         }
+        console.log('🔄 [OAUTH CALLBACK] Cross-domain redirect to:', finalRedirectUrl);
+        return res.redirect(303, finalRedirectUrl);
       }
     } catch (error) {
-      // SECURITY: If state parsing fails, log the attempt and use safe fallback
-      console.error('🚨 [SECURITY] Could not parse state for return host - potential tampering attempt');
-      console.error('🚨 [SECURITY] State parsing error:', error);
-      console.error('🚨 [SECURITY] Request details:', {
-        ip: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        referer: req.get('referer'),
-        timestamp: new Date().toISOString()
-      });
-      console.log('⚠️ [OAUTH CALLBACK] Using safe default redirect due to state parsing failure');
-      finalRedirectUrl = '/dashboard';
+      console.log('⚠️ [OAUTH CALLBACK] Could not parse state for return host, using default redirect');
     }
     
     // Same domain redirect - go to dashboard
@@ -553,17 +455,93 @@ export async function checkSessionRoute(req: Request, res: Response) {
     console.log('🍪 Session Debug:', {
       host: requestHost,
       cookiePresent: !!req.cookies?.brandentifier_session,
-      tokenLength: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.length : 0,
+      cookieStart: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.substring(0, 20) + '...' : 'none',
       userAgent: req.get('user-agent')?.substring(0, 50)
     });
     
     // Check if JWT session cookie exists
     const sessionToken = req.cookies?.brandentifier_session;
     
+    // CRITICAL FIX: Add fallback authentication for Firebase UID
     if (!sessionToken) {
-      console.log('❌ No JWT session cookie found');
-      // Clear any stale cookies that might exist
-      clearSessionCookie(req, res);
+      console.log('❌ No JWT session cookie found, trying Firebase UID fallback authentication');
+      
+      // Check for Firebase UID in headers or query params (used by other endpoints)
+      const firebaseUid = req.headers['x-firebase-uid'] || req.headers['firebase-uid'] || req.query.firebaseUid;
+      
+      if (firebaseUid && typeof firebaseUid === 'string') {
+        console.log('🔄 Found Firebase UID in request, attempting fallback authentication:', firebaseUid);
+        
+        try {
+          // Look up user by Firebase UID (stored as username)
+          const user = await storage.getUserByUsername(firebaseUid);
+          
+          if (user) {
+            console.log('✅ Fallback authentication successful for Firebase UID:', firebaseUid);
+            
+            // Return sanitized user data (same format as JWT validation)
+            const clientUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              name: user.name,
+              photoURL: user.photoURL,
+              profileCompleted: user.profileCompleted || 0,
+              authProvider: 'google',
+              emailVerified: user.emailVerified
+            };
+            
+            return res.json({
+              success: true,
+              user: clientUser,
+              authMethod: 'firebase-uid-fallback'
+            });
+          } else {
+            console.log('❌ No user found for Firebase UID:', firebaseUid);
+          }
+        } catch (error) {
+          console.log('❌ Error in Firebase UID fallback authentication:', error);
+        }
+      }
+      
+      // Check sessionStorage data sent from frontend as fallback
+      const userDataHeader = req.headers['x-user-data'];
+      if (userDataHeader && typeof userDataHeader === 'string') {
+        try {
+          const userData = JSON.parse(userDataHeader);
+          console.log('🔄 Found user data in headers, validating against database');
+          
+          // Validate by looking up user in database
+          const user = userData.email ? 
+            await storage.getUserByEmail(userData.email) :
+            await storage.getUserByUsername(userData.username || userData.uid);
+          
+          if (user) {
+            console.log('✅ Header-based authentication successful for user:', user.email);
+            
+            const clientUser = {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              name: user.name,
+              photoURL: user.photoURL,
+              profileCompleted: user.profileCompleted || 0,
+              authProvider: 'google',
+              emailVerified: user.emailVerified
+            };
+            
+            return res.json({
+              success: true,
+              user: clientUser,
+              authMethod: 'header-data-fallback'
+            });
+          }
+        } catch (error) {
+          console.log('❌ Error parsing user data from headers:', error);
+        }
+      }
+      
+      console.log('❌ No valid authentication method found (no JWT cookie, Firebase UID, or valid user data)');
       return res.status(401).json({
         success: false,
         error: 'No session found'
@@ -572,7 +550,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
     
     // Verify JWT token
     try {
-      const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
+      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
       console.log('✅ Valid session found for user:', decoded.email);
       
       // Get fresh user data from database
@@ -580,8 +558,6 @@ export async function checkSessionRoute(req: Request, res: Response) {
       
       if (!user) {
         console.log('❌ User not found in database');
-        // Clear invalid session cookie
-        clearSessionCookie(req, res);
         return res.status(401).json({
           success: false,
           error: 'User not found'
@@ -607,9 +583,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
       
     } catch (jwtError) {
-      console.log('❌ Invalid or expired JWT token - validation failed');
-      // Clear invalid/expired session cookie
-      clearSessionCookie(req, res);
+      console.log('❌ Invalid or expired JWT token:', jwtError);
       return res.status(401).json({
         success: false,
         error: 'Invalid session token'
@@ -621,104 +595,6 @@ export async function checkSessionRoute(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: 'Session check failed'
-    });
-  }
-}
-
-/**
- * Helper function to clear session cookie with proper security settings
- */
-function clearSessionCookie(req: Request, res: Response) {
-  const currentHost = req.get('host') || 'localhost:5000';
-  const isLocalDev = currentHost.includes('localhost') || currentHost.includes('127.0.0.1');
-  const isHttps = !isLocalDev; // All Replit domains (.replit.app and .replit.dev) use HTTPS
-  
-  // Clear cookie with same settings as when it was set
-  const cookieOptions = {
-    httpOnly: true,
-    secure: isHttps,
-    sameSite: 'lax' as const,
-    path: '/',
-    expires: new Date(0), // Set expiration to past date to clear cookie
-  };
-  
-  res.clearCookie('brandentifier_session', cookieOptions);
-  console.log('🍪 Session cookie cleared with options:', {
-    domain: (cookieOptions as any).domain || 'omitted',
-    sameSite: cookieOptions.sameSite,
-    secure: cookieOptions.secure,
-    host: currentHost
-  });
-}
-
-/**
- * Logout endpoint - securely clears JWT session cookie
- */
-export async function logoutRoute(req: Request, res: Response) {
-  try {
-    console.log('🚪 Processing logout request');
-    
-    // Set cache control headers for logout endpoint
-    res.set({
-      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Surrogate-Control': 'no-store',
-      'X-Auth-Handler': 'server-logout',
-      'X-Auth-Timestamp': new Date().toISOString(),
-      'X-Auth-Host': req.get('host') || 'unknown'
-    });
-    
-    // Debug logging for logout
-    const requestHost = req.get('host');
-    const sessionToken = req.cookies?.brandentifier_session;
-    
-    console.log('🍪 Logout Debug:', {
-      host: requestHost,
-      cookiePresent: !!sessionToken,
-      method: req.method,
-      userAgent: req.get('user-agent')?.substring(0, 50)
-    });
-    
-    // Check if we have a session to clear
-    if (sessionToken) {
-      try {
-        // Try to decode the token to get user info for logging
-        const decoded = jwt.verify(sessionToken, getJWTSecret()) as any;
-        console.log('🚪 Logging out user:', decoded.email);
-      } catch (jwtError) {
-        console.log('🚪 Clearing invalid/expired session during logout');
-      }
-    } else {
-      console.log('🚪 No session cookie found, but proceeding with logout');
-    }
-    
-    // Always clear the session cookie (even if it doesn't exist or is invalid)
-    clearSessionCookie(req, res);
-    
-    console.log('✅ Logout completed successfully');
-    
-    // Return success response
-    res.json({
-      success: true,
-      message: 'Logged out successfully'
-    });
-    
-  } catch (error: any) {
-    console.error('❌ Logout error:', error);
-    
-    // Even if there's an error, try to clear the cookie
-    try {
-      clearSessionCookie(req, res);
-    } catch (clearError) {
-      console.error('❌ Error clearing cookie during logout error:', clearError);
-    }
-    
-    // Return success anyway - logout should be idempotent
-    res.json({
-      success: true,
-      message: 'Logged out successfully',
-      note: 'Logout completed despite error'
     });
   }
 }

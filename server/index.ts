@@ -18,7 +18,6 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
-import { initializeJWTConfiguration } from "./jwt-secret-manager";
 
 const app = express();
 
@@ -41,21 +40,32 @@ app.use((req, res, next) => {
     return next();
   }
 
-  // SECURITY: Apply clickjacking protection for all pages
-  // Only allow Replit development environment embedding for preview functionality
-  const isReplitDev = req.headers.host?.includes('.replit.dev') || req.headers.host?.includes('picard.replit.dev');
+  // Force removal of X-Frame-Options header - this must run before all other middleware
+  // Remove any existing X-Frame-Options header
+  res.removeHeader('X-Frame-Options');
   
-  if (isReplitDev) {
-    // Allow iframe embedding only within Replit development environment
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://*.replit.dev https://replit.com");
-  } else {
-    // Production: Strong clickjacking protection
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
-  }
+  // Override the setHeader method to prevent X-Frame-Options from being set
+  const originalSetHeader = res.setHeader.bind(res);
+  res.setHeader = function(name: string, value: any) {
+    if (name.toLowerCase() === 'x-frame-options') {
+      console.log(`🚫 Blocked attempt to set X-Frame-Options: ${value}`);
+      return this; // Don't set the header
+    }
+    return originalSetHeader(name, value);
+  };
   
-  console.log(`🔒 SECURITY: Clickjacking protection applied for ${req.method} ${req.path}`);
+  // Also override res.end to ensure no headers are set at response time
+  const originalEnd = res.end.bind(res);
+  res.end = function(chunk?: any, encoding?: any) {
+    // Final removal of X-Frame-Options right before sending response (only if headers haven't been sent)
+    if (!this.headersSent) {
+      this.removeHeader('X-Frame-Options');
+      console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
+    }
+    return originalEnd.call(this, chunk, encoding);
+  };
+  
+  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
   next();
 });
 
@@ -108,8 +118,8 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   
-  // Secure frame protection is handled in the middleware above
-  // res.setHeader('X-Frame-Options') is set based on environment
+  // Forcibly remove X-Frame-Options to allow iframe embedding
+  res.removeHeader('X-Frame-Options');
   res.header('X-Content-Type-Options', 'nosniff');
   
   // Handle preflight requests
@@ -531,18 +541,6 @@ muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
 (async () => {
-  // CRITICAL: Initialize JWT configuration before server starts
-  // This validates JWT_SECRET in production and exits if missing
-  console.log("🔐 Initializing JWT secret management...");
-  try {
-    initializeJWTConfiguration();
-    console.log("✅ JWT secret management initialized successfully");
-  } catch (error) {
-    console.error("❌ FATAL: JWT configuration failed:", error instanceof Error ? error.message : error);
-    console.error("❌ Server startup aborted due to JWT configuration error");
-    process.exit(1);
-  }
-
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -111,7 +111,7 @@ export function EmailAuth() {
         console.log("Email preview:", data.emailPreview);
       } else if (data.verificationToken) {
         // Fallback for development
-        console.log("Verification token generated successfully for development");
+        console.log("Verification token (for dev testing):", data.verificationToken);
       }
       
     } catch (err: any) {
@@ -205,7 +205,7 @@ export function EmailAuth() {
       if (responseData.emailPreview) {
         console.log("Email preview URL:", responseData.emailPreview);
       } else if (responseData.verificationToken) {
-        console.log("New verification token generated successfully for development");
+        console.log("Verification token (for dev testing):", responseData.verificationToken);
       }
       
       // Set the unverified email for potential resend
