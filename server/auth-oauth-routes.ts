@@ -462,86 +462,8 @@ export async function checkSessionRoute(req: Request, res: Response) {
     // Check if JWT session cookie exists
     const sessionToken = req.cookies?.brandentifier_session;
     
-    // CRITICAL FIX: Add fallback authentication for Firebase UID
     if (!sessionToken) {
-      console.log('❌ No JWT session cookie found, trying Firebase UID fallback authentication');
-      
-      // Check for Firebase UID in headers or query params (used by other endpoints)
-      const firebaseUid = req.headers['x-firebase-uid'] || req.headers['firebase-uid'] || req.query.firebaseUid;
-      
-      if (firebaseUid && typeof firebaseUid === 'string') {
-        console.log('🔄 Found Firebase UID in request, attempting fallback authentication:', firebaseUid);
-        
-        try {
-          // Look up user by Firebase UID (stored as username)
-          const user = await storage.getUserByUsername(firebaseUid);
-          
-          if (user) {
-            console.log('✅ Fallback authentication successful for Firebase UID:', firebaseUid);
-            
-            // Return sanitized user data (same format as JWT validation)
-            const clientUser = {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              name: user.name,
-              photoURL: user.photoURL,
-              profileCompleted: user.profileCompleted || 0,
-              authProvider: 'google',
-              emailVerified: user.emailVerified
-            };
-            
-            return res.json({
-              success: true,
-              user: clientUser,
-              authMethod: 'firebase-uid-fallback'
-            });
-          } else {
-            console.log('❌ No user found for Firebase UID:', firebaseUid);
-          }
-        } catch (error) {
-          console.log('❌ Error in Firebase UID fallback authentication:', error);
-        }
-      }
-      
-      // Check sessionStorage data sent from frontend as fallback
-      const userDataHeader = req.headers['x-user-data'];
-      if (userDataHeader && typeof userDataHeader === 'string') {
-        try {
-          const userData = JSON.parse(userDataHeader);
-          console.log('🔄 Found user data in headers, validating against database');
-          
-          // Validate by looking up user in database
-          const user = userData.email ? 
-            await storage.getUserByEmail(userData.email) :
-            await storage.getUserByUsername(userData.username || userData.uid);
-          
-          if (user) {
-            console.log('✅ Header-based authentication successful for user:', user.email);
-            
-            const clientUser = {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              name: user.name,
-              photoURL: user.photoURL,
-              profileCompleted: user.profileCompleted || 0,
-              authProvider: 'google',
-              emailVerified: user.emailVerified
-            };
-            
-            return res.json({
-              success: true,
-              user: clientUser,
-              authMethod: 'header-data-fallback'
-            });
-          }
-        } catch (error) {
-          console.log('❌ Error parsing user data from headers:', error);
-        }
-      }
-      
-      console.log('❌ No valid authentication method found (no JWT cookie, Firebase UID, or valid user data)');
+      console.log('❌ No JWT session cookie found');
       return res.status(401).json({
         success: false,
         error: 'No session found'
