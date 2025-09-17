@@ -356,8 +356,8 @@ export async function setupSecurity(app: any) {
       } else if (process.env.NODE_ENV === 'development') {
         console.log('CORS: Allowing due to development mode');
         callback(null, true);
-      } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
-        console.log('CORS: Allowing Replit domain');
+      } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev') || origin.endsWith('.replit.co')) {
+        console.log('CORS: Allowing Replit domain:', origin);
         callback(null, true);
       } else {
         console.log(`CORS: Rejecting origin: ${origin}`);

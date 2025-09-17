@@ -80,6 +80,21 @@ const ALLOWED_ORIGINS = [
   'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev'
 ];
 
+// Function to check if origin is allowed
+function isOriginAllowed(origin: string): boolean {
+  // Check explicit allowlist first
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    return true;
+  }
+  
+  // Allow all Replit domains dynamically
+  if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev') || origin.endsWith('.replit.co')) {
+    return true;
+  }
+  
+  return false;
+}
+
 app.use((req, res, next) => {
   const origin = req.get('origin');
   
@@ -88,15 +103,14 @@ app.use((req, res, next) => {
   console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
   
   // Set CORS headers based on allowlist or for no-origin requests (direct access)
-  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      console.log('CORS: Allowing origin:', origin);
-    } else {
-      res.header('Access-Control-Allow-Origin', '*');
-      console.log('CORS: Allowing request with no origin');
-    }
+  if (!origin) {
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Allowing request with no origin');
+  } else if (isOriginAllowed(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Allowing origin:', origin);
   } else {
     console.log('CORS: Blocking unauthorized origin:', origin);
   }

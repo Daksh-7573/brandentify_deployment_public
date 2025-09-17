@@ -27,6 +27,23 @@ const ALLOWED_REDIRECT_URIS = [
   'http://127.0.0.1:5000/api/auth/google/callback'
 ];
 
+// Function to determine if a redirect URI is valid
+function isValidRedirectUri(uri: string): boolean {
+  // Check exact matches first
+  if (ALLOWED_REDIRECT_URIS.includes(uri)) {
+    return true;
+  }
+  
+  // Allow any Replit preview domain (*.replit.dev) or published domain (*.replit.app)
+  const url = new URL(uri);
+  if ((url.hostname.endsWith('.replit.dev') || url.hostname.endsWith('.replit.app')) && 
+      url.pathname === '/api/auth/google/callback') {
+    return true;
+  }
+  
+  return false;
+}
+
 // In-memory state storage (in production, use Redis or database)
 const stateStore = new Map<string, { timestamp: number, ip: string }>();
 
@@ -69,8 +86,8 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     const isPreviewDomain = host.includes('replit.dev');
     const isPublishedDomain = host.includes('replit.app');
     
-    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
-    // Store original host in state for post-auth redirect
+    // CRITICAL FIX: Use the SAME domain as the originating request to avoid cookie domain mismatch
+    // This ensures that session cookies can be properly shared between OAuth callback and frontend
     let redirectUri;
     let returnHost = host;
     
@@ -78,10 +95,17 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isPreviewDomain || isPublishedDomain) {
+      // Use the SAME domain as the request origin to fix cookie domain mismatch
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // Fallback to published domain for unknown domains
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+    }
+    
+    // Validate that the redirect URI is allowed
+    if (!isValidRedirectUri(redirectUri)) {
+      throw new Error(`Redirect URI not allowed: ${redirectUri}`);
     }
     
     console.log('OAuth redirect URI:', redirectUri);
@@ -201,8 +225,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     const isPreviewDomain = host.includes('replit.dev');
     const isPublishedDomain = host.includes('replit.app');
     
-    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
-    // Store original host in state for post-auth redirect
+    // CRITICAL FIX: Use the SAME domain as the callback request to avoid cookie domain mismatch
+    // This ensures that session cookies can be properly shared between OAuth callback and frontend
     let redirectUri;
     let returnHost = host;
     
@@ -210,10 +234,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isPreviewDomain || isPublishedDomain) {
+      // Use the SAME domain as the callback request to fix cookie domain mismatch
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // Fallback to published domain for unknown domains
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+    }
+    
+    // Validate that the redirect URI is allowed
+    if (!isValidRedirectUri(redirectUri)) {
+      throw new Error(`Redirect URI not allowed: ${redirectUri}`);
     }
     
     console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
@@ -327,12 +358,13 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     // Determine exact domain for production cookie
     const currentHost = req.get('host') || 'localhost:5000';
-    const isProduction = currentHost.includes('replit.app');
+    const isLocalDev = currentHost.includes('localhost') || currentHost.includes('127.0.0.1');
+    const isHttps = !isLocalDev; // All Replit domains (.replit.app and .replit.dev) use HTTPS
     
-    // Set session cookie with correct domain for published Replit app
+    // Set session cookie with correct security settings for all HTTPS Replit domains
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,        // Secure only on HTTPS
+      secure: isHttps,             // Secure flag for all HTTPS domains (both .replit.app and .replit.dev)
       sameSite: 'lax' as const,    // Use 'lax' for same-site requests to work properly
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
