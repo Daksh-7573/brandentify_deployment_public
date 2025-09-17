@@ -26,7 +26,12 @@ import { securityMonitorMiddleware, enhancedApiProtection } from './security-mon
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
 // Secure JWT signing key (in production, this should be in environment variables)
-const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+// CRITICAL FIX: Use the same JWT secret as auth-oauth-routes.ts to ensure token compatibility
+const JWT_SECRET = process.env.JWT_SECRET || (() => {
+  const defaultSecret = 'brandentifier-secure-jwt-secret-key-2025';
+  console.log('🔐 Using default JWT secret for token validation');
+  return defaultSecret;
+})();
 const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
@@ -207,6 +212,7 @@ export function verifyToken(token: string): any {
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   // Skip authentication for public routes
   const publicRoutes = [
+    '/', // Allow root route to serve frontend
     '/api/auth',
     '/api/login',
     '/api/register',
@@ -224,32 +230,36 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
   
   // Get token from headers or cookies or query params
+  // CRITICAL FIX: Look for the correct cookie name 'brandentifier_session' that's set by OAuth routes
   const token = req.headers.authorization?.split(' ')[1] || 
+                req.cookies?.brandentifier_session || 
                 req.cookies?.token || 
                 req.query?.token as string;
                 
   if (!token) {
     // If Firebase auth is used, allow the request to continue since Firebase handles auth
-    // We allow Firebase auth to bypass our JWT auth to maintain compatibility
     if (req.headers['x-firebase-auth']) {
       return next();
     }
     
-    // For now, allow all requests to pass through to maintain compatibility
-    // with the existing authentication system
-    return next();
-    
-    // In a full JWT implementation, we would return:
-    // return res.status(401).json({ message: 'No authentication token provided' });
+    // CRITICAL FIX: Properly enforce authentication for protected routes
+    return res.status(401).json({ 
+      success: false,
+      error: 'Authentication required',
+      message: 'No authentication token provided. Please log in.',
+      code: 'NO_TOKEN'
+    });
   }
   
   const decoded = verifyToken(token);
   if (!decoded) {
-    // For now, allow all requests to pass through to maintain compatibility
-    return next();
-    
-    // In a full JWT implementation, we would return:
-    // return res.status(401).json({ message: 'Invalid or expired token' });
+    // CRITICAL FIX: Properly validate JWT tokens
+    return res.status(401).json({ 
+      success: false,
+      error: 'Authentication failed',
+      message: 'Invalid or expired authentication token. Please log in again.',
+      code: 'INVALID_TOKEN'
+    });
   }
   
   // Attach user info to request object

@@ -17,7 +17,8 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+// CRITICAL FIX: Use consistent JWT secret that doesn't change between restarts
+const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
