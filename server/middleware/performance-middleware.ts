@@ -7,8 +7,8 @@ export function performanceMiddleware() {
     
     // Add response headers for performance
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    // Remove X-Frame-Options to allow iframe embedding
-    res.removeHeader('X-Frame-Options');
+    // Set secure X-Frame-Options for clickjacking protection
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     
     // Cache static API responses for user data, but exclude quest endpoints

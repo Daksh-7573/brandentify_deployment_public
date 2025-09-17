@@ -323,12 +323,24 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
  * @param app Express application
  */
 export async function setupSecurity(app: any) {
-  // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
+  // 1. Enable helmet for secure headers with proper Content Security Policy
   app.use(
     helmet({
-      contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
-      crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
-      frameguard: false, // Disable X-Frame-Options to allow iframe embedding for Replit preview
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for some frameworks
+          imgSrc: ["'self'", "data:", "https:", "blob:"],
+          connectSrc: ["'self'", "wss:", "https:"],
+          frameSrc: ["'self'"],
+          // CRITICAL: Prevent clickjacking by restricting frame embedding
+          frameAncestors: ["'self'", "https://*.replit.dev", "https://replit.com"]
+        }
+      },
+      crossOriginEmbedderPolicy: false, // Keep disabled for compatibility
+      frameguard: { action: 'sameorigin' }, // Enable frame protection with SAMEORIGIN
     })
   );
   
@@ -443,8 +455,8 @@ export async function setupSecurity(app: any) {
     // Security headers that won't break existing functionality
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    // Explicitly remove X-Frame-Options to allow iframe embedding
-    res.removeHeader('X-Frame-Options');
+    // Set secure X-Frame-Options for clickjacking protection
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();
