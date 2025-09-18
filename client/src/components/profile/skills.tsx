@@ -23,17 +23,23 @@ type SkillItem = {
 
 export default function Skills() {
   const { user, isDemoMode } = useAuth();
-  // Don't try to parse Firebase UID as an integer - use the string directly for Firebase auth users
-  const userId = isDemoMode ? 1 : (user?.uid || 1);
   
-  // Get the numeric user ID if available from auth context (for database operations)
-  const userNumericId = user?.id || 2;
-  console.log("Skills component - Using userNumericId:", userNumericId);
+  // Use consistent user ID logic matching the profile page
+  // Primary: numeric ID, Fallback: username, uid, or default to 1
+  const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '1';
+  
+  console.log("Skills component - user object:", {
+    id: user?.id,
+    username: user?.username, 
+    uid: user?.uid,
+    email: user?.email
+  });
+  console.log("Skills component - Using userIdentifier:", userIdentifier);
   
   // Fetch skills from the API with proper caching
   const { data: serverSkills, isLoading, refetch } = useQuery({
-    queryKey: [`/api/users/${userId}/skills`],
-    enabled: !!userId,
+    queryKey: [`/api/users/${userIdentifier}/skills`],
+    enabled: !!userIdentifier,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnMount: false, // Prevent automatic refetch on mount
     refetchOnWindowFocus: false, // Disable refetch on window focus
