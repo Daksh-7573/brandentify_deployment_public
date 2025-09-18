@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
