@@ -530,6 +530,13 @@ const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
 
 app.use(requestTimeout);
 
+// ✅ CRITICAL FIX: Add global JSON and URL-encoded body parsing middleware
+// This MUST come before fileUpload and any route handlers to parse JSON request bodies
+console.log('🔧 [MIDDLEWARE] Configuring global JSON and URL-encoded body parsing...');
+app.use(express.json({ limit: '50mb' })); // Support large base64 images
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+console.log('✅ [MIDDLEWARE] Global body parsing middleware configured successfully');
+
 // Setup express-fileupload middleware only for multipart requests
 app.use((req, res, next) => {
   // Only apply file upload middleware for multipart content

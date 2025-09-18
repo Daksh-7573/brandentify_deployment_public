@@ -8839,15 +8839,47 @@ export class DatabaseStorage implements IStorage {
       'createdAt'
     ];
     
+    // Enhanced debugging for field filtering
+    console.log(`[DatabaseStorage.updateUser] *** FIELD FILTERING DEBUG ***`);
+    console.log(`[DatabaseStorage.updateUser] Input userData keys:`, Object.keys(userData));
+    console.log(`[DatabaseStorage.updateUser] validKeys array:`, validKeys);
+    
+    // Track each field during filtering
+    const filteredEntries = Object.entries(userData).map(([key, value]) => {
+      const isValidKey = validKeys.includes(key);
+      const startsWithUnderscore = key.startsWith('_');
+      const shouldKeep = isValidKey && !startsWithUnderscore;
+      
+      console.log(`[DatabaseStorage.updateUser] Field '${key}': validKey=${isValidKey}, startsWithUnderscore=${startsWithUnderscore}, shouldKeep=${shouldKeep}`);
+      
+      if (key === 'photoURL') {
+        console.log(`[DatabaseStorage.updateUser] *** PHOTO URL SPECIFIC DEBUG ***`);
+        console.log(`[DatabaseStorage.updateUser] photoURL value type:`, typeof value);
+        console.log(`[DatabaseStorage.updateUser] photoURL value length:`, value ? value.length : 'NULL/UNDEFINED');
+        console.log(`[DatabaseStorage.updateUser] photoURL value exists:`, value !== null && value !== undefined);
+        console.log(`[DatabaseStorage.updateUser] photoURL actual value:`, value ? value.substring(0, 100) + '...' : String(value));
+      }
+      
+      return { key, value, shouldKeep };
+    });
+    
     // Filter out any keys that don't match our schema or start with _
     const cleanedUserData: Partial<User> = Object.fromEntries(
-      Object.entries(userData).filter(([key]) => 
-        validKeys.includes(key) && !key.startsWith('_')
-      )
+      filteredEntries.filter(entry => entry.shouldKeep).map(entry => [entry.key, entry.value])
     );
     
     // Log cleaned data 
+    console.log(`[DatabaseStorage.updateUser] Cleaned user data keys:`, Object.keys(cleanedUserData));
     console.log(`[DatabaseStorage.updateUser] Cleaned user data:`, cleanedUserData);
+    
+    if ('photoURL' in userData) {
+      console.log(`[DatabaseStorage.updateUser] *** POST-FILTER PHOTO URL CHECK ***`);
+      console.log(`[DatabaseStorage.updateUser] photoURL was in input: TRUE`);
+      console.log(`[DatabaseStorage.updateUser] photoURL is in cleaned data:`, 'photoURL' in cleanedUserData);
+      if ('photoURL' in cleanedUserData) {
+        console.log(`[DatabaseStorage.updateUser] photoURL value in cleaned data:`, cleanedUserData.photoURL ? cleanedUserData.photoURL.substring(0, 100) + '...' : String(cleanedUserData.photoURL));
+      }
+    }
     
     // Skip update if no valid fields remain
     if (Object.keys(cleanedUserData).length === 0) {

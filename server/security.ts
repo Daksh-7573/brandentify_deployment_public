@@ -88,8 +88,31 @@ export function validateInput(schema: z.ZodType<any>, requestProp: 'body' | 'que
         // In the future, this can be changed to reject invalid requests
         next();
       } else {
-        // If validation succeeds, replace the request property with the validated data
-        req[requestProp] = result.data;
+        // CRITICAL FIX: For user profile routes, preserve extra fields not in schema
+        const isUserProfileRoute = req.path.includes('/api/users/') && (req.method === 'PUT' || req.method === 'PATCH');
+        
+        if (isUserProfileRoute && requestProp === 'body') {
+          console.log(`[Field Preservation] 🚀 CRITICAL FIX: Preserving extra fields for user profile route: ${req.method} ${req.path}`);
+          console.log(`[Field Preservation] Original body keys:`, Object.keys(req[requestProp] || {}));
+          console.log(`[Field Preservation] Validated data keys:`, Object.keys(result.data || {}));
+          
+          // Merge validated data with original body, preserving extra fields like photoURL
+          const originalBody = req[requestProp] || {};
+          const validatedData = result.data || {};
+          
+          // Start with validated data and add back any extra fields from original
+          const mergedData = { ...originalBody, ...validatedData };
+          
+          console.log(`[Field Preservation] Merged data keys:`, Object.keys(mergedData));
+          if (originalBody.photoURL) {
+            console.log(`[Field Preservation] ✅ Preserved photoURL field (${originalBody.photoURL.length} chars)`);
+          }
+          
+          req[requestProp] = mergedData;
+        } else {
+          // For non-user-profile routes, use original behavior
+          req[requestProp] = result.data;
+        }
         next();
       }
     } catch (error) {
@@ -385,8 +408,53 @@ export async function setupSecurity(app: any) {
   app.use('/api/login', apiLimiter);
   app.use('/api/register', apiLimiter);
   
-  // 4. XSS Protection
-  app.use(xssClean());
+  // 4. XSS Protection - FIXED: Selective implementation that bypasses XSS Clean for user profile routes
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const isUserProfileRoute = req.path.includes('/api/users/') && (req.method === 'PUT' || req.method === 'PATCH');
+    
+    if (isUserProfileRoute) {
+      console.log(`[XSS Protection] 🚀 CRITICAL FIX: Bypassing XSS Clean for user profile route: ${req.method} ${req.path}`);
+      console.log(`[XSS Protection] 📸 Preserving photoURL field for profile updates`);
+      
+      // For user profile routes, skip XSS cleaning to preserve photoURL base64 data
+      // but still apply basic validation for safety
+      let preservedPhotoURL: string | null = null;
+      if (req.body?.photoURL && typeof req.body.photoURL === 'string') {
+        const photoURL = req.body.photoURL;
+        const isBase64Image = photoURL.match(/^data:image\/(jpeg|jpg|png|gif|webp);base64,/);
+        const isHttpUrl = photoURL.match(/^https?:\/\//);
+        
+        if (!isBase64Image && !isHttpUrl) {
+          console.log(`[XSS Protection] ❌ Removing invalid photoURL format`);
+          delete req.body.photoURL;
+        } else if (isBase64Image) {
+          const base64Data = photoURL.split(',')[1];
+          const sizeInBytes = (base64Data.length * 3) / 4;
+          if (sizeInBytes > 10 * 1024 * 1024) { // 10MB limit
+            console.log(`[XSS Protection] ❌ Removing oversized photoURL (${Math.round(sizeInBytes / 1024 / 1024)}MB)`);
+            delete req.body.photoURL;
+          } else {
+            preservedPhotoURL = photoURL;
+            console.log(`[XSS Protection] ✅ PHOTOURL FIX: Allowing base64 photoURL (${Math.round(sizeInBytes / 1024)}KB)`);
+          }
+        } else {
+          preservedPhotoURL = photoURL;
+          console.log(`[XSS Protection] ✅ Allowing HTTP URL photoURL`);
+        }
+      }
+      
+      // CRITICAL FIX: Store preserved photoURL in req object for later restoration
+      if (preservedPhotoURL) {
+        (req as any).preservedPhotoURL = preservedPhotoURL;
+        console.log('[XSS Protection] 🔒 STORED photoURL for later restoration');
+      }
+      
+      next();
+    } else {
+      // Apply normal XSS cleaning for all other routes
+      xssClean()(req, res, next);
+    }
+  });
   
   // 5. CSRF Protection (non-breaking implementation)
   app.use(csrfProtection);

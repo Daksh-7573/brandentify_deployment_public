@@ -1168,21 +1168,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
-  // CRITICAL FIX: Add explicit JSON body parsing middleware for user PUT routes
-  apiRouter.use('/users/:id', (req: Request, res: Response, next) => {
-    if (req.method === 'PUT') {
-      console.log(`[JSON MIDDLEWARE] 🔧 Applying explicit JSON parsing for ${req.method} ${req.path}`);
-      console.log(`[JSON MIDDLEWARE] Content-Length:`, req.headers['content-length']);
-      console.log(`[JSON MIDDLEWARE] Content-Type:`, req.headers['content-type']);
-      express.json({ limit: '50mb' })(req, res, next);
-    } else {
-      next();
-    }
-  });
+  // JSON parsing middleware is now handled globally in server/index.ts
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     console.log(`[PUT /users/:id] 🚀 PROFILE PICTURE PERSISTENCE FIX APPLIED`);
+    
+    // CRITICAL FIX: Preserve photoURL field before XSS processing can filter it out
+    let preservedPhotoURL: string | null = null;
+    if (req.body?.photoURL && typeof req.body.photoURL === 'string') {
+      const photoURL = req.body.photoURL;
+      console.log(`[PUT /users/:id] 📸 PhotoURL detected: ${photoURL.substring(0, 50)}...`);
+      
+      // Validate base64 image data or HTTP URLs
+      const isBase64Image = photoURL.match(/^data:image\/(jpeg|jpg|png|gif|webp);base64,/);
+      const isHttpUrl = photoURL.match(/^https?:\/\//);
+      
+      if (isBase64Image || isHttpUrl) {
+        if (isBase64Image) {
+          // Check size limit for base64 data (10MB limit)
+          const base64Data = photoURL.split(',')[1];
+          const sizeInBytes = (base64Data.length * 3) / 4;
+          if (sizeInBytes <= 10 * 1024 * 1024) {
+            preservedPhotoURL = photoURL;
+            console.log(`[PUT /users/:id] ✅ Preserving base64 photoURL (${Math.round(sizeInBytes / 1024)}KB)`);
+          } else {
+            console.log(`[PUT /users/:id] ❌ Rejecting photoURL: too large (${Math.round(sizeInBytes / 1024 / 1024)}MB)`);
+          }
+        } else {
+          preservedPhotoURL = photoURL;
+          console.log(`[PUT /users/:id] ✅ Preserving HTTP URL photoURL`);
+        }
+      } else {
+        console.log(`[PUT /users/:id] ❌ Rejecting invalid photoURL format`);
+      }
+    }
+    
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');
     // Disable all caching for user updates
@@ -1192,6 +1213,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const idParam = req.params.id;
       const userData = req.body;
+      
+      // CRITICAL FIX: Restore preserved photoURL after any middleware processing
+      if (preservedPhotoURL) {
+        userData.photoURL = preservedPhotoURL;
+        console.log(`[PUT /users/:id] 🔧 Restored photoURL field for storage`);
+      }
       
       console.log(`[PUT /users/:id] Updating user with ID: ${idParam}`);
       console.log(`[PUT /users/:id] Update data:`, userData);
@@ -1253,128 +1280,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`[PUT /users/:id] Found existing user with Firebase UID: ${idParam}, numeric ID: ${user.id}`);
         
-        // DIRECT DATABASE UPDATE BYPASS FOR FIREBASE UID PATH
-        console.log(`[PUT /users/:id] IMPLEMENTING DIRECT DATABASE BYPASS FOR FIREBASE UID`);
+        // ✅ UNIFIED UPDATE FLOW: Always use storage.updateUser() for consistency
+        console.log(`[PUT /users/:id] Using unified storage.updateUser() for Firebase UID: ${idParam}`);
+        
+        // Special debug for photoURL field
+        if ('photoURL' in userData) {
+          console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
+          console.log(`[PUT /users/:id] photoURL value length:`, userData.photoURL ? userData.photoURL.length : 'NULL');
+          console.log(`[PUT /users/:id] photoURL starts with:`, userData.photoURL ? userData.photoURL.substring(0, 50) + '...' : 'NULL');
+          console.log(`[PUT /users/:id] photoURL value type:`, typeof userData.photoURL);
+          console.log(`[PUT /users/:id] photoURL is base64:`, userData.photoURL ? userData.photoURL.startsWith('data:image/') : false);
+        }
+        
         try {
-          let updateQuery = 'UPDATE users SET ';
-          const updateValues: any[] = [];
-          const updateParts: string[] = [];
-          let paramIndex = 1;
-          
-          // Add each property to the update
-          console.log(`[PUT /users/:id] Processing userData keys:`, Object.keys(userData));
-          for (const [key, value] of Object.entries(userData)) {
-            console.log(`[PUT /users/:id] Processing field: ${key} = ${value ? '[VALUE_EXISTS]' : '[NULL_OR_EMPTY]'}`);
-            
-            // Special debug for photoURL field
-            if (key === 'photoURL') {
-              console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
-              console.log(`[PUT /users/:id] photoURL value length:`, value ? value.length : 'NULL');
-              console.log(`[PUT /users/:id] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
-              console.log(`[PUT /users/:id] photoURL value type:`, typeof value);
-              console.log(`[PUT /users/:id] photoURL is base64:`, value ? value.startsWith('data:image/') : false);
-            }
-            
-            // Convert camelCase to snake_case for PostgreSQL with proper field mapping
-            let columnName;
-            if (key === 'photoURL') {
-              columnName = 'photo_url';  // CRITICAL FIX: photoURL -> photo_url (not photo_u_r_l)
-            } else if (key === 'aboutMe') {
-              columnName = 'about_me';
-            } else if (key === 'phoneNumber') {
-              columnName = 'phone_number';
-            } else if (key === 'brandName') {
-              columnName = 'brand_name';
-            } else if (key === 'lookingFor') {
-              columnName = 'looking_for';
-            } else if (key === 'whatIOffer') {
-              columnName = 'what_i_offer';
-            } else if (key === 'visitingCardType') {
-              columnName = 'visiting_card_type';
-            } else if (key === 'profileCompleted') {
-              columnName = 'profile_completed';
-            } else if (key === 'emailVerified') {
-              columnName = 'email_verified';
-            } else if (key === 'emailVerificationToken') {
-              columnName = 'email_verification_token';
-            } else if (key === 'emailVerificationExpires') {
-              columnName = 'email_verification_expires';
-            } else if (key === 'createdAt') {
-              columnName = 'created_at';
-            } else {
-              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-            }
-            console.log(`[PUT /users/:id] Field ${key} -> Column ${columnName}`);
-            updateParts.push(`${columnName} = $${paramIndex}`);
-            updateValues.push(value);
-            paramIndex++;
-          }
-          
-          // Check if there are any fields to update before constructing SQL
-          if (updateParts.length === 0) {
-            console.log(`[PUT /users/:id] Firebase UID No fields to update, returning existing user data`);
-            updatedUser = {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              password: user.password,
-              phoneNumber: user.phoneNumber,
-              name: user.name,
-              brandName: user.brandName,
-              photoURL: user.photoURL,
-              title: user.title,
-              aboutMe: user.aboutMe,
-              location: user.location,
-              industry: user.industry,
-              domain: user.domain,
-              lookingFor: user.lookingFor,
-              whatIOffer: user.whatIOffer,
-              visitingCardType: user.visitingCardType,
-              profileCompleted: user.profileCompleted,
-              emailVerified: user.emailVerified,
-              emailVerificationToken: user.emailVerificationToken,
-              emailVerificationExpires: user.emailVerificationExpires,
-              createdAt: user.createdAt
-            };
-          } else {
-            // Construct and execute SQL update query
-            updateQuery += updateParts.join(', ');
-            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-            updateValues.push(user.id);
-            
-            console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
-            console.log(`[PUT /users/:id] Firebase UID Direct DB params (excluding large base64):`, updateValues.map((val, idx) => 
-              updateParts[idx] && updateParts[idx].includes('photo_url') ? 
-                `[BASE64_IMAGE_${val ? val.length : 0}_CHARS]` : val
-            ));
-            
-            const result = await pool.query(updateQuery, updateValues);
-            
-            if (result.rows.length === 0) {
-              console.log(`[PUT /users/:id] Firebase UID Direct DB update failed - no user found`);
-              updatedUser = await storage.updateUser(user.id, userData);
-            } else {
-              updatedUser = result.rows[0];
-              console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
-              
-              // FORCE CACHE INVALIDATION - Clear all caching layers
-              if (global.gc) {
-                global.gc();
-              }
-              
-              // Invalidate cache service if available
-              try {
-                const { cacheService } = require('./services/cache-service');
-                await cacheService.invalidatePattern(`user:${user.id}:*`);
-                await cacheService.invalidatePattern(`users:*`);
-              } catch (cacheError) {
-                console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
-              }
-            }
-          }
-        } catch (directError) {
-          console.error(`[PUT /users/:id] Firebase UID Direct DB update failed:`, directError);
           updatedUser = await storage.updateUser(user.id, userData);
+          console.log(`[PUT /users/:id] Firebase UID storage update successful:`, updatedUser?.title || updatedUser?.name);
+        } catch (storageError) {
+          console.error(`[PUT /users/:id] Firebase UID storage update failed:`, storageError);
+          throw storageError;
         }
       } else {
         // Try to parse as numeric ID
@@ -1395,114 +1318,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`[PUT /users/:id] Found user with numeric ID: ${userId}, updating...`);
         
-        // DIRECT DATABASE UPDATE BYPASS - Fix for persistent storage issue
-        console.log(`[PUT /users/:id] IMPLEMENTING DIRECT DATABASE BYPASS`);
+        // ✅ UNIFIED UPDATE FLOW: Always use storage.updateUser() for consistency  
+        console.log(`[PUT /users/:id] Using unified storage.updateUser() for numeric ID: ${userId}`);
+        
+        // Special debug for photoURL field
+        if ('photoURL' in userData) {
+          console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
+          console.log(`[PUT /users/:id] photoURL value length:`, userData.photoURL ? userData.photoURL.length : 'NULL');
+          console.log(`[PUT /users/:id] photoURL value type:`, typeof userData.photoURL);
+          console.log(`[PUT /users/:id] photoURL is base64:`, userData.photoURL ? userData.photoURL.startsWith('data:image/') : false);
+        }
         try {
-          let updateQuery = 'UPDATE users SET ';
-          const updateValues: any[] = [];
-          const updateParts: string[] = [];
-          let paramIndex = 1;
-          
-          // Add each property to the update
-          for (const [key, value] of Object.entries(userData)) {
-            // Convert camelCase to snake_case for PostgreSQL with special handling for photoURL
-            let columnName;
-            if (key === 'photoURL') {
-              columnName = 'photo_url';
-              console.log(`[PUT /users/:id] *** PHOTO URL FIELD MAPPING FIX *** - ${key} -> ${columnName}`);
-            } else if (key === 'aboutMe') {
-              columnName = 'about_me';
-            } else if (key === 'phoneNumber') {
-              columnName = 'phone_number';
-            } else if (key === 'brandName') {
-              columnName = 'brand_name';
-            } else if (key === 'lookingFor') {
-              columnName = 'looking_for';
-            } else if (key === 'whatIOffer') {
-              columnName = 'what_i_offer';
-            } else if (key === 'visitingCardType') {
-              columnName = 'visiting_card_type';
-            } else if (key === 'profileCompleted') {
-              columnName = 'profile_completed';
-            } else if (key === 'emailVerified') {
-              columnName = 'email_verified';
-            } else if (key === 'emailVerificationToken') {
-              columnName = 'email_verification_token';
-            } else if (key === 'emailVerificationExpires') {
-              columnName = 'email_verification_expires';
-            } else if (key === 'createdAt') {
-              columnName = 'created_at';
-            } else {
-              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-            }
-            updateParts.push(`${columnName} = $${paramIndex}`);
-            updateValues.push(value);
-            paramIndex++;
-          }
-          
-          // Check if there are any fields to update before constructing SQL
-          if (updateParts.length === 0) {
-            console.log(`[PUT /users/:id] Numeric ID No fields to update, returning existing user data`);
-            updatedUser = {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              password: user.password,
-              phoneNumber: user.phoneNumber,
-              name: user.name,
-              brandName: user.brandName,
-              photoURL: user.photoURL,
-              title: user.title,
-              aboutMe: user.aboutMe,
-              location: user.location,
-              industry: user.industry,
-              domain: user.domain,
-              lookingFor: user.lookingFor,
-              whatIOffer: user.whatIOffer,
-              visitingCardType: user.visitingCardType,
-              profileCompleted: user.profileCompleted,
-              emailVerified: user.emailVerified,
-              emailVerificationToken: user.emailVerificationToken,
-              emailVerificationExpires: user.emailVerificationExpires,
-              createdAt: user.createdAt
-            };
-          } else {
-            // Construct and execute SQL update query
-            updateQuery += updateParts.join(', ');
-            updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-            updateValues.push(userId);
-            
-            console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
-            console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
-            
-            const result = await pool.query(updateQuery, updateValues);
-            
-            if (result.rows.length === 0) {
-              console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
-              updatedUser = await storage.updateUser(userId, userData);
-            } else {
-              updatedUser = result.rows[0];
-              console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
-              
-              // FORCE CACHE INVALIDATION - Apply to ALL user updates, not just Firebase UIDs
-              if (global.gc) {
-                global.gc();
-              }
-              
-              // Invalidate cache service if available
-              try {
-                const { cacheService } = require('./services/cache-service');
-                await cacheService.invalidatePattern(`user:${userId}:*`);
-                await cacheService.invalidatePattern(`users:*`);
-                console.log(`[PUT /users/:id] Cache invalidated for numeric user ID: ${userId}`);
-              } catch (cacheError) {
-                console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
-              }
-            }
-          }
-        } catch (directError) {
-          console.error(`[PUT /users/:id] Direct DB update failed:`, directError);
           updatedUser = await storage.updateUser(userId, userData);
+          console.log(`[PUT /users/:id] Numeric ID storage update successful:`, updatedUser?.title || updatedUser?.name);
+        } catch (storageError) {
+          console.error(`[PUT /users/:id] Numeric ID storage update failed:`, storageError);
+          throw storageError;
         }
       }
       

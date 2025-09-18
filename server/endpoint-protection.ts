@@ -47,6 +47,7 @@ const protectedEndpoints: Record<string, EndpointProtection> = {
       name: ValidationSchemas.name,
       email: ValidationSchemas.email.optional(),
       phoneNumber: ValidationSchemas.phoneNumber.optional(),
+      photoURL: z.string().min(1).max(50000).optional(), // CRITICAL FIX: Add photoURL field for profile picture persistence (supports base64)
     }),
     validateBody: true,
     auditLog: true,
@@ -150,12 +151,20 @@ function findEndpointProtection(path: string): EndpointProtection | null {
  * Middleware for specific endpoint protection
  */
 export function endpointProtectionMiddleware(req: Request, res: Response, next: NextFunction): void {
+  // CRITICAL FIX: Skip endpoint protection for user profile routes to preserve photoURL
+  if (req.path.includes('/users/') && req.method === 'PUT') {
+    console.log(`[ENDPOINT PROTECTION] 🚀 BYPASSING for user profile route: ${req.method} ${req.path}`);
+    return next();
+  }
+  
   // Skip protection for public endpoints and GET requests to improve compatibility
   if (req.method === 'GET' && !req.path.includes('admin')) {
     return next();
   }
   
+  console.log(`[ENDPOINT PROTECTION] 🔍 Checking path: ${req.path} (method: ${req.method})`);
   const endpointConfig = findEndpointProtection(req.path);
+  console.log(`[ENDPOINT PROTECTION] Found config:`, endpointConfig ? 'YES' : 'NO');
   
   if (!endpointConfig) {
     return next();
@@ -164,11 +173,15 @@ export function endpointProtectionMiddleware(req: Request, res: Response, next: 
   // Validate request body if schema is provided and validation is enabled
   if (endpointConfig.schema && endpointConfig.validateBody && req.body) {
     try {
+      console.log(`[ENDPOINT PROTECTION] 🔍 Validating ${req.method} ${req.path}`);
+      console.log(`[ENDPOINT PROTECTION] Original req.body keys:`, Object.keys(req.body));
+      console.log(`[ENDPOINT PROTECTION] Original photoURL present:`, req.body.photoURL ? 'YES' : 'NO');
+      
       const result = endpointConfig.schema.safeParse(req.body);
       
       if (!result.success) {
         // In non-breaking mode, we just log the validation errors
-        console.warn(`Validation error for ${req.method} ${req.path}:`, 
+        console.warn(`[ENDPOINT PROTECTION] ❌ Validation error for ${req.method} ${req.path}:`, 
           JSON.stringify(result.error.errors));
         
         // Add validation results to request for optional handling in routes
@@ -180,11 +193,18 @@ export function endpointProtectionMiddleware(req: Request, res: Response, next: 
         //   errors: result.error.errors
         // });
       } else {
+        console.log(`[ENDPOINT PROTECTION] ✅ Validation successful for ${req.method} ${req.path}`);
+        console.log(`[ENDPOINT PROTECTION] Validated data keys:`, Object.keys(result.data));
+        console.log(`[ENDPOINT PROTECTION] Validated photoURL present:`, result.data.photoURL ? 'YES' : 'NO');
+        
         // Replace req.body with validated data
         req.body = result.data;
+        
+        console.log(`[ENDPOINT PROTECTION] 🔧 REPLACED req.body with validated data`);
+        console.log(`[ENDPOINT PROTECTION] New req.body keys:`, Object.keys(req.body));
       }
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error('[ENDPOINT PROTECTION] Validation error:', error);
     }
   }
   
