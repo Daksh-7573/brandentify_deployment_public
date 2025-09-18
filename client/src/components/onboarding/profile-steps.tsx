@@ -3011,8 +3011,8 @@ export default function ProfileSteps({
         </div>
       )}
       
-      {/* Current step */}
-      <div className={`${isEditing ? 'p-6' : 'container max-w-3xl py-8'}`}>
+      {/* Current step with proper scrolling in edit mode */}
+      <div className={`${isEditing ? 'flex flex-col max-h-[90svh]' : 'container max-w-3xl py-8'}`}>
         {!isEditing && (
           <Card className="mb-6">
             <CardHeader>
@@ -3047,21 +3047,31 @@ export default function ProfileSteps({
           </Card>
         )}
         
-        {/* In edit mode, just show the form content without the card wrapper */}
+        {/* In edit mode with proper scrolling container */}
         {isEditing && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2 mb-4">
-              {steps[currentStep - 1].icon}
-              <h2 className="text-2xl font-semibold">
-                {steps[currentStep - 1].title}
-                {steps[currentStep - 1].mandatory && 
-                  <span className="text-sm text-red-500 font-normal ml-2">(Required)</span>
-                }
-              </h2>
+          <>
+            {/* Fixed header */}
+            <div className="px-6 py-4 border-b bg-background/80 backdrop-blur">
+              <div className="flex items-center gap-2">
+                {steps[currentStep - 1].icon}
+                <h2 className="text-2xl font-semibold">
+                  {steps[currentStep - 1].title}
+                  {steps[currentStep - 1].mandatory && 
+                    <span className="text-sm text-red-500 font-normal ml-2">(Required)</span>
+                  }
+                </h2>
+              </div>
             </div>
             
-            {renderStepContent()}
-          </div>
+            {/* Scrollable content area */}
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6" style={{
+              paddingBottom: `calc(24px + env(safe-area-inset-bottom))`
+            }}>
+              <div className="space-y-6 pb-20">
+                {renderStepContent()}
+              </div>
+            </div>
+          </>
         )}
         
         {/* Skip this step button for non-mandatory steps in onboarding mode */}
