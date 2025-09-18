@@ -78,17 +78,30 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }, 200);
         
-        // Send only the photoURL update to the API
+        // Send photoURL update along with user info to ensure user exists
         console.log('[PROFILE UPLOAD DEBUG] Uploading to user ID:', targetUserId);
         console.log('[PROFILE UPLOAD DEBUG] Base64 image length:', base64Image.length);
         console.log('[PROFILE UPLOAD DEBUG] Base64 preview:', base64Image.substring(0, 100) + '...');
         
+        // Include user's name and email to help server create user if needed (for Firebase UID cases)
+        const updateData: any = {
+          photoURL: base64Image
+        };
+        
+        // Add user info from auth context if available to help with Firebase UID user creation
+        if (user?.name) {
+          updateData.name = user.name;
+        }
+        if (user?.email) {
+          updateData.email = user.email;
+        }
+        
+        console.log('[PROFILE UPLOAD DEBUG] Update data keys:', Object.keys(updateData));
+        
         const res = await apiRequest(
           'PUT',
           `/api/users/${targetUserId}`,
-          {
-            photoURL: base64Image
-          }
+          updateData
         );
         
         console.log('[PROFILE UPLOAD DEBUG] API response:', res);
