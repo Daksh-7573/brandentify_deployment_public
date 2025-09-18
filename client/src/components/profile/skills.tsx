@@ -170,10 +170,12 @@ export default function Skills() {
       const method = newSkill.id ? 'PUT' : 'POST';
       const url = newSkill.id ? `/api/skills/${newSkill.id}` : '/api/skills';
       
-      // Use the userIdentifier for database operations
+      // Properly format data for backend validation - convert userId to integer and ensure proficiency is number
       const data = {
         ...newSkill,
-        userId: userIdentifier
+        userId: parseInt(userIdentifier), // Backend expects integer userId
+        proficiency: Number(newSkill.proficiency || 50), // Ensure proficiency is number
+        level: newSkill.level // Backend expects level as string
       };
       
       console.log("Saving skill with data:", data);
