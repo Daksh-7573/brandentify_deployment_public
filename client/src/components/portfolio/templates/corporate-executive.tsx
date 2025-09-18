@@ -20,6 +20,14 @@ interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
   mediaUrls?: string[];
 }
 
+// Helper function to normalize unknown JSONB types to string arrays
+const toStringArray = (v: unknown): string[] => {
+  if (Array.isArray(v)) return v.map(String);
+  if (typeof v === 'string') return v.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  if (Array.isArray((v as any)?.values)) return (v as any).values.map(String);
+  return [];
+};
+
 interface CorporateExecutiveProps {
   userInfo: {
     id?: number; // User ID for mentorship button (as mentorId)
@@ -391,14 +399,16 @@ export default function CorporateExecutive({
       .corporate-executive-template .service-card {
         transition: all 0.3s ease;
         border-radius: 12px;
-        border-left: 3px solid transparent;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border: 2px solid #f1f3f4;
+        background: linear-gradient(135deg, #ffffff, #fafbfc);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       }
       
       .corporate-executive-template .service-card:hover {
-        border-left-color: #6a0dad;
-        background: linear-gradient(to right, rgba(106, 13, 173, 0.03), transparent);
-        box-shadow: 0 8px 30px rgba(106, 13, 173, 0.1);
+        border-color: #6a0dad;
+        background: linear-gradient(135deg, #ffffff, #f8f5ff);
+        box-shadow: 0 12px 40px rgba(106, 13, 173, 0.15);
+        transform: translateY(-4px);
       }
 
       .corporate-executive-template .service-card-icon {
@@ -429,15 +439,37 @@ export default function CorporateExecutive({
       }
       
       .corporate-executive-template .btn-outline {
-        border: 1px solid #e5e7eb;
+        border: 2px solid #e5e7eb;
         transition: all 0.3s ease;
         border-radius: 8px;
+        background: #ffffff;
+        color: #374151;
+        font-weight: 500;
       }
       
       .corporate-executive-template .btn-outline:hover {
         border-color: #6a0dad;
-        color: #6a0dad;
-        box-shadow: 0 2px 8px rgba(106, 13, 173, 0.1);
+        background: #6a0dad;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(106, 13, 173, 0.25);
+        transform: translateY(-1px);
+      }
+
+      .corporate-executive-template .service-inquire-btn {
+        border: 2px solid #d1d5db;
+        background: #ffffff;
+        color: #374151;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border-radius: 8px;
+      }
+
+      .corporate-executive-template .service-inquire-btn:hover {
+        border-color: #6a0dad;
+        background: #6a0dad;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(106, 13, 173, 0.25);
+        transform: translateY(-1px);
       }
 
       .corporate-executive-template .highlight-badge {
@@ -947,7 +979,7 @@ export default function CorporateExecutive({
                   <div className="flex justify-end">
                     <Button 
                       variant="outline"
-                      className="text-sm px-4 py-2 rounded-md flex items-center hover:bg-[#f9f0ff]"
+                      className="service-inquire-btn text-sm px-4 py-2 rounded-md flex items-center"
                     >
                       <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -1116,16 +1148,19 @@ export default function CorporateExecutive({
                         </p>
                       )}
                       
-                      {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
-                        <div className="mt-3 mb-2">
-                          <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
-                          <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            {(exp.keyResponsibilities as string[]).map((item, idx) => (
-                              <li key={idx}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {(() => {
+                        const responsibilities = toStringArray(exp.keyResponsibilities);
+                        return responsibilities.length > 0 && (
+                          <div className="mt-3 mb-2">
+                            <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
+                            <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {responsibilities.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 ))}
