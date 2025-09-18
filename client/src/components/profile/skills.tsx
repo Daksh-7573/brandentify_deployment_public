@@ -22,7 +22,7 @@ type SkillItem = {
 };
 
 export default function Skills() {
-  const { user, isDemoMode } = useAuth();
+  const { user } = useAuth();
   
   // Use consistent user ID logic matching the profile page
   // Primary: numeric ID, Fallback: username, uid, or default to 1
@@ -124,10 +124,7 @@ export default function Skills() {
     try {
       console.log("Deleting skill with ID:", skillId);
       
-      await apiRequest({
-        method: 'DELETE', 
-        url: `/api/skills/${skillId}`
-      });
+      await apiRequest('DELETE', `/api/skills/${skillId}`);
       
       setSkills(prev => prev.filter(skill => skill.id !== skillId));
       
@@ -136,9 +133,8 @@ export default function Skills() {
         description: "Skill has been removed from your profile",
       });
       
-      // Invalidate both Firebase UID and numeric user ID query keys to ensure all caches are refreshed
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/skills`] });
+      // Invalidate the skills query to ensure cache is refreshed
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userIdentifier}/skills`] });
       
     } catch (error) {
       console.error("Error deleting skill:", error);
@@ -174,19 +170,15 @@ export default function Skills() {
       const method = newSkill.id ? 'PUT' : 'POST';
       const url = newSkill.id ? `/api/skills/${newSkill.id}` : '/api/skills';
       
-      // Use the numeric user ID from auth context for database operations
+      // Use the userIdentifier for database operations
       const data = {
         ...newSkill,
-        userId: userNumericId // Use the numeric ID for database operations
+        userId: userIdentifier
       };
       
       console.log("Saving skill with data:", data);
       
-      await apiRequest({
-        method,
-        url,
-        data
-      });
+      await apiRequest(method, url, data);
       
       toast({
         title: newSkill.id ? "Skill updated" : "Skill added",
@@ -196,9 +188,8 @@ export default function Skills() {
       });
       
       // Invalidate the skills query to trigger a refresh
-      // Invalidate both Firebase UID and numeric user ID query keys to ensure all caches are refreshed
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/skills`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/skills`] });
+      // Invalidate the skills query to ensure cache is refreshed
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userIdentifier}/skills`] });
       setIsAddModalOpen(false);
       
     } catch (error) {
