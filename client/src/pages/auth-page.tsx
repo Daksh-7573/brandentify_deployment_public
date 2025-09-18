@@ -139,8 +139,8 @@ export default function AuthPage() {
                 <TabsContent value="phone">
                   <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
-                    <p className="text-gray-300">Phone auth coming soon - use Google for now</p>
-                    <FastGoogleAuth />
+                    <p className="text-gray-300 mb-4">Phone authentication is coming soon!</p>
+                    <p className="text-gray-400 text-sm">Please use the Email tab to sign in with Google for now.</p>
                   </div>
                 </TabsContent>
               </Tabs>
