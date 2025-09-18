@@ -10,22 +10,16 @@ const router = Router();
 
 /**
  * Get all conversations for the current user
- * SECURITY: User determined from authentication, not client parameters
  */
 router.get("/conversations", async (req, res) => {
   try {
-    // Import authentication functions
-    const { getCurrentUser } = await import('./middleware/secure-auth');
+    const userId = Number(req.query.userId);
     
-    const currentUser = getCurrentUser(req);
-    if (!currentUser) {
-      return res.status(401).json({ 
-        error: "Authentication required",
-        message: "Please log in to access your conversations"
-      });
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
     }
     
-    const conversations = await messageService.getConversationsForUser(currentUser.id);
+    const conversations = await messageService.getConversationsForUser(userId);
     res.json(conversations);
   } catch (error) {
     console.error("Error getting conversations:", error);
@@ -277,36 +271,48 @@ router.delete("/messages/:id", async (req, res) => {
 });
 
 /**
- * Get unread message count for the current authenticated user
- * SECURITY FIX: User determined from authentication, never from client parameters
+ * Get unread message count for a user
  */
 router.get("/unread/count", async (req, res) => {
   try {
-    // Import authentication functions
-    const { getCurrentUser } = await import('./middleware/secure-auth');
+    const userIdParam = req.query.userId as string;
     
-    const currentUser = getCurrentUser(req);
-    if (!currentUser) {
-      return res.status(401).json({ 
-        error: "Authentication required",
-        message: "Please log in to view your unread message count",
-        code: "AUTH_REQUIRED"
-      });
+    // First check if this is a Firebase UID (string) or a numeric ID
+    const isFirebaseUid = /^[A-Za-z0-9]{20,}$/.test(userIdParam);
+    let userId: number;
+    
+    if (isFirebaseUid) {
+      // If this is a Firebase UID, try to find the user in the database
+      console.log(`[GET /messaging/unread/count] Looking up user with Firebase UID: ${userIdParam}`);
+      
+      try {
+        // Look up the user by the Firebase UID which is stored as the username
+        const storage = (await import('./storage')).storage;
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /messaging/unread/count] No user found with Firebase UID: ${userIdParam}`);
+          // Return 0 count rather than error for better UX
+          return res.json({ count: 0 });
+        }
+        
+        // Use the numeric user ID from the database
+        userId = user.id;
+        console.log(`[GET /messaging/unread/count] Found user with ID: ${userId} for Firebase UID: ${userIdParam}`);
+      } catch (lookupError) {
+        console.error('Error looking up user by Firebase UID:', lookupError);
+        // Return 0 count rather than error for better UX
+        return res.json({ count: 0 });
+      }
+    } else {
+      // If this is a numeric ID, parse it
+      userId = Number(userIdParam);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
     }
     
-    const result = await messageService.getTotalUnreadMessageCount(currentUser.id);
-    
-    // 🔐 SECURE DEBUG HEADERS for user/profile verification across domains
-    res.setHeader('X-User-Id', currentUser.id.toString());
-    res.setHeader('X-Firebase-UID', currentUser.firebaseUid);
-    res.setHeader('X-Auth-Method', 'server-session');
-    const { getDatabaseFingerprint } = await import('./db');
-    const dbFingerprint = await getDatabaseFingerprint();
-    res.setHeader('X-DB-Fingerprint', dbFingerprint.fingerprint);
-    res.setHeader('X-Domain-Debug', 'messaging-unread-count-secure');
-    
-    console.log(`🔐 [SECURE AUTH] Unread count for authenticated user ${currentUser.id} (${currentUser.email}) - DB: ${dbFingerprint.fingerprint}`);
-    
+    const result = await messageService.getTotalUnreadMessageCount(userId);
     res.json(result);
   } catch (error) {
     console.error("Error getting unread message count:", error);

@@ -25,11 +25,8 @@ import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
-// Secure JWT signing key - MUST be provided via environment variable
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error('FATAL: JWT_SECRET environment variable is required for security. Application cannot start without it.');
-}
+// Secure JWT signing key (in production, this should be in environment variables)
+const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
 const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
@@ -216,8 +213,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     '/api/brands-of-the-day',
     '/api/demo',
     '/api/nowboard-items',
-    '/api/pulses',
-    '/dashboard'  // Allow React app to handle this client-side route
+    '/api/pulses'
   ];
   
   // Check if the route is public
@@ -239,20 +235,21 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
       return next();
     }
     
-    return res.status(401).json({ 
-      message: 'No authentication token provided',
-      error: 'Authentication required',
-      code: 'NO_TOKEN'
-    });
+    // For now, allow all requests to pass through to maintain compatibility
+    // with the existing authentication system
+    return next();
+    
+    // In a full JWT implementation, we would return:
+    // return res.status(401).json({ message: 'No authentication token provided' });
   }
   
   const decoded = verifyToken(token);
   if (!decoded) {
-    return res.status(401).json({ 
-      message: 'Invalid or expired token',
-      error: 'Authentication failed',
-      code: 'INVALID_TOKEN'
-    });
+    // For now, allow all requests to pass through to maintain compatibility
+    return next();
+    
+    // In a full JWT implementation, we would return:
+    // return res.status(401).json({ message: 'Invalid or expired token' });
   }
   
   // Attach user info to request object
@@ -338,37 +335,35 @@ export async function setupSecurity(app: any) {
     })
   );
   
-  // 2. Set up CORS with whitelisted origins and SECURE credential handling
+  // 2. Set up CORS with whitelisted origins
   const corsOptions = {
     origin: function (origin: any, callback: any) {
       // Debug logging
-      console.log(`CORS: [SECURITY.TS] Checking origin: ${origin}`);
-      console.log(`CORS: [SECURITY.TS] ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
-      console.log(`CORS: [SECURITY.TS] NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`CORS: Checking origin: ${origin}`);
+      console.log(`CORS: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
+      console.log(`CORS: NODE_ENV: ${process.env.NODE_ENV}`);
       
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) {
-        console.log('CORS: [SECURITY.TS] Allowing request with no origin');
+        console.log('CORS: Allowing request with no origin');
         return callback(null, true);
       }
       
       // Allow all Replit domains and development
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-        console.log('CORS: [SECURITY.TS] Origin found in ALLOWED_ORIGINS');
+        console.log('CORS: Origin found in ALLOWED_ORIGINS');
         callback(null, true);
       } else if (process.env.NODE_ENV === 'development') {
-        console.log('CORS: [SECURITY.TS] Allowing due to development mode');
+        console.log('CORS: Allowing due to development mode');
         callback(null, true);
       } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
-        console.log('CORS: [SECURITY.TS] Allowing Replit domain');
+        console.log('CORS: Allowing Replit domain');
         callback(null, true);
       } else {
-        console.log(`CORS: [SECURITY.TS] Rejecting origin: ${origin}`);
+        console.log(`CORS: Rejecting origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
-    // SECURITY FIX: Enable credentials for secure cross-domain authentication
-    // The origin validation above already restricts which origins can access with credentials
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']

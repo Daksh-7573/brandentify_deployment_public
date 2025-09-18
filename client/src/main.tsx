@@ -5,8 +5,6 @@ import "./index.css";
 
 // Note: Firebase removed - using custom OAuth only
 
-// Note: Console.log suppression removed - cache messages should stop naturally
-
 // Performance measurement
 const appStartTime = performance.now();
 console.log('[PERF] React app initialization started');
