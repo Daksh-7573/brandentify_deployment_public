@@ -216,7 +216,8 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     '/api/brands-of-the-day',
     '/api/demo',
     '/api/nowboard-items',
-    '/api/pulses'
+    '/api/pulses',
+    '/dashboard'  // Allow React app to handle this client-side route
   ];
   
   // Check if the route is public
