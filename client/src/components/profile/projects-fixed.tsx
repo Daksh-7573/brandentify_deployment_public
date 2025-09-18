@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 interface Project {
   id: number;
@@ -42,6 +43,7 @@ const ProjectsFixed = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Handle viewing project details
   const handleViewProject = async (project: Project) => {
@@ -82,13 +84,14 @@ const ProjectsFixed = () => {
     }
   };
 
-  // Fetch projects from the backend
-  const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+  // Fetch projects from the backend using current authenticated user
+  // Use consistent user ID logic matching the profile page  
+  const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '1';
   const { data: projects = [], isLoading: isProjectsLoading } = useQuery({
-    queryKey: ['/api/users', userId, 'projects'],
+    queryKey: ['/api/users', userIdentifier, 'projects'],
     queryFn: async () => {
       try {
-        const response = await fetch(`/api/users/${userId}/projects`);
+        const response = await fetch(`/api/users/${userIdentifier}/projects`);
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }
@@ -186,7 +189,7 @@ const ProjectsFixed = () => {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
       setIsAddModalOpen(false);
       // Reset form and clear data
       projectForm.reset();
@@ -223,7 +226,7 @@ const ProjectsFixed = () => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       setIsViewModalOpen(false); // Close the modal
       setSelectedProject(null);
@@ -286,12 +289,12 @@ const ProjectsFixed = () => {
 
   const onProjectSubmit = async (values: any) => {
     try {
-      // Use the current authenticated user's Firebase UID
-      const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+      // Use the current authenticated user's identifier
+      console.log('Using user for project creation:', { user, userIdentifier });
       
       // Prepare the project data matching the database schema
       const projectData = {
-        userId: userId, // Send Firebase UID, backend will convert to numeric ID
+        userId: userIdentifier, // Send user ID, backend will convert to numeric ID
         title: values.title || '',
         description: values.description || '',
         category: values.category || '',
