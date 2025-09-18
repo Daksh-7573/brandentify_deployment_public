@@ -93,24 +93,66 @@ export default function ProfileNeo() {
   }
 
   // Get the correct user identifier for API calls
-  const userIdentifier = user?.username || user?.id?.toString() || user?.uid || '';
+  // Primary approach: Use the numeric ID if available (for custom OAuth)
+  // Fallback: Use username or uid for Firebase users
+  const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '';
   
-  // Get user profile data with optimized error handling
+  console.log('[USER ID DEBUG] User object:', {
+    id: user?.id,
+    username: user?.username, 
+    uid: user?.uid,
+    email: user?.email
+  });
+  console.log('[USER ID DEBUG] Selected userIdentifier:', userIdentifier);
+  
+  // Get user profile data with enhanced error handling
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
     queryKey: ['/api/users', userIdentifier],
     queryFn: async () => {
-      console.log('Fetching user data for:', userIdentifier);
-      const response = await fetch(`/api/users/${userIdentifier}`);
+      console.log('[PROFILE DATA FETCH] Starting fetch for userIdentifier:', userIdentifier);
+      console.log('[PROFILE DATA FETCH] Request URL:', `/api/users/${userIdentifier}`);
+      
+      const response = await fetch(`/api/users/${userIdentifier}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        // Add credentials for session-based auth
+        credentials: 'include',
+      });
+      
+      console.log('[PROFILE DATA FETCH] Response status:', response.status);
+      console.log('[PROFILE DATA FETCH] Response statusText:', response.statusText);
+      console.log('[PROFILE DATA FETCH] Response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
-        console.error('Failed to fetch user data:', response.status, response.statusText);
-        throw new Error(`Failed to fetch user data: ${response.status}`);
+        let errorMessage = `Failed to fetch user data: ${response.status} ${response.statusText}`;
+        
+        try {
+          const errorData = await response.text();
+          console.error('[PROFILE DATA FETCH] Error response body:', errorData);
+          errorMessage += ` - ${errorData}`;
+        } catch (e) {
+          console.error('[PROFILE DATA FETCH] Could not read error response body:', e);
+        }
+        
+        throw new Error(errorMessage);
       }
+      
       const data = await response.json();
-      console.log('User data fetched successfully:', data);
+      console.log('[PROFILE DATA FETCH] Success! User data received:', {
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        hasPhotoURL: !!data.photoURL
+      });
       return data;
     },
-    enabled: !!userIdentifier,
-    retry: 2,
+    enabled: !!userIdentifier && !!user,
+    retry: (failureCount, error) => {
+      console.log('[PROFILE DATA FETCH] Retry attempt:', failureCount, 'Error:', error.message);
+      return failureCount < 2;
+    },
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false, // Prevent unnecessary refetches
   });
@@ -823,8 +865,37 @@ export default function ProfileNeo() {
               }}
             />
           ) : (
-            <div className="p-8 text-white text-center">
-              Unable to load user data. Please try again.
+            <div className="p-8 text-white text-center space-y-4">
+              <AlertCircle className="h-12 w-12 mx-auto text-red-400" />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Unable to load user data</h3>
+                {userDataError ? (
+                  <div className="text-sm text-gray-300 space-y-2">
+                    <p>Error: {userDataError.message}</p>
+                    <div className="text-xs text-gray-400 bg-gray-800/50 p-3 rounded">
+                      <p><strong>Debug Info:</strong></p>
+                      <p>User ID: {userIdentifier || 'Not available'}</p>
+                      <p>Auth User ID: {user?.id || 'N/A'}</p>
+                      <p>Auth Username: {user?.username || 'N/A'}</p>
+                      <p>Auth UID: {user?.uid || 'N/A'}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-300">Please try again or contact support if the issue persists.</p>
+                )}
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  console.log('[RETRY] Manually retrying user data fetch');
+                  // Force refetch by invalidating the query
+                  queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+                }}
+                className="mx-auto"
+                data-testid="button-retry-user-data"
+              >
+                Try Again
+              </Button>
             </div>
           )}
         </DialogContent>
