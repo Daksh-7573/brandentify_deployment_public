@@ -132,7 +132,7 @@ export default function WorkExperience() {
 
   const createExperienceMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch(`/api/users/${userIdentifier}/experiences`, {
+      const response = await fetch(`/api/experiences`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -179,16 +179,16 @@ export default function WorkExperience() {
     e.preventDefault();
     
     const experienceData = {
+      userId: parseInt(userIdentifier), // Convert to number for backend validation
       title: formData.title,
       company: formData.company,
       location: formData.location,
       industry: formData.industry,
       domain: formData.domain,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      startDate: formData.startDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD or use current date
+      endDate: formData.endDate?.toISOString().split('T')[0] || null,
       keyResponsibilities: formData.keyResponsibilities.split('\n').filter(line => line.trim()),
-      isCurrentlyWorking: formData.isCurrentlyWorking,
-      userId: userIdentifier
+      isCurrentlyWorking: formData.isCurrentlyWorking
     };
 
     createExperienceMutation.mutate(experienceData);
