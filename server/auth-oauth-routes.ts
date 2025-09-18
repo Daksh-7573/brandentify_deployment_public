@@ -27,18 +27,31 @@ const ALLOWED_REDIRECT_URIS = [
   'http://127.0.0.1:5000/api/auth/google/callback'
 ];
 
+// Improved domain pattern matching for Replit environments
+const REPLIT_DOMAIN_PATTERNS = [
+  /^[a-zA-Z0-9-]+\.replit\.app$/,                    // Published domains like brandentifier.replit.app
+  /^[a-zA-Z0-9-]+\.replit\.dev$/,                    // Preview domains like simple.replit.dev
+  /^[a-f0-9-]+\.picard\.replit\.dev$/,               // Basic picard preview pattern
+  /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/ // Full picard subdomain pattern like 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+];
+
 // In-memory state storage (in production, use Redis or database)
 const stateStore = new Map<string, { timestamp: number, ip: string }>();
 
-// Clean up expired states every 10 minutes
+// Clean up expired states every 20 minutes (check for states older than 15 minutes)
 setInterval(() => {
-  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+  let deletedCount = 0;
   for (const [state, data] of Array.from(stateStore.entries())) {
-    if (data.timestamp < fiveMinutesAgo) {
+    if (data.timestamp < fifteenMinutesAgo) {
       stateStore.delete(state);
+      deletedCount++;
     }
   }
-}, 10 * 60 * 1000);
+  if (deletedCount > 0) {
+    console.log(`🧹 [STATE-CLEANUP] Removed ${deletedCount} expired OAuth states`);
+  }
+}, 20 * 60 * 1000);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
@@ -63,11 +76,19 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       throw new Error('Google Client ID not configured');
     }
     
-    // Use environment-based redirect URI determination - API route to avoid client collision
+    // Enhanced environment-based redirect URI determination with better domain handling
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
-    const isPreviewDomain = host.includes('replit.dev');
-    const isPublishedDomain = host.includes('replit.app');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
+    
+    console.log('🌐 [OAUTH-URL] Domain analysis:', {
+      host,
+      isDevelopment,
+      isReplitDomain,
+      isBrandentifierCom,
+      matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
+    });
     
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
     // Store original host in state for post-auth redirect
@@ -76,15 +97,19 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     if (isDevelopment) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
-    } else if (host.includes('brandentifier.com')) {
+    } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
-    } else {
+    } else if (isReplitDomain) {
       // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+    } else {
+      // Fallback for unknown domains
+      console.log('⚠️ [OAUTH-URL] Unknown domain, using fallback redirect URI');
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
-    console.log('OAuth redirect URI:', redirectUri);
+    console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
     // Create cryptographically secure state parameter with return host
     const stateData = {
@@ -173,20 +198,49 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       return res.redirect('/auth?error=missing_params');
     }
     
-    // Validate state parameter (CSRF protection)
+    // Enhanced state parameter validation with detailed logging
     const stateData = stateStore.get(state as string);
+    const currentTime = Date.now();
+    
+    console.log('🔐 [STATE-VALIDATION] Validating OAuth state:', {
+      stateExists: !!stateData,
+      stateStoreSize: stateStore.size,
+      currentHost: req.get('host'),
+      timestamp: new Date().toISOString()
+    });
+    
     if (!stateData) {
-      console.error('Invalid or expired state parameter');
+      console.error('❌ [STATE-VALIDATION] Invalid or missing state parameter:', {
+        providedState: state ? `${(state as string).substring(0, 10)}...` : 'null',
+        storeHasStates: stateStore.size > 0,
+        allStates: Array.from(stateStore.keys()).map(k => k.substring(0, 10) + '...')
+      });
       return res.redirect('/auth?error=invalid_state');
     }
     
-    // Check state age (max 5 minutes)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    if (stateData.timestamp < fiveMinutesAgo) {
-      console.error('Expired state parameter');
+    // Check state age (max 15 minutes) - Extended from 5 minutes
+    const fifteenMinutesAgo = currentTime - 15 * 60 * 1000;
+    const stateAge = currentTime - stateData.timestamp;
+    
+    console.log('⏰ [STATE-VALIDATION] State age check:', {
+      stateTimestamp: new Date(stateData.timestamp).toISOString(),
+      currentTimestamp: new Date(currentTime).toISOString(),
+      stateAgeSeconds: Math.floor(stateAge / 1000),
+      maxAgeSeconds: 15 * 60,
+      isExpired: stateData.timestamp < fifteenMinutesAgo
+    });
+    
+    if (stateData.timestamp < fifteenMinutesAgo) {
+      console.error('❌ [STATE-VALIDATION] Expired state parameter:', {
+        stateAge: Math.floor(stateAge / 1000) + ' seconds',
+        maxAge: '900 seconds (15 minutes)',
+        expiredBy: Math.floor((fifteenMinutesAgo - stateData.timestamp) / 1000) + ' seconds'
+      });
       stateStore.delete(state as string);
       return res.redirect('/auth?error=expired_state');
     }
+    
+    console.log('✅ [STATE-VALIDATION] State validation successful');
     
     // Remove used state
     stateStore.delete(state as string);
@@ -195,11 +249,19 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       throw new Error('Google OAuth credentials not configured');
     }
     
-    // Use environment-based redirect URI determination - API route to avoid client collision
+    // Enhanced environment-based redirect URI determination in callback (matches URL generation)
     const host = req.get('Host') || '';
     const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
-    const isPreviewDomain = host.includes('replit.dev');
-    const isPublishedDomain = host.includes('replit.app');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
+    
+    console.log('🌐 [OAUTH-CALLBACK] Domain analysis for token exchange:', {
+      host,
+      isDevelopment,
+      isReplitDomain,
+      isBrandentifierCom,
+      matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
+    });
     
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
     // Store original host in state for post-auth redirect
@@ -208,18 +270,22 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     if (isDevelopment) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
-    } else if (host.includes('brandentifier.com')) {
+    } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
-    } else {
+    } else if (isReplitDomain) {
       // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+    } else {
+      // Fallback for unknown domains
+      console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using fallback redirect URI');
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
     console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
-    console.log('🔄 [OAUTH CALLBACK] Using redirect URI:', redirectUri);
-    console.log('🔄 [OAUTH CALLBACK] Host detected:', host);
-    console.log('🔄 [OAUTH CALLBACK] Development mode:', isDevelopment);
+    console.log('✅ [OAUTH CALLBACK] Using redirect URI:', redirectUri);
+    console.log('🔍 [OAUTH CALLBACK] Host detected:', host);
+    console.log('🔧 [OAUTH CALLBACK] Development mode:', isDevelopment);
     
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
