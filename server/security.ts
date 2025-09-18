@@ -25,13 +25,11 @@ import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
-// Secure JWT signing key (in production, this should be in environment variables)
-// CRITICAL FIX: Use the same JWT secret as auth-oauth-routes.ts to ensure token compatibility
-const JWT_SECRET = process.env.JWT_SECRET || (() => {
-  const defaultSecret = 'brandentifier-secure-jwt-secret-key-2025';
-  console.log('🔐 Using default JWT secret for token validation');
-  return defaultSecret;
-})();
+// Secure JWT signing key - MUST be provided via environment variable
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is required for security. Application cannot start without it.');
+}
 const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)
@@ -212,7 +210,6 @@ export function verifyToken(token: string): any {
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   // Skip authentication for public routes
   const publicRoutes = [
-    '/', // Allow root route to serve frontend
     '/api/auth',
     '/api/login',
     '/api/register',
@@ -230,34 +227,29 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
   
   // Get token from headers or cookies or query params
-  // CRITICAL FIX: Look for the correct cookie name 'brandentifier_session' that's set by OAuth routes
   const token = req.headers.authorization?.split(' ')[1] || 
-                req.cookies?.brandentifier_session || 
                 req.cookies?.token || 
                 req.query?.token as string;
                 
   if (!token) {
     // If Firebase auth is used, allow the request to continue since Firebase handles auth
+    // We allow Firebase auth to bypass our JWT auth to maintain compatibility
     if (req.headers['x-firebase-auth']) {
       return next();
     }
     
-    // CRITICAL FIX: Properly enforce authentication for protected routes
     return res.status(401).json({ 
-      success: false,
+      message: 'No authentication token provided',
       error: 'Authentication required',
-      message: 'No authentication token provided. Please log in.',
       code: 'NO_TOKEN'
     });
   }
   
   const decoded = verifyToken(token);
   if (!decoded) {
-    // CRITICAL FIX: Properly validate JWT tokens
     return res.status(401).json({ 
-      success: false,
+      message: 'Invalid or expired token',
       error: 'Authentication failed',
-      message: 'Invalid or expired authentication token. Please log in again.',
       code: 'INVALID_TOKEN'
     });
   }
@@ -345,35 +337,37 @@ export async function setupSecurity(app: any) {
     })
   );
   
-  // 2. Set up CORS with whitelisted origins
+  // 2. Set up CORS with whitelisted origins and SECURE credential handling
   const corsOptions = {
     origin: function (origin: any, callback: any) {
       // Debug logging
-      console.log(`CORS: Checking origin: ${origin}`);
-      console.log(`CORS: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
-      console.log(`CORS: NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`CORS: [SECURITY.TS] Checking origin: ${origin}`);
+      console.log(`CORS: [SECURITY.TS] ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
+      console.log(`CORS: [SECURITY.TS] NODE_ENV: ${process.env.NODE_ENV}`);
       
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) {
-        console.log('CORS: Allowing request with no origin');
+        console.log('CORS: [SECURITY.TS] Allowing request with no origin');
         return callback(null, true);
       }
       
       // Allow all Replit domains and development
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-        console.log('CORS: Origin found in ALLOWED_ORIGINS');
+        console.log('CORS: [SECURITY.TS] Origin found in ALLOWED_ORIGINS');
         callback(null, true);
       } else if (process.env.NODE_ENV === 'development') {
-        console.log('CORS: Allowing due to development mode');
+        console.log('CORS: [SECURITY.TS] Allowing due to development mode');
         callback(null, true);
-      } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev') || origin.endsWith('.replit.co')) {
-        console.log('CORS: Allowing Replit domain:', origin);
+      } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
+        console.log('CORS: [SECURITY.TS] Allowing Replit domain');
         callback(null, true);
       } else {
-        console.log(`CORS: Rejecting origin: ${origin}`);
+        console.log(`CORS: [SECURITY.TS] Rejecting origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
+    // SECURITY FIX: Enable credentials for secure cross-domain authentication
+    // The origin validation above already restricts which origins can access with credentials
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']

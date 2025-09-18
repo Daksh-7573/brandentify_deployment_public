@@ -257,6 +257,7 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByBrandName(brandName: string): Promise<User | undefined>;
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
@@ -324,7 +325,6 @@ export interface IStorage {
   // Project operations
   getProjectsByUserId(userId: number): Promise<Project[]>;
   getProjectById(id: number): Promise<Project | undefined>;
-  getAllProjects(): Promise<Project[]>;
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, project: Partial<Project>): Promise<Project | undefined>;
   deleteProject(id: number): Promise<boolean>;
@@ -711,40 +711,6 @@ export interface IStorage {
     endTime?: Date;
     reason?: string;
   }>;
-
-  // Smart Connect operations
-  // Connection Request operations
-  getConnectionRequestById(id: number): Promise<ConnectionRequest | undefined>;
-  getConnectionRequestsByRequester(requesterId: number): Promise<ConnectionRequest[]>;
-  getConnectionRequestsByRecipient(recipientId: number): Promise<ConnectionRequest[]>;
-  getConnectionRequestByUsers(requesterId: number, recipientId: number): Promise<ConnectionRequest | undefined>;
-  createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest>;
-  updateConnectionRequest(id: number, updates: Partial<ConnectionRequest>): Promise<ConnectionRequest | undefined>;
-  deleteConnectionRequest(id: number): Promise<boolean>;
-  acceptConnectionRequest(id: number, responseMessage?: string): Promise<{ connectionRequest: ConnectionRequest; userConnection: UserConnection }>;
-  declineConnectionRequest(id: number, responseMessage?: string): Promise<ConnectionRequest>;
-  withdrawConnectionRequest(id: number): Promise<ConnectionRequest | undefined>;
-  
-  // User Connection operations
-  getUserConnectionById(id: number): Promise<UserConnection | undefined>;
-  getUserConnections(userId: number): Promise<UserConnection[]>;
-  getConnectionBetweenUsers(user1Id: number, user2Id: number): Promise<UserConnection | undefined>;
-  createUserConnection(connection: InsertUserConnection): Promise<UserConnection>;
-  updateUserConnection(id: number, updates: Partial<UserConnection>): Promise<UserConnection | undefined>;
-  deleteUserConnection(id: number): Promise<boolean>;
-  areUsersConnected(user1Id: number, user2Id: number): Promise<boolean>;
-  getMutualConnections(user1Id: number, user2Id: number): Promise<UserConnection[]>;
-  
-  // Connection Recommendation operations
-  getConnectionRecommendationById(id: number): Promise<ConnectionRecommendation | undefined>;
-  getConnectionRecommendationsForUser(userId: number, limit?: number): Promise<ConnectionRecommendation[]>;
-  createConnectionRecommendation(recommendation: InsertConnectionRecommendation): Promise<ConnectionRecommendation>;
-  updateConnectionRecommendation(id: number, updates: Partial<ConnectionRecommendation>): Promise<ConnectionRecommendation | undefined>;
-  markRecommendationViewed(id: number): Promise<ConnectionRecommendation | undefined>;
-  dismissRecommendation(id: number): Promise<ConnectionRecommendation | undefined>;
-  markRecommendationRequested(id: number): Promise<ConnectionRecommendation | undefined>;
-  deleteConnectionRecommendation(id: number): Promise<boolean>;
-  cleanupExpiredRecommendations(): Promise<number>;
 }
 
 // In-memory implementation of the storage
@@ -806,11 +772,6 @@ export class MemStorage implements IStorage {
   // Mentorship Connect models
   private mentorshipRequests: Map<number, MentorshipRequest>;
   private mentorshipFeedback: Map<number, MentorshipFeedback>;
-  
-  // Smart Connect models
-  private connectionRequests: Map<number, ConnectionRequest>;
-  private userConnections: Map<number, UserConnection>;
-  private connectionRecommendations: Map<number, ConnectionRecommendation>;
   
   // Career Capsule models - removed
   // private careerCapsules: Map<number, CareerCapsule>;
@@ -1063,7 +1024,28 @@ export class MemStorage implements IStorage {
       emailVerified: true,
       emailVerificationToken: null,
       emailVerificationExpires: null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      firebaseUid: null,
+      googleId: null,
+      authProvider: null,
+      lastLoginAt: null,
+      aboutMe: null,
+      companyName: null,
+      workMode: null,
+      skills: null,
+      interests: null,
+      socialLinks: null,
+      profileUrl: null,
+      visibility: "public",
+      brandName: null,
+      personalityType: null,
+      whatIAmWorkingOn: null,
+      whatIOffer: null,
+      currentFocus: null,
+      radarVisibility: null,
+      geoLatitude: null,
+      geoLongitude: null,
+      geoLastUpdated: null
     };
     this.users.set(demoUser.id, demoUser);
     this.currentUserId++;
@@ -1757,6 +1739,51 @@ export class MemStorage implements IStorage {
     }
   }
   
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    console.log(`[db.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
+    
+    try {
+      // Query database by Google ID (primary lookup) or Firebase UID (fallback for legacy users)
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        brand_name as "brandName", visiting_card_type as "visitingCardType", 
+        profile_completed as "profileCompleted", email_verified as "emailVerified", 
+        email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", 
+        firebase_uid as "firebaseUid", google_id as "googleId", 
+        auth_provider as "authProvider", last_login_at as "lastLoginAt", 
+        created_at as "createdAt"
+        FROM users 
+        WHERE google_id = $1 OR firebase_uid = $1
+      `;
+      
+      const result = await pool.query(query, [googleId]);
+      console.log(`[db.getUserByGoogleId] Query returned ${result.rows.length} rows`);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+        return undefined;
+      }
+      
+      const user = result.rows[0] as User;
+      console.log(`[db.getUserByGoogleId] Found user:`, {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        googleId: user.googleId,
+        firebaseUid: user.firebaseUid,
+        authProvider: user.authProvider
+      });
+      
+      return user;
+    } catch (error) {
+      console.error(`[db.getUserByGoogleId] Error fetching user with Google ID ${googleId}:`, error);
+      return undefined;
+    }
+  }
+
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
   }
@@ -1782,6 +1809,11 @@ export class MemStorage implements IStorage {
       lookingFor: insertUser.lookingFor ?? null,
       visitingCardType: insertUser.visitingCardType ?? null,
       profileCompleted: insertUser.profileCompleted ?? null,
+      firebaseUid: insertUser.firebaseUid ?? null,
+      googleId: insertUser.googleId ?? null,
+      authProvider: insertUser.authProvider ?? null,
+      lastLoginAt: insertUser.lastLoginAt ?? null,
+      brandName: insertUser.brandName ?? null,
       emailVerified: false,
       emailVerificationToken: null,
       emailVerificationExpires: null
@@ -2176,10 +2208,6 @@ export class MemStorage implements IStorage {
   
   async getProjectById(id: number): Promise<Project | undefined> {
     return this.projects.get(id);
-  }
-  
-  async getAllProjects(): Promise<Project[]> {
-    return Array.from(this.projects.values());
   }
   
   async createProject(insertProject: InsertProject): Promise<Project> {
@@ -7958,7 +7986,6 @@ export class MemStorage implements IStorage {
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
 import { eq, desc, and, sql as drizzleSql } from 'drizzle-orm';
-import { brandsOfTheDay } from '@shared/schema';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -8688,7 +8715,8 @@ export class DatabaseStorage implements IStorage {
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-            email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+            firebase_uid as "firebaseUid", google_id as "googleId", auth_provider as "authProvider"
           FROM users
           WHERE email = $1
         `, [email]);
@@ -8705,6 +8733,49 @@ export class DatabaseStorage implements IStorage {
       }
     }, 3, 800).catch(error => {
       console.error(`[db.getUserByEmail] All retries failed for email ${email}:`, error);
+      return undefined; // Final fallback to prevent UI from breaking
+    });
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    console.log(`[db.getUserByGoogleId] Looking up user with Google ID: ${googleId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT 
+            id, username, email, password, phone_number as "phoneNumber", 
+            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
+            visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+            firebase_uid as "firebaseUid", google_id as "googleId", auth_provider as "authProvider"
+          FROM users
+          WHERE google_id = $1 OR firebase_uid = $1
+        `, [googleId]);
+        
+        console.log(`[db.getUserByGoogleId] Query returned ${result.rows.length} rows`);
+        
+        if (result.rows.length > 0) {
+          const user = result.rows[0] as User;
+          console.log(`[db.getUserByGoogleId] Found user:`, {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            googleId: user.googleId,
+            firebaseUid: user.firebaseUid
+          });
+          return user;
+        }
+        console.log(`[db.getUserByGoogleId] No user found with Google ID: ${googleId}`);
+        return undefined;
+      } catch (error) {
+        console.error(`[db.getUserByGoogleId] Error fetching user with Google ID ${googleId}:`, error);
+        throw error; // Rethrow for retry mechanism
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getUserByGoogleId] All retries failed for Google ID ${googleId}:`, error);
       return undefined; // Final fallback to prevent UI from breaking
     });
   }
@@ -9263,26 +9334,6 @@ export class DatabaseStorage implements IStorage {
   async getProjectById(id: number): Promise<Project | undefined> {
     const [project] = await db.select().from(projects).where(eq(projects.id, id));
     return project || undefined;
-  }
-
-  async getAllProjects(): Promise<Project[]> {
-    console.log(`[db.getAllProjects] Fetching all projects`);
-    try {
-      const result = await pool.query(`
-        SELECT id, user_id as "userId", title, description, start_date as "startDate",
-               project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
-               thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
-               created_at as "createdAt", updated_at as "updatedAt"
-        FROM projects
-        ORDER BY created_at DESC
-      `);
-      
-      console.log(`[db.getAllProjects] Found ${result.rows.length} total projects`);
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getAllProjects] Error fetching all projects:`, error);
-      return [];
-    }
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
@@ -11889,29 +11940,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getHashtags(): Promise<Hashtag[]> {
-    try {
-      console.log('[db.getHashtags] Fetching all hashtags');
-      
-      const result = await pool.query(`
-        SELECT 
-          id,
-          tag,
-          COALESCE(count, 0) as count,
-          created_at as "createdAt",
-          updated_at as "updatedAt"
-        FROM hashtags
-        ORDER BY count DESC, tag ASC
-      `);
-      
-      console.log(`[db.getHashtags] Found ${result.rows.length} hashtags`);
-      return result.rows;
-    } catch (error) {
-      console.error('[db.getHashtags] Error fetching hashtags:', error);
-      return [];
-    }
-  }
-
   async getPulsesByInterests(interests: string[], includeTypes?: string[]): Promise<any[]> {
     if (!interests.length) return [];
     
@@ -12058,8 +12086,8 @@ export const storage = {
   
   // User methods
   getUser: (id: number) => dbStorage.getUser(id),
-  getAllUsers: () => dbStorage.getAllUsers(),
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
+  getUserByGoogleId: (googleId: string) => dbStorage.getUserByGoogleId(googleId),
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
   getUserByBrandName: (brandName: string) => dbStorage.getUserByBrandName(brandName),
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
@@ -12096,7 +12124,6 @@ export const storage = {
   // Project methods
   getProjectsByUserId: (userId: number) => dbStorage.getProjectsByUserId(userId),
   getProjectById: (id: number) => dbStorage.getProjectById(id),
-  getAllProjects: () => dbStorage.getAllProjects(),
   createProject: (project: InsertProject) => dbStorage.createProject(project),
   updateProject: (id: number, project: Partial<Project>) => dbStorage.updateProject(id, project),
   deleteProject: (id: number) => dbStorage.deleteProject(id),
@@ -12318,14 +12345,6 @@ export const storage = {
   getPulses: () => dbStorage.getPulses(),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
   
-  // Hashtag methods
-  getHashtags: () => dbStorage.getHashtags(),
-  
-  // Search methods
-  searchPulses: (query: string) => dbStorage.searchPulses(query),
-  searchProfiles: (query: string) => dbStorage.searchProfiles(query),
-  searchHashtags: (query: string) => dbStorage.searchHashtags(query),
-  
   // Poll Vote methods
   getPollVoteByUserAndPulse: (userId: number, pulseId: number) => dbStorage.getPollVoteByUserAndPulse(userId, pulseId),
   createPollVote: (vote: InsertPollVote) => dbStorage.createPollVote(vote),
@@ -12367,456 +12386,5 @@ export const storage = {
   upsertUserInterest: (interest: any) => dbStorage.upsertUserInterest(interest),
   followUser: (followerId: number, followeeId: number) => dbStorage.followUser(followerId, followeeId),
   unfollowUser: (followerId: number, followeeId: number) => dbStorage.unfollowUser(followerId, followeeId),
-  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId),
-
-  // Smart Connect methods - database-backed implementation
-  getConnectionRequestById: async (id: number) => {
-    console.log(`[storage.getConnectionRequestById] Getting connection request ${id}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM connection_requests WHERE id = $1',
-        [id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error getting connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  getConnectionRequestsByRequester: async (requesterId: number) => {
-    console.log(`[storage.getConnectionRequestsByRequester] Getting requests for requester ${requesterId}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM connection_requests WHERE requester_id = $1 ORDER BY requested_at DESC',
-        [requesterId]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error(`Error getting requests for requester ${requesterId}:`, error);
-      throw error;
-    }
-  },
-  getConnectionRequestsByRecipient: async (recipientId: number) => {
-    console.log(`[storage.getConnectionRequestsByRecipient] Getting requests for recipient ${recipientId}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM connection_requests WHERE recipient_id = $1 ORDER BY requested_at DESC',
-        [recipientId]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error(`Error getting requests for recipient ${recipientId}:`, error);
-      throw error;
-    }
-  },
-  getConnectionRequestByUsers: async (requesterId: number, recipientId: number) => {
-    console.log(`[storage.getConnectionRequestByUsers] Getting request between ${requesterId} and ${recipientId}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM connection_requests WHERE (requester_id = $1 AND recipient_id = $2) OR (requester_id = $2 AND recipient_id = $1) LIMIT 1',
-        [requesterId, recipientId]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error getting request between ${requesterId} and ${recipientId}:`, error);
-      throw error;
-    }
-  },
-  createConnectionRequest: async (request: InsertConnectionRequest) => {
-    console.log(`[storage.createConnectionRequest] Creating connection request`, request);
-    try {
-      const result = await executeQuery(
-        `INSERT INTO connection_requests (requester_id, recipient_id, message, request_reason, match_score, shared_interests, mutual_connections, metadata_json)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING *`,
-        [
-          request.requesterId,
-          request.recipientId,
-          request.message || null,
-          request.requestReason || null,
-          request.matchScore || null,
-          JSON.stringify(request.sharedInterests || []),
-          request.mutualConnections || 0,
-          JSON.stringify(request.metadataJson || {})
-        ]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('Error creating connection request:', error);
-      throw error;
-    }
-  },
-  updateConnectionRequest: async (id: number, updates: Partial<ConnectionRequest>) => {
-    console.log(`[storage.updateConnectionRequest] Updating connection request ${id}`, updates);
-    try {
-      const setParts = [];
-      const values = [];
-      let paramCount = 1;
-      
-      Object.entries(updates).forEach(([key, value]) => {
-        if (key === 'id') return; // Skip id field
-        const dbField = key === 'requesterId' ? 'requester_id' :
-                       key === 'recipientId' ? 'recipient_id' :
-                       key === 'requestReason' ? 'request_reason' :
-                       key === 'matchScore' ? 'match_score' :
-                       key === 'sharedInterests' ? 'shared_interests' :
-                       key === 'mutualConnections' ? 'mutual_connections' :
-                       key === 'requestedAt' ? 'requested_at' :
-                       key === 'respondedAt' ? 'responded_at' :
-                       key === 'responseMessage' ? 'response_message' :
-                       key === 'connectionEstablishedAt' ? 'connection_established_at' :
-                       key === 'isStarred' ? 'is_starred' :
-                       key === 'lastInteractionAt' ? 'last_interaction_at' :
-                       key === 'metadataJson' ? 'metadata_json' :
-                       key === 'createdAt' ? 'created_at' :
-                       key === 'updatedAt' ? 'updated_at' : key;
-        
-        setParts.push(`${dbField} = $${paramCount}`);
-        values.push(typeof value === 'object' && value !== null ? JSON.stringify(value) : value);
-        paramCount++;
-      });
-      
-      if (setParts.length === 0) return undefined;
-      
-      // Always update the updated_at timestamp
-      setParts.push(`updated_at = NOW()`);
-      values.push(id);
-      
-      const result = await executeQuery(
-        `UPDATE connection_requests SET ${setParts.join(', ')} WHERE id = $${paramCount} RETURNING *`,
-        values
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error updating connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  deleteConnectionRequest: async (id: number) => {
-    console.log(`[storage.deleteConnectionRequest] Deleting connection request ${id}`);
-    try {
-      const result = await executeQuery(
-        'DELETE FROM connection_requests WHERE id = $1',
-        [id]
-      );
-      return result.rowCount > 0;
-    } catch (error) {
-      console.error(`Error deleting connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  acceptConnectionRequest: async (id: number, responseMessage?: string) => {
-    console.log(`[storage.acceptConnectionRequest] Accepting connection request ${id}`);
-    try {
-      // Get the connection request first
-      const getRequestResult = await executeQuery(
-        'SELECT * FROM connection_requests WHERE id = $1',
-        [id]
-      );
-      
-      if (getRequestResult.rows.length === 0) {
-        throw new Error(`Connection request ${id} not found`);
-      }
-      
-      const request = getRequestResult.rows[0];
-      
-      // Start transaction
-      const client = await pool.connect();
-      try {
-        await client.query('BEGIN');
-        
-        // Update the connection request
-        const updateRequestResult = await client.query(
-          'UPDATE connection_requests SET status = $1, responded_at = NOW(), response_message = $2, connection_established_at = NOW(), updated_at = NOW() WHERE id = $3 RETURNING *',
-          ['accepted', responseMessage || null, id]
-        );
-        
-        // Ensure canonical ordering (lower ID always as user1)
-        const user1Id = Math.min(request.requester_id, request.recipient_id);
-        const user2Id = Math.max(request.requester_id, request.recipient_id);
-        
-        // Create user connection
-        const createConnectionResult = await client.query(
-          'INSERT INTO user_connections (user1_id, user2_id, connection_request_id) VALUES ($1, $2, $3) RETURNING *',
-          [user1Id, user2Id, id]
-        );
-        
-        await client.query('COMMIT');
-        
-        return {
-          connectionRequest: updateRequestResult.rows[0],
-          userConnection: createConnectionResult.rows[0]
-        };
-      } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-      } finally {
-        client.release();
-      }
-    } catch (error) {
-      console.error(`Error accepting connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  declineConnectionRequest: async (id: number, responseMessage?: string) => {
-    console.log(`[storage.declineConnectionRequest] Declining connection request ${id}`);
-    try {
-      const result = await executeQuery(
-        'UPDATE connection_requests SET status = $1, responded_at = NOW(), response_message = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
-        ['declined', responseMessage || null, id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error declining connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  withdrawConnectionRequest: async (id: number) => {
-    console.log(`[storage.withdrawConnectionRequest] Withdrawing connection request ${id}`);
-    try {
-      const result = await executeQuery(
-        'UPDATE connection_requests SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
-        ['withdrawn', id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error withdrawing connection request ${id}:`, error);
-      throw error;
-    }
-  },
-  getUserConnectionById: async (id: number) => {
-    console.log(`[storage.getUserConnectionById] Getting user connection ${id}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM user_connections WHERE id = $1',
-        [id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error getting user connection ${id}:`, error);
-      throw error;
-    }
-  },
-  getUserConnections: async (userId: number) => {
-    console.log(`[storage.getUserConnections] Getting connections for user ${userId}`);
-    try {
-      const result = await executeQuery(
-        'SELECT * FROM user_connections WHERE (user1_id = $1 OR user2_id = $1) AND is_active = true ORDER BY established_at DESC',
-        [userId]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error(`Error getting connections for user ${userId}:`, error);
-      throw error;
-    }
-  },
-  getConnectionBetweenUsers: async (user1Id: number, user2Id: number) => {
-    console.log(`[storage.getConnectionBetweenUsers] Getting connection between ${user1Id} and ${user2Id}`);
-    try {
-      // Ensure canonical ordering for the query
-      const minUserId = Math.min(user1Id, user2Id);
-      const maxUserId = Math.max(user1Id, user2Id);
-      
-      const result = await executeQuery(
-        'SELECT * FROM user_connections WHERE user1_id = $1 AND user2_id = $2 AND is_active = true',
-        [minUserId, maxUserId]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error getting connection between ${user1Id} and ${user2Id}:`, error);
-      throw error;
-    }
-  },
-  createUserConnection: async (connection: InsertUserConnection) => {
-    console.log(`[storage.createUserConnection] Creating user connection`, connection);
-    try {
-      // Ensure canonical ordering (lower ID always as user1)
-      const user1Id = Math.min(connection.user1Id, connection.user2Id);
-      const user2Id = Math.max(connection.user1Id, connection.user2Id);
-      
-      const result = await executeQuery(
-        `INSERT INTO user_connections (user1_id, user2_id, connection_request_id, connection_type, connection_strength, notes, tags)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING *`,
-        [
-          user1Id,
-          user2Id,
-          connection.connectionRequestId || null,
-          connection.connectionType || 'professional',
-          connection.connectionStrength || 1,
-          connection.notes || null,
-          JSON.stringify(connection.tags || [])
-        ]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('Error creating user connection:', error);
-      throw error;
-    }
-  },
-  updateUserConnection: async (id: number, updates: any) => {
-    console.log(`[storage.updateUserConnection] Updating user connection ${id}`, updates);
-    // TODO: Implement database update
-    return undefined;
-  },
-  deleteUserConnection: async (id: number) => {
-    console.log(`[storage.deleteUserConnection] Deleting user connection ${id}`);
-    // TODO: Implement database delete
-    return true;
-  },
-  areUsersConnected: async (user1Id: number, user2Id: number) => {
-    console.log(`[storage.areUsersConnected] Checking if ${user1Id} and ${user2Id} are connected`);
-    try {
-      // Ensure canonical ordering for the query
-      const minUserId = Math.min(user1Id, user2Id);
-      const maxUserId = Math.max(user1Id, user2Id);
-      
-      const result = await executeQuery(
-        'SELECT 1 FROM user_connections WHERE user1_id = $1 AND user2_id = $2 AND is_active = true LIMIT 1',
-        [minUserId, maxUserId]
-      );
-      return result.rows.length > 0;
-    } catch (error) {
-      console.error(`Error checking connection between ${user1Id} and ${user2Id}:`, error);
-      return false; // Default to not connected on error
-    }
-  },
-  getMutualConnections: async (user1Id: number, user2Id: number) => {
-    console.log(`[storage.getMutualConnections] Getting mutual connections between ${user1Id} and ${user2Id}`);
-    try {
-      const result = await executeQuery(
-        `SELECT DISTINCT u.id, u.name, u.title, u.photo_url
-         FROM users u
-         INNER JOIN user_connections uc1 ON (uc1.user1_id = u.id OR uc1.user2_id = u.id)
-         INNER JOIN user_connections uc2 ON (uc2.user1_id = u.id OR uc2.user2_id = u.id)
-         WHERE uc1.is_active = true AND uc2.is_active = true
-         AND ((uc1.user1_id = $1 OR uc1.user2_id = $1) AND uc1.user1_id != u.id AND uc1.user2_id != u.id)
-         AND ((uc2.user1_id = $2 OR uc2.user2_id = $2) AND uc2.user1_id != u.id AND uc2.user2_id != u.id)
-         AND u.id != $1 AND u.id != $2`,
-        [user1Id, user2Id]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error(`Error getting mutual connections between ${user1Id} and ${user2Id}:`, error);
-      return [];
-    }
-  },
-  getConnectionRecommendationById: async (id: number) => {
-    console.log(`[storage.getConnectionRecommendationById] Getting recommendation ${id}`);
-    // TODO: Implement database query
-    return undefined;
-  },
-  getConnectionRecommendationsForUser: async (userId: number, limit?: number) => {
-    console.log(`[storage.getConnectionRecommendationsForUser] Getting recommendations for user ${userId}`);
-    try {
-      const queryLimit = limit || 10;
-      const result = await executeQuery(
-        `SELECT * FROM connection_recommendations 
-         WHERE user_id = $1 AND is_dismissed = false 
-         AND (expires_at IS NULL OR expires_at > NOW())
-         ORDER BY match_score DESC, generated_at DESC 
-         LIMIT $2`,
-        [userId, queryLimit]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error(`Error getting recommendations for user ${userId}:`, error);
-      return [];
-    }
-  },
-  createConnectionRecommendation: async (recommendation: InsertConnectionRecommendation) => {
-    console.log(`[storage.createConnectionRecommendation] Creating recommendation`, recommendation);
-    try {
-      const result = await executeQuery(
-        `INSERT INTO connection_recommendations (
-           user_id, recommended_user_id, recommendation_type, match_score,
-           industry_match_score, skill_match_score, location_match_score, interest_match_score,
-           match_reasons, strength_areas, compatibility_insights, recommendation_metadata, expires_at
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-         RETURNING *`,
-        [
-          recommendation.userId,
-          recommendation.recommendedUserId,
-          recommendation.recommendationType,
-          recommendation.matchScore,
-          recommendation.industryMatchScore || null,
-          recommendation.skillMatchScore || null,
-          recommendation.locationMatchScore || null,
-          recommendation.interestMatchScore || null,
-          JSON.stringify(recommendation.matchReasons || []),
-          JSON.stringify(recommendation.strengthAreas || []),
-          JSON.stringify(recommendation.compatibilityInsights || []),
-          JSON.stringify(recommendation.recommendationMetadata || {}),
-          recommendation.expiresAt || null
-        ]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('Error creating connection recommendation:', error);
-      throw error;
-    }
-  },
-  updateConnectionRecommendation: async (id: number, updates: any) => {
-    console.log(`[storage.updateConnectionRecommendation] Updating recommendation ${id}`, updates);
-    // TODO: Implement database update
-    return undefined;
-  },
-  markRecommendationViewed: async (id: number) => {
-    console.log(`[storage.markRecommendationViewed] Marking recommendation ${id} as viewed`);
-    try {
-      const result = await executeQuery(
-        'UPDATE connection_recommendations SET is_viewed = true, viewed_at = NOW(), updated_at = NOW() WHERE id = $1 RETURNING *',
-        [id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error marking recommendation ${id} as viewed:`, error);
-      throw error;
-    }
-  },
-  dismissRecommendation: async (id: number) => {
-    console.log(`[storage.dismissRecommendation] Dismissing recommendation ${id}`);
-    try {
-      const result = await executeQuery(
-        'UPDATE connection_recommendations SET is_dismissed = true, dismissed_at = NOW(), updated_at = NOW() WHERE id = $1 RETURNING *',
-        [id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error dismissing recommendation ${id}:`, error);
-      throw error;
-    }
-  },
-  markRecommendationRequested: async (id: number) => {
-    console.log(`[storage.markRecommendationRequested] Marking recommendation ${id} as requested`);
-    try {
-      const result = await executeQuery(
-        'UPDATE connection_recommendations SET was_connection_requested = true, updated_at = NOW() WHERE id = $1 RETURNING *',
-        [id]
-      );
-      return result.rows[0] || undefined;
-    } catch (error) {
-      console.error(`Error marking recommendation ${id} as requested:`, error);
-      throw error;
-    }
-  },
-  deleteConnectionRecommendation: async (id: number) => {
-    console.log(`[storage.deleteConnectionRecommendation] Deleting recommendation ${id}`);
-    // TODO: Implement database delete
-    return true;
-  },
-  cleanupExpiredRecommendations: async () => {
-    console.log(`[storage.cleanupExpiredRecommendations] Cleaning up expired recommendations`);
-    try {
-      const result = await executeQuery(
-        'DELETE FROM connection_recommendations WHERE expires_at IS NOT NULL AND expires_at < NOW()'
-      );
-      const deletedCount = result.rowCount || 0;
-      console.log(`[storage.cleanupExpiredRecommendations] Cleaned up ${deletedCount} expired recommendations`);
-      return deletedCount;
-    } catch (error) {
-      console.error('Error cleaning up expired recommendations:', error);
-      return 0;
-    }
-  }
+  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId)
 } as IStorage;
