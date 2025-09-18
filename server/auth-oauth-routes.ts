@@ -81,9 +81,11 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isPreviewDomain) {
+      // Use preview domain for callback to match origin and avoid 403 errors
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // Use published domain for published apps  
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
@@ -213,9 +215,11 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       redirectUri = 'http://localhost:5000/api/auth/google/callback';
     } else if (host.includes('brandentifier.com')) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isPreviewDomain) {
+      // Use preview domain for callback to match origin and avoid 403 errors
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app
+      // Use published domain for published apps  
       redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
     }
     
