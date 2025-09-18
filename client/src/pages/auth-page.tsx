@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, Phone, Check, Sparkles, Target, Users, AlertTriangle, Clock, RefreshCw, Shield, WifiOff, UserX } from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
@@ -22,6 +23,12 @@ export default function AuthPage() {
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  
+  // Extract error from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const errorType = urlParams.get('error');
+  const errorMessage = urlParams.get('message');
   
   // Debug auth state on auth page
   console.log('AuthPage: Current auth state:', {
@@ -47,6 +54,159 @@ export default function AuthPage() {
   //   
   //   checkRedirect();
   // }, []);
+
+  // Error message configuration
+  const getErrorConfig = (errorType: string | null) => {
+    switch (errorType) {
+      case 'invalid_state':
+        return {
+          icon: Shield,
+          title: 'Security Verification Failed',
+          message: 'The authentication request could not be verified. This usually happens when the session has been tampered with.',
+          guidance: 'Please try signing in again to restart the authentication process.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'expired_state':
+        return {
+          icon: Clock,
+          title: 'Authentication Session Expired',
+          message: 'Your authentication session has expired. For security reasons, authentication requests are only valid for 15 minutes.',
+          guidance: 'Please start the sign-in process again to get a fresh authentication session.',
+          color: 'border-yellow-500/50 bg-yellow-500/10',
+          iconColor: 'text-yellow-400',
+          retryable: true
+        };
+      case 'exchange_code_not_found':
+        return {
+          icon: WifiOff,
+          title: 'Connection Handoff Failed',
+          message: 'The secure session transfer between domains failed. This can happen if you took too long to complete the sign-in or if there was a network issue.',
+          guidance: 'Please try signing in again. The process should complete within a few minutes.',
+          color: 'border-orange-500/50 bg-orange-500/10',
+          iconColor: 'text-orange-400',
+          retryable: true
+        };
+      case 'oauth_error':
+        return {
+          icon: AlertTriangle,
+          title: 'Google Sign-In Error',
+          message: 'Google encountered an error while processing your sign-in request.',
+          guidance: 'This is usually temporary. Please try again, or check if your Google account is accessible.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'token_exchange_failed':
+        return {
+          icon: RefreshCw,
+          title: 'Authentication Token Error',
+          message: 'We couldn\'t complete the authentication process with Google. This might be due to a temporary server issue.',
+          guidance: 'Please wait a moment and try signing in again. If the problem persists, contact support.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'user_info_failed':
+        return {
+          icon: UserX,
+          title: 'Profile Information Error',
+          message: 'We successfully authenticated with Google but couldn\'t retrieve your profile information.',
+          guidance: 'Please check your Google account permissions and try again.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'invalid_exchange_code':
+        return {
+          icon: Shield,
+          title: 'Invalid Session Code',
+          message: 'The session transfer code is invalid or malformed.',
+          guidance: 'Please try signing in again to get a new session code.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'exchange_code_expired':
+        return {
+          icon: Clock,
+          title: 'Session Transfer Expired',
+          message: 'The session transfer took too long and has expired for security reasons.',
+          guidance: 'Please complete the sign-in process within 5 minutes. Try again.',
+          color: 'border-yellow-500/50 bg-yellow-500/10',
+          iconColor: 'text-yellow-400',
+          retryable: true
+        };
+      case 'host_mismatch':
+        return {
+          icon: Shield,
+          title: 'Domain Security Check Failed',
+          message: 'The authentication request came from an unexpected domain.',
+          guidance: 'This is a security protection. Please try signing in again.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'callback_error':
+        return {
+          icon: AlertTriangle,
+          title: 'Authentication Callback Error',
+          message: 'An unexpected error occurred during the authentication process.',
+          guidance: 'Please try again. If the problem persists, contact support.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      case 'session_accept_error':
+        return {
+          icon: WifiOff,
+          title: 'Session Setup Error',
+          message: 'We couldn\'t complete setting up your session after authentication.',
+          guidance: 'Please try signing in again. This is usually a temporary issue.',
+          color: 'border-orange-500/50 bg-orange-500/10',
+          iconColor: 'text-orange-400',
+          retryable: true
+        };
+      case 'missing_params':
+        return {
+          icon: AlertTriangle,
+          title: 'Authentication Parameters Missing',
+          message: 'Required authentication information was not received from Google.',
+          guidance: 'Please ensure you complete the Google sign-in process and try again.',
+          color: 'border-red-500/50 bg-red-500/10',
+          iconColor: 'text-red-400',
+          retryable: true
+        };
+      default:
+        return null;
+    }
+  };
+
+  const errorConfig = getErrorConfig(errorType);
+
+  // Handle retry button click
+  const handleRetry = () => {
+    setIsRetrying(true);
+    // Clear error parameters from URL
+    window.history.replaceState({}, '', '/auth');
+    
+    // Reset retry state after a brief delay
+    setTimeout(() => {
+      setIsRetrying(false);
+    }, 1000);
+  };
+
+  // Auto-clear errors after 30 seconds to prevent stale error states
+  useEffect(() => {
+    if (errorType) {
+      const timer = setTimeout(() => {
+        window.history.replaceState({}, '', '/auth');
+      }, 30000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [errorType]);
 
   // Simple redirect without loops - only redirect if explicitly on auth page
   useEffect(() => {
@@ -76,13 +236,70 @@ export default function AuthPage() {
       {/* Content layer */}
       <div className="relative z-10">
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
-          {/* Minimal auth page - no debug components */}
+          {/* Error Alert Section */}
+          {errorConfig && (
+            <div className="max-w-4xl mx-auto mb-6 md:mb-8" data-testid="auth-error-alert">
+              <Alert className={`${errorConfig.color} border-2`}>
+                <div className="flex items-start space-x-4">
+                  <div className={`p-2 rounded-full bg-black/20 ${errorConfig.iconColor} flex-shrink-0`}>
+                    <errorConfig.icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-white mb-2" data-testid="error-title">
+                          {errorConfig.title}
+                        </h3>
+                        <AlertDescription className="text-gray-300 mb-3" data-testid="error-message">
+                          {errorConfig.message}
+                        </AlertDescription>
+                        <p className="text-sm text-gray-400" data-testid="error-guidance">
+                          {errorConfig.guidance}
+                        </p>
+                        {errorMessage && (
+                          <p className="text-xs text-gray-500 mt-2" data-testid="error-details">
+                            Technical details: {errorMessage}
+                          </p>
+                        )}
+                      </div>
+                      {errorConfig.retryable && (
+                        <div className="flex-shrink-0">
+                          <Button
+                            onClick={handleRetry}
+                            disabled={isRetrying}
+                            variant="outline"
+                            size="sm"
+                            className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30"
+                            data-testid="button-retry-auth"
+                          >
+                            {isRetrying ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                Clearing...
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Try Again
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Alert>
+            </div>
+          )}
+
+          {/* Header Section */}
           <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
             Welcome to Brandentifier
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-gray-300 px-2">
-            Sign in to accelerate your professional growth with AI-powered career guidance
+            {errorConfig ? 'Please try signing in again' : 'Sign in to accelerate your professional growth with AI-powered career guidance'}
           </p>
           
         </div>
