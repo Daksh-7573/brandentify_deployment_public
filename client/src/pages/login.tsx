@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
-import { GoogleLoginButton } from '@/components/auth/login-buttons';
+import { FastGoogleAuth } from '@/components/auth/FastGoogleAuth';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -30,7 +30,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
-            <GoogleLoginButton />
+            <FastGoogleAuth />
             
             <div className="flex items-center gap-2 my-2">
               <Separator className="flex-grow bg-gray-700" />
