@@ -21,6 +21,7 @@ import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./rou
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
+import { registerSmartConnectNewRoutes } from "./routes-smart-connect-new";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
@@ -414,8 +415,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
-  // Register Smart Connect routes directly
-  registerSmartConnectRoutes(app, storage);
+  // Register Smart Connect routes - use only the new database-backed routes
+  // registerSmartConnectRoutes(app, storage); // REMOVED: Duplicate mock route registration
+  registerSmartConnectNewRoutes(app, storage);
   
   // Initialize the email service
   await initEmailService();

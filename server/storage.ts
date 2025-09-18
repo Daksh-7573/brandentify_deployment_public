@@ -711,6 +711,40 @@ export interface IStorage {
     endTime?: Date;
     reason?: string;
   }>;
+
+  // Smart Connect operations
+  // Connection Request operations
+  getConnectionRequestById(id: number): Promise<ConnectionRequest | undefined>;
+  getConnectionRequestsByRequester(requesterId: number): Promise<ConnectionRequest[]>;
+  getConnectionRequestsByRecipient(recipientId: number): Promise<ConnectionRequest[]>;
+  getConnectionRequestByUsers(requesterId: number, recipientId: number): Promise<ConnectionRequest | undefined>;
+  createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest>;
+  updateConnectionRequest(id: number, updates: Partial<ConnectionRequest>): Promise<ConnectionRequest | undefined>;
+  deleteConnectionRequest(id: number): Promise<boolean>;
+  acceptConnectionRequest(id: number, responseMessage?: string): Promise<{ connectionRequest: ConnectionRequest; userConnection: UserConnection }>;
+  declineConnectionRequest(id: number, responseMessage?: string): Promise<ConnectionRequest>;
+  withdrawConnectionRequest(id: number): Promise<ConnectionRequest | undefined>;
+  
+  // User Connection operations
+  getUserConnectionById(id: number): Promise<UserConnection | undefined>;
+  getUserConnections(userId: number): Promise<UserConnection[]>;
+  getConnectionBetweenUsers(user1Id: number, user2Id: number): Promise<UserConnection | undefined>;
+  createUserConnection(connection: InsertUserConnection): Promise<UserConnection>;
+  updateUserConnection(id: number, updates: Partial<UserConnection>): Promise<UserConnection | undefined>;
+  deleteUserConnection(id: number): Promise<boolean>;
+  areUsersConnected(user1Id: number, user2Id: number): Promise<boolean>;
+  getMutualConnections(user1Id: number, user2Id: number): Promise<UserConnection[]>;
+  
+  // Connection Recommendation operations
+  getConnectionRecommendationById(id: number): Promise<ConnectionRecommendation | undefined>;
+  getConnectionRecommendationsForUser(userId: number, limit?: number): Promise<ConnectionRecommendation[]>;
+  createConnectionRecommendation(recommendation: InsertConnectionRecommendation): Promise<ConnectionRecommendation>;
+  updateConnectionRecommendation(id: number, updates: Partial<ConnectionRecommendation>): Promise<ConnectionRecommendation | undefined>;
+  markRecommendationViewed(id: number): Promise<ConnectionRecommendation | undefined>;
+  dismissRecommendation(id: number): Promise<ConnectionRecommendation | undefined>;
+  markRecommendationRequested(id: number): Promise<ConnectionRecommendation | undefined>;
+  deleteConnectionRecommendation(id: number): Promise<boolean>;
+  cleanupExpiredRecommendations(): Promise<number>;
 }
 
 // In-memory implementation of the storage
@@ -772,6 +806,11 @@ export class MemStorage implements IStorage {
   // Mentorship Connect models
   private mentorshipRequests: Map<number, MentorshipRequest>;
   private mentorshipFeedback: Map<number, MentorshipFeedback>;
+  
+  // Smart Connect models
+  private connectionRequests: Map<number, ConnectionRequest>;
+  private userConnections: Map<number, UserConnection>;
+  private connectionRecommendations: Map<number, ConnectionRecommendation>;
   
   // Career Capsule models - removed
   // private careerCapsules: Map<number, CareerCapsule>;
@@ -12328,5 +12367,456 @@ export const storage = {
   upsertUserInterest: (interest: any) => dbStorage.upsertUserInterest(interest),
   followUser: (followerId: number, followeeId: number) => dbStorage.followUser(followerId, followeeId),
   unfollowUser: (followerId: number, followeeId: number) => dbStorage.unfollowUser(followerId, followeeId),
-  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId)
+  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId),
+
+  // Smart Connect methods - database-backed implementation
+  getConnectionRequestById: async (id: number) => {
+    console.log(`[storage.getConnectionRequestById] Getting connection request ${id}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM connection_requests WHERE id = $1',
+        [id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error getting connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  getConnectionRequestsByRequester: async (requesterId: number) => {
+    console.log(`[storage.getConnectionRequestsByRequester] Getting requests for requester ${requesterId}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM connection_requests WHERE requester_id = $1 ORDER BY requested_at DESC',
+        [requesterId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`Error getting requests for requester ${requesterId}:`, error);
+      throw error;
+    }
+  },
+  getConnectionRequestsByRecipient: async (recipientId: number) => {
+    console.log(`[storage.getConnectionRequestsByRecipient] Getting requests for recipient ${recipientId}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM connection_requests WHERE recipient_id = $1 ORDER BY requested_at DESC',
+        [recipientId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`Error getting requests for recipient ${recipientId}:`, error);
+      throw error;
+    }
+  },
+  getConnectionRequestByUsers: async (requesterId: number, recipientId: number) => {
+    console.log(`[storage.getConnectionRequestByUsers] Getting request between ${requesterId} and ${recipientId}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM connection_requests WHERE (requester_id = $1 AND recipient_id = $2) OR (requester_id = $2 AND recipient_id = $1) LIMIT 1',
+        [requesterId, recipientId]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error getting request between ${requesterId} and ${recipientId}:`, error);
+      throw error;
+    }
+  },
+  createConnectionRequest: async (request: InsertConnectionRequest) => {
+    console.log(`[storage.createConnectionRequest] Creating connection request`, request);
+    try {
+      const result = await executeQuery(
+        `INSERT INTO connection_requests (requester_id, recipient_id, message, request_reason, match_score, shared_interests, mutual_connections, metadata_json)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [
+          request.requesterId,
+          request.recipientId,
+          request.message || null,
+          request.requestReason || null,
+          request.matchScore || null,
+          JSON.stringify(request.sharedInterests || []),
+          request.mutualConnections || 0,
+          JSON.stringify(request.metadataJson || {})
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error creating connection request:', error);
+      throw error;
+    }
+  },
+  updateConnectionRequest: async (id: number, updates: Partial<ConnectionRequest>) => {
+    console.log(`[storage.updateConnectionRequest] Updating connection request ${id}`, updates);
+    try {
+      const setParts = [];
+      const values = [];
+      let paramCount = 1;
+      
+      Object.entries(updates).forEach(([key, value]) => {
+        if (key === 'id') return; // Skip id field
+        const dbField = key === 'requesterId' ? 'requester_id' :
+                       key === 'recipientId' ? 'recipient_id' :
+                       key === 'requestReason' ? 'request_reason' :
+                       key === 'matchScore' ? 'match_score' :
+                       key === 'sharedInterests' ? 'shared_interests' :
+                       key === 'mutualConnections' ? 'mutual_connections' :
+                       key === 'requestedAt' ? 'requested_at' :
+                       key === 'respondedAt' ? 'responded_at' :
+                       key === 'responseMessage' ? 'response_message' :
+                       key === 'connectionEstablishedAt' ? 'connection_established_at' :
+                       key === 'isStarred' ? 'is_starred' :
+                       key === 'lastInteractionAt' ? 'last_interaction_at' :
+                       key === 'metadataJson' ? 'metadata_json' :
+                       key === 'createdAt' ? 'created_at' :
+                       key === 'updatedAt' ? 'updated_at' : key;
+        
+        setParts.push(`${dbField} = $${paramCount}`);
+        values.push(typeof value === 'object' && value !== null ? JSON.stringify(value) : value);
+        paramCount++;
+      });
+      
+      if (setParts.length === 0) return undefined;
+      
+      // Always update the updated_at timestamp
+      setParts.push(`updated_at = NOW()`);
+      values.push(id);
+      
+      const result = await executeQuery(
+        `UPDATE connection_requests SET ${setParts.join(', ')} WHERE id = $${paramCount} RETURNING *`,
+        values
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error updating connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  deleteConnectionRequest: async (id: number) => {
+    console.log(`[storage.deleteConnectionRequest] Deleting connection request ${id}`);
+    try {
+      const result = await executeQuery(
+        'DELETE FROM connection_requests WHERE id = $1',
+        [id]
+      );
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`Error deleting connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  acceptConnectionRequest: async (id: number, responseMessage?: string) => {
+    console.log(`[storage.acceptConnectionRequest] Accepting connection request ${id}`);
+    try {
+      // Get the connection request first
+      const getRequestResult = await executeQuery(
+        'SELECT * FROM connection_requests WHERE id = $1',
+        [id]
+      );
+      
+      if (getRequestResult.rows.length === 0) {
+        throw new Error(`Connection request ${id} not found`);
+      }
+      
+      const request = getRequestResult.rows[0];
+      
+      // Start transaction
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        
+        // Update the connection request
+        const updateRequestResult = await client.query(
+          'UPDATE connection_requests SET status = $1, responded_at = NOW(), response_message = $2, connection_established_at = NOW(), updated_at = NOW() WHERE id = $3 RETURNING *',
+          ['accepted', responseMessage || null, id]
+        );
+        
+        // Ensure canonical ordering (lower ID always as user1)
+        const user1Id = Math.min(request.requester_id, request.recipient_id);
+        const user2Id = Math.max(request.requester_id, request.recipient_id);
+        
+        // Create user connection
+        const createConnectionResult = await client.query(
+          'INSERT INTO user_connections (user1_id, user2_id, connection_request_id) VALUES ($1, $2, $3) RETURNING *',
+          [user1Id, user2Id, id]
+        );
+        
+        await client.query('COMMIT');
+        
+        return {
+          connectionRequest: updateRequestResult.rows[0],
+          userConnection: createConnectionResult.rows[0]
+        };
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error(`Error accepting connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  declineConnectionRequest: async (id: number, responseMessage?: string) => {
+    console.log(`[storage.declineConnectionRequest] Declining connection request ${id}`);
+    try {
+      const result = await executeQuery(
+        'UPDATE connection_requests SET status = $1, responded_at = NOW(), response_message = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+        ['declined', responseMessage || null, id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error declining connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  withdrawConnectionRequest: async (id: number) => {
+    console.log(`[storage.withdrawConnectionRequest] Withdrawing connection request ${id}`);
+    try {
+      const result = await executeQuery(
+        'UPDATE connection_requests SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+        ['withdrawn', id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error withdrawing connection request ${id}:`, error);
+      throw error;
+    }
+  },
+  getUserConnectionById: async (id: number) => {
+    console.log(`[storage.getUserConnectionById] Getting user connection ${id}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM user_connections WHERE id = $1',
+        [id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error getting user connection ${id}:`, error);
+      throw error;
+    }
+  },
+  getUserConnections: async (userId: number) => {
+    console.log(`[storage.getUserConnections] Getting connections for user ${userId}`);
+    try {
+      const result = await executeQuery(
+        'SELECT * FROM user_connections WHERE (user1_id = $1 OR user2_id = $1) AND is_active = true ORDER BY established_at DESC',
+        [userId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`Error getting connections for user ${userId}:`, error);
+      throw error;
+    }
+  },
+  getConnectionBetweenUsers: async (user1Id: number, user2Id: number) => {
+    console.log(`[storage.getConnectionBetweenUsers] Getting connection between ${user1Id} and ${user2Id}`);
+    try {
+      // Ensure canonical ordering for the query
+      const minUserId = Math.min(user1Id, user2Id);
+      const maxUserId = Math.max(user1Id, user2Id);
+      
+      const result = await executeQuery(
+        'SELECT * FROM user_connections WHERE user1_id = $1 AND user2_id = $2 AND is_active = true',
+        [minUserId, maxUserId]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error getting connection between ${user1Id} and ${user2Id}:`, error);
+      throw error;
+    }
+  },
+  createUserConnection: async (connection: InsertUserConnection) => {
+    console.log(`[storage.createUserConnection] Creating user connection`, connection);
+    try {
+      // Ensure canonical ordering (lower ID always as user1)
+      const user1Id = Math.min(connection.user1Id, connection.user2Id);
+      const user2Id = Math.max(connection.user1Id, connection.user2Id);
+      
+      const result = await executeQuery(
+        `INSERT INTO user_connections (user1_id, user2_id, connection_request_id, connection_type, connection_strength, notes, tags)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [
+          user1Id,
+          user2Id,
+          connection.connectionRequestId || null,
+          connection.connectionType || 'professional',
+          connection.connectionStrength || 1,
+          connection.notes || null,
+          JSON.stringify(connection.tags || [])
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error creating user connection:', error);
+      throw error;
+    }
+  },
+  updateUserConnection: async (id: number, updates: any) => {
+    console.log(`[storage.updateUserConnection] Updating user connection ${id}`, updates);
+    // TODO: Implement database update
+    return undefined;
+  },
+  deleteUserConnection: async (id: number) => {
+    console.log(`[storage.deleteUserConnection] Deleting user connection ${id}`);
+    // TODO: Implement database delete
+    return true;
+  },
+  areUsersConnected: async (user1Id: number, user2Id: number) => {
+    console.log(`[storage.areUsersConnected] Checking if ${user1Id} and ${user2Id} are connected`);
+    try {
+      // Ensure canonical ordering for the query
+      const minUserId = Math.min(user1Id, user2Id);
+      const maxUserId = Math.max(user1Id, user2Id);
+      
+      const result = await executeQuery(
+        'SELECT 1 FROM user_connections WHERE user1_id = $1 AND user2_id = $2 AND is_active = true LIMIT 1',
+        [minUserId, maxUserId]
+      );
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error(`Error checking connection between ${user1Id} and ${user2Id}:`, error);
+      return false; // Default to not connected on error
+    }
+  },
+  getMutualConnections: async (user1Id: number, user2Id: number) => {
+    console.log(`[storage.getMutualConnections] Getting mutual connections between ${user1Id} and ${user2Id}`);
+    try {
+      const result = await executeQuery(
+        `SELECT DISTINCT u.id, u.name, u.title, u.photo_url
+         FROM users u
+         INNER JOIN user_connections uc1 ON (uc1.user1_id = u.id OR uc1.user2_id = u.id)
+         INNER JOIN user_connections uc2 ON (uc2.user1_id = u.id OR uc2.user2_id = u.id)
+         WHERE uc1.is_active = true AND uc2.is_active = true
+         AND ((uc1.user1_id = $1 OR uc1.user2_id = $1) AND uc1.user1_id != u.id AND uc1.user2_id != u.id)
+         AND ((uc2.user1_id = $2 OR uc2.user2_id = $2) AND uc2.user1_id != u.id AND uc2.user2_id != u.id)
+         AND u.id != $1 AND u.id != $2`,
+        [user1Id, user2Id]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`Error getting mutual connections between ${user1Id} and ${user2Id}:`, error);
+      return [];
+    }
+  },
+  getConnectionRecommendationById: async (id: number) => {
+    console.log(`[storage.getConnectionRecommendationById] Getting recommendation ${id}`);
+    // TODO: Implement database query
+    return undefined;
+  },
+  getConnectionRecommendationsForUser: async (userId: number, limit?: number) => {
+    console.log(`[storage.getConnectionRecommendationsForUser] Getting recommendations for user ${userId}`);
+    try {
+      const queryLimit = limit || 10;
+      const result = await executeQuery(
+        `SELECT * FROM connection_recommendations 
+         WHERE user_id = $1 AND is_dismissed = false 
+         AND (expires_at IS NULL OR expires_at > NOW())
+         ORDER BY match_score DESC, generated_at DESC 
+         LIMIT $2`,
+        [userId, queryLimit]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error(`Error getting recommendations for user ${userId}:`, error);
+      return [];
+    }
+  },
+  createConnectionRecommendation: async (recommendation: InsertConnectionRecommendation) => {
+    console.log(`[storage.createConnectionRecommendation] Creating recommendation`, recommendation);
+    try {
+      const result = await executeQuery(
+        `INSERT INTO connection_recommendations (
+           user_id, recommended_user_id, recommendation_type, match_score,
+           industry_match_score, skill_match_score, location_match_score, interest_match_score,
+           match_reasons, strength_areas, compatibility_insights, recommendation_metadata, expires_at
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+         RETURNING *`,
+        [
+          recommendation.userId,
+          recommendation.recommendedUserId,
+          recommendation.recommendationType,
+          recommendation.matchScore,
+          recommendation.industryMatchScore || null,
+          recommendation.skillMatchScore || null,
+          recommendation.locationMatchScore || null,
+          recommendation.interestMatchScore || null,
+          JSON.stringify(recommendation.matchReasons || []),
+          JSON.stringify(recommendation.strengthAreas || []),
+          JSON.stringify(recommendation.compatibilityInsights || []),
+          JSON.stringify(recommendation.recommendationMetadata || {}),
+          recommendation.expiresAt || null
+        ]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error creating connection recommendation:', error);
+      throw error;
+    }
+  },
+  updateConnectionRecommendation: async (id: number, updates: any) => {
+    console.log(`[storage.updateConnectionRecommendation] Updating recommendation ${id}`, updates);
+    // TODO: Implement database update
+    return undefined;
+  },
+  markRecommendationViewed: async (id: number) => {
+    console.log(`[storage.markRecommendationViewed] Marking recommendation ${id} as viewed`);
+    try {
+      const result = await executeQuery(
+        'UPDATE connection_recommendations SET is_viewed = true, viewed_at = NOW(), updated_at = NOW() WHERE id = $1 RETURNING *',
+        [id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error marking recommendation ${id} as viewed:`, error);
+      throw error;
+    }
+  },
+  dismissRecommendation: async (id: number) => {
+    console.log(`[storage.dismissRecommendation] Dismissing recommendation ${id}`);
+    try {
+      const result = await executeQuery(
+        'UPDATE connection_recommendations SET is_dismissed = true, dismissed_at = NOW(), updated_at = NOW() WHERE id = $1 RETURNING *',
+        [id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error dismissing recommendation ${id}:`, error);
+      throw error;
+    }
+  },
+  markRecommendationRequested: async (id: number) => {
+    console.log(`[storage.markRecommendationRequested] Marking recommendation ${id} as requested`);
+    try {
+      const result = await executeQuery(
+        'UPDATE connection_recommendations SET was_connection_requested = true, updated_at = NOW() WHERE id = $1 RETURNING *',
+        [id]
+      );
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error(`Error marking recommendation ${id} as requested:`, error);
+      throw error;
+    }
+  },
+  deleteConnectionRecommendation: async (id: number) => {
+    console.log(`[storage.deleteConnectionRecommendation] Deleting recommendation ${id}`);
+    // TODO: Implement database delete
+    return true;
+  },
+  cleanupExpiredRecommendations: async () => {
+    console.log(`[storage.cleanupExpiredRecommendations] Cleaning up expired recommendations`);
+    try {
+      const result = await executeQuery(
+        'DELETE FROM connection_recommendations WHERE expires_at IS NOT NULL AND expires_at < NOW()'
+      );
+      const deletedCount = result.rowCount || 0;
+      console.log(`[storage.cleanupExpiredRecommendations] Cleaned up ${deletedCount} expired recommendations`);
+      return deletedCount;
+    } catch (error) {
+      console.error('Error cleaning up expired recommendations:', error);
+      return 0;
+    }
+  }
 } as IStorage;
