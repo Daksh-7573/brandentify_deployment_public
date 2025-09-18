@@ -473,10 +473,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             setIsLoading(true);
             
             try {
-              // Combine dropdown and text input values for job title
-              const combinedJobTitle = [selectedJobTitleFromDropdown, jobTitle]
-                .filter(Boolean)
-                .join(' - ') || null;
+              // Use either dropdown selection OR custom text input (not both combined)
+              const combinedJobTitle = selectedJobTitleFromDropdown || jobTitle.trim() || null;
               
               const updateData = {
                 name: name.trim(),
@@ -484,7 +482,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
-                aboutMe: aboutMe.trim() || null,
+                about: aboutMe.trim() || null,
                 lookingFor: lookingFor.trim() || null,
               };
 
@@ -513,13 +511,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               
               console.log("[BUTTON] Final validated data:", updateData);
               
-              const response = await fetch(`/api/users/${userData.id}/force-update`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateData),
-              });
+              const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
 
               console.log("[BUTTON] Response status:", response.status);
 
@@ -528,15 +520,29 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 throw new Error(`API call failed: ${response.status} - ${errorText}`);
               }
 
-              const result = await response.json();
-              console.log("[BUTTON] API response:", result);
+              console.log("[BUTTON] API response:", response);
 
-              // Invalidate queries to refresh data - match profile page query key
-              if (user?.uid) {
-                await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-              }
+              // Create the updated user data object for immediate cache update
+              const updatedUserData = {
+                ...userData,
+                ...updateData,
+                title: combinedJobTitle,
+                about: aboutMe.trim() || null
+              };
+
+              console.log("[BUTTON] Updating cache immediately with:", updatedUserData);
+
+              // Immediately update the cache with the new data using the correct query key
+              queryClient.setQueryData(['/api/users', userIdentifier], updatedUserData);
+
+              console.log("[BUTTON] Cache updated immediately, now invalidating for fresh data");
+
+              // Invalidate queries to ensure fresh data from server matches what we just set
+              await queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+              
+              // Also invalidate any other potential query keys for safety
               await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
-              await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
+              await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
               toast({
@@ -544,13 +550,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 description: "Your profile information has been successfully updated.",
                 variant: "default",
               });
-
-              // Force immediate cache refresh with multiple strategies
-              await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.uid] });
-              await queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}`] });
-              
-              // Refetch user data immediately
-              await queryClient.refetchQueries({ queryKey: ['/api/users', user?.uid] });
               
               console.log("[BUTTON] Calling parent onSave callback");
               onSave();
