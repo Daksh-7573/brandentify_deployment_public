@@ -60,6 +60,14 @@ interface AnimatedTemplateProps {
   currentUserId?: number;
 }
 
+// Utility function to normalize unknown JSONB fields to string arrays
+const toStringArray = (v: unknown): string[] => {
+  if (Array.isArray(v)) return v.map(String);
+  if (typeof v === 'string') return v.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+  if (Array.isArray((v as any)?.values)) return (v as any).values.map(String);
+  return [];
+};
+
 // Main animated portfolio component
 const Animated: React.FC<AnimatedTemplateProps> = ({
   name,
@@ -708,16 +716,19 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </span>
                     </div>
                     
-                    {service.features && service.features.length > 0 && (
-                      <ul className="space-y-2 mb-6">
-                        {service.features.map((feature, i) => (
-                          <li key={i} className="text-gray-300 flex items-start">
-                            <ChevronRight className="w-5 h-5 text-blue-400 shrink-0 mr-2 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                    {(() => {
+                      const features = toStringArray(service.features);
+                      return features.length > 0 && (
+                        <ul className="space-y-2 mb-6">
+                          {features.map((feature, i) => (
+                            <li key={i} className="text-gray-300 flex items-start">
+                              <ChevronRight className="w-5 h-5 text-blue-400 shrink-0 mr-2 mt-0.5" />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    })()}
                     
                     <Button 
                       onClick={() => setSelectedService(service)}
@@ -793,21 +804,24 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                         </div>
                       </div>
                       
-                      {selectedService.features && selectedService.features.length > 0 && (
-                        <div>
-                          <h4 className="text-lg font-bold text-white mb-3">What's Included</h4>
-                          <ul className="space-y-3 bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
-                            {selectedService.features.map((feature, i) => (
-                              <li key={i} className="text-gray-300 flex items-start">
-                                <div className="mr-3 mt-1 w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-                                  <ChevronRight className="w-4 h-4 text-blue-400" />
-                                </div>
-                                <span>{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {(() => {
+                        const features = toStringArray(selectedService.features);
+                        return features.length > 0 && (
+                          <div>
+                            <h4 className="text-lg font-bold text-white mb-3">What's Included</h4>
+                            <ul className="space-y-3 bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
+                              {features.map((feature, i) => (
+                                <li key={i} className="text-gray-300 flex items-start">
+                                  <div className="mr-3 mt-1 w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                                    <ChevronRight className="w-4 h-4 text-blue-400" />
+                                  </div>
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
                       
                       <div className="pt-4">
                         <Button 
@@ -1020,18 +1034,21 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                         </div>
                         
                         {/* Media Gallery - if there are more images */}
-                        {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 1 && (
-                          <div className="pt-4">
-                            <h4 className="text-lg font-bold text-white mb-3">Project Gallery</h4>
-                            <div className="grid grid-cols-3 gap-2">
-                              {selectedProject.mediaUrls.map((url, i) => (
-                                <div key={i} className="aspect-square rounded-md overflow-hidden">
-                                  <img src={url} alt={`${selectedProject.title} - image ${i+1}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
+                        {(() => {
+                          const mediaUrls = toStringArray(selectedProject.mediaUrls);
+                          return mediaUrls.length > 1 && (
+                            <div className="pt-4">
+                              <h4 className="text-lg font-bold text-white mb-3">Project Gallery</h4>
+                              <div className="grid grid-cols-3 gap-2">
+                                {mediaUrls.map((url, i) => (
+                                  <div key={i} className="aspect-square rounded-md overflow-hidden">
+                                    <img src={url} alt={`${selectedProject.title} - image ${i+1}`} className="w-full h-full object-cover" />
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -1145,19 +1162,22 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                         )}
                       </div>
                       
-                      {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
-                        <div className="mb-4">
-                          <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
-                          <ul className="space-y-1">
-                            {experience.keyResponsibilities.map((responsibility, i) => (
-                              <li key={i} className="text-gray-300 flex items-start">
-                                <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
-                                <span>{responsibility}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {(() => {
+                        const responsibilities = toStringArray(experience.keyResponsibilities);
+                        return responsibilities.length > 0 && (
+                          <div className="mb-4">
+                            <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
+                            <ul className="space-y-1">
+                              {responsibilities.map((responsibility, i) => (
+                                <li key={i} className="text-gray-300 flex items-start">
+                                  <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
+                                  <span>{responsibility}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
                     </motion.div>
                   </motion.div>
                 ))
@@ -1265,18 +1285,21 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </div>
                     </div>
                     
-                    {education.skillsAcquired && education.skillsAcquired.length > 0 && (
-                      <div>
-                        <h5 className="text-sm font-semibold text-gray-400 mb-2">Skills Acquired</h5>
-                        <div className="flex flex-wrap gap-2">
-                          {education.skillsAcquired.map((skill, i) => (
-                            <Badge key={i} className="bg-gray-700/50 text-gray-300 border border-gray-600/20">
-                              {skill}
-                            </Badge>
-                          ))}
+                    {(() => {
+                      const skillsAcquired = toStringArray(education.skillsAcquired);
+                      return skillsAcquired.length > 0 && (
+                        <div>
+                          <h5 className="text-sm font-semibold text-gray-400 mb-2">Skills Acquired</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {skillsAcquired.map((skill, i) => (
+                              <Badge key={i} className="bg-gray-700/50 text-gray-300 border border-gray-600/20">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 </motion.div>
               ))
