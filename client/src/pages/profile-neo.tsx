@@ -855,6 +855,7 @@ export default function ProfileNeo() {
                 lookingFor: userData.lookingFor || '',
                 photoURL: userData.photoURL || ''
               }}
+              userIdentifier={userIdentifier}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
               onSave={async () => {
                 console.log("[DEBUG] onSave called from profile dialog");

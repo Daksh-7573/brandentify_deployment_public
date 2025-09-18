@@ -11,6 +11,7 @@ import LocationAutocomplete from "@/components/ui/location-autocomplete";
 
 interface EditPersonalInfoProps {
   userData: UserData;
+  userIdentifier: string;
   onCancel: () => void;
   onSave: () => void;
 }
@@ -28,7 +29,7 @@ const countryCodes = [
   { code: "+971", country: "UAE" },
 ];
 
-const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCancel, onSave }) => {
+const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userIdentifier, onCancel, onSave }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -144,10 +145,26 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
       console.log("[DEBUG] API response:", response);
 
-      // Invalidate queries to refresh data - use the correct query keys that match profile page
+      // Create the updated user data object for immediate cache update
+      const updatedUserData = {
+        ...userData,
+        ...updateData,
+        title: combinedJobTitle
+      };
+
+      console.log("[DEBUG] Updating cache immediately with:", updatedUserData);
+
+      // Immediately update the cache with the new data using the correct query key
+      queryClient.setQueryData(['/api/users', userIdentifier], updatedUserData);
+
+      console.log("[DEBUG] Cache updated immediately, now invalidating for fresh data");
+
+      // Invalidate queries to ensure fresh data from server matches what we just set
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+      
+      // Also invalidate any other potential query keys for safety
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
       toast({
