@@ -373,73 +373,52 @@ export default function Scholar({
 
   // Group skills by category with safety checks - simplified to show all skills
   const safeSkills = userSkills || [];
-  const skillCategories = {
-    technical: safeSkills.filter(skill => 
-      skill && skill.name && (
-        skill.name.toLowerCase().includes('programming') || 
-        skill.name.toLowerCase().includes('technical') ||
-        skill.name.toLowerCase().includes('coding') ||
-        skill.name.toLowerCase().includes('development') ||
-        skill.name.toLowerCase().includes('javascript') ||
-        skill.name.toLowerCase().includes('python') ||
-        skill.name.toLowerCase().includes('java') ||
-        skill.name.toLowerCase().includes('react') ||
-        skill.name.toLowerCase().includes('node') ||
-        skill.name.toLowerCase().includes('sql') ||
-        skill.name.toLowerCase().includes('html') ||
-        skill.name.toLowerCase().includes('css')
-      )
-    ),
-    soft: safeSkills.filter(skill => 
-      skill && skill.name && (
-        skill.name.toLowerCase().includes('communication') || 
-        skill.name.toLowerCase().includes('leadership') ||
-        skill.name.toLowerCase().includes('teamwork') ||
-        skill.name.toLowerCase().includes('collaboration') ||
-        skill.name.toLowerCase().includes('management') ||
-        skill.name.toLowerCase().includes('problem') ||
-        skill.name.toLowerCase().includes('analytical')
-      )
-    ),
-    tools: safeSkills.filter(skill => 
-      skill && skill.name && (
-        skill.name.toLowerCase().includes('tool') || 
-        skill.name.toLowerCase().includes('software') ||
-        skill.name.toLowerCase().includes('platform') ||
-        skill.name.toLowerCase().includes('adobe') ||
-        skill.name.toLowerCase().includes('figma') ||
-        skill.name.toLowerCase().includes('sketch')
-      )
-    ),
-    other: safeSkills.filter(skill => 
-      skill && skill.name && (
-        !skill.name.toLowerCase().includes('programming') && 
-        !skill.name.toLowerCase().includes('technical') &&
-        !skill.name.toLowerCase().includes('coding') &&
-        !skill.name.toLowerCase().includes('development') &&
-        !skill.name.toLowerCase().includes('javascript') &&
-        !skill.name.toLowerCase().includes('python') &&
-        !skill.name.toLowerCase().includes('java') &&
-        !skill.name.toLowerCase().includes('react') &&
-        !skill.name.toLowerCase().includes('node') &&
-        !skill.name.toLowerCase().includes('sql') &&
-        !skill.name.toLowerCase().includes('html') &&
-        !skill.name.toLowerCase().includes('css') &&
-        !skill.name.toLowerCase().includes('communication') && 
-        !skill.name.toLowerCase().includes('leadership') &&
-        !skill.name.toLowerCase().includes('teamwork') &&
-        !skill.name.toLowerCase().includes('collaboration') &&
-        !skill.name.toLowerCase().includes('management') &&
-        !skill.name.toLowerCase().includes('problem') &&
-        !skill.name.toLowerCase().includes('analytical') &&
-        !skill.name.toLowerCase().includes('tool') && 
-        !skill.name.toLowerCase().includes('software') &&
-        !skill.name.toLowerCase().includes('platform') &&
-        !skill.name.toLowerCase().includes('adobe') &&
-        !skill.name.toLowerCase().includes('figma') &&
-        !skill.name.toLowerCase().includes('sketch')
-      )
+  
+  // Separate technical and tools skills logically, but randomize soft/other skills distribution
+  const technicalSkills = safeSkills.filter(skill => 
+    skill && skill.name && (
+      skill.name.toLowerCase().includes('programming') || 
+      skill.name.toLowerCase().includes('technical') ||
+      skill.name.toLowerCase().includes('coding') ||
+      skill.name.toLowerCase().includes('development') ||
+      skill.name.toLowerCase().includes('javascript') ||
+      skill.name.toLowerCase().includes('python') ||
+      skill.name.toLowerCase().includes('java') ||
+      skill.name.toLowerCase().includes('react') ||
+      skill.name.toLowerCase().includes('node') ||
+      skill.name.toLowerCase().includes('sql') ||
+      skill.name.toLowerCase().includes('html') ||
+      skill.name.toLowerCase().includes('css')
     )
+  );
+  
+  const toolsSkills = safeSkills.filter(skill => 
+    skill && skill.name && (
+      skill.name.toLowerCase().includes('tool') || 
+      skill.name.toLowerCase().includes('software') ||
+      skill.name.toLowerCase().includes('platform') ||
+      skill.name.toLowerCase().includes('adobe') ||
+      skill.name.toLowerCase().includes('figma') ||
+      skill.name.toLowerCase().includes('sketch')
+    )
+  );
+  
+  // Get remaining skills (non-technical and non-tools) and randomly distribute them
+  const remainingSkills = safeSkills.filter(skill => 
+    skill && skill.name && 
+    !technicalSkills.includes(skill) && 
+    !toolsSkills.includes(skill)
+  );
+  
+  // Shuffle remaining skills and split them randomly between soft and other categories
+  const shuffledRemaining = [...remainingSkills].sort(() => Math.random() - 0.5);
+  const midPoint = Math.ceil(shuffledRemaining.length / 2);
+  
+  const skillCategories = {
+    technical: technicalSkills,
+    soft: shuffledRemaining.slice(0, midPoint),
+    tools: toolsSkills,
+    other: shuffledRemaining.slice(midPoint)
   };
 
   // If no skills fit into categories, put them all in 'other'
@@ -665,7 +644,7 @@ export default function Scholar({
                     {skillCategories.technical.map((skill) => (
                       <div key={skill.id} className="w-full mb-4">
                         <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">{skill.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                               {skill.level} - {skill.proficiency}%
@@ -742,7 +721,7 @@ export default function Scholar({
                     {skillCategories.other.map((skill) => (
                       <div key={skill.id} className="w-full mb-4">
                         <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">{skill.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-medium px-2 py-1 rounded-md bg-green-50 text-green-700">
                               {skill.level} - {skill.proficiency}%
@@ -779,7 +758,7 @@ export default function Scholar({
                     {safeSkills.map((skill) => (
                       <div key={skill.id} className="w-full mb-4">
                         <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">{skill.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                               {skill.level} - {skill.proficiency}%
