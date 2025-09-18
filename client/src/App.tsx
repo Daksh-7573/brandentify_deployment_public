@@ -293,7 +293,7 @@ function Router() {
       {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
       {adminLoaded && (
         <>
-          <Route path="/login" component={LoginPage} />
+          <Route path="/login" component={() => <PageRedirect to="/auth" />} />
           <Route path="/auth-status" component={AuthStatusPage} />
           <Route path="/dev-login" component={DevLoginPage} />
           <Route path="/simple-login" component={SimpleLoginPage} />
