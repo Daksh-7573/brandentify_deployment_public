@@ -294,7 +294,7 @@ const ProjectsFixed = () => {
       
       // Prepare the project data matching the database schema
       const projectData = {
-        userId: userIdentifier, // Send user ID, backend will convert to numeric ID
+        userId: parseInt(userIdentifier), // Convert to number for backend validation
         title: values.title || '',
         description: values.description || '',
         category: values.category || '',
