@@ -7355,10 +7355,16 @@ ${extractedText.substring(0, 5000)}
         }
       }
 
-      // Search Pulses/Content
+      // Search Pulses/Content (enhanced with user data)
       if (searchCategory === 'all' || searchCategory === 'pulses') {
         try {
           const allPulses = await storage.getPulses();
+          const allUsers = await storage.getAllUsers();
+          
+          // Create user lookup map for efficiency
+          const userMap = new Map();
+          allUsers.forEach(user => userMap.set(user.id, user));
+          
           const pulseMatches = allPulses
             .filter(pulse => {
               const searchableContent = [
@@ -7370,17 +7376,20 @@ ${extractedText.substring(0, 5000)}
               return searchableContent.includes(searchTerm);
             })
             .slice(0, searchLimit)
-            .map(pulse => ({
-              id: pulse.id,
-              title: pulse.title || 'Untitled',
-              content: pulse.content || '',
-              type: pulse.type || 'pulse',
-              createdAt: pulse.createdAt,
-              user: {
-                name: 'User',  // Would need to join with users table
-                photoURL: null
-              }
-            }));
+            .map(pulse => {
+              const pulseUser = userMap.get(pulse.userId);
+              return {
+                id: pulse.id,
+                title: pulse.title || 'Untitled',
+                content: pulse.content || '',
+                type: pulse.type || 'pulse',
+                createdAt: pulse.createdAt,
+                user: {
+                  name: pulseUser?.name || 'Anonymous User',
+                  photoURL: pulseUser?.photoURL || null
+                }
+              };
+            });
           
           results.pulses = pulseMatches;
           console.log(`[SEARCH API] Found ${pulseMatches.length} pulse matches`);
@@ -7389,16 +7398,11 @@ ${extractedText.substring(0, 5000)}
         }
       }
 
-      // Search Projects
+      // Search Projects (optimized)
       if (searchCategory === 'all' || searchCategory === 'projects') {
         try {
-          // Get all projects by getting all users and their projects
-          const allUsers = await storage.getAllUsers();
-          let allProjects: any[] = [];
-          for (const user of allUsers) {
-            const userProjects = await storage.getProjectsByUserId(user.id);
-            allProjects = allProjects.concat(userProjects);
-          }
+          // Use efficient getAllProjects method instead of looping through users
+          const allProjects = await storage.getAllProjects();
           const projectMatches = allProjects
             .filter(project => {
               const searchableFields = [
@@ -7415,7 +7419,8 @@ ${extractedText.substring(0, 5000)}
               title: project.title || 'Untitled Project',
               description: project.description || '',
               technologies: project.technologies || '',
-              createdAt: project.createdAt
+              createdAt: project.createdAt,
+              userId: project.userId
             }));
           
           results.projects = projectMatches;
