@@ -44,6 +44,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 // Form validation schema
 import { z } from 'zod';
@@ -93,9 +94,19 @@ const industryOptions = [
 
 export default function WorkExperience() {
   const { toast } = useToast();
+  const { user } = useAuth();
   
-  // Use demo user ID for now
-  const userNumericId = 2;
+  // Use consistent user ID logic matching other components (Skills, Projects)
+  // Primary: numeric ID, Fallback: username, uid, or default to 1
+  const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '1';
+  
+  console.log("WorkExperience component - user object:", {
+    id: user?.id,
+    username: user?.username, 
+    uid: user?.uid,
+    email: user?.email
+  });
+  console.log("WorkExperience component - Using userIdentifier:", userIdentifier);
   
   // State for form management
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -115,13 +126,13 @@ export default function WorkExperience() {
   const queryClient = useQueryClient();
 
   const { data: experiences = [], isLoading } = useQuery<any[]>({
-    queryKey: [`/api/users/${userNumericId}/experiences`],
-    enabled: !!userNumericId
+    queryKey: [`/api/users/${userIdentifier}/experiences`],
+    enabled: !!userIdentifier
   });
 
   const createExperienceMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch(`/api/users/${userNumericId}/experiences`, {
+      const response = await fetch(`/api/users/${userIdentifier}/experiences`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -130,7 +141,7 @@ export default function WorkExperience() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/experiences`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userIdentifier}/experiences`] });
       setShowAddDialog(false);
       resetForm();
       toast({ title: "Success", description: "Career path added successfully!" });
@@ -177,7 +188,7 @@ export default function WorkExperience() {
       endDate: formData.endDate,
       keyResponsibilities: formData.keyResponsibilities.split('\n').filter(line => line.trim()),
       isCurrentlyWorking: formData.isCurrentlyWorking,
-      userId: userNumericId
+      userId: userIdentifier
     };
 
     createExperienceMutation.mutate(experienceData);
