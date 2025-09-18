@@ -1,6 +1,6 @@
-// Re-export the useAuth hook from the simple auth context
+// Re-export the useAuth hook from the main auth context that validates server sessions
 import { useContext } from 'react';
-import { AuthContext } from '../context/simple-auth-context';
+import { AuthContext } from '../context/auth-context';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -11,7 +11,7 @@ export const useAuth = () => {
   // Add helper properties for profile page
   return {
     ...context,
-    uid: context.user?.username || context.user?.id?.toString() || context.user?.email || '',
+    uid: context.user?.uid || context.user?.id?.toString() || context.user?.email || '',
     isReady: !context.isLoading && !!context.user
   };
 };

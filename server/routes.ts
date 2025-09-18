@@ -1,5 +1,5 @@
 console.log("Loaded routes.ts");
-import express, { type Express, Request, Response } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
@@ -11,6 +11,7 @@ import crypto from "crypto";
 import path from "path";
 import fs from "fs";
 import fileUpload from "express-fileupload";
+import jwt from "jsonwebtoken";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
@@ -1170,7 +1171,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // JSON parsing middleware is now handled globally in server/index.ts
 
-  apiRouter.put("/users/:id", async (req: Request, res: Response) => {
+  // Authentication middleware specifically for profile updates
+  const validateProfileUpdateAuth = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log('🔐 [AUTH-GUARD] Validating authentication for profile update');
+      
+      // Check if this is a profile picture update (contains photoURL)
+      const isProfilePictureUpdate = req.body?.photoURL;
+      
+      if (isProfilePictureUpdate) {
+        console.log('🖼️ [AUTH-GUARD] Profile picture update detected - enforcing authentication');
+        
+        // Check JWT session cookie first
+        const sessionToken = req.cookies?.brandentifier_session;
+        
+        if (!sessionToken) {
+          console.log('❌ [AUTH-GUARD] No session token found for profile picture upload');
+          return res.status(401).json({
+            success: false,
+            error: 'Authentication required for profile picture uploads',
+            code: 'NO_SESSION'
+          });
+        }
+        
+        // Verify JWT token
+        try {
+          const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+          const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+          console.log('✅ [AUTH-GUARD] Valid session found for user:', decoded.email);
+          
+          // Get the target user ID from the URL
+          const targetUserId = req.params.id;
+          const authenticatedUserId = decoded.userId?.toString();
+          
+          console.log('🔍 [AUTH-GUARD] Target user ID:', targetUserId);
+          console.log('🔍 [AUTH-GUARD] Authenticated user ID:', authenticatedUserId);
+          
+          // Ensure user can only update their own profile
+          if (authenticatedUserId && targetUserId !== authenticatedUserId) {
+            console.log('❌ [AUTH-GUARD] User attempting to update different user profile');
+            return res.status(403).json({
+              success: false,
+              error: 'You can only update your own profile picture',
+              code: 'UNAUTHORIZED_UPDATE'
+            });
+          }
+          
+          // Attach user info to request for consistency
+          (req as any).authenticatedUser = decoded;
+          
+        } catch (jwtError) {
+          console.log('❌ [AUTH-GUARD] Invalid JWT token:', jwtError.message);
+          return res.status(401).json({
+            success: false,
+            error: 'Invalid authentication session',
+            code: 'INVALID_SESSION'
+          });
+        }
+      }
+      
+      // Continue to the actual route handler
+      next();
+      
+    } catch (error) {
+      console.error('❌ [AUTH-GUARD] Authentication validation error:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'Authentication validation failed',
+        code: 'AUTH_ERROR'
+      });
+    }
+  };
+
+  apiRouter.put("/users/:id", validateProfileUpdateAuth, async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     console.log(`[PUT /users/:id] 🚀 PROFILE PICTURE PERSISTENCE FIX APPLIED`);
     

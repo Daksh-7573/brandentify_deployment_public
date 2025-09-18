@@ -44,9 +44,27 @@ export function useProfilePicture(userId: number | string | null = null) {
       // Store the uploaded image for cache update
       setCurrentUploadedImage(base64Image);
       
+      // AUTHENTICATION VALIDATION: Ensure user is properly authenticated
+      if (!user) {
+        throw new Error("You must be logged in to upload a profile picture. Please sign in first.");
+      }
+      
       // Ensure we have a valid user ID
       if (!targetUserId) {
         throw new Error("Invalid user ID. Please log in again.");
+      }
+      
+      // SECURITY CHECK: Prevent uploading to different user accounts
+      const userNumericId = user.id?.toString();
+      const userUid = user.uid || user.id?.toString();
+      
+      if (targetUserId !== userNumericId && targetUserId !== userUid) {
+        console.error('[SECURITY] User attempting to upload to different account:', {
+          targetUserId,
+          userNumericId,
+          userUid
+        });
+        throw new Error("You can only update your own profile picture.");
       }
       
       // Start upload progress tracking
@@ -118,9 +136,16 @@ export function useProfilePicture(userId: number | string | null = null) {
         setIsUploading(false);
         setUploadProgress(0);
         
-        // Enhance error message
+        // Enhanced error handling with authentication context
         if (error instanceof Error) {
-          if (error.message.includes("413")) {
+          console.error('[PROFILE UPLOAD ERROR] Error details:', error);
+          
+          // Handle authentication-specific errors
+          if (error.message.includes("401") || error.message.includes("Authentication required")) {
+            throw new Error("Please sign in to upload a profile picture.");
+          } else if (error.message.includes("403") || error.message.includes("can only update your own")) {
+            throw new Error("You can only update your own profile picture.");
+          } else if (error.message.includes("413")) {
             throw new Error("Image is too large. Please use a smaller image (max 5MB).");
           } else if (error.message.includes("Network error")) {
             throw new Error("Network error. Please check your internet connection and try again.");
