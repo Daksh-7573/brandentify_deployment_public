@@ -141,13 +141,13 @@ export function useProfilePicture(userId: number | string | null = null) {
       console.log('[PROFILE PICTURE] Target user ID for cache update:', targetUserId);
       console.log('[PROFILE PICTURE] New photoURL from server:', (data as any)?.photoURL ? 'RECEIVED' : 'MISSING');
       
-      // Direct cache data update instead of invalidation to prevent wrong API calls
+      // Force immediate cache invalidation and refetch for immediate UI updates
       if (targetUserId) {
-        // Use the stored uploaded image for cache update since API response doesn't include photoURL
+        // Use the response photoURL or fallback to uploaded image
         const newPhotoURL = (data as any)?.photoURL || currentUploadedImage;
-        console.log('[PROFILE PICTURE] About to update cache with photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
+        console.log('[PROFILE PICTURE] About to invalidate cache with new photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
         
-        // Update the cached data directly with the new profile picture
+        // First update the cache directly to ensure immediate UI update
         queryClient.setQueryData(['/api/users', targetUserId], (oldData: any) => {
           if (oldData) {
             console.log('[PROFILE PICTURE] Updating cached data - old photoURL:', oldData.photoURL ? 'EXISTS' : 'NULL');
@@ -157,7 +157,6 @@ export function useProfilePicture(userId: number | string | null = null) {
               photoURL: newPhotoURL
             };
             console.log('[PROFILE PICTURE] ✅ Cache updated successfully for userId:', targetUserId);
-            console.log('[PROFILE PICTURE] ✅ Updated data includes photoURL:', updatedData.photoURL ? 'YES' : 'NO');
             return updatedData;
           }
           return oldData;
@@ -165,7 +164,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         
         // Also update by numeric ID if different from targetUserId
         const numericUserId = (data as any)?.id?.toString();
-        if (numericUserId && numericUserId !== targetUserId) {
+        if (numericUserId && numericUserId !== targetUserId.toString()) {
           queryClient.setQueryData(['/api/users', numericUserId], (oldData: any) => {
             if (oldData) {
               return {
@@ -177,24 +176,25 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }
         
-        // Force all components to re-render immediately after cache update
-        console.log('[PROFILE PICTURE] 🔄 Triggering component re-renders for userId:', targetUserId);
-        queryClient.invalidateQueries({ 
-          queryKey: ['/api/users', targetUserId],
-          exact: true,
-          refetchType: 'none' // Don't refetch, just trigger re-renders
+        // Then invalidate all related queries to ensure fresh data on next fetch
+        console.log('[PROFILE PICTURE] 🔄 Invalidating all user queries for immediate refresh');
+        await queryClient.invalidateQueries({ 
+          queryKey: ['/api/users'],
+          refetchType: 'active' // Refetch all active queries
         });
-        if (numericUserId && numericUserId !== targetUserId) {
-          console.log('[PROFILE PICTURE] 🔄 Also triggering re-renders for numericUserId:', numericUserId);
-          queryClient.invalidateQueries({ 
-            queryKey: ['/api/users', numericUserId],
-            exact: true,
-            refetchType: 'none'
+        
+        // Additional specific invalidation for the exact user
+        await queryClient.invalidateQueries({ 
+          queryKey: ['/api/users', targetUserId]
+        });
+        
+        if (numericUserId && numericUserId !== targetUserId.toString()) {
+          await queryClient.invalidateQueries({ 
+            queryKey: ['/api/users', numericUserId]
           });
         }
-        console.log('[PROFILE PICTURE] 🎉 All cache updates and re-renders completed!');
         
-        console.log('[PROFILE PICTURE] Cache data update complete');
+        console.log('[PROFILE PICTURE] 🎉 All cache updates and invalidations completed!');
       }
       
       // Clear the stored image after successful upload

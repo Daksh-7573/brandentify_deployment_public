@@ -1465,6 +1465,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } else {
               updatedUser = result.rows[0];
               console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+              
+              // FORCE CACHE INVALIDATION - Apply to ALL user updates, not just Firebase UIDs
+              if (global.gc) {
+                global.gc();
+              }
+              
+              // Invalidate cache service if available
+              try {
+                const { cacheService } = require('./services/cache-service');
+                await cacheService.invalidatePattern(`user:${userId}:*`);
+                await cacheService.invalidatePattern(`users:*`);
+                console.log(`[PUT /users/:id] Cache invalidated for numeric user ID: ${userId}`);
+              } catch (cacheError) {
+                console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+              }
             }
           }
         } catch (directError) {
