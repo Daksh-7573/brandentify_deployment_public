@@ -671,27 +671,70 @@ export default function Scholar({
                 </div>
               )}
               
-              {/* Soft Skills */}
-              {skillCategories.soft.length > 0 && (
+              {/* Combined Skills (formerly Soft Skills and Other Skills) */}
+              {(skillCategories.soft.length > 0 || skillCategories.other.length > 0) && (
                 <div className="graph-paper fade-in-up delay-100 p-6 rounded-lg">
-                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-indigo-800">
-                    <MessageSquare className="h-5 w-5 mr-2 text-indigo-600" /> Soft Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="space-y-4">
+                    {/* Display soft skills */}
                     {skillCategories.soft.map((skill) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline"
-                        className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
-                      >
-                        {skill.name} {skill.level && <span className="ml-1 text-xs bg-indigo-50 px-2 py-1 rounded-md text-indigo-700">{skill.level} - {skill.proficiency}%</span>}
-                      </Badge>
+                      <div key={skill.id} className="w-full mb-4">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
+                              {skill.level} - {skill.proficiency}%
+                            </span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${skill.proficiency}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Display other skills */}
+                    {skillCategories.other.map((skill) => (
+                      <div key={skill.id} className="w-full mb-4">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
+                              {skill.level} - {skill.proficiency}%
+                            </span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${skill.proficiency}%` }}
+                          />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
               )}
-              
-              {/* Tools */}
+
+              {/* Tools & Software (keeping this separate as it's logically different) */}
               {skillCategories.tools.length > 0 && (
                 <div className="notebook-paper fade-in-up delay-200 p-6 rounded-lg">
                   <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-purple-800">
@@ -706,43 +749,6 @@ export default function Scholar({
                       >
                         {skill.name} {skill.level && <span className="ml-1 text-xs bg-purple-100 px-2 py-1 rounded-md text-purple-700">{skill.level} - {skill.proficiency}%</span>}
                       </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Other Skills */}
-              {skillCategories.other.length > 0 && (
-                <div className="graph-paper fade-in-up delay-300 p-6 rounded-lg">
-                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-green-800">
-                    <Star className="h-5 w-5 mr-2 text-green-600" /> Other Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {skillCategories.other.map((skill) => (
-                      <div key={skill.id} className="w-full mb-4">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-green-50 text-green-700">
-                              {skill.level} - {skill.proficiency}%
-                            </span>
-                            <div className="flex">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-green-600 fill-green-600' : 'text-gray-300'}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill bg-green-500" 
-                            style={{ width: `${skill.proficiency}%` }}
-                          />
-                        </div>
-                      </div>
                     ))}
                   </div>
                 </div>
