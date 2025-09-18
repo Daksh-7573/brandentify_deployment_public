@@ -482,7 +482,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
-                about: aboutMe.trim() || null,
+                aboutMe: aboutMe.trim() || null,
                 lookingFor: lookingFor.trim() || null,
               };
 
@@ -527,7 +527,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 ...userData,
                 ...updateData,
                 title: combinedJobTitle,
-                about: aboutMe.trim() || null
+                aboutMe: aboutMe.trim() || null
               };
 
               console.log("[BUTTON] Updating cache immediately with:", updatedUserData);
