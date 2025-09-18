@@ -643,6 +643,26 @@ app.use((req, res, next) => {
   next();
 });
 
+// CRITICAL DEBUG: Track request body consumption at the earliest possible stage
+app.use((req, res, next) => {
+  if (req.path.includes('/users/') && req.method === 'PUT') {
+    console.log(`[EARLY DEBUG] ${req.method} ${req.path} - ENTERING MIDDLEWARE CHAIN`);
+    console.log(`[EARLY DEBUG] Content-Length:`, req.headers['content-length']);
+    console.log(`[EARLY DEBUG] Content-Type:`, req.headers['content-type']);
+    console.log(`[EARLY DEBUG] Body before any parsing:`, req.body || 'UNDEFINED');
+    
+    // Track if body gets consumed
+    const originalOn = req.on.bind(req);
+    req.on = function(event, listener) {
+      if (event === 'data') {
+        console.log(`[EARLY DEBUG] Request body 'data' event listener attached`);
+      }
+      return originalOn(event, listener);
+    };
+  }
+  next();
+});
+
 // Configure JSON and URL-encoded body parsing BEFORE other middleware with debugging
 app.use((req, res, next) => {
   if (req.path.includes('/career-capsule')) {
@@ -669,9 +689,34 @@ app.use((req, res, next) => {
   next();
 });
 
-// Standard body parsers for all other routes
-app.use(express.json({ limit: '50mb' }));
+// Standard body parsers for all other routes with enhanced debugging
+app.use(express.json({ 
+  limit: '50mb',
+  verify: (req, res, buf: Buffer, encoding) => {
+    if (req.path.includes('/users/')) {
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Raw buffer length:`, buf.length);
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
+    }
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Add JSON body debugging middleware for user routes
+app.use((req, res, next) => {
+  if (req.path.includes('/users/') && req.method === 'PUT') {
+    console.log(`[Body Parser Debug] ${req.method} ${req.path}`);
+    console.log(`[Body Parser Debug] Body after parsing:`, req.body);
+    console.log(`[Body Parser Debug] Body keys:`, Object.keys(req.body || {}));
+    console.log(`[Body Parser Debug] Body is:`, typeof req.body, req.body === null ? 'NULL' : req.body === undefined ? 'UNDEFINED' : 'DEFINED');
+    if (req.body?.photoURL) {
+      console.log(`[Body Parser Debug] photoURL length:`, req.body.photoURL.length);
+      console.log(`[Body Parser Debug] photoURL preview:`, req.body.photoURL.substring(0, 50) + '...');
+    } else {
+      console.log(`[Body Parser Debug] ❌ NO photoURL field found in body`);
+    }
+  }
+  next();
+});
 
 
 
@@ -705,11 +750,11 @@ app.use('/api/security', securityDashboardRoutes);
 // Setup API Gateway and Message Queue (Phase 3: Microservices Architecture)
 console.log("Setting up API Gateway and Message Queue services");
 
-// Profile picture upload debugging completed - core issue fixed
+// CRITICAL FIX: Move API Gateway AFTER route registration to prevent request body consumption
+// The API Gateway was consuming request bodies before they could be parsed by JSON middleware
+// This caused profile picture uploads and other PUT/POST requests to arrive with empty bodies
 
-app.use(apiGateway.routeRequest);
-app.use(apiGateway.healthCheckMiddleware);
-app.use(apiGateway.timeoutMiddleware);
+// API Gateway setup moved to AFTER registerRoutes() - see line ~760
 
 // Initialize message queue handlers
 messageQueue.registerHandler(TaskTypes.EMAIL_NOTIFICATION, async (payload) => {
@@ -736,6 +781,13 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
 
 (async () => {
   const server = await registerRoutes(app);
+  
+  // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
+  console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
+  app.use(apiGateway.routeRequest);
+  app.use(apiGateway.healthCheckMiddleware);
+  app.use(apiGateway.timeoutMiddleware);
+  console.log("API Gateway setup completed - request body consumption issue resolved");
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

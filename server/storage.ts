@@ -8870,6 +8870,10 @@ export class DatabaseStorage implements IStorage {
             updateData.brandName = value;
             break;
           case 'photoURL':
+            console.log(`[DatabaseStorage.updateUser] *** PHOTO URL MAPPING ***`);
+            console.log(`[DatabaseStorage.updateUser] photoURL value type:`, typeof value);
+            console.log(`[DatabaseStorage.updateUser] photoURL value length:`, value ? value.length : 'NULL');
+            console.log(`[DatabaseStorage.updateUser] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
             updateData.photoURL = value;
             break;
           case 'aboutMe':
@@ -8901,7 +8905,12 @@ export class DatabaseStorage implements IStorage {
         }
       }
       
-      console.log(`[DatabaseStorage.updateUser] Drizzle update data:`, updateData);
+      // Log update data without exposing full base64 content
+      const logSafeUpdateData = { ...updateData };
+      if (logSafeUpdateData.photoURL && logSafeUpdateData.photoURL.length > 100) {
+        logSafeUpdateData.photoURL = `[BASE64_IMAGE_${logSafeUpdateData.photoURL.length}_CHARS]`;
+      }
+      console.log(`[DatabaseStorage.updateUser] Drizzle update data:`, logSafeUpdateData);
       
       // Execute the update using Drizzle ORM
       const [updatedUser] = await db
@@ -8915,8 +8924,14 @@ export class DatabaseStorage implements IStorage {
         return undefined;
       }
       
-      console.log(`[DatabaseStorage.updateUser] DRIZZLE UPDATE SUCCESS:`, updatedUser);
+      // Log success without exposing full base64 content  
+      const logSafeUser = { ...updatedUser };
+      if (logSafeUser.photoURL && logSafeUser.photoURL.length > 100) {
+        logSafeUser.photoURL = `[BASE64_IMAGE_${logSafeUser.photoURL.length}_CHARS]`;
+      }
+      console.log(`[DatabaseStorage.updateUser] DRIZZLE UPDATE SUCCESS:`, logSafeUser);
       console.log(`[DatabaseStorage.updateUser] Updated title field via Drizzle:`, updatedUser.title);
+      console.log(`[DatabaseStorage.updateUser] Updated photoURL field via Drizzle:`, updatedUser.photoURL ? `[${updatedUser.photoURL.length} chars]` : 'NULL');
       
       // Verify critical fields were updated correctly
       for (const [key, value] of Object.entries(cleanedUserData)) {

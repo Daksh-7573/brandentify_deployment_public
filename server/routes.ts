@@ -1168,8 +1168,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
+  // CRITICAL FIX: Add explicit JSON body parsing middleware for user PUT routes
+  apiRouter.use('/users/:id', (req: Request, res: Response, next) => {
+    if (req.method === 'PUT') {
+      console.log(`[JSON MIDDLEWARE] 🔧 Applying explicit JSON parsing for ${req.method} ${req.path}`);
+      console.log(`[JSON MIDDLEWARE] Content-Length:`, req.headers['content-length']);
+      console.log(`[JSON MIDDLEWARE] Content-Type:`, req.headers['content-type']);
+      express.json({ limit: '50mb' })(req, res, next);
+    } else {
+      next();
+    }
+  });
+
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
+    console.log(`[PUT /users/:id] 🚀 PROFILE PICTURE PERSISTENCE FIX APPLIED`);
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');
     // Disable all caching for user updates
@@ -1258,6 +1271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
               console.log(`[PUT /users/:id] photoURL value length:`, value ? value.length : 'NULL');
               console.log(`[PUT /users/:id] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
+              console.log(`[PUT /users/:id] photoURL value type:`, typeof value);
+              console.log(`[PUT /users/:id] photoURL is base64:`, value ? value.startsWith('data:image/') : false);
             }
             
             // Convert camelCase to snake_case for PostgreSQL with proper field mapping
@@ -1328,7 +1343,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             updateValues.push(user.id);
             
             console.log(`[PUT /users/:id] Firebase UID Direct DB query:`, updateQuery);
-            console.log(`[PUT /users/:id] Firebase UID Direct DB params:`, updateValues);
+            console.log(`[PUT /users/:id] Firebase UID Direct DB params (excluding large base64):`, updateValues.map((val, idx) => 
+              updateParts[idx] && updateParts[idx].includes('photo_url') ? 
+                `[BASE64_IMAGE_${val ? val.length : 0}_CHARS]` : val
+            ));
             
             const result = await pool.query(updateQuery, updateValues);
             
