@@ -1,7 +1,28 @@
 import { db } from '../db';
-import { users, questDefinitions } from '@shared/schema';
+import { users, questDefinitions, careerGoals, userHashtagFollows, hashtags } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
+interface EnhancedUserProfile {
+  industry: string;
+  domain: string;
+  name?: string;
+  title?: string;
+  location?: string;
+  goals?: Array<{
+    id: number;
+    title: string;
+    goalType: string;
+    targetRole?: string | null;
+    targetIndustry?: string | null;
+    timeframe?: number;
+  }>;
+  followedHashtags?: Array<{
+    id: number;
+    tag: string;
+  }>;
+}
+
+// Keep legacy interface for backward compatibility
 interface UserProfile {
   industry: string;
   domain: string;
@@ -14,7 +35,7 @@ export class CareerQuestPersonalizationService {
   /**
    * Get personalized content for a specific quest type based on user profile
    */
-  getPersonalizedQuestContent(questType: string, targetAction: string, userProfile: UserProfile | null): {
+  getPersonalizedQuestContent(questType: string, targetAction: string, userProfile: UserProfile | EnhancedUserProfile | null): {
     title: string;
     description: string;
     muskTip: string;
@@ -229,25 +250,69 @@ export class CareerQuestPersonalizationService {
   }
 
   /**
+   * Get enhanced user profile with goals, location, and followed hashtags
+   */
+  async getEnhancedUserProfile(userId: number): Promise<EnhancedUserProfile | null> {
+    try {
+      // Get user basic profile
+      const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (userResult.length === 0) return null;
+
+      const user = userResult[0];
+      
+      // Get user's career goals
+      const goalsResult = await db
+        .select({
+          id: careerGoals.id,
+          title: careerGoals.title,
+          goalType: careerGoals.goalType,
+          targetRole: careerGoals.targetRole,
+          targetIndustry: careerGoals.targetIndustry,
+          timeframe: careerGoals.timeframe
+        })
+        .from(careerGoals)
+        .where(eq(careerGoals.userId, userId));
+
+      // Get followed hashtags
+      const hashtagsResult = await db
+        .select({
+          id: hashtags.id,
+          tag: hashtags.tag
+        })
+        .from(userHashtagFollows)
+        .innerJoin(hashtags, eq(userHashtagFollows.hashtagId, hashtags.id))
+        .where(eq(userHashtagFollows.userId, userId));
+
+      return {
+        industry: user.industry || '',
+        domain: user.domain || '',
+        name: user.name || '',
+        title: user.title || '',
+        location: user.location || '',
+        goals: goalsResult,
+        followedHashtags: hashtagsResult
+      };
+    } catch (error) {
+      console.error(`[CareerQuest] Error getting enhanced profile for user ${userId}:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Update existing quest definitions with personalized content for a specific user
    */
   async updateQuestDefinitionsForUser(userId: number): Promise<void> {
     try {
-      // Get user profile
-      const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-      const userProfile = userResult.length > 0 ? {
-        industry: userResult[0].industry || '',
-        domain: userResult[0].domain || '',
-        name: userResult[0].name || '',
-        title: userResult[0].title || ''
-      } : null;
+      // Get enhanced user profile
+      const userProfile = await this.getEnhancedUserProfile(userId);
 
       if (!userProfile) {
         console.log(`[CareerQuest] No user profile found for user ${userId}`);
         return;
       }
 
-      console.log(`[CareerQuest] Personalizing quests for ${userProfile.name} - ${userProfile.industry}/${userProfile.domain}`);
+      console.log(`[CareerQuest] Enhanced personalizing quests for ${userProfile.name} - ${userProfile.industry}/${userProfile.domain}`);
+      console.log(`[CareerQuest] Goals: ${userProfile.goals?.length || 0}, Location: ${userProfile.location}, Hashtags: ${userProfile.followedHashtags?.length || 0}`);
 
       // Get career quest definitions that need personalization
       const careerQuestTypes = ['profile_update', 'learning', 'networking', 'resume', 'portfolio', 'pulse_creation'];
@@ -256,7 +321,7 @@ export class CareerQuestPersonalizationService {
       const skillQuests = await db.select().from(questDefinitions).where(eq(questDefinitions.targetAction, 'add_skill'));
       
       if (skillQuests.length > 0) {
-          const personalizedContent = this.getPersonalizedQuestContent('profile_update', 'add_skill', userProfile);
+          const personalizedContent = this.getEnhancedQuestContent('profile_update', 'add_skill', userProfile);
           
           await db.update(questDefinitions)
             .set({
@@ -266,13 +331,62 @@ export class CareerQuestPersonalizationService {
             })
             .where(eq(questDefinitions.targetAction, 'add_skill'));
             
-          console.log(`[CareerQuest] Updated skill mastery quest with ${userProfile.industry}/${userProfile.domain} content`);
+          console.log(`[CareerQuest] Updated skill mastery quest with enhanced ${userProfile.industry}/${userProfile.domain} content`);
         }
 
       console.log(`[CareerQuest] Successfully personalized career quests for user ${userId}`);
     } catch (error) {
       console.error(`[CareerQuest] Error personalizing quests for user ${userId}:`, error);
     }
+  }
+
+  /**
+   * Get enhanced personalized quest content using goals, location, and hashtags
+   */
+  getEnhancedQuestContent(questType: string, targetAction: string, userProfile: EnhancedUserProfile): {
+    title: string;
+    description: string;
+    muskTip: string;
+  } {
+    const { industry, domain, location, goals, followedHashtags } = userProfile;
+    
+    // Get base content first
+    const baseContent = this.getPersonalizedQuestContent(questType, targetAction, userProfile);
+    
+    // Enhance with goals context
+    let enhancedDescription = baseContent.description;
+    let enhancedMuskTip = baseContent.muskTip;
+    
+    if (goals && goals.length > 0) {
+      const primaryGoal = goals[0]; // Use first/primary goal
+      const goalContext = primaryGoal.targetRole || primaryGoal.title;
+      
+      if (targetAction === 'add_skill') {
+        enhancedDescription = `Add skills that align with your goal to become ${goalContext} in ${primaryGoal.targetIndustry || industry}`;
+        enhancedMuskTip += ` Focus on skills that will help you transition to ${goalContext} within your ${primaryGoal.timeframe}-year timeline.`;
+      } else if (targetAction === 'add_connection') {
+        enhancedDescription = `Build strategic connections with ${goalContext} professionals and ${industry} leaders`;
+        enhancedMuskTip += ` Network with people who can guide your path to ${goalContext}.`;
+      }
+    }
+    
+    // Enhance with location context
+    if (location && (targetAction === 'add_connection' || targetAction === 'find_mentor')) {
+      enhancedMuskTip += ` Look for ${location}-based professionals and local ${industry} events.`;
+    }
+    
+    // Enhance with hashtag interests
+    if (followedHashtags && followedHashtags.length > 0 && targetAction === 'create_content') {
+      const hashtagTopics = followedHashtags.slice(0, 3).map(h => h.tag).join(', ');
+      enhancedDescription += ` Focus on topics you're interested in: ${hashtagTopics}`;
+      enhancedMuskTip += ` Create content around your interests: ${hashtagTopics} to build thought leadership.`;
+    }
+    
+    return {
+      title: baseContent.title,
+      description: enhancedDescription,
+      muskTip: enhancedMuskTip
+    };
   }
 }
 
