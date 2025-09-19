@@ -363,9 +363,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       }
 
       // Combine intelligent quests with existing database quests
-      // Prioritize intelligent quests, but include completed database quests
+      // Prioritize database quests if they exist, especially active ones
+      const activeDbQuests = dbQuests.filter(q => q.status === 'active');
       const completedDbQuests = dbQuests.filter(q => q.status === 'completed');
-      const allQuests = [...formattedQuests, ...completedDbQuests];
+      
+      // If we have active database quests, prioritize them over intelligent quests
+      const allQuests = activeDbQuests.length > 0 
+        ? [...activeDbQuests, ...completedDbQuests]
+        : [...formattedQuests, ...completedDbQuests];
 
       console.log(`[GET /users/${userId}/quests/current-week] Returning ${allQuests.length} total quests (${formattedQuests.length} intelligent + ${completedDbQuests.length} completed DB quests)`);
       
