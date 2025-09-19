@@ -30,16 +30,42 @@ export function FastGoogleAuth() {
       const data = await response.json();
       console.log('✅ Got OAuth URL, redirecting...');
       
-      // Use direct redirect method due to cross-origin popup issues
-      console.log('🔄 Using direct redirect for OAuth (avoiding popup issues)');
-      console.log('🔗 OAuth URL:', data.oauthUrl.substring(0, 100) + '...');
-      
-      // Store timestamp for auth attempt tracking
-      sessionStorage.setItem('oauth_attempt_time', Date.now().toString());
-      
-      // Direct redirect to Google OAuth
-      window.location.href = data.oauthUrl;
-      return;
+      // Try popup first, fallback to redirect if popup is blocked
+      try {
+        const popup = window.open(
+          data.oauthUrl,
+          'google-auth',
+          'width=500,height=600,left=' + 
+          (window.screen.width / 2 - 250) + 
+          ',top=' + (window.screen.height / 2 - 300) + 
+          ',scrollbars=yes,resizable=yes'
+        );
+        
+        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+          // Popup blocked or failed, use redirect method
+          console.log('Popup blocked, using redirect method');
+          window.location.href = data.oauthUrl;
+          return;
+        }
+        
+        // Monitor the popup for completion
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            setIsLoading(false);
+            // Check for authentication success
+            window.location.reload(); // Refresh to check auth state
+          }
+        }, 1000);
+        
+        return;
+        
+      } catch (popupError) {
+        // If popup fails completely, use redirect
+        console.log('Popup failed, using redirect method:', popupError);
+        window.location.href = data.oauthUrl;
+        return;
+      }
       
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
