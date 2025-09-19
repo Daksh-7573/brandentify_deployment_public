@@ -125,9 +125,9 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      // Use the same domain as the requesting host to avoid cross-domain redirect issues
+      // This ensures OAuth redirects back to the same domain that initiated the request
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
       // Fallback for unknown domains
       console.log('⚠️ [OAUTH-URL] Unknown domain, using fallback redirect URI');
@@ -339,9 +339,9 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      // Use the same domain as the requesting host to avoid cross-domain redirect issues
+      // This ensures OAuth redirects back to the same domain that initiated the request
+      redirectUri = `https://${host}/api/auth/google/callback`;
     } else {
       // Fallback for unknown domains
       console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using fallback redirect URI');
