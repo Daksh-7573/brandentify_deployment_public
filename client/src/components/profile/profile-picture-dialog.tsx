@@ -118,6 +118,34 @@ export function ProfilePictureDialog({
         });
       }
       
+      // CRITICAL FIX: Sync auth context for header display
+      console.log('[PROFILE DIALOG] 🔄 Syncing auth context for header sync');
+      if (typeof window !== 'undefined') {
+        try {
+          const response = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include'
+          });
+          if (response.ok) {
+            const sessionData = await response.json();
+            if (sessionData.success && sessionData.user) {
+              // Update session storage to sync auth context
+              sessionStorage.setItem('brandentifier_user', JSON.stringify({
+                ...sessionData.user,
+                photoURL: newPhotoURL
+              }));
+              
+              // Trigger a manual refresh by dispatching a custom event
+              window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
+                detail: { newPhotoURL } 
+              }));
+            }
+          }
+        } catch (error) {
+          console.log('[PROFILE DIALOG] Auth context refresh failed, will sync on next page load');
+        }
+      }
+      
       // Force immediate re-render
       queryClient.invalidateQueries({ 
         queryKey: ['/api/users', actualUserId],

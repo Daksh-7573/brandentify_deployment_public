@@ -101,6 +101,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
   }, []);
 
+  // Listen for profile picture updates to sync auth state
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: any) => {
+      console.log('[Auth Context] 🔄 Profile picture updated, syncing auth context');
+      const { newPhotoURL } = event.detail;
+      
+      if (user && newPhotoURL) {
+        const updatedUser = {
+          ...user,
+          photoURL: newPhotoURL
+        };
+        setUser(updatedUser);
+        console.log('[Auth Context] ✅ Auth context synced with new profile picture');
+      }
+    };
+
+    // Listen for profile picture update events
+    window.addEventListener('profile-picture-updated', handleProfilePictureUpdate);
+    
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('profile-picture-updated', handleProfilePictureUpdate);
+    };
+  }, [user]);
+
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {

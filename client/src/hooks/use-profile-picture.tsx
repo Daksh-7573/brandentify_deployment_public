@@ -201,6 +201,37 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }
         
+        // CRITICAL FIX: Also refresh the auth context to sync with header
+        console.log('[PROFILE PICTURE] 🔄 Refreshing auth context for immediate header sync');
+        if (user && typeof window !== 'undefined') {
+          // Import the auth context refresh function dynamically to avoid circular imports
+          const { useAuth } = await import('@/hooks/use-auth');
+          // We can't call useAuth here as it's a hook, so we'll trigger the refresh via a session check
+          try {
+            const response = await fetch('/api/auth/session', {
+              method: 'GET',
+              credentials: 'include'
+            });
+            if (response.ok) {
+              const sessionData = await response.json();
+              if (sessionData.success && sessionData.user) {
+                // Update session storage to sync auth context on next check
+                sessionStorage.setItem('brandentifier_user', JSON.stringify({
+                  ...sessionData.user,
+                  photoURL: newPhotoURL
+                }));
+                
+                // Trigger a manual refresh by dispatching a custom event
+                window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
+                  detail: { newPhotoURL } 
+                }));
+              }
+            }
+          } catch (error) {
+            console.log('[PROFILE PICTURE] Auth context refresh failed, will sync on next page load');
+          }
+        }
+        
         // Then invalidate all related queries to ensure fresh data on next fetch
         console.log('[PROFILE PICTURE] 🔄 Invalidating all user queries for immediate refresh');
         await queryClient.invalidateQueries({ 
