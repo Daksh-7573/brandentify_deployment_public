@@ -11,8 +11,9 @@ export async function checkAndHandleAuthRedirect(): Promise<boolean> {
     const { getRedirectResult } = await import('firebase/auth');
     const { auth } = await import('@/lib/firebase');
     
-    if (!auth) {
-      console.log("❌ Firebase auth not initialized");
+    // Firebase is disabled - return early to prevent syntax errors
+    if (!auth || auth === null) {
+      console.log("🚫 Firebase auth is disabled - skipping redirect handling");
       return false;
     }
     
@@ -71,6 +72,10 @@ export async function checkAndHandleAuthRedirect(): Promise<boolean> {
 export function initializeRedirectHandler() {
   // Only run in browser environment
   if (typeof window === 'undefined') return;
+  
+  // Skip if Firebase is disabled to prevent errors
+  console.log("🔧 initializeRedirectHandler: Firebase disabled, skipping redirect handler");
+  return;
   
   // Check if we have a redirect attempt flag
   const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
