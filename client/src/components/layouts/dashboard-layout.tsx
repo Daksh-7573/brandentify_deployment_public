@@ -133,13 +133,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         
         {/* Main content area */}
         <div className="ml-64 flex-1">
-          {children}
+          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {children}
+          </div>
         </div>
       </div>
 
       {/* Mobile content area */}
       <div className="sm:hidden">
-        {children}
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {children}
+        </div>
       </div>
     </div>
   );
