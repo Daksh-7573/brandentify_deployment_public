@@ -481,8 +481,7 @@ function validateOAuthConfigurationAtStartup(): {
   };
 }
 
-// Run startup validation
-const startupValidation = validateOAuthConfigurationAtStartup();
+// Startup validation will be run after all constants are defined
 
 // Clean up expired states and session exchange codes every 10 minutes
 setInterval(() => {
@@ -617,23 +616,10 @@ if (!oauthCredentials.valid) {
   console.error('   6. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables');
 } else {
   console.log('✅ [OAUTH-INIT] OAuth credentials validation successful');
-  
-  // Validate OAuth scopes
-  const currentScopes = getOAuthScopes(oauthCredentials.environment);
-  const scopeValidation = validateOAuthScopes(currentScopes);
-  
-  if (!scopeValidation.valid) {
-    console.error('❌ [OAUTH-SCOPES] OAuth scope validation failed:');
-    scopeValidation.errors.forEach(error => console.error(`   - ${error}`));
-  }
-  
-  if (scopeValidation.warnings.length > 0) {
-    console.warn('⚠️ [OAUTH-SCOPES] OAuth scope warnings:');
-    scopeValidation.warnings.forEach(warning => console.warn(`   - ${warning}`));
-  }
-  
-  console.log('✅ [OAUTH-SCOPES] Current OAuth scopes:', currentScopes);
 }
+
+// Run comprehensive startup validation now that all constants are defined
+const startupValidation = validateOAuthConfigurationAtStartup();
 
 /**
  * Canonicalize host for secure comparison
