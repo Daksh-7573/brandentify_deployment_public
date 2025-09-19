@@ -19,6 +19,9 @@ function getWeekNumber(date: Date): number {
 // Import the service function instead of duplicating code
 import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
 
+// Import social quest services
+import { socialQuestPersonalizationService } from './services/social-quest-personalization-service';
+
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
   apiRouter.get("/quest-definitions", async (req, res) => {
@@ -1225,5 +1228,124 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  console.log("Career Quests routes loaded");
+  // ============================================================================
+  // SOCIAL QUEST ENDPOINTS
+  // ============================================================================
+
+  // Get all social quest definitions
+  apiRouter.get("/social-quest-definitions", async (req, res) => {
+    try {
+      const socialQuestDefinitions = await storage.getAllSocialQuestDefinitions();
+      res.json(socialQuestDefinitions);
+    } catch (error) {
+      console.error('[GET /social-quest-definitions] Error:', error);
+      res.status(500).json({ message: 'Failed to fetch social quest definitions' });
+    }
+  });
+
+  // Get user's social quests
+  apiRouter.get("/users/:userId/social-quests", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const socialQuests = await storage.getUserSocialQuests(userId);
+      res.json(socialQuests);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/social-quests] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch user social quests' });
+    }
+  });
+
+  // Get user's social quests with full definitions
+  apiRouter.get("/users/:userId/social-quests-with-definitions", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const socialQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
+      res.json(socialQuests);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/social-quests-with-definitions] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch user social quests with definitions' });
+    }
+  });
+
+  // Get personalized social quest for specific platform
+  apiRouter.get("/users/:userId/social-quest/personalized/:platform", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const platform = req.params.platform;
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      if (!['linkedin', 'twitter', 'instagram', 'facebook', 'youtube', 'tiktok'].includes(platform)) {
+        return res.status(400).json({ message: 'Invalid platform' });
+      }
+      
+      const personalizedQuest = await socialQuestPersonalizationService.generatePersonalizedSocialQuest(
+        userId, 
+        platform, 
+        'share_content'
+      );
+      
+      res.json(personalizedQuest);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/social-quest/personalized/${req.params.platform}] Error:`, error);
+      res.status(500).json({ message: 'Failed to generate personalized social quest' });
+    }
+  });
+
+  // Create user social quest
+  apiRouter.post("/users/:userId/social-quests", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const socialQuestData = req.body;
+      const createdSocialQuest = await storage.createUserSocialQuest({
+        ...socialQuestData,
+        userId
+      });
+      
+      res.status(201).json(createdSocialQuest);
+    } catch (error) {
+      console.error(`[POST /users/${req.params.userId}/social-quests] Error:`, error);
+      res.status(500).json({ message: 'Failed to create user social quest' });
+    }
+  });
+
+  // Update user social quest
+  apiRouter.patch("/users/:userId/social-quests/:socialQuestId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const socialQuestId = parseInt(req.params.socialQuestId);
+      
+      if (isNaN(userId) || isNaN(socialQuestId)) {
+        return res.status(400).json({ message: 'Invalid user ID or social quest ID' });
+      }
+      
+      const updateData = req.body;
+      const updatedSocialQuest = await storage.updateUserSocialQuest(socialQuestId, updateData);
+      
+      if (!updatedSocialQuest) {
+        return res.status(404).json({ message: 'User social quest not found' });
+      }
+      
+      res.json(updatedSocialQuest);
+    } catch (error) {
+      console.error(`[PATCH /users/${req.params.userId}/social-quests/${req.params.socialQuestId}] Error:`, error);
+      res.status(500).json({ message: 'Failed to update user social quest' });
+    }
+  });
+
+  console.log("Career Quests and Social Quests routes loaded");
 }

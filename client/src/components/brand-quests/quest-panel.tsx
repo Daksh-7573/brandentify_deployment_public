@@ -7,8 +7,9 @@ import {
   useUserQuestsWithDefinitions, 
   useUserWeeklyQuests, 
   getCurrentWeekNumber, 
-  getCurrentYear
-} from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
+  getCurrentYear,
+  useCombinedUserQuests
+} from '@/hooks/use-career-quests';
 import { QuestCard } from './quest-card';
 import { cn } from '@/lib/utils';
 
@@ -30,12 +31,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchWeekly
   } = useUserWeeklyQuests(userId, currentWeek, currentYear);
   
+  // Use combined quest hook to integrate both career and social quests
   const {
     data: allQuests,
     isLoading: isLoadingAll,
     error: allError,
     refetch: refetchAll
-  } = useUserQuestsWithDefinitions(userId);
+  } = useCombinedUserQuests(userId);
 
   
   // Removed XP progress functionality since it's now in the parent component

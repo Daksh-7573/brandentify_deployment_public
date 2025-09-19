@@ -572,6 +572,14 @@ export interface IStorage {
   completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined>;
   dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined>;
   incrementQuestProgress(id: number): Promise<UserQuest | undefined>;
+
+  // Social Quest operations
+  getAllSocialQuestDefinitions(): Promise<any[]>;
+  getSocialQuestDefinitionById(id: number): Promise<any | undefined>;
+  getUserSocialQuests(userId: number): Promise<any[]>;
+  getUserSocialQuestsWithDefinitions(userId: number): Promise<any[]>;
+  createUserSocialQuest(socialQuest: any): Promise<any>;
+  updateUserSocialQuest(id: number, socialQuest: any): Promise<any | undefined>;
   assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
   
   // User XP operations
@@ -12187,6 +12195,14 @@ export const storage = {
   dismissUserQuest: (id: number, reason?: string) => dbStorage.dismissUserQuest(id, reason),
   incrementQuestProgress: (id: number) => dbStorage.incrementQuestProgress(id),
   assignWeeklyQuestsToUser: (userId: number) => dbStorage.assignWeeklyQuestsToUser(userId),
+  
+  // Social Quest method delegates
+  getAllSocialQuestDefinitions: () => dbStorage.getAllSocialQuestDefinitions(),
+  getSocialQuestDefinitionById: (id: number) => dbStorage.getSocialQuestDefinitionById(id),
+  getUserSocialQuests: (userId: number) => dbStorage.getUserSocialQuests(userId),
+  getUserSocialQuestsWithDefinitions: (userId: number) => dbStorage.getUserSocialQuestsWithDefinitions(userId),
+  createUserSocialQuest: (socialQuest: any) => dbStorage.createUserSocialQuest(socialQuest),
+  updateUserSocialQuest: (id: number, socialQuest: any) => dbStorage.updateUserSocialQuest(id, socialQuest),
 
   // User XP methods
   getUserXp: (userId: number) => dbStorage.getUserXp(userId),

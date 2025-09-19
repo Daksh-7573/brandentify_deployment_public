@@ -2,6 +2,127 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { QuestDefinition, UserQuest, UserXp, UserBadge, XpTransaction } from '@/types/career-quest';
 import { queryClient } from '@/lib/queryClient';
 
+// Social Quest Hooks
+export const useSocialQuestDefinitions = () => {
+  return useQuery({
+    queryKey: ['/api/social-quest-definitions'],
+    queryFn: async () => {
+      try {
+        const res = await fetch('/api/social-quest-definitions');
+        if (!res.ok) {
+          console.error('Failed to fetch social quest definitions, status:', res.status);
+          return [];
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          return [];
+        }
+        return res.json();
+      } catch (error) {
+        console.error('Error fetching social quest definitions:', error);
+        return [];
+      }
+    }
+  });
+};
+
+export const useUserSocialQuests = (userId?: number) => {
+  return useQuery({
+    queryKey: [userId ? `/api/users/${userId}/social-quests` : null],
+    queryFn: async () => {
+      if (!userId) {
+        return [];
+      }
+      
+      try {
+        const res = await fetch(`/api/users/${userId}/social-quests`);
+        if (!res.ok) {
+          console.error('Failed to fetch user social quests, status:', res.status);
+          return [];
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          return [];
+        }
+        return res.json();
+      } catch (error) {
+        console.error('Error fetching user social quests:', error);
+        return [];
+      }
+    },
+    enabled: !!userId
+  });
+};
+
+export const useUserSocialQuestsWithDefinitions = (userId?: number) => {
+  return useQuery({
+    queryKey: [userId ? `/api/users/${userId}/social-quests-with-definitions` : null],
+    queryFn: async () => {
+      if (!userId) {
+        return [];
+      }
+      
+      try {
+        const res = await fetch(`/api/users/${userId}/social-quests-with-definitions`);
+        if (!res.ok) {
+          console.error('Failed to fetch user social quests with definitions, status:', res.status);
+          return [];
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          return [];
+        }
+        return res.json();
+      } catch (error) {
+        console.error('Error fetching user social quests with definitions:', error);
+        return [];
+      }
+    },
+    enabled: !!userId
+  });
+};
+
+// Combined Quest Hook - integrates both career and social quests
+export const useCombinedUserQuests = (userId?: number) => {
+  const {
+    data: careerQuests,
+    isLoading: isLoadingCareer,
+    error: careerError,
+    refetch: refetchCareer
+  } = useUserQuestsWithDefinitions(userId);
+  
+  const {
+    data: socialQuests,
+    isLoading: isLoadingSocial,
+    error: socialError,
+    refetch: refetchSocial
+  } = useUserSocialQuestsWithDefinitions(userId);
+  
+  const isLoading = isLoadingCareer || isLoadingSocial;
+  const error = careerError || socialError;
+  
+  // Combine both quest arrays
+  const combinedQuests = [
+    ...(careerQuests || []).map(quest => ({ ...quest, questType: 'career' })),
+    ...(socialQuests || []).map(quest => ({ ...quest, questType: 'social' }))
+  ];
+  
+  const refetch = () => {
+    refetchCareer();
+    refetchSocial();
+  };
+  
+  return {
+    data: combinedQuests,
+    isLoading,
+    error,
+    refetch
+  };
+};
+
 // Fetch all quest definitions
 export const useQuestDefinitions = () => {
   return useQuery({
