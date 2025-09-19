@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { users } from '@shared/schema';
+import { users, careerGoals, userHashtagFollows, hashtags } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 export interface PersonalizedSocialQuest {
@@ -8,6 +8,28 @@ export interface PersonalizedSocialQuest {
   muskTip: string;
 }
 
+export interface EnhancedUserProfile {
+  industry?: string | null;
+  domain?: string | null;
+  title?: string | null;
+  lookingFor?: string | null;
+  name?: string | null;
+  location?: string | null;
+  goals?: Array<{
+    id: number;
+    title: string;
+    goalType: string;
+    targetRole?: string | null;
+    targetIndustry?: string | null;
+    timeframe?: number;
+  }>;
+  followedHashtags?: Array<{
+    id: number;
+    tag: string;
+  }>;
+}
+
+// Keep legacy interface for backward compatibility
 export interface UserProfile {
   industry?: string | null;
   domain?: string | null;
@@ -19,7 +41,57 @@ export interface UserProfile {
 class SocialQuestPersonalizationService {
   
   /**
-   * Generate personalized social quest content based on user profile and platform
+   * Get enhanced user profile with goals, location, and followed hashtags
+   */
+  async getEnhancedUserProfile(userId: number): Promise<EnhancedUserProfile | null> {
+    try {
+      // Get user basic profile
+      const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (userResult.length === 0) return null;
+
+      const user = userResult[0];
+      
+      // Get user's career goals
+      const goalsResult = await db
+        .select({
+          id: careerGoals.id,
+          title: careerGoals.title,
+          goalType: careerGoals.goalType,
+          targetRole: careerGoals.targetRole,
+          targetIndustry: careerGoals.targetIndustry,
+          timeframe: careerGoals.timeframe
+        })
+        .from(careerGoals)
+        .where(eq(careerGoals.userId, userId));
+
+      // Get followed hashtags
+      const hashtagsResult = await db
+        .select({
+          id: hashtags.id,
+          tag: hashtags.tag
+        })
+        .from(userHashtagFollows)
+        .innerJoin(hashtags, eq(userHashtagFollows.hashtagId, hashtags.id))
+        .where(eq(userHashtagFollows.userId, userId));
+
+      return {
+        industry: user.industry,
+        domain: user.domain,
+        title: user.title,
+        lookingFor: user.lookingFor,
+        name: user.name,
+        location: user.location,
+        goals: goalsResult,
+        followedHashtags: hashtagsResult
+      };
+    } catch (error) {
+      console.error(`[SocialQuest] Error getting enhanced profile for user ${userId}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Generate personalized social quest content based on enhanced user profile and platform
    */
   async generatePersonalizedSocialQuest(
     userId: number, 
@@ -27,21 +99,14 @@ class SocialQuestPersonalizationService {
     targetAction: string
   ): Promise<PersonalizedSocialQuest> {
     try {
-      // Get user profile
-      const userResult = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-      const userProfile = userResult.length > 0 ? {
-        industry: userResult[0].industry,
-        domain: userResult[0].domain,
-        title: userResult[0].title,
-        lookingFor: userResult[0].lookingFor,
-        name: userResult[0].name
-      } : null;
+      // Get enhanced user profile
+      const userProfile = await this.getEnhancedUserProfile(userId);
 
       if (!userProfile || !userProfile.industry) {
         return this.getFallbackQuest(platform, targetAction);
       }
 
-      return this.generateIndustrySpecificQuest(userProfile, platform, targetAction);
+      return this.generateEnhancedSocialQuest(userProfile, platform, targetAction);
 
     } catch (error) {
       console.error('[SocialQuest] Error generating personalized quest:', error);
@@ -50,10 +115,57 @@ class SocialQuestPersonalizationService {
   }
 
   /**
-   * Generate industry-specific quest content
+   * Generate enhanced social quest content using goals, location, and interests
+   */
+  private generateEnhancedSocialQuest(
+    profile: EnhancedUserProfile, 
+    platform: string, 
+    targetAction: string
+  ): PersonalizedSocialQuest {
+    // Get base industry-specific content first
+    const baseQuest = this.generateIndustrySpecificQuest(profile, platform, targetAction);
+    
+    // Enhance with goals context
+    let enhancedDescription = baseQuest.description;
+    let enhancedMuskTip = baseQuest.muskTip;
+    
+    if (profile.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      const goalContext = primaryGoal.targetRole || primaryGoal.title;
+      
+      if (goalContext) {
+        enhancedDescription += ` Focus on content that positions you as a future ${goalContext}`;
+        enhancedMuskTip += ` Share insights that demonstrate your readiness for ${goalContext} roles.`;
+      }
+    }
+    
+    // Enhance with location context for networking/local content
+    if (profile.location && platform.toLowerCase() === 'linkedin') {
+      enhancedDescription += ` Consider mentioning ${profile.location} market trends or local industry insights`;
+      enhancedMuskTip += ` Include ${profile.location} context to attract local connections.`;
+    }
+    
+    // Enhance with hashtag interests
+    if (profile.followedHashtags && profile.followedHashtags.length > 0) {
+      const relevantHashtags = profile.followedHashtags
+        .slice(0, 3)
+        .map(h => `#${h.tag}`)
+        .join(' ');
+      enhancedMuskTip += ` Suggested hashtags based on your interests: ${relevantHashtags}`;
+    }
+    
+    return {
+      title: baseQuest.title,
+      description: enhancedDescription,
+      muskTip: enhancedMuskTip
+    };
+  }
+
+  /**
+   * Generate industry-specific quest content (legacy method enhanced)
    */
   private generateIndustrySpecificQuest(
-    profile: UserProfile, 
+    profile: UserProfile | EnhancedUserProfile, 
     platform: string, 
     targetAction: string
   ): PersonalizedSocialQuest {
