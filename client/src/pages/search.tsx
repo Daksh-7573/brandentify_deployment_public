@@ -768,7 +768,7 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="neo-glass-card mb-8">
+                      <Card className="neo-glass-card-smart-connect mb-8">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
                           <CardDescription className="text-white/70">
@@ -894,7 +894,7 @@ function SearchPage() {
                     )}
                     
                     {showMatchResults && (
-                      <Card className="neo-glass-card">
+                      <Card className="neo-glass-card-smart-connect">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
                           <CardDescription className="text-white/70">
@@ -905,7 +905,7 @@ function SearchPage() {
                           {matchMutation.isPending ? (
                             <div className="space-y-4">
                               {[1, 2, 3].map((i) => (
-                                <Card key={i} className="neo-glass-card overflow-hidden">
+                                <Card key={i} className="neo-glass-card-smart-connect overflow-hidden">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
                                       <Skeleton className="h-16 w-16 rounded-full bg-white/10" />
@@ -929,7 +929,7 @@ function SearchPage() {
                           ) : matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 ? (
                             <div className="space-y-4">
                               {matchMutation.data.map((match: any) => (
-                                <Card key={match.user.id} className="neo-glass-card overflow-hidden hover:scale-[1.02] transition-all duration-300">
+                                <Card key={match.user.id} className="neo-glass-card-smart-connect overflow-hidden hover:scale-[1.02] transition-all duration-300">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
                                       <Avatar className="h-16 w-16 border-2 border-white/20">
