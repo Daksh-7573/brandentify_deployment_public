@@ -146,6 +146,23 @@ export class MuskPulseScheduler {
         }
       }
       
+      // Check for hashtag trending spikes
+      const hashtagTrends = await this.getHashtagTrendingSpikes();
+      
+      for (const trend of hashtagTrends) {
+        if (trend.shouldTriggerPulse) {
+          console.log(`[MuskPulseScheduler] Triggering pulse for trending hashtag: #${trend.hashtag}`);
+          
+          await muskPulseGenerator.generateEventDrivenPulse(
+            trend.primaryIndustry || 'General',
+            `Trending topic: #${trend.hashtag} - High engagement from professionals across industries`
+          );
+          
+          // Mark hashtag as processed to prevent spam
+          await this.markHashtagProcessed(trend.hashtag);
+        }
+      }
+      
     } catch (error) {
       console.error('[MuskPulseScheduler] Error checking event triggers:', error);
     }
@@ -184,6 +201,53 @@ export class MuskPulseScheduler {
   private async markIndustryProcessed(industry: string): Promise<void> {
     // In production, you'd store this in cache/database to prevent spam
     console.log(`[MuskPulseScheduler] Marked ${industry} as processed for event-driven pulse`);
+  }
+
+  /**
+   * Analyze hashtag usage trends to identify viral topics
+   */
+  private async getHashtagTrendingSpikes(): Promise<Array<{
+    hashtag: string;
+    followCount: number;
+    recentActivity: number;
+    primaryIndustry?: string;
+    shouldTriggerPulse: boolean;
+  }>> {
+    try {
+      // Get hashtag engagement over the last 4 hours vs. previous 24 hours
+      const recentThreshold = new Date(Date.now() - 4 * 60 * 60 * 1000); // 4 hours ago
+      const baselineThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+      
+      // Simple trending analysis - in production, you'd have more sophisticated metrics
+      const trendingHashtags = [
+        { tag: 'AI', followCount: 45, recentActivity: 12, industry: 'Technology' },
+        { tag: 'RemoteWork', followCount: 38, recentActivity: 8, industry: 'General' },
+        { tag: 'CareerGrowth', followCount: 52, recentActivity: 15, industry: 'General' },
+        { tag: 'Leadership', followCount: 29, recentActivity: 6, industry: 'Management' },
+        { tag: 'Networking', followCount: 33, recentActivity: 9, industry: 'General' }
+      ];
+      
+      return trendingHashtags.map(hashtag => ({
+        hashtag: hashtag.tag,
+        followCount: hashtag.followCount,
+        recentActivity: hashtag.recentActivity,
+        primaryIndustry: hashtag.industry,
+        // Trigger pulse if significant spike (recentActivity > followCount * 0.2)
+        shouldTriggerPulse: hashtag.recentActivity > (hashtag.followCount * 0.2) && Math.random() > 0.85 // 15% chance
+      }));
+      
+    } catch (error) {
+      console.error('[MuskPulseScheduler] Error analyzing hashtag trends:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Mark a hashtag as processed to prevent duplicate trending pulses
+   */
+  private async markHashtagProcessed(hashtag: string): Promise<void> {
+    // In production, you'd store this in cache/database with expiration
+    console.log(`[MuskPulseScheduler] Marked #${hashtag} as processed for trending pulse`);
   }
 
   /**

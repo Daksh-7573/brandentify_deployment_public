@@ -367,7 +367,15 @@ export class MuskPulseGenerator {
    */
   private async generatePulseContent(
     options: PulseGenerationOptions, 
-    userContext: { industries: string[]; domains: string[]; locations: string[] }
+    userContext: { 
+      industries: string[]; 
+      domains: string[]; 
+      locations: string[]; 
+      popularGoals: string[];
+      targetRoles: string[];
+      trendingHashtags: string[];
+      skillGaps: string[];
+    }
   ): Promise<{ title: string; content: string; industry?: string; hashtags: string[]; referenceLinks: Array<{title: string; url: string; source: string}> }> {
     
     const timePrompts = {
@@ -377,29 +385,38 @@ export class MuskPulseGenerator {
     };
 
     const contextInfo = `
-Platform user interests:
+Platform user insights:
 - Industries: ${userContext.industries.join(', ')}
 - Specialties: ${userContext.domains.join(', ')}
 - Locations: ${userContext.locations.join(', ')}
+- Popular Career Goals: ${userContext.popularGoals.join(', ')}
+- Target Roles: ${userContext.targetRoles.join(', ')}
+- Trending Hashtags: ${userContext.trendingHashtags.map(tag => `#${tag}`).join(', ')}
+- Common Skill Gaps: ${userContext.skillGaps.join(', ')}
     `;
 
     const prompt = `
 You are Musk, an expert AI career assistant for Brandentifier, a professional networking platform.
 
-Generate a ${options.timeOfDay} news pulse that provides concise career summaries with reference links.
+Generate a ${options.timeOfDay} news pulse that provides highly personalized career insights with reference links.
 
 ${contextInfo}
 
 Requirements:
 - Create brief summaries (2-3 sentences max) instead of long content
 - MUST include 2-3 credible reference links for "Read More" functionality
-- Focus on actionable career advice, industry trends, or skill development
-- Be professional yet engaging
-- Include 2-3 relevant hashtags
-- Prioritize Brandentifier platform features (portfolio building, networking, skill development)
+- Focus on actionable career advice that addresses current user goals and skill gaps
+- Address trending hashtags and popular career objectives mentioned above
+- Target content towards the specified roles and industries users are pursuing
+- Be professional yet engaging with a personal touch
+- Include 2-3 relevant hashtags from the trending list when applicable
+- Prioritize advice that helps users bridge their skill gaps and achieve their career goals
+- Encourage use of Brandentifier features for portfolio building, networking, and skill development
 - Use real, credible sources like Harvard Business Review, McKinsey, Forbes, TechCrunch, MIT Technology Review, etc.
 
 ${timePrompts[options.timeOfDay]}
+
+PERSONALIZATION FOCUS: Tailor content to help users progress towards their target roles by addressing their skill gaps and leveraging trending topics they're following.
 
 CRITICAL: NEVER generate fake URLs or made-up article links. Only use these verified working direct article URLs:
 - https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond (Harvard Business Review - Work Trends 2025)
