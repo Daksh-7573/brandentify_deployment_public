@@ -403,22 +403,21 @@ export default function Scholar({
     )
   );
   
-  // Get remaining skills (non-technical and non-tools) and randomly distribute them
+  // Get remaining skills (non-technical and non-tools) - combine as one stable list
   const remainingSkills = safeSkills.filter(skill => 
     skill && skill.name && 
     !technicalSkills.includes(skill) && 
     !toolsSkills.includes(skill)
   );
   
-  // Shuffle remaining skills and split them randomly between soft and other categories
-  const shuffledRemaining = [...remainingSkills].sort(() => Math.random() - 0.5);
-  const midPoint = Math.ceil(shuffledRemaining.length / 2);
+  // Sort remaining skills alphabetically for stable ordering
+  const sortedRemaining = [...remainingSkills].sort((a, b) => a.name.localeCompare(b.name));
   
   const skillCategories = {
     technical: technicalSkills,
-    soft: shuffledRemaining.slice(0, midPoint),
+    soft: sortedRemaining, // All non-technical/non-tools skills go here
     tools: toolsSkills,
-    other: shuffledRemaining.slice(midPoint)
+    other: [] as typeof safeSkills // Keep empty since we removed the headings and combined everything
   };
 
   // If no skills fit into categories, put them all in 'other'
@@ -633,7 +632,7 @@ export default function Scholar({
           )}
           
           {hasSkills && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Technical Skills */}
               {skillCategories.technical.length > 0 && (
                 <div className="notebook-card fade-in-up p-6 rounded-lg">
@@ -672,39 +671,10 @@ export default function Scholar({
               )}
               
               {/* Combined Skills (formerly Soft Skills and Other Skills) */}
-              {(skillCategories.soft.length > 0 || skillCategories.other.length > 0) && (
+              {skillCategories.soft.length > 0 && (
                 <div className="graph-paper fade-in-up delay-100 p-6 rounded-lg">
                   <div className="space-y-4">
-                    {/* Display soft skills */}
                     {skillCategories.soft.map((skill) => (
-                      <div key={skill.id} className="w-full mb-4">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-800">{skill.name}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
-                              {skill.level} - {skill.proficiency}%
-                            </span>
-                            <div className="flex">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill" 
-                            style={{ width: `${skill.proficiency}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {/* Display other skills */}
-                    {skillCategories.other.map((skill) => (
                       <div key={skill.id} className="w-full mb-4">
                         <div className="flex justify-between mb-1">
                           <span className="text-sm font-medium text-gray-800">{skill.name}</span>
