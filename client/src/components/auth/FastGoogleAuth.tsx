@@ -61,13 +61,25 @@ export function FastGoogleAuth() {
   };
 
   return (
-    <Button
+    <button
       onClick={handleGoogleAuth}
       disabled={isLoading}
-      variant="outline"
-      className="w-full flex items-center justify-center gap-3 !bg-white hover:!bg-gray-50 !text-gray-900 !border-gray-300 shadow-sm"
-      size="lg"
-      style={{ backgroundColor: 'white !important', color: '#111827 !important', borderColor: '#d1d5db !important' }}
+      className="w-full h-12 flex items-center justify-center gap-3 px-4 py-2 text-base font-medium rounded-lg border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{ 
+        backgroundColor: 'white', 
+        color: '#1f2937',
+        borderColor: '#d1d5db'
+      }}
+      onMouseEnter={(e) => {
+        if (!isLoading) {
+          e.currentTarget.style.backgroundColor = '#f9fafb';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isLoading) {
+          e.currentTarget.style.backgroundColor = 'white';
+        }
+      }}
     >
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
