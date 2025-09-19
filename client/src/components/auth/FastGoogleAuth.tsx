@@ -10,6 +10,7 @@ export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // Force browser cache refresh with timestamp
   const handleGoogleAuth = async () => {
     setIsLoading(true);
     
@@ -17,10 +18,15 @@ export function FastGoogleAuth() {
       console.log('🔄 Starting Google authentication...');
       console.log('🚀 Using custom OAuth flow for all domains');
       
-      // Get OAuth URL from our server
-      const response = await fetch('/api/auth/google/url', {
+      // Get OAuth URL from our server with cache-busting
+      const response = await fetch(`/api/auth/google/url?t=${Date.now()}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
       
       if (!response.ok) {
@@ -95,6 +101,6 @@ export function FastGoogleAuth() {
           Continue with Google
         </>
       )}
-    </Button>
+    </button>
   );
 }
