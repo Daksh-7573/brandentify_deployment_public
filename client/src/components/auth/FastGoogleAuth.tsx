@@ -64,7 +64,8 @@ export function FastGoogleAuth() {
     <Button
       onClick={handleGoogleAuth}
       disabled={isLoading}
-      className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
+      variant="outline"
+      className="w-full flex items-center justify-center gap-3 !bg-white hover:!bg-gray-50 !text-gray-900 !border-gray-300"
       size="lg"
     >
       {isLoading ? (
