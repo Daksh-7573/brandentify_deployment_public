@@ -130,6 +130,14 @@ interface UserContext {
   industry?: string;
   domain?: string;
   location?: string;
+  goals?: Array<{
+    title: string;
+    goalType: string;
+    targetIndustry?: string;
+    targetRole?: string;
+    currentSkills: string[];
+    requiredSkills: string[];
+  }>;
   followedHashtags?: string[];
 }
 
@@ -193,13 +201,14 @@ export class MuskPulseGenerator {
   }
 
   /**
-   * Get active user context for content personalization
+   * Get active user context for content personalization including goals and hashtags
    */
   private async getUserContext(): Promise<UserContext[]> {
     try {
       const client = await pool.connect();
       try {
-        const result = await client.query(`
+        // Get basic user info
+        const userResult = await client.query(`
           SELECT DISTINCT 
             id, industry, domain, location
           FROM users 
@@ -208,40 +217,119 @@ export class MuskPulseGenerator {
           LIMIT 20
         `);
         
-        return result.rows.map((row: any) => ({
-          id: Number(row.id),
-          industry: row.industry as string,
-          domain: row.domain as string,
-          location: row.location as string
-        }));
+        const users: UserContext[] = [];
+        
+        for (const row of userResult.rows) {
+          const userId = Number(row.id);
+          
+          // Get user goals
+          const goalsResult = await client.query(`
+            SELECT title, goal_type, target_industry, target_role, 
+                   current_skills, required_skills
+            FROM career_goals 
+            WHERE user_id = $1 AND status != 'completed'
+            LIMIT 3
+          `, [userId]);
+          
+          // Get followed hashtags
+          const hashtagsResult = await client.query(`
+            SELECT h.tag
+            FROM user_hashtag_follows uhf
+            JOIN hashtags h ON uhf.hashtag_id = h.id
+            WHERE uhf.user_id = $1
+            ORDER BY h.count DESC
+            LIMIT 10
+          `, [userId]);
+          
+          users.push({
+            id: userId,
+            industry: row.industry as string,
+            domain: row.domain as string,
+            location: row.location as string,
+            goals: goalsResult.rows.map((goal: any) => ({
+              title: goal.title,
+              goalType: goal.goal_type,
+              targetIndustry: goal.target_industry,
+              targetRole: goal.target_role,
+              currentSkills: Array.isArray(goal.current_skills) ? goal.current_skills : [],
+              requiredSkills: Array.isArray(goal.required_skills) ? goal.required_skills : []
+            })),
+            followedHashtags: hashtagsResult.rows.map((row: any) => row.tag)
+          });
+        }
+        
+        return users;
       } finally {
         client.release();
       }
     } catch (error) {
-      console.error('[MuskPulseGenerator] Error fetching user context:', error);
+      console.error('[MuskPulseGenerator] Error fetching enhanced user context:', error);
       return [];
     }
   }
 
   /**
-   * Get simplified active user context
+   * Get simplified active user context with enhanced data
    */
-  private async getActiveUserContext(): Promise<{ industries: string[]; domains: string[]; locations: string[] }> {
+  private async getActiveUserContext(): Promise<{ 
+    industries: string[]; 
+    domains: string[]; 
+    locations: string[]; 
+    popularGoals: string[];
+    targetRoles: string[];
+    trendingHashtags: string[];
+    skillGaps: string[];
+  }> {
     try {
       const users = await this.getUserContext();
       
+      // Basic aggregation
       const industries = Array.from(new Set(users.map(u => u.industry).filter((val): val is string => Boolean(val))));
       const domains = Array.from(new Set(users.map(u => u.domain).filter((val): val is string => Boolean(val))));
       const locations = Array.from(new Set(users.map(u => u.location).filter((val): val is string => Boolean(val))));
       
+      // Goal and hashtag aggregation
+      const allGoals = users.flatMap(u => u.goals || []);
+      const popularGoals = Array.from(new Set(allGoals.map(g => g.title))).slice(0, 5);
+      const targetRoles = Array.from(new Set(allGoals.map(g => g.targetRole).filter((val): val is string => Boolean(val)))).slice(0, 5);
+      
+      const allHashtags = users.flatMap(u => u.followedHashtags || []);
+      const hashtagFrequency = allHashtags.reduce((acc, tag) => {
+        acc[tag] = (acc[tag] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      const trendingHashtags = Object.entries(hashtagFrequency)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 8)
+        .map(([tag]) => tag);
+      
+      // Skill gap analysis
+      const allRequiredSkills = allGoals.flatMap(g => g.requiredSkills || []);
+      const allCurrentSkills = allGoals.flatMap(g => g.currentSkills || []);
+      const skillGaps = allRequiredSkills.filter(skill => 
+        !allCurrentSkills.includes(skill)
+      ).slice(0, 5);
+      
       return {
         industries: industries.slice(0, 5),
         domains: domains.slice(0, 5),
-        locations: locations.slice(0, 3)
+        locations: locations.slice(0, 3),
+        popularGoals,
+        targetRoles,
+        trendingHashtags,
+        skillGaps
       };
     } catch (error) {
-      console.error('[MuskPulseGenerator] Error getting active user context:', error);
-      return { industries: [], domains: [], locations: [] };
+      console.error('[MuskPulseGenerator] Error getting enhanced active user context:', error);
+      return { 
+        industries: [], 
+        domains: [], 
+        locations: [], 
+        popularGoals: [],
+        targetRoles: [],
+        trendingHashtags: [],
+        skillGaps: []
+      };
     }
   }
 
