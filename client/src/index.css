@@ -814,6 +814,20 @@ input.smart-radar-input::placeholder {
     background-repeat: no-repeat !important;
     background-attachment: fixed !important;
   }
+  
+  /* Force consistent button styling for Replit preview */
+  .neo-glass-button,
+  button[class*="neo-glass"] {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .neo-glass-button:hover,
+  button[class*="neo-glass"]:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    color: #000000 !important;
+  }
 }
 
 /* High-specificity overrides for dark tabs inside neo-glass sections */
