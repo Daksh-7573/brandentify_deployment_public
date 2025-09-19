@@ -5,7 +5,11 @@ import bcrypt from 'bcrypt';
 
 const router = express.Router();
 
-// Trust proxy configuration is handled centrally in server/index.ts
+// Set the trust proxy setting
+router.use((req, res, next) => {
+  req.app.set('trust proxy', true);
+  next();
+});
 
 /**
  * Direct login endpoint that works across all domains
@@ -47,8 +51,15 @@ router.post("/api/direct-login", async (req: Request, res: Response) => {
         lookingFor: null,
         whatIOffer: null,
         phoneNumber: null,
+        isVerified: true,
         googleId: null,
-        lastLoginAt: new Date()
+        facebookId: null,
+        twitterId: null,
+        appleId: null,
+        githubId: null,
+        linkedinId: null,
+        lastLogin: new Date(),
+        createdAt: new Date()
       });
       
       console.log(`New user created with ID: ${user.id}`);
@@ -57,7 +68,7 @@ router.post("/api/direct-login", async (req: Request, res: Response) => {
       
       // Update last login time
       await storage.updateUser(user.id, {
-        lastLoginAt: new Date()
+        lastLogin: new Date()
       });
     }
     

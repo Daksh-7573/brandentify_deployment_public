@@ -46,7 +46,7 @@ export default function AuthStatusPage() {
       title: 'Signed out',
       description: 'You have been signed out completely.',
     });
-    setLocation('/auth');
+    setLocation('/login');
   };
   
   // Handle force Google auth
@@ -81,7 +81,7 @@ export default function AuthStatusPage() {
       
       // Wait briefly to allow toast to display
       setTimeout(() => {
-        window.location.href = '/auth';
+        window.location.href = '/login';
       }, 1000);
     } catch (error) {
       console.error('Error forcing Google auth:', error);

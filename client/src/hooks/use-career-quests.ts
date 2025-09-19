@@ -106,8 +106,8 @@ export const useCombinedUserQuests = (userId?: number) => {
   
   // Combine both quest arrays
   const combinedQuests = [
-    ...(careerQuests || []).map((quest: UserQuest) => ({ ...quest, questType: 'career' })),
-    ...(socialQuests || []).map((quest: UserQuest) => ({ ...quest, questType: 'social' }))
+    ...(careerQuests || []).map(quest => ({ ...quest, questType: 'career' })),
+    ...(socialQuests || []).map(quest => ({ ...quest, questType: 'social' }))
   ];
   
   const refetch = () => {
@@ -210,7 +210,7 @@ export const useUserQuestsWithDefinitions = (userId?: number) => {
 
 // Fetch user's weekly quests
 export const useUserWeeklyQuests = (userId?: number, weekNumber?: number, year?: number) => {
-  const currentWeek = weekNumber || getCurrentWeekNumber();
+  const currentWeek = weekNumber || getCurrentWeekNumber(new Date());
   const currentYear = year || getCurrentYear();
   
   return useQuery({

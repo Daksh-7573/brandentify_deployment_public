@@ -128,8 +128,10 @@ export function useLumosAnimations() {
     // Initial call
     handleScroll();
     
-    // Note: No cleanup needed since this is not a React effect
-    // Event listeners are managed by the calling component
+    // Cleanup - this is just for reference, we're not using React effects here
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
   
   /**

@@ -129,21 +129,19 @@ if (isDevelopment) {
     target: 'https://brandentifier-app.firebaseapp.com',
     changeOrigin: true,
     secure: true,
-    on: {
-      proxyReq: (proxyReq: any, req: any, res: any) => {
-        console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
-        proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
-        proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
-      },
-      proxyRes: (proxyRes: any, req: any, res: any) => {
-        console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-        proxyRes.headers['access-control-allow-origin'] = '*';
-        proxyRes.headers['access-control-allow-credentials'] = 'true';
-      },
-      error: (err: any, req: any, res: any) => {
-        console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
-        res.status(500).json({ error: 'Firebase auth proxy error' });
-      }
+    onProxyReq: (proxyReq: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+      proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+      proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+    },
+    onProxyRes: (proxyRes: any, req: any, res: any) => {
+      console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      proxyRes.headers['access-control-allow-credentials'] = 'true';
+    },
+    onError: (err: any, req: any, res: any) => {
+      console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
+      res.status(500).json({ error: 'Firebase auth proxy error' });
     }
   }));
 } else {
@@ -701,10 +699,10 @@ app.use((req, res, next) => {
 // Standard body parsers for all other routes with enhanced debugging
 app.use(express.json({ 
   limit: '50mb',
-  verify: (req: any, res, buf: Buffer, encoding) => {
-    if (req.url && req.url.includes('/users/')) {
-      console.log(`[JSON Parser] ${req.method} ${req.url} - Raw buffer length:`, buf.length);
-      console.log(`[JSON Parser] ${req.method} ${req.url} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
+  verify: (req, res, buf: Buffer, encoding) => {
+    if (req.path.includes('/users/')) {
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Raw buffer length:`, buf.length);
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
     }
   }
 }));

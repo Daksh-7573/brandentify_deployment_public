@@ -2,7 +2,7 @@
   "variant": "vibrant",
   "primary": "#3B82F6",
   "appearance": "dark",
-  "radius": 0.5,
+  "radius": 1.5,
   "colors": {
     "secondary": "#0EA5E9",
     "tertiary": "#06B6D4",

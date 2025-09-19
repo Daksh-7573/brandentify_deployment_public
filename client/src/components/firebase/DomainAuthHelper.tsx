@@ -11,8 +11,13 @@ export function DomainAuthHelper() {
   const [location, setLocation] = useLocation();
   
   useEffect(() => {
-    // Firebase is disabled - skip auth redirect handler completely
-    console.log('🚫 DomainAuthHelper: Firebase disabled, skipping auth redirect handler');
+    // Import and initialize the redirect handler
+    const initHandler = async () => {
+      const { initializeRedirectHandler } = await import('@/utils/auth-redirect-handler');
+      initializeRedirectHandler();
+    };
+    
+    initHandler();
   }, []);
   
   return null; // This component doesn't render anything

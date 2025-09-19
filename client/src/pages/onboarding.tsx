@@ -14,7 +14,7 @@ export default function OnboardingPage() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated && !isDemoMode) {
-      setLocation('/auth');
+      setLocation('/login');
     }
   }, [isAuthenticated, isDemoMode, setLocation]);
   

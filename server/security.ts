@@ -24,7 +24,6 @@ import cors from 'cors';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
-import { getCSRFSecret } from './middleware/csrf-protection';
 
 // Secure JWT signing key (in production, this should be in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
@@ -34,7 +33,8 @@ const JWT_EXPIRES = '24h';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'brandentifier-secure-encryption-key-2025';
 const IV_LENGTH = 16; // For AES, this is always 16 bytes
 
-// CSRF secret is now managed centrally in middleware/csrf-protection.ts
+// CSRF Token secret (in production, this should be in environment variables)
+const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-2025';
 
 // Allowed CORS origins (in production, this should be configured properly)
 const ALLOWED_ORIGINS = [
@@ -394,64 +394,19 @@ export async function setupSecurity(app: any) {
   
   app.use(cors(corsOptions));
   
-  // 3. Rate limiting to prevent brute force attacks with multiple tiers for security
-  
-  // Critical authentication routes - strict rate limiting
-  const authLimiter = rateLimit({
+  // 3. Rate limiting to prevent brute force attacks
+  const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // limit each IP to 10 requests per 15 minutes for auth routes
+    max: 500, // limit each IP to 500 requests per windowMs (generous limit to avoid breaking functionality)
     standardHeaders: true,
     legacyHeaders: false,
-    message: { message: 'Too many authentication attempts, please try again later.' },
-    // Security: Validate that we're getting the real IP address
-    keyGenerator: (req: Request): string => {
-      const forwardedFor = req.headers['x-forwarded-for'] as string;
-      const realIP = req.ip || req.connection.remoteAddress || 'unknown';
-      
-      // Log IP extraction for security monitoring
-      console.log(`[SECURITY] Rate limit check - Real IP: ${realIP}, X-Forwarded-For: ${forwardedFor}, Trust Proxy: ${req.app.get('trust proxy')}`);
-      
-      return realIP;
-    }
-  });
-
-  // General API routes - moderate rate limiting
-  const generalApiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per 15 minutes for general API
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { message: 'Too many API requests, please slow down.' },
-    keyGenerator: (req: Request): string => {
-      const realIP = req.ip || req.connection.remoteAddress || 'unknown';
-      return realIP;
-    }
-  });
-
-  // Demo auth routes - moderate rate limiting (these were previously vulnerable)
-  const demoAuthLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20, // limit each IP to 20 requests per 15 minutes for demo auth
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { message: 'Too many demo authentication attempts, please try again later.' },
-    keyGenerator: (req: Request): string => {
-      const realIP = req.ip || req.connection.remoteAddress || 'unknown';
-      return realIP;
-    }
+    message: { message: 'Too many requests, please try again later.' }
   });
   
-  // Apply rate limiting to authentication routes with strict limits
-  app.use('/api/auth', authLimiter);
-  app.use('/api/login', authLimiter);
-  app.use('/api/register', authLimiter);
-  
-  // Apply rate limiting to demo auth routes (previously vulnerable routes)
-  app.use('/auth/demo-login', demoAuthLimiter);
-  app.use('/api/direct-login', demoAuthLimiter);
-  
-  // Apply general rate limiting to all API routes
-  app.use('/api', generalApiLimiter);
+  // Apply rate limiting to authentication routes only to avoid disrupting normal usage
+  app.use('/api/auth', apiLimiter);
+  app.use('/api/login', apiLimiter);
+  app.use('/api/register', apiLimiter);
   
   // 4. XSS Protection - FIXED: Selective implementation that bypasses XSS Clean for user profile routes
   app.use((req: Request, res: Response, next: NextFunction) => {

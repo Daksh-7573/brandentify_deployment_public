@@ -12,7 +12,7 @@ export default function ManageServicesPage() {
   useEffect(() => {
     // If user auth is complete and no user, redirect to login
     if (!authLoading && !user) {
-      setLocation("/auth");
+      setLocation("/login");
       return;
     }
     

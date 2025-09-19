@@ -14,7 +14,11 @@ const router = express.Router();
  * Demo login endpoint - works across all domains
  * Creates a user account with the given email and logs in
  */
-// Trust proxy configuration is handled centrally in server/index.ts
+// Set the trust proxy setting
+router.use((req, res, next) => {
+  req.app.set('trust proxy', true);
+  next();
+});
 
 router.post("/auth/demo-login", async (req: Request, res: Response) => {
   try {

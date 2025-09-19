@@ -410,7 +410,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Please sign in to access your dashboard</h2>
-          <Button onClick={() => setLocation('/auth')}>Sign In</Button>
+          <Button onClick={() => setLocation('/login')}>Sign In</Button>
         </div>
       </div>
     );

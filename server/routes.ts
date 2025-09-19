@@ -63,8 +63,7 @@ import { personalizedQuestAssignment } from "./services/personalized-quest-assig
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, getOAuthConfigStatusRoute } from "./auth-oauth-routes";
-import { enhancedCSRFMiddleware } from './middleware/csrf-protection';
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -455,12 +454,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       total: sorted.length 
     });
   });
-  
-  // CRITICAL CSRF FIX: Apply CSRF middleware before other routes
-  
-  // Apply CSRF middleware to API routes (will generate tokens for GET and validate for POST/PUT/DELETE)
-  app.use('/api', enhancedCSRFMiddleware);
-  console.log('🛡️ [CSRF] Enhanced CSRF middleware applied to all /api routes');
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
@@ -7298,7 +7291,6 @@ ${extractedText.substring(0, 5000)}
   
   app.get("/api/auth/session", checkSessionRoute);
   app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
-  app.get("/api/auth/oauth-config-status", getOAuthConfigStatusRoute); // OAuth configuration status and validation
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed
