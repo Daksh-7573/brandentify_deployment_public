@@ -40,43 +40,60 @@ export class CareerQuestPersonalizationService {
     description: string;
     muskTip: string;
   } {
-    if (!userProfile || !userProfile.industry || !userProfile.domain) {
+    // More flexible fallback - use enhanced content if we have industry OR domain
+    if (!userProfile || (!userProfile.industry && !userProfile.domain)) {
       return this.getDefaultContent(questType, targetAction);
     }
 
-    const { industry, domain } = userProfile;
+    const industry = userProfile.industry || 'Professional';
+    const domain = userProfile.domain || 'General';
+    
+    // Check if we have enhanced profile data
+    const enhancedProfile = (userProfile as EnhancedUserProfile)?.goals !== undefined ? userProfile as EnhancedUserProfile : undefined;
     
     switch (targetAction) {
       case 'add_skill':
-        return this.getPersonalizedSkillContent(industry, domain);
+        return this.getPersonalizedSkillContent(industry, domain, enhancedProfile);
       case 'add_new_skill':
         return this.getPersonalizedLearningContent(industry, domain);
       case 'add_connection':
-        return this.getPersonalizedNetworkingContent(industry, domain);
+        return this.getPersonalizedNetworkingContent(industry, domain, enhancedProfile);
       case 'find_mentor':
-        return this.getPersonalizedMentorContent(industry, domain);
+        return this.getPersonalizedMentorContent(industry, domain, enhancedProfile);
       case 'update_resume':
-        return this.getPersonalizedResumeContent(industry, domain);
+        return this.getPersonalizedResumeContent(industry, domain, enhancedProfile);
       case 'add_project':
-        return this.getPersonalizedPortfolioContent(industry, domain);
+        return this.getPersonalizedPortfolioContent(industry, domain, enhancedProfile);
       case 'create_content':
-        return this.getPersonalizedContentContent(industry, domain);
+        return this.getPersonalizedContentContent(industry, domain, enhancedProfile);
       default:
         return this.getDefaultContent(questType, targetAction);
     }
   }
 
-  private getPersonalizedSkillContent(industry: string, domain: string): {
+  private getPersonalizedSkillContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
     const skillSuggestions = this.getIndustrySkills(industry, domain);
     
+    let description = `Add at least 3 skills specific to ${industry} with appropriate proficiency levels`;
+    let muskTip = `Add skills that are specific to your industry and accurately rate your proficiency. For ${industry}/${domain}, consider skills like ${skillSuggestions.slice(0, 3).map(skill => `'${skill}'`).join(', ')}.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Add skills that align with your goal to become ${primaryGoal.targetRole} in ${primaryGoal.targetIndustry || industry}`;
+        muskTip += ` Focus on skills that bridge your current expertise to ${primaryGoal.targetRole} within your ${primaryGoal.timeframe}-year timeline.`;
+      }
+    }
+    
     return {
-      title: "Industry Skill Mastery",
-      description: `Add at least 3 skills specific to ${industry} with appropriate proficiency levels`,
-      muskTip: `Add skills that are specific to your industry and accurately rate your proficiency. For ${industry}/${domain}, consider skills like ${skillSuggestions.slice(0, 3).map(skill => `'${skill}'`).join(', ')}.`
+      title: "Goal-Aligned Skill Mastery",
+      description,
+      muskTip
     };
   }
 
@@ -94,63 +111,139 @@ export class CareerQuestPersonalizationService {
     };
   }
 
-  private getPersonalizedNetworkingContent(industry: string, domain: string): {
+  private getPersonalizedNetworkingContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
+    let description = `Connect with ${industry.toLowerCase()} professionals and ${domain.toLowerCase()} specialists`;
+    let muskTip = `Quality connections in ${industry} are more valuable than quantity. Focus on ${domain} professionals and industry leaders.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Build strategic connections with ${primaryGoal.targetRole} professionals and ${industry} leaders`;
+        muskTip = `Network with people who can guide your path to ${primaryGoal.targetRole}. Quality connections in ${industry} are more valuable than quantity.`;
+      }
+    }
+    
+    // Enhance with location context
+    if (profile?.location) {
+      muskTip += ` Look for ${profile.location}-based professionals and local ${industry} networking events.`;
+    }
+    
     return {
-      title: "Connection Builder",
-      description: `Connect with ${industry.toLowerCase()} professionals and ${domain.toLowerCase()} specialists`,
-      muskTip: `Quality connections in ${industry} are more valuable than quantity. Focus on ${domain} professionals, hotel managers, travel coordinators, and industry suppliers.`
+      title: "Strategic Connection Building",
+      description,
+      muskTip
     };
   }
 
-  private getPersonalizedMentorContent(industry: string, domain: string): {
+  private getPersonalizedMentorContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
+    let description = `Identify and connect with a ${industry.toLowerCase()} industry mentor specializing in ${domain.toLowerCase()}`;
+    let muskTip = `Look for mentors with ${industry} leadership experience who can provide insights into career advancement and industry best practices.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Find mentors who have achieved ${primaryGoal.targetRole} positions in ${primaryGoal.targetIndustry || industry}`;
+        muskTip = `Seek mentors who have successfully transitioned to ${primaryGoal.targetRole}. They can provide specific guidance for your ${primaryGoal.timeframe}-year career timeline.`;
+      }
+    }
+    
+    // Enhance with location context  
+    if (profile?.location) {
+      muskTip += ` Consider both local ${profile.location} mentors and remote industry leaders.`;
+    }
+    
     return {
-      title: "Mentor Finder",
-      description: `Identify and connect with a ${industry.toLowerCase()} industry mentor specializing in ${domain.toLowerCase()}`,
-      muskTip: `Look for mentors with ${industry} leadership experience. ${domain} veterans can provide insights into revenue management, client relations, and operational excellence.`
+      title: "Goal-Oriented Mentor Search",
+      description,
+      muskTip
     };
   }
 
-  private getPersonalizedResumeContent(industry: string, domain: string): {
+  private getPersonalizedResumeContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
+    let description = `Update your resume highlighting ${industry.toLowerCase()} achievements and ${domain.toLowerCase()} expertise`;
+    let muskTip = `Quantify your ${industry} impact with specific metrics and measurable results that demonstrate your expertise in ${domain}.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Update your resume to highlight experience relevant to ${primaryGoal.targetRole} positions`;
+        muskTip = `Focus on achievements that demonstrate your readiness for ${primaryGoal.targetRole}. Quantify your ${industry} impact with specific metrics that align with ${primaryGoal.targetRole} responsibilities.`;
+      }
+    }
+    
     return {
-      title: "Resume Enhancement",
-      description: `Update your resume highlighting ${industry.toLowerCase()} achievements and ${domain.toLowerCase()} expertise`,
-      muskTip: `Quantify your ${industry} impact with specific metrics. Include guest satisfaction scores, booking efficiency improvements, or cost savings you've achieved in ${domain}.`
+      title: "Goal-Targeted Resume Update",
+      description,
+      muskTip
     };
   }
 
-  private getPersonalizedPortfolioContent(industry: string, domain: string): {
+  private getPersonalizedPortfolioContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
+    let description = `Add a project showcasing your ${industry.toLowerCase()} expertise or ${domain.toLowerCase()} solutions`;
+    let muskTip = `Include ${industry} projects that demonstrate your impact and showcase your ${domain} expertise with measurable results.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Add a project that demonstrates skills relevant to ${primaryGoal.targetRole} positions`;
+        muskTip = `Showcase projects that highlight your readiness for ${primaryGoal.targetRole}. Focus on ${industry} initiatives that demonstrate leadership, problem-solving, and ${domain} expertise.`;
+      }
+    }
+    
     return {
-      title: "Portfolio Builder",
-      description: `Add a project showcasing your ${industry.toLowerCase()} expertise or ${domain.toLowerCase()} solutions`,
-      muskTip: `Include ${industry} projects that demonstrate your impact. Case studies of successful ${domain} initiatives, process improvements, or customer experience enhancements work well.`
+      title: "Strategic Portfolio Project",
+      description,
+      muskTip
     };
   }
 
-  private getPersonalizedContentContent(industry: string, domain: string): {
+  private getPersonalizedContentContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
     title: string;
     description: string;
     muskTip: string;
   } {
+    let description = `Share professional insights about ${industry.toLowerCase()} trends or ${domain.toLowerCase()} best practices`;
+    let muskTip = `${industry} professionals who share ${domain} insights build thought leadership. Focus on industry challenges, innovative solutions, and market trends.`;
+    
+    // Enhance with goals context
+    if (profile?.goals && profile.goals.length > 0) {
+      const primaryGoal = profile.goals[0];
+      if (primaryGoal.targetRole) {
+        description = `Create content that positions you as a future ${primaryGoal.targetRole} in ${industry}`;
+        muskTip = `Share insights that demonstrate your readiness for ${primaryGoal.targetRole} roles. Content that showcases ${domain} expertise and leadership thinking attracts the right opportunities.`;
+      }
+    }
+    
+    // Enhance with hashtag interests
+    if (profile?.followedHashtags && profile.followedHashtags.length > 0) {
+      const relevantHashtags = profile.followedHashtags.slice(0, 3).map(h => `#${h.tag}`).join(' ');
+      muskTip += ` Consider using hashtags you follow: ${relevantHashtags}`;
+    }
+    
     return {
-      title: "Content Creator",
-      description: `Share professional insights about ${industry.toLowerCase()} trends or ${domain.toLowerCase()} best practices`,
-      muskTip: `${industry} content creators who share ${domain} insights receive 3x more opportunities. Focus on industry challenges, innovative solutions, and market trends.`
+      title: "Strategic Content Creation",
+      description,
+      muskTip
     };
   }
 
@@ -321,7 +414,7 @@ export class CareerQuestPersonalizationService {
       const skillQuests = await db.select().from(questDefinitions).where(eq(questDefinitions.targetAction, 'add_skill'));
       
       if (skillQuests.length > 0) {
-          const personalizedContent = this.getEnhancedQuestContent('profile_update', 'add_skill', userProfile);
+          const personalizedContent = this.getPersonalizedQuestContent('profile_update', 'add_skill', userProfile);
           
           await db.update(questDefinitions)
             .set({
