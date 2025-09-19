@@ -88,6 +88,7 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
   try {
     console.log('🚀 Creating Google OAuth URL');
+    console.log('🔍 [DEBUG] Client ID (first 8 chars):', CLIENT_ID?.substring(0, 8) + '...');
     
     // Set cache control headers for auth endpoint
     res.set({
