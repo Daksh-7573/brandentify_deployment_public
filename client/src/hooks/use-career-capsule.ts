@@ -12,14 +12,32 @@ export interface CareerGoal {
   id: number;
   userId: number;
   title: string;
-  description: string;
+  description: string | null;
   targetDate: Date;
   goalType: GoalType;
+  customGoal?: string | null;
+  timeframe: number;
+  industry?: string | null;
+  isPrivate: boolean;
+  overallProgress: number;
+  isMuskGenerated: boolean;
   status: GoalStatus;
   createdAt: Date;
   updatedAt: Date;
-  progress: number;
-  industryFocus: string;
+  // Legacy fields for compatibility
+  progress?: number; // Maps to overallProgress
+  industryFocus?: string; // Maps to industry
+}
+
+export interface GoalTask {
+  id: number;
+  yearId: number;
+  title: string;
+  description?: string | null;
+  isCompleted: boolean;
+  dueDate?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface GoalMilestone {
@@ -33,6 +51,7 @@ export interface GoalMilestone {
   createdAt: Date;
   updatedAt: Date;
   completedAt: Date | null;
+  tasks?: GoalTask[]; // Tasks associated with this milestone
 }
 
 export interface GoalSkill {
@@ -85,9 +104,11 @@ export const useCareerCapsule = (userId: number | string) => {
 
   // Get a specific career goal with all related data
   const useGoalDetails = (goalId: number) => {
-    return useQuery({
+    return useQuery<CareerGoalWithDetails>({
       queryKey: [`/api/career-goals/${goalId}`],
       enabled: !!goalId,
+      retry: 3,
+      retryDelay: 1000,
     });
   };
 

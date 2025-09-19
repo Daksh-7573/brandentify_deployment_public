@@ -174,9 +174,9 @@ export default function CareerCapsulePage() {
     }
     
     // Calculate target date based on timeframe if not provided
-    const calculatedTargetDate = targetDate || new Date(
+    const calculatedTargetDate = targetDate ? new Date(targetDate) : new Date(
       new Date().setFullYear(new Date().getFullYear() + parseInt(timeframe))
-    ).toISOString();
+    );
     
     setIsSubmitting(true);
     
@@ -189,10 +189,13 @@ export default function CareerCapsulePage() {
         timeframe: parseInt(timeframe),
         targetDate: calculatedTargetDate,
         status: "not_started",
-      });
+        isPrivate: false,
+        overallProgress: 0,
+        isMuskGenerated: false,
+      }) as any;
       
       // Store the created goal ID to trigger milestone generation
-      if (response && response.id) {
+      if (response?.id) {
         setCreatedGoalId(response.id);
         
         toast({
@@ -574,16 +577,10 @@ export default function CareerCapsulePage() {
         <DialogContent className="sm:max-w-[700px] w-[95vw] sm:w-full max-h-[95vh] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-white">
-              {goalDetails && typeof goalDetails === 'object' ? 
-                (goalDetails.goal?.title || goalDetails.title || "Goal Details") : 
-                "Goal Details"
-              }
+              {goalDetails?.goal?.title || "Goal Details"}
             </DialogTitle>
             <DialogDescription className="text-gray-300">
-              {goalDetails && typeof goalDetails === 'object' ? 
-                (goalDetails.goal?.description || goalDetails.description || "Loading goal details...") : 
-                "Loading goal details..."
-              }
+              {goalDetails?.goal?.description || "Loading goal details..."}
             </DialogDescription>
           </DialogHeader>
           
@@ -599,17 +596,13 @@ export default function CareerCapsulePage() {
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-white">Goal Type</p>
                   <p className="text-sm text-gray-300">
-                    {getGoalTypeText(
-                      (goalDetails.goal?.goalType || goalDetails.goalType) as GoalType
-                    )}
+                    {goalDetails?.goal?.goalType ? getGoalTypeText(goalDetails.goal.goalType) : "N/A"}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-white">Target Date</p>
                   <p className="text-sm text-gray-300">
-                    {formatDate(
-                      (goalDetails.goal?.targetDate || goalDetails.targetDate) as string
-                    )}
+                    {goalDetails?.goal?.targetDate ? formatDate(goalDetails.goal.targetDate.toString()) : "N/A"}
                   </p>
                 </div>
                 {/* Progress bar removed */}
@@ -618,8 +611,7 @@ export default function CareerCapsulePage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium text-white">Milestones</h3>
-                  {(!goalDetails || !goalDetails.milestones || 
-                    (goalDetails.milestones && goalDetails.milestones.length === 0)) && (
+                  {(!goalDetails?.milestones || goalDetails.milestones.length === 0) && (
                     <Button 
                       size="sm" 
                       className="neo-glass-button"
@@ -627,11 +619,13 @@ export default function CareerCapsulePage() {
                         if (selectedGoalId && goalDetails) {
                           console.log("Generating milestones for goal:", selectedGoalId);
                           console.log("Goal details:", goalDetails);
-                          generateMilestones.mutate({
-                            goalType: goalDetails.goal?.goalType || goalDetails.goalType,
-                            description: goalDetails.goal?.description || goalDetails.description,
-                            timeframe: goalDetails.goal?.timeframe || goalDetails.timeframe,
-                          });
+                          if (goalDetails?.goal) {
+                            generateMilestones.mutate({
+                              goalType: goalDetails.goal.goalType,
+                              description: goalDetails.goal.description || '',
+                              timeframe: goalDetails.goal.timeframe || 1,
+                            });
+                          }
                         }
                       }}
                       disabled={generateMilestones.isPending}
@@ -661,19 +655,24 @@ export default function CareerCapsulePage() {
                 )}
                 
                 {/* Debug info about milestones data */}
-                {console.log('Milestone debug info:', { 
-                  hasGoalDetails: !!goalDetails,
-                  hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
-                  milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
-                  milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
-                  milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
-                  firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
-                    { 
-                      ...goalDetails.milestones[0], 
-                      hasTasks: !!goalDetails.milestones[0].tasks, 
-                      tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
-                    } : 'none'
-                })}
+                {(() => {
+                  if (goalDetails) {
+                    console.log('Milestone debug info:', { 
+                      hasGoalDetails: !!goalDetails,
+                      hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
+                      milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
+                      milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
+                      milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
+                      firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
+                        { 
+                          ...goalDetails.milestones[0], 
+                          hasTasks: !!goalDetails.milestones[0].tasks, 
+                          tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
+                        } : 'none'
+                    });
+                  }
+                  return null;
+                })()}
                 
                 {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
                   <div className="space-y-4">
@@ -703,7 +702,7 @@ export default function CareerCapsulePage() {
                           <p className="text-sm mt-1 text-gray-300">{milestone.description}</p>
                           {milestone.targetDate && (
                             <p className="text-xs text-gray-400 mt-2">
-                              Due: {formatDate(milestone.targetDate as string)}
+                              Due: {formatDate(milestone.targetDate instanceof Date ? milestone.targetDate.toISOString() : String(milestone.targetDate))}
                             </p>
                           )}
                           
