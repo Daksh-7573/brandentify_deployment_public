@@ -239,6 +239,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-testing-comprehensive" component={() => {
+        const AuthTestingComprehensive = lazy(() => import("@/pages/auth-testing-comprehensive"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthTestingComprehensive />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
         return (
