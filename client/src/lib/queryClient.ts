@@ -259,11 +259,11 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 /**
  * Enhanced query function with better error handling and robust fault tolerance
  */
-export const getQueryFn: <T>(options: {
+export const getQueryFn = <T>(options: {
   on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
+}): QueryFunction<T> =>
   async ({ queryKey }) => {
+    const { on401: unauthorizedBehavior } = options;
     try {
       // Validate the queryKey to prevent fetch errors
       if (!queryKey || !queryKey[0] || typeof queryKey[0] !== 'string') {
