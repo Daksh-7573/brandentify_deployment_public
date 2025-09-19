@@ -89,17 +89,23 @@ app.use((req, res, next) => {
   console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
   
   // Set CORS headers based on allowlist or for no-origin requests (direct access)
-  if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      console.log('CORS: Allowing origin:', origin);
-    } else {
-      res.header('Access-Control-Allow-Origin', '*');
-      console.log('CORS: Allowing request with no origin');
-    }
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    // Origin-specific CORS for authenticated requests
+    res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Allowing origin:', origin);
+  } else if (!origin) {
+    // No-origin requests (direct access) - no credentials needed
+    res.header('Access-Control-Allow-Origin', '*');
+    console.log('CORS: Allowing request with no origin');
+  } else if (ALLOWED_ORIGINS.includes(origin)) {
+    // Fallback: Allow origin but log it
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Origin found in ALLOWED_ORIGINS');
   } else {
     console.log('CORS: Blocking unauthorized origin:', origin);
+    // For unauthorized origins, don't set CORS headers
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
