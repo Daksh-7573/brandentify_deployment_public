@@ -51,6 +51,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+// Import constants for industry and domain mappings
+import { INDUSTRIES, INDUSTRY_DOMAINS } from '@shared/constants';
+
 // Work Experience Schema
 const workExperienceFormSchema = z.object({
   id: z.number().optional(),
@@ -78,18 +81,6 @@ const workExperienceLocations = [
   "Boston, MA",
   "Denver, CO",
   "Miami, FL"
-];
-
-// Industry options
-const industryOptions = [
-  { key: 'technology', value: 'technology', label: 'Technology' },
-  { key: 'finance', value: 'finance', label: 'Finance & Banking' },
-  { key: 'healthcare', value: 'healthcare', label: 'Healthcare' },
-  { key: 'education', value: 'education', label: 'Education' },
-  { key: 'retail', value: 'retail', label: 'Retail & E-commerce' },
-  { key: 'manufacturing', value: 'manufacturing', label: 'Manufacturing' },
-  { key: 'consulting', value: 'consulting', label: 'Consulting' },
-  { key: 'media', value: 'media', label: 'Media & Entertainment' }
 ];
 
 export default function WorkExperience() {
@@ -121,6 +112,20 @@ export default function WorkExperience() {
     keyResponsibilities: '',
     isCurrentlyWorking: false
   });
+  
+  // State for domain options based on selected industry
+  const [domains, setDomains] = useState<string[]>([]);
+  
+  // Update domains when industry changes
+  useEffect(() => {
+    if (formData.industry && INDUSTRY_DOMAINS[formData.industry]) {
+      setDomains(INDUSTRY_DOMAINS[formData.industry]);
+      // Reset domain when industry changes
+      setFormData(prev => ({ ...prev, domain: '' }));
+    } else {
+      setDomains([]);
+    }
+  }, [formData.industry]);
 
   // Queries and mutations
   const queryClient = useQueryClient();
@@ -344,17 +349,17 @@ export default function WorkExperience() {
                         boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
                       }}
                     >
-                      {industryOptions.map((option) => (
+                      {INDUSTRIES.map((industry) => (
                         <SelectItem 
-                          key={option.key} 
-                          value={option.value}
+                          key={industry} 
+                          value={industry}
                           className="cursor-pointer transition-colors"
                           style={{
                             color: 'rgba(255,255,255,0.9)',
                             padding: '12px 16px'
                           }}
                         >
-                          {option.label}
+                          {industry}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -366,15 +371,50 @@ export default function WorkExperience() {
                   <label htmlFor="domain" className="text-sm font-medium text-white">
                     Domain
                   </label>
-                  <input
-                    id="domain"
-                    type="text"
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleInputChange}
-                    placeholder="Enter domain..."
-                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                  />
+                  <Select 
+                    value={formData.domain} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, domain: value }))}
+                    disabled={!formData.industry}
+                  >
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        opacity: formData.industry ? 1 : 0.5
+                      }}
+                    >
+                      <SelectValue 
+                        placeholder={formData.industry ? "Select domain..." : "Select industry first"} 
+                        style={{ color: 'white' }} 
+                      />
+                    </SelectTrigger>
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
+                      {domains.map((domain) => (
+                        <SelectItem 
+                          key={domain} 
+                          value={domain}
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
+                        >
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Date Fields */}
