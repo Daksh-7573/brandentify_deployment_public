@@ -35,9 +35,9 @@ This guide provides comprehensive instructions for setting up Google OAuth authe
 
 Enable the following APIs in your Google Cloud project:
 
-1. **Google+ API** (legacy but still required for some OAuth flows)
+1. **Google Identity Services API** (current Google OAuth 2.0 standard)
    - Go to APIs & Services > Library
-   - Search for "Google+ API"
+   - Search for "Google Identity Services API"
    - Click "Enable"
 
 2. **Google OAuth2 API** 
@@ -47,6 +47,8 @@ Enable the following APIs in your Google Cloud project:
 3. **Google Identity and Access Management (IAM) API**
    - Search for "Google Identity and Access Management API"
    - Click "Enable"
+
+**Note**: Google+ API is deprecated and no longer required for OAuth 2.0 flows. Use Google Identity Services API instead.
 
 ### Step 3: Configure OAuth Consent Screen
 
@@ -101,7 +103,9 @@ Enable the following APIs in your Google Cloud project:
 
 ### Step 6: Add Authorized Redirect URIs
 
-⚠️ **CRITICAL**: Add ALL of the following redirect URIs to ensure OAuth works across all Replit environments:
+⚠️ **CRITICAL**: Add ALL of the following **EXACT** redirect URIs to your Google Cloud Console OAuth configuration. These are not patterns - each URI must be added individually:
+
+📋 **COPY-PASTE CHECKLIST**: Add each URI exactly as shown (no modifications):
 
 #### Production Domains
 ```
@@ -162,7 +166,7 @@ After creating the OAuth credentials, you'll receive:
 GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your_client_secret_here
 JWT_SECRET=your_secure_jwt_secret_here
-CSRF_SECRET=your_csrf_secret_here
+CSRF_SECRET=your_secure_csrf_secret_here
 ```
 
 #### For Production/Development Separation:
@@ -175,11 +179,26 @@ PROD_GOOGLE_CLIENT_SECRET=your_prod_client_secret
 DEV_GOOGLE_CLIENT_ID=your_dev_client_id.apps.googleusercontent.com
 DEV_GOOGLE_CLIENT_SECRET=your_dev_client_secret
 
-# Shared secrets
+# Shared secrets (REQUIRED for production)
 JWT_SECRET=your_secure_jwt_secret_here
-CSRF_SECRET=your_csrf_secret_here
+CSRF_SECRET=your_secure_csrf_secret_here
 NODE_ENV=production  # or development
 ```
+
+#### **CRITICAL**: CSRF_SECRET Security Requirements
+
+⚠️ **Production Security**: Starting with the latest security updates, `CSRF_SECRET` is **mandatory** in production environments. The server will **fail to start** if this variable is not set.
+
+**Generate secure secrets:**
+```bash
+# Generate JWT_SECRET (64 characters)
+node -e "console.log('JWT_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+
+# Generate CSRF_SECRET (64 characters) 
+node -e "console.log('CSRF_SECRET=' + require('crypto').randomBytes(64).toString('hex'))"
+```
+
+**Development**: If secrets are not set in development, cryptographically random secrets will be generated per-process (not persistent across restarts).
 
 ## Production vs Development Separation
 
@@ -314,7 +333,22 @@ This endpoint returns:
 - **Rotate credentials regularly**
 - **Monitor credential usage**
 
-### 2. Scope Minimization
+### 2. PKCE (Proof Key for Code Exchange) Security
+
+🔐 **Enhanced OAuth 2.0 Security**: Our implementation includes PKCE (RFC 7636) for protection against authorization code interception attacks:
+
+- **Code Verifier**: Cryptographically random 256-bit string generated per OAuth flow
+- **Code Challenge**: SHA256 hash of code_verifier, base64url encoded  
+- **S256 Method**: Industry standard hash method for maximum security
+- **Single-Use**: Each PKCE parameter set is used only once and automatically expires
+
+**PKCE Flow**:
+1. Client generates code_verifier and code_challenge
+2. Authorization request includes code_challenge and method=S256
+3. Google validates code_challenge during token exchange
+4. Prevents replay attacks and authorization code interception
+
+### 3. Scope Minimization
 
 Our implementation uses minimal required scopes:
 - `openid` - Required for OAuth 2.0 / OpenID Connect
@@ -327,14 +361,16 @@ Our implementation uses minimal required scopes:
 - Drive access
 - Additional Google service scopes
 
-### 3. Domain Security
+### 4. Domain Security
 
 - **Host-only cookies** prevent subdomain security issues
 - **HTTPS enforcement** for all production domains
 - **Domain validation** prevents unauthorized redirects
 - **CSRF protection** for all authentication requests
 
-### 4. Session Security
+**Preview Environment Behavior**: Preview environments (e.g., `*.picard.replit.dev`) intentionally redirect to the published domain (`brandentifier.replit.app`) for security. This consolidates authentication and prevents subdomain cookie issues.
+
+### 5. Session Security
 
 - **JWT tokens** with expiration for stateless authentication
 - **Secure cookie options** with SameSite protection

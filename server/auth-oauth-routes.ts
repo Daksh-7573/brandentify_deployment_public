@@ -85,8 +85,35 @@ function getOAuthCredentials(): OAuthCredentials {
 const oauthCredentials = getOAuthCredentials();
 const CLIENT_ID = oauthCredentials.clientId;
 const CLIENT_SECRET = oauthCredentials.clientSecret;
+
+// SECURITY FIX: Secure JWT and CSRF secret management
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-const CSRF_SECRET = process.env.CSRF_SECRET || process.env.JWT_SECRET || 'brandentifier-csrf-secret-key-2025';
+
+// CRITICAL SECURITY FIX: Remove hardcoded CSRF secret - generate cryptographically random per-process default
+// In production, CSRF_SECRET MUST be explicitly set as environment variable
+function generateSecureCSRFSecret(): string {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  
+  if (nodeEnv === 'production' && !process.env.CSRF_SECRET) {
+    console.error('❌ [SECURITY-ERROR] CSRF_SECRET is required in production environment');
+    console.error('❌ [SECURITY-ERROR] Server startup failed - set CSRF_SECRET environment variable');
+    console.error('❌ [SECURITY-ERROR] Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
+    process.exit(1); // Hard fail in production
+  }
+  
+  if (process.env.CSRF_SECRET) {
+    console.log('✅ [CSRF-SECRET] Using explicitly set CSRF_SECRET from environment');
+    return process.env.CSRF_SECRET;
+  }
+  
+  // Development fallback: generate cryptographically random secret per-process
+  const generatedSecret = crypto.randomBytes(64).toString('hex');
+  console.warn('⚠️ [CSRF-SECRET] No CSRF_SECRET set - generated secure per-process secret (development only)');
+  console.warn('⚠️ [CSRF-SECRET] For production: set CSRF_SECRET environment variable');
+  return generatedSecret;
+}
+
+const CSRF_SECRET = generateSecureCSRFSecret();
 
 // Log credential validation status
 if (!oauthCredentials.valid) {
@@ -270,8 +297,73 @@ function getRedirectUriForHost(host: string): string {
   }
 }
 
-// In-memory state storage (in production, use Redis or database)
-const stateStore = new Map<string, { timestamp: number, ip: string }>();
+// PKCE (Proof Key for Code Exchange) utility functions for OAuth 2.0 security
+/**
+ * Generate PKCE code_verifier - cryptographically random string
+ * Must be 43-128 characters, URL-safe base64url encoded
+ */
+function generateCodeVerifier(): string {
+  // Generate 32 random bytes (256 bits) for maximum security
+  const randomBytes = crypto.randomBytes(32);
+  // Encode as base64url (URL-safe base64 without padding)
+  return randomBytes.toString('base64url');
+}
+
+/**
+ * Generate PKCE code_challenge from code_verifier using S256 method
+ * SHA256 hash of code_verifier, then base64url encoded
+ */
+function generateCodeChallenge(codeVerifier: string): string {
+  const hash = crypto.createHash('sha256');
+  hash.update(codeVerifier);
+  // Encode as base64url (URL-safe base64 without padding)
+  return hash.digest('base64url');
+}
+
+/**
+ * Validate PKCE parameters for security compliance
+ */
+function validatePKCEParameters(codeVerifier: string, codeChallenge: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  // Validate code_verifier format and length
+  if (!codeVerifier || typeof codeVerifier !== 'string') {
+    errors.push('code_verifier must be a non-empty string');
+  } else if (codeVerifier.length < 43 || codeVerifier.length > 128) {
+    errors.push('code_verifier must be 43-128 characters long');
+  } else if (!/^[A-Za-z0-9_-]+$/.test(codeVerifier)) {
+    errors.push('code_verifier must be URL-safe base64url encoded');
+  }
+  
+  // Validate code_challenge format
+  if (!codeChallenge || typeof codeChallenge !== 'string') {
+    errors.push('code_challenge must be a non-empty string');
+  } else if (!/^[A-Za-z0-9_-]+$/.test(codeChallenge)) {
+    errors.push('code_challenge must be URL-safe base64url encoded');
+  }
+  
+  // Validate code_challenge is correct for code_verifier
+  if (codeVerifier && codeChallenge) {
+    const expectedChallenge = generateCodeChallenge(codeVerifier);
+    if (codeChallenge !== expectedChallenge) {
+      errors.push('code_challenge does not match code_verifier using S256 method');
+    }
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+
+// Enhanced state storage interface with PKCE support
+interface OAuthState {
+  timestamp: number;
+  ip: string;
+  codeVerifier: string; // PKCE code_verifier for security validation
+  codeChallenge: string; // PKCE code_challenge for verification
+  host: string; // Requesting host for security validation
+}
+
+// In-memory state storage with PKCE support (in production, use Redis or database)
+const stateStore = new Map<string, OAuthState>();
 
 // Session exchange code storage for cross-domain handoff
 interface SessionExchangeData {
@@ -398,7 +490,7 @@ setInterval(() => {
   const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
   const eightMinutesAgo = Date.now() - 8 * 60 * 1000;
   
-  // Clean up expired OAuth states (15 minutes)
+  // Clean up expired OAuth states (15 minutes) with PKCE support
   let deletedStateCount = 0;
   for (const [state, data] of Array.from(stateStore.entries())) {
     if (data.timestamp < fifteenMinutesAgo) {
@@ -899,6 +991,26 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
+    // SECURITY ENHANCEMENT: Generate PKCE parameters for OAuth 2.0 protection
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = generateCodeChallenge(codeVerifier);
+    
+    console.log('🔐 [PKCE-SECURITY] Generated PKCE parameters:', {
+      codeVerifierLength: codeVerifier.length,
+      codeChallengeLength: codeChallenge.length,
+      codeChallengePreview: codeChallenge.substring(0, 10) + '...',
+      method: 'S256'
+    });
+    
+    // Validate PKCE parameters for security compliance
+    const pkceValidation = validatePKCEParameters(codeVerifier, codeChallenge);
+    if (!pkceValidation.valid) {
+      console.error('❌ [PKCE-SECURITY] PKCE parameter validation failed:', pkceValidation.errors);
+      throw new Error('PKCE parameter generation failed validation');
+    }
+    
+    console.log('✅ [PKCE-SECURITY] PKCE parameters validated successfully');
+    
     // Create cryptographically secure state parameter with return host
     const stateData = {
       nonce: crypto.randomBytes(16).toString('base64url'),
@@ -909,13 +1021,18 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     const state = Buffer.from(JSON.stringify(stateData)).toString('base64url');
     
-    // Store state for validation (simplified since data is in state)
+    // Enhanced state storage with PKCE parameters for security validation
     stateStore.set(state, { 
       timestamp: Date.now(), 
-      ip: req.ip || req.connection.remoteAddress || 'unknown'
+      ip: req.ip || req.connection.remoteAddress || 'unknown',
+      codeVerifier: codeVerifier,
+      codeChallenge: codeChallenge,
+      host: host
     });
     
-    // Build OAuth URL with OpenID Connect scope
+    console.log('💾 [PKCE-SECURITY] Stored PKCE parameters in state store for validation');
+    
+    // Build OAuth URL with PKCE and OpenID Connect scope
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
       redirect_uri: redirectUri,
@@ -923,8 +1040,13 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       scope: getOAuthScopes(oauthCredentials.environment),
       access_type: 'online',
       prompt: 'select_account',
-      state: state
+      state: state,
+      // PKCE parameters for OAuth 2.0 security enhancement
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256'
     });
+    
+    console.log('🔐 [PKCE-SECURITY] OAuth URL includes PKCE protection with S256 method');
     
     const oauthUrl = `${GOOGLE_OAUTH_BASE_URL}?${params.toString()}`;
     
@@ -1023,7 +1145,43 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     console.log('✅ [STATE-VALIDATION] State validation successful');
     
-    // Remove used state
+    // SECURITY ENHANCEMENT: Validate PKCE parameters from state
+    const { codeVerifier, codeChallenge, host: storedHost } = stateData;
+    
+    console.log('🔐 [PKCE-VALIDATION] Validating PKCE parameters from OAuth callback:', {
+      hasCodeVerifier: !!codeVerifier,
+      hasCodeChallenge: !!codeChallenge,
+      codeVerifierLength: codeVerifier?.length,
+      codeChallengeLength: codeChallenge?.length,
+      storedHost,
+      currentHost: req.get('host')
+    });
+    
+    if (!codeVerifier || !codeChallenge) {
+      console.error('❌ [PKCE-VALIDATION] Missing PKCE parameters in state:', {
+        codeVerifier: !!codeVerifier,
+        codeChallenge: !!codeChallenge,
+        stateKeys: Object.keys(stateData)
+      });
+      stateStore.delete(state as string);
+      return res.redirect('/auth?error=missing_pkce_params');
+    }
+    
+    // Validate PKCE parameters integrity
+    const pkceValidation = validatePKCEParameters(codeVerifier, codeChallenge);
+    if (!pkceValidation.valid) {
+      console.error('❌ [PKCE-VALIDATION] PKCE parameter validation failed in callback:', {
+        errors: pkceValidation.errors,
+        codeVerifierPreview: codeVerifier.substring(0, 10) + '...',
+        codeChallengePreview: codeChallenge.substring(0, 10) + '...'
+      });
+      stateStore.delete(state as string);
+      return res.redirect('/auth?error=pkce_validation_failed');
+    }
+    
+    console.log('✅ [PKCE-VALIDATION] PKCE parameters validated successfully');
+    
+    // Remove used state (after PKCE validation)
     stateStore.delete(state as string);
     
     if (!CLIENT_ID || !CLIENT_SECRET) {
@@ -1051,6 +1209,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('✅ [OAUTH CALLBACK] Using redirect URI:', redirectUri);
     console.log('🔍 [OAUTH CALLBACK] Host detected:', host);
     console.log('🔧 [OAUTH CALLBACK] Development mode:', isDevelopment);
+    console.log('🔐 [PKCE-SECURITY] Including code_verifier in token exchange for PKCE validation');
     
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
@@ -1063,6 +1222,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         code: code as string,
         grant_type: 'authorization_code',
         redirect_uri: redirectUri,
+        // PKCE code_verifier for OAuth 2.0 security validation
+        code_verifier: codeVerifier,
       }),
     });
     
