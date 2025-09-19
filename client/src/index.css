@@ -816,6 +816,19 @@ input.smart-radar-input::placeholder {
   }
   
   /* Force consistent button styling for Replit preview */
+  button, .btn, [role="button"] {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: #000000 !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  button:hover, .btn:hover, [role="button"]:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    color: #000000 !important;
+    transform: translateY(-1px) !important;
+  }
+  
   .neo-glass-button,
   button[class*="neo-glass"] {
     background: rgba(255, 255, 255, 0.9) !important;

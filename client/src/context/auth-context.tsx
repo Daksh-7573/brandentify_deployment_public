@@ -326,7 +326,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[Auth Context] ❌ No valid authentication found');
         
       } catch (error) {
-        console.log('[Auth Context] Session check error:', error.message);
+        console.log('[Auth Context] Session check error:', error instanceof Error ? error.message : String(error));
       }
       
       // No valid authentication found
