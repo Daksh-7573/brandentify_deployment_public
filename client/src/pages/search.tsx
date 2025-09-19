@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { GridSkeleton, ProfileCardSkeleton } from "@/components/ui/skeleton-components";
+import { GridSkeleton, ProfileCardSkeleton, Skeleton } from "@/components/ui/skeleton-components";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
@@ -81,7 +81,7 @@ function SearchPage() {
   const userId = user?.id;
   
   // Smart connect state
-  const [showMatchForm, setShowMatchForm] = useState(false);
+  const [showMatchForm, setShowMatchForm] = useState(activeCategory === "smart-connect");
   const [showMatchResults, setShowMatchResults] = useState(false);
   const [industry, setIndustry] = useState("");
   const [domain, setDomain] = useState("");
@@ -165,7 +165,7 @@ function SearchPage() {
         experienceLevel: experience,
         lookingFor,
         skills: [],
-        location: user?.location || ""
+        location: ""
       };
       
       const response = await fetch("/api/smart-connect", {
@@ -411,12 +411,25 @@ function SearchPage() {
               </div>
 
               {/* Main Tabs: Search vs Smart Connect */}
-              <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
+              <Tabs 
+                value={activeCategory === "smart-connect" ? "smart-connect" : "search"} 
+                onValueChange={(value) => {
+                  if (value === "smart-connect") {
+                    setActiveCategory("smart-connect");
+                    setShowMatchForm(true);
+                    setShowMatchResults(false);
+                  } else {
+                    setActiveCategory("pulses");
+                    setShowMatchForm(false);
+                    setShowMatchResults(false);
+                  }
+                }}
+                className="w-full"
+              >
                 <TabsList className="mb-6 dark-tabs-list">
                   <TabsTrigger 
                     value="search" 
                     className="dark-tabs-trigger"
-                    onClick={() => setActiveCategory("pulses")}
                   >
                     <SearchIcon size={16} className="mr-1.5" />
                     <span>Search</span>
@@ -424,10 +437,6 @@ function SearchPage() {
                   <TabsTrigger 
                     value="smart-connect" 
                     className="dark-tabs-trigger"
-                    onClick={() => {
-                      setActiveCategory("smart-connect");
-                      setShowMatchForm(true);
-                    }}
                   >
                     <Users size={16} className="mr-1.5" />
                     <span>Smart Connect</span>
