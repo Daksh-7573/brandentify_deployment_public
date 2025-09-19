@@ -235,13 +235,7 @@ function Router() {
           
           {/* Development authentication - accessible via direct URL only */}
           <Route path="/dev-login" component={DevLoginPage} />
-          
-          {/* 
-            Removed excessive development authentication routes to avoid user confusion:
-            - All test auth routes are still available via direct URL typing if needed for development
-            - Users are now directed to the main /auth route which uses production system
-            - Cleaned up to prevent navigation confusion
-          */
+          {/* Development authentication routes cleaned up for user clarity */}
           <Route path="/verify-email" component={EmailVerification} />
         </>
       )}

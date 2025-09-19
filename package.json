@@ -103,6 +103,7 @@
     "pdf.js-extract": "^0.2.1",
     "pdfjs-dist": "^5.1.91",
     "pdfjs-dist-for-node": "^1.0.892-rc.1",
+    "postcss-selector-parser": "^7.1.0",
     "puppeteer": "^24.22.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
