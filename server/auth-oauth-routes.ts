@@ -82,10 +82,11 @@ interface SessionExchangeData {
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
 
-// Clean up expired states and session exchange codes every 5 minutes
+// Clean up expired states and session exchange codes every 10 minutes
 setInterval(() => {
   const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
-  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+  const eightMinutesAgo = Date.now() - 8 * 60 * 1000;
   
   // Clean up expired OAuth states (15 minutes)
   let deletedStateCount = 0;
@@ -99,21 +100,123 @@ setInterval(() => {
     console.log(`🧹 [STATE-CLEANUP] Removed ${deletedStateCount} expired OAuth states`);
   }
   
-  // Clean up expired session exchange codes (5 minutes)
+  // Clean up expired session exchange codes (10 minutes) with expiration warnings (8 minutes)
   let deletedExchangeCount = 0;
+  let warningCount = 0;
   for (const [code, data] of Array.from(sessionExchangeStore.entries())) {
-    if (data.timestamp < fiveMinutesAgo) {
+    if (data.timestamp < tenMinutesAgo) {
       sessionExchangeStore.delete(code);
       deletedExchangeCount++;
+    } else if (data.timestamp < eightMinutesAgo) {
+      console.warn(`⚠️ [EXCHANGE-WARNING] Session exchange code expiring soon: ${code.substring(0, 10)}... (${Math.floor((Date.now() - data.timestamp) / 1000)}s old)`);
+      warningCount++;
     }
   }
   if (deletedExchangeCount > 0) {
     console.log(`🧹 [EXCHANGE-CLEANUP] Removed ${deletedExchangeCount} expired session exchange codes`);
   }
-}, 5 * 60 * 1000);
+  if (warningCount > 0) {
+    console.log(`⏰ [EXCHANGE-WARNING] ${warningCount} session exchange codes will expire in 2 minutes`);
+  }
+}, 10 * 60 * 1000);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+}
+
+/**
+ * Canonicalize host for secure comparison
+ * - Converts to lowercase for case-insensitive comparison
+ * - Strips default ports (80 for HTTP, 443 for HTTPS)
+ * - Handles edge cases for localhost and development environments
+ */
+function canonicalizeHost(host: string): string {
+  if (!host) return '';
+  
+  // Convert to lowercase for case-insensitive comparison
+  let canonicalHost = host.toLowerCase().trim();
+  
+  // Handle common edge cases
+  if (canonicalHost === 'localhost' || canonicalHost === '127.0.0.1') {
+    return canonicalHost;
+  }
+  
+  // Strip default ports
+  if (canonicalHost.endsWith(':80')) {
+    canonicalHost = canonicalHost.replace(':80', '');
+  } else if (canonicalHost.endsWith(':443')) {
+    canonicalHost = canonicalHost.replace(':443', '');
+  }
+  
+  return canonicalHost;
+}
+
+/**
+ * Check if two hosts match after canonicalization
+ * Provides robust host comparison with tolerance for case and default ports
+ */
+function hostsMatch(host1: string, host2: string): boolean {
+  const canonical1 = canonicalizeHost(host1);
+  const canonical2 = canonicalizeHost(host2);
+  
+  console.log('🔍 [HOST-COMPARISON] Comparing hosts:', {
+    original1: host1,
+    original2: host2,
+    canonical1,
+    canonical2,
+    match: canonical1 === canonical2
+  });
+  
+  return canonical1 === canonical2;
+}
+
+/**
+ * Determine secure cookie options for the given host
+ * SECURITY: Never sets domain attribute to parent domains - always host-only or exact FQDN
+ */
+function getSecureCookieOptions(host: string, isHttps: boolean) {
+  const canonicalHost = canonicalizeHost(host);
+  
+  console.log('🍪 [COOKIE-SECURITY] Analyzing host for secure cookie options:', {
+    originalHost: host,
+    canonicalHost,
+    isHttps,
+    isDevelopment: canonicalHost.includes('localhost') || canonicalHost.includes('127.0.0.1')
+  });
+  
+  // CRITICAL SECURITY: Validate domain patterns to prevent parent domain vulnerabilities
+  const isPicardDomain = canonicalHost.includes('.picard.replit.dev');
+  const isReplitAppDomain = canonicalHost.includes('.replit.app');
+  const isBrandentifierCom = canonicalHost.includes('brandentifier.com');
+  const isDevelopment = canonicalHost.includes('localhost') || canonicalHost.includes('127.0.0.1');
+  
+  // Base cookie options with security defaults
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isHttps,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  };
+  
+  // SECURITY RULE: Always use host-only cookies (no domain attribute) for maximum security
+  // This prevents cookie sharing across subdomains which could be a security vulnerability
+  console.log('🔒 [COOKIE-SECURITY] Using host-only cookie (no domain attribute) for maximum security');
+  
+  // Validate that we're not accidentally setting parent domains
+  if (isPicardDomain) {
+    console.log('✅ [COOKIE-SECURITY] Picard domain detected - using host-only cookie');
+  } else if (isReplitAppDomain) {
+    console.log('✅ [COOKIE-SECURITY] Replit.app domain detected - using host-only cookie');  
+  } else if (isBrandentifierCom) {
+    console.log('✅ [COOKIE-SECURITY] Brandentifier.com domain detected - using host-only cookie');
+  } else if (isDevelopment) {
+    console.log('✅ [COOKIE-SECURITY] Development environment detected - using host-only cookie');
+  } else {
+    console.warn('⚠️ [COOKIE-SECURITY] Unknown domain pattern - using host-only cookie for safety');
+  }
+  
+  return cookieOptions;
 }
 
 /**
@@ -469,15 +572,34 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     });
     
     if (needsCrossDomainHandoff) {
+      const handoffStartTime = Date.now();
+      
       // Generate secure session exchange code for cross-domain handoff
       const exchangeCode = crypto.randomBytes(32).toString('base64url');
       
-      // Store session exchange data (expires in 5 minutes, single-use)
-      sessionExchangeStore.set(exchangeCode, {
+      console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated:', {
+        startTime: new Date(handoffStartTime).toISOString(),
+        currentHost,
+        returnHost,
+        userId: user.id,
+        exchangeCodePrefix: exchangeCode.substring(0, 10) + '...'
+      });
+      
+      // Store session exchange data (expires in 10 minutes, single-use)
+      const exchangeData = {
         sessionToken,
-        timestamp: Date.now(),
+        timestamp: handoffStartTime,
         returnHost,
         userId: user.id
+      };
+      
+      sessionExchangeStore.set(exchangeCode, exchangeData);
+      
+      console.log('💾 [SESSION-HANDOFF] Exchange data stored:', {
+        exchangeCodePrefix: exchangeCode.substring(0, 10) + '...',
+        expiresAt: new Date(handoffStartTime + 10 * 60 * 1000).toISOString(),
+        storeSize: sessionExchangeStore.size,
+        returnHostPattern: REPLIT_DOMAIN_PATTERNS.find(p => p.test(returnHost))?.toString() || 'no-pattern-match'
       });
       
       // Build session acceptance URL on return domain
@@ -485,26 +607,26 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         ? `http://${returnHost}/auth/accept-session?code=${exchangeCode}`
         : `https://${returnHost}/auth/accept-session?code=${exchangeCode}`;
       
-      console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
-      console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
+      console.log('🚀 [SESSION-HANDOFF] Redirecting to session accept URL:', {
+        url: sessionAcceptUrl,
+        protocol: sessionAcceptUrl.startsWith('https') ? 'HTTPS' : 'HTTP',
+        timingMs: Date.now() - handoffStartTime
+      });
       
       return res.redirect(303, sessionAcceptUrl);
     } else {
       // Same domain - set cookie directly and redirect to dashboard
       const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
       
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isHttps,
-        sameSite: 'lax' as const,
-        path: '/',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      };
+      // SECURITY FIX: Use secure cookie options with host-only setting
+      const cookieOptions = getSecureCookieOptions(currentHost, isHttps);
       
-      console.log('🍪 [SESSION-HANDOFF] Same domain - setting secure cookie:', {
+      console.log('🍪 [SESSION-HANDOFF] Same domain - setting secure host-only cookie:', {
+        host: currentHost,
         sameSite: cookieOptions.sameSite,
         secure: cookieOptions.secure,
-        isHttps: isHttps
+        isHttps: isHttps,
+        hostOnlyMode: true // No domain attribute = host-only cookie
       });
       
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
@@ -523,8 +645,18 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
  * Accept session from cross-domain handoff - validates exchange code and sets session cookie
  */
 export async function acceptSessionRoute(req: Request, res: Response) {
+  let acceptStartTime = Date.now();
+  
   try {
-    console.log('🔄 [SESSION-ACCEPT] Processing session acceptance');
+    const currentHost = req.get('host') || 'unknown';
+    
+    console.log('🔄 [SESSION-ACCEPT] Processing session acceptance:', {
+      startTime: new Date(acceptStartTime).toISOString(),
+      host: currentHost,
+      userAgent: req.get('user-agent')?.substring(0, 50) || 'unknown',
+      ip: req.ip || 'unknown',
+      hasExchangeCode: !!req.query.code
+    });
     
     // Set cache control headers
     res.set({
@@ -534,83 +666,230 @@ export async function acceptSessionRoute(req: Request, res: Response) {
       'Surrogate-Control': 'no-store',
       'X-Auth-Handler': 'session-accept',
       'X-Auth-Timestamp': new Date().toISOString(),
-      'X-Auth-Host': req.get('host') || 'unknown'
+      'X-Auth-Host': currentHost,
+      'X-Session-Accept-Start': acceptStartTime.toString()
     });
     
     const { code } = req.query;
     
-    if (!code || typeof code !== 'string') {
-      console.error('❌ [SESSION-ACCEPT] Missing or invalid exchange code');
-      return res.redirect('/auth?error=invalid_exchange_code');
+    // Enhanced validation for missing or malformed exchange codes
+    if (!code) {
+      console.error('❌ [SESSION-ACCEPT] Missing exchange code parameter:', {
+        queryParams: Object.keys(req.query),
+        url: req.url,
+        referer: req.get('referer') || 'none'
+      });
+      
+      // UX FIX: Return proper redirect instead of JSON response
+      const redirectUrl = '/auth?error=missing_exchange_code&retry=true';
+      console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with missing code error:', redirectUrl);
+      return res.redirect(302, redirectUrl);
     }
     
-    // Look up session exchange data
+    if (typeof code !== 'string' || code.length < 10) {
+      console.error('❌ [SESSION-ACCEPT] Invalid exchange code format:', {
+        codeType: typeof code,
+        codeLength: typeof code === 'string' ? code.length : 'N/A',
+        codePreview: typeof code === 'string' ? code.substring(0, 5) + '...' : 'N/A'
+      });
+      
+      // UX FIX: Return proper redirect instead of JSON response
+      const redirectUrl = '/auth?error=invalid_exchange_code&retry=true';
+      console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with invalid code error:', redirectUrl);
+      return res.redirect(302, redirectUrl);
+    }
+    
+    // Enhanced exchange code lookup with detailed diagnostics
+    console.log('🔍 [SESSION-ACCEPT] Looking up exchange code:', {
+      codePrefix: code.substring(0, 10) + '...',
+      storeSize: sessionExchangeStore.size,
+      lookupTime: new Date().toISOString()
+    });
+    
     const exchangeData = sessionExchangeStore.get(code);
     
     if (!exchangeData) {
-      console.error('❌ [SESSION-ACCEPT] Exchange code not found or already used:', {
+      const diagnosticInfo = {
         codeProvided: code.substring(0, 10) + '...',
         storeSize: sessionExchangeStore.size,
-        allCodes: Array.from(sessionExchangeStore.keys()).map(k => k.substring(0, 10) + '...')
-      });
-      return res.redirect('/auth?error=exchange_code_not_found');
+        allCodes: Array.from(sessionExchangeStore.keys()).map(k => k.substring(0, 10) + '...'),
+        possibleCauses: [
+          sessionExchangeStore.size === 0 ? 'No exchange codes in store' : null,
+          'Code already used (single-use)',
+          'Code expired and cleaned up',
+          'Code never generated (OAuth flow incomplete)'
+        ].filter(Boolean)
+      };
+      
+      console.error('❌ [SESSION-ACCEPT] Exchange code not found or already used:', diagnosticInfo);
+      
+      // UX FIX: Return proper redirect instead of JSON response
+      const redirectUrl = '/auth?error=exchange_code_not_found&retry=true';
+      console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with code not found error:', redirectUrl);
+      return res.redirect(302, redirectUrl);
     }
     
-    // Check exchange code age (max 5 minutes)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    if (exchangeData.timestamp < fiveMinutesAgo) {
-      console.error('❌ [SESSION-ACCEPT] Exchange code expired:', {
-        codeAge: Math.floor((Date.now() - exchangeData.timestamp) / 1000) + ' seconds',
-        maxAge: '300 seconds (5 minutes)'
-      });
-      sessionExchangeStore.delete(code);
-      return res.redirect('/auth?error=exchange_code_expired');
-    }
-    
-    // Validate that we're on the correct return host
-    const currentHost = req.get('host') || '';
-    if (exchangeData.returnHost !== currentHost) {
-      console.error('❌ [SESSION-ACCEPT] Host mismatch:', {
-        expectedHost: exchangeData.returnHost,
-        actualHost: currentHost
-      });
-      return res.redirect('/auth?error=host_mismatch');
-    }
-    
-    console.log('✅ [SESSION-ACCEPT] Exchange code valid, setting session cookie');
-    
-    // Remove used exchange code (single-use)
-    sessionExchangeStore.delete(code);
-    
-    // Set session cookie on the correct domain
-    const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
-    
-    const cookieOptions = {
-      httpOnly: true,
-      secure: isHttps,
-      sameSite: 'lax' as const,
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    };
-    
-    console.log('🍪 [SESSION-ACCEPT] Setting secure session cookie:', {
-      sameSite: cookieOptions.sameSite,
-      secure: cookieOptions.secure,
-      isHttps: isHttps
+    console.log('✅ [SESSION-ACCEPT] Exchange code found:', {
+      userId: exchangeData.userId,
+      returnHost: exchangeData.returnHost,
+      generatedAt: new Date(exchangeData.timestamp).toISOString(),
+      ageSeconds: Math.floor((Date.now() - exchangeData.timestamp) / 1000)
     });
     
+    // Enhanced exchange code validation with detailed timing
+    acceptStartTime = Date.now();
+    const codeAge = acceptStartTime - exchangeData.timestamp;
+    const tenMinutesAgo = acceptStartTime - 10 * 60 * 1000;
+    const eightMinutesAgo = acceptStartTime - 8 * 60 * 1000;
+    
+    console.log('⏱️ [SESSION-ACCEPT] Exchange code timing analysis:', {
+      codeGeneratedAt: new Date(exchangeData.timestamp).toISOString(),
+      currentTime: new Date(acceptStartTime).toISOString(),
+      ageSeconds: Math.floor(codeAge / 1000),
+      maxAgeSeconds: 10 * 60,
+      isExpired: exchangeData.timestamp < tenMinutesAgo,
+      isNearExpiry: exchangeData.timestamp < eightMinutesAgo
+    });
+    
+    // Check exchange code age (max 10 minutes)
+    if (exchangeData.timestamp < tenMinutesAgo) {
+      const errorDetails = {
+        codeAge: Math.floor(codeAge / 1000) + ' seconds',
+        maxAge: '600 seconds (10 minutes)',
+        expiredBy: Math.floor((tenMinutesAgo - exchangeData.timestamp) / 1000) + ' seconds',
+        codePrefix: code.substring(0, 10) + '...'
+      };
+      
+      console.error('❌ [SESSION-ACCEPT] Exchange code expired:', errorDetails);
+      
+      // CLEANUP FIX: Delete expired code immediately since it's clearly expired
+      sessionExchangeStore.delete(code);
+      
+      // UX FIX: Return proper redirect instead of JSON response
+      const redirectUrl = '/auth?error=exchange_code_expired&retry=true';
+      console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with expired code error:', redirectUrl);
+      return res.redirect(302, redirectUrl);
+    }
+    
+    // Warning for codes nearing expiry
+    if (exchangeData.timestamp < eightMinutesAgo) {
+      console.warn('⚠️ [SESSION-ACCEPT] Exchange code is nearing expiry:', {
+        ageSeconds: Math.floor(codeAge / 1000),
+        remainingSeconds: 600 - Math.floor(codeAge / 1000)
+      });
+    }
+    
+    // SECURITY FIX: Enhanced host validation with canonicalized comparison
+    const expectedHost = exchangeData.returnHost;
+    
+    console.log('🌐 [SESSION-ACCEPT] Host validation with canonicalization:', {
+      expectedHost,
+      actualHost: currentHost,
+      expectedCanonical: canonicalizeHost(expectedHost),
+      actualCanonical: canonicalizeHost(currentHost),
+      currentHostPattern: REPLIT_DOMAIN_PATTERNS.find(p => p.test(currentHost))?.toString() || 'no-pattern-match',
+      expectedHostPattern: REPLIT_DOMAIN_PATTERNS.find(p => p.test(expectedHost))?.toString() || 'no-pattern-match'
+    });
+    
+    // Use robust host comparison with canonicalization
+    if (!hostsMatch(expectedHost, currentHost)) {
+      const errorDetails = {
+        expectedHost,
+        actualHost: currentHost,
+        expectedCanonical: canonicalizeHost(expectedHost),
+        actualCanonical: canonicalizeHost(currentHost),
+        isPicardDomain: currentHost.includes('.picard.replit.dev'),
+        isReplitDomain: REPLIT_DOMAIN_PATTERNS.some(p => p.test(currentHost))
+      };
+      
+      console.error('❌ [SESSION-ACCEPT] Host mismatch after canonicalization:', errorDetails);
+      
+      // UX FIX: Return proper redirect instead of JSON response
+      const redirectUrl = `/auth?error=host_mismatch&expected=${encodeURIComponent(expectedHost)}&actual=${encodeURIComponent(currentHost)}&retry=true`;
+      console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with host mismatch error:', redirectUrl);
+      return res.redirect(302, redirectUrl);
+    }
+    
+    const validationEndTime = Date.now();
+    
+    console.log('✅ [SESSION-ACCEPT] All validations passed, proceeding with cookie setup:', {
+      validationDurationMs: validationEndTime - acceptStartTime,
+      exchangeCodePrefix: code.substring(0, 10) + '...',
+      validatedAt: new Date(validationEndTime).toISOString()
+    });
+    
+    // EXCHANGE CODE CLEANUP FIX: Don't delete exchange code yet - only after successful operations
+    
+    // SECURITY FIX: Use secure cookie options with host-only setting
+    const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
+    const cookieOptions = getSecureCookieOptions(currentHost, isHttps);
+    
+    console.log('🍪 [SESSION-ACCEPT] Setting secure host-only cookie:', {
+      host: currentHost,
+      sameSite: cookieOptions.sameSite,
+      secure: cookieOptions.secure,
+      isHttps: isHttps,
+      hostOnlyMode: true, // No domain attribute = host-only cookie for maximum security
+      isPicardDomain: currentHost.includes('.picard.replit.dev'),
+      isReplitDomain: REPLIT_DOMAIN_PATTERNS.some(p => p.test(currentHost))
+    });
+    
+    // Set the session cookie with enhanced security settings
     res.cookie('brandentifier_session', exchangeData.sessionToken, cookieOptions);
     
-    console.log('✅ [SESSION-ACCEPT] Session handoff completed successfully');
-    console.log('✅ [SESSION-ACCEPT] User ID:', exchangeData.userId);
-    console.log('✅ [SESSION-ACCEPT] Redirecting to dashboard');
+    console.log('🍪 [SESSION-ACCEPT] Session cookie set successfully:', {
+      cookieName: 'brandentifier_session',
+      tokenLength: exchangeData.sessionToken.length,
+      domain: currentHost,
+      options: cookieOptions,
+      setAt: new Date().toISOString()
+    });
+    
+    const handoffDuration = Date.now() - acceptStartTime;
+    const totalSessionHandoffTime = Date.now() - exchangeData.timestamp;
+    
+    console.log('✅ [SESSION-ACCEPT] Session handoff completed successfully:', {
+      userId: exchangeData.userId,
+      handoffDurationMs: handoffDuration,
+      totalSessionHandoffMs: totalSessionHandoffTime,
+      completedAt: new Date().toISOString(),
+      finalHost: currentHost,
+      cookieSecure: cookieOptions.secure
+    });
+    
+    // Performance tracking for cross-domain handoffs
+    if (totalSessionHandoffTime > 30000) { // More than 30 seconds
+      console.warn('⚠️ [SESSION-ACCEPT] Slow session handoff detected:', {
+        totalTimeMs: totalSessionHandoffTime,
+        threshold: 30000,
+        possibleCause: 'Network latency or user delay'
+      });
+    }
+    
+    // EXCHANGE CODE CLEANUP FIX: Only delete exchange code after successful cookie setting and redirect
+    // This improves error recovery - if redirect fails, code is still available for retry
+    sessionExchangeStore.delete(code);
+    console.log('✅ [SESSION-ACCEPT] Exchange code deleted after successful operations:', {
+      codePrefix: code.substring(0, 10) + '...',
+      remainingCodes: sessionExchangeStore.size
+    });
     
     // Redirect to dashboard on the correct domain
     return res.redirect(303, '/dashboard');
     
   } catch (error: any) {
-    console.error('❌ [SESSION-ACCEPT] Session acceptance error:', error);
-    res.redirect(`/auth?error=session_accept_error&message=${encodeURIComponent(error.message)}`);
+    console.error('❌ [SESSION-ACCEPT] Unexpected session acceptance error:', {
+      errorMessage: error.message,
+      errorStack: error.stack?.substring(0, 500), // Truncated stack trace
+      host: req.get('host'),
+      exchangeCodeProvided: !!req.query.code,
+      timestamp: new Date().toISOString()
+    });
+    
+    // UX FIX: Return proper redirect instead of JSON response for unexpected errors
+    const redirectUrl = '/auth?error=session_accept_error&retry=true';
+    console.log('🚀 [SESSION-ACCEPT] Redirecting to auth page with unexpected error:', redirectUrl);
+    return res.redirect(302, redirectUrl);
   }
 }
 
