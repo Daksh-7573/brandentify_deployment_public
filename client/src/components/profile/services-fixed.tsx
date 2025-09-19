@@ -314,7 +314,7 @@ export default function Services() {
                 <span>Add What I Offer</span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
+            <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
               <DialogHeader>
                 <DialogTitle className="text-white text-xl font-semibold">Add What I Offer</DialogTitle>
                 <DialogDescription className="text-gray-300">
@@ -449,7 +449,7 @@ export default function Services() {
       
       {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
+        <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Edit Service</DialogTitle>
             <DialogDescription className="text-gray-300">
