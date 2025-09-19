@@ -84,8 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
     .catch(error => {
-      console.log('[Auth Context] ❌ No valid JWT session found:', error.message);
+      console.log('[Auth Context] ❌ No valid JWT session found:', {
+        errorMessage: error.message,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent.substring(0, 50),
+        currentDomain: window.location.hostname,
+        cookiesEnabled: navigator.cookieEnabled,
+        sessionStorageAvailable: typeof(Storage) !== "undefined" && sessionStorage
+      });
       console.log('[Auth Context] User needs to authenticate via server OAuth');
+      
+      // Clear any stale session data
+      sessionStorage.removeItem('brandentifier_user');
       setIsLoading(false);
     });
     
@@ -153,18 +163,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return; // Will redirect
       
     } catch (error: any) {
-      console.error("Google sign-in error:", error);
+      console.error("[Auth Context] Google sign-in error:", {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        timestamp: new Date().toISOString(),
+        currentUrl: window.location.href,
+        userAgent: navigator.userAgent.substring(0, 50),
+        cookiesEnabled: navigator.cookieEnabled,
+        onlineStatus: navigator.onLine
+      });
       
+      // Enhanced error categorization and user-friendly messages
       let errorMessage = "There was a problem with Google sign-in. Please try again.";
+      let canRetry = true;
+      let suggestions = ['Try refreshing the page', 'Check your internet connection'];
       
       if (error.message && error.message.includes('OAuth URL')) {
         errorMessage = "Unable to start authentication. Please try again.";
+        suggestions = ['Refresh the page and try again', 'Clear browser cache', 'Try in incognito mode'];
+      } else if (error.message && error.message.includes('network')) {
+        errorMessage = "Network connection issue. Please check your internet and try again.";
+        suggestions = ['Check your internet connection', 'Try again in a few moments'];
+      } else if (error.message && error.message.includes('blocked')) {
+        errorMessage = "Authentication was blocked. Please enable popups and try again.";
+        suggestions = ['Enable popups for this site', 'Try in a different browser', 'Disable ad blockers temporarily'];
+        canRetry = true;
+      } else if (!navigator.onLine) {
+        errorMessage = "You appear to be offline. Please check your internet connection.";
+        suggestions = ['Check your internet connection', 'Try again when back online'];
+        canRetry = false;
+      } else if (!navigator.cookieEnabled) {
+        errorMessage = "Cookies are disabled. Please enable cookies and try again.";
+        suggestions = ['Enable cookies in your browser settings', 'Try in incognito mode'];
+        canRetry = false;
       }
       
       toast({
         title: "Authentication Error",
         description: errorMessage,
         variant: "destructive",
+      });
+      
+      // Log detailed error information for debugging
+      console.error('[Auth Context] Detailed error analysis:', {
+        canRetry,
+        suggestions,
+        browserInfo: {
+          cookiesEnabled: navigator.cookieEnabled,
+          onlineStatus: navigator.onLine,
+          userAgent: navigator.userAgent,
+          language: navigator.language
+        }
       });
       
     } finally {
@@ -195,10 +244,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Redirect to auth page
       window.location.href = '/auth';
       
-    } catch (error) {
-      console.error("Sign out error:", error);
+    } catch (error: any) {
+      console.error("[Auth Context] Sign out error:", {
+        errorMessage: error.message,
+        timestamp: new Date().toISOString(),
+        currentUrl: window.location.href,
+        userAgent: navigator.userAgent.substring(0, 50)
+      });
       
-      // Clear local state anyway
+      // Provide user feedback about sign out issues
+      let signOutMessage = "Sign out completed locally. You may need to clear your browser data.";
+      if (error.message && error.message.includes('network')) {
+        signOutMessage = "Network issue during sign out. You have been signed out locally.";
+      } else if (error.message && error.message.includes('server')) {
+        signOutMessage = "Server error during sign out. You have been signed out locally.";
+      }
+      
+      toast({
+        title: "Signed out",
+        description: signOutMessage,
+        variant: "default", // Not destructive since local signout succeeded
+      });
+      
+      // Clear local state anyway - prioritize user security
       setUser(null);
       sessionStorage.removeItem('brandentifier_user');
       window.location.href = '/auth';

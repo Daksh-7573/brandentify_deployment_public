@@ -174,10 +174,32 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     });
     
   } catch (error: any) {
-    console.error('❌ Error creating OAuth URL:', error);
+    console.error('❌ [OAUTH-URL-ERROR] Error creating OAuth URL:', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      host: req.get('host'),
+      userAgent: req.get('user-agent'),
+      timestamp: new Date().toISOString()
+    });
+    
+    // Categorize and provide user-friendly error messages
+    let userMessage = 'Unable to start authentication. Please try again.';
+    let errorCode = 'OAUTH_URL_CREATION_FAILED';
+    
+    if (error.message?.includes('Google Client ID')) {
+      userMessage = 'Authentication service is temporarily unavailable. Please try again later.';
+      errorCode = 'OAUTH_CONFIG_ERROR';
+    } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+      userMessage = 'Network connection issue. Please check your internet and try again.';
+      errorCode = 'NETWORK_ERROR';
+    }
+    
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create OAuth URL'
+      error: userMessage,
+      errorCode: errorCode,
+      canRetry: true,
+      suggestedActions: ['Try refreshing the page', 'Check your internet connection', 'Try again in a few minutes']
     });
   }
 }
@@ -212,15 +234,36 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     const { code, state, error } = req.query;
     
-    // Handle OAuth errors
+    // Handle OAuth errors with detailed logging
     if (error) {
-      console.error('OAuth error:', error);
-      return res.redirect('/auth?error=oauth_error');
+      console.error('❌ [OAUTH-ERROR] Google OAuth error:', {
+        error: error,
+        host: req.get('host'),
+        referer: req.get('referer'),
+        userAgent: req.get('user-agent'),
+        timestamp: new Date().toISOString()
+      });
+      
+      // Provide specific error messages based on OAuth error types
+      let errorMessage = 'Authentication was cancelled or failed. Please try again.';
+      if (error === 'access_denied') {
+        errorMessage = 'Authentication was cancelled. You need to grant permission to continue.';
+      } else if (error === 'invalid_request') {
+        errorMessage = 'Authentication request was invalid. Please try again.';
+      }
+      
+      return res.redirect(`/auth?error=oauth_error&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
     }
     
     if (!code || !state) {
-      console.error('Missing authorization code or state');
-      return res.redirect('/auth?error=missing_params');
+      console.error('❌ [OAUTH-CALLBACK-ERROR] Missing authorization code or state:', {
+        hasCode: !!code,
+        hasState: !!state,
+        query: req.query,
+        host: req.get('host'),
+        timestamp: new Date().toISOString()
+      });
+      return res.redirect('/auth?error=missing_params&message=Authentication%20response%20incomplete.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     // Enhanced state parameter validation with detailed logging
@@ -240,7 +283,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         storeHasStates: stateStore.size > 0,
         allStates: Array.from(stateStore.keys()).map(k => k.substring(0, 10) + '...')
       });
-      return res.redirect('/auth?error=invalid_state');
+      return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     // Check state age (max 15 minutes) - Extended from 5 minutes
@@ -262,7 +305,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         expiredBy: Math.floor((fifteenMinutesAgo - stateData.timestamp) / 1000) + ' seconds'
       });
       stateStore.delete(state as string);
-      return res.redirect('/auth?error=expired_state');
+      return res.redirect('/auth?error=expired_state&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     console.log('✅ [STATE-VALIDATION] State validation successful');
@@ -326,8 +369,25 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Token exchange failed:', errorText);
-      return res.redirect('/auth?error=token_exchange_failed');
+      console.error('❌ [TOKEN-EXCHANGE-ERROR] Token exchange failed:', {
+        status: tokenResponse.status,
+        statusText: tokenResponse.statusText,
+        errorText: errorText,
+        host: req.get('host'),
+        redirectUri: redirectUri,
+        timestamp: new Date().toISOString()
+      });
+      
+      let errorMessage = 'Authentication failed during token exchange. Please try again.';
+      if (tokenResponse.status === 400) {
+        errorMessage = 'Invalid authentication request. Please try signing in again.';
+      } else if (tokenResponse.status === 401) {
+        errorMessage = 'Authentication expired. Please try signing in again.';
+      } else if (tokenResponse.status >= 500) {
+        errorMessage = 'Authentication service temporarily unavailable. Please try again later.';
+      }
+      
+      return res.redirect(`/auth?error=token_exchange_failed&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
     }
     
     const tokenData = await tokenResponse.json();
@@ -343,8 +403,21 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     });
     
     if (!userResponse.ok) {
-      console.error('Failed to fetch user info');
-      return res.redirect('/auth?error=user_info_failed');
+      console.error('❌ [USER-INFO-ERROR] Failed to fetch user info:', {
+        status: userResponse.status,
+        statusText: userResponse.statusText,
+        host: req.get('host'),
+        timestamp: new Date().toISOString()
+      });
+      
+      let errorMessage = 'Unable to retrieve your profile information. Please try again.';
+      if (userResponse.status === 401) {
+        errorMessage = 'Authentication token expired. Please try signing in again.';
+      } else if (userResponse.status === 403) {
+        errorMessage = 'Insufficient permissions to access profile. Please try signing in again.';
+      }
+      
+      return res.redirect(`/auth?error=user_info_failed&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
     }
     
     const googleUser = await userResponse.json();
@@ -523,8 +596,27 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
   } catch (error: any) {
-    console.error('❌ OAuth callback error:', error);
-    res.redirect(`/auth?error=callback_error&message=${encodeURIComponent(error.message)}`);
+    console.error('❌ [OAUTH-CALLBACK-CRITICAL] OAuth callback critical error:', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      host: req.get('host'),
+      userAgent: req.get('user-agent'),
+      referer: req.get('referer'),
+      timestamp: new Date().toISOString(),
+      query: req.query
+    });
+    
+    // Categorize critical errors
+    let userMessage = 'Authentication failed due to an unexpected error. Please try again.';
+    if (error.message?.includes('database') || error.message?.includes('storage')) {
+      userMessage = 'Unable to save your authentication. Please try again.';
+    } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+      userMessage = 'Network error during authentication. Please check your connection and try again.';
+    } else if (error.message?.includes('Google OAuth')) {
+      userMessage = 'Google authentication service error. Please try again later.';
+    }
+    
+    res.redirect(`/auth?error=callback_error&message=${encodeURIComponent(userMessage)}&canRetry=true&errorCode=OAUTH_CALLBACK_ERROR`);
   }
 }
 
@@ -550,7 +642,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     
     if (!code || typeof code !== 'string') {
       console.error('❌ [SESSION-ACCEPT] Missing or invalid exchange code');
-      return res.redirect('/auth?error=invalid_exchange_code');
+      return res.redirect('/auth?error=invalid_exchange_code&message=Authentication%20session%20code%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     // Look up session exchange data
@@ -562,7 +654,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
         storeSize: sessionExchangeStore.size,
         allCodes: Array.from(sessionExchangeStore.keys()).map(k => k.substring(0, 10) + '...')
       });
-      return res.redirect('/auth?error=exchange_code_not_found');
+      return res.redirect('/auth?error=exchange_code_not_found&message=Authentication%20session%20not%20found%20or%20already%20used.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     // Check exchange code age (max 5 minutes)
@@ -573,7 +665,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
         maxAge: '300 seconds (5 minutes)'
       });
       sessionExchangeStore.delete(code);
-      return res.redirect('/auth?error=exchange_code_expired');
+      return res.redirect('/auth?error=exchange_code_expired&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     // Validate that we're on the correct return host
@@ -583,7 +675,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
         expectedHost: exchangeData.returnHost,
         actualHost: currentHost
       });
-      return res.redirect('/auth?error=host_mismatch');
+      return res.redirect('/auth?error=host_mismatch&message=Authentication%20domain%20mismatch.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
     console.log('✅ [SESSION-ACCEPT] Exchange code valid, setting session cookie');
@@ -619,8 +711,23 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     return res.redirect(303, '/dashboard');
     
   } catch (error: any) {
-    console.error('❌ [SESSION-ACCEPT] Session acceptance error:', error);
-    res.redirect(`/auth?error=session_accept_error&message=${encodeURIComponent(error.message)}`);
+    console.error('❌ [SESSION-ACCEPT-ERROR] Session acceptance critical error:', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      host: req.get('host'),
+      userAgent: req.get('user-agent'),
+      timestamp: new Date().toISOString(),
+      query: req.query
+    });
+    
+    let userMessage = 'Failed to complete authentication session. Please try signing in again.';
+    if (error.message?.includes('cookie')) {
+      userMessage = 'Unable to set authentication cookie. Please enable cookies and try again.';
+    } else if (error.message?.includes('domain')) {
+      userMessage = 'Authentication domain error. Please try signing in again.';
+    }
+    
+    res.redirect(`/auth?error=session_accept_error&message=${encodeURIComponent(userMessage)}&canRetry=true&errorCode=SESSION_ACCEPT_ERROR`);
   }
 }
 
@@ -639,23 +746,72 @@ export async function checkSessionRoute(req: Request, res: Response) {
       'Surrogate-Control': 'no-store'
     });
     
-    // Debug logging for session validation
+    // Enhanced debug logging for session validation
     const requestHost = req.get('host');
-    console.log('🍪 Session Debug:', {
+    const sessionCookie = req.cookies?.brandentifier_session;
+    const allCookies = req.cookies || {};
+    const cookieHeader = req.get('cookie');
+    
+    console.log('🍪 [SESSION-DEBUG] Enhanced session validation debug:', {
       host: requestHost,
-      cookiePresent: !!req.cookies?.brandentifier_session,
-      cookieStart: req.cookies?.brandentifier_session ? req.cookies.brandentifier_session.substring(0, 20) + '...' : 'none',
-      userAgent: req.get('user-agent')?.substring(0, 50)
+      timestamp: new Date().toISOString(),
+      // Cookie analysis
+      cookiePresent: !!sessionCookie,
+      cookieStart: sessionCookie ? sessionCookie.substring(0, 10) + '...' : 'none',
+      cookieLength: sessionCookie ? sessionCookie.length : 0,
+      allCookiesCount: Object.keys(allCookies).length,
+      cookieNames: Object.keys(allCookies),
+      rawCookieHeader: cookieHeader ? cookieHeader.substring(0, 100) + '...' : 'none',
+      // Request context
+      userAgent: req.get('user-agent')?.substring(0, 50) || 'none',
+      origin: req.get('origin') || 'none',
+      referer: req.get('referer') || 'none',
+      // Security headers
+      secFetchSite: req.get('sec-fetch-site') || 'none',
+      secFetchMode: req.get('sec-fetch-mode') || 'none',
+      // Cross-domain analysis
+      isDevelopment: requestHost?.includes('localhost') || requestHost?.includes('127.0.0.1'),
+      isReplitDomain: REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(requestHost || '')),
+      isBrandentifierCom: requestHost?.includes('brandentifier.com')
     });
     
     // Check if JWT session cookie exists
     const sessionToken = req.cookies?.brandentifier_session;
     
     if (!sessionToken) {
-      console.log('❌ No session cookie found');
-      return res.status(401).json({
-        success: false,
-        error: 'No session found'
+      console.log('❌ [SESSION-DEBUG] No session cookie found - detailed analysis:', {
+        cookiePresent: !!sessionCookie,
+        cookieType: typeof sessionCookie,
+        allCookiesPresent: Object.keys(allCookies).length > 0,
+        cookieHeaderPresent: !!cookieHeader,
+        possibleCookieIssues: [
+          !cookieHeader ? 'No cookie header in request' : null,
+          cookieHeader && !sessionCookie ? 'Cookie header present but session cookie missing' : null,
+          sessionCookie && typeof sessionCookie !== 'string' ? 'Session cookie wrong type' : null
+        ].filter(Boolean),
+        suggestedFixes: [
+          'Check if cookies are enabled in browser',
+          'Verify cookie domain settings',
+          'Check if sameSite policy is blocking cookies',
+          'Ensure HTTPS is used for secure cookies'
+        ]
+      });
+      
+      return res.status(401).json({ 
+        success: false, 
+        error: 'No session found',
+        debug: {
+          cookieAnalysis: {
+            present: !!sessionCookie,
+            type: typeof sessionCookie,
+            allCookiesCount: Object.keys(allCookies).length
+          },
+          suggestions: [
+            'Clear browser cookies and try signing in again',
+            'Enable cookies in your browser settings',
+            'Try signing in from a different browser or incognito mode'
+          ]
+        }
       });
     }
     
