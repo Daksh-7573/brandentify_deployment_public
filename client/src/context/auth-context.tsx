@@ -158,9 +158,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       console.log('✅ Got OAuth URL, redirecting to Google...');
       
-      // Redirect to Google OAuth (will come back to our callback)
-      window.location.href = data.oauthUrl;
-      return; // Will redirect
+      // Open Google OAuth in popup window (required for security)
+      const popup = window.open(
+        data.oauthUrl,
+        'google-auth',
+        'width=500,height=600,left=' + 
+        (window.screen.width / 2 - 250) + 
+        ',top=' + (window.screen.height / 2 - 300) + 
+        ',scrollbars=yes,resizable=yes'
+      );
+      
+      if (!popup) {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+      
+      // Monitor the popup for completion
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          setIsLoading(false);
+          // Check for authentication success
+          window.location.reload(); // Refresh to check auth state
+        }
+      }, 1000);
+      
+      return;
       
     } catch (error: any) {
       console.error("[Auth Context] Google sign-in error:", {
