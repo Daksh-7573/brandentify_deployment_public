@@ -63,7 +63,7 @@ import { personalizedQuestAssignment } from "./services/personalized-quest-assig
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, getOAuthConfigStatusRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7291,6 +7291,7 @@ ${extractedText.substring(0, 5000)}
   
   app.get("/api/auth/session", checkSessionRoute);
   app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
+  app.get("/api/auth/oauth-config-status", getOAuthConfigStatusRoute); // OAuth configuration status and validation
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed

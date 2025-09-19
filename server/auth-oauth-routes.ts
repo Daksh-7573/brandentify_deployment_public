@@ -14,59 +14,259 @@ const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-// Get OAuth credentials from environment
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-2025';
+// Enhanced OAuth credential management with environment-specific validation
+interface OAuthCredentials {
+  clientId: string;
+  clientSecret: string;
+  environment: 'development' | 'production';
+  valid: boolean;
+  errors: string[];
+}
 
-// Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
-// Note: Dynamic Replit domains rely on brandentifier.replit.app + cross-domain handoff
-const ALLOWED_REDIRECT_URIS = [
-  'https://brandentifier.replit.app/api/auth/google/callback',
+/**
+ * Validate Google OAuth credential format and requirements
+ */
+function validateOAuthCredentials(clientId?: string, clientSecret?: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  // Client ID validation
+  if (!clientId) {
+    errors.push('GOOGLE_CLIENT_ID is required but not found in environment variables');
+  } else if (!clientId.endsWith('.apps.googleusercontent.com')) {
+    errors.push('GOOGLE_CLIENT_ID must end with .apps.googleusercontent.com');
+  } else if (clientId.length < 50) {
+    errors.push('GOOGLE_CLIENT_ID appears to be too short (should be ~72 characters)');
+  }
+  
+  // Client Secret validation
+  if (!clientSecret) {
+    errors.push('GOOGLE_CLIENT_SECRET is required but not found in environment variables');
+  } else if (clientSecret.length < 20) {
+    errors.push('GOOGLE_CLIENT_SECRET appears to be too short (should be ~24+ characters)');
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Determine environment and get appropriate OAuth credentials
+ */
+function getOAuthCredentials(): OAuthCredentials {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const environment = nodeEnv === 'production' ? 'production' : 'development';
+  
+  // Support environment-specific credentials for credential rotation
+  const envPrefix = environment === 'production' ? 'PROD_' : 'DEV_';
+  
+  // Try environment-specific credentials first, then fall back to general ones
+  const clientId = process.env[`${envPrefix}GOOGLE_CLIENT_ID`] || process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env[`${envPrefix}GOOGLE_CLIENT_SECRET`] || process.env.GOOGLE_CLIENT_SECRET;
+  
+  const validation = validateOAuthCredentials(clientId, clientSecret);
+  
+  console.log(`🔐 [OAUTH-CREDENTIALS] Environment: ${environment}`);
+  console.log(`🔐 [OAUTH-CREDENTIALS] Using credentials: ${envPrefix ? envPrefix + 'GOOGLE_CLIENT_*' : 'GOOGLE_CLIENT_*'}`);
+  console.log(`🔐 [OAUTH-CREDENTIALS] Validation: ${validation.valid ? '✅ VALID' : '❌ INVALID'}`);
+  
+  if (!validation.valid) {
+    console.error('❌ [OAUTH-CREDENTIALS] Validation errors:', validation.errors);
+  }
+  
+  return {
+    clientId: clientId || '',
+    clientSecret: clientSecret || '',
+    environment,
+    valid: validation.valid,
+    errors: validation.errors
+  };
+}
+
+// Get and validate OAuth credentials
+const oauthCredentials = getOAuthCredentials();
+const CLIENT_ID = oauthCredentials.clientId;
+const CLIENT_SECRET = oauthCredentials.clientSecret;
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const CSRF_SECRET = process.env.CSRF_SECRET || process.env.JWT_SECRET || 'brandentifier-csrf-secret-key-2025';
+
+// Log credential validation status
+if (!oauthCredentials.valid) {
+  console.error('❌ [OAUTH-INIT] OAuth credentials validation failed:');
+  oauthCredentials.errors.forEach(error => console.error(`   - ${error}`));
+}
+
+// Enhanced redirect URI whitelist with comprehensive Replit domain support
+// Covers all current and future Replit environments and domain patterns
+const STATIC_ALLOWED_REDIRECT_URIS = [
+  // Production domains
   'https://brandentifier.com/api/auth/google/callback',
+  'https://www.brandentifier.com/api/auth/google/callback',
+  
+  // Primary Replit published domain
+  'https://brandentifier.replit.app/api/auth/google/callback',
+  
+  // Development environments
   'http://localhost:5000/api/auth/google/callback',
-  'http://127.0.0.1:5000/api/auth/google/callback'
+  'http://localhost:3000/api/auth/google/callback',
+  'http://127.0.0.1:5000/api/auth/google/callback',
+  'http://127.0.0.1:3000/api/auth/google/callback',
+  
+  // Common Replit development patterns
+  'https://replit.com/api/auth/google/callback',
+  'https://replit.dev/api/auth/google/callback'
 ];
 
-// Improved domain pattern matching for Replit environments
+// Generate comprehensive Replit domain patterns for current and future support
+function generateDynamicRedirectUris(): string[] {
+  const dynamicUris: string[] = [];
+  
+  // Add common Replit app patterns that might be used
+  const commonReplitPatterns = [
+    'brandentifier-v2', 'brandentifier-staging', 'brandentifier-test',
+    'brandentifier-demo', 'brandentifier-beta', 'brandentifier-prod'
+  ];
+  
+  commonReplitPatterns.forEach(pattern => {
+    dynamicUris.push(`https://${pattern}.replit.app/api/auth/google/callback`);
+  });
+  
+  return dynamicUris;
+}
+
+// Combined allowed redirect URIs
+const ALLOWED_REDIRECT_URIS = [
+  ...STATIC_ALLOWED_REDIRECT_URIS,
+  ...generateDynamicRedirectUris()
+];
+
+console.log(`🔗 [REDIRECT-URIS] Total allowed redirect URIs: ${ALLOWED_REDIRECT_URIS.length}`);
+console.log(`🔗 [REDIRECT-URIS] Static URIs: ${STATIC_ALLOWED_REDIRECT_URIS.length}, Dynamic URIs: ${generateDynamicRedirectUris().length}`);
+
+// Comprehensive Replit domain pattern matching for all environments
 const REPLIT_DOMAIN_PATTERNS = [
+  // Published app domains
   /^[a-zA-Z0-9-]+\.replit\.app$/,                    // Published domains like brandentifier.replit.app
+  /^[a-zA-Z0-9-]+\.replit\.com$/,                    // Legacy replit.com domains
+  
+  // Preview and development domains
   /^[a-zA-Z0-9-]+\.replit\.dev$/,                    // Preview domains like simple.replit.dev
-  /^[a-f0-9-]+\.picard\.replit\.dev$/,               // Basic picard preview pattern
-  /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/ // Full picard subdomain pattern like 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+  /^[a-zA-Z0-9-]+\.repl\.co$/,                       // Legacy repl.co domains
+  
+  // Picard development environments (all variations)
+  /^[a-f0-9-]+\.picard\.replit\.dev$/,               // Basic picard pattern
+  /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/, // Full picard pattern
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}-\w+-\w+\.picard\.replit\.dev$/, // UUID-based picard
+  
+  // Workspace and team domains
+  /^[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\.replit\.app$/,      // Team workspace domains
+  /^[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\.replit\.dev$/,      // Team development domains
+  
+  // Additional Replit infrastructure patterns
+  /^[a-zA-Z0-9-]+\.replitusercontent\.com$/,         // User content domains
+  /^[a-zA-Z0-9-]+\.replit-cdn\.com$/,                // CDN domains
+  
+  // Future-proofing for new Replit domain patterns
+  /^[a-zA-Z0-9-]+\.replit\.[a-z]{2,4}$/,              // Generic replit TLD pattern
+  /^[a-zA-Z0-9-]+\.repl\.[a-z]{2,4}$/                 // Generic repl TLD pattern
 ];
 
 /**
- * Determine the correct redirect URI based on the requesting domain
- * Uses requesting domain if whitelisted, otherwise falls back to brandentifier.replit.app
+ * Check if a domain matches any Replit pattern
+ */
+function isReplitDomain(domain: string): boolean {
+  return REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(domain));
+}
+
+/**
+ * Enhanced domain classification for better environment detection
+ */
+function classifyDomain(domain: string): {
+  type: 'development' | 'production' | 'replit-published' | 'replit-preview' | 'unknown';
+  isReplit: boolean;
+  isTrusted: boolean;
+} {
+  const isDevelopment = domain.includes('localhost') || domain.includes('127.0.0.1');
+  const isReplitApp = domain.endsWith('.replit.app');
+  const isPicardDev = domain.includes('.picard.replit.dev');
+  const isReplitDev = domain.endsWith('.replit.dev');
+  const isBrandentifierCom = domain.includes('brandentifier.com');
+  const isReplit = isReplitDomain(domain);
+  
+  let type: 'development' | 'production' | 'replit-published' | 'replit-preview' | 'unknown';
+  let isTrusted = false;
+  
+  if (isDevelopment) {
+    type = 'development';
+    isTrusted = true;
+  } else if (isBrandentifierCom) {
+    type = 'production';
+    isTrusted = true;
+  } else if (isReplitApp) {
+    type = 'replit-published';
+    isTrusted = true;
+  } else if (isPicardDev || isReplitDev) {
+    type = 'replit-preview';
+    isTrusted = true;
+  } else {
+    type = 'unknown';
+    isTrusted = false;
+  }
+  
+  return { type, isReplit, isTrusted };
+}
+
+/**
+ * Enhanced redirect URI determination with comprehensive domain support
+ * Uses intelligent fallbacks and environment-aware URI selection
  */
 function getRedirectUriForHost(host: string): string {
-  const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
-  const isBrandentifierCom = host.includes('brandentifier.com');
-  const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+  const domainClassification = classifyDomain(host);
   
-  // Check if current domain has a whitelisted redirect URI
-  const potentialRedirectUri = isDevelopment 
+  // Construct potential redirect URI based on domain type
+  const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+  const potentialRedirectUri = isLocalhost 
     ? `http://${host}/api/auth/google/callback`
     : `https://${host}/api/auth/google/callback`;
   
+  console.log(`🔍 [REDIRECT-URI] Domain analysis:`, {
+    host,
+    classification: domainClassification,
+    potentialUri: potentialRedirectUri
+  });
+  
+  // Check static whitelist first
   if (ALLOWED_REDIRECT_URIS.includes(potentialRedirectUri)) {
-    console.log('✅ [REDIRECT-URI] Using current domain redirect URI (whitelisted):', potentialRedirectUri);
+    console.log('✅ [REDIRECT-URI] Using whitelisted redirect URI:', potentialRedirectUri);
     return potentialRedirectUri;
   }
   
-  // Domain-specific logic for non-whitelisted domains
-  if (isDevelopment) {
-    return 'http://localhost:5000/api/auth/google/callback';
-  } else if (isBrandentifierCom) {
-    return 'https://brandentifier.com/api/auth/google/callback';
-  } else if (isReplitDomain) {
-    console.log('⚠️ [REDIRECT-URI] Replit domain not whitelisted, using fallback:', host);
-    return 'https://brandentifier.replit.app/api/auth/google/callback';
-  } else {
-    console.log('⚠️ [REDIRECT-URI] Unknown domain, using fallback:', host);
-    return 'https://brandentifier.replit.app/api/auth/google/callback';
+  // Enhanced environment-specific fallback logic
+  switch (domainClassification.type) {
+    case 'development':
+      const devUri = isLocalhost ? potentialRedirectUri : 'http://localhost:5000/api/auth/google/callback';
+      console.log('🔧 [REDIRECT-URI] Development environment, using:', devUri);
+      return devUri;
+      
+    case 'production':
+      console.log('🏢 [REDIRECT-URI] Production environment, using brandentifier.com');
+      return 'https://brandentifier.com/api/auth/google/callback';
+      
+    case 'replit-published':
+      // For published Replit apps, try to use the specific domain if it looks safe
+      if (host.endsWith('.replit.app') && /^[a-zA-Z0-9-]+\.replit\.app$/.test(host)) {
+        console.log('📱 [REDIRECT-URI] Published Replit app, using domain-specific URI:', potentialRedirectUri);
+        return potentialRedirectUri;
+      }
+      console.log('📱 [REDIRECT-URI] Published Replit app, using primary fallback');
+      return 'https://brandentifier.replit.app/api/auth/google/callback';
+      
+    case 'replit-preview':
+      // For preview environments, always use primary published domain for security
+      console.log('🔍 [REDIRECT-URI] Replit preview environment, using primary fallback for security');
+      return 'https://brandentifier.replit.app/api/auth/google/callback';
+      
+    default:
+      console.warn('⚠️ [REDIRECT-URI] Unknown domain type, using secure fallback:', host);
+      return 'https://brandentifier.replit.app/api/auth/google/callback';
   }
 }
 
@@ -82,6 +282,115 @@ interface SessionExchangeData {
 }
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
+
+/**
+ * Comprehensive OAuth Configuration Validation at Server Startup
+ */
+function validateOAuthConfigurationAtStartup(): {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  summary: any;
+} {
+  const startupErrors: string[] = [];
+  const startupWarnings: string[] = [];
+  
+  console.log('🔍 [STARTUP-VALIDATION] Running comprehensive OAuth configuration validation...');
+  
+  // 1. Credential validation
+  if (!oauthCredentials.valid) {
+    startupErrors.push('OAuth credentials validation failed');
+    oauthCredentials.errors.forEach(error => startupErrors.push(`Credential Error: ${error}`));
+  }
+  
+  // 2. Environment configuration validation
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  if (nodeEnv === 'production' && !process.env.PROD_GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID) {
+    startupWarnings.push('Production environment detected but no production-specific OAuth credentials found');
+  }
+  
+  // 3. JWT Secret validation
+  if (!process.env.JWT_SECRET) {
+    startupWarnings.push('JWT_SECRET not set - using generated secret (sessions will not persist across restarts)');
+  }
+  
+  // 4. CSRF Secret validation
+  if (!process.env.CSRF_SECRET) {
+    startupWarnings.push('CSRF_SECRET not set - using fallback (consider setting for production)');
+  }
+  
+  // 5. Redirect URI coverage validation
+  const currentHost = process.env.REPLIT_SLUG ? `${process.env.REPLIT_SLUG}.replit.app` : 'localhost:5000';
+  const coverageCheck = getRedirectUriForHost(currentHost);
+  
+  // 6. Domain pattern coverage validation
+  const testDomains = [
+    'brandentifier.replit.app',
+    'test-app.replit.app', 
+    'abc123-def456-ghi789.picard.replit.dev',
+    'localhost:5000',
+    'brandentifier.com'
+  ];
+  
+  const uncoveredDomains = testDomains.filter(domain => {
+    const classification = classifyDomain(domain);
+    return !classification.isTrusted;
+  });
+  
+  if (uncoveredDomains.length > 0) {
+    startupWarnings.push(`Some test domains not properly classified: ${uncoveredDomains.join(', ')}`);
+  }
+  
+  // 7. Scope validation
+  const currentScopes = getOAuthScopes(oauthCredentials.environment);
+  const scopeValidation = validateOAuthScopes(currentScopes);
+  
+  if (!scopeValidation.valid) {
+    startupErrors.push('OAuth scope validation failed');
+    scopeValidation.errors.forEach(error => startupErrors.push(`Scope Error: ${error}`));
+  }
+  
+  startupWarnings.push(...scopeValidation.warnings);
+  
+  const summary = {
+    environment: oauthCredentials.environment,
+    credentialsValid: oauthCredentials.valid,
+    scopesValid: scopeValidation.valid,
+    redirectUriCount: ALLOWED_REDIRECT_URIS.length,
+    domainPatternCount: REPLIT_DOMAIN_PATTERNS.length,
+    currentHost,
+    nodeEnv,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    hasCsrfSecret: !!process.env.CSRF_SECRET,
+    hasProductionCredentials: !!(process.env.PROD_GOOGLE_CLIENT_ID || (nodeEnv === 'production' && process.env.GOOGLE_CLIENT_ID))
+  };
+  
+  const overallValid = startupErrors.length === 0;
+  
+  console.log('📊 [STARTUP-VALIDATION] OAuth Configuration Summary:', summary);
+  
+  if (overallValid) {
+    console.log('✅ [STARTUP-VALIDATION] OAuth configuration validation passed');
+  } else {
+    console.error('❌ [STARTUP-VALIDATION] OAuth configuration validation failed');
+    startupErrors.forEach(error => console.error(`   - ${error}`));
+  }
+  
+  if (startupWarnings.length > 0) {
+    console.warn('⚠️ [STARTUP-VALIDATION] OAuth configuration warnings:');
+    startupWarnings.forEach(warning => console.warn(`   - ${warning}`));
+  }
+  
+  return {
+    valid: overallValid,
+    errors: startupErrors,
+    warnings: startupWarnings,
+    summary
+  };
+}
+
+// Run startup validation
+const startupValidation = validateOAuthConfigurationAtStartup();
 
 // Clean up expired states and session exchange codes every 10 minutes
 setInterval(() => {
@@ -121,8 +430,117 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000);
 
-if (!CLIENT_ID || !CLIENT_SECRET) {
-  console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+// Enhanced OAuth scope configuration and validation
+interface OAuthScopeConfig {
+  scopes: string[];
+  description: string;
+  required: boolean;
+  purpose: string;
+}
+
+const OAUTH_SCOPE_DEFINITIONS: Record<string, OAuthScopeConfig> = {
+  'openid': {
+    scopes: ['openid'],
+    description: 'Required for OpenID Connect authentication',
+    required: true,
+    purpose: 'Enables secure identity verification'
+  },
+  'email': {
+    scopes: ['email'],
+    description: 'Access to user email address',
+    required: true,
+    purpose: 'User identification and account linking'
+  },
+  'profile': {
+    scopes: ['profile'],
+    description: 'Access to basic profile information (name, photo)',
+    required: true,
+    purpose: 'User profile display and personalization'
+  }
+};
+
+/**
+ * Get optimal OAuth scopes based on environment and requirements
+ */
+function getOAuthScopes(environment: 'development' | 'production' = 'production'): string {
+  // Base required scopes for minimal security footprint
+  const requiredScopes = Object.values(OAUTH_SCOPE_DEFINITIONS)
+    .filter(config => config.required)
+    .flatMap(config => config.scopes);
+  
+  console.log(`🔒 [OAUTH-SCOPES] Environment: ${environment}`);
+  console.log(`🔒 [OAUTH-SCOPES] Required scopes: ${requiredScopes.join(', ')}`);
+  
+  // Return minimal required scopes for security
+  return requiredScopes.join(' ');
+}
+
+/**
+ * Validate OAuth scope configuration
+ */
+function validateOAuthScopes(requestedScopes: string): { valid: boolean; errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const scopeArray = requestedScopes.split(' ').filter(s => s.trim());
+  
+  // Check for required scopes
+  const requiredScopes = Object.values(OAUTH_SCOPE_DEFINITIONS)
+    .filter(config => config.required)
+    .flatMap(config => config.scopes);
+  
+  for (const requiredScope of requiredScopes) {
+    if (!scopeArray.includes(requiredScope)) {
+      errors.push(`Missing required OAuth scope: ${requiredScope}`);
+    }
+  }
+  
+  // Check for unknown scopes
+  const knownScopes = Object.values(OAUTH_SCOPE_DEFINITIONS).flatMap(config => config.scopes);
+  for (const scope of scopeArray) {
+    if (!knownScopes.includes(scope)) {
+      warnings.push(`Unknown OAuth scope: ${scope} (may be valid but not documented)`);
+    }
+  }
+  
+  // Security recommendation: minimal scopes
+  if (scopeArray.length > 4) {
+    warnings.push(`Consider reducing OAuth scopes for better security. Currently requesting: ${scopeArray.length} scopes`);
+  }
+  
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+// Log comprehensive OAuth configuration validation status
+if (!oauthCredentials.valid) {
+  console.error('❌ [OAUTH-INIT] OAuth credentials validation failed:');
+  oauthCredentials.errors.forEach(error => console.error(`   - ${error}`));
+  
+  // Add helpful setup instructions
+  console.error('❌ [OAUTH-INIT] Setup Instructions:');
+  console.error('   1. Go to Google Cloud Console: https://console.cloud.google.com/');
+  console.error('   2. Create or select a project');
+  console.error('   3. Enable Google+ API and Google OAuth2 API');
+  console.error('   4. Create OAuth 2.0 credentials');
+  console.error('   5. Add authorized redirect URIs');
+  console.error('   6. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables');
+} else {
+  console.log('✅ [OAUTH-INIT] OAuth credentials validation successful');
+  
+  // Validate OAuth scopes
+  const currentScopes = getOAuthScopes(oauthCredentials.environment);
+  const scopeValidation = validateOAuthScopes(currentScopes);
+  
+  if (!scopeValidation.valid) {
+    console.error('❌ [OAUTH-SCOPES] OAuth scope validation failed:');
+    scopeValidation.errors.forEach(error => console.error(`   - ${error}`));
+  }
+  
+  if (scopeValidation.warnings.length > 0) {
+    console.warn('⚠️ [OAUTH-SCOPES] OAuth scope warnings:');
+    scopeValidation.warnings.forEach(warning => console.warn(`   - ${warning}`));
+  }
+  
+  console.log('✅ [OAUTH-SCOPES] Current OAuth scopes:', currentScopes);
 }
 
 /**
@@ -388,6 +806,61 @@ function getSecureCookieOptions(host: string, isHttps: boolean) {
 }
 
 /**
+ * Get OAuth configuration status for debugging and monitoring
+ */
+export async function getOAuthConfigStatusRoute(req: Request, res: Response) {
+  try {
+    console.log('📊 [CONFIG-STATUS] OAuth configuration status requested');
+    
+    // Run fresh validation
+    const currentValidation = validateOAuthConfigurationAtStartup();
+    
+    const configStatus = {
+      timestamp: new Date().toISOString(),
+      requestingHost: req.get('host'),
+      validation: currentValidation,
+      environment: oauthCredentials.environment,
+      credentials: {
+        clientIdExists: !!CLIENT_ID,
+        clientIdFormat: CLIENT_ID ? (CLIENT_ID.endsWith('.apps.googleusercontent.com') ? 'valid' : 'invalid') : 'missing',
+        clientSecretExists: !!CLIENT_SECRET,
+        jwtSecretExists: !!process.env.JWT_SECRET,
+        csrfSecretExists: !!process.env.CSRF_SECRET
+      },
+      redirectUris: {
+        total: ALLOWED_REDIRECT_URIS.length,
+        static: STATIC_ALLOWED_REDIRECT_URIS.length,
+        dynamic: generateDynamicRedirectUris().length,
+        currentHostUri: getRedirectUriForHost(req.get('host') || 'localhost:5000')
+      },
+      domainSupport: {
+        totalPatterns: REPLIT_DOMAIN_PATTERNS.length,
+        currentHostClassification: classifyDomain(req.get('host') || 'localhost:5000'),
+        isReplitDomain: isReplitDomain(req.get('host') || 'localhost:5000')
+      },
+      scopes: {
+        current: getOAuthScopes(oauthCredentials.environment),
+        definitions: OAUTH_SCOPE_DEFINITIONS
+      }
+    };
+    
+    res.json({
+      success: true,
+      status: 'OAuth configuration retrieved successfully',
+      config: configStatus
+    });
+    
+  } catch (error: any) {
+    console.error('❌ [CONFIG-STATUS] Error retrieving OAuth config status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve OAuth configuration status',
+      message: error.message
+    });
+  }
+}
+
+/**
  * Generate Google OAuth URL - avoids Firebase routing issues
  */
 export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
@@ -447,7 +920,7 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       client_id: CLIENT_ID,
       redirect_uri: redirectUri,
       response_type: 'code',
-      scope: 'openid email profile',
+      scope: getOAuthScopes(oauthCredentials.environment),
       access_type: 'online',
       prompt: 'select_account',
       state: state
