@@ -61,8 +61,8 @@ export default function BrandQuestsPage() {
       
       <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
-        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
-        <div className="flex-1 max-w-4xl">
+        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6 w-full">
+        <div className="flex-1 max-w-4xl mx-auto">
           <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Brand Quests</h1>
@@ -92,7 +92,7 @@ export default function BrandQuestsPage() {
             )}
           </NeoGlassSection>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
             {/* Main content - Quests */}
             <div className="lg:col-span-2 order-2 lg:order-1">
               {/* Quests Panel */}
