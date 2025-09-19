@@ -1,5 +1,108 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// localStorage keys for auth tokens (matching auth-context.tsx)
+const STORAGE_KEYS = {
+  JWT_TOKEN: 'brandentifier_jwt_token',
+  CSRF_TOKEN: 'brandentifier_csrf_token',
+  AUTH_METHOD: 'brandentifier_auth_method'
+};
+
+// Authentication utilities
+const getAuthToken = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.JWT_TOKEN);
+  } catch (error) {
+    console.warn('[API Client] Error accessing localStorage for auth token:', error);
+    return null;
+  }
+};
+
+const getCSRFToken = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.CSRF_TOKEN);
+  } catch (error) {
+    console.warn('[API Client] Error accessing localStorage for CSRF token:', error);
+    return null;
+  }
+};
+
+const getAuthMethod = (): 'cookie' | 'localStorage' | 'none' => {
+  try {
+    const method = localStorage.getItem(STORAGE_KEYS.AUTH_METHOD);
+    return method as 'cookie' | 'localStorage' | 'none' || 'none';
+  } catch (error) {
+    return 'none';
+  }
+};
+
+// Token refresh function
+const attemptTokenRefresh = async (): Promise<boolean> => {
+  console.log('🔄 [API Client] Attempting token refresh');
+  
+  try {
+    const currentToken = getAuthToken();
+    const csrfToken = getCSRFToken();
+    
+    const response = await fetch('/api/auth/refresh-token', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(currentToken && { 'Authorization': `Bearer ${currentToken}` }),
+        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.success && data.token) {
+        // Store new token
+        localStorage.setItem(STORAGE_KEYS.JWT_TOKEN, data.token);
+        
+        if (data.user) {
+          localStorage.setItem('brandentifier_user_data', JSON.stringify(data.user));
+        }
+        
+        console.log('✅ [API Client] Token refresh successful');
+        return true;
+      }
+    }
+    
+    console.warn('❌ [API Client] Token refresh failed');
+    return false;
+    
+  } catch (error) {
+    console.error('[API Client] Token refresh error:', error);
+    return false;
+  }
+};
+
+// Enhanced header generation
+const generateAuthHeaders = (): Record<string, string> => {
+  const headers: Record<string, string> = {};
+  const authMethod = getAuthMethod();
+  
+  // For localStorage authentication, add Bearer token and CSRF protection
+  if (authMethod === 'localStorage') {
+    const token = getAuthToken();
+    const csrfToken = getCSRFToken();
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('🔑 [API Client] Added Bearer token to request');
+    }
+    
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+      console.log('🛡️ [API Client] Added CSRF token to request');
+    }
+  }
+  
+  // Cookie authentication is handled automatically via credentials: 'include'
+  return headers;
+};
+
 /**
  * Utility function to check response and throw error with better formatting
  */
@@ -137,9 +240,15 @@ export async function apiRequest(
       const isFormData = data instanceof FormData;
       
       // Setup headers and body based on content type
+      const baseHeaders = !isFormData && data ? { "Content-Type": "application/json" } : {};
+      const authHeaders = generateAuthHeaders();
+      
       const requestOptions: RequestInit = {
         method: method,
-        headers: !isFormData && data ? { "Content-Type": "application/json" } : {},
+        headers: {
+          ...baseHeaders,
+          ...authHeaders
+        },
         body: isFormData ? (data as FormData) : 
               data ? JSON.stringify(data) : 
               undefined,
@@ -172,6 +281,37 @@ export async function apiRequest(
       
       // Handle response status codes
       if (!res.ok) {
+        // Handle 401 Unauthorized - attempt token refresh for localStorage auth
+        if (res.status === 401 && getAuthMethod() === 'localStorage') {
+          console.log('🔑 [API Client] 401 detected with localStorage auth, attempting token refresh');
+          
+          const refreshSuccess = await attemptTokenRefresh();
+          
+          if (refreshSuccess && attempt === 0) {
+            console.log('✅ [API Client] Token refreshed, retrying request');
+            attempt++;
+            continue; // Retry the request with new token
+          } else {
+            console.warn('❌ [API Client] Token refresh failed or max retries reached');
+            // Clear tokens and redirect to auth
+            try {
+              localStorage.removeItem(STORAGE_KEYS.JWT_TOKEN);
+              localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+              localStorage.removeItem(STORAGE_KEYS.AUTH_METHOD);
+            } catch (error) {
+              console.warn('[API Client] Error clearing tokens:', error);
+            }
+            
+            // Only redirect for protected routes, not public endpoints
+            if (!url.includes('/api/auth/') && !url.includes('/api/demo') && !url.includes('/api/brands-of-the-day')) {
+              console.log('🔄 [API Client] Redirecting to auth due to authentication failure');
+              setTimeout(() => {
+                window.location.href = '/auth';
+              }, 100);
+            }
+          }
+        }
+        
         // Log error details for debugging
         console.warn(`API request failed: ${method} ${url} - Status: ${res.status}`);
         
@@ -325,12 +465,16 @@ export const getQueryFn = <T>(options: {
       }, 10000) : null; // 10 second timeout
       
       try {
+        // Generate authentication headers for query requests
+        const authHeaders = generateAuthHeaders();
+        
         const res = await fetch(fetchUrl, {
           credentials: "include",
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
+            'Expires': '0',
+            ...authHeaders
           },
           signal: controller.signal
         });
@@ -340,9 +484,69 @@ export const getQueryFn = <T>(options: {
           clearTimeout(timeoutId);
         }
 
-        // Special handling for auth errors
+        // Enhanced handling for auth errors with token refresh
         if (res.status === 401) {
           console.warn("Unauthorized request to", queryKey[0]);
+          
+          // Attempt token refresh for localStorage auth
+          if (getAuthMethod() === 'localStorage') {
+            console.log('🔄 [Query Client] Attempting token refresh for 401 response');
+            
+            const refreshSuccess = await attemptTokenRefresh();
+            
+            if (refreshSuccess) {
+              console.log('✅ [Query Client] Token refreshed, retrying query');
+              
+              // Retry the request with new token
+              const retryAuthHeaders = generateAuthHeaders();
+              const retryRes = await fetch(fetchUrl, {
+                credentials: "include",
+                headers: {
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache',
+                  'Expires': '0',
+                  ...retryAuthHeaders
+                },
+                signal: controller.signal
+              });
+              
+              if (retryRes.ok) {
+                console.log('✅ [Query Client] Query retry successful after token refresh');
+                
+                // Handle successful response
+                if (retryRes.status === 204 || retryRes.headers.get('content-length') === '0') {
+                  if (url.includes('/projects') || url.includes('/experiences') || url.includes('/educations') || url.includes('/skills') || url.includes('/services')) {
+                    return [] as unknown as T;
+                  }
+                  return null as unknown as T;
+                }
+                
+                const retryData = await retryRes.json();
+                return retryData as T;
+              } else {
+                console.warn('❌ [Query Client] Query retry failed after token refresh');
+              }
+            } else {
+              console.warn('❌ [Query Client] Token refresh failed for query');
+              // Clear tokens and redirect to auth for protected routes
+              try {
+                localStorage.removeItem(STORAGE_KEYS.JWT_TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.CSRF_TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.AUTH_METHOD);
+              } catch (error) {
+                console.warn('[Query Client] Error clearing tokens:', error);
+              }
+              
+              // Only redirect for protected routes
+              if (!url.includes('/api/auth/') && !url.includes('/api/demo') && !url.includes('/api/brands-of-the-day')) {
+                setTimeout(() => {
+                  window.location.href = '/auth';
+                }, 100);
+              }
+            }
+          }
+          
+          // Handle based on behavior setting
           if (unauthorizedBehavior === "returnNull") {
             return null as unknown as T;
           }

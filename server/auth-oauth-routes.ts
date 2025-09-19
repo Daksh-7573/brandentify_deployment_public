@@ -18,6 +18,7 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-2025';
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 // Note: Dynamic Replit domains rely on brandentifier.replit.app + cross-domain handoff
@@ -149,6 +150,173 @@ function canonicalizeHost(host: string): string {
   }
   
   return canonicalHost;
+}
+
+/**
+ * Generate CSRF token for localStorage authentication
+ */
+function generateCSRFToken(userId?: number): string {
+  const tokenId = crypto.randomBytes(32).toString('hex');
+  const timestamp = Date.now();
+  
+  const csrfData = {
+    tokenId,
+    userId,
+    timestamp,
+    nonce: crypto.randomBytes(16).toString('hex')
+  };
+  
+  // Sign the CSRF data to prevent tampering
+  const signedToken = jwt.sign(csrfData, CSRF_SECRET, { 
+    algorithm: 'HS256',
+    expiresIn: '1h'  // CSRF tokens expire in 1 hour
+  });
+  
+  console.log(`🛡️ [CSRF-OAUTH] Generated CSRF token for user ${userId || 'anonymous'}`);
+  return signedToken;
+}
+
+/**
+ * Send hybrid authentication response with both cookie and localStorage token
+ * Returns HTML page that sets up localStorage auth and redirects to dashboard
+ */
+function sendHybridAuthResponse(res: Response, sessionToken: string, userOrId: any) {
+  const userId = typeof userOrId === 'object' ? userOrId.id : userOrId;
+  const csrfToken = generateCSRFToken(userId);
+  
+  console.log('🔄 [HYBRID-AUTH] Setting up hybrid authentication response');
+  
+  const hybridAuthHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Brandentifier - Authentication Setup</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .auth-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            font-size: 18px;
+            margin-bottom: 0.5rem;
+        }
+        .sub-message {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="spinner"></div>
+        <div class="message">Setting up your account...</div>
+        <div class="sub-message">Configuring cross-domain authentication</div>
+    </div>
+    
+    <script>
+        console.log('🚀 [HYBRID-AUTH] Initializing hybrid authentication setup');
+        
+        try {
+            // Store JWT token in localStorage for cross-domain compatibility
+            const token = '${sessionToken}';
+            const csrfToken = '${csrfToken}';
+            const userData = ${JSON.stringify(typeof userOrId === 'object' ? {
+              id: userOrId.id,
+              email: userOrId.email,
+              name: userOrId.name,
+              photoURL: userOrId.photoURL,
+              username: userOrId.username
+            } : { id: userOrId })};
+            
+            // Storage keys (matching auth-context.tsx)
+            const STORAGE_KEYS = {
+                JWT_TOKEN: 'brandentifier_jwt_token',
+                USER_DATA: 'brandentifier_user_data',
+                CSRF_TOKEN: 'brandentifier_csrf_token',
+                AUTH_METHOD: 'brandentifier_auth_method',
+                TOKEN_EXPIRY: 'brandentifier_token_expiry'
+            };
+            
+            // Store authentication data in localStorage
+            localStorage.setItem(STORAGE_KEYS.JWT_TOKEN, token);
+            localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+            localStorage.setItem(STORAGE_KEYS.CSRF_TOKEN, csrfToken);
+            localStorage.setItem(STORAGE_KEYS.AUTH_METHOD, 'localStorage');
+            
+            // Store token expiry for easy checking
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                localStorage.setItem(STORAGE_KEYS.TOKEN_EXPIRY, payload.exp.toString());
+            } catch (error) {
+                console.warn('[HYBRID-AUTH] Error parsing token for expiry storage:', error);
+            }
+            
+            console.log('✅ [HYBRID-AUTH] Authentication data stored successfully');
+            console.log('🔄 [HYBRID-AUTH] Redirecting to dashboard');
+            
+            // Broadcast storage event for cross-tab sync
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: STORAGE_KEYS.JWT_TOKEN,
+                newValue: token,
+                storageArea: localStorage
+            }));
+            
+            // Redirect to dashboard after successful setup
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000);
+            
+        } catch (error) {
+            console.error('❌ [HYBRID-AUTH] Error setting up authentication:', error);
+            
+            // Fallback redirect even if localStorage setup fails
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>`;
+  
+  res.set({
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    'X-Auth-Method': 'hybrid',
+    'X-CSRF-Token': csrfToken
+  });
+  
+  console.log('📤 [HYBRID-AUTH] Sending hybrid authentication response');
+  return res.send(hybridAuthHtml);
 }
 
 /**
@@ -615,7 +783,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       
       return res.redirect(303, sessionAcceptUrl);
     } else {
-      // Same domain - set cookie directly and redirect to dashboard
+      // Same domain - set cookie and provide token for localStorage (hybrid auth)
       const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
       
       // SECURITY FIX: Use secure cookie options with host-only setting
@@ -631,8 +799,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
       
-      console.log('✅ [SESSION-HANDOFF] Same domain redirect to dashboard');
-      return res.redirect(303, '/dashboard');
+      console.log('✅ [SESSION-HANDOFF] Same domain hybrid auth setup (cookie + localStorage)');
+      return sendHybridAuthResponse(res, sessionToken, user);
     }
     
   } catch (error: any) {
@@ -874,8 +1042,9 @@ export async function acceptSessionRoute(req: Request, res: Response) {
       remainingCodes: sessionExchangeStore.size
     });
     
-    // Redirect to dashboard on the correct domain
-    return res.redirect(303, '/dashboard');
+    // Hybrid auth setup (cookie + localStorage) and redirect to dashboard
+    console.log('✅ [SESSION-ACCEPT] Setting up hybrid authentication (cookie + localStorage)');
+    return sendHybridAuthResponse(res, exchangeData.sessionToken, exchangeData.userId);
     
   } catch (error: any) {
     console.error('❌ [SESSION-ACCEPT] Unexpected session acceptance error:', {
@@ -981,9 +1150,14 @@ export async function checkSessionRoute(req: Request, res: Response) {
       };
       
       console.log('✅ Session valid, returning user data');
+      
+      // Include CSRF token for localStorage auth requests
+      const csrfToken = generateCSRFToken(user.id);
+      
       return res.json({
         success: true,
-        user: clientUser
+        user: clientUser,
+        csrfToken: csrfToken
       });
       
     } catch (jwtError) {
