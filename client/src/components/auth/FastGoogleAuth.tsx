@@ -10,7 +10,6 @@ export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Force browser cache refresh with timestamp
   const handleGoogleAuth = async () => {
     setIsLoading(true);
     
@@ -18,15 +17,10 @@ export function FastGoogleAuth() {
       console.log('🔄 Starting Google authentication...');
       console.log('🚀 Using custom OAuth flow for all domains');
       
-      // Get OAuth URL from our server with cache-busting
-      const response = await fetch(`/api/auth/google/url?t=${Date.now()}`, {
+      // Get OAuth URL from our server
+      const response = await fetch('/api/auth/google/url', {
         method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
       
       if (!response.ok) {
@@ -67,25 +61,11 @@ export function FastGoogleAuth() {
   };
 
   return (
-    <button
+    <Button
       onClick={handleGoogleAuth}
       disabled={isLoading}
-      className="w-full h-12 flex items-center justify-center gap-3 px-4 py-2 text-base font-medium rounded-lg border shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ 
-        backgroundColor: 'white', 
-        color: '#1f2937',
-        borderColor: '#d1d5db'
-      }}
-      onMouseEnter={(e) => {
-        if (!isLoading) {
-          e.currentTarget.style.backgroundColor = '#f9fafb';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isLoading) {
-          e.currentTarget.style.backgroundColor = 'white';
-        }
-      }}
+      className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
+      size="lg"
     >
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
@@ -101,6 +81,6 @@ export function FastGoogleAuth() {
           Continue with Google
         </>
       )}
-    </button>
+    </Button>
   );
 }

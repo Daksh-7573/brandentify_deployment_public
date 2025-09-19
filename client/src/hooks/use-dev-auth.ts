@@ -17,12 +17,6 @@ export function useDevAuth() {
   
   // Check authentication state on mount
   useEffect(() => {
-    if (!firebaseAuth) {
-      // Firebase is disabled - return early
-      setIsAuthenticated(false);
-      return () => {};
-    }
-    
     const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
       if (user) {
         setIsAuthenticated(true);
@@ -64,11 +58,6 @@ export function useDevAuth() {
       localStorage.setItem('dev_auth_redirect', 'true');
       localStorage.setItem('dev_auth_time', Date.now().toString());
       
-      // Check if Firebase auth is available
-      if (!firebaseAuth) {
-        throw new Error('Firebase authentication is disabled');
-      }
-      
       // Start redirect flow
       await signInWithRedirect(firebaseAuth, freshProvider);
       
@@ -91,20 +80,8 @@ export function useDevAuth() {
     try {
       setIsLoading(true);
       
-      // Check if Firebase auth is available
-      if (!firebaseAuth) {
-        // Firebase is disabled - simulate sign out
-        setIsAuthenticated(false);
-        setLocation('/');
-        toast({
-          title: "Signed out",
-          description: "You have been signed out successfully."
-        });
-        return;
-      }
-      
       // Sign out from Firebase
-      // Note: firebaseAuth is null when Firebase is disabled
+      await firebaseAuth.signOut();
       
       // Clear any storage items
       localStorage.removeItem('dev_auth_redirect');
