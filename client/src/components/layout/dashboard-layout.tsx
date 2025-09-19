@@ -47,7 +47,7 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pt-16 relative z-10"> {/* Padding-top for fixed header */}
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-transparent">
-          <div className="min-h-screen">
+          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-screen">
             {children}
           </div>
         </main>
