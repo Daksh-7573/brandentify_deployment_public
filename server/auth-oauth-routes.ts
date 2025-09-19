@@ -499,12 +499,12 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       return res.redirect(303, sessionAcceptUrl);
     } else {
       // Same domain - set cookie directly and redirect to dashboard
-      const isProduction = currentHost.includes('replit.app');
+      const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
       
       const cookieOptions = {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax' as const,
+        secure: isSecure,
+        sameSite: isSecure ? 'none' as const : 'lax' as const, // Use 'none' for cross-domain compatibility
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
@@ -591,13 +591,13 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     // Remove used exchange code (single-use)
     sessionExchangeStore.delete(code);
     
-    // Set session cookie on the correct domain
-    const isProduction = currentHost.includes('replit.app') || currentHost.includes('replit.dev');
+    // Set session cookie on the correct domain with cross-domain compatibility
+    const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
     
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax' as const,
+      secure: isSecure,
+      sameSite: isSecure ? 'none' as const : 'lax' as const, // Use 'none' for cross-domain compatibility
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
