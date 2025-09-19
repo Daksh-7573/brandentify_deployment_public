@@ -82,7 +82,6 @@ const EmailVerification = lazy(() => import("@/pages/email-verification"));
 const NavigationTest = lazy(() => import("@/pages/navigation-test"));
 const URLInputDemo = lazy(() => import("@/pages/url-input-demo"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
-const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
 
 
@@ -239,14 +238,6 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/auth-testing-comprehensive" component={() => {
-        const AuthTestingComprehensive = lazy(() => import("@/pages/auth-testing-comprehensive"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthTestingComprehensive />
-          </Suspense>
-        );
-      }} />
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
         return (
@@ -301,7 +292,6 @@ function Router() {
       {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
       {adminLoaded && (
         <>
-          <Route path="/login" component={() => <PageRedirect to="/auth" />} />
           <Route path="/auth-status" component={AuthStatusPage} />
           <Route path="/dev-login" component={DevLoginPage} />
           <Route path="/simple-login" component={SimpleLoginPage} />
