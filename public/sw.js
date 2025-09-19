@@ -1,5 +1,5 @@
 // Service Worker for App Shell Caching
-const CACHE_NAME = 'brandentifier-shell-v2'; // Force cache refresh
+const CACHE_NAME = 'brandentifier-shell-v8'; // Force complete cache refresh for cross-domain fix
 const SHELL_FILES = [];
 
 // Install event - skip caching to fix frontend
@@ -20,10 +20,9 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
+          // Delete ALL old caches to force fresh assets
+          console.log('[SW] Deleting old cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
     }).then(() => {

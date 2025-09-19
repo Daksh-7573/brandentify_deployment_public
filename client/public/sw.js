@@ -1,9 +1,9 @@
 // Enhanced Service Worker v7 - COMPLETE API CACHING BYPASS FIX  
-const SW_VERSION = 'v7'; // Bumped version to force API cache bypass activation
-const CACHE_NAME = 'brandentifier-v7';
-const STATIC_CACHE_NAME = 'brandentifier-static-v7';
-const API_CACHE_NAME = 'brandentifier-api-v7';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v7';
+const SW_VERSION = 'v8'; // Force complete cache refresh for cross-domain fix
+const CACHE_NAME = 'brandentifier-v8';
+const STATIC_CACHE_NAME = 'brandentifier-static-v8';
+const API_CACHE_NAME = 'brandentifier-api-v8';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v8';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -64,8 +64,8 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v7')) {
-              console.log('[SW v7] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v8')) {
+              console.log('[SW v8] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
