@@ -20,6 +20,7 @@ const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
+// Note: Dynamic Replit domains rely on brandentifier.replit.app + cross-domain handoff
 const ALLOWED_REDIRECT_URIS = [
   'https://brandentifier.replit.app/api/auth/google/callback',
   'https://brandentifier.com/api/auth/google/callback',
@@ -34,6 +35,39 @@ const REPLIT_DOMAIN_PATTERNS = [
   /^[a-f0-9-]+\.picard\.replit\.dev$/,               // Basic picard preview pattern
   /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/ // Full picard subdomain pattern like 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
 ];
+
+/**
+ * Determine the correct redirect URI based on the requesting domain
+ * Uses requesting domain if whitelisted, otherwise falls back to brandentifier.replit.app
+ */
+function getRedirectUriForHost(host: string): string {
+  const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+  const isBrandentifierCom = host.includes('brandentifier.com');
+  const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+  
+  // Check if current domain has a whitelisted redirect URI
+  const potentialRedirectUri = isDevelopment 
+    ? `http://${host}/api/auth/google/callback`
+    : `https://${host}/api/auth/google/callback`;
+  
+  if (ALLOWED_REDIRECT_URIS.includes(potentialRedirectUri)) {
+    console.log('✅ [REDIRECT-URI] Using current domain redirect URI (whitelisted):', potentialRedirectUri);
+    return potentialRedirectUri;
+  }
+  
+  // Domain-specific logic for non-whitelisted domains
+  if (isDevelopment) {
+    return 'http://localhost:5000/api/auth/google/callback';
+  } else if (isBrandentifierCom) {
+    return 'https://brandentifier.com/api/auth/google/callback';
+  } else if (isReplitDomain) {
+    console.log('⚠️ [REDIRECT-URI] Replit domain not whitelisted, using fallback:', host);
+    return 'https://brandentifier.replit.app/api/auth/google/callback';
+  } else {
+    console.log('⚠️ [REDIRECT-URI] Unknown domain, using fallback:', host);
+    return 'https://brandentifier.replit.app/api/auth/google/callback';
+  }
+}
 
 // In-memory state storage (in production, use Redis or database)
 const stateStore = new Map<string, { timestamp: number, ip: string }>();
@@ -115,24 +149,9 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
-    // Store original host in state for post-auth redirect
-    let redirectUri;
-    let returnHost = host;
-    
-    if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/api/auth/google/callback';
-    } else if (isBrandentifierCom) {
-      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
-    } else if (isReplitDomain) {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-    } else {
-      // Fallback for unknown domains
-      console.log('⚠️ [OAUTH-URL] Unknown domain, using fallback redirect URI');
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-    }
+    // Use requesting domain as redirect URI when whitelisted, otherwise fallback
+    const redirectUri = getRedirectUriForHost(host);
+    const returnHost = host;
     
     console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
@@ -188,15 +207,8 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
   try {
     console.log('🔄 [OAUTH CALLBACK] Processing Google OAuth callback');
-    console.log('🔄 [OAUTH CALLBACK] Query params:', req.query);
-    console.log('🔄 [OAUTH CALLBACK] Request URL:', req.url);
+    console.log('🔄 [OAUTH CALLBACK] Request initiated from host:', req.get('host'));
     console.log('🔄 [OAUTH CALLBACK] Request method:', req.method);
-    console.log('🔄 [OAUTH CALLBACK] Request headers:', {
-      host: req.get('host'),
-      'user-agent': req.get('user-agent'),
-      referer: req.get('referer'),
-      origin: req.get('origin')
-    });
     
     // Set cache control headers for auth callback endpoint
     res.set({
@@ -288,22 +300,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
-    let redirectUri;
-    
-    if (isDevelopment) {
-      redirectUri = 'http://localhost:5000/api/auth/google/callback';
-    } else if (isBrandentifierCom) {
-      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
-    } else if (isReplitDomain) {
-      // Use published domain as static redirect URI for all Replit domains
-      // This works for both *.replit.dev and *.replit.app including picard.replit.dev
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-    } else {
-      // Fallback for unknown domains
-      console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using fallback redirect URI');
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-    }
+    // Use requesting domain as redirect URI when whitelisted, otherwise fallback (must match URL generation)
+    const redirectUri = getRedirectUriForHost(host);
     
     console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
     console.log('✅ [OAUTH CALLBACK] Using redirect URI:', redirectUri);
@@ -348,11 +346,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
     const googleUser = await userResponse.json();
-    console.log('✅ User info received:', {
-      email: googleUser.email,
-      name: googleUser.name,
-      id: googleUser.id
-    });
+    console.log('✅ User info received from Google OAuth');
     
     // Create or update user in our database
     const userData = {
@@ -366,7 +360,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     };
     
     console.log('📡 Saving user to database...');
-    console.log('🔍 [AUTH-FIX] Looking up user by Google ID first:', userData.googleId);
+    console.log('🔍 [AUTH-FIX] Looking up existing user by Google ID');
     
     // FIXED: Check by Google ID first to prevent duplicate users across domains
     let existingUser = await storage.getUserByGoogleId(userData.googleId);
@@ -375,9 +369,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     if (existingUser) {
       console.log('✅ [AUTH-FIX] Found existing user by Google ID:', {
         id: existingUser.id,
-        email: existingUser.email,
-        name: existingUser.name,
-        googleId: existingUser.googleId
+        hasEmail: !!existingUser.email,
+        hasName: !!existingUser.name
       });
       // Update existing user with latest Google info
       user = await storage.updateUser(existingUser.id, {
@@ -427,8 +420,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     console.log('✅ User saved successfully:', {
       id: user.id,
-      email: user.email,
-      name: user.name
+      hasEmail: !!user.email,
+      hasName: !!user.name
     });
     
     // Create secure JWT session
@@ -460,9 +453,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     
     console.log('✅ [OAUTH CALLBACK] Authentication completed successfully');
     console.log('✅ [OAUTH CALLBACK] User authenticated:', {
-      email: user.email,
       id: user.id,
-      username: user.username,
+      hasUsername: !!user.username,
       authProvider: 'google'
     });
     
@@ -499,21 +491,20 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       return res.redirect(303, sessionAcceptUrl);
     } else {
       // Same domain - set cookie directly and redirect to dashboard
-      const isProduction = currentHost.includes('replit.app');
+      const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
       
       const cookieOptions = {
         httpOnly: true,
-        secure: isProduction,
+        secure: isHttps,
         sameSite: 'lax' as const,
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
       
-      console.log('🍪 [SESSION-HANDOFF] Same domain - setting cookie directly:', {
-        domain: (cookieOptions as any).domain || 'omitted',
+      console.log('🍪 [SESSION-HANDOFF] Same domain - setting secure cookie:', {
         sameSite: cookieOptions.sameSite,
         secure: cookieOptions.secure,
-        host: currentHost
+        isHttps: isHttps
       });
       
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
@@ -592,21 +583,20 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     sessionExchangeStore.delete(code);
     
     // Set session cookie on the correct domain
-    const isProduction = currentHost.includes('replit.app') || currentHost.includes('replit.dev');
+    const isHttps = req.secure || req.get('X-Forwarded-Proto') === 'https';
     
     const cookieOptions = {
       httpOnly: true,
-      secure: isProduction,
+      secure: isHttps,
       sameSite: 'lax' as const,
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
     
-    console.log('🍪 [SESSION-ACCEPT] Setting session cookie:', {
-      domain: (cookieOptions as any).domain || 'omitted',
+    console.log('🍪 [SESSION-ACCEPT] Setting secure session cookie:', {
       sameSite: cookieOptions.sameSite,
       secure: cookieOptions.secure,
-      host: currentHost
+      isHttps: isHttps
     });
     
     res.cookie('brandentifier_session', exchangeData.sessionToken, cookieOptions);
