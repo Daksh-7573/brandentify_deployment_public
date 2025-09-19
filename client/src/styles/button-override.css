@@ -36,24 +36,3 @@
   border-color: rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
 }
-
-/* Google Auth Button - White styling to avoid neo-glass overrides */
-.google-auth-button {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #1f2937 !important;
-  border: 1px solid #d1d5db !important;
-  font-weight: 500 !important;
-}
-
-.google-auth-button:hover {
-  background: #f9fafb !important;
-  background-color: #f9fafb !important;
-  border-color: #9ca3af !important;
-  color: #1f2937 !important;
-}
-
-.google-auth-button:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-}
