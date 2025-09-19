@@ -65,8 +65,9 @@ export function FastGoogleAuth() {
       onClick={handleGoogleAuth}
       disabled={isLoading}
       variant="outline"
-      className="w-full flex items-center justify-center gap-3 !bg-white hover:!bg-gray-50 !text-gray-900 !border-gray-300"
+      className="w-full flex items-center justify-center gap-3 !bg-white hover:!bg-gray-50 !text-gray-900 !border-gray-300 shadow-sm"
       size="lg"
+      style={{ backgroundColor: 'white !important', color: '#111827 !important', borderColor: '#d1d5db !important' }}
     >
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
