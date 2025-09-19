@@ -8,6 +8,7 @@ import { Request, Response } from "express";
 import { storage } from "./storage";
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { generateCSRFToken, getCSRFSecret } from './middleware/csrf-protection';
 
 // Google OAuth URLs
 const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -86,34 +87,11 @@ const oauthCredentials = getOAuthCredentials();
 const CLIENT_ID = oauthCredentials.clientId;
 const CLIENT_SECRET = oauthCredentials.clientSecret;
 
-// SECURITY FIX: Secure JWT and CSRF secret management
+// SECURITY FIX: Secure JWT secret management
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
-// CRITICAL SECURITY FIX: Remove hardcoded CSRF secret - generate cryptographically random per-process default
-// In production, CSRF_SECRET MUST be explicitly set as environment variable
-function generateSecureCSRFSecret(): string {
-  const nodeEnv = process.env.NODE_ENV || 'development';
-  
-  if (nodeEnv === 'production' && !process.env.CSRF_SECRET) {
-    console.error('❌ [SECURITY-ERROR] CSRF_SECRET is required in production environment');
-    console.error('❌ [SECURITY-ERROR] Server startup failed - set CSRF_SECRET environment variable');
-    console.error('❌ [SECURITY-ERROR] Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
-    process.exit(1); // Hard fail in production
-  }
-  
-  if (process.env.CSRF_SECRET) {
-    console.log('✅ [CSRF-SECRET] Using explicitly set CSRF_SECRET from environment');
-    return process.env.CSRF_SECRET;
-  }
-  
-  // Development fallback: generate cryptographically random secret per-process
-  const generatedSecret = crypto.randomBytes(64).toString('hex');
-  console.warn('⚠️ [CSRF-SECRET] No CSRF_SECRET set - generated secure per-process secret (development only)');
-  console.warn('⚠️ [CSRF-SECRET] For production: set CSRF_SECRET environment variable');
-  return generatedSecret;
-}
-
-const CSRF_SECRET = generateSecureCSRFSecret();
+// CSRF secret is now managed centrally in middleware/csrf-protection.ts
+// Use getCSRFSecret() function to access the centralized CSRF secret
 
 // Log credential validation status
 if (!oauthCredentials.valid) {
@@ -406,9 +384,12 @@ function validateOAuthConfigurationAtStartup(): {
     startupWarnings.push('JWT_SECRET not set - using generated secret (sessions will not persist across restarts)');
   }
   
-  // 4. CSRF Secret validation
-  if (!process.env.CSRF_SECRET) {
-    startupWarnings.push('CSRF_SECRET not set - using fallback (consider setting for production)');
+  // 4. CSRF Secret validation - now managed centrally in middleware
+  try {
+    getCSRFSecret(); // This will validate and potentially exit if not set in production
+    console.log('✅ [CSRF-SECRET] Centralized CSRF secret validation passed');
+  } catch (error) {
+    startupWarnings.push('CSRF_SECRET validation error - check middleware configuration');
   }
   
   // 5. Redirect URI coverage validation
@@ -453,7 +434,7 @@ function validateOAuthConfigurationAtStartup(): {
     currentHost,
     nodeEnv,
     hasJwtSecret: !!process.env.JWT_SECRET,
-    hasCsrfSecret: !!process.env.CSRF_SECRET,
+    hasCsrfSecret: !!getCSRFSecret(),
     hasProductionCredentials: !!(process.env.PROD_GOOGLE_CLIENT_ID || (nodeEnv === 'production' && process.env.GOOGLE_CLIENT_ID))
   };
   
@@ -651,26 +632,7 @@ function canonicalizeHost(host: string): string {
 /**
  * Generate CSRF token for localStorage authentication
  */
-function generateCSRFToken(userId?: number): string {
-  const tokenId = crypto.randomBytes(32).toString('hex');
-  const timestamp = Date.now();
-  
-  const csrfData = {
-    tokenId,
-    userId,
-    timestamp,
-    nonce: crypto.randomBytes(16).toString('hex')
-  };
-  
-  // Sign the CSRF data to prevent tampering
-  const signedToken = jwt.sign(csrfData, CSRF_SECRET, { 
-    algorithm: 'HS256',
-    expiresIn: '1h'  // CSRF tokens expire in 1 hour
-  });
-  
-  console.log(`🛡️ [CSRF-OAUTH] Generated CSRF token for user ${userId || 'anonymous'}`);
-  return signedToken;
-}
+// CSRF token generation is now imported from middleware/csrf-protection.ts
 
 /**
  * Send hybrid authentication response with both cookie and localStorage token
@@ -903,7 +865,7 @@ export async function getOAuthConfigStatusRoute(req: Request, res: Response) {
         clientIdFormat: CLIENT_ID ? (CLIENT_ID.endsWith('.apps.googleusercontent.com') ? 'valid' : 'invalid') : 'missing',
         clientSecretExists: !!CLIENT_SECRET,
         jwtSecretExists: !!process.env.JWT_SECRET,
-        csrfSecretExists: !!process.env.CSRF_SECRET
+        csrfSecretExists: !!getCSRFSecret()
       },
       redirectUris: {
         total: ALLOWED_REDIRECT_URIS.length,
@@ -1420,6 +1382,12 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
       
       console.log('✅ [SESSION-HANDOFF] Same domain hybrid auth setup (cookie + localStorage)');
+      
+      // CRITICAL CSRF FIX: Generate CSRF token for OAuth callback response
+      const csrfToken = generateCSRFToken(user.id);
+      res.setHeader('X-CSRF-Token', csrfToken);
+      console.log('🛡️ [CSRF] Generated CSRF token for OAuth callback');
+      
       return sendHybridAuthResponse(res, sessionToken, user);
     }
     
@@ -1662,8 +1630,14 @@ export async function acceptSessionRoute(req: Request, res: Response) {
       remainingCodes: sessionExchangeStore.size
     });
     
-    // Hybrid auth setup (cookie + localStorage) and redirect to dashboard
+    // Hybrid auth setup (cookie + localStorage) and redirect to dashboard  
     console.log('✅ [SESSION-ACCEPT] Setting up hybrid authentication (cookie + localStorage)');
+    
+    // CRITICAL CSRF FIX: Generate CSRF token for session accept response
+    const csrfTokenForSessionAccept = generateCSRFToken(exchangeData.userId);
+    res.setHeader('X-CSRF-Token', csrfTokenForSessionAccept);
+    console.log('🛡️ [CSRF] Generated CSRF token for session accept');
+    
     return sendHybridAuthResponse(res, exchangeData.sessionToken, exchangeData.userId);
     
   } catch (error: any) {
@@ -1773,6 +1747,9 @@ export async function checkSessionRoute(req: Request, res: Response) {
       
       // Include CSRF token for localStorage auth requests
       const csrfToken = generateCSRFToken(user.id);
+      
+      // CRITICAL CSRF FIX: Add X-CSRF-Token header for session endpoint
+      res.setHeader('X-CSRF-Token', csrfToken);
       
       return res.json({
         success: true,

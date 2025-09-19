@@ -9,7 +9,40 @@ import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
-const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-2025';
+/**
+ * SECURITY FIX: Centralized secure CSRF secret management
+ * In production, CSRF_SECRET MUST be explicitly set as environment variable
+ */
+function generateSecureCSRFSecret(): string {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  
+  if (nodeEnv === 'production' && !process.env.CSRF_SECRET) {
+    console.error('❌ [SECURITY-ERROR] CSRF_SECRET is required in production environment');
+    console.error('❌ [SECURITY-ERROR] Server startup failed - set CSRF_SECRET environment variable');
+    console.error('❌ [SECURITY-ERROR] Generate a secure secret: node -e "console.log(require(\'crypto\').randomBytes(64).toString(\'hex\'))"');
+    process.exit(1); // Hard fail in production
+  }
+  
+  if (process.env.CSRF_SECRET) {
+    console.log('✅ [CSRF-SECRET] Using explicitly set CSRF_SECRET from environment');
+    return process.env.CSRF_SECRET;
+  }
+  
+  // Development fallback: generate cryptographically random secret per-process
+  const generatedSecret = crypto.randomBytes(64).toString('hex');
+  console.warn('⚠️ [CSRF-SECRET] No CSRF_SECRET set - generated secure per-process secret (development only)');
+  console.warn('⚠️ [CSRF-SECRET] For production: set CSRF_SECRET environment variable');
+  return generatedSecret;
+}
+
+/**
+ * Export function to get CSRF secret for universal use across the application
+ */
+export function getCSRFSecret(): string {
+  return CSRF_SECRET;
+}
+
+const CSRF_SECRET = generateSecureCSRFSecret();
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
 // In-memory store for CSRF tokens (in production, use Redis or database)
@@ -108,7 +141,7 @@ export function validateCSRFToken(token: string, userId?: number): boolean {
     return true;
     
   } catch (error) {
-    console.warn('❌ [CSRF] Token validation error:', error.message);
+    console.warn('❌ [CSRF] Token validation error:', error instanceof Error ? error.message : String(error));
     return false;
   }
 }
@@ -288,7 +321,7 @@ export function getCSRFStats() {
   let activeTokens = 0;
   let expiredTokens = 0;
   
-  for (const [, data] of csrfTokenStore.entries()) {
+  for (const [, data] of Array.from(csrfTokenStore.entries())) {
     if (data.timestamp >= oneHourAgo) {
       activeTokens++;
     } else {
@@ -310,5 +343,6 @@ export default {
   csrfTokenGenerator,
   csrfProtection,
   enhancedCSRFMiddleware,
-  getCSRFStats
+  getCSRFStats,
+  getCSRFSecret
 };

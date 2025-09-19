@@ -240,7 +240,7 @@ export async function apiRequest(
       const isFormData = data instanceof FormData;
       
       // Setup headers and body based on content type
-      const baseHeaders = !isFormData && data ? { "Content-Type": "application/json" } : {};
+      const baseHeaders: Record<string, string> = !isFormData && data ? { "Content-Type": "application/json" } : {};
       const authHeaders = generateAuthHeaders();
       
       const requestOptions: RequestInit = {

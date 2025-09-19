@@ -64,6 +64,7 @@ import { platformRecommendationService } from "./services/platform-recommendatio
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, getOAuthConfigStatusRoute } from "./auth-oauth-routes";
+import { enhancedCSRFMiddleware } from './middleware/csrf-protection';
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -454,6 +455,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       total: sorted.length 
     });
   });
+  
+  // CRITICAL CSRF FIX: Apply CSRF middleware before other routes
+  
+  // Apply CSRF middleware to API routes (will generate tokens for GET and validate for POST/PUT/DELETE)
+  app.use('/api', enhancedCSRFMiddleware);
+  console.log('🛡️ [CSRF] Enhanced CSRF middleware applied to all /api routes');
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);

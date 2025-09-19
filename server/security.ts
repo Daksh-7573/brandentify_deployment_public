@@ -24,6 +24,7 @@ import cors from 'cors';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
+import { getCSRFSecret } from './middleware/csrf-protection';
 
 // Secure JWT signing key (in production, this should be in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
@@ -33,8 +34,7 @@ const JWT_EXPIRES = '24h';
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'brandentifier-secure-encryption-key-2025';
 const IV_LENGTH = 16; // For AES, this is always 16 bytes
 
-// CSRF Token secret (in production, this should be in environment variables)
-const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-2025';
+// CSRF secret is now managed centrally in middleware/csrf-protection.ts
 
 // Allowed CORS origins (in production, this should be configured properly)
 const ALLOWED_ORIGINS = [
