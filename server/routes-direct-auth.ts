@@ -48,8 +48,7 @@ router.post("/api/direct-login", async (req: Request, res: Response) => {
         whatIOffer: null,
         phoneNumber: null,
         googleId: null,
-        lastLoginAt: new Date(),
-        createdAt: new Date()
+        lastLoginAt: new Date()
       });
       
       console.log(`New user created with ID: ${user.id}`);
