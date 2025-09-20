@@ -1061,7 +1061,7 @@ export const questDefinitions = pgTable("quest_definitions", {
   // - requiredIndustry
 });
 
-// User quests model - tracks active and completed quests for each user (simplified version)
+// User quests model - tracks active and completed quests for each user (updated for daily quests)
 export const userQuests = pgTable("user_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -1070,7 +1070,8 @@ export const userQuests = pgTable("user_quests", {
   progress: integer("progress").notNull().default(0), // Current progress count
   assignedAt: timestamp("assigned_at").defaultNow(),
   completedAt: timestamp("completed_at"), // When the quest was completed
-  weekNumber: integer("week_number").notNull(), // Week of the year (1-52)
+  assignedDate: text("assigned_date").notNull(), // Date in YYYY-MM-DD format for daily tracking
+  weekNumber: integer("week_number").notNull(), // Week of the year (1-52) - kept for backwards compatibility
   year: integer("year").notNull(), // Year of the quest
   xpEarned: integer("xp_earned"), // Actual XP earned upon completion
   badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
