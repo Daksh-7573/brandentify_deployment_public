@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserQuestsWithDefinitions, 
-  useUserWeeklyQuests, 
+  useUserWeeklyQuests,
+  useUserDailyQuests,
   getCurrentWeekNumber, 
   getCurrentYear,
   useCombinedUserQuests
@@ -25,11 +26,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const currentYear = getCurrentYear();
   
   const { 
-    data: weeklyQuests,
-    isLoading: isLoadingWeekly,
-    error: weeklyError,
-    refetch: refetchWeekly
-  } = useUserWeeklyQuests(userId, currentWeek, currentYear);
+    data: dailyQuests,
+    isLoading: isLoadingDaily,
+    error: dailyError,
+    refetch: refetchDaily
+  } = useUserDailyQuests(userId);
   
   // Use combined quest hook to integrate both career and social quests
   const {
@@ -44,18 +45,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   useEffect(() => {
     const refetchInterval = setInterval(() => {
-      refetchWeekly();
+      refetchDaily();
       refetchAll();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll]);
+  }, [refetchDaily, refetchAll]);
   
   useEffect(() => {
-    if (weeklyError) {
-      console.log('Error fetching weekly quests:', weeklyError);
+    if (dailyError) {
+      console.log('Error fetching daily quests:', dailyError);
       toast({
-        title: 'Error fetching weekly quests',
+        title: 'Error fetching daily quests',
         description: "We're having trouble loading your quests. Please try again later.",
         variant: 'destructive',
       });
@@ -70,7 +71,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       });
     }
 
-  }, [weeklyError, allError, toast]);
+  }, [dailyError, allError, toast]);
   
   // Filter quests by type
   const socialQuestTypes = ['social_post']; // Only platform-specific social media quests
@@ -92,13 +93,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     return careerQuestTypes.includes(questType) || !socialQuestTypes.includes(questType);
   }) || [];
   
-  // Weekly quests filtered by type and only show active status
-  const weeklyCareerQuests = (weeklyQuests || []).filter(q => {
+  // Daily quests filtered by type and only show active status
+  const dailyCareerQuests = (dailyQuests || []).filter(q => {
     const questType = getQuestType(q);
     return q.status === 'active' && !socialQuestTypes.includes(questType);
   });
   
-  const weeklySocialQuests = (weeklyQuests || []).filter(q => {
+  const dailySocialQuests = (dailyQuests || []).filter(q => {
     const questType = getQuestType(q);
     return q.status === 'active' && socialQuestTypes.includes(questType);
   });
@@ -121,7 +122,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   }) || [];
   
 
-  const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
+  const renderQuestsList = (quests: typeof dailyQuests, loading: boolean) => {
     if (loading) {
       return (
         <div className="space-y-4 mt-4">
@@ -154,10 +155,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   
   // Log errors for debugging purposes
   useEffect(() => {
-    if (weeklyError && !isLoadingWeekly) {
-      console.log('Error loading quests:', weeklyError);
+    if (dailyError && !isLoadingDaily) {
+      console.log('Error loading quests:', dailyError);
     }
-  }, [weeklyError, isLoadingWeekly]);
+  }, [dailyError, isLoadingDaily]);
 
   return (
     <div className={cn("w-full", className)}>
@@ -167,7 +168,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       </div>
       
       {/* Quest Tabs */}
-      {isLoadingWeekly ? (
+      {isLoadingDaily ? (
         <div className="space-y-2 sm:space-y-3">
           <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
           <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
@@ -178,11 +179,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
             <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Career Quests</span>
-              <span className="text-xs">({weeklyCareerQuests.length + completedCareerQuests.length + expiredCareerQuests.length})</span>
+              <span className="text-xs">({dailyCareerQuests.length + completedCareerQuests.length + expiredCareerQuests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Social Quests</span>
-              <span className="text-xs">({weeklySocialQuests.length + completedSocialQuests.length + expiredSocialQuests.length})</span>
+              <span className="text-xs">({dailySocialQuests.length + completedSocialQuests.length + expiredSocialQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
@@ -192,11 +193,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             </div>
             
             {/* Career Quests Sub-tabs */}
-            <Tabs defaultValue="weekly" className="w-full">
+            <Tabs defaultValue="today" className="w-full">
               <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Weekly</span>
-                  <span className="text-xs">({weeklyCareerQuests.length})</span>
+                <TabsTrigger value="today" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Today</span>
+                  <span className="text-xs">({dailyCareerQuests.length})</span>
                 </TabsTrigger>
                 <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
                   <span className="text-center">Completed</span>
@@ -208,11 +209,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+              <TabsContent value="today" className="space-y-3 sm:space-y-4">
                 <div className="text-xs text-white/60 mb-2">
-                  Week {currentWeek}, {currentYear} - Weekly career quests
+                  {new Date().toLocaleDateString()} - Today's career quests
                 </div>
-                {renderQuestsList(weeklyCareerQuests, isLoadingWeekly)}
+                {renderQuestsList(dailyCareerQuests, isLoadingDaily)}
               </TabsContent>
               
               <TabsContent value="completed" className="space-y-3 sm:space-y-4">
@@ -237,11 +238,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             </div>
             
             {/* Social Quests Sub-tabs */}
-            <Tabs defaultValue="weekly" className="w-full">
+            <Tabs defaultValue="today" className="w-full">
               <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Weekly</span>
-                  <span className="text-xs">({weeklySocialQuests.length})</span>
+                <TabsTrigger value="today" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
+                  <span className="text-center">Today</span>
+                  <span className="text-xs">({dailySocialQuests.length})</span>
                 </TabsTrigger>
                 <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
                   <span className="text-center">Completed</span>
@@ -253,11 +254,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+              <TabsContent value="today" className="space-y-3 sm:space-y-4">
                 <div className="text-xs text-white/60 mb-2">
-                  Week {currentWeek}, {currentYear} - Weekly social media quests
+                  {new Date().toLocaleDateString()} - Today's social media quests
                 </div>
-                {renderQuestsList(weeklySocialQuests, isLoadingWeekly)}
+                {renderQuestsList(dailySocialQuests, isLoadingDaily)}
               </TabsContent>
               
               <TabsContent value="completed" className="space-y-3 sm:space-y-4">

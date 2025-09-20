@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserQuestsWithDefinitions, 
-  useUserWeeklyQuests, 
+  useUserWeeklyQuests,
+  useUserDailyQuests,
   getCurrentWeekNumber, 
   getCurrentYear
 } from '@/hooks/use-career-quests';
@@ -19,16 +20,16 @@ interface QuestPanelProps {
 
 export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { toast } = useToast();
-  const [tabValue, setTabValue] = useState('weekly');
+  const [tabValue, setTabValue] = useState('today');
   const currentWeek = getCurrentWeekNumber();
   const currentYear = getCurrentYear();
   
   const { 
-    data: weeklyQuests,
-    isLoading: isLoadingWeekly,
-    error: weeklyError,
-    refetch: refetchWeekly
-  } = useUserWeeklyQuests(userId, currentWeek, currentYear);
+    data: dailyQuests,
+    isLoading: isLoadingDaily,
+    error: dailyError,
+    refetch: refetchDaily
+  } = useUserDailyQuests(userId);
   
   const {
     data: allQuests,
@@ -41,18 +42,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   useEffect(() => {
     const refetchInterval = setInterval(() => {
-      refetchWeekly();
+      refetchDaily();
       refetchAll();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll]);
+  }, [refetchDaily, refetchAll]);
   
   useEffect(() => {
-    if (weeklyError) {
+    if (dailyError) {
       toast({
-        title: 'Error fetching weekly quests',
-        description: (weeklyError as Error).message,
+        title: 'Error fetching daily quests',
+        description: (dailyError as Error).message,
         variant: 'destructive',
       });
     }
@@ -64,7 +65,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         variant: 'destructive',
       });
     }
-  }, [weeklyError, allError, toast]);
+  }, [dailyError, allError, toast]);
   
   // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
   // For completed and expired tabs, use the data from the all quests hook
@@ -81,7 +82,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
            action === 'add_project_technologies';
   }) || [];
   
-  const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
+  const renderQuestsList = (quests: typeof dailyQuests, loading: boolean) => {
     if (loading) {
       return (
         <div className="space-y-4 mt-4">
@@ -119,18 +120,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       </CardHeader>
       <CardContent>
         
-        <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
+        <Tabs defaultValue="today" value={tabValue} onValueChange={setTabValue}>
           <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="weekly">Weekly ({weeklyQuests?.length || 0})</TabsTrigger>
+            <TabsTrigger value="today">Today ({dailyQuests?.length || 0})</TabsTrigger>
             <TabsTrigger value="completed">Completed ({completedQuests.length})</TabsTrigger>
             <TabsTrigger value="expired">Missed ({expiredQuests.length})</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="weekly" className="space-y-4">
+          <TabsContent value="today" className="space-y-4">
             <div className="text-sm text-muted-foreground mb-2">
-              Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
+              {new Date().toLocaleDateString()} - Today's quests for your career growth
             </div>
-            {renderQuestsList(weeklyQuests, isLoadingWeekly)}
+            {renderQuestsList(dailyQuests, isLoadingDaily)}
           </TabsContent>
           
           <TabsContent value="expired" className="space-y-4">
