@@ -1,0 +1,168 @@
+import cron from 'node-cron';
+import { storage } from '../storage';
+import { db } from '../db';
+import { userQuests } from '@shared/schema';
+import { eq, and, lt, ne } from 'drizzle-orm';
+
+class DailyQuestScheduler {
+  private isSchedulerActive = false;
+
+  // Schedule to run every day at 12:01 AM UTC to handle quest expiration
+  public startScheduler() {
+    if (this.isSchedulerActive) {
+      console.log('[DailyQuestScheduler] Scheduler already running');
+      return;
+    }
+
+    // Schedule: Every day at 12:01 AM (1 0 * * *)
+    cron.schedule('1 0 * * *', async () => {
+      console.log('[DailyQuestScheduler] Starting daily quest expiration check...');
+      await this.expirePreviousDayQuests();
+      await this.assignNewDailyQuests();
+    }, {
+      timezone: 'UTC'
+    });
+
+    this.isSchedulerActive = true;
+    console.log('[DailyQuestScheduler] Daily 12:01AM scheduler activated');
+  }
+
+  public stopScheduler() {
+    this.isSchedulerActive = false;
+    console.log('[DailyQuestScheduler] Scheduler stopped');
+  }
+
+  /**
+   * Expire quests that were assigned on previous days and not completed
+   */
+  private async expirePreviousDayQuests() {
+    try {
+      console.log('[DailyQuestScheduler] Checking for previous day quests to expire...');
+      
+      // Get start of today in UTC
+      const todayStart = new Date();
+      todayStart.setUTCHours(0, 0, 0, 0);
+      
+      // Get today's date in YYYY-MM-DD format
+      const todayDateString = this.getTodayDateString();
+      
+      // Update quests that were assigned before today and are still active
+      const expiredQuests = await db
+        .update(userQuests)
+        .set({ 
+          status: 'expired'
+        })
+        .where(
+          and(
+            ne(userQuests.status, 'completed'), // Don't expire completed quests
+            ne(userQuests.status, 'expired'),   // Don't re-expire already expired quests
+            lt(userQuests.assignedDate, todayDateString) // assignedDate before today
+          )
+        )
+        .returning({ id: userQuests.id, userId: userQuests.userId });
+
+      console.log(`[DailyQuestScheduler] Expired ${expiredQuests.length} quests from previous days`);
+      
+      return expiredQuests.length;
+      
+    } catch (error) {
+      console.error('[DailyQuestScheduler] Error expiring previous day quests:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Assign new daily quests to all active users
+   */
+  private async assignNewDailyQuests() {
+    try {
+      console.log('[DailyQuestScheduler] Starting daily quest assignment for all users...');
+      
+      // Get all users from storage
+      const users = await storage.getAllUsers();
+      console.log(`[DailyQuestScheduler] Found ${users.length} users to process`);
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const user of users) {
+        try {
+          console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
+          
+          // Use the daily quest assignment method from storage
+          const assignedQuests = await storage.assignDailyQuestsToUser(user.id);
+          
+          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} quests for ${user.name}`);
+          successCount++;
+          
+        } catch (userError) {
+          console.error(`[DailyQuestScheduler] ❌ Error assigning quests for user ${user.id}:`, userError);
+          errorCount++;
+        }
+      }
+
+      console.log(`[DailyQuestScheduler] Daily assignment complete: ${successCount} success, ${errorCount} errors`);
+      
+      return { successCount, errorCount };
+      
+    } catch (error) {
+      console.error('[DailyQuestScheduler] Fatal error in daily assignment:', error);
+      return { successCount: 0, errorCount: 1 };
+    }
+  }
+
+  // Manual trigger for testing
+  public async triggerDailyExpiration() {
+    console.log('[DailyQuestScheduler] Manual trigger - expiring previous day quests');
+    return await this.expirePreviousDayQuests();
+  }
+
+  public async triggerDailyAssignment() {
+    console.log('[DailyQuestScheduler] Manual trigger - assigning new daily quests');
+    return await this.assignNewDailyQuests();
+  }
+
+  public async triggerFullDailyProcess() {
+    console.log('[DailyQuestScheduler] Manual trigger - full daily process');
+    const expiredCount = await this.expirePreviousDayQuests();
+    const assignmentResult = await this.assignNewDailyQuests();
+    
+    return {
+      expiredQuests: expiredCount,
+      successfulAssignments: assignmentResult.successCount,
+      failedAssignments: assignmentResult.errorCount
+    };
+  }
+
+  public getSchedulerStatus() {
+    return {
+      isActive: this.isSchedulerActive,
+      nextRun: this.isSchedulerActive ? 'Daily at 12:01 AM UTC' : 'Not scheduled',
+      description: 'Expires previous day quests and assigns new daily quests'
+    };
+  }
+
+  /**
+   * Get today's date in YYYY-MM-DD format for consistency
+   */
+  private getTodayDateString(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  /**
+   * Check if a quest is from today
+   */
+  private isQuestFromToday(assignedDate: Date): boolean {
+    const today = new Date();
+    const questDate = new Date(assignedDate);
+    
+    return (
+      questDate.getUTCFullYear() === today.getUTCFullYear() &&
+      questDate.getUTCMonth() === today.getUTCMonth() &&
+      questDate.getUTCDate() === today.getUTCDate()
+    );
+  }
+}
+
+export const dailyQuestScheduler = new DailyQuestScheduler();
