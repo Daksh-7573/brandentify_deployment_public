@@ -17,7 +17,12 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+// SECURITY: JWT_SECRET must be consistent across all instances for cross-instance state validation
+const JWT_SECRET_RAW = process.env.JWT_SECRET;
+if (!JWT_SECRET_RAW) {
+  throw new Error('JWT_SECRET environment variable is required for secure cross-instance OAuth state validation. Set this to the same value across all server instances.');
+}
+const JWT_SECRET: string = JWT_SECRET_RAW; // TypeScript assertion - guaranteed to be defined after check
 
 // STANDARDIZED: Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 // These URIs must be registered in Google Cloud Console exactly as listed
@@ -132,7 +137,7 @@ function validateStatelessState(token: string): any {
       maxAge: '15m' // Additional expiry check
     });
     return decoded;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ [STATE-VALIDATION] JWT state validation failed:', error.message);
     throw new Error('Invalid or expired authentication state');
   }
