@@ -492,6 +492,23 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
           authProvider: 'google',
           lastLoginAt: new Date()
         });
+
+        // Assign starter quests immediately for new users
+        if (user && user.id) {
+          try {
+            console.log(`🎯 [STARTER-QUESTS] Assigning starter quests to new user ${user.id} (${user.name})`);
+            
+            // Assign both career and social starter quests
+            const starterCareerQuests = await storage.assignDailyQuestsToUser(user.id);
+            const starterSocialQuests = await storage.assignDailySocialQuests(user.id);
+            
+            const totalStarterQuests = starterCareerQuests.length + starterSocialQuests.length;
+            console.log(`✅ [STARTER-QUESTS] Successfully assigned ${starterCareerQuests.length} career + ${starterSocialQuests.length} social = ${totalStarterQuests} starter quests to new user ${user.name}`);
+          } catch (starterError) {
+            console.error(`❌ [STARTER-QUESTS] Error assigning starter quests to new user ${user.id}:`, starterError);
+            // Don't fail the user creation if quest assignment fails
+          }
+        }
       }
     }
     
