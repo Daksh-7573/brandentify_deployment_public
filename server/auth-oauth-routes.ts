@@ -595,7 +595,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       const cookieOptions = {
         httpOnly: true,
         secure: isSecure,
-        sameSite: isSecure ? 'none' as const : 'lax' as const, // Use 'none' for cross-domain compatibility
+        sameSite: 'lax' as const, // Use 'lax' for better compatibility - fixed for Replit domains
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
@@ -707,7 +707,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     const cookieOptions = {
       httpOnly: true,
       secure: isSecure,
-      sameSite: isSecure ? 'none' as const : 'lax' as const, // Use 'none' for cross-domain compatibility
+      sameSite: 'lax' as const, // Use 'lax' for better compatibility - fixed for Replit domains
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
