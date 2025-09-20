@@ -28,9 +28,10 @@ export function FastGoogleAuth() {
       console.log('🔍 [USER-ACTIVATION-CHECK] hasUserActivation:', hasUserActivation);
       
       if (isInIframe) {
-        console.log('🖼️ IFRAME DETECTED - Google blocks iframe authentication, forcing top-level redirect method');
-        console.log('🔧 This fixes the "accounts.google.com refused to connect" and 403 errors in Replit app preview');
-        setAuthMethod('redirect');
+        console.log('🖼️ IFRAME DETECTED - Google blocks iframe authentication, forcing popup-only method');
+        console.log('🔧 Popup authentication bypasses Google X-Frame-Options blocking in Replit preview');
+        console.log('💡 This fixes "accounts.google.com refused to connect" and invalid_state errors');
+        setAuthMethod('popup');
       } else if (isMobile) {
         console.log('📱 Mobile device detected - using redirect method');
         setAuthMethod('redirect');
@@ -42,7 +43,7 @@ export function FastGoogleAuth() {
         setAuthMethod('popup');
       }
       
-      console.log('✅ [AUTH-METHOD-DETECTION] Final method selected:', isInIframe ? 'redirect (iframe-safe)' : isMobile ? 'redirect (mobile)' : 'popup');
+      console.log('✅ [AUTH-METHOD-DETECTION] Final method selected:', isInIframe ? 'popup (iframe-required)' : isMobile ? 'redirect (mobile)' : 'popup');
     };
 
     detectAuthMethod();
@@ -94,17 +95,10 @@ export function FastGoogleAuth() {
     try {
       console.log('🔄 Starting Google authentication with method:', authMethod);
       
-      // For redirect method, get URL and redirect immediately
+      // For redirect method, get URL and redirect immediately (mobile only)
       if (authMethod === 'redirect') {
         setLoadingMessage('Getting authentication URL...');
-        
-        // IFRAME-SAFE AUTHENTICATION: Check if we're in iframe context
-        const isInIframe = window.top !== window.self;
-        if (isInIframe) {
-          console.log('🚀 Using iframe-safe redirect method (top-level navigation)');
-        } else {
-          console.log('🚀 Using direct redirect method (most reliable)');
-        }
+        console.log('🚀 Using direct redirect method (mobile)');
         
         const response = await fetch('/api/auth/google/url', {
           method: 'GET',
@@ -118,16 +112,9 @@ export function FastGoogleAuth() {
         const data = await response.json();
         setLoadingMessage('Redirecting to Google...');
         
-        // Small delay to show loading message
+        // Redirect for mobile contexts
         setTimeout(() => {
-          if (isInIframe) {
-            // IFRAME FIX: Navigate the top-level window to break out of iframe
-            console.log('🔧 Breaking out of iframe for authentication');
-            window.top!.location.href = data.oauthUrl;
-          } else {
-            // Normal redirect for non-iframe contexts
-            window.location.href = data.oauthUrl;
-          }
+          window.location.href = data.oauthUrl;
         }, 500);
         
         return;
@@ -179,12 +166,7 @@ export function FastGoogleAuth() {
           setLoadingMessage('Redirecting to Google...');
           
           setTimeout(() => {
-            const isInIframe = window.top !== window.self;
-            if (isInIframe) {
-              window.top!.location.href = data.oauthUrl;
-            } else {
-              window.location.href = data.oauthUrl;
-            }
+            window.location.href = data.oauthUrl;
           }, 1000);
           
           return;
@@ -223,12 +205,7 @@ export function FastGoogleAuth() {
         
         setLoadingMessage('Switching to redirect method...');
         setTimeout(() => {
-          const isInIframe = window.top !== window.self;
-          if (isInIframe) {
-            window.top!.location.href = data.oauthUrl;
-          } else {
-            window.location.href = data.oauthUrl;
-          }
+          window.location.href = data.oauthUrl;
         }, 1000);
         return;
       }
@@ -356,19 +333,36 @@ export function FastGoogleAuth() {
         )}
       </Button>
       
-      {/* Authentication method indicator */}
+      {/* Authentication method indicator and iframe-specific messaging */}
       {!isLoading && authMethod !== 'detecting' && (
-        <div className="text-xs text-center text-gray-500 flex items-center justify-center gap-1">
-          {authMethod === 'popup' ? (
-            <>
-              <AlertCircle className="h-3 w-3" />
-              Popup method (with redirect fallback)
-            </>
-          ) : (
-            <>
-              <ExternalLink className="h-3 w-3" />
-              {window.top !== window.self ? 'Iframe-safe redirect method' : 'Redirect method (mobile-optimized)'}
-            </>
+        <div className="text-xs text-center text-gray-500 space-y-1">
+          <div className="flex items-center justify-center gap-1">
+            {authMethod === 'popup' ? (
+              <>
+                <AlertCircle className="h-3 w-3" />
+                {window.top !== window.self ? 'Popup method (required for iframe)' : 'Popup method (with redirect fallback)'}
+              </>
+            ) : (
+              <>
+                <ExternalLink className="h-3 w-3" />
+                Redirect method (mobile-optimized)
+              </>
+            )}
+          </div>
+          
+          {/* Special iframe-specific messaging */}
+          {window.top !== window.self && (
+            <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-xs">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-medium">Popup Authentication Required</div>
+                  <div className="text-blue-600 mt-1">
+                    This app is running in preview mode. Please allow popups for authentication.
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       )}
