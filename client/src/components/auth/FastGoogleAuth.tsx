@@ -21,6 +21,12 @@ export function FastGoogleAuth() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const hasUserActivation = 'userActivation' in navigator;
       
+      // DEBUG: Always log iframe detection result
+      console.log('🔍 [AUTH-METHOD-DETECTION] Starting authentication method detection...');
+      console.log('🔍 [IFRAME-CHECK] window.top !== window.self:', isInIframe);
+      console.log('🔍 [MOBILE-CHECK] isMobile:', isMobile);
+      console.log('🔍 [USER-ACTIVATION-CHECK] hasUserActivation:', hasUserActivation);
+      
       if (isInIframe) {
         console.log('🖼️ IFRAME DETECTED - Google blocks iframe authentication, forcing top-level redirect method');
         console.log('🔧 This fixes the "accounts.google.com refused to connect" and 403 errors in Replit app preview');
@@ -35,6 +41,8 @@ export function FastGoogleAuth() {
         console.log('🖥️ Desktop without user activation API - popup method with fallback');
         setAuthMethod('popup');
       }
+      
+      console.log('✅ [AUTH-METHOD-DETECTION] Final method selected:', isInIframe ? 'redirect (iframe-safe)' : isMobile ? 'redirect (mobile)' : 'popup');
     };
 
     detectAuthMethod();
