@@ -73,43 +73,68 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   }, [dailyError, allError, toast]);
   
-  // Filter quests by type
-  const socialQuestTypes = ['social_post', 'social_quest']; // Platform-specific social media quests
+  // Filter quests by type - Expanded social quest types for all platforms
+  const socialQuestTypes = [
+    'social_post', 'social_quest', 
+    'instagram_reel', 'instagram_story', 'instagram_post',
+    'linkedin_article', 'linkedin_post', 'linkedin_video',
+    'youtube_short', 'youtube_video', 'youtube_community',
+    'twitter_thread', 'twitter_post', 'twitter_space',
+    'tiktok_video', 'tiktok_duet', 'tiktok_live',
+    'facebook_post', 'facebook_story', 'facebook_reel',
+    'threads_post', 'threads_reply',
+    'pinterest_pin', 'pinterest_board',
+    'snapchat_story', 'snapchat_spotlight',
+    'discord_message', 'discord_thread',
+    'reddit_post', 'reddit_comment',
+    'medium_article', 'substack_post',
+    'social_media', 'content_creation'
+  ]; // Platform-specific social media quests
   const careerQuestTypes = ['profile_update', 'pulse_creation', 'networking', 'learning', 'portfolio', 'resume', 'visibility', 'exploration', 'nowboard']; // Career development quests
   
-  // Get quest type from different possible sources in the data
+  // Get quest type from different possible sources in the data with enhanced fallback
   const getQuestType = (quest: any) => {
-    return quest.definition?.type || quest.questDefinition?.type || quest.questType || quest.type;
+    // Try multiple sources with fallback
+    const type = quest.definition?.type || 
+                quest.questDefinition?.type || 
+                quest.questType || 
+                quest.type || 
+                quest.quest_type || 
+                quest.quest?.type ||
+                'profile_update'; // Safe default
+    
+    // Ensure we always return a string and handle null/undefined
+    return type ? String(type).toLowerCase() : 'profile_update';
   };
   
-  // Filter by quest category
+  // Filter by quest category (case-insensitive)
   const socialQuests = allQuests?.filter(quest => {
-    const questType = getQuestType(quest);
-    return socialQuestTypes.includes(questType);
+    const questType = getQuestType(quest)?.toLowerCase() || '';
+    return socialQuestTypes.some(type => type.toLowerCase() === questType);
   }) || [];
   
   const careerQuests = allQuests?.filter(quest => {
-    const questType = getQuestType(quest);
-    return careerQuestTypes.includes(questType) || !socialQuestTypes.includes(questType);
+    const questType = getQuestType(quest)?.toLowerCase() || '';
+    return careerQuestTypes.some(type => type.toLowerCase() === questType) || !socialQuestTypes.some(type => type.toLowerCase() === questType);
   }) || [];
   
-  // Daily quests filtered by type and only show active status
+  // Daily quests filtered by type and only show active status (case-insensitive)
   const dailyCareerQuests = (dailyQuests || []).filter(q => {
-    const questType = getQuestType(q);
-    return q.status === 'active' && !socialQuestTypes.includes(questType);
+    const questType = getQuestType(q)?.toLowerCase() || '';
+    return q.status?.toLowerCase() === 'active' && !socialQuestTypes.some(type => type.toLowerCase() === questType);
   });
   
   const dailySocialQuests = (dailyQuests || []).filter(q => {
-    const questType = getQuestType(q);
-    return q.status === 'active' && socialQuestTypes.includes(questType);
+    const questType = getQuestType(q)?.toLowerCase() || '';
+    return q.status?.toLowerCase() === 'active' && socialQuestTypes.some(type => type.toLowerCase() === questType);
   });
   
-  // Status-based filtering for each category
-  const completedCareerQuests = careerQuests.filter(q => q.status === 'completed');
-  const expiredCareerQuests = careerQuests.filter(q => q.status === 'expired');
+  // Status-based filtering for each category (case-insensitive)
+  const completedCareerQuests = careerQuests.filter(q => q.status?.toLowerCase() === 'completed');
+  const expiredCareerQuests = careerQuests.filter(q => q.status?.toLowerCase() === 'expired');
   
-  const completedSocialQuests = socialQuests.filter(q => q.status === 'completed');
-  const expiredSocialQuests = socialQuests.filter(q => q.status === 'expired');
+  const completedSocialQuests = socialQuests.filter(q => q.status?.toLowerCase() === 'completed');
+  const expiredSocialQuests = socialQuests.filter(q => q.status?.toLowerCase() === 'expired');
   
   // Count skill-related quests
   const skillQuests = allQuests?.filter(quest => {

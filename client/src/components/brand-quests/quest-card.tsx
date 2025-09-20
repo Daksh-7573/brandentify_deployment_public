@@ -33,7 +33,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     type: (quest.questType as QuestType) || 'pulse_creation',
     targetCount: 1, // Default if not provided
     targetAction: quest.targetAction || '',
-    xpReward: quest.definition?.xpReward || quest.questDefinition?.xpReward || quest.xpReward || 0,
+    xpReward: quest.definition?.xpReward || quest.questDefinition?.xpReward || 0,
     badgeReward: undefined,
     // For Musk tips, use any available field that might have it
     muskTip: quest.questMuskTip || quest.muskResponse || '',
@@ -44,9 +44,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   // Ensure targetCount has a minimum value of 1 to prevent division by zero
   const targetCount = questDefinition.targetCount || 1;
-  const isComplete = quest.status === 'completed';
-  const isExpired = quest.status === 'expired';
-  const isActive = quest.status === 'active';
+  const isComplete = quest.status?.toLowerCase() === 'completed';
+  const isExpired = quest.status?.toLowerCase() === 'expired';
+  const isActive = quest.status?.toLowerCase() === 'active';
   
   // Fix progress display logic: if completed, show full progress regardless of database value
   const displayProgress = isComplete ? targetCount : quest.progress;
@@ -210,11 +210,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="text-xl text-white">{getQuestIcon()}</span>
-              <h3 className="text-lg font-semibold text-white">{questDefinition?.title || quest.title}</h3>
+              <h3 className="text-lg font-semibold text-white">{questDefinition?.title}</h3>
             </div>
-            {(questDefinition?.badgeReward || quest.badgeReward) && (
+            {questDefinition?.badgeReward && (
               <Badge variant="outline" className="ml-7 mt-1 bg-black/30 text-white border-white/10 backdrop-blur-sm">
-                Award: {getBadgeLabel(questDefinition?.badgeReward || quest.badgeReward)}
+                Award: {getBadgeLabel(questDefinition?.badgeReward)}
               </Badge>
             )}
           </div>
@@ -229,14 +229,14 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </Badge>
         </div>
         <p className="ml-7 mt-1 text-white/80 text-sm">
-          {questDefinition?.description || quest.description}
+          {questDefinition?.description}
         </p>
       </div>
       <div className="py-3">
         <div className="space-y-3">
           <div className="flex justify-between text-sm text-white/70 mb-2">
-            <span className="font-medium">Progress: {displayProgress} / {questDefinition?.targetCount || quest.targetCount || 1}</span>
-            <span className="text-blue-300 font-medium">+{questDefinition?.xpReward || quest.xpReward || 50} XP</span>
+            <span className="font-medium">Progress: {displayProgress} / {questDefinition?.targetCount || 1}</span>
+            <span className="text-blue-300 font-medium">+{questDefinition?.xpReward || 50} XP</span>
           </div>
           <div className="relative">
             <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
