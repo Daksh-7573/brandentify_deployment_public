@@ -136,19 +136,21 @@ if (isDevelopment) {
     target: 'https://brandentifier-app.firebaseapp.com',
     changeOrigin: true,
     secure: true,
-    onProxyReq: (proxyReq: any, req: any, res: any) => {
-      console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
-      proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
-      proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
-    },
-    onProxyRes: (proxyRes: any, req: any, res: any) => {
-      console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
-      proxyRes.headers['access-control-allow-origin'] = '*';
-      proxyRes.headers['access-control-allow-credentials'] = 'true';
-    },
-    onError: (err: any, req: any, res: any) => {
-      console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
-      res.status(500).json({ error: 'Firebase auth proxy error' });
+    on: {
+      proxyReq: (proxyReq: any, req: any, res: any) => {
+        console.log(`🔥 [DEV AUTH PROXY] Proxying ${req.method} ${req.url} to Firebase`);
+        proxyReq.setHeader('origin', 'https://brandentifier.replit.app');
+        proxyReq.setHeader('referer', 'https://brandentifier.replit.app/');
+      },
+      proxyRes: (proxyRes: any, req: any, res: any) => {
+        console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+        proxyRes.headers['access-control-allow-origin'] = '*';
+        proxyRes.headers['access-control-allow-credentials'] = 'true';
+      },
+      error: (err: any, req: any, res: any) => {
+        console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
+        res.status(500).json({ error: 'Firebase auth proxy error' });
+      }
     }
   }));
 } else {

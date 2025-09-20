@@ -61,7 +61,7 @@ export class PersonalizedQuestAssignment {
       );
 
       for (const missingRec of missingRecommendations) {
-        const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile);
+        const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
         
         const [newQuest] = await db
           .insert(questDefinitions)
@@ -124,6 +124,7 @@ export class PersonalizedQuestAssignment {
             status: 'active',
             progress: 0,
             assignedAt: new Date(),
+            assignedDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
             weekNumber: currentWeek,
             year: currentYear
           })
@@ -386,6 +387,7 @@ export class PersonalizedQuestAssignment {
             questDefinitionId: questDef.id,
             status: 'active',
             progress: 0,
+            assignedDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
             weekNumber,
             year,
             assignedAt: new Date()

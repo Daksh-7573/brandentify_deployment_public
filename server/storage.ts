@@ -11220,8 +11220,7 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          success_criteria as "successCriteria", is_active as "isActive"
         FROM quest_definitions
         WHERE is_active = true
         ORDER BY category, difficulty, title
@@ -11240,8 +11239,7 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          success_criteria as "successCriteria", is_active as "isActive"
         FROM quest_definitions
         WHERE category = $1 AND is_active = true
         ORDER BY difficulty, title
@@ -11264,8 +11262,7 @@ export class DatabaseStorage implements IStorage {
         RETURNING 
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          success_criteria as "successCriteria", is_active as "isActive"
       `, [
         quest.title, quest.description, quest.category, quest.difficulty,
         quest.xpReward, quest.estimatedTimeMinutes, quest.instructions,
@@ -11334,8 +11331,7 @@ export class DatabaseStorage implements IStorage {
         RETURNING 
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          success_criteria as "successCriteria", is_active as "isActive"
       `, values);
 
       return result.rows[0];
@@ -11475,17 +11471,17 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO user_quests (
-          user_id, quest_definition_id, status, progress, assigned_at
-        ) VALUES ($1, $2, $3, $4, $5)
+          user_id, quest_definition_id, status, progress, assigned_at, week_number, year, assigned_date
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING 
           id, user_id as "userId", quest_definition_id as "questDefinitionId",
           status, progress, assigned_at as "assignedAt", 
           completed_at as "completedAt", xp_earned as "xpEarned", 
           dismissed_reason as "dismissedReason", badge_earned as "badgeEarned", musk_response as "muskResponse",
-          week_number as "weekNumber", year
+          week_number as "weekNumber", year, assigned_date as "assignedDate"
       `, [
         quest.userId, quest.questDefinitionId, quest.status || 'active',
-        quest.progress || 0, quest.startedAt || new Date()
+        quest.progress || 0, quest.assignedAt || new Date(), quest.weekNumber || null, quest.year || null, quest.assignedDate || null
       ]);
       
       return result.rows[0];
@@ -12241,6 +12237,156 @@ export class DatabaseStorage implements IStorage {
       console.error('[db.isUserFollowing] Error:', error);
       return false;
     }
+  }
+
+  async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
+      
+      // Check if user_quests table exists
+      const tableExists = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.tables
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableExists.rows[0].exists) {
+        console.log(`[db.getCurrentDayUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year,
+          assigned_date as "assignedDate"
+        FROM user_quests
+        WHERE user_id = $1
+          AND assigned_date = $2
+        ORDER BY 
+          CASE status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          assigned_at DESC
+      `, [userId, currentDate]);
+      
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentDayUserQuests] Error fetching daily quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
+      return [];
+    }
+  }
+
+  async assignDailyQuestsToUser(userId: number): Promise<UserQuest[]> {
+    // Get current date information
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const currentWeek = this.getWeekNumber(now);
+    const currentYear = now.getFullYear();
+    
+    // Check if user already has quests for today
+    const existingDailyQuests = await this.getCurrentDayUserQuests(userId);
+    if (existingDailyQuests.length > 0) {
+      return existingDailyQuests;
+    }
+    
+    // Get user for profile completion check
+    const user = await this.getUser(userId);
+    if (!user) return [];
+    
+    // Get all active quest definitions
+    const allQuests = await this.getActiveQuestDefinitions();
+    
+    // Filter quests based on user's profile completion level
+    const eligibleQuests = allQuests.filter(quest => {
+      // Basic eligibility (same as weekly logic for now)
+      return true; // Keep it simple for daily quests
+    });
+    
+    // Randomly select 1-2 quests for the day (more manageable than 5 per week)
+    const numQuests = Math.min(2, Math.max(1, eligibleQuests.length)); // 1-2 quests
+    const selectedQuests: QuestDefinition[] = [];
+    
+    // Try to get variety in quest types
+    const questTypes = [...new Set(eligibleQuests.map(q => q.type))];
+    
+    // If we have multiple types, try to get one of each up to our limit
+    if (questTypes.length > 1 && numQuests > 1) {
+      // Select one from different types
+      const shuffledTypes = questTypes.sort(() => Math.random() - 0.5);
+      
+      for (let i = 0; i < Math.min(numQuests, shuffledTypes.length); i++) {
+        const type = shuffledTypes[i];
+        const typeQuests = eligibleQuests.filter(q => q.type === type);
+        if (typeQuests.length > 0) {
+          const randomIndex = Math.floor(Math.random() * typeQuests.length);
+          selectedQuests.push(typeQuests[randomIndex]);
+        }
+      }
+    } else {
+      // Random selection if we only have one type or need one quest
+      for (let i = 0; i < numQuests && eligibleQuests.length > 0; i++) {
+        const randomIndex = Math.floor(Math.random() * eligibleQuests.length);
+        selectedQuests.push(eligibleQuests[randomIndex]);
+        // Remove selected to avoid duplicates
+        eligibleQuests.splice(randomIndex, 1);
+      }
+    }
+    
+    // Create user quests for the selected quest definitions
+    const createdQuests: UserQuest[] = [];
+    
+    for (const questDef of selectedQuests) {
+      const quest = await this.createUserQuest({
+        userId,
+        questDefinitionId: questDef.id,
+        status: "active",
+        progress: 0,
+        weekNumber: currentWeek,
+        year: currentYear,
+        assignedDate: currentDate
+      });
+      
+      createdQuests.push(quest);
+    }
+    
+    return createdQuests;
+  }
+
+  // Utility function to get ISO week number
+  getWeekNumber(date: Date): number {
+    // Create a copy of the date to avoid modifying the original
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    
+    // Get first day of year
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    
+    // Calculate full weeks to nearest Thursday
+    const weekNumber = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    
+    return weekNumber;
   }
 }
 
