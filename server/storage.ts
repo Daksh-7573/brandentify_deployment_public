@@ -7131,30 +7131,41 @@ export class MemStorage implements IStorage {
       
       const result = await pool.query(`
         SELECT 
-          id,
-          user_id as "userId",
-          quest_definition_id as "questDefinitionId",
-          status,
-          progress,
-          assigned_at as "assignedAt",
-          completed_at as "completedAt",
-          dismissed_reason as "dismissedReason",
-          xp_earned as "xpEarned",
-          badge_earned as "badgeEarned",
-          musk_response as "muskResponse",
-          week_number as "weekNumber",
-          year,
-          assigned_date as "assignedDate"
-        FROM user_quests
-        WHERE user_id = $1
-          AND assigned_date = $2
+          uq.id,
+          uq.user_id as "userId",
+          uq.quest_definition_id as "questDefinitionId",
+          uq.status,
+          uq.progress,
+          uq.assigned_at as "assignedAt",
+          uq.completed_at as "completedAt",
+          uq.dismissed_reason as "dismissedReason",
+          uq.xp_earned as "xpEarned",
+          uq.badge_earned as "badgeEarned",
+          uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber",
+          uq.year,
+          uq.assigned_date as "assignedDate",
+          qd.title,
+          qd.description,
+          qd.type,
+          qd.target_count as "targetCount",
+          qd.target_action as "targetAction",
+          qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward",
+          qd.musk_tip as "muskTip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1
+          AND uq.assigned_date = $2
+          AND qd.type NOT IN ('social_quest', 'social_post')
+          AND uq.status = 'active'
         ORDER BY 
-          CASE status 
+          CASE uq.status 
             WHEN 'completed' THEN 2
             WHEN 'dismissed' THEN 1
             ELSE 0
           END,
-          assigned_at DESC
+          uq.assigned_at DESC
       `, [userId, currentDate]);
       
       console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
@@ -12256,61 +12267,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
-    try {
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      
-      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
-      
-      // Check if user_quests table exists
-      const tableExists = await pool.query(`
-        SELECT EXISTS (
-          SELECT 1 FROM information_schema.tables
-          WHERE table_name = 'user_quests'
-        );
-      `);
-      
-      if (!tableExists.rows[0].exists) {
-        console.log(`[db.getCurrentDayUserQuests] user_quests table does not exist`);
-        return [];
-      }
-      
-      const result = await pool.query(`
-        SELECT 
-          id,
-          user_id as "userId",
-          quest_definition_id as "questDefinitionId",
-          status,
-          progress,
-          assigned_at as "assignedAt",
-          completed_at as "completedAt",
-          dismissed_reason as "dismissedReason",
-          xp_earned as "xpEarned",
-          badge_earned as "badgeEarned",
-          musk_response as "muskResponse",
-          week_number as "weekNumber",
-          year,
-          assigned_date as "assignedDate"
-        FROM user_quests
-        WHERE user_id = $1
-          AND assigned_date = $2
-        ORDER BY 
-          CASE status 
-            WHEN 'completed' THEN 2
-            WHEN 'dismissed' THEN 1
-            ELSE 0
-          END,
-          assigned_at DESC
-      `, [userId, currentDate]);
-      
-      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
-      return result.rows;
-    } catch (error) {
-      console.error(`[db.getCurrentDayUserQuests] Error fetching daily quests for user ${userId}:`, error);
-      // Return empty array to prevent cascading errors
-      return [];
-    }
-  }
 
   async assignDailyQuestsToUser(userId: number): Promise<UserQuest[]> {
     // Get current date information
