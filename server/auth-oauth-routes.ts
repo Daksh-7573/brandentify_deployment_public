@@ -167,14 +167,14 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       isDevelopment,
       isBrandentifierCom,
       isReplitDomain,
-      isPopupFlow
+      isPopupRequest: req.query.popup === 'true' || req.query.flow === 'popup'
     });
     console.log('📝 Whitelist Check:', {
       'isInWhitelist': ALLOWED_REDIRECT_URIS.includes(redirectUri),
       'whitelistedURIs': ALLOWED_REDIRECT_URIS
     });
     
-    // Create cryptographically secure state parameter with return host
+    // Create cryptographically secure state parameter with return host  
     const isPopupFlow = req.query.popup === 'true' || req.query.flow === 'popup';
     const stateData = {
       nonce: crypto.randomBytes(16).toString('base64url'),
@@ -1131,4 +1131,83 @@ export async function checkSessionRoute(req: Request, res: Response) {
       error: 'Session check failed'
     });
   }
+}
+
+// INVESTIGATION: Debug endpoint to analyze CSP and iframe context differences
+export async function debugContextRoute(req: Request, res: Response) {
+  console.log('🔍 [CONTEXT-DEBUG] Debug endpoint called for investigation');
+  
+  // Capture all headers and context information
+  const contextAnalysis = {
+    timestamp: new Date().toISOString(),
+    host: req.get('host'),
+    origin: req.get('origin'),
+    referer: req.get('referer'),
+    userAgent: req.get('user-agent')?.substring(0, 100) + '...',
+    headers: {
+      'x-forwarded-proto': req.get('x-forwarded-proto'),
+      'x-forwarded-host': req.get('x-forwarded-host'),
+      'x-frame-options': req.get('x-frame-options'),
+      'content-security-policy': req.get('content-security-policy'),
+      'sec-fetch-site': req.get('sec-fetch-site'),
+      'sec-fetch-mode': req.get('sec-fetch-mode'),
+      'sec-fetch-dest': req.get('sec-fetch-dest'),
+      'sec-fetch-user': req.get('sec-fetch-user')
+    },
+    context: {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      ip: req.ip || req.connection.remoteAddress || 'unknown',
+      isSecure: req.secure || req.get('x-forwarded-proto') === 'https'
+    },
+    // Detect iframe context
+    iframeDetection: {
+      isIframeContext: req.get('sec-fetch-dest') === 'iframe' || 
+                      req.get('sec-fetch-site') === 'cross-site' ||
+                      req.get('referer')?.includes('preview'),
+      secFetchDest: req.get('sec-fetch-dest'),
+      secFetchSite: req.get('sec-fetch-site'),
+      hasRefererPreview: req.get('referer')?.includes('preview') || false
+    },
+    // OAuth URI analysis
+    uriAnalysis: (() => {
+      const host = req.get('host') || 'unknown';
+      const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+      const isBrandentifierCom = host.includes('brandentifier.com');
+      const isReplitDomain = host.includes('.replit.dev') || host.includes('.replit.app');
+      
+      let redirectUri;
+      if (isDevelopment) {
+        redirectUri = 'http://localhost:5000/api/auth/google/callback';
+      } else if (isBrandentifierCom) {
+        redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+      } else if (isReplitDomain) {
+        if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+          redirectUri = `https://${host}/api/auth/google/callback`;
+        } else {
+          redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+        }
+      } else {
+        redirectUri = `https://${host}/api/auth/google/callback`;
+      }
+      
+      return {
+        host,
+        generatedRedirectUri: redirectUri,
+        isInWhitelist: ALLOWED_REDIRECT_URIS.includes(redirectUri),
+        isDevelopment,
+        isBrandentifierCom,
+        isReplitDomain
+      };
+    })()
+  };
+  
+  console.log('📊 [CONTEXT-DEBUG] Complete context analysis:', JSON.stringify(contextAnalysis, null, 2));
+  
+  res.json({
+    success: true,
+    message: 'Context analysis completed - check server logs for details',
+    contextAnalysis
+  });
 }
