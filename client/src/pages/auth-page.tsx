@@ -29,7 +29,6 @@ export default function AuthPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const errorType = urlParams.get('error');
   const errorMessage = urlParams.get('message');
-  const retryHint = urlParams.get('retryHint'); // New retry guidance from server
   
   // Debug auth state on auth page
   console.log('AuthPage: Current auth state:', {
@@ -63,23 +62,21 @@ export default function AuthPage() {
         return {
           icon: Shield,
           title: 'Security Verification Failed',
-          message: retryHint === 'newSession' ? 'This may be due to a cross-domain security check. A fresh authentication session will resolve this.' : 'The authentication request could not be verified. This usually happens when the session has been tampered with.',
-          guidance: retryHint === 'newSession' ? 'Please try signing in again - a new secure session will be created.' : 'Please try signing in again to restart the authentication process.',
+          message: 'The authentication request could not be verified. This usually happens when the session has been tampered with.',
+          guidance: 'Please try signing in again to restart the authentication process.',
           color: 'border-red-500/50 bg-red-500/10',
           iconColor: 'text-red-400',
-          retryable: true,
-          autoRetry: false // Manual retry for security issues
+          retryable: true
         };
       case 'expired_state':
         return {
           icon: Clock,
           title: 'Authentication Session Expired',
-          message: 'Your authentication session has expired. For security reasons, authentication requests are only valid for 20 minutes.',
-          guidance: retryHint === 'immediate' ? 'You can try again immediately - a fresh session will be created.' : 'Please start the sign-in process again to get a fresh authentication session.',
+          message: 'Your authentication session has expired. For security reasons, authentication requests are only valid for 15 minutes.',
+          guidance: 'Please start the sign-in process again to get a fresh authentication session.',
           color: 'border-yellow-500/50 bg-yellow-500/10',
           iconColor: 'text-yellow-400',
-          retryable: true,
-          autoRetry: retryHint === 'immediate'
+          retryable: true
         };
       case 'exchange_code_not_found':
         return {
@@ -136,7 +133,7 @@ export default function AuthPage() {
           icon: Clock,
           title: 'Session Transfer Expired',
           message: 'The session transfer took too long and has expired for security reasons.',
-          guidance: 'Please complete the sign-in process within 10 minutes. Try again.',
+          guidance: 'Please complete the sign-in process within 5 minutes. Try again.',
           color: 'border-yellow-500/50 bg-yellow-500/10',
           iconColor: 'text-yellow-400',
           retryable: true
@@ -200,33 +197,16 @@ export default function AuthPage() {
     }, 1000);
   };
 
-  // Auto-retry logic for errors that support immediate retry
-  useEffect(() => {
-    if (errorType && errorConfig?.autoRetry) {
-      console.log(`🔄 [AUTO-RETRY] Automatically retrying for error type: ${errorType}`);
-      setIsRetrying(true);
-      
-      // Clear error and retry after 3 seconds to show user the error briefly
-      const retryTimer = setTimeout(() => {
-        console.log(`✅ [AUTO-RETRY] Clearing error and attempting retry for: ${errorType}`);
-        window.history.replaceState({}, '', '/auth');
-        setIsRetrying(false);
-      }, 3000);
-      
-      return () => clearTimeout(retryTimer);
-    }
-  }, [errorType, errorConfig]);
-
   // Auto-clear errors after 30 seconds to prevent stale error states
   useEffect(() => {
-    if (errorType && !errorConfig?.autoRetry) {
+    if (errorType) {
       const timer = setTimeout(() => {
         window.history.replaceState({}, '', '/auth');
       }, 30000);
       
       return () => clearTimeout(timer);
     }
-  }, [errorType, errorConfig]);
+  }, [errorType]);
 
   // Simple redirect without loops - only redirect if explicitly on auth page
   useEffect(() => {

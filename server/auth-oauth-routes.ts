@@ -17,139 +17,30 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-// SECURITY: JWT_SECRET must be consistent across all instances for cross-instance state validation
-const JWT_SECRET_RAW = process.env.JWT_SECRET;
-if (!JWT_SECRET_RAW) {
-  throw new Error('JWT_SECRET environment variable is required for secure cross-instance OAuth state validation. Set this to the same value across all server instances.');
-}
-const JWT_SECRET: string = JWT_SECRET_RAW; // TypeScript assertion - guaranteed to be defined after check
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
-// DOMAIN-SPECIFIC: Allowed redirect URI patterns (must be registered in Google Cloud Console)
-// Updated strategy: Authenticate on the same domain where user starts to avoid cross-domain issues
-const ALLOWED_REDIRECT_URI_PATTERNS = [
-  // Production domains
-  'https://brandentifier.com/api/auth/google/callback',
-  'https://www.brandentifier.com/api/auth/google/callback',
-  
-  // Replit published domains
+// Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
+const ALLOWED_REDIRECT_URIS = [
   'https://brandentifier.replit.app/api/auth/google/callback',
-  
-  // Development domains
+  'https://brandentifier.com/api/auth/google/callback',
   'http://localhost:5000/api/auth/google/callback',
   'http://127.0.0.1:5000/api/auth/google/callback',
-  
-  // Replit preview domain patterns (requires wildcard registration in Google Cloud Console)
-  // Pattern: https://*.picard.replit.dev/api/auth/google/callback
-  // Pattern: https://*.replit.dev/api/auth/google/callback
+  // Current Replit preview domain
+  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google/callback'
 ];
 
-// DOMAIN-SPECIFIC: Replit domain patterns for same-domain authentication
-// REMOVED: Domain patterns (no longer needed with stable redirect URI approach)
-// All Replit environments now use the stable callback: brandentifier.replit.app
-
-/**
- * STABLE REDIRECT URI SELECTION
- * 
- * Google OAuth requires exact redirect URI matches - wildcards are NOT supported.
- * This function uses a single stable registered redirect URI for iframe compatibility.
- * 
- * Strategy: Use stable callback for popup authentication, return to original host
- */
-function getDomainSpecificRedirectUri(host: string): { redirectUri: string; returnHost: string } {
-  const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
-  
-  let redirectUri: string;
-  const returnHost = host; // Track original host for post-auth return
-  
-  if (isDevelopment) {
-    // Development: Use localhost callback (same domain)
-    redirectUri = `http://${host}/api/auth/google/callback`;
-  } else {
-    // All production and preview environments: Use stable registered callback
-    // This MUST be exactly registered in Google Cloud Console
-    redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-  }
-  
-  console.log('🔗 [STABLE-REDIRECT] Using stable redirect URI strategy:', {
-    originalHost: host,
-    stableRedirectUri: redirectUri,
-    returnHost: returnHost,
-    isDevelopment
-  });
-  
-  return { redirectUri, returnHost };
-}
-
-/**
- * SECURITY: Validate redirect URI against exact allowed URIs
- * 
- * Google OAuth requires exact matches - no wildcards supported.
- * This prevents redirect_uri_mismatch errors and open redirect attacks.
- */
-function validateRedirectUri(redirectUri: string): boolean {
-  const ALLOWED_EXACT_URIS = [
-    // Production domains
-    'https://brandentifier.com/api/auth/google/callback',
-    'https://www.brandentifier.com/api/auth/google/callback',
-    
-    // Replit stable callback (used for all preview environments)
-    'https://brandentifier.replit.app/api/auth/google/callback',
-    
-    // Development domains
-    'http://localhost:5000/api/auth/google/callback',
-    'http://127.0.0.1:5000/api/auth/google/callback'
-  ];
-  
-  const isValid = ALLOWED_EXACT_URIS.includes(redirectUri);
-  
-  if (!isValid) {
-    console.log('⚠️ [SECURITY] Invalid redirect URI detected:', {
-      providedUri: redirectUri,
-      allowedExactUris: ALLOWED_EXACT_URIS
-    });
-  }
-  
-  return isValid;
-}
-
-/**
- * SECURITY: Create stateless JWT-based state token
- * 
- * This replaces in-memory state storage to work across different server instances
- */
-function createStatelessState(data: any): string {
-  const payload = {
-    ...data,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (20 * 60), // 20 minutes expiry (increased for better cross-domain handoff)
-    jti: crypto.randomBytes(16).toString('base64url') // unique token ID
-  };
-  
-  return jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256' });
-}
-
-/**
- * SECURITY: Validate stateless JWT state token
- * 
- * This validates the JWT state token and returns the payload if valid
- */
-function validateStatelessState(token: string): any {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET, { 
-      algorithms: ['HS256'],
-      maxAge: '20m' // Additional expiry check (increased for better cross-domain handoff)
-    });
-    return decoded;
-  } catch (error: any) {
-    console.error('❌ [STATE-VALIDATION] JWT state validation failed:', error.message);
-    throw new Error('Invalid or expired authentication state');
-  }
-}
+// Improved domain pattern matching for Replit environments
+const REPLIT_DOMAIN_PATTERNS = [
+  /^[a-zA-Z0-9-]+\.replit\.app$/,                    // Published domains like brandentifier.replit.app
+  /^[a-zA-Z0-9-]+\.replit\.dev$/,                    // Preview domains like simple.replit.dev
+  /^[a-f0-9-]+\.picard\.replit\.dev$/,               // Basic picard preview pattern
+  /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/ // Full picard subdomain pattern like 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+];
 
 // In-memory state storage (in production, use Redis or database)
 const stateStore = new Map<string, { timestamp: number, ip: string }>();
 
-// Cross-domain session exchange for stable redirect URI approach
+// Session exchange code storage for cross-domain handoff
 interface SessionExchangeData {
   sessionToken: string;
   timestamp: number;
@@ -159,15 +50,15 @@ interface SessionExchangeData {
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
 
-// Clean up expired states and session exchange codes every 10 minutes
+// Clean up expired states and session exchange codes every 5 minutes
 setInterval(() => {
-  const twentyMinutesAgo = Date.now() - 20 * 60 * 1000;
-  const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+  const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
   
-  // Clean up expired OAuth states (20 minutes)
+  // Clean up expired OAuth states (15 minutes)
   let deletedStateCount = 0;
   for (const [state, data] of Array.from(stateStore.entries())) {
-    if (data.timestamp < twentyMinutesAgo) {
+    if (data.timestamp < fifteenMinutesAgo) {
       stateStore.delete(state);
       deletedStateCount++;
     }
@@ -179,7 +70,7 @@ setInterval(() => {
   // Clean up expired session exchange codes (5 minutes)
   let deletedExchangeCount = 0;
   for (const [code, data] of Array.from(sessionExchangeStore.entries())) {
-    if (data.timestamp < tenMinutesAgo) {
+    if (data.timestamp < fiveMinutesAgo) {
       sessionExchangeStore.delete(code);
       deletedExchangeCount++;
     }
@@ -187,7 +78,7 @@ setInterval(() => {
   if (deletedExchangeCount > 0) {
     console.log(`🧹 [EXCHANGE-CLEANUP] Removed ${deletedExchangeCount} expired session exchange codes`);
   }
-}, 10 * 60 * 1000);
+}, 5 * 60 * 1000);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
@@ -213,67 +104,62 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       throw new Error('Google Client ID not configured');
     }
     
-    // DOMAIN-SPECIFIC: Use same-domain authentication to eliminate cross-domain issues
+    // Enhanced environment-based redirect URI determination with better domain handling
     const host = req.get('Host') || '';
-    const { redirectUri, returnHost } = getDomainSpecificRedirectUri(host);
+    const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
     
-    console.log('🌐 [OAUTH-URL] Stable redirect analysis:', {
+    console.log('🌐 [OAUTH-URL] Domain analysis:', {
       host,
-      redirectUri,
-      returnHost,
-      isStableRedirect: redirectUri === 'https://brandentifier.replit.app/api/auth/google/callback'
+      isDevelopment,
+      isReplitDomain,
+      isBrandentifierCom,
+      matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    console.log('✅ [OAUTH-URL] Domain-specific redirect URI selected:', redirectUri);
+    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
+    // Store original host in state for post-auth redirect
+    let redirectUri;
+    let returnHost = host;
     
-    // Validation: Ensure URI matches allowed patterns
-    if (!validateRedirectUri(redirectUri)) {
-      console.error('🚨 [OAUTH-URL] CRITICAL: Generated URI not valid!', {
-        generatedUri: redirectUri,
-        host: host
-      });
-      throw new Error('Invalid redirect URI generated - not matching allowed patterns');
+    if (isDevelopment) {
+      redirectUri = 'http://localhost:5000/api/auth/google/callback';
+    } else if (isBrandentifierCom) {
+      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isReplitDomain) {
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // For published domains, still use stable redirect URI
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        // Preview domain: use current domain
+        redirectUri = `https://${host}/api/auth/google/callback`;
+      } else {
+        // Published domain: use stable redirect URI
+        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      }
+    } else {
+      // Fallback for unknown domains - use current host if HTTPS
+      console.log('⚠️ [OAUTH-URL] Unknown domain, using current host as fallback');
+      redirectUri = `https://${host}/api/auth/google/callback`;
     }
     
-    console.log('✅ [URI-DEBUG] Domain-specific validation passed');
-    console.log('🔍 [URI-DEBUG] DOMAIN-SPECIFIC URI ANALYSIS:');
-    console.log('📍 Original Host:', host);
-    console.log('🎯 Domain-Specific Redirect URI:', redirectUri);
-    console.log('🔗 Return Host (same domain):', returnHost);
-    console.log('📋 Request Headers:', {
-      'user-agent': req.get('user-agent')?.substring(0, 100) + '...',
-      'referer': req.get('referer'),
-      'x-forwarded-proto': req.get('x-forwarded-proto'),
-      'x-forwarded-host': req.get('x-forwarded-host'),
-      'origin': req.get('origin'),
-      'sec-fetch-site': req.get('sec-fetch-site'),
-      'sec-fetch-mode': req.get('sec-fetch-mode'),
-      'sec-fetch-dest': req.get('sec-fetch-dest')
-    });
-    console.log('🏷️ Request Context:', {
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      isPopupRequest: req.query.popup === 'true' || req.query.flow === 'popup'
-    });
-    console.log('📝 Domain-Specific Check:', {
-      'isValidUri': validateRedirectUri(redirectUri),
-      'sameDomainAuth': host === returnHost
-    });
+    console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
-    // SECURITY: Create stateless JWT-based state (works across all server instances)
-    const isPopupFlow = req.query.popup === 'true' || req.query.flow === 'popup';
+    // Create cryptographically secure state parameter with return host
     const stateData = {
       nonce: crypto.randomBytes(16).toString('base64url'),
       returnHost: returnHost,
-      ip: req.ip || req.connection.remoteAddress || 'unknown',
-      isPopup: isPopupFlow,
-      initiatingHost: host // Track where auth was initiated
+      timestamp: Date.now(),
+      ip: req.ip || req.connection.remoteAddress || 'unknown'
     };
     
-    const state = createStatelessState(stateData);
+    const state = Buffer.from(JSON.stringify(stateData)).toString('base64url');
     
-    console.log('✅ [SECURITY] Stateless JWT state created for same-domain authentication');
+    // Store state for validation (simplified since data is in state)
+    stateStore.set(state, { 
+      timestamp: Date.now(), 
+      ip: req.ip || req.connection.remoteAddress || 'unknown'
+    });
     
     // Build OAuth URL with OpenID Connect scope
     const params = new URLSearchParams({
@@ -331,32 +217,16 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
  * Handle Google OAuth callback - processes the authorization code
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
-  const startTime = Date.now();
-  const callbackId = crypto.randomBytes(8).toString('hex');
-  
   try {
-    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] ========== STARTING GOOGLE OAUTH CALLBACK ==========`);
-    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Timestamp: ${new Date().toISOString()}`);
-    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Request details:`, {
-      method: req.method,
-      url: req.url,
-      fullUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
-      host: req.get('host'),
-      userAgent: req.get('user-agent')?.substring(0, 100) + '...',
-      referer: req.get('referer'),
-      origin: req.get('origin'),
-      remoteAddress: req.ip || req.connection.remoteAddress
-    });
-    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Query parameters:`, req.query);
-    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Request headers (filtered):`, {
+    console.log('🔄 [OAUTH CALLBACK] Processing Google OAuth callback');
+    console.log('🔄 [OAUTH CALLBACK] Query params:', req.query);
+    console.log('🔄 [OAUTH CALLBACK] Request URL:', req.url);
+    console.log('🔄 [OAUTH CALLBACK] Request method:', req.method);
+    console.log('🔄 [OAUTH CALLBACK] Request headers:', {
       host: req.get('host'),
       'user-agent': req.get('user-agent'),
       referer: req.get('referer'),
-      origin: req.get('origin'),
-      'accept-language': req.get('accept-language'),
-      'x-forwarded-for': req.get('x-forwarded-for'),
-      'x-forwarded-proto': req.get('x-forwarded-proto'),
-      'x-real-ip': req.get('x-real-ip')
+      origin: req.get('origin')
     });
     
     // Set cache control headers for auth callback endpoint
@@ -372,25 +242,15 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     });
     
     const { code, state, error } = req.query;
-    console.log(`🔍 [OAUTH-CALLBACK-${callbackId}] Extracted query parameters:`, {
-      hasCode: !!code,
-      hasState: !!state,
-      hasError: !!error,
-      codePrefix: code ? (code as string).substring(0, 20) + '...' : null,
-      statePrefix: state ? (state as string).substring(0, 20) + '...' : null,
-      error: error
-    });
     
     // Handle OAuth errors with detailed logging
     if (error) {
-      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] Google OAuth error detected:`, {
+      console.error('❌ [OAUTH-ERROR] Google OAuth error:', {
         error: error,
-        errorType: typeof error,
         host: req.get('host'),
         referer: req.get('referer'),
-        userAgent: req.get('user-agent')?.substring(0, 100),
-        timestamp: new Date().toISOString(),
-        callbackDuration: Date.now() - startTime
+        userAgent: req.get('user-agent'),
+        timestamp: new Date().toISOString()
       });
       
       // Provide specific error messages based on OAuth error types
@@ -405,145 +265,108 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
     if (!code || !state) {
-      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] Missing authorization code or state:`, {
+      console.error('❌ [OAUTH-CALLBACK-ERROR] Missing authorization code or state:', {
         hasCode: !!code,
         hasState: !!state,
-        codeType: typeof code,
-        stateType: typeof state,
-        allQueryParams: Object.keys(req.query),
         query: req.query,
         host: req.get('host'),
-        timestamp: new Date().toISOString(),
-        callbackDuration: Date.now() - startTime
+        timestamp: new Date().toISOString()
       });
       return res.redirect('/auth?error=missing_params&message=Authentication%20response%20incomplete.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
-    // SECURITY: Validate stateless JWT state (works across all server instances) with retry logic
-    let stateData;
-    try {
-      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] Starting JWT state validation...`);
-      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] JWT_SECRET available:`, !!JWT_SECRET);
-      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] State token length:`, (state as string).length);
-      
-      stateData = validateStatelessState(state as string);
-      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] JWT state validation successful:`, {
-        initiatingHost: stateData.initiatingHost,
-        returnHost: stateData.returnHost,
-        isPopup: stateData.isPopup,
-        jti: stateData.jti,
-        currentHost: req.get('host'),
-        tokenAge: Math.floor(Date.now() / 1000) - stateData.iat,
-        timeToExpiry: stateData.exp - Math.floor(Date.now() / 1000),
-        issueTime: new Date(stateData.iat * 1000).toISOString(),
-        expiryTime: new Date(stateData.exp * 1000).toISOString()
+    // Enhanced state parameter validation with detailed logging
+    const stateData = stateStore.get(state as string);
+    const currentTime = Date.now();
+    
+    console.log('🔐 [STATE-VALIDATION] Validating OAuth state:', {
+      stateExists: !!stateData,
+      stateStoreSize: stateStore.size,
+      currentHost: req.get('host'),
+      timestamp: new Date().toISOString()
+    });
+    
+    if (!stateData) {
+      console.error('❌ [STATE-VALIDATION] Invalid or missing state parameter:', {
+        providedState: state ? `${(state as string).substring(0, 10)}...` : 'null',
+        storeHasStates: stateStore.size > 0,
+        allStates: Array.from(stateStore.keys()).map(k => k.substring(0, 10) + '...')
       });
-    } catch (error: any) {
-      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] JWT state validation failed:`, {
-        error: error.message,
-        errorType: error.name,
-        errorStack: error.stack,
-        providedState: typeof state,
-        stateLength: typeof state === 'string' ? (state as string).length : 0,
-        statePrefix: typeof state === 'string' ? (state as string).substring(0, 50) + '...' : null,
-        currentHost: req.get('host'),
-        currentTime: Math.floor(Date.now() / 1000),
-        userAgent: req.get('user-agent')?.substring(0, 100),
-        callbackDuration: Date.now() - startTime,
-        jwtSecretAvailable: !!JWT_SECRET
-      });
-      
-      // Enhanced error categorization with retry guidance
-      if (error.message.includes('expired') || error.name === 'TokenExpiredError') {
-        console.log('⏰ [AUTH-RECOVERY] JWT token expired - suggesting immediate retry');
-        return res.redirect('/auth?error=expired_state&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=immediate');
-      } else if (error.message.includes('signature') || error.name === 'JsonWebTokenError') {
-        console.log('🔐 [AUTH-RECOVERY] JWT signature invalid - may be cross-instance issue');
-        return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=newSession');
-      } else {
-        console.log('❓ [AUTH-RECOVERY] Unknown JWT validation error - suggesting new session');
-        return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=newSession');
-      }
+      return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
-    // JWT validation already handled expiry, state is guaranteed valid at this point
+    
+    // Check state age (max 15 minutes) - Extended from 5 minutes
+    const fifteenMinutesAgo = currentTime - 15 * 60 * 1000;
+    const stateAge = currentTime - stateData.timestamp;
+    
+    console.log('⏰ [STATE-VALIDATION] State age check:', {
+      stateTimestamp: new Date(stateData.timestamp).toISOString(),
+      currentTimestamp: new Date(currentTime).toISOString(),
+      stateAgeSeconds: Math.floor(stateAge / 1000),
+      maxAgeSeconds: 15 * 60,
+      isExpired: stateData.timestamp < fifteenMinutesAgo
+    });
+    
+    if (stateData.timestamp < fifteenMinutesAgo) {
+      console.error('❌ [STATE-VALIDATION] Expired state parameter:', {
+        stateAge: Math.floor(stateAge / 1000) + ' seconds',
+        maxAge: '900 seconds (15 minutes)',
+        expiredBy: Math.floor((fifteenMinutesAgo - stateData.timestamp) / 1000) + ' seconds'
+      });
+      stateStore.delete(state as string);
+      return res.redirect('/auth?error=expired_state&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    console.log('✅ [STATE-VALIDATION] State validation successful');
+    
+    // Remove used state
+    stateStore.delete(state as string);
     
     if (!CLIENT_ID || !CLIENT_SECRET) {
       throw new Error('Google OAuth credentials not configured');
     }
     
-    // SECURITY: Use validated returnHost from JWT state and generate redirect URI for token exchange
+    // Enhanced environment-based redirect URI determination in callback (matches URL generation)
     const host = req.get('Host') || '';
-    const { redirectUri } = getDomainSpecificRedirectUri(host);
-    const returnHost = stateData.returnHost; // Direct use since same-domain authentication eliminates cross-domain security concerns
+    const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
     
-    console.log('🌐 [OAUTH-CALLBACK] Secure callback analysis:', {
-      callbackHost: host,
-      redirectUri,
-      returnHost: returnHost,
-      stateInitiatingHost: stateData.initiatingHost,
-      isValidUri: validateRedirectUri(redirectUri),
+    console.log('🌐 [OAUTH-CALLBACK] Domain analysis for token exchange:', {
+      host,
+      isDevelopment,
+      isReplitDomain,
+      isBrandentifierCom,
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    // Validation: Ensure URI consistency
-    if (!validateRedirectUri(redirectUri)) {
-      console.error('🚨 [OAUTH-CALLBACK] CRITICAL: Generated URI not valid!', {
-        generatedUri: redirectUri,
-        host: host
-      });
-      throw new Error('Invalid redirect URI generated for token exchange - not matching allowed patterns');
+    // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
+    let redirectUri;
+    
+    if (isDevelopment) {
+      redirectUri = 'http://localhost:5000/api/auth/google/callback';
+    } else if (isBrandentifierCom) {
+      redirectUri = 'https://brandentifier.com/api/auth/google/callback';
+    } else if (isReplitDomain) {
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // For published domains, still use stable redirect URI
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        // Preview domain: use current domain
+        redirectUri = `https://${host}/api/auth/google/callback`;
+      } else {
+        // Published domain: use stable redirect URI
+        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      }
+    } else {
+      // Fallback for unknown domains - use current host if HTTPS
+      console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using current host as fallback');
+      redirectUri = `https://${host}/api/auth/google/callback`;
     }
     
     console.log('🔄 [OAUTH CALLBACK] Exchanging code for token...');
-    console.log('✅ [OAUTH CALLBACK] Using standardized redirect URI:', redirectUri);
-    console.log('🔍 [OAUTH CALLBACK] Original host detected:', host);
-    console.log('🔗 [OAUTH CALLBACK] Return host for post-auth:', returnHost);
-    
-    // STANDARDIZED DEBUGGING: Detailed callback context analysis
-    console.log('🔍 [CALLBACK-DEBUG] STANDARDIZED CALLBACK ANALYSIS:');
-    console.log('📍 Callback Host:', host);
-    console.log('🎯 Standardized Token Exchange URI:', redirectUri);
-    console.log('🔗 Post-Auth Return Host:', returnHost);
-    console.log('📋 Callback Headers:', {
-      'user-agent': req.get('user-agent')?.substring(0, 100) + '...',
-      'referer': req.get('referer'),
-      'x-forwarded-proto': req.get('x-forwarded-proto'),
-      'x-forwarded-host': req.get('x-forwarded-host'),
-      'origin': req.get('origin'),
-      'x-frame-options': req.get('x-frame-options'),
-      'sec-fetch-site': req.get('sec-fetch-site'),
-      'sec-fetch-mode': req.get('sec-fetch-mode'),
-      'sec-fetch-dest': req.get('sec-fetch-dest')
-    });
-    console.log('🏷️ Callback Context:', {
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      state: typeof state,
-      code: typeof code
-    });
-    console.log('📝 URI Validation:', {
-      'generatedURI': redirectUri,
-      'isValidUri': validateRedirectUri(redirectUri),
-      'validUriPatterns': 'Check validateRedirectUri function'
-    });
-    
-    // ERROR HANDLING: Add token exchange error prediction
-    if (!validateRedirectUri(redirectUri)) {
-      console.log('⚠️ [POTENTIAL-ERROR] Generated URI not in whitelist - Google OAuth will likely fail!');
-      console.log('🔧 [SUGGESTION] Either add to Google Cloud Console or fix dynamic generation logic');
-    }
-    
-    // IFRAME CONTEXT ANALYSIS: Check if request came from iframe
-    const isIframeContext = req.get('sec-fetch-dest') === 'iframe' || 
-                           req.get('sec-fetch-site') === 'cross-site' ||
-                           req.get('referer')?.includes('preview');
-    console.log('🖼️ [IFRAME-ANALYSIS] Context detection:', {
-      'isIframeContext': isIframeContext,
-      'sec-fetch-dest': req.get('sec-fetch-dest'),
-      'sec-fetch-site': req.get('sec-fetch-site'),
-      'referer': req.get('referer')
-    });
+    console.log('✅ [OAUTH CALLBACK] Using redirect URI:', redirectUri);
+    console.log('🔍 [OAUTH CALLBACK] Host detected:', host);
+    console.log('🔧 [OAUTH CALLBACK] Development mode:', isDevelopment);
     
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
@@ -728,8 +551,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       algorithm: 'HS256'
     });
     
-    // SECURITY: Use already validated returnHost from JWT state (no additional parsing needed)
-    const finalReturnHost = returnHost; // Already validated earlier from JWT state
+    // Parse state to get return host for cross-domain session handoff
+    let returnHost = req.get('host') || 'localhost:5000';
+    
+    try {
+      const decodedState = JSON.parse(Buffer.from(state as string, 'base64url').toString());
+      if (decodedState.returnHost) {
+        returnHost = decodedState.returnHost;
+      }
+    } catch (error) {
+      console.log('⚠️ [OAUTH CALLBACK] Could not parse state for return host, using current host');
+    }
     
     console.log('✅ [OAUTH CALLBACK] Authentication completed successfully');
     console.log('✅ [OAUTH CALLBACK] User authenticated:', {
@@ -739,21 +571,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       authProvider: 'google'
     });
     
-    // CROSS-DOMAIN ANALYSIS: Check if session handoff is needed
+    // Check if cross-domain session handoff is needed
     const currentHost = req.get('host') || 'localhost:5000';
-    const needsCrossDomainHandoff = finalReturnHost !== currentHost;
+    const needsCrossDomainHandoff = returnHost !== currentHost;
     
-    console.log(`🔍 [OAUTH-CALLBACK-${callbackId}] Domain analysis for cross-domain handoff:`, {
+    console.log('🔍 [SESSION-HANDOFF] Domain analysis:', {
       currentHost,
-      returnHost: finalReturnHost,
-      needsCrossDomainHandoff,
-      authFlowType: needsCrossDomainHandoff ? 'cross-domain' : 'same-domain',
-      userAgent: req.get('user-agent')?.substring(0, 100),
-      callbackDuration: Date.now() - startTime
+      returnHost,
+      needsCrossDomainHandoff
     });
     
     if (needsCrossDomainHandoff) {
-      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Cross-domain handoff required - generating session exchange code...`);
       // Generate secure session exchange code for cross-domain handoff
       const exchangeCode = crypto.randomBytes(32).toString('base64url');
       
@@ -761,35 +589,21 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       sessionExchangeStore.set(exchangeCode, {
         sessionToken,
         timestamp: Date.now(),
-        returnHost: finalReturnHost,
+        returnHost,
         userId: user.id
       });
       
-      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Stored session exchange:`, {
-        codePrefix: exchangeCode.substring(0, 10) + '...',
-        returnHost: finalReturnHost,
-        userId: user.id,
-        storeSize: sessionExchangeStore.size,
-        exchangeExpiry: new Date(Date.now() + 5 * 60 * 1000).toISOString()
-      });
-      
       // Build session acceptance URL on return domain
-      const sessionAcceptUrl = finalReturnHost.includes('localhost') 
-        ? `http://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`
-        : `https://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`;
+      const sessionAcceptUrl = returnHost.includes('localhost') 
+        ? `http://${returnHost}/auth/accept-session?code=${exchangeCode}`
+        : `https://${returnHost}/auth/accept-session?code=${exchangeCode}`;
       
-      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Cross-domain handoff initiated`);
-      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] Generated exchange code and redirecting to:`, sessionAcceptUrl);
-      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] OAuth callback processing completed in ${Date.now() - startTime}ms`);
+      console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
+      console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
       
       return res.redirect(303, sessionAcceptUrl);
     } else {
-      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] Same-domain authentication - no handoff needed`);
-      // Same domain - check if this is a popup request first
-      // SECURITY: Use popup detection from already validated JWT state
-      const isPopupRequest = stateData.isPopup === true;
-      console.log('🔍 [POPUP-DETECTION] JWT state-based popup detection:', { isPopup: isPopupRequest });
-      
+      // Same domain - set cookie directly and redirect to dashboard
       const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
       
       const cookieOptions = {
@@ -804,186 +618,13 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         domain: (cookieOptions as any).domain || 'omitted',
         sameSite: cookieOptions.sameSite,
         secure: cookieOptions.secure,
-        host: currentHost,
-        isPopupRequest
+        host: currentHost
       });
       
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
       
-      if (isPopupRequest) {
-        // Handle popup authentication - send PostMessage to parent window
-        console.log('🪟 [POPUP-AUTH] Popup authentication detected - sending PostMessage to parent');
-        
-        const popupResponseHtml = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Authentication Successful</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      text-align: center;
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      max-width: 400px;
-    }
-    .spinner {
-      border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top: 3px solid white;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    h1 { margin: 0 0 15px; font-size: 24px; }
-    p { margin: 0; opacity: 0.9; line-height: 1.5; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="spinner"></div>
-    <h1>Authentication Successful!</h1>
-    <p>You have been successfully signed in. This window will close automatically.</p>
-  </div>
-  
-  <script>
-    console.log('🪟 [POPUP-CALLBACK] Popup authentication completion page loaded');
-    
-    try {
-      // Check if we have a parent window (popup scenario)
-      if (window.opener && !window.opener.closed) {
-        console.log('✅ [POPUP-CALLBACK] Parent window detected - sending success message');
-        
-        // Send success message to parent window with cross-domain support
-        const successMessage = {
-          type: 'GOOGLE_AUTH_COMPLETE',
-          success: true,
-          user: {
-            id: ${user.id},
-            email: '${user.email}',
-            name: '${user.name?.replace(/'/g, "\\'") || ""}',
-            authProvider: 'google'
-          },
-          timestamp: new Date().toISOString(),
-          crossDomain: ${needsCrossDomainHandoff},
-          returnHost: '${finalReturnHost}',
-          sessionExchangeCode: null
-        };
-        
-        // For cross-domain scenarios, include session exchange info
-        if (${needsCrossDomainHandoff}) {
-          // Generate session exchange code for cross-domain handoff
-          const popupExchangeCode = crypto.randomBytes(32).toString('base64url');
-          
-          // Store session exchange data on server (same as redirect flow)
-          sessionExchangeStore.set(popupExchangeCode, {
-            sessionToken: ${JSON.stringify(sessionToken)},
-            timestamp: Date.now(),
-            returnHost: '${finalReturnHost}',
-            userId: ${user.id}
-          });
-          
-          console.log('🔄 [POPUP-CALLBACK] Stored session exchange for cross-domain handoff:', {
-            codePrefix: popupExchangeCode.substring(0, 10) + '...',
-            returnHost: '${finalReturnHost}',
-            userId: ${user.id}
-          });
-          
-          // SECURITY: Only send the exchange code - client will construct URL locally
-          successMessage.sessionExchangeCode = popupExchangeCode;
-        }
-        
-        // Try multiple target origins for cross-domain compatibility
-        const targetOrigins = [
-          '${finalReturnHost.includes('localhost') ? `http://${finalReturnHost}` : `https://${finalReturnHost}`}',
-          window.location.origin,
-          '*' // Last resort for iframe contexts
-        ];
-        
-        targetOrigins.forEach(origin => {
-          try {
-            window.opener.postMessage(successMessage, origin);
-            console.log('📤 [POPUP-CALLBACK] Message sent to origin:', origin);
-          } catch (e) {
-            console.log('❌ [POPUP-CALLBACK] Failed to send to origin:', origin, e.message);
-          }
-        });
-        
-        // Small delay then close popup
-        setTimeout(() => {
-          console.log('🔄 [POPUP-CALLBACK] Closing popup window');
-          window.close();
-        }, 2000);
-        
-      } else {
-        console.log('❌ [POPUP-CALLBACK] No parent window found - redirecting to dashboard');
-        // Fallback: redirect to dashboard if not in popup context
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('❌ [POPUP-CALLBACK] Error in popup completion:', error);
-      
-      // Send error message to parent with cross-domain support
-      if (window.opener && !window.opener.closed) {
-        const errorMessage = {
-          type: 'GOOGLE_AUTH_COMPLETE',
-          success: false,
-          error: 'Failed to complete popup authentication',
-          crossDomain: ${needsCrossDomainHandoff}
-        };
-        
-        // Try multiple target origins
-        const targetOrigins = [
-          '${finalReturnHost.includes('localhost') ? `http://${finalReturnHost}` : `https://${finalReturnHost}`}',
-          window.location.origin,
-          '*'
-        ];
-        
-        targetOrigins.forEach(origin => {
-          try {
-            window.opener.postMessage(errorMessage, origin);
-          } catch (e) {
-            console.log('❌ [POPUP-ERROR] Failed to send error to origin:', origin);
-          }
-        });
-      }
-      
-      // Fallback: redirect to dashboard
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 3000);
-    }
-  </script>
-</body>
-</html>`;
-        
-        return res.send(popupResponseHtml);
-      } else {
-        // Regular redirect authentication
-        console.log('✅ [SESSION-HANDOFF] Same domain redirect to dashboard');
-        return res.redirect(303, '/dashboard');
-      }
+      console.log('✅ [SESSION-HANDOFF] Same domain redirect to dashboard');
+      return res.redirect(303, '/dashboard');
     }
     
   } catch (error: any) {
@@ -1008,51 +649,6 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
     res.redirect(`/auth?error=callback_error&message=${encodeURIComponent(userMessage)}&canRetry=true&errorCode=OAUTH_CALLBACK_ERROR`);
-  }
-}
-
-/**
- * Store session exchange data for popup-based cross-domain handoff
- */
-export async function storeSessionExchangeRoute(req: Request, res: Response) {
-  try {
-    console.log('🔄 [STORE-SESSION-EXCHANGE] Processing session exchange storage request');
-    
-    const { exchangeCode, sessionToken, returnHost, userId } = req.body;
-    
-    if (!exchangeCode || !sessionToken || !returnHost || !userId) {
-      console.error('❌ [STORE-SESSION-EXCHANGE] Missing required data:', {
-        hasExchangeCode: !!exchangeCode,
-        hasSessionToken: !!sessionToken,
-        hasReturnHost: !!returnHost,
-        hasUserId: !!userId
-      });
-      return res.status(400).json({ error: 'Missing required session exchange data' });
-    }
-    
-    // Store session exchange data (expires in 5 minutes, single-use)
-    sessionExchangeStore.set(exchangeCode, {
-      sessionToken,
-      timestamp: Date.now(),
-      returnHost,
-      userId
-    });
-    
-    console.log('✅ [STORE-SESSION-EXCHANGE] Session exchange stored:', {
-      codePrefix: exchangeCode.substring(0, 10) + '...',
-      returnHost,
-      userId,
-      storeSize: sessionExchangeStore.size
-    });
-    
-    res.json({ success: true });
-    
-  } catch (error: any) {
-    console.error('❌ [STORE-SESSION-EXCHANGE-ERROR] Failed to store session exchange:', {
-      errorMessage: error.message,
-      errorStack: error.stack
-    });
-    res.status(500).json({ error: 'Failed to store session exchange data' });
   }
 }
 
@@ -1119,13 +715,13 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     // Remove used exchange code (single-use)
     sessionExchangeStore.delete(code);
     
-    // Set session cookie on the correct domain
+    // Set session cookie on the correct domain with cross-domain compatibility
     const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
     
     const cookieOptions = {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'lax' as const,
+      sameSite: 'lax' as const, // Use 'lax' for better compatibility - fixed for Replit domains
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };
@@ -1324,68 +920,4 @@ export async function checkSessionRoute(req: Request, res: Response) {
       error: 'Session check failed'
     });
   }
-}
-
-// INVESTIGATION: Debug endpoint to analyze CSP and iframe context differences
-export async function debugContextRoute(req: Request, res: Response) {
-  console.log('🔍 [CONTEXT-DEBUG] Debug endpoint called for investigation');
-  
-  // Capture all headers and context information
-  const contextAnalysis = {
-    timestamp: new Date().toISOString(),
-    host: req.get('host'),
-    origin: req.get('origin'),
-    referer: req.get('referer'),
-    userAgent: req.get('user-agent')?.substring(0, 100) + '...',
-    headers: {
-      'x-forwarded-proto': req.get('x-forwarded-proto'),
-      'x-forwarded-host': req.get('x-forwarded-host'),
-      'x-frame-options': req.get('x-frame-options'),
-      'content-security-policy': req.get('content-security-policy'),
-      'sec-fetch-site': req.get('sec-fetch-site'),
-      'sec-fetch-mode': req.get('sec-fetch-mode'),
-      'sec-fetch-dest': req.get('sec-fetch-dest'),
-      'sec-fetch-user': req.get('sec-fetch-user')
-    },
-    context: {
-      method: req.method,
-      path: req.path,
-      query: req.query,
-      ip: req.ip || req.connection.remoteAddress || 'unknown',
-      isSecure: req.secure || req.get('x-forwarded-proto') === 'https'
-    },
-    // Detect iframe context
-    iframeDetection: {
-      isIframeContext: req.get('sec-fetch-dest') === 'iframe' || 
-                      req.get('sec-fetch-site') === 'cross-site' ||
-                      req.get('referer')?.includes('preview'),
-      secFetchDest: req.get('sec-fetch-dest'),
-      secFetchSite: req.get('sec-fetch-site'),
-      hasRefererPreview: req.get('referer')?.includes('preview') || false
-    },
-    // STANDARDIZED OAuth URI analysis
-    uriAnalysis: (() => {
-      const host = req.get('host') || 'unknown';
-      const { redirectUri, returnHost } = getDomainSpecificRedirectUri(host);
-      
-      return {
-        host,
-        generatedRedirectUri: redirectUri,
-        returnHost,
-        isValidUri: validateRedirectUri(redirectUri),
-        isStandardized: true,
-        isDevelopment: host.includes('localhost') || host.includes('127.0.0.1'),
-        isBrandentifierCom: host.includes('brandentifier.com'),
-        isReplitDomain: REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host))
-      };
-    })()
-  };
-  
-  console.log('📊 [CONTEXT-DEBUG] Complete context analysis:', JSON.stringify(contextAnalysis, null, 2));
-  
-  res.json({
-    success: true,
-    message: 'Context analysis completed - check server logs for details',
-    contextAnalysis
-  });
 }

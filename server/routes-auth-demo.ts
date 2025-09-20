@@ -14,11 +14,11 @@ const router = express.Router();
  * Demo login endpoint - works across all domains
  * Creates a user account with the given email and logs in
  */
-// SECURITY FIX: Remove insecure trust proxy override - use main app's secure setting (trust proxy: 1)
-// router.use((req, res, next) => {
-//   req.app.set('trust proxy', true);  // REMOVED: This was bypassing rate limiting security
-//   next();
-// });
+// Set the trust proxy setting
+router.use((req, res, next) => {
+  req.app.set('trust proxy', true);
+  next();
+});
 
 router.post("/auth/demo-login", async (req: Request, res: Response) => {
   try {

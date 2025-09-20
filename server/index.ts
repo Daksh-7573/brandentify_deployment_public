@@ -709,10 +709,9 @@ app.use((req, res, next) => {
 app.use(express.json({ 
   limit: '50mb',
   verify: (req, res, buf: Buffer, encoding) => {
-    const expressReq = req as express.Request;
-    if (expressReq.path && expressReq.path.includes('/users/')) {
-      console.log(`[JSON Parser] ${expressReq.method} ${expressReq.path} - Raw buffer length:`, buf.length);
-      console.log(`[JSON Parser] ${expressReq.method} ${expressReq.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
+    if (req.path.includes('/users/')) {
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Raw buffer length:`, buf.length);
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
     }
   }
 }));

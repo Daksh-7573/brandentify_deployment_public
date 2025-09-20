@@ -63,7 +63,7 @@ import { personalizedQuestAssignment } from "./services/personalized-quest-assig
 import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, debugContextRoute, storeSessionExchangeRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7276,9 +7276,6 @@ ${extractedText.substring(0, 5000)}
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
   
-  // INVESTIGATION: Debug endpoint for context analysis
-  app.get("/api/auth/google/debug-context", debugContextRoute);
-  
   // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
   app.get('/auth-callback', (req: Request, res: Response) => {
     console.log('🔄 [AUTH BRIDGE] Redirecting /auth-callback to API endpoint');
@@ -7294,7 +7291,6 @@ ${extractedText.substring(0, 5000)}
   
   app.get("/api/auth/session", checkSessionRoute);
   app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
-  app.post("/api/auth/store-session-exchange", storeSessionExchangeRoute); // Store session exchange for popups
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed
