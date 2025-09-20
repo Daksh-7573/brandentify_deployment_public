@@ -1011,7 +1011,62 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
-  "social_post" // New type for Social Media Post Suggestions
+  "social_post", // Social Media Post Suggestions
+  "social_quest" // Social Media Quest Activities
+]);
+
+// Content types enum for enhanced social quest variations
+export const contentTypeEnum = pgEnum("content_type", [
+  // Instagram content types
+  "instagram_reel",
+  "instagram_story",
+  "instagram_story_poll",
+  "instagram_story_qa",
+  "instagram_carousel",
+  "instagram_post",
+  "instagram_igtv",
+  
+  // LinkedIn content types
+  "linkedin_post",
+  "linkedin_article",
+  "linkedin_story",
+  "linkedin_document",
+  "linkedin_poll",
+  
+  // Twitter/X content types
+  "twitter_tweet",
+  "twitter_thread",
+  "twitter_reply",
+  "twitter_quote_tweet",
+  "twitter_space",
+  
+  // YouTube content types
+  "youtube_long_video",
+  "youtube_short",
+  "youtube_community_post",
+  "youtube_live_stream",
+  
+  // TikTok content types
+  "tiktok_video",
+  "tiktok_story",
+  "tiktok_live",
+  
+  // Facebook content types
+  "facebook_post",
+  "facebook_story",
+  "facebook_reel",
+  "facebook_event",
+  
+  // General content types
+  "blog_post",
+  "podcast_episode",
+  "webinar",
+  "newsletter",
+  "case_study",
+  "white_paper",
+  
+  // Default
+  "general_post"
 ]);
 
 // Quest status enum (simplified)
@@ -1047,11 +1102,15 @@ export const questDefinitions = pgTable("quest_definitions", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   type: questTypeEnum("type").notNull(),
+  contentType: contentTypeEnum("content_type").default("general_post"), // Enhanced content type for social quests
+  platform: text("platform"), // Social media platform (instagram, linkedin, twitter, youtube, etc.)
   targetCount: integer("target_count").notNull().default(1), // Number of actions needed to complete
   targetAction: text("target_action").notNull(), // Specific action required for engagement quests
   xpReward: integer("xp_reward").notNull().default(50),
   badgeReward: badgeTypeEnum("badge_reward"),
-  muskTip: text("musk_tip"), // Tip from Musk about this quest
+  muskTip: text("musk_tip"), // Enhanced tip from Musk about this specific content type
+  estimatedTimeMinutes: integer("estimated_time_minutes").default(15), // Time to complete the quest
+  difficultyLevel: text("difficulty_level").default("beginner"), // beginner, intermediate, advanced
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
