@@ -248,6 +248,83 @@ export const useUserWeeklyQuests = (userId?: number, weekNumber?: number, year?:
   });
 };
 
+// Fetch user's daily quests
+export const useUserDailyQuests = (userId?: number) => {
+  const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  
+  return useQuery({
+    queryKey: [userId ? `/api/users/${userId}/quests/current-day` : null, currentDate],
+    queryFn: async () => {
+      // If no user ID provided, return empty array
+      if (!userId) {
+        return [] as UserQuest[];
+      }
+      
+      try {
+        // Get quests for current day for this user
+        const currentDayRes = await fetch(`/api/users/${userId}/quests/current-day`);
+        if (currentDayRes.ok) {
+          const contentType = currentDayRes.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const quests = await currentDayRes.json() as UserQuest[];
+            // Only return ACTIVE quests for the daily tab
+            const activeQuests = quests.filter(quest => quest.status === 'active');
+            if (activeQuests && activeQuests.length > 0) {
+              console.log(`Found ${activeQuests.length} active quests for current day for user ${userId}`);
+              return activeQuests;
+            }
+          }
+        }
+        
+        console.log(`No active quests found for user ${userId} for current day`);
+        return []; // Return empty array to avoid UI errors
+      } catch (error) {
+        console.error('Error fetching daily quests:', error);
+        return []; // Return empty array to avoid UI errors
+      }
+    },
+    enabled: !!userId
+  });
+};
+
+// Assign daily quests to user
+export const useAssignDailyQuests = () => {
+  return useMutation({
+    mutationFn: async ({ userId }: { userId: number }) => {
+      const res = await fetch(`/api/users/${userId}/quests/assign-daily`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!res.ok) {
+        const text = await res.text();
+        try {
+          const errorJson = JSON.parse(text);
+          throw new Error(errorJson.message || 'Failed to assign daily quests');
+        } catch (e) {
+          throw new Error(`Failed to assign daily quests: ${text.slice(0, 100)}`);
+        }
+      }
+      return res.json() as Promise<UserQuest[]>;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate daily quest cache to show new quests
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests/current-day`] 
+      });
+      // Also invalidate other quest caches
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests`] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] 
+      });
+    }
+  });
+};
+
 // Fetch user's XP information
 export const useUserXp = (userId?: number) => {
   return useQuery({
@@ -393,6 +470,9 @@ export const useUpdateQuestProgress = () => {
         queryKey: [`/api/users/${data.userId}/quests/current-week`] 
       });
       queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${data.userId}/quests/current-day`] 
+      });
+      queryClient.invalidateQueries({ 
         queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
       });
       
@@ -459,6 +539,14 @@ export const useCompleteQuest = () => {
         return filtered;
       });
 
+      // Optimistically remove from daily cache immediately
+      queryClient.setQueryData([`/api/users/${userId}/quests/current-day`], (old: any) => {
+        if (!old || !Array.isArray(old)) return old;
+        const filtered = old.filter((quest: any) => quest.id !== questId);
+        console.log(`[OPTIMISTIC] Removed quest ${questId} from daily cache. Count: ${old.length} -> ${filtered.length}`);
+        return filtered;
+      });
+
       // Optimistically update in all-quests cache
       queryClient.setQueryData([`/api/users/${userId}/quests-with-definitions`], (old: any) => {
         if (!old || !Array.isArray(old)) return old;
@@ -474,14 +562,18 @@ export const useCompleteQuest = () => {
         );
       });
 
+      // Snapshot the previous daily quests for rollback
+      const previousDailyQuests = queryClient.getQueryData([`/api/users/${userId}/quests/current-day`]);
+
       // Return context for potential rollback
-      return { previousWeeklyQuests, previousAllQuests, questId, userId };
+      return { previousWeeklyQuests, previousDailyQuests, previousAllQuests, questId, userId };
     },
 
     // If mutation fails, use the context returned from onMutate to roll back
     onError: (err, variables, context) => {
       if (context) {
         queryClient.setQueryData([`/api/users/${context.userId}/quests/current-week`], context.previousWeeklyQuests);
+        queryClient.setQueryData([`/api/users/${context.userId}/quests/current-day`], context.previousDailyQuests);
         queryClient.setQueryData([`/api/users/${context.userId}/quests-with-definitions`], context.previousAllQuests);
       }
     },
@@ -492,11 +584,16 @@ export const useCompleteQuest = () => {
       
       // Remove any cached data first to force fresh fetch
       queryClient.removeQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-week`] });
+      queryClient.removeQueries({ queryKey: [`/api/users/${variables.userId}/quests/current-day`] });
       queryClient.removeQueries({ queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] });
       
       // Then force fresh data fetch
       queryClient.refetchQueries({ 
         queryKey: [`/api/users/${variables.userId}/quests/current-week`],
+        type: 'active'
+      });
+      queryClient.refetchQueries({ 
+        queryKey: [`/api/users/${variables.userId}/quests/current-day`],
         type: 'active'
       });
       queryClient.refetchQueries({ 
