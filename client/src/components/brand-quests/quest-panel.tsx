@@ -74,8 +74,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   }, [dailyError, allError, toast]);
   
   // Filter quests by type
-  const socialQuestTypes = ['social_post']; // Only platform-specific social media quests
-  const careerQuestTypes = ['profile_update', 'pulse_creation', 'networking', 'learning', 'portfolio', 'resume', 'visibility', 'exploration', 'nowboard', 'social_quest']; // Added social_quest to career quests
+  const socialQuestTypes = ['social_post', 'social_quest']; // Platform-specific social media quests
+  const careerQuestTypes = ['profile_update', 'pulse_creation', 'networking', 'learning', 'portfolio', 'resume', 'visibility', 'exploration', 'nowboard']; // Career development quests
   
   // Get quest type from different possible sources in the data
   const getQuestType = (quest: any) => {
