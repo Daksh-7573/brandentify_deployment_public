@@ -581,6 +581,8 @@ export interface IStorage {
   createUserSocialQuest(socialQuest: any): Promise<any>;
   updateUserSocialQuest(id: number, socialQuest: any): Promise<any | undefined>;
   assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
+  getCurrentDayUserQuests(userId: number): Promise<UserQuest[]>;
+  assignDailyQuestsToUser(userId: number): Promise<UserQuest[]>;
   
   // User XP operations
   getUserXp(userId: number): Promise<UserXp | undefined>;
@@ -7105,6 +7107,62 @@ export class MemStorage implements IStorage {
       return [];
     }
   }
+
+  async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
+      
+      // Check if user_quests table exists
+      const tableExists = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.tables
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableExists.rows[0].exists) {
+        console.log(`[db.getCurrentDayUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year,
+          assigned_date as "assignedDate"
+        FROM user_quests
+        WHERE user_id = $1
+          AND assigned_date = $2
+        ORDER BY 
+          CASE status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          assigned_at DESC
+      `, [userId, currentDate]);
+      
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentDayUserQuests] Error fetching daily quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
+      return [];
+    }
+  }
   
   // Utility function to get ISO week number
   getWeekNumber(date: Date): number {
@@ -7540,16 +7598,19 @@ export class MemStorage implements IStorage {
     const weekNumber = quest.weekNumber || this.getWeekNumber(now);
     const year = quest.year || now.getFullYear();
     
+    // Generate assignedDate if not provided (YYYY-MM-DD format)
+    const assignedDate = quest.assignedDate || now.toISOString().split('T')[0];
+    
     const userQuest: UserQuest = {
       ...quest,
       id,
       assignedAt,
+      assignedDate,
       weekNumber,
       year,
       progress: quest.progress ?? 0,
       status: quest.status ?? "active",
       completedAt: null,
-      dismissedReason: null,
       xpEarned: null,
       badgeEarned: null,
       muskResponse: null
@@ -7744,7 +7805,84 @@ export class MemStorage implements IStorage {
         status: "active",
         progress: 0,
         weekNumber: currentWeek,
-        year: currentYear
+        year: currentYear,
+        assignedDate: now.toISOString().split('T')[0] // YYYY-MM-DD format
+      });
+      
+      createdQuests.push(quest);
+    }
+    
+    return createdQuests;
+  }
+
+  async assignDailyQuestsToUser(userId: number): Promise<UserQuest[]> {
+    // Get current date information
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const currentWeek = this.getWeekNumber(now);
+    const currentYear = now.getFullYear();
+    
+    // Check if user already has quests for today
+    const existingDailyQuests = await this.getCurrentDayUserQuests(userId);
+    if (existingDailyQuests.length > 0) {
+      return existingDailyQuests;
+    }
+    
+    // Get user for profile completion check
+    const user = await this.getUser(userId);
+    if (!user) return [];
+    
+    // Get all active quest definitions
+    const allQuests = await this.getActiveQuestDefinitions();
+    
+    // Filter quests based on user's profile completion level
+    const eligibleQuests = allQuests.filter(quest => {
+      // Basic eligibility (same as weekly logic for now)
+      return true; // Keep it simple for daily quests
+    });
+    
+    // Randomly select 1-2 quests for the day (more manageable than 5 per week)
+    const numQuests = Math.min(2, Math.max(1, eligibleQuests.length)); // 1-2 quests
+    const selectedQuests: QuestDefinition[] = [];
+    
+    // Try to get variety in quest types
+    const questTypes = [...new Set(eligibleQuests.map(q => q.type))];
+    
+    // If we have multiple types, try to get one of each up to our limit
+    if (questTypes.length > 1 && numQuests > 1) {
+      // Select one from different types
+      const shuffledTypes = questTypes.sort(() => Math.random() - 0.5);
+      
+      for (let i = 0; i < Math.min(numQuests, shuffledTypes.length); i++) {
+        const type = shuffledTypes[i];
+        const typeQuests = eligibleQuests.filter(q => q.type === type);
+        if (typeQuests.length > 0) {
+          const randomIndex = Math.floor(Math.random() * typeQuests.length);
+          selectedQuests.push(typeQuests[randomIndex]);
+        }
+      }
+    } else {
+      // Random selection if we only have one type or need one quest
+      for (let i = 0; i < numQuests && eligibleQuests.length > 0; i++) {
+        const randomIndex = Math.floor(Math.random() * eligibleQuests.length);
+        selectedQuests.push(eligibleQuests[randomIndex]);
+        // Remove selected to avoid duplicates
+        eligibleQuests.splice(randomIndex, 1);
+      }
+    }
+    
+    // Create user quests for the selected quest definitions
+    const createdQuests: UserQuest[] = [];
+    
+    for (const questDef of selectedQuests) {
+      const quest = await this.createUserQuest({
+        userId,
+        questDefinitionId: questDef.id,
+        status: "active",
+        progress: 0,
+        weekNumber: currentWeek,
+        year: currentYear,
+        assignedDate: currentDate
       });
       
       createdQuests.push(quest);
@@ -12195,6 +12333,8 @@ export const storage = {
   dismissUserQuest: (id: number, reason?: string) => dbStorage.dismissUserQuest(id, reason),
   incrementQuestProgress: (id: number) => dbStorage.incrementQuestProgress(id),
   assignWeeklyQuestsToUser: (userId: number) => dbStorage.assignWeeklyQuestsToUser(userId),
+  getCurrentDayUserQuests: (userId: number) => dbStorage.getCurrentDayUserQuests(userId),
+  assignDailyQuestsToUser: (userId: number) => dbStorage.assignDailyQuestsToUser(userId),
   
   // Social Quest method delegates
   getAllSocialQuestDefinitions: () => dbStorage.getAllSocialQuestDefinitions(),
