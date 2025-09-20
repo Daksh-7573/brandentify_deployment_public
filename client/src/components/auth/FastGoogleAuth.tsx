@@ -154,7 +154,7 @@ export function FastGoogleAuth() {
       // Step 3: Get OAuth URL and redirect the pre-opened popup
       setLoadingMessage('Getting authentication URL...');
       
-      const response = await fetch('/api/auth/google/url', {
+      const response = await fetch('/api/auth/google/url?popup=true', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });

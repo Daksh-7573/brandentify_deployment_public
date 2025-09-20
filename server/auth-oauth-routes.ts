@@ -146,11 +146,13 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
     // Create cryptographically secure state parameter with return host
+    const isPopupFlow = req.query.popup === 'true' || req.query.flow === 'popup';
     const stateData = {
       nonce: crypto.randomBytes(16).toString('base64url'),
       returnHost: returnHost,
       timestamp: Date.now(),
-      ip: req.ip || req.connection.remoteAddress || 'unknown'
+      ip: req.ip || req.connection.remoteAddress || 'unknown',
+      isPopup: isPopupFlow
     };
     
     const state = Buffer.from(JSON.stringify(stateData)).toString('base64url');
@@ -603,7 +605,24 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       
       return res.redirect(303, sessionAcceptUrl);
     } else {
-      // Same domain - set cookie directly and redirect to dashboard
+      // Same domain - check if this is a popup request first
+      // Parse state data to check if this was initiated as popup flow
+      let isPopupRequest = false;
+      try {
+        const decodedState = JSON.parse(Buffer.from(state as string, 'base64url').toString());
+        isPopupRequest = decodedState.isPopup === true;
+        console.log('🔍 [POPUP-DETECTION] State-based popup detection:', { isPopup: isPopupRequest });
+      } catch (stateParseError) {
+        // Fallback to header-based detection if state parsing fails
+        const referer = req.get('referer') || '';
+        const userAgent = req.get('user-agent') || '';
+        isPopupRequest = req.query.popup === 'true' || 
+                        referer.includes('google-auth') || 
+                        referer.includes('popup') ||
+                        (userAgent.includes('Mobile') === false && !userAgent.includes('Bot')); // Desktop browsers more likely to use popup
+        console.log('🔍 [POPUP-DETECTION] Fallback header-based detection:', { isPopup: isPopupRequest });
+      }
+      
       const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
       
       const cookieOptions = {
@@ -618,13 +637,128 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         domain: (cookieOptions as any).domain || 'omitted',
         sameSite: cookieOptions.sameSite,
         secure: cookieOptions.secure,
-        host: currentHost
+        host: currentHost,
+        isPopupRequest
       });
       
       res.cookie('brandentifier_session', sessionToken, cookieOptions);
       
-      console.log('✅ [SESSION-HANDOFF] Same domain redirect to dashboard');
-      return res.redirect(303, '/dashboard');
+      if (isPopupRequest) {
+        // Handle popup authentication - send PostMessage to parent window
+        console.log('🪟 [POPUP-AUTH] Popup authentication detected - sending PostMessage to parent');
+        
+        const popupResponseHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Successful</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      max-width: 400px;
+    }
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    h1 { margin: 0 0 15px; font-size: 24px; }
+    p { margin: 0; opacity: 0.9; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h1>Authentication Successful!</h1>
+    <p>You have been successfully signed in. This window will close automatically.</p>
+  </div>
+  
+  <script>
+    console.log('🪟 [POPUP-CALLBACK] Popup authentication completion page loaded');
+    
+    try {
+      // Check if we have a parent window (popup scenario)
+      if (window.opener && !window.opener.closed) {
+        console.log('✅ [POPUP-CALLBACK] Parent window detected - sending success message');
+        
+        // Send success message to parent window
+        window.opener.postMessage({
+          type: 'GOOGLE_AUTH_COMPLETE',
+          success: true,
+          user: {
+            id: ${user.id},
+            email: '${user.email}',
+            name: '${user.name?.replace(/'/g, "\\'") || ""}',
+            authProvider: 'google'
+          },
+          timestamp: new Date().toISOString()
+        }, window.location.origin);
+        
+        // Small delay then close popup
+        setTimeout(() => {
+          console.log('🔄 [POPUP-CALLBACK] Closing popup window');
+          window.close();
+        }, 2000);
+        
+      } else {
+        console.log('❌ [POPUP-CALLBACK] No parent window found - redirecting to dashboard');
+        // Fallback: redirect to dashboard if not in popup context
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('❌ [POPUP-CALLBACK] Error in popup completion:', error);
+      
+      // Send error message to parent if possible
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({
+          type: 'GOOGLE_AUTH_COMPLETE',
+          success: false,
+          error: 'Failed to complete popup authentication'
+        }, window.location.origin);
+      }
+      
+      // Fallback: redirect to dashboard
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>`;
+        
+        return res.send(popupResponseHtml);
+      } else {
+        // Regular redirect authentication
+        console.log('✅ [SESSION-HANDOFF] Same domain redirect to dashboard');
+        return res.redirect(303, '/dashboard');
+      }
     }
     
   } catch (error: any) {
