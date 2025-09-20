@@ -1,0 +1,358 @@
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%…:72 A preload for 'https://brandentifier.replit.app/assets/App-DAphVPve.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:260 [SW EMERGENCY FIX v4] Detected Replit domain: brandentifier.replit.app
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:261 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:284 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+index-Cbkmms5h.js:1797 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+index-Cbkmms5h.js:1867 [PERF] React app initialization started
+index-Cbkmms5h.js:1867 [PERF] React rendering started
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:396 [Skeleton] DOM loaded, preparing smooth transition
+index-Cbkmms5h.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+index-Cbkmms5h.js:1867 [PERF] React app rendered in 26.80 ms
+index-Cbkmms5h.js:1867 [PERF] Total initialization time: 27.30 ms
+index-Cbkmms5h.js:289 AuthProvider: Starting auth check, current loading state: true
+index-Cbkmms5h.js:289 AuthProvider: Running checkAuth
+index-Cbkmms5h.js:289 AuthProvider: Published domain detected, checking server session
+index-Cbkmms5h.js:289 AuthProvider: Fetching server session for published domain...
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:402 [Skeleton] Starting fade-out transition
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:330 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:331 📊 Total page load time: 131.90ms
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:332 🔥 Firebase init time: 131.90ms
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:340 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 9 modulepreload links active
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:341 ⚡ Expected improvement: 100-300ms faster cold starts
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:346 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:347 ⚡ Expected improvement: 150-250ms faster auth loads
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:376 🔄 [Strategy 4] Service Worker: Installing...
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:381 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:388 📈 Performance Optimization Complete - All 4 strategies active!
+index-Cbkmms5h.js:1867 [PERF] Skeleton loader removed in 151.00 ms
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:408 [Skeleton] Skeleton loading complete - app ready
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:412 ⚡ [PERF] Skeleton-to-app transition: 281.70ms
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: true, hasUser: false, userEmail: undefined}
+index-Cbkmms5h.js:1867 [Progressive Loading] Starting tiered component loading
+index-Cbkmms5h.js:1867 [Progressive Loading] ⚡ Core components ready
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: true, hasUser: false, userEmail: undefined}
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:356 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true:357 ⚡ Expected improvement: 50-100ms perceived performance boost
+index-Cbkmms5h.js:1867 [Progressive Loading] 🚀 Secondary components loaded
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: true, hasUser: false, userEmail: undefined}
+index-Cbkmms5h.js:289 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://brandentifier.replit.app/api/auth/session'}
+index-Cbkmms5h.js:289 AuthProvider: Raw server response: {success: true, user: {…}}
+index-Cbkmms5h.js:289 AuthProvider: Unwrapped user from server response
+index-Cbkmms5h.js:289 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+index-Cbkmms5h.js:289 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: true, isLoading: true, hasUser: true, userEmail: 'nishant.brodos@gmail.com'}
+index-Cbkmms5h.js:1867 [Progressive Loading] 🔧 All components loaded in 207.90ms
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: true, isLoading: true, hasUser: true, userEmail: 'nishant.brodos@gmail.com'}
+index-Cbkmms5h.js:49 Cached response for /api/users/2
+index-Cbkmms5h.js:49 Cached response for /api/users/2/educations
+index-Cbkmms5h.js:49 Cached response for /api/users/2/experiences
+index-Cbkmms5h.js:49 Cached response for /api/users/2/skills
+index-Cbkmms5h.js:49 Cached response for /api/users/2/projects
+index-Cbkmms5h.js:289 AuthProvider: Failsafe timeout - forcing loading to false
+(anonymous) @ index-Cbkmms5h.js:289
+setTimeout
+(anonymous) @ index-Cbkmms5h.js:289
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+(anonymous) @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this warning
+index-Cbkmms5h.js:289 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+auth-page-BUpfDzqC.js:11 AuthPage: Current auth state: {isAuthenticated: true, isLoading: false, hasUser: true, userEmail: 'nishant.brodos@gmail.com'}
+auth-page-BUpfDzqC.js:11 ✅ User authenticated on auth page, redirecting to dashboard
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userData?.photoURL: NULL
+index-Cbkmms5h.js:1840 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+index-Cbkmms5h.js:1840 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userId used for query: 107731462353452700275
+index-Cbkmms5h.js:1840 Fetching user data for header with ID: 107731462353452700275
+index-Cbkmms5h.js:1840 Header mounted - invalidating user query
+index-Cbkmms5h.js:49 Fetching data from: /api/nowboard-items
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses
+index-Cbkmms5h.js:1840 [HEADER IMAGE DEBUG] Image loaded successfully
+index-Cbkmms5h.js:1840 [HEADER IMAGE DEBUG] Image source type: URL
+index-Cbkmms5h.js:1840 [HEADER IMAGE DEBUG] Image source length: 96
+index-Cbkmms5h.js:1867 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+index-Cbkmms5h.js:49 Cached response for /api/messaging/unread/count?userId=107731462353452700275
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userData?.photoURL: NULL
+index-Cbkmms5h.js:1840 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+index-Cbkmms5h.js:1840 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userId used for query: 107731462353452700275
+index-Cbkmms5h.js:1867 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+index-Cbkmms5h.js:49 Fetching data from: /api/users/1/reaction-quota
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/75/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/74/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/73/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/72/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/71/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/70/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/69/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/68/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/67/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/66/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/65/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/64/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/63/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/62/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/61/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/60/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/59/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/58/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/57/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/56/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/55/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/54/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/53/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/52/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/51/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/50/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/49/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/48/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/47/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/46/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/45/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/44/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/43/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/42/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/41/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/40/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/39/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/38/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/37/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/36/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/35/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/34/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/33/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/32/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/31/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/30/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/29/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/28/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/poll-votes/user/1/pulse/27
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/27/poll-votes
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/27/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/26/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/25/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/24/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/23/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/22/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/21/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/20/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/19/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/18/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/17/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/16/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/15/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/14/reactions
+index-Cbkmms5h.js:49 Fetching data from: /api/pulses/13/reactions
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userData?.photoURL: NULL
+index-Cbkmms5h.js:1840 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+index-Cbkmms5h.js:1840 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userId used for query: 107731462353452700275
+index-Cbkmms5h.js:49 Cached response for /api/messaging/unread/count?userId=107731462353452700275
+index-Cbkmms5h.js:49  GET https://brandentifier.replit.app/api/poll-votes/user/1/pulse/27?t=1758405789114 404 (Not Found)
+(anonymous) @ index-Cbkmms5h.js:49
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+(anonymous) @ index-Cbkmms5h.js:41
+setTimeout
+s @ index-Cbkmms5h.js:49
+o @ index-Cbkmms5h.js:49
+batch @ index-Cbkmms5h.js:49
+Br @ index-Cbkmms5h.js:49
+setData @ index-Cbkmms5h.js:49
+onSuccess @ index-Cbkmms5h.js:49
+f @ index-Cbkmms5h.js:49
+Promise.then
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this error
+index-Cbkmms5h.js:49 No poll vote found (expected): /api/poll-votes/user/1/pulse/27
+index-Cbkmms5h.js:49  GET https://brandentifier.replit.app/api/users/107731462353452700275 404 (Not Found)
+qe @ index-Cbkmms5h.js:49
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this error
+index-Cbkmms5h.js:49 API request failed: GET /api/users/107731462353452700275 - Status: 404
+qe @ index-Cbkmms5h.js:49
+await in qe
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this warning
+index-Cbkmms5h.js:49 API Error 404 from https://brandentifier.replit.app/api/users/107731462353452700275: {"message":"User not found"}
+IF @ index-Cbkmms5h.js:49
+await in IF
+qe @ index-Cbkmms5h.js:49
+await in qe
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this error
+index-Cbkmms5h.js:1840 Fetching user data for header with ID: 107731462353452700275
+index-Cbkmms5h.js:49  GET https://brandentifier.replit.app/api/users/107731462353452700275 404 (Not Found)
+qe @ index-Cbkmms5h.js:49
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.then
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.catch
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this error
+index-Cbkmms5h.js:49 API request failed: GET /api/users/107731462353452700275 - Status: 404
+qe @ index-Cbkmms5h.js:49
+await in qe
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.then
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.catch
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this warning
+index-Cbkmms5h.js:49 API Error 404 from https://brandentifier.replit.app/api/users/107731462353452700275: {"message":"User not found"}
+IF @ index-Cbkmms5h.js:49
+await in IF
+qe @ index-Cbkmms5h.js:49
+await in qe
+queryFn @ index-Cbkmms5h.js:1840
+i @ index-Cbkmms5h.js:49
+y @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.then
+(anonymous) @ index-Cbkmms5h.js:49
+Promise.catch
+y @ index-Cbkmms5h.js:49
+start @ index-Cbkmms5h.js:49
+fetch @ index-Cbkmms5h.js:49
+Hl @ index-Cbkmms5h.js:49
+onSubscribe @ index-Cbkmms5h.js:49
+subscribe @ index-Cbkmms5h.js:49
+(anonymous) @ index-Cbkmms5h.js:49
+jC @ index-Cbkmms5h.js:39
+kh @ index-Cbkmms5h.js:41
+ya @ index-Cbkmms5h.js:41
+Eb @ index-Cbkmms5h.js:41
+ki @ index-Cbkmms5h.js:39
+pL @ index-Cbkmms5h.js:41
+Vi @ index-Cbkmms5h.js:41
+aP @ index-Cbkmms5h.js:41
+_ @ index-Cbkmms5h.js:26
+M @ index-Cbkmms5h.js:26Understand this error
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userData?.photoURL: NULL
+index-Cbkmms5h.js:1840 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+index-Cbkmms5h.js:1840 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userId used for query: 107731462353452700275
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userData?.photoURL: NULL
+index-Cbkmms5h.js:1840 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+index-Cbkmms5h.js:1840 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+index-Cbkmms5h.js:1840 [HEADER DEBUG] userId used for query: 107731462353452700275
+6The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+2index-Cbkmms5h.js:49 Cached response for /api/messaging/unread/count?userId=107731462353452700275
