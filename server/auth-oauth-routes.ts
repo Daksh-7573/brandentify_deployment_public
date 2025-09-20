@@ -423,6 +423,9 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     let stateData;
     try {
       console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] Starting JWT state validation...`);
+      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] JWT_SECRET available:`, !!JWT_SECRET);
+      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] State token length:`, (state as string).length);
+      
       stateData = validateStatelessState(state as string);
       console.log(`✅ [OAUTH-CALLBACK-${callbackId}] JWT state validation successful:`, {
         initiatingHost: stateData.initiatingHost,
@@ -446,7 +449,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         currentHost: req.get('host'),
         currentTime: Math.floor(Date.now() / 1000),
         userAgent: req.get('user-agent')?.substring(0, 100),
-        callbackDuration: Date.now() - startTime
+        callbackDuration: Date.now() - startTime,
+        jwtSecretAvailable: !!JWT_SECRET
       });
       
       // Enhanced error categorization with retry guidance
@@ -739,14 +743,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     const currentHost = req.get('host') || 'localhost:5000';
     const needsCrossDomainHandoff = finalReturnHost !== currentHost;
     
-    console.log('🔍 [SESSION-HANDOFF] Domain analysis:', {
+    console.log(`🔍 [OAUTH-CALLBACK-${callbackId}] Domain analysis for cross-domain handoff:`, {
       currentHost,
       returnHost: finalReturnHost,
       needsCrossDomainHandoff,
-      authFlowType: needsCrossDomainHandoff ? 'cross-domain' : 'same-domain'
+      authFlowType: needsCrossDomainHandoff ? 'cross-domain' : 'same-domain',
+      userAgent: req.get('user-agent')?.substring(0, 100),
+      callbackDuration: Date.now() - startTime
     });
     
     if (needsCrossDomainHandoff) {
+      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Cross-domain handoff required - generating session exchange code...`);
       // Generate secure session exchange code for cross-domain handoff
       const exchangeCode = crypto.randomBytes(32).toString('base64url');
       
@@ -758,11 +765,12 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         userId: user.id
       });
       
-      console.log('🔄 [SESSION-HANDOFF] Stored session exchange:', {
+      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Stored session exchange:`, {
         codePrefix: exchangeCode.substring(0, 10) + '...',
         returnHost: finalReturnHost,
         userId: user.id,
-        storeSize: sessionExchangeStore.size
+        storeSize: sessionExchangeStore.size,
+        exchangeExpiry: new Date(Date.now() + 5 * 60 * 1000).toISOString()
       });
       
       // Build session acceptance URL on return domain
@@ -770,11 +778,13 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         ? `http://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`
         : `https://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`;
       
-      console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
-      console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
+      console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Cross-domain handoff initiated`);
+      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] Generated exchange code and redirecting to:`, sessionAcceptUrl);
+      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] OAuth callback processing completed in ${Date.now() - startTime}ms`);
       
       return res.redirect(303, sessionAcceptUrl);
     } else {
+      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] Same-domain authentication - no handoff needed`);
       // Same domain - check if this is a popup request first
       // SECURITY: Use popup detection from already validated JWT state
       const isPopupRequest = stateData.isPopup === true;
