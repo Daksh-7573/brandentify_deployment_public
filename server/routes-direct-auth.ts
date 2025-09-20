@@ -5,11 +5,11 @@ import bcrypt from 'bcrypt';
 
 const router = express.Router();
 
-// Set the trust proxy setting
-router.use((req, res, next) => {
-  req.app.set('trust proxy', true);
-  next();
-});
+// SECURITY FIX: Remove insecure trust proxy override - use main app's secure setting (trust proxy: 1)
+// router.use((req, res, next) => {
+//   req.app.set('trust proxy', true);  // REMOVED: This was bypassing rate limiting security
+//   next();
+// });
 
 /**
  * Direct login endpoint that works across all domains
