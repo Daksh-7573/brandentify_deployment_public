@@ -12267,6 +12267,95 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          uq.id,
+          uq.user_id as "userId",
+          uq.quest_definition_id as "questDefinitionId", 
+          uq.status,
+          uq.progress,
+          uq.assigned_at as "assignedAt",
+          uq.completed_at as "completedAt",
+          uq.dismissed_reason as "dismissedReason",
+          uq.xp_earned as "xpEarned",
+          uq.badge_earned as "badgeEarned",
+          uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber",
+          uq.year,
+          uq.assigned_date as "assignedDate",
+          qd.id as "definition_id",
+          qd.type as "definition_type",
+          qd.title as "definition_title",
+          qd.description as "definition_description",
+          qd.category as "definition_category",
+          qd.difficulty as "definition_difficulty",
+          qd.estimated_time_minutes as "definition_estimated_time",
+          qd.xp_reward as "definition_xp_reward",
+          qd.is_active as "definition_is_active",
+          qd.platform as "definition_platform",
+          qd.platform as "definition_platform_specific",
+          qd.content_type as "definition_content_type",
+          qd.musk_tip as "definition_musk_tip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1
+          AND uq.assigned_date = $2
+          AND qd.type NOT IN ('social_quest', 'social_post')
+          AND uq.status = 'active'
+        ORDER BY 
+          CASE uq.status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          uq.assigned_at DESC
+      `, [userId, currentDate]);
+      
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
+      
+      // Add definition object for frontend compatibility (similar to social quests)
+      return result.rows.map(row => ({
+        id: row.id,
+        userId: row.userId,
+        questDefinitionId: row.questDefinitionId,
+        status: row.status,
+        progress: row.progress,
+        assignedAt: row.assignedAt,
+        completedAt: row.completedAt,
+        dismissedReason: row.dismissedReason,
+        xpEarned: row.xpEarned,
+        badgeEarned: row.badgeEarned,
+        muskResponse: row.muskResponse,
+        weekNumber: row.weekNumber,
+        year: row.year,
+        assignedDate: row.assignedDate,
+        definition: {
+          id: row.definition_id,
+          type: row.definition_type,
+          title: row.definition_title,
+          description: row.definition_description,
+          category: row.definition_category,
+          difficulty: row.definition_difficulty,
+          estimatedTime: row.definition_estimated_time,
+          xpReward: row.definition_xp_reward,
+          isActive: row.definition_is_active,
+          platform: row.definition_platform,
+          contentType: row.definition_content_type,
+          muskTip: row.definition_musk_tip
+        }
+      }));
+    } catch (error) {
+      console.error(`[db.getCurrentDayUserQuests] Error fetching quests for user ${userId}:`, error);
+      return [];
+    }
+  }
+
 
   async assignDailyQuestsToUser(userId: number): Promise<UserQuest[]> {
     // Get current date information
