@@ -1,0 +1,47 @@
+A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/App-DAphVPve.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth:260 [SW EMERGENCY FIX v4] Detected Replit domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+auth:261 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+index-BNtFuG4u.js:2292 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+index-BNtFuG4u.js:2362 [PERF] React app initialization started
+index-BNtFuG4u.js:2362 [PERF] React rendering started
+auth:396 [Skeleton] DOM loaded, preparing smooth transition
+index-BNtFuG4u.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+index-BNtFuG4u.js:2362 [PERF] React app rendered in 14.00 ms
+index-BNtFuG4u.js:2362 [PERF] Total initialization time: 14.30 ms
+auth:284 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+index-BNtFuG4u.js:289 AuthProvider: Starting auth check, current loading state: true
+index-BNtFuG4u.js:289 AuthProvider: Running checkAuth
+index-BNtFuG4u.js:289 AuthProvider: Checking sessionStorage
+index-BNtFuG4u.js:289 AuthProvider: Current sessionStorage keys: []
+index-BNtFuG4u.js:289 AuthProvider: Raw stored data: null
+index-BNtFuG4u.js:289 AuthProvider: No stored user found in sessionStorage
+index-BNtFuG4u.js:289 AuthProvider: Setting isLoading to false from checkAuth
+index-BNtFuG4u.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: false, userEmail: undefined}
+auth:330 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+auth:331 📊 Total page load time: 60.70ms
+auth:332 🔥 Firebase init time: 60.70ms
+auth:340 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 9 modulepreload links active
+auth:341 ⚡ Expected improvement: 100-300ms faster cold starts
+auth:346 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+auth:347 ⚡ Expected improvement: 150-250ms faster auth loads
+auth:376 🔄 [Strategy 4] Service Worker: Installing...
+auth:381 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+auth:388 📈 Performance Optimization Complete - All 4 strategies active!
+auth:402 [Skeleton] Starting fade-out transition
+index-BNtFuG4u.js:2362 [PERF] Skeleton loader removed in 159.10 ms
+auth:408 [Skeleton] Skeleton loading complete - app ready
+auth:412 ⚡ [PERF] Skeleton-to-app transition: 214.40ms
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth:356 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+auth:357 ⚡ Expected improvement: 50-100ms perceived performance boost
+auth-page-B-gwGjz-.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-BNtFuG4u.js:2362 [Progressive Loading] Starting tiered component loading
+index-BNtFuG4u.js:2362 [Progressive Loading] ⚡ Core components ready
+auth-page-B-gwGjz-.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-BNtFuG4u.js:2362 [Progressive Loading] 🚀 Secondary components loaded
+auth-page-B-gwGjz-.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-BNtFuG4u.js:2362 [Progressive Loading] 🔧 All components loaded in 203.20ms
+auth-page-B-gwGjz-.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+auth:1 The resource https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/App-DAphVPve.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+auth:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKCi8vIE5vdGU6IEZpcmViYXNlIHJlbW92ZWQgLSB1c2luZyBjdXN0b20gT0F1dGggb25seQoKLy8gUGVyZm9ybWFuY2UgbWVhc3VyZW1lbnQKY29uc3QgYXBwU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CmNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIGluaXRpYWxpemF0aW9uIHN0YXJ0ZWQnKTsKCi8vIFJlbW92ZSBIVE1MIGxvYWRlciBpbW1lZGlhdGVseSB3aGVuIFJlYWN0IGFwcCBzdGFydHMKY29uc3QgbG9hZGVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FwcC1sb2FkZXInKTsKaWYgKGxvYWRlcikgewogIGxvYWRlci5zdHlsZS5vcGFjaXR5ID0gJzAnOwogIGxvYWRlci5zdHlsZS50cmFuc2l0aW9uID0gJ29wYWNpdHkgMC4xNXMgZWFzZS1vdXQnOwogIHNldFRpbWVvdXQoKCkgPT4gewogICAgbG9hZGVyLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFNrZWxldG9uIGxvYWRlciByZW1vdmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAxNTApOwp9CgovLyBDaGVjayBpZiB3ZSBzaG91bGQgdXNlIHRoZSBzaW1wbGUgYXBwIG9yIHRoZSBmdWxsIGFwcApjb25zdCB1c2VTaW1wbGVBcHAgPSBmYWxzZTsgLy8gU2V0IHRvIHRydWUgZm9yIHRlc3RpbmcKCi8vIFByb2dyZXNzaXZlIHJlbmRlcmluZyAtIHN0YXJ0IHdpdGggY3JpdGljYWwgY29tcG9uZW50cwpjb25zdCByZW5kZXJBcHAgPSAoKSA9PiB7CiAgY29uc3QgcmVuZGVyU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CiAgY29uc29sZS5sb2coJ1tQRVJGXSBSZWFjdCByZW5kZXJpbmcgc3RhcnRlZCcpOwogIAogIGNyZWF0ZVJvb3QoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInJvb3QiKSEpLnJlbmRlcigKICAgIHVzZVNpbXBsZUFwcCA/IDxTaW1wbGVBcHAgLz4gOiA8QXBwIC8+CiAgKTsKICAKICAvLyBSZXBvcnQgcmVuZGVyaW5nIHRpbWUgYWZ0ZXIgUmVhY3QgaGFzIG1vdW50ZWQKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIHJlbmRlcmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gcmVuZGVyU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gVG90YWwgaW5pdGlhbGl6YXRpb24gdGltZTonLCAocGVyZm9ybWFuY2Uubm93KCkgLSBhcHBTdGFydFRpbWUpLnRvRml4ZWQoMiksICdtcycpOwogIH0sIDApOwp9OwoKLy8gT3B0aW1pemUgcmVuZGVyaW5nIHRpbWluZwppZiAoZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2xvYWRpbmcnKSB7CiAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIHJlbmRlckFwcCk7Cn0gZWxzZSB7CiAgcmVuZGVyQXBwKCk7Cn0K was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
