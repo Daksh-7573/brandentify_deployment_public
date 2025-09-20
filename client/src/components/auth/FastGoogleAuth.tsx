@@ -157,30 +157,41 @@ export function FastGoogleAuth() {
       if (!popup || popup.closed || typeof popup.closed === 'undefined') {
         console.log('🚫 Popup was blocked - falling back to redirect method');
         setLoadingMessage('Popup blocked - switching to redirect method...');
-        
-        // Fallback to redirect method
-        const response = await fetch('/api/auth/google/url', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
+        toast({
+          title: 'Popup Blocked',
+          description: 'Your browser blocked the authentication popup. Using redirect method instead.',
+          variant: 'default'
         });
         
-        if (!response.ok) {
-          throw new Error('Failed to get OAuth URL');
-        }
-        
-        const data = await response.json();
-        setLoadingMessage('Redirecting to Google...');
-        
-        setTimeout(() => {
-          const isInIframe = window.top !== window.self;
-          if (isInIframe) {
-            window.top!.location.href = data.oauthUrl;
-          } else {
-            window.location.href = data.oauthUrl;
+        // Fallback to redirect method with enhanced error handling
+        try {
+          const response = await fetch('/api/auth/google/url', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to get OAuth URL');
           }
-        }, 1000);
-        
-        return;
+          
+          const data = await response.json();
+          setLoadingMessage('Redirecting to Google...');
+          
+          setTimeout(() => {
+            const isInIframe = window.top !== window.self;
+            if (isInIframe) {
+              window.top!.location.href = data.oauthUrl;
+            } else {
+              window.location.href = data.oauthUrl;
+            }
+          }, 1000);
+          
+          return;
+        } catch (fallbackError: any) {
+          console.error('❌ Fallback redirect method failed:', fallbackError);
+          throw new Error(`Authentication service unavailable: ${fallbackError.message}`);
+        }
       }
       
       // Step 3: Get OAuth URL and redirect the pre-opened popup
@@ -192,7 +203,7 @@ export function FastGoogleAuth() {
       });
       
       if (!response.ok) {
-        popup.close();
+        popup?.close();
         throw new Error('Failed to get OAuth URL');
       }
       
@@ -203,10 +214,12 @@ export function FastGoogleAuth() {
       console.log('✅ Got OAuth URL, redirecting popup window');
       
       try {
-        popup.location.href = data.oauthUrl;
+        if (popup) {
+          popup.location.href = data.oauthUrl;
+        }
       } catch (popupRedirectError) {
         console.log('🚫 Failed to redirect popup - falling back to redirect method');
-        popup.close();
+        popup?.close();
         
         setLoadingMessage('Switching to redirect method...');
         setTimeout(() => {
@@ -234,7 +247,7 @@ export function FastGoogleAuth() {
       // Check popup status every second
       popupCheckInterval = setInterval(() => {
         try {
-          if (popup.closed) {
+          if (popup?.closed) {
             console.log('🔄 Popup closed - checking authentication status');
             cleanup();
             setLoadingMessage('Checking authentication status...');
@@ -253,7 +266,7 @@ export function FastGoogleAuth() {
       // Timeout after 5 minutes
       authTimeout = setTimeout(() => {
         cleanup();
-        if (!popup.closed) {
+        if (popup && !popup.closed) {
           popup.close();
         }
         setIsLoading(false);

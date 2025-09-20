@@ -118,7 +118,7 @@ function createStatelessState(data: any): string {
   const payload = {
     ...data,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes expiry
+    exp: Math.floor(Date.now() / 1000) + (20 * 60), // 20 minutes expiry (increased for better cross-domain handoff)
     jti: crypto.randomBytes(16).toString('base64url') // unique token ID
   };
   
@@ -134,7 +134,7 @@ function validateStatelessState(token: string): any {
   try {
     const decoded = jwt.verify(token, JWT_SECRET, { 
       algorithms: ['HS256'],
-      maxAge: '15m' // Additional expiry check
+      maxAge: '20m' // Additional expiry check (increased for better cross-domain handoff)
     });
     return decoded;
   } catch (error: any) {
@@ -156,15 +156,15 @@ interface SessionExchangeData {
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
 
-// Clean up expired states and session exchange codes every 5 minutes
+// Clean up expired states and session exchange codes every 10 minutes
 setInterval(() => {
-  const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
-  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const twentyMinutesAgo = Date.now() - 20 * 60 * 1000;
+  const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
   
-  // Clean up expired OAuth states (15 minutes)
+  // Clean up expired OAuth states (20 minutes)
   let deletedStateCount = 0;
   for (const [state, data] of Array.from(stateStore.entries())) {
-    if (data.timestamp < fifteenMinutesAgo) {
+    if (data.timestamp < twentyMinutesAgo) {
       stateStore.delete(state);
       deletedStateCount++;
     }
@@ -173,10 +173,10 @@ setInterval(() => {
     console.log(`🧹 [STATE-CLEANUP] Removed ${deletedStateCount} expired OAuth states`);
   }
   
-  // Clean up expired session exchange codes (5 minutes)
+  // Clean up expired session exchange codes (10 minutes)
   let deletedExchangeCount = 0;
   for (const [code, data] of Array.from(sessionExchangeStore.entries())) {
-    if (data.timestamp < fiveMinutesAgo) {
+    if (data.timestamp < tenMinutesAgo) {
       sessionExchangeStore.delete(code);
       deletedExchangeCount++;
     }
@@ -184,7 +184,7 @@ setInterval(() => {
   if (deletedExchangeCount > 0) {
     console.log(`🧹 [EXCHANGE-CLEANUP] Removed ${deletedExchangeCount} expired session exchange codes`);
   }
-}, 5 * 60 * 1000);
+}, 10 * 60 * 1000);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
@@ -388,7 +388,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       return res.redirect('/auth?error=missing_params&message=Authentication%20response%20incomplete.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
-    // SECURITY: Validate stateless JWT state (works across all server instances)
+    // SECURITY: Validate stateless JWT state (works across all server instances) with retry logic
     let stateData;
     try {
       stateData = validateStatelessState(state as string);
@@ -397,21 +397,31 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         returnHost: stateData.returnHost,
         isPopup: stateData.isPopup,
         jti: stateData.jti,
-        currentHost: req.get('host')
+        currentHost: req.get('host'),
+        tokenAge: Math.floor(Date.now() / 1000) - stateData.iat,
+        timeToExpiry: stateData.exp - Math.floor(Date.now() / 1000)
       });
     } catch (error: any) {
       console.log('❌ [STATE-VALIDATION] Stateless JWT state validation failed:', {
         error: error.message,
+        errorType: error.name,
         providedState: typeof state,
         stateLength: typeof state === 'string' ? (state as string).length : 0,
-        currentHost: req.get('host')
+        currentHost: req.get('host'),
+        currentTime: Math.floor(Date.now() / 1000),
+        userAgent: req.get('user-agent')?.substring(0, 100)
       });
       
-      // Determine error type for user-friendly message
-      if (error.message.includes('expired')) {
-        return res.redirect('/auth?error=expired_state&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
+      // Enhanced error categorization with retry guidance
+      if (error.message.includes('expired') || error.name === 'TokenExpiredError') {
+        console.log('⏰ [AUTH-RECOVERY] JWT token expired - suggesting immediate retry');
+        return res.redirect('/auth?error=expired_state&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=immediate');
+      } else if (error.message.includes('signature') || error.name === 'JsonWebTokenError') {
+        console.log('🔐 [AUTH-RECOVERY] JWT signature invalid - may be cross-instance issue');
+        return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=newSession');
       } else {
-        return res.redirect('/auth?error=invalid_state&message=Invalid%20authentication%20session.%20Please%20try%20signing%20in%20again.&canRetry=true');
+        console.log('❓ [AUTH-RECOVERY] Unknown JWT validation error - suggesting new session');
+        return res.redirect('/auth?error=invalid_state&message=Authentication%20session%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true&retryHint=newSession');
       }
     }
     // JWT validation already handled expiry, state is guaranteed valid at this point
