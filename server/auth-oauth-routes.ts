@@ -145,6 +145,35 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     console.log('✅ [OAUTH-URL] Selected redirect URI:', redirectUri);
     
+    // ENHANCED DEBUGGING: Detailed URI and context analysis
+    console.log('🔍 [URI-DEBUG] COMPLETE URI ANALYSIS:');
+    console.log('📍 Original Host:', host);
+    console.log('🎯 Generated Redirect URI:', redirectUri);
+    console.log('🔗 Return Host:', returnHost);
+    console.log('📋 Request Headers:', {
+      'user-agent': req.get('user-agent')?.substring(0, 100) + '...',
+      'referer': req.get('referer'),
+      'x-forwarded-proto': req.get('x-forwarded-proto'),
+      'x-forwarded-host': req.get('x-forwarded-host'),
+      'origin': req.get('origin'),
+      'sec-fetch-site': req.get('sec-fetch-site'),
+      'sec-fetch-mode': req.get('sec-fetch-mode'),
+      'sec-fetch-dest': req.get('sec-fetch-dest')
+    });
+    console.log('🏷️ Request Context:', {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      isDevelopment,
+      isBrandentifierCom,
+      isReplitDomain,
+      isPopupFlow
+    });
+    console.log('📝 Whitelist Check:', {
+      'isInWhitelist': ALLOWED_REDIRECT_URIS.includes(redirectUri),
+      'whitelistedURIs': ALLOWED_REDIRECT_URIS
+    });
+    
     // Create cryptographically secure state parameter with return host
     const isPopupFlow = req.query.popup === 'true' || req.query.flow === 'popup';
     const stateData = {
@@ -369,6 +398,54 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     console.log('✅ [OAUTH CALLBACK] Using redirect URI:', redirectUri);
     console.log('🔍 [OAUTH CALLBACK] Host detected:', host);
     console.log('🔧 [OAUTH CALLBACK] Development mode:', isDevelopment);
+    
+    // ENHANCED DEBUGGING: Detailed callback context analysis
+    console.log('🔍 [CALLBACK-DEBUG] COMPLETE CALLBACK ANALYSIS:');
+    console.log('📍 Callback Host:', host);
+    console.log('🎯 Token Exchange URI:', redirectUri);
+    console.log('📋 Callback Headers:', {
+      'user-agent': req.get('user-agent')?.substring(0, 100) + '...',
+      'referer': req.get('referer'),
+      'x-forwarded-proto': req.get('x-forwarded-proto'),
+      'x-forwarded-host': req.get('x-forwarded-host'),
+      'origin': req.get('origin'),
+      'x-frame-options': req.get('x-frame-options'),
+      'sec-fetch-site': req.get('sec-fetch-site'),
+      'sec-fetch-mode': req.get('sec-fetch-mode'),
+      'sec-fetch-dest': req.get('sec-fetch-dest')
+    });
+    console.log('🏷️ Callback Context:', {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      state: typeof state,
+      code: typeof code,
+      isDevelopment,
+      isBrandentifierCom,
+      isReplitDomain
+    });
+    console.log('📝 URI Validation:', {
+      'generatedURI': redirectUri,
+      'isInWhitelist': ALLOWED_REDIRECT_URIS.includes(redirectUri),
+      'whitelistedURIs': ALLOWED_REDIRECT_URIS
+    });
+    
+    // ERROR HANDLING: Add token exchange error prediction
+    if (!ALLOWED_REDIRECT_URIS.includes(redirectUri)) {
+      console.log('⚠️ [POTENTIAL-ERROR] Generated URI not in whitelist - Google OAuth will likely fail!');
+      console.log('🔧 [SUGGESTION] Either add to Google Cloud Console or fix dynamic generation logic');
+    }
+    
+    // IFRAME CONTEXT ANALYSIS: Check if request came from iframe
+    const isIframeContext = req.get('sec-fetch-dest') === 'iframe' || 
+                           req.get('sec-fetch-site') === 'cross-site' ||
+                           req.get('referer')?.includes('preview');
+    console.log('🖼️ [IFRAME-ANALYSIS] Context detection:', {
+      'isIframeContext': isIframeContext,
+      'sec-fetch-dest': req.get('sec-fetch-dest'),
+      'sec-fetch-site': req.get('sec-fetch-site'),
+      'referer': req.get('referer')
+    });
     
     const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
