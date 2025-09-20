@@ -7158,7 +7158,22 @@ export class MemStorage implements IStorage {
       `, [userId, currentDate]);
       
       console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
-      return result.rows;
+      
+      // Add definition object for frontend compatibility (similar to social quests)
+      return result.rows.map(row => ({
+        ...row,
+        definition: {
+          id: row.questDefinitionId,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          targetCount: row.targetCount,
+          targetAction: row.targetAction,
+          xpReward: row.xpReward,
+          badgeReward: row.badgeReward,
+          muskTip: row.muskTip
+        }
+      }));
     } catch (error) {
       console.error(`[db.getCurrentDayUserQuests] Error fetching daily quests for user ${userId}:`, error);
       // Return empty array to prevent cascading errors
