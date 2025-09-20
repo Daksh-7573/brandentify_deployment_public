@@ -578,6 +578,8 @@ export interface IStorage {
   getSocialQuestDefinitionById(id: number): Promise<any | undefined>;
   getUserSocialQuests(userId: number): Promise<any[]>;
   getUserSocialQuestsWithDefinitions(userId: number): Promise<any[]>;
+  getCurrentDaySocialQuests(userId: number): Promise<any[]>;
+  assignDailySocialQuests(userId: number): Promise<any[]>;
   createUserSocialQuest(socialQuest: any): Promise<any>;
   updateUserSocialQuest(id: number, socialQuest: any): Promise<any | undefined>;
   assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
@@ -12388,6 +12390,226 @@ export class DatabaseStorage implements IStorage {
     
     return weekNumber;
   }
+
+  // Social Quest operations implementation
+  async getAllSocialQuestDefinitions(): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, type, target_count as "targetCount", 
+          target_action as "targetAction", xp_reward as "xpReward",
+          badge_reward as "badgeReward", musk_tip as "muskTip", 
+          is_active as "isActive", created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions 
+        WHERE type IN ('social_quest', 'social_post') AND is_active = true
+        ORDER BY created_at DESC
+      `);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getAllSocialQuestDefinitions] Error:', error);
+      return [];
+    }
+  }
+
+  async getSocialQuestDefinitionById(id: number): Promise<any | undefined> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, type, target_count as "targetCount", 
+          target_action as "targetAction", xp_reward as "xpReward",
+          badge_reward as "badgeReward", musk_tip as "muskTip", 
+          is_active as "isActive", created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions 
+        WHERE id = $1 AND type IN ('social_quest', 'social_post')
+      `, [id]);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getSocialQuestDefinitionById] Error fetching social quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getUserSocialQuests(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND qd.type IN ('social_quest', 'social_post')
+        ORDER BY uq.assigned_at DESC
+      `, [userId]);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserSocialQuests] Error fetching social quests for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getUserSocialQuestsWithDefinitions(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND qd.type IN ('social_quest', 'social_post')
+        ORDER BY uq.assigned_at DESC
+      `, [userId]);
+      
+      // Add definition object for frontend compatibility
+      return result.rows.map(row => ({
+        ...row,
+        definition: {
+          id: row.questDefinitionId,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          targetCount: row.targetCount,
+          targetAction: row.targetAction,
+          xpReward: row.xpReward,
+          badgeReward: row.badgeReward,
+          muskTip: row.muskTip
+        }
+      }));
+    } catch (error) {
+      console.error(`[db.getUserSocialQuestsWithDefinitions] Error fetching social quests with definitions for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getCurrentDaySocialQuests(userId: number): Promise<any[]> {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 
+          AND qd.type IN ('social_quest', 'social_post')
+          AND uq.assigned_date = $2
+          AND uq.status = 'active'
+        ORDER BY uq.assigned_at DESC
+      `, [userId, currentDate]);
+      
+      // Add definition object for frontend compatibility
+      return result.rows.map(row => ({
+        ...row,
+        definition: {
+          id: row.questDefinitionId,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          targetCount: row.targetCount,
+          targetAction: row.targetAction,
+          xpReward: row.xpReward,
+          badgeReward: row.badgeReward,
+          muskTip: row.muskTip
+        }
+      }));
+    } catch (error) {
+      console.error(`[db.getCurrentDaySocialQuests] Error fetching daily social quests for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async assignDailySocialQuests(userId: number): Promise<any[]> {
+    try {
+      const now = new Date();
+      const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+      const currentWeek = this.getWeekNumber(now);
+      const currentYear = now.getFullYear();
+      
+      // Check if user already has social quests for today
+      const existingDailyQuests = await this.getCurrentDaySocialQuests(userId);
+      if (existingDailyQuests.length > 0) {
+        return existingDailyQuests;
+      }
+      
+      // Get all active social quest definitions
+      const allSocialQuests = await this.getAllSocialQuestDefinitions();
+      
+      if (allSocialQuests.length === 0) {
+        console.log(`No active social quest definitions available for user ${userId}`);
+        return [];
+      }
+      
+      // Randomly select 1-2 social quests for the day
+      const numQuests = Math.min(2, Math.max(1, allSocialQuests.length));
+      const selectedQuests = [];
+      
+      // Random selection
+      for (let i = 0; i < numQuests && allSocialQuests.length > 0; i++) {
+        const randomIndex = Math.floor(Math.random() * allSocialQuests.length);
+        selectedQuests.push(allSocialQuests[randomIndex]);
+        // Remove selected quest to avoid duplicates
+        allSocialQuests.splice(randomIndex, 1);
+      }
+      
+      // Create user quest records for selected social quests
+      const createdQuests = [];
+      for (const quest of selectedQuests) {
+        try {
+          const userQuest = await this.createUserQuest({
+            userId,
+            questDefinitionId: quest.id,
+            status: 'active',
+            progress: 0,
+            assignedAt: now,
+            weekNumber: currentWeek,
+            year: currentYear,
+            assignedDate: currentDate
+          });
+          
+          // Add definition for frontend compatibility
+          const questWithDefinition = {
+            ...userQuest,
+            definition: quest
+          };
+          
+          createdQuests.push(questWithDefinition);
+          console.log(`[assignDailySocialQuests] Assigned social quest ${quest.title} to user ${userId}`);
+        } catch (error) {
+          console.error(`[assignDailySocialQuests] Error creating social quest ${quest.id} for user ${userId}:`, error);
+        }
+      }
+      
+      return createdQuests;
+    } catch (error) {
+      console.error(`[db.assignDailySocialQuests] Error assigning daily social quests to user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async createUserSocialQuest(socialQuest: any): Promise<any> {
+    // Use the existing createUserQuest method since social quests use the same table
+    return this.createUserQuest(socialQuest);
+  }
+
+  async updateUserSocialQuest(id: number, socialQuest: any): Promise<any | undefined> {
+    // Use the existing updateUserQuest method since social quests use the same table  
+    return this.updateUserQuest(id, socialQuest);
+  }
 }
 
 // Create a properly typed storage instance
@@ -12487,6 +12709,8 @@ export const storage = {
   getSocialQuestDefinitionById: (id: number) => dbStorage.getSocialQuestDefinitionById(id),
   getUserSocialQuests: (userId: number) => dbStorage.getUserSocialQuests(userId),
   getUserSocialQuestsWithDefinitions: (userId: number) => dbStorage.getUserSocialQuestsWithDefinitions(userId),
+  getCurrentDaySocialQuests: (userId: number) => dbStorage.getCurrentDaySocialQuests(userId),
+  assignDailySocialQuests: (userId: number) => dbStorage.assignDailySocialQuests(userId),
   createUserSocialQuest: (socialQuest: any) => dbStorage.createUserSocialQuest(socialQuest),
   updateUserSocialQuest: (id: number, socialQuest: any) => dbStorage.updateUserSocialQuest(id, socialQuest),
 

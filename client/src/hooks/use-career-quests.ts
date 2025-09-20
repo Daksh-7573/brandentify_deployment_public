@@ -248,7 +248,7 @@ export const useUserWeeklyQuests = (userId?: number, weekNumber?: number, year?:
   });
 };
 
-// Fetch user's daily quests
+// Fetch user's daily quests (career only)
 export const useUserDailyQuests = (userId?: number) => {
   const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   
@@ -270,21 +270,98 @@ export const useUserDailyQuests = (userId?: number) => {
             // Only return ACTIVE quests for the daily tab
             const activeQuests = quests.filter(quest => quest.status === 'active');
             if (activeQuests && activeQuests.length > 0) {
-              console.log(`Found ${activeQuests.length} active quests for current day for user ${userId}`);
+              console.log(`Found ${activeQuests.length} active career quests for current day for user ${userId}`);
               return activeQuests;
             }
           }
         }
         
-        console.log(`No active quests found for user ${userId} for current day`);
+        console.log(`No active career quests found for user ${userId} for current day`);
         return []; // Return empty array to avoid UI errors
       } catch (error) {
-        console.error('Error fetching daily quests:', error);
+        console.error('Error fetching daily career quests:', error);
         return []; // Return empty array to avoid UI errors
       }
     },
     enabled: !!userId
   });
+};
+
+// Fetch user's daily social quests
+export const useUserDailySocialQuests = (userId?: number) => {
+  const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  
+  return useQuery({
+    queryKey: [userId ? `/api/users/${userId}/social-quests/current-day` : null, currentDate],
+    queryFn: async () => {
+      // If no user ID provided, return empty array
+      if (!userId) {
+        return [] as any[];
+      }
+      
+      try {
+        // Get social quests for current day for this user
+        const currentDayRes = await fetch(`/api/users/${userId}/social-quests/current-day`);
+        if (currentDayRes.ok) {
+          const contentType = currentDayRes.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const quests = await currentDayRes.json() as any[];
+            // Only return ACTIVE quests for the daily tab
+            const activeQuests = quests.filter(quest => quest.status === 'active');
+            if (activeQuests && activeQuests.length > 0) {
+              console.log(`Found ${activeQuests.length} active social quests for current day for user ${userId}`);
+              return activeQuests;
+            }
+          }
+        }
+        
+        console.log(`No active social quests found for user ${userId} for current day`);
+        return []; // Return empty array to avoid UI errors
+      } catch (error) {
+        console.error('Error fetching daily social quests:', error);
+        return []; // Return empty array to avoid UI errors
+      }
+    },
+    enabled: !!userId
+  });
+};
+
+// Combined daily quests (both career and social)
+export const useUserCombinedDailyQuests = (userId?: number) => {
+  const {
+    data: careerQuests,
+    isLoading: isLoadingCareer,
+    error: careerError,
+    refetch: refetchCareer
+  } = useUserDailyQuests(userId);
+  
+  const {
+    data: socialQuests,
+    isLoading: isLoadingSocial,
+    error: socialError,
+    refetch: refetchSocial
+  } = useUserDailySocialQuests(userId);
+  
+  const isLoading = isLoadingCareer || isLoadingSocial;
+  const error = careerError || socialError;
+  
+  // Combine both quest arrays
+  const combinedQuests = [
+    ...(careerQuests || []).map(quest => ({ ...quest, questType: 'career' })),
+    ...(socialQuests || []).map(quest => ({ ...quest, questType: 'social' }))
+  ];
+  
+  const refetch = () => {
+    refetchCareer();
+    refetchSocial();
+  };
+  
+  return {
+    data: combinedQuests,
+    isLoading,
+    error,
+    refetch
+  };
 };
 
 // Assign daily quests to user

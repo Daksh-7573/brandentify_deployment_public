@@ -89,10 +89,13 @@ class DailyQuestScheduler {
         try {
           console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
           
-          // Use the daily quest assignment method from storage
-          const assignedQuests = await storage.assignDailyQuestsToUser(user.id);
+          // Assign both career and social quests daily
+          const assignedCareerQuests = await storage.assignDailyQuestsToUser(user.id);
+          const assignedSocialQuests = await storage.assignDailySocialQuests(user.id);
           
-          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} quests for ${user.name}`);
+          const totalAssigned = assignedCareerQuests.length + assignedSocialQuests.length;
+          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedCareerQuests.length} career + ${assignedSocialQuests.length} social = ${totalAssigned} total quests for ${user.name}`);
+          
           successCount++;
           
         } catch (userError) {
@@ -118,7 +121,7 @@ class DailyQuestScheduler {
   }
 
   public async triggerDailyAssignment() {
-    console.log('[DailyQuestScheduler] Manual trigger - assigning new daily quests');
+    console.log('[DailyQuestScheduler] Manual trigger - assigning new daily quests (both career and social)');
     return await this.assignNewDailyQuests();
   }
 

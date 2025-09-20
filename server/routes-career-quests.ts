@@ -1440,5 +1440,36 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Social Quest Daily endpoints
+  apiRouter.get("/users/:userId/social-quests/current-day", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const dailySocialQuests = await storage.getCurrentDaySocialQuests(userId);
+      res.json(dailySocialQuests);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/social-quests/current-day] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch daily social quests' });
+    }
+  });
+
+  apiRouter.post("/users/:userId/social-quests/assign-daily", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const assignedSocialQuests = await storage.assignDailySocialQuests(userId);
+      res.json(assignedSocialQuests);
+    } catch (error) {
+      console.error(`[POST /users/${req.params.userId}/social-quests/assign-daily] Error:`, error);
+      res.status(500).json({ message: 'Failed to assign daily social quests' });
+    }
+  });
+
   console.log("Career Quests and Social Quests routes loaded");
 }
