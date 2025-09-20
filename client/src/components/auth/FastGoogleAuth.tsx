@@ -16,37 +16,93 @@ export function FastGoogleAuth() {
   // Detect optimal authentication method on component mount
   useEffect(() => {
     const detectAuthMethod = () => {
-      // IFRAME DETECTION: Check if we're running inside an iframe (e.g., Replit app preview)
-      const isInIframe = window.top !== window.self;
+      // COMPREHENSIVE IFRAME DETECTION with multiple methods
+      const isInIframe = (() => {
+        try {
+          // Method 1: Window comparison
+          const windowComparison = window.top !== window.self;
+          
+          // Method 2: Parent window access test
+          let parentAccessible = false;
+          try {
+            parentAccessible = !!window.parent && window.parent !== window;
+          } catch (e) {
+            parentAccessible = true; // If we get an error, we're likely in iframe
+          }
+          
+          // Method 3: Frame detection
+          const frameDetection = window.frameElement !== null;
+          
+          console.log('🔍 [IFRAME-DETECTION-METHODS]', {
+            windowComparison,
+            parentAccessible,
+            frameDetection,
+            location: window.location.href,
+            referrer: document.referrer
+          });
+          
+          return windowComparison || parentAccessible || frameDetection;
+        } catch (error) {
+          console.log('🔍 [IFRAME-DETECTION-ERROR]', error);
+          return false;
+        }
+      })();
+      
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const hasUserActivation = 'userActivation' in navigator;
+      const isReplitPreview = window.location.hostname.includes('picard.replit.dev');
       
-      // DEBUG: Always log iframe detection result
-      console.log('🔍 [AUTH-METHOD-DETECTION] Starting authentication method detection...');
-      console.log('🔍 [IFRAME-CHECK] window.top !== window.self:', isInIframe);
+      // ENHANCED DEBUG LOGGING
+      console.log('🔍 [AUTH-METHOD-DETECTION] Starting comprehensive authentication method detection...');
+      console.log('🔍 [ENVIRONMENT-CHECK]', {
+        currentURL: window.location.href,
+        hostname: window.location.hostname,
+        isReplitPreview,
+        userAgent: navigator.userAgent,
+        referrer: document.referrer
+      });
+      console.log('🔍 [IFRAME-CHECK] Multiple detection methods:', { isInIframe });
       console.log('🔍 [MOBILE-CHECK] isMobile:', isMobile);
       console.log('🔍 [USER-ACTIVATION-CHECK] hasUserActivation:', hasUserActivation);
       
+      let selectedMethod: 'popup' | 'redirect' = 'popup';
+      let reason = '';
+      
       if (isInIframe) {
+        selectedMethod = 'popup';
+        reason = 'iframe-required';
         console.log('🖼️ IFRAME DETECTED - Google blocks iframe authentication, forcing popup-only method');
         console.log('🔧 Popup authentication bypasses Google X-Frame-Options blocking in Replit preview');
         console.log('💡 This fixes "accounts.google.com refused to connect" and invalid_state errors');
-        setAuthMethod('popup');
       } else if (isMobile) {
+        selectedMethod = 'redirect';
+        reason = 'mobile-optimized';
         console.log('📱 Mobile device detected - using redirect method');
-        setAuthMethod('redirect');
-      } else if (hasUserActivation && (navigator.userActivation as any).isActive !== undefined) {
-        console.log('🖥️ Desktop with user activation API - popup method preferred');
-        setAuthMethod('popup');
+      } else if (isReplitPreview) {
+        selectedMethod = 'popup';
+        reason = 'replit-preview-optimized';
+        console.log('🔧 Replit preview detected - using popup method to avoid cross-domain issues');
       } else {
-        console.log('🖥️ Desktop without user activation API - popup method with fallback');
-        setAuthMethod('popup');
+        selectedMethod = 'popup';
+        reason = 'desktop-default';
+        console.log('🖥️ Desktop environment - popup method preferred');
       }
       
-      console.log('✅ [AUTH-METHOD-DETECTION] Final method selected:', isInIframe ? 'popup (iframe-required)' : isMobile ? 'redirect (mobile)' : 'popup');
+      console.log('✅ [AUTH-METHOD-DETECTION] Final method selected:', selectedMethod, `(${reason})`);
+      console.log('🎯 [AUTH-METHOD-DETECTION] Setting authMethod state to:', selectedMethod);
+      
+      setAuthMethod(selectedMethod);
+      
+      // Verify state was set
+      setTimeout(() => {
+        console.log('🔍 [AUTH-METHOD-VERIFICATION] authMethod state after setting:', selectedMethod);
+      }, 100);
     };
 
-    detectAuthMethod();
+    // Run detection with slight delay to ensure DOM is ready
+    const timeoutId = setTimeout(detectAuthMethod, 50);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // PostMessage listener for popup communication with cross-domain support
@@ -142,12 +198,37 @@ export function FastGoogleAuth() {
     setLoadingMessage('Starting authentication...');
     
     try {
-      console.log('🔄 Starting Google authentication with method:', authMethod);
+      // ENHANCED DEBUG: Log authentication start with full context
+      console.log('🔄 [AUTH-START] Starting Google authentication with comprehensive debug info:');
+      console.log('🔄 [AUTH-START] Current authMethod state:', authMethod);
+      console.log('🔄 [AUTH-START] Current environment:', {
+        hostname: window.location.hostname,
+        href: window.location.href,
+        isReplitPreview: window.location.hostname.includes('picard.replit.dev'),
+        userAgent: navigator.userAgent.substring(0, 100) + '...'
+      });
       
-      // For redirect method, get URL and redirect immediately (mobile only)
-      if (authMethod === 'redirect') {
+      // WAIT FOR METHOD DETECTION if still detecting
+      if (authMethod === 'detecting') {
+        console.log('⏳ [AUTH-START] Method still detecting, waiting 200ms...');
+        setLoadingMessage('Detecting optimal authentication method...');
+        await new Promise(resolve => setTimeout(resolve, 200));
+        console.log('🔄 [AUTH-START] After wait, authMethod is now:', authMethod);
+        
+        // If still detecting, force popup for safety
+        if (authMethod === 'detecting') {
+          console.log('⚠️ [AUTH-START] Method detection timeout, forcing popup method');
+          setAuthMethod('popup');
+        }
+      }
+      
+      const finalAuthMethod = authMethod === 'detecting' ? 'popup' : authMethod;
+      console.log('🎯 [AUTH-START] Final auth method selected:', finalAuthMethod);
+      
+      // For redirect method, get URL and redirect immediately
+      if (finalAuthMethod === 'redirect') {
         setLoadingMessage('Getting authentication URL...');
-        console.log('🚀 Using direct redirect method (mobile)');
+        console.log('🚀 [AUTH-REDIRECT] Using direct redirect method');
         
         const response = await fetch('/api/auth/google/url', {
           method: 'GET',
@@ -155,14 +236,22 @@ export function FastGoogleAuth() {
         });
         
         if (!response.ok) {
+          const errorText = await response.text().catch(() => 'Unknown error');
+          console.error('❌ [AUTH-REDIRECT] Failed to get OAuth URL:', {
+            status: response.status,
+            statusText: response.statusText,
+            errorText
+          });
           throw new Error('Failed to get OAuth URL');
         }
         
         const data = await response.json();
+        console.log('✅ [AUTH-REDIRECT] Got OAuth URL, redirecting to Google...');
         setLoadingMessage('Redirecting to Google...');
         
-        // Redirect for mobile contexts
+        // Redirect for mobile/direct contexts
         setTimeout(() => {
+          console.log('🔄 [AUTH-REDIRECT] Executing redirect to:', data.oauthUrl.substring(0, 100) + '...');
           window.location.href = data.oauthUrl;
         }, 500);
         
@@ -170,7 +259,12 @@ export function FastGoogleAuth() {
       }
       
       // Pre-open popup pattern for popup method
-      console.log('🚀 Using pre-open popup pattern for better browser compatibility');
+      console.log('🚀 [AUTH-POPUP] Using pre-open popup pattern for better browser compatibility');
+      console.log('🚀 [AUTH-POPUP] Environment check:', {
+        windowTop: window.top === window.self ? 'same' : 'different',
+        isIframe: window.top !== window.self,
+        hostname: window.location.hostname
+      });
       setLoadingMessage('Opening authentication window...');
       
       // Step 1: Open blank popup immediately on user click (avoids blocking)

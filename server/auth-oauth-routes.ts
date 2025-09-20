@@ -331,16 +331,32 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
  * Handle Google OAuth callback - processes the authorization code
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
+  const startTime = Date.now();
+  const callbackId = crypto.randomBytes(8).toString('hex');
+  
   try {
-    console.log('🔄 [OAUTH CALLBACK] Processing Google OAuth callback');
-    console.log('🔄 [OAUTH CALLBACK] Query params:', req.query);
-    console.log('🔄 [OAUTH CALLBACK] Request URL:', req.url);
-    console.log('🔄 [OAUTH CALLBACK] Request method:', req.method);
-    console.log('🔄 [OAUTH CALLBACK] Request headers:', {
+    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] ========== STARTING GOOGLE OAUTH CALLBACK ==========`);
+    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Timestamp: ${new Date().toISOString()}`);
+    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Request details:`, {
+      method: req.method,
+      url: req.url,
+      fullUrl: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
+      host: req.get('host'),
+      userAgent: req.get('user-agent')?.substring(0, 100) + '...',
+      referer: req.get('referer'),
+      origin: req.get('origin'),
+      remoteAddress: req.ip || req.connection.remoteAddress
+    });
+    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Query parameters:`, req.query);
+    console.log(`🔄 [OAUTH-CALLBACK-${callbackId}] Request headers (filtered):`, {
       host: req.get('host'),
       'user-agent': req.get('user-agent'),
       referer: req.get('referer'),
-      origin: req.get('origin')
+      origin: req.get('origin'),
+      'accept-language': req.get('accept-language'),
+      'x-forwarded-for': req.get('x-forwarded-for'),
+      'x-forwarded-proto': req.get('x-forwarded-proto'),
+      'x-real-ip': req.get('x-real-ip')
     });
     
     // Set cache control headers for auth callback endpoint
@@ -356,15 +372,25 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     });
     
     const { code, state, error } = req.query;
+    console.log(`🔍 [OAUTH-CALLBACK-${callbackId}] Extracted query parameters:`, {
+      hasCode: !!code,
+      hasState: !!state,
+      hasError: !!error,
+      codePrefix: code ? (code as string).substring(0, 20) + '...' : null,
+      statePrefix: state ? (state as string).substring(0, 20) + '...' : null,
+      error: error
+    });
     
     // Handle OAuth errors with detailed logging
     if (error) {
-      console.error('❌ [OAUTH-ERROR] Google OAuth error:', {
+      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] Google OAuth error detected:`, {
         error: error,
+        errorType: typeof error,
         host: req.get('host'),
         referer: req.get('referer'),
-        userAgent: req.get('user-agent'),
-        timestamp: new Date().toISOString()
+        userAgent: req.get('user-agent')?.substring(0, 100),
+        timestamp: new Date().toISOString(),
+        callbackDuration: Date.now() - startTime
       });
       
       // Provide specific error messages based on OAuth error types
@@ -379,12 +405,16 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
     if (!code || !state) {
-      console.error('❌ [OAUTH-CALLBACK-ERROR] Missing authorization code or state:', {
+      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] Missing authorization code or state:`, {
         hasCode: !!code,
         hasState: !!state,
+        codeType: typeof code,
+        stateType: typeof state,
+        allQueryParams: Object.keys(req.query),
         query: req.query,
         host: req.get('host'),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        callbackDuration: Date.now() - startTime
       });
       return res.redirect('/auth?error=missing_params&message=Authentication%20response%20incomplete.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
@@ -392,25 +422,31 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     // SECURITY: Validate stateless JWT state (works across all server instances) with retry logic
     let stateData;
     try {
+      console.log(`🔐 [OAUTH-CALLBACK-${callbackId}] Starting JWT state validation...`);
       stateData = validateStatelessState(state as string);
-      console.log('✅ [STATE-VALIDATION] Stateless JWT state validation successful:', {
+      console.log(`✅ [OAUTH-CALLBACK-${callbackId}] JWT state validation successful:`, {
         initiatingHost: stateData.initiatingHost,
         returnHost: stateData.returnHost,
         isPopup: stateData.isPopup,
         jti: stateData.jti,
         currentHost: req.get('host'),
         tokenAge: Math.floor(Date.now() / 1000) - stateData.iat,
-        timeToExpiry: stateData.exp - Math.floor(Date.now() / 1000)
+        timeToExpiry: stateData.exp - Math.floor(Date.now() / 1000),
+        issueTime: new Date(stateData.iat * 1000).toISOString(),
+        expiryTime: new Date(stateData.exp * 1000).toISOString()
       });
     } catch (error: any) {
-      console.log('❌ [STATE-VALIDATION] Stateless JWT state validation failed:', {
+      console.error(`❌ [OAUTH-CALLBACK-${callbackId}] JWT state validation failed:`, {
         error: error.message,
         errorType: error.name,
+        errorStack: error.stack,
         providedState: typeof state,
         stateLength: typeof state === 'string' ? (state as string).length : 0,
+        statePrefix: typeof state === 'string' ? (state as string).substring(0, 50) + '...' : null,
         currentHost: req.get('host'),
         currentTime: Math.floor(Date.now() / 1000),
-        userAgent: req.get('user-agent')?.substring(0, 100)
+        userAgent: req.get('user-agent')?.substring(0, 100),
+        callbackDuration: Date.now() - startTime
       });
       
       // Enhanced error categorization with retry guidance
