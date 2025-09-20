@@ -49,38 +49,87 @@ export function FastGoogleAuth() {
     detectAuthMethod();
   }, []);
 
-  // PostMessage listener for popup communication
+  // PostMessage listener for popup communication with cross-domain support
   useEffect(() => {
     const handlePostMessage = (event: MessageEvent) => {
-      // Verify origin for security
+      // SECURITY: Strict origin verification - only allow specific trusted domains
       const allowedOrigins = [
         window.location.origin,
-        'https://accounts.google.com'
+        'https://accounts.google.com',
+        'https://brandentifier.replit.app', // Stable OAuth domain
+        'https://brandentifier.com'
       ];
       
-      if (!allowedOrigins.some(origin => event.origin.startsWith(origin.split('//')[0] + '//'))) {
-        console.log('🚫 Ignored postMessage from unauthorized origin:', event.origin);
+      // SECURITY: For Replit domains, only allow the specific stable OAuth domain
+      // Removed generic *.replit.* allowance to prevent open-redirect attacks
+      if (!allowedOrigins.includes(event.origin)) {
+        console.log('🚫 [SECURITY] Ignored postMessage from unauthorized origin:', event.origin);
         return;
       }
 
-      const { type, success, error } = event.data || {};
+      const { type, success, error, crossDomain, sessionExchangeCode, user } = event.data || {};
       
       if (type === 'GOOGLE_AUTH_COMPLETE') {
-        console.log('✅ Received authentication completion message');
-        setLoadingMessage('Authentication successful! Redirecting...');
+        console.log('✅ Received authentication completion message', {
+          success,
+          crossDomain,
+          origin: event.origin,
+          hasSessionCode: !!sessionExchangeCode
+        });
         
-        setTimeout(() => {
-          if (success) {
-            window.location.href = '/dashboard';
-          } else {
-            setIsLoading(false);
-            toast({
-              title: 'Authentication Failed',
-              description: error || 'Authentication was not completed successfully.',
-              variant: 'destructive'
-            });
+        if (success) {
+          setLoadingMessage('Authentication successful! Redirecting...');
+          
+          setTimeout(() => {
+            if (crossDomain && sessionExchangeCode) {
+              // SECURITY: Construct session accept URL locally to prevent open-redirect attacks
+              // Never trust URLs provided in postMessage from cross-origin sources
+              const localSessionAcceptUrl = `${window.location.origin}/auth/accept-session?code=${sessionExchangeCode}`;
+              
+              console.log('🔄 [CROSS-DOMAIN-AUTH] Initiating secure session transfer');
+              console.log('🔗 [CROSS-DOMAIN-AUTH] Local session accept URL:', localSessionAcceptUrl);
+              
+              // Store user data temporarily for quick access
+              if (user) {
+                sessionStorage.setItem('auth_pending_user', JSON.stringify(user));
+              }
+              
+              // Redirect to locally constructed session acceptance URL
+              window.location.href = localSessionAcceptUrl;
+            } else {
+              // Same domain - direct redirect
+              console.log('✅ [SAME-DOMAIN-AUTH] Direct redirect to dashboard');
+              window.location.href = '/dashboard';
+            }
+          }, 1000);
+        } else {
+          // Handle authentication failure
+          setIsLoading(false);
+          setLoadingMessage('');
+          
+          console.error('❌ [AUTH-FAILURE] Authentication failed:', {
+            error,
+            crossDomain,
+            origin: event.origin
+          });
+          
+          let errorMessage = error || 'Authentication was not completed successfully.';
+          
+          // Provide more specific error messages
+          if (error?.includes('popup')) {
+            errorMessage = 'Popup authentication failed. Please ensure popups are enabled and try again.';
+          } else if (error?.includes('cross-domain') || error?.includes('domain')) {
+            errorMessage = 'Cross-domain authentication issue. Please try again or contact support.';
+          } else if (error?.includes('refused to connect')) {
+            errorMessage = 'Authentication service temporarily unavailable. Please try again in a moment.';
           }
-        }, 1000);
+          
+          toast({
+            title: 'Authentication Failed',
+            description: errorMessage,
+            variant: 'destructive'
+          });
+        }
       }
     };
 

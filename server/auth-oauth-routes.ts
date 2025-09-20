@@ -149,16 +149,15 @@ function validateStatelessState(token: string): any {
 // In-memory state storage (in production, use Redis or database)
 const stateStore = new Map<string, { timestamp: number, ip: string }>();
 
-// REMOVED: Session exchange interface (no longer needed with same-domain authentication)
-// interface SessionExchangeData {
-//   sessionToken: string;
-//   timestamp: number;
-//   returnHost: string;
-//   userId: number;
-// }
+// Cross-domain session exchange for stable redirect URI approach
+interface SessionExchangeData {
+  sessionToken: string;
+  timestamp: number;
+  returnHost: string;
+  userId: number;
+}
 
-// REMOVED: Session exchange store (no longer needed with same-domain authentication)
-// const sessionExchangeStore = new Map<string, SessionExchangeData>();
+const sessionExchangeStore = new Map<string, SessionExchangeData>();
 
 // Clean up expired states and session exchange codes every 10 minutes
 setInterval(() => {
@@ -177,8 +176,17 @@ setInterval(() => {
     console.log(`🧹 [STATE-CLEANUP] Removed ${deletedStateCount} expired OAuth states`);
   }
   
-  // REMOVED: Session exchange cleanup (no longer needed with same-domain authentication)
-  // Session exchange codes are no longer used since authentication happens on the same domain
+  // Clean up expired session exchange codes (5 minutes)
+  let deletedExchangeCount = 0;
+  for (const [code, data] of Array.from(sessionExchangeStore.entries())) {
+    if (data.timestamp < tenMinutesAgo) {
+      sessionExchangeStore.delete(code);
+      deletedExchangeCount++;
+    }
+  }
+  if (deletedExchangeCount > 0) {
+    console.log(`🧹 [EXCHANGE-CLEANUP] Removed ${deletedExchangeCount} expired session exchange codes`);
+  }
 }, 10 * 60 * 1000);
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
@@ -691,17 +699,46 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       authProvider: 'google'
     });
     
-    // SAME-DOMAIN AUTHENTICATION: No cross-domain handoff needed
-    // With domain-specific authentication, we always authenticate on the same domain
+    // CROSS-DOMAIN ANALYSIS: Check if session handoff is needed
     const currentHost = req.get('host') || 'localhost:5000';
+    const needsCrossDomainHandoff = finalReturnHost !== currentHost;
     
-    console.log('🔍 [SAME-DOMAIN-AUTH] Authentication completed on same domain:', {
+    console.log('🔍 [SESSION-HANDOFF] Domain analysis:', {
       currentHost,
       returnHost: finalReturnHost,
-      sameDomainAuth: true
+      needsCrossDomainHandoff,
+      authFlowType: needsCrossDomainHandoff ? 'cross-domain' : 'same-domain'
     });
     
-    {
+    if (needsCrossDomainHandoff) {
+      // Generate secure session exchange code for cross-domain handoff
+      const exchangeCode = crypto.randomBytes(32).toString('base64url');
+      
+      // Store session exchange data (expires in 5 minutes, single-use)
+      sessionExchangeStore.set(exchangeCode, {
+        sessionToken,
+        timestamp: Date.now(),
+        returnHost: finalReturnHost,
+        userId: user.id
+      });
+      
+      console.log('🔄 [SESSION-HANDOFF] Stored session exchange:', {
+        codePrefix: exchangeCode.substring(0, 10) + '...',
+        returnHost: finalReturnHost,
+        userId: user.id,
+        storeSize: sessionExchangeStore.size
+      });
+      
+      // Build session acceptance URL on return domain
+      const sessionAcceptUrl = finalReturnHost.includes('localhost') 
+        ? `http://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`
+        : `https://${finalReturnHost}/auth/accept-session?code=${exchangeCode}`;
+      
+      console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
+      console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
+      
+      return res.redirect(303, sessionAcceptUrl);
+    } else {
       // Same domain - check if this is a popup request first
       // SECURITY: Use popup detection from already validated JWT state
       const isPopupRequest = stateData.isPopup === true;
@@ -717,7 +754,7 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
       
-      console.log('🍪 [SAME-DOMAIN-AUTH] Setting session cookie directly (same domain):', {
+      console.log('🍪 [SESSION-HANDOFF] Same domain - setting cookie directly:', {
         domain: (cookieOptions as any).domain || 'omitted',
         sameSite: cookieOptions.sameSite,
         secure: cookieOptions.secure,
@@ -790,8 +827,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       if (window.opener && !window.opener.closed) {
         console.log('✅ [POPUP-CALLBACK] Parent window detected - sending success message');
         
-        // Send success message to parent window
-        window.opener.postMessage({
+        // Send success message to parent window with cross-domain support
+        const successMessage = {
           type: 'GOOGLE_AUTH_COMPLETE',
           success: true,
           user: {
@@ -800,8 +837,50 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
             name: '${user.name?.replace(/'/g, "\\'") || ""}',
             authProvider: 'google'
           },
-          timestamp: new Date().toISOString()
-        }, window.location.origin);
+          timestamp: new Date().toISOString(),
+          crossDomain: ${needsCrossDomainHandoff},
+          returnHost: '${finalReturnHost}',
+          sessionExchangeCode: null
+        };
+        
+        // For cross-domain scenarios, include session exchange info
+        if (${needsCrossDomainHandoff}) {
+          // Generate session exchange code for cross-domain handoff
+          const popupExchangeCode = crypto.randomBytes(32).toString('base64url');
+          
+          // Store session exchange data on server (same as redirect flow)
+          sessionExchangeStore.set(popupExchangeCode, {
+            sessionToken: ${JSON.stringify(sessionToken)},
+            timestamp: Date.now(),
+            returnHost: '${finalReturnHost}',
+            userId: ${user.id}
+          });
+          
+          console.log('🔄 [POPUP-CALLBACK] Stored session exchange for cross-domain handoff:', {
+            codePrefix: popupExchangeCode.substring(0, 10) + '...',
+            returnHost: '${finalReturnHost}',
+            userId: ${user.id}
+          });
+          
+          // SECURITY: Only send the exchange code - client will construct URL locally
+          successMessage.sessionExchangeCode = popupExchangeCode;
+        }
+        
+        // Try multiple target origins for cross-domain compatibility
+        const targetOrigins = [
+          '${finalReturnHost.includes('localhost') ? `http://${finalReturnHost}` : `https://${finalReturnHost}`}',
+          window.location.origin,
+          '*' // Last resort for iframe contexts
+        ];
+        
+        targetOrigins.forEach(origin => {
+          try {
+            window.opener.postMessage(successMessage, origin);
+            console.log('📤 [POPUP-CALLBACK] Message sent to origin:', origin);
+          } catch (e) {
+            console.log('❌ [POPUP-CALLBACK] Failed to send to origin:', origin, e.message);
+          }
+        });
         
         // Small delay then close popup
         setTimeout(() => {
@@ -819,13 +898,29 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     } catch (error) {
       console.error('❌ [POPUP-CALLBACK] Error in popup completion:', error);
       
-      // Send error message to parent if possible
+      // Send error message to parent with cross-domain support
       if (window.opener && !window.opener.closed) {
-        window.opener.postMessage({
+        const errorMessage = {
           type: 'GOOGLE_AUTH_COMPLETE',
           success: false,
-          error: 'Failed to complete popup authentication'
-        }, window.location.origin);
+          error: 'Failed to complete popup authentication',
+          crossDomain: ${needsCrossDomainHandoff}
+        };
+        
+        // Try multiple target origins
+        const targetOrigins = [
+          '${finalReturnHost.includes('localhost') ? `http://${finalReturnHost}` : `https://${finalReturnHost}`}',
+          window.location.origin,
+          '*'
+        ];
+        
+        targetOrigins.forEach(origin => {
+          try {
+            window.opener.postMessage(errorMessage, origin);
+          } catch (e) {
+            console.log('❌ [POPUP-ERROR] Failed to send error to origin:', origin);
+          }
+        });
       }
       
       // Fallback: redirect to dashboard
@@ -871,16 +966,160 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
 }
 
 /**
- * REMOVED: Accept session from cross-domain handoff
- * 
- * This function is no longer needed with same-domain authentication.
- * Authentication now happens directly on the same domain where it started,
- * eliminating the need for cross-domain session handoff.
+ * Store session exchange data for popup-based cross-domain handoff
  */
-// export async function acceptSessionRoute(req: Request, res: Response) {
-//   // REMOVED: Cross-domain session handoff is no longer needed
-//   // All authentication now happens on the same domain
-// }
+export async function storeSessionExchangeRoute(req: Request, res: Response) {
+  try {
+    console.log('🔄 [STORE-SESSION-EXCHANGE] Processing session exchange storage request');
+    
+    const { exchangeCode, sessionToken, returnHost, userId } = req.body;
+    
+    if (!exchangeCode || !sessionToken || !returnHost || !userId) {
+      console.error('❌ [STORE-SESSION-EXCHANGE] Missing required data:', {
+        hasExchangeCode: !!exchangeCode,
+        hasSessionToken: !!sessionToken,
+        hasReturnHost: !!returnHost,
+        hasUserId: !!userId
+      });
+      return res.status(400).json({ error: 'Missing required session exchange data' });
+    }
+    
+    // Store session exchange data (expires in 5 minutes, single-use)
+    sessionExchangeStore.set(exchangeCode, {
+      sessionToken,
+      timestamp: Date.now(),
+      returnHost,
+      userId
+    });
+    
+    console.log('✅ [STORE-SESSION-EXCHANGE] Session exchange stored:', {
+      codePrefix: exchangeCode.substring(0, 10) + '...',
+      returnHost,
+      userId,
+      storeSize: sessionExchangeStore.size
+    });
+    
+    res.json({ success: true });
+    
+  } catch (error: any) {
+    console.error('❌ [STORE-SESSION-EXCHANGE-ERROR] Failed to store session exchange:', {
+      errorMessage: error.message,
+      errorStack: error.stack
+    });
+    res.status(500).json({ error: 'Failed to store session exchange data' });
+  }
+}
+
+/**
+ * Accept session from cross-domain handoff - validates exchange code and sets session cookie
+ */
+export async function acceptSessionRoute(req: Request, res: Response) {
+  try {
+    console.log('🔄 [SESSION-ACCEPT] Processing session acceptance');
+    
+    // Set cache control headers
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+      'X-Auth-Handler': 'session-accept',
+      'X-Auth-Timestamp': new Date().toISOString(),
+      'X-Auth-Host': req.get('host') || 'unknown'
+    });
+    
+    const { code } = req.query;
+    
+    if (!code || typeof code !== 'string') {
+      console.error('❌ [SESSION-ACCEPT] Missing or invalid exchange code');
+      return res.redirect('/auth?error=invalid_exchange_code&message=Authentication%20session%20code%20invalid.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    // Look up session exchange data
+    const exchangeData = sessionExchangeStore.get(code);
+    
+    if (!exchangeData) {
+      console.error('❌ [SESSION-ACCEPT] Exchange code not found or already used:', {
+        codeProvided: code.substring(0, 10) + '...',
+        storeSize: sessionExchangeStore.size,
+        allCodes: Array.from(sessionExchangeStore.keys()).map(k => k.substring(0, 10) + '...')
+      });
+      return res.redirect('/auth?error=exchange_code_not_found&message=Authentication%20session%20not%20found%20or%20already%20used.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    // Check exchange code age (max 5 minutes)
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    if (exchangeData.timestamp < fiveMinutesAgo) {
+      console.error('❌ [SESSION-ACCEPT] Exchange code expired:', {
+        codeAge: Math.floor((Date.now() - exchangeData.timestamp) / 1000) + ' seconds',
+        maxAge: '300 seconds (5 minutes)'
+      });
+      sessionExchangeStore.delete(code);
+      return res.redirect('/auth?error=exchange_code_expired&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    // Validate that we're on the correct return host
+    const currentHost = req.get('host') || '';
+    if (exchangeData.returnHost !== currentHost) {
+      console.error('❌ [SESSION-ACCEPT] Host mismatch:', {
+        expectedHost: exchangeData.returnHost,
+        actualHost: currentHost
+      });
+      return res.redirect('/auth?error=host_mismatch&message=Authentication%20domain%20mismatch.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    console.log('✅ [SESSION-ACCEPT] Exchange code valid, setting session cookie');
+    
+    // Remove used exchange code (single-use)
+    sessionExchangeStore.delete(code);
+    
+    // Set session cookie on the correct domain
+    const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
+    
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'lax' as const,
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+    
+    console.log('🍪 [SESSION-ACCEPT] Setting session cookie:', {
+      domain: (cookieOptions as any).domain || 'omitted',
+      sameSite: cookieOptions.sameSite,
+      secure: cookieOptions.secure,
+      host: currentHost
+    });
+    
+    res.cookie('brandentifier_session', exchangeData.sessionToken, cookieOptions);
+    
+    console.log('✅ [SESSION-ACCEPT] Session handoff completed successfully');
+    console.log('✅ [SESSION-ACCEPT] User ID:', exchangeData.userId);
+    console.log('✅ [SESSION-ACCEPT] Redirecting to dashboard');
+    
+    // Redirect to dashboard on the correct domain
+    return res.redirect(303, '/dashboard');
+    
+  } catch (error: any) {
+    console.error('❌ [SESSION-ACCEPT-ERROR] Session acceptance critical error:', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      host: req.get('host'),
+      userAgent: req.get('user-agent'),
+      timestamp: new Date().toISOString(),
+      query: req.query
+    });
+    
+    let userMessage = 'Failed to complete authentication session. Please try signing in again.';
+    if (error.message?.includes('cookie')) {
+      userMessage = 'Unable to set authentication cookie. Please enable cookies and try again.';
+    } else if (error.message?.includes('domain')) {
+      userMessage = 'Authentication domain error. Please try signing in again.';
+    }
+    
+    res.redirect(`/auth?error=session_accept_error&message=${encodeURIComponent(userMessage)}&canRetry=true&errorCode=SESSION_ACCEPT_ERROR`);
+  }
+}
 
 /**
  * Check current session validity - for client-side auth state detection
