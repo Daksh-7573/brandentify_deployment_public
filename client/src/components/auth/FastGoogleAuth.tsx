@@ -16,11 +16,16 @@ export function FastGoogleAuth() {
   // Detect optimal authentication method on component mount
   useEffect(() => {
     const detectAuthMethod = () => {
-      // Check if we're on mobile or if user activation is not supported
+      // IFRAME DETECTION: Check if we're running inside an iframe (e.g., Replit app preview)
+      const isInIframe = window.top !== window.self;
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const hasUserActivation = 'userActivation' in navigator;
       
-      if (isMobile) {
+      if (isInIframe) {
+        console.log('🖼️ IFRAME DETECTED - Google blocks iframe authentication, forcing top-level redirect method');
+        console.log('🔧 This fixes the "accounts.google.com refused to connect" and 403 errors in Replit app preview');
+        setAuthMethod('redirect');
+      } else if (isMobile) {
         console.log('📱 Mobile device detected - using redirect method');
         setAuthMethod('redirect');
       } else if (hasUserActivation && (navigator.userActivation as any).isActive !== undefined) {
@@ -84,7 +89,14 @@ export function FastGoogleAuth() {
       // For redirect method, get URL and redirect immediately
       if (authMethod === 'redirect') {
         setLoadingMessage('Getting authentication URL...');
-        console.log('🚀 Using direct redirect method (most reliable)');
+        
+        // IFRAME-SAFE AUTHENTICATION: Check if we're in iframe context
+        const isInIframe = window.top !== window.self;
+        if (isInIframe) {
+          console.log('🚀 Using iframe-safe redirect method (top-level navigation)');
+        } else {
+          console.log('🚀 Using direct redirect method (most reliable)');
+        }
         
         const response = await fetch('/api/auth/google/url', {
           method: 'GET',
@@ -100,7 +112,14 @@ export function FastGoogleAuth() {
         
         // Small delay to show loading message
         setTimeout(() => {
-          window.location.href = data.oauthUrl;
+          if (isInIframe) {
+            // IFRAME FIX: Navigate the top-level window to break out of iframe
+            console.log('🔧 Breaking out of iframe for authentication');
+            window.top!.location.href = data.oauthUrl;
+          } else {
+            // Normal redirect for non-iframe contexts
+            window.location.href = data.oauthUrl;
+          }
         }, 500);
         
         return;
@@ -145,7 +164,12 @@ export function FastGoogleAuth() {
         setLoadingMessage('Redirecting to Google...');
         
         setTimeout(() => {
-          window.location.href = data.oauthUrl;
+          const isInIframe = window.top !== window.self;
+          if (isInIframe) {
+            window.top!.location.href = data.oauthUrl;
+          } else {
+            window.location.href = data.oauthUrl;
+          }
         }, 1000);
         
         return;
@@ -178,7 +202,12 @@ export function FastGoogleAuth() {
         
         setLoadingMessage('Switching to redirect method...');
         setTimeout(() => {
-          window.location.href = data.oauthUrl;
+          const isInIframe = window.top !== window.self;
+          if (isInIframe) {
+            window.top!.location.href = data.oauthUrl;
+          } else {
+            window.location.href = data.oauthUrl;
+          }
         }, 1000);
         return;
       }
@@ -317,7 +346,7 @@ export function FastGoogleAuth() {
           ) : (
             <>
               <ExternalLink className="h-3 w-3" />
-              Redirect method (mobile-optimized)
+              {window.top !== window.self ? 'Iframe-safe redirect method' : 'Redirect method (mobile-optimized)'}
             </>
           )}
         </div>
