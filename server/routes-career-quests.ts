@@ -688,6 +688,94 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Daily quest assignment route
+  apiRouter.post("/users/:userId/quests/assign-daily", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      try {
+        // Check if database tables exist first
+        const tableCheck = await db.execute(sql`
+          SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'user_quests'
+          )
+        `);
+        
+        if (!tableCheck.rows[0].exists) {
+          console.log('[POST /users/:userId/quests/assign-daily] user_quests table does not exist, returning empty array');
+          return res.status(201).json([]);
+        }
+        
+        // Also check quest_definitions table
+        const questDefinitionsCheck = await db.execute(sql`
+          SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'quest_definitions'
+          )
+        `);
+        
+        if (!questDefinitionsCheck.rows[0].exists) {
+          console.log('[POST /users/:userId/quests/assign-daily] quest_definitions table does not exist, returning empty array');
+          return res.status(201).json([]);
+        }
+        
+        const assignedQuests = await storage.assignDailyQuestsToUser(userId);
+        res.status(201).json(assignedQuests);
+      } catch (dbError) {
+        console.error(`[POST /users/${req.params.userId}/quests/assign-daily] Database error:`, dbError);
+        // Return empty array instead of error to prevent UI crashes
+        res.status(201).json([]);
+      }
+    } catch (error) {
+      console.error(`[POST /users/${req.params.userId}/quests/assign-daily] Error:`, error);
+      // Return empty array instead of error to prevent UI crashes
+      res.status(201).json([]);
+    }
+  });
+
+  // Daily quest retrieval route
+  apiRouter.get("/users/:userId/quests/current-day", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      try {
+        // Check if database tables exist first
+        const tableCheck = await db.execute(sql`
+          SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'user_quests'
+          )
+        `);
+        
+        if (!tableCheck.rows[0].exists) {
+          console.log('[GET /users/:userId/quests/current-day] user_quests table does not exist, returning empty array');
+          return res.status(200).json([]);
+        }
+        
+        const dailyQuests = await storage.getCurrentDayUserQuests(userId);
+        res.json(dailyQuests);
+      } catch (dbError) {
+        console.error(`[GET /users/${req.params.userId}/quests/current-day] Database error:`, dbError);
+        // Return empty array instead of error to prevent UI crashes
+        res.status(200).json([]);
+      }
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/quests/current-day] Error:`, error);
+      // Return empty array instead of error to prevent UI crashes
+      res.status(200).json([]);
+    }
+  });
+
   apiRouter.patch("/user-quests/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
