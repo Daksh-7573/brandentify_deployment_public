@@ -51,15 +51,9 @@ router.post("/api/direct-login", async (req: Request, res: Response) => {
         lookingFor: null,
         whatIOffer: null,
         phoneNumber: null,
-        isVerified: true,
+        // Social auth IDs - using only schema-supported fields
         googleId: null,
-        facebookId: null,
-        twitterId: null,
-        appleId: null,
-        githubId: null,
-        linkedinId: null,
-        lastLogin: new Date(),
-        createdAt: new Date()
+        lastLoginAt: new Date()
       });
       
       console.log(`New user created with ID: ${user.id}`);
@@ -68,7 +62,7 @@ router.post("/api/direct-login", async (req: Request, res: Response) => {
       
       // Update last login time
       await storage.updateUser(user.id, {
-        lastLogin: new Date()
+        lastLoginAt: new Date()
       });
     }
     
