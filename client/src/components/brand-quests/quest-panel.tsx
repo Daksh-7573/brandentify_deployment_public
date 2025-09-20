@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   useUserQuestsWithDefinitions, 
   useUserWeeklyQuests,
-  useUserDailyQuests,
+  useUserCombinedDailyQuests,
   getCurrentWeekNumber, 
   getCurrentYear,
   useCombinedUserQuests
@@ -30,7 +30,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     isLoading: isLoadingDaily,
     error: dailyError,
     refetch: refetchDaily
-  } = useUserDailyQuests(userId);
+  } = useUserCombinedDailyQuests(userId);
   
   // Use combined quest hook to integrate both career and social quests
   const {
