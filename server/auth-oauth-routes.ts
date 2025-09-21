@@ -600,37 +600,35 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       authProvider: 'google'
     });
     
-    // POPUP COMMUNICATION FIX: Detect if this is a popup window request
-    const referer = req.get('referer') || '';
-    const userAgent = req.get('user-agent') || '';
+    // POPUP COMMUNICATION FIX: Detect popup requests BEFORE authentication
+    const isPopupRequest = req.query.popup === 'true';
     const currentHost = req.get('host') || 'localhost:5000';
     
-    // Check multiple indicators that this is a popup window
-    const isPopupRequest = 
-      // Check if request came from a popup (no referer or self-referencing)
-      !referer || 
-      referer.includes(currentHost) ||
-      // Check for popup indicators in headers
-      req.get('sec-fetch-dest') === 'empty' ||
-      req.get('sec-fetch-mode') === 'navigate' ||
-      // Check for our custom popup identifier
-      req.query.popup === 'true';
-    
     console.log('🔍 [POPUP-DETECTION] Popup context analysis:', {
-      referer,
-      currentHost,
-      isPopupRequest,
-      secFetchDest: req.get('sec-fetch-dest'),
-      secFetchMode: req.get('sec-fetch-mode'),
       popupQuery: req.query.popup,
-      userAgent: userAgent.substring(0, 50)
+      isPopupRequest,
+      currentHost,
+      referer: req.get('referer') || 'none',
+      userAgent: (req.get('user-agent') || '').substring(0, 50)
     });
     
-    // POPUP COMMUNICATION FIX: Handle popup requests with postMessage
+    // POPUP COMMUNICATION FIX: Handle popup requests IMMEDIATELY (before session cookies)
     if (isPopupRequest) {
-      console.log('🪟 [POPUP-AUTH] Detected popup request, sending success message to parent window');
+      console.log('🪟 [POPUP-AUTH] Detected popup request, returning postMessage HTML WITHOUT setting cookies');
       
-      // Return HTML page that sends message to parent and closes popup
+      // Create session token for parent window communication (but don't set cookie here)
+      const sessionData = {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        username: user.username,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
+      };
+      
+      const sessionToken = jwt.sign(sessionData, JWT_SECRET);
+      
+      // Return HTML page that sends user data and token to parent window
       const popupResponseHTML = `
         <!DOCTYPE html>
         <html>
@@ -663,19 +661,21 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
           <script>
             console.log('[POPUP AUTH] Popup callback page loaded, sending success message to parent');
             
-            // Send success message to parent window
+            // Send success message with session token to parent window
             try {
               if (window.opener && !window.opener.closed) {
-                console.log('[POPUP AUTH] Sending GOOGLE_AUTH_SUCCESS message to parent window');
+                console.log('[POPUP AUTH] Sending GOOGLE_AUTH_SUCCESS with session token to parent window');
                 window.opener.postMessage({
                   type: 'GOOGLE_AUTH_SUCCESS',
                   data: {
                     success: true,
+                    sessionToken: '${sessionToken}',
                     user: {
                       id: ${user.id},
                       email: '${user.email}',
                       name: '${user.name?.replace(/'/g, "\\'")}',
-                      username: '${user.username}'
+                      username: '${user.username}',
+                      photoURL: '${user.photoURL || ''}'
                     },
                     timestamp: new Date().toISOString()
                   }

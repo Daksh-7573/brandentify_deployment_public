@@ -215,8 +215,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // POPUP COMMUNICATION FIX: Proper popup-parent messaging pattern
       try {
+        // Add popup=true parameter to OAuth URL for reliable backend detection
+        const popupOAuthUrl = data.oauthUrl + (data.oauthUrl.includes('?') ? '&' : '?') + 'popup=true';
+        console.log('[POPUP AUTH] Opening popup with URL:', popupOAuthUrl);
+        
         const popup = window.open(
-          data.oauthUrl,
+          popupOAuthUrl,
           'google-auth',
           'width=500,height=600,left=' + 
           (window.screen.width / 2 - 250) + 
@@ -244,7 +248,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           
           if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-            console.log('[POPUP AUTH] ✅ Authentication successful, updating main window');
+            console.log('[POPUP AUTH] ✅ Authentication successful, processing session token');
             
             // Close popup immediately
             if (popup && !popup.closed) {
@@ -254,9 +258,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Remove event listener
             window.removeEventListener('message', handleAuthMessage);
             
-            // Refresh auth state without full page reload
-            fetchAuthState();
-            setIsLoading(false);
+            // POPUP COMMUNICATION FIX: Set session cookie and update auth state
+            const { sessionToken, user: userData } = event.data.data;
+            
+            if (sessionToken && userData) {
+              console.log('[POPUP AUTH] Setting session cookie for main window authentication');
+              
+              // Set the session cookie in the main window
+              document.cookie = `brandentifier_session=${sessionToken}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${window.location.protocol === 'https:' ? '; secure' : ''}`;
+              
+              // Update user state immediately without API call
+              const authUser = {
+                uid: userData.id.toString(),
+                id: userData.id,
+                username: userData.username,
+                email: userData.email,
+                name: userData.name,
+                photoURL: userData.photoURL || null
+              };
+              
+              console.log('[POPUP AUTH] ✅ Main window authenticated successfully:', authUser.email);
+              setUser(authUser);
+              setIsLoading(false);
+              
+              // Trigger cache refresh for consistency
+              queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+              
+            } else {
+              console.error('[POPUP AUTH] ❌ Missing session token or user data');
+              // Fallback to normal auth state check
+              fetchAuthState();
+              setIsLoading(false);
+            }
             
           } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
             console.error('[POPUP AUTH] ❌ Authentication failed:', event.data.error);
