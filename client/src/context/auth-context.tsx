@@ -21,7 +21,6 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void;
   signInWithEmail: (user: User) => void;
@@ -34,7 +33,6 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  isDemoMode: false,
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
@@ -46,8 +44,75 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
+
+  // POPUP COMMUNICATION FIX: Reusable function to fetch auth state
+  const fetchAuthState = async () => {
+    try {
+      console.log('[Auth Context] Checking authentication state...');
+      
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include' // Include cookies
+      });
+      
+      if (response.ok) {
+        const sessionData = await response.json();
+        if (sessionData.success && sessionData.user) {
+          console.log('[Auth Context] ✅ Valid session found:', sessionData.user.email);
+          
+          // PROFILE PICTURE PERSISTENCE FIX: Enhanced photo URL handling
+          const userData = sessionData.user;
+          let finalPhotoURL = userData.photoURL;
+          
+          // Log photo source information from backend
+          if (userData.photoSource) {
+            console.log('[Auth Context] 📸 Photo source from backend:', userData.photoSource);
+          }
+          
+          // Apply photo URL priority logic on frontend as well
+          if (userData.photoURL) {
+            if (userData.photoURL.startsWith('data:image/')) {
+              console.log('[Auth Context] ✅ Using custom uploaded profile picture');
+            } else if (userData.photoURL.startsWith('http')) {
+              console.log('[Auth Context] ✅ Using Google OAuth profile picture');
+            }
+          } else {
+            console.log('[Auth Context] ℹ️ No profile picture available');
+          }
+
+          const authUser = {
+            uid: userData.id.toString(),
+            ...userData,
+            photoURL: finalPhotoURL
+          };
+          
+          setUser(authUser);
+          setIsLoading(false);
+          
+          // Store in session storage for consistency with photo source tracking
+          sessionStorage.setItem('photoSource', userData.photoSource || 'none');
+          
+          // Trigger cache refresh for user data
+          queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+          
+          console.log('[Auth Context] 🔄 User data and cache updated');
+          return authUser;
+        }
+      }
+      
+      console.log('[Auth Context] No valid session found');
+      setUser(null);
+      setIsLoading(false);
+      return null;
+      
+    } catch (error) {
+      console.error('[Auth Context] Error checking auth state:', error);
+      setUser(null);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
   // Initialize authentication system with server-side session check only
   useEffect(() => {
@@ -56,123 +121,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     console.log('[Auth Context] Using server-side JWT session for all domains');
     
-    // Check server-side session for all domains
-    fetch('/api/auth/session', {
-      method: 'GET',
-      credentials: 'include' // Include cookies
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('No valid session');
-      }
-    })
-    .then(sessionData => {
-      if (sessionData.success && sessionData.user) {
-        console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
-        
-        // PROFILE PICTURE PERSISTENCE FIX: Enhanced photo URL handling
-        const userData = sessionData.user;
-        let finalPhotoURL = userData.photoURL;
-        
-        // Log photo source information from backend
-        if (userData.photoSource) {
-          console.log('[Auth Context] 📸 Photo source from backend:', userData.photoSource);
-        }
-        
-        // Apply photo URL priority logic on frontend as well
-        if (userData.photoURL) {
-          if (userData.photoURL.startsWith('data:image/')) {
-            console.log('[Auth Context] ✅ Using custom uploaded profile picture');
-          } else if (userData.photoURL.startsWith('http')) {
-            console.log('[Auth Context] ✅ Using Google OAuth profile picture');
-          }
-        } else {
-          console.log('[Auth Context] ℹ️ No profile picture available');
-        }
-
-        const authUser = {
-          uid: userData.id.toString(),
-          ...userData,
-          photoURL: finalPhotoURL
-        };
-        
-        setUser(authUser);
-        setIsLoading(false);
-        
-        // Store in session storage for consistency with photo source tracking
-        const sessionUserData = {
-          ...userData,
-          photoURL: finalPhotoURL,
-          photoSource: userData.photoSource || 'unknown'
-        };
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
-        
-        console.log('[Auth Context] 💾 Updated session storage with photo source tracking');
-      } else {
-        throw new Error('Invalid session data');
-      }
-    })
-    .catch(error => {
-      console.log('[Auth Context] ❌ No valid JWT session found:', {
-        errorMessage: error.message,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent.substring(0, 50),
-        currentDomain: window.location.hostname,
-        cookiesEnabled: navigator.cookieEnabled,
-        sessionStorageAvailable: typeof(Storage) !== "undefined" && sessionStorage
-      });
-      console.log('[Auth Context] User needs to authenticate via server OAuth');
-      
-      // Clear any stale session data
-      sessionStorage.removeItem('brandentifier_user');
+    // Use the reusable fetchAuthState function
+    fetchAuthState().then(user => {
+      const endTime = performance.now();
+      console.log(`[Auth Context] Initialization completed in ${endTime - startTime}ms`);
+    }).catch(error => {
+      console.error('[Auth Context] Initialization failed:', error);
       setIsLoading(false);
     });
-    
   }, []);
 
-  // Listen for profile picture updates to sync auth state
+  // PROFILE PICTURE PERSISTENCE FIX: Listen for profile picture updates
   useEffect(() => {
-    const handleProfilePictureUpdate = (event: any) => {
-      console.log('[Auth Context] 🔄 Profile picture updated, syncing auth context');
-      const { newPhotoURL, photoSource } = event.detail;
+    const handleProfilePictureUpdate = (event: CustomEvent) => {
+      if (!user) return;
       
-      if (user && newPhotoURL) {
-        const updatedUser = {
-          ...user,
-          photoURL: newPhotoURL,
-          photoSource: photoSource || 'custom_upload' // Default to custom upload
-        };
-        setUser(updatedUser);
-        
-        // PROFILE PICTURE PERSISTENCE FIX: Update session storage immediately
-        const currentSessionData = sessionStorage.getItem('brandentifier_user');
-        if (currentSessionData) {
-          try {
-            const sessionUser = JSON.parse(currentSessionData);
-            const updatedSessionUser = {
-              ...sessionUser,
-              photoURL: newPhotoURL,
-              photoSource: photoSource || 'custom_upload'
-            };
-            sessionStorage.setItem('brandentifier_user', JSON.stringify(updatedSessionUser));
-            console.log('[Auth Context] 💾 Updated session storage with new profile picture');
-          } catch (error) {
-            console.error('[Auth Context] ❌ Failed to update session storage:', error);
-          }
-        }
-        
-        console.log('[Auth Context] ✅ Auth context synced with new profile picture');
-      }
+      const { newPhotoURL } = event.detail;
+      console.log('[Auth Context] 🖼️ Profile picture updated, refreshing user data');
+      
+      // Update the current user with new photo URL
+      setUser(prevUser => prevUser ? {
+        ...prevUser,
+        photoURL: newPhotoURL
+      } : null);
+      
+      // Also refresh full user data to ensure backend sync
+      fetchAuthState();
     };
 
-    // Listen for profile picture update events
-    window.addEventListener('profile-picture-updated', handleProfilePictureUpdate);
+    window.addEventListener('profile-picture-updated', handleProfilePictureUpdate as EventListener);
     
-    // Cleanup event listener
     return () => {
-      window.removeEventListener('profile-picture-updated', handleProfilePictureUpdate);
+      window.removeEventListener('profile-picture-updated', handleProfilePictureUpdate as EventListener);
     };
   }, [user]);
 
@@ -208,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign in with Google - simplified custom OAuth only
+  // POPUP COMMUNICATION FIX: Sign in with Google using proper popup messaging
   const signInWithGoogle = async () => {
     if (isLoading) return;
     
@@ -233,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       console.log('✅ Got OAuth URL, redirecting to Google...');
       
-      // Try popup first, fallback to redirect if popup is blocked
+      // POPUP COMMUNICATION FIX: Proper popup-parent messaging pattern
       try {
         const popup = window.open(
           data.oauthUrl,
@@ -251,13 +231,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         
-        // Monitor the popup for completion
+        console.log('[POPUP AUTH] OAuth popup opened, waiting for completion...');
+        
+        // FIXED: Add proper message listener for popup communication
+        const handleAuthMessage = (event: MessageEvent) => {
+          console.log('[POPUP AUTH] Received message from popup:', event.data);
+          
+          // Verify origin for security
+          if (event.origin !== window.location.origin) {
+            console.warn('[POPUP AUTH] Ignoring message from unauthorized origin:', event.origin);
+            return;
+          }
+          
+          if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+            console.log('[POPUP AUTH] ✅ Authentication successful, updating main window');
+            
+            // Close popup immediately
+            if (popup && !popup.closed) {
+              popup.close();
+            }
+            
+            // Remove event listener
+            window.removeEventListener('message', handleAuthMessage);
+            
+            // Refresh auth state without full page reload
+            fetchAuthState();
+            setIsLoading(false);
+            
+          } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+            console.error('[POPUP AUTH] ❌ Authentication failed:', event.data.error);
+            
+            // Close popup
+            if (popup && !popup.closed) {
+              popup.close();
+            }
+            
+            // Remove event listener
+            window.removeEventListener('message', handleAuthMessage);
+            
+            toast({
+              title: "Authentication Failed",
+              description: event.data.error || "Google authentication was not successful. Please try again.",
+              variant: "destructive"
+            });
+            
+            setIsLoading(false);
+          }
+        };
+        
+        // Add message listener
+        window.addEventListener('message', handleAuthMessage);
+        
+        // FIXED: Monitor popup closure as fallback (but don't reload page)
         const checkClosed = setInterval(() => {
           if (popup.closed) {
             clearInterval(checkClosed);
+            window.removeEventListener('message', handleAuthMessage);
+            console.log('[POPUP AUTH] Popup closed without message, checking auth state...');
+            
+            // Check auth state without full page reload
+            fetchAuthState();
             setIsLoading(false);
-            // Check for authentication success
-            window.location.reload(); // Refresh to check auth state
           }
         }, 1000);
         
@@ -324,17 +358,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
       
-    } finally {
       setIsLoading(false);
     }
   };
 
-  // Sign out function - simplified for all domains
+  // Sign in with Phone/Email (placeholder implementations)
+  const signInWithPhone = (user: User) => {
+    console.log('Phone sign-in not implemented yet', user);
+  };
+
+  const signInWithEmail = (user: User) => {
+    console.log('Email sign-in not implemented yet', user);
+  };
+
+  // Refresh user data
+  const refreshUserData = async () => {
+    if (!user) return;
+    
+    try {
+      const userData = await fetchUserData(user.id);
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    }
+  };
+
+  // Sign out function
   const signOut = async () => {
     try {
-      setIsLoading(true);
+      console.log('[Auth Context] Initiating sign out');
       
-      // Clear server-side session for all domains
+      // Clear the server-side session
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
@@ -342,119 +398,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Clear local state
       setUser(null);
-      sessionStorage.removeItem('brandentifier_user');
+      sessionStorage.removeItem('photoSource');
+      
+      // Invalidate all queries to clear cached data
+      queryClient.clear();
+      
+      console.log('[Auth Context] ✅ Sign out completed');
       
       toast({
-        title: "Signed out",
-        description: "You have been signed out successfully.",
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
       });
       
-      // Redirect to auth page
-      window.location.href = '/auth';
-      
-    } catch (error: any) {
-      console.error("[Auth Context] Sign out error:", {
-        errorMessage: error.message,
-        timestamp: new Date().toISOString(),
-        currentUrl: window.location.href,
-        userAgent: navigator.userAgent.substring(0, 50)
-      });
-      
-      // Provide user feedback about sign out issues
-      let signOutMessage = "Sign out completed locally. You may need to clear your browser data.";
-      if (error.message && error.message.includes('network')) {
-        signOutMessage = "Network issue during sign out. You have been signed out locally.";
-      } else if (error.message && error.message.includes('server')) {
-        signOutMessage = "Server error during sign out. You have been signed out locally.";
-      }
-      
-      toast({
-        title: "Signed out",
-        description: signOutMessage,
-        variant: "default", // Not destructive since local signout succeeded
-      });
-      
-      // Clear local state anyway - prioritize user security
-      setUser(null);
-      sessionStorage.removeItem('brandentifier_user');
-      window.location.href = '/auth';
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Refresh user data with profile picture persistence fix
-  const refreshUserData = async () => {
-    if (!user) return;
-    
-    try {
-      console.log('[Auth Context] 🔄 Refreshing user data with photo persistence logic');
-      
-      // Check server-side session again to get latest data
-      const response = await fetch('/api/auth/session', {
-        method: 'GET',
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const sessionData = await response.json();
-        if (sessionData.success && sessionData.user) {
-          // PROFILE PICTURE PERSISTENCE FIX: Apply same photo priority logic
-          const userData = sessionData.user;
-          let finalPhotoURL = userData.photoURL;
-          
-          // Log photo source information from backend
-          if (userData.photoSource) {
-            console.log('[Auth Context] 🔄 Refresh - Photo source from backend:', userData.photoSource);
-          }
-          
-          // Apply photo URL priority logic
-          if (userData.photoURL) {
-            if (userData.photoURL.startsWith('data:image/')) {
-              console.log('[Auth Context] 🔄 Refresh - Using custom uploaded profile picture');
-            } else if (userData.photoURL.startsWith('http')) {
-              console.log('[Auth Context] 🔄 Refresh - Using Google OAuth profile picture');
-            }
-          }
-
-          const authUser = {
-            uid: userData.id.toString(),
-            ...userData,
-            photoURL: finalPhotoURL
-          };
-          
-          setUser(authUser);
-          
-          // Update session storage
-          const sessionUserData = {
-            ...userData,
-            photoURL: finalPhotoURL,
-            photoSource: userData.photoSource || 'unknown'
-          };
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
-          
-          console.log('[Auth Context] ✅ User data refreshed with photo persistence logic');
-        }
-      } else {
-        // Fallback to old method if session check fails
-        const userData = await fetchUserData(user.uid, user.email || undefined);
-        if (userData) {
-          setUser(userData);
-          console.log('[Auth Context] ✅ User data refreshed via fallback method');
-        }
-      }
     } catch (error) {
-      console.error("[Auth Context] Error refreshing user data:", error);
+      console.error('[Auth Context] Sign out error:', error);
+      
+      // Even if server request fails, clear local state
+      setUser(null);
+      sessionStorage.removeItem('photoSource');
+      queryClient.clear();
+      
+      toast({
+        title: "Signed out",
+        description: "You have been logged out.",
+      });
     }
-  };
-
-  // Placeholder functions for compatibility
-  const signInWithPhone = (user: User) => {
-    console.log("Phone sign-in not implemented");
-  };
-
-  const signInWithEmail = (user: User) => {
-    console.log("Email sign-in not implemented");
   };
 
   return (
@@ -463,7 +431,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading,
-        isDemoMode,
         signInWithGoogle,
         signInWithPhone,
         signInWithEmail,
@@ -474,13 +441,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-// Export hook to use auth context
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }
