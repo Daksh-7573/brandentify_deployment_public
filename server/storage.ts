@@ -11284,17 +11284,18 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO quest_definitions (
-          title, description, category, difficulty, xp_reward,
-          estimated_time_minutes, instructions, success_criteria, is_active
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          title, description, type, content_type, platform, target_count, target_action,
+          xp_reward, badge_reward, musk_tip, estimated_time_minutes, difficulty_level, is_active
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING 
-          id, title, description, category, difficulty, xp_reward as "xpReward",
-          estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive"
+          id, title, description, type, content_type as "contentType", platform, target_count as "targetCount",
+          target_action as "targetAction", xp_reward as "xpReward", badge_reward as "badgeReward",
+          musk_tip as "muskTip", estimated_time_minutes as "estimatedTimeMinutes", 
+          difficulty_level as "difficultyLevel", is_active as "isActive"
       `, [
-        quest.title, quest.description, quest.category, quest.difficulty,
-        quest.xpReward, quest.estimatedTimeMinutes, quest.instructions,
-        quest.successCriteria, quest.isActive
+        quest.title, quest.description, quest.type, quest.contentType, quest.platform,
+        quest.targetCount, quest.targetAction, quest.xpReward, quest.badgeReward,
+        quest.muskTip, quest.estimatedTimeMinutes, quest.difficultyLevel, quest.isActive
       ]);
       
       return result.rows[0];
@@ -12633,26 +12634,17 @@ export class DatabaseStorage implements IStorage {
             const questDefinition = await this.createQuestDefinition({
               title: personalizedQuest.title,
               description: personalizedQuest.description,
-              type: 'pulse_creation',
+              type: 'social_quest',
+              contentType: personalizedQuest.contentType || 'general_post',
+              platform: platform,
               targetCount: 1,
               targetAction: personalizedQuest.targetAction,
               xpReward: personalizedQuest.xpReward,
               badgeReward: null,
-              requiredProfileCompletion: 0,
-              requiredCareerStage: null,
-              requiredIndustry: null,
               muskTip: personalizedQuest.muskTip,
-              isActive: true,
-              category: 'social_media',
-              difficulty: 'beginner',
               estimatedTimeMinutes: personalizedQuest.estimatedTimeMinutes,
-              instructions: personalizedQuest.description,
-              successCriteria: `Complete the ${personalizedQuest.targetAction} and engage with responses`,
-              contentType: 'general_post',
-              platform: personalizedQuest.platform,
               difficultyLevel: 'beginner',
-              weekNumber: currentWeek,
-              year: currentYear
+              isActive: true
             });
             
             // Create user quest assignment
@@ -12690,26 +12682,17 @@ export class DatabaseStorage implements IStorage {
         const fallbackDefinition = await this.createQuestDefinition({
           title: 'Share Your Professional Journey',
           description: 'Create a post about your professional experience and what you have learned in your career.',
-          type: 'pulse_creation',
+          type: 'social_quest',
+          contentType: 'linkedin_post',
+          platform: 'linkedin',
           targetCount: 1,
           targetAction: 'create_linkedin_post',
           xpReward: 50,
           badgeReward: null,
-          requiredProfileCompletion: 0,
-          requiredCareerStage: null,
-          requiredIndustry: null,
           muskTip: 'Your experience is valuable. Share it to build your professional brand.',
-          isActive: true,
-          category: 'social_media',
-          difficulty: 'beginner',
           estimatedTimeMinutes: 15,
-          instructions: 'Create a LinkedIn post sharing your professional insights',
-          successCriteria: 'Complete the LinkedIn post and engage with responses',
-          contentType: 'general_post',
-          platform: 'linkedin',
           difficultyLevel: 'beginner',
-          weekNumber: currentWeek,
-          year: currentYear
+          isActive: true
         });
         
         const fallbackUserQuest = await this.createUserQuest({
