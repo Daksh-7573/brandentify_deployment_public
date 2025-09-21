@@ -1,7 +1,7 @@
 import { db } from '../db';
 import { users, userQuests, questDefinitions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
-import { platformRecommendationService } from './platform-recommendation-service';
+import { socialQuestTemplateEngine } from './social-quest-template-engine';
 import { hashtagSuggestionService } from './hashtag-suggestion-service';
 
 export class PersonalizedQuestAssignment {

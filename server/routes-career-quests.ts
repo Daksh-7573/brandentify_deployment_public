@@ -19,8 +19,8 @@ function getWeekNumber(date: Date): number {
 // Import the service function instead of duplicating code
 import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
 
-// Import social quest services
-import { socialQuestPersonalizationService } from './services/social-quest-personalization-service';
+// Import social quest template engine
+import { socialQuestTemplateEngine } from './services/social-quest-template-engine';
 
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes

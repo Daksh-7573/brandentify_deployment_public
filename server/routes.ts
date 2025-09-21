@@ -60,7 +60,6 @@ import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
-import { platformRecommendationService } from "./services/platform-recommendation-service";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
