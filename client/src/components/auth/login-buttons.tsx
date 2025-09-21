@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/context/auth-context';
 
 /**
  * Set of authentication buttons for the application
