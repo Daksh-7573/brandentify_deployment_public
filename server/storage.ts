@@ -12564,7 +12564,8 @@ export class DatabaseStorage implements IStorage {
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
           qd.title, qd.description, qd.type, qd.target_count as "targetCount",
           qd.target_action as "targetAction", qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip",
+          qd.platform, qd.content_type as "contentType"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
@@ -12586,7 +12587,9 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          muskTip: row.muskTip,
+          platform: row.platform,
+          contentType: row.contentType
         }
       }));
     } catch (error) {
