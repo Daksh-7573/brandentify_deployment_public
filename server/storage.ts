@@ -12616,13 +12616,9 @@ export class DatabaseStorage implements IStorage {
       // Import template engine dynamically to avoid circular dependencies
       const { socialQuestTemplateEngine } = await import('./services/social-quest-template-engine');
       
-      // Generate personalized quests for multiple platforms
-      const platforms = ['linkedin', 'instagram', 'twitter', 'youtube', 'facebook', 'tiktok', 'pinterest', 'medium'];
+      // Use intelligent platform selection based on user profile
+      const selectedPlatforms = await socialQuestTemplateEngine.selectOptimalPlatforms(userId);
       const generatedQuests: any[] = [];
-      
-      // Try to generate 1-2 personalized quests for different platforms
-      const questsToGenerate = Math.min(2, platforms.length);
-      const selectedPlatforms = platforms.sort(() => 0.5 - Math.random()).slice(0, questsToGenerate);
       
       for (const platform of selectedPlatforms) {
         try {
