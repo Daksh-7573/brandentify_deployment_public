@@ -776,6 +776,130 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Bucket-based quest retrieval route for career quests
+  apiRouter.get("/users/:userId/quests/bucket/:bucket", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const bucket = req.params.bucket;
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      if (!['daily', 'completed', 'missed'].includes(bucket)) {
+        return res.status(400).json({ message: 'Invalid bucket. Must be daily, completed, or missed' });
+      }
+      
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      let questsWithDefinitions = [];
+      
+      // Query based on bucket type
+      if (bucket === 'daily') {
+        // Active quests assigned today
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.assigned_date = ${currentDate}
+            AND uq.status = 'active'
+          ORDER BY uq.assigned_at DESC
+        `);
+        questsWithDefinitions = result.rows;
+      } else if (bucket === 'completed') {
+        // Completed quests (today and recent)
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.status = 'completed'
+          ORDER BY uq.completed_at DESC
+          LIMIT 20
+        `);
+        questsWithDefinitions = result.rows;
+      } else if (bucket === 'missed') {
+        // Expired or dismissed quests
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.status IN ('expired', 'dismissed')
+          ORDER BY uq.assigned_at DESC
+          LIMIT 20
+        `);
+        questsWithDefinitions = result.rows;
+      }
+      
+      res.json(questsWithDefinitions);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/quests/bucket/${req.params.bucket}] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch quests by bucket' });
+    }
+  });
+
   apiRouter.patch("/user-quests/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -1453,6 +1577,142 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     } catch (error) {
       console.error(`[GET /users/${req.params.userId}/social-quests/current-day] Error:`, error);
       res.status(500).json({ message: 'Failed to fetch daily social quests' });
+    }
+  });
+
+  // Bucket-based social quest retrieval route
+  apiRouter.get("/users/:userId/social-quests/bucket/:bucket", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const bucket = req.params.bucket;
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      if (!['daily', 'completed', 'missed'].includes(bucket)) {
+        return res.status(400).json({ message: 'Invalid bucket. Must be daily, completed, or missed' });
+      }
+      
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      let socialQuestsWithDefinitions = [];
+      
+      // Query based on bucket type for social quests
+      if (bucket === 'daily') {
+        // Active social quests assigned today
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.assigned_date = ${currentDate}
+            AND uq.status = 'active'
+            AND EXISTS (
+              SELECT 1 FROM user_social_quests usq 
+              WHERE usq.user_quest_id = uq.id
+            )
+          ORDER BY uq.assigned_at DESC
+        `);
+        socialQuestsWithDefinitions = result.rows;
+      } else if (bucket === 'completed') {
+        // Completed social quests (today and recent)
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.status = 'completed'
+            AND EXISTS (
+              SELECT 1 FROM user_social_quests usq 
+              WHERE usq.user_quest_id = uq.id
+            )
+          ORDER BY uq.completed_at DESC
+          LIMIT 20
+        `);
+        socialQuestsWithDefinitions = result.rows;
+      } else if (bucket === 'missed') {
+        // Expired or dismissed social quests
+        const result = await db.execute(sql`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.assigned_date as "assignedDate",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            -- Quest definition fields
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          WHERE uq.user_id = ${userId} 
+            AND uq.status IN ('expired', 'dismissed')
+            AND EXISTS (
+              SELECT 1 FROM user_social_quests usq 
+              WHERE usq.user_quest_id = uq.id
+            )
+          ORDER BY uq.assigned_at DESC
+          LIMIT 20
+        `);
+        socialQuestsWithDefinitions = result.rows;
+      }
+      
+      res.json(socialQuestsWithDefinitions);
+    } catch (error) {
+      console.error(`[GET /users/${req.params.userId}/social-quests/bucket/${req.params.bucket}] Error:`, error);
+      res.status(500).json({ message: 'Failed to fetch social quests by bucket' });
     }
   });
 
