@@ -4,12 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  useUserQuestsWithDefinitions, 
-  useUserWeeklyQuests,
-  useUserCombinedDailyQuests,
-  getCurrentWeekNumber, 
-  getCurrentYear,
-  useCombinedUserQuests
+  useUserCombinedDailyQuests
 } from '@/hooks/use-career-quests';
 import { QuestCard } from './quest-card';
 import { cn } from '@/lib/utils';
@@ -22,8 +17,6 @@ interface QuestPanelProps {
 export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { toast } = useToast();
   const [tabValue, setTabValue] = useState('career');
-  const currentWeek = getCurrentWeekNumber();
-  const currentYear = getCurrentYear();
   
   const { 
     data: dailyQuests,
@@ -32,13 +25,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchDaily
   } = useUserCombinedDailyQuests(userId);
   
-  // Use combined quest hook to integrate both career and social quests
-  const {
-    data: allQuests,
-    isLoading: isLoadingAll,
-    error: allError,
-    refetch: refetchAll
-  } = useCombinedUserQuests(userId);
+  // Removed allQuests hook - now only using daily quests for cleaner UI
 
   
   // Removed XP progress functionality since it's now in the parent component
@@ -46,11 +33,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   useEffect(() => {
     const refetchInterval = setInterval(() => {
       refetchDaily();
-      refetchAll();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchDaily, refetchAll]);
+  }, [refetchDaily]);
   
   useEffect(() => {
     if (dailyError) {
@@ -62,16 +48,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       });
     }
     
-    if (allError) {
-      console.log('Error fetching all quests:', allError);
-      toast({
-        title: 'Error fetching quests',
-        description: "We're having trouble loading your quests. Please try again later.",
-        variant: 'destructive',
-      });
-    }
+    // Removed allError handling since we only use daily quests now
 
-  }, [dailyError, allError, toast]);
+  }, [dailyError, toast]);
   
   // Filter quests by type - Expanded social quest types for all platforms
   const socialQuestTypes = [
@@ -107,16 +86,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     return type ? String(type).toLowerCase() : 'profile_update';
   };
   
-  // Filter by quest category (case-insensitive)
-  const socialQuests = allQuests?.filter(quest => {
-    const questType = getQuestType(quest)?.toLowerCase() || '';
-    return socialQuestTypes.some(type => type.toLowerCase() === questType);
-  }) || [];
-  
-  const careerQuests = allQuests?.filter(quest => {
-    const questType = getQuestType(quest)?.toLowerCase() || '';
-    return careerQuestTypes.some(type => type.toLowerCase() === questType) || !socialQuestTypes.some(type => type.toLowerCase() === questType);
-  }) || [];
+  // Removed old quest filtering - now only using daily quests
   
   // Daily quests filtered by type and only show active status (case-insensitive)
   const dailyCareerQuests = (dailyQuests || []).filter(q => {
@@ -129,22 +99,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     return q.status?.toLowerCase() === 'active' && socialQuestTypes.some(type => type.toLowerCase() === questType);
   });
   
-  // Status-based filtering for each category (case-insensitive)
-  const completedCareerQuests = careerQuests.filter(q => q.status?.toLowerCase() === 'completed');
-  const expiredCareerQuests = careerQuests.filter(q => q.status?.toLowerCase() === 'expired');
+  // Removed completed/expired quest filtering - focus on daily quests only
   
-  const completedSocialQuests = socialQuests.filter(q => q.status?.toLowerCase() === 'completed');
-  const expiredSocialQuests = socialQuests.filter(q => q.status?.toLowerCase() === 'expired');
-  
-  // Count skill-related quests
-  const skillQuests = allQuests?.filter(quest => {
-    const action = quest.definition?.targetAction;
-    return action === 'add_skill' || 
-           action === 'add_skill_category' ||
-           action === 'add_industry_skill' ||
-           action === 'update_resume_skills' ||
-           action === 'add_project_technologies';
-  }) || [];
+  // Removed skill quest counting - simplified to daily quests only
   
 
   const renderQuestsList = (quests: typeof dailyQuests, loading: boolean) => {
@@ -204,11 +161,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
             <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Career Quests</span>
-              <span className="text-xs">({dailyCareerQuests.length + completedCareerQuests.length + expiredCareerQuests.length})</span>
+              <span className="text-xs">({dailyCareerQuests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Social Quests</span>
-              <span className="text-xs">({dailySocialQuests.length + completedSocialQuests.length + expiredSocialQuests.length})</span>
+              <span className="text-xs">({dailySocialQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
@@ -217,44 +174,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               Professional development quests to build your career foundation
             </div>
             
-            {/* Career Quests Sub-tabs */}
-            <Tabs defaultValue="today" className="w-full">
-              <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="today" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Today</span>
-                  <span className="text-xs">({dailyCareerQuests.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Completed</span>
-                  <span className="text-xs">({completedCareerQuests.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Missed</span>
-                  <span className="text-xs">({expiredCareerQuests.length})</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="today" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  {new Date().toLocaleDateString()} - Today's career quests
-                </div>
-                {renderQuestsList(dailyCareerQuests, isLoadingDaily)}
-              </TabsContent>
-              
-              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  Completed career quests that earned you XP
-                </div>
-                {renderQuestsList(completedCareerQuests, isLoadingAll)}
-              </TabsContent>
-              
-              <TabsContent value="missed" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  Missed career quest opportunities
-                </div>
-                {renderQuestsList(expiredCareerQuests, isLoadingAll)}
-              </TabsContent>
-            </Tabs>
+            {/* Simplified Career Quests - Daily Only */}
+            <div className="text-xs text-white/60 mb-2">
+              {new Date().toLocaleDateString()} - Today's career quests
+            </div>
+            {renderQuestsList(dailyCareerQuests, isLoadingDaily)}
           </TabsContent>
           
           <TabsContent value="social" className="space-y-3 sm:space-y-4">
@@ -262,44 +186,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               Social media quests to amplify your professional brand online
             </div>
             
-            {/* Social Quests Sub-tabs */}
-            <Tabs defaultValue="today" className="w-full">
-              <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="today" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Today</span>
-                  <span className="text-xs">({dailySocialQuests.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Completed</span>
-                  <span className="text-xs">({completedSocialQuests.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-1 px-1 sm:px-2 text-xs">
-                  <span className="text-center">Missed</span>
-                  <span className="text-xs">({expiredSocialQuests.length})</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="today" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  {new Date().toLocaleDateString()} - Today's social media quests
-                </div>
-                {renderQuestsList(dailySocialQuests, isLoadingDaily)}
-              </TabsContent>
-              
-              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  Completed social quests with platform-specific achievements
-                </div>
-                {renderQuestsList(completedSocialQuests, isLoadingAll)}
-              </TabsContent>
-              
-              <TabsContent value="missed" className="space-y-3 sm:space-y-4">
-                <div className="text-xs text-white/60 mb-2">
-                  Missed social media opportunities
-                </div>
-                {renderQuestsList(expiredSocialQuests, isLoadingAll)}
-              </TabsContent>
-            </Tabs>
+            {/* Simplified Social Quests - Daily Only */}
+            <div className="text-xs text-white/60 mb-2">
+              {new Date().toLocaleDateString()} - Today's social media quests
+            </div>
+            {renderQuestsList(dailySocialQuests, isLoadingDaily)}
           </TabsContent>
         </Tabs>
       )}
