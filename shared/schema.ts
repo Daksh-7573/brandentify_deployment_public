@@ -1498,3 +1498,143 @@ export type InsertItemView = z.infer<typeof insertItemViewSchema>;
 
 export type UserRestriction = typeof userRestrictions.$inferSelect;
 export type InsertUserRestriction = z.infer<typeof insertUserRestrictionSchema>;
+
+// ===== TEMPLATE-BASED SOCIAL QUEST SYSTEM =====
+// New architecture for personalized, scalable social quest generation
+
+// Template category enumeration
+export const templateCategoryEnum = pgEnum("template_category", [
+  "authority_builder", // Thought leadership content
+  "story_driver", // Personal journey sharing
+  "problem_solver", // Target audience pain points
+  "network_builder", // Strategic connections
+  "engagement_catalyst", // Community interaction
+  "expertise_showcase", // Skills and knowledge display
+  "value_provider", // Helpful tips and insights
+  "brand_storytelling" // Personal brand narrative
+]);
+
+// Template categories - defines different types of quest templates
+export const socialQuestTemplateCategories = pgTable("social_quest_template_categories", {
+  id: serial("id").primaryKey(),
+  name: templateCategoryEnum("name").notNull(),
+  description: text("description").notNull(),
+  brandImpact: text("brand_impact").notNull(), // What this category achieves for personal brand
+  priority: integer("priority").default(3), // 1-5, higher = more impactful for brand building
+  minProfileCompletion: integer("min_profile_completion").default(50), // Minimum profile % needed
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Social quest templates - actual template definitions with variables
+export const socialQuestTemplates = pgTable("social_quest_templates", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("category_id").references(() => socialQuestTemplateCategories.id).notNull(),
+  title: text("title").notNull(), // Template title with variables: "Share Your {signature_methodology} on {platform}"
+  description: text("description").notNull(), // Template description with variables
+  muskTip: text("musk_tip").notNull(), // Template Musk tip with variables
+  platform: text("platform").notNull(), // linkedin, instagram, twitter, etc.
+  targetAction: text("target_action").notNull(), // create_linkedin_post, create_instagram_reel, etc.
+  variables: jsonb("variables").default('[]'), // Array of variable names used: ["signature_methodology", "quantified_achievements"]
+  brandImpactDescription: text("brand_impact_description").notNull(), // What this specific template achieves
+  callToAction: text("call_to_action").notNull(), // CTA back to Brandentifier
+  difficultyLevel: text("difficulty_level").default('beginner'), // beginner, intermediate, advanced
+  estimatedTimeMinutes: integer("estimated_time_minutes").default(15),
+  xpReward: integer("xp_reward").default(50),
+  requiredUserData: jsonb("required_user_data").default('[]'), // What profile data is needed: ["industry", "domain", "workExperiences"]
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Personal brand variables - extracted and stored user brand data
+export const personalBrandVariables = pgTable("personal_brand_variables", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  uniqueExpertise: text("unique_expertise"), // e.g., "Technology + Hospitality fusion"
+  quantifiedAchievements: jsonb("quantified_achievements").default('[]'), // e.g., ["reduced costs by 40% for 5 hotels"]
+  signatureMethodology: text("signature_methodology"), // e.g., "3-step automation process"
+  careerStory: text("career_story"), // e.g., "from traditional hospitality to tech innovation"
+  personalMission: text("personal_mission"), // e.g., "democratizing hospitality technology in Gujarat"
+  targetAudience: text("target_audience"), // e.g., "Gujarat hotel owners struggling with costs"
+  competitiveAdvantage: text("competitive_advantage"), // e.g., "only tech-savvy hospitality expert in region"
+  coreValues: jsonb("core_values").default('[]'), // Array of values
+  contentThemes: jsonb("content_themes").default('[]'), // What they should talk about
+  industryInsights: jsonb("industry_insights").default('[]'), // Industry-specific knowledge
+  extractedAt: timestamp("extracted_at").defaultNow(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  isComplete: boolean("is_complete").default(false) // Whether all key variables are populated
+});
+
+// Template assignment rules - logic for which templates to assign
+export const templateAssignmentRules = pgTable("template_assignment_rules", {
+  id: serial("id").primaryKey(),
+  templateId: integer("template_id").references(() => socialQuestTemplates.id).notNull(),
+  ruleType: text("rule_type").notNull(), // "industry_match", "profile_completion", "goal_alignment", etc.
+  ruleCondition: jsonb("rule_condition").notNull(), // JSON condition: {"industry": ["Hospitality"], "min_completion": 70}
+  priority: integer("priority").default(1), // Higher = more likely to be assigned
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Generated quest tracking - tracks which templates were used for which users
+export const generatedSocialQuests = pgTable("generated_social_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  templateId: integer("template_id").references(() => socialQuestTemplates.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  variablesUsed: jsonb("variables_used").notNull(), // Actual values used for variables
+  personalizedTitle: text("personalized_title").notNull(),
+  personalizedDescription: text("personalized_description").notNull(),
+  personalizedMuskTip: text("personalized_musk_tip").notNull(),
+  generatedAt: timestamp("generated_at").defaultNow(),
+  assignedAt: timestamp("assigned_at"), // When assigned to user
+  completedAt: timestamp("completed_at"), // When user completed it
+  brandImpactScore: integer("brand_impact_score").default(0) // 0-100 based on completion quality
+});
+
+// Insert schemas for template system
+export const insertSocialQuestTemplateCategorySchema = createInsertSchema(socialQuestTemplateCategories).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertSocialQuestTemplateSchema = createInsertSchema(socialQuestTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPersonalBrandVariablesSchema = createInsertSchema(personalBrandVariables).omit({
+  id: true,
+  extractedAt: true,
+  lastUpdated: true
+});
+
+export const insertTemplateAssignmentRuleSchema = createInsertSchema(templateAssignmentRules).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertGeneratedSocialQuestSchema = createInsertSchema(generatedSocialQuests).omit({
+  id: true,
+  generatedAt: true,
+  assignedAt: true,
+  completedAt: true
+});
+
+// Export types for template system
+export type SocialQuestTemplateCategory = typeof socialQuestTemplateCategories.$inferSelect;
+export type InsertSocialQuestTemplateCategory = z.infer<typeof insertSocialQuestTemplateCategorySchema>;
+
+export type SocialQuestTemplate = typeof socialQuestTemplates.$inferSelect;
+export type InsertSocialQuestTemplate = z.infer<typeof insertSocialQuestTemplateSchema>;
+
+export type PersonalBrandVariables = typeof personalBrandVariables.$inferSelect;
+export type InsertPersonalBrandVariables = z.infer<typeof insertPersonalBrandVariablesSchema>;
+
+export type TemplateAssignmentRule = typeof templateAssignmentRules.$inferSelect;
+export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignmentRuleSchema>;
+
+export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
+export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
