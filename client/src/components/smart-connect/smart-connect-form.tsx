@@ -60,13 +60,9 @@ export function SmartConnectForm({ userId }: { userId: number }) {
   // Smart Connect mutation
   const smartConnectMutation = useMutation({
     mutationFn: async (values: SmartConnectFormValues) => {
-      return apiRequest({
-        method: 'POST',
-        url: `/api/smart-connect`,
-        data: {
-          userId,
-          ...values,
-        }
+      return apiRequest('POST', `/api/smart-connect`, {
+        userId,
+        ...values,
       });
     },
     onSuccess: () => {
