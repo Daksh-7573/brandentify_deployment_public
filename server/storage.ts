@@ -12606,55 +12606,132 @@ export class DatabaseStorage implements IStorage {
         return existingDailyQuests;
       }
       
-      // Get all active social quest definitions
-      const allSocialQuests = await this.getAllSocialQuestDefinitions();
+      console.log(`[assignDailySocialQuests] 🚀 Using NEW template-based system for user ${userId}`);
       
-      if (allSocialQuests.length === 0) {
-        console.log(`No active social quest definitions available for user ${userId}`);
-        return [];
-      }
+      // Import template engine dynamically to avoid circular dependencies
+      const { socialQuestTemplateEngine } = await import('./services/social-quest-template-engine');
       
-      // Randomly select 1-2 social quests for the day
-      const numQuests = Math.min(2, Math.max(1, allSocialQuests.length));
-      const selectedQuests = [];
+      // Generate personalized quests for multiple platforms
+      const platforms = ['linkedin', 'instagram', 'twitter'];
+      const generatedQuests: any[] = [];
       
-      // Random selection
-      for (let i = 0; i < numQuests && allSocialQuests.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * allSocialQuests.length);
-        selectedQuests.push(allSocialQuests[randomIndex]);
-        // Remove selected quest to avoid duplicates
-        allSocialQuests.splice(randomIndex, 1);
-      }
+      // Try to generate 1-2 personalized quests for different platforms
+      const questsToGenerate = Math.min(2, platforms.length);
+      const selectedPlatforms = platforms.sort(() => 0.5 - Math.random()).slice(0, questsToGenerate);
       
-      // Create user quest records for selected social quests
-      const createdQuests = [];
-      for (const quest of selectedQuests) {
+      for (const platform of selectedPlatforms) {
         try {
-          const userQuest = await this.createUserQuest({
-            userId,
-            questDefinitionId: quest.id,
-            status: 'active',
-            progress: 0,
-            assignedAt: now,
-            weekNumber: currentWeek,
-            year: currentYear,
-            assignedDate: currentDate
-          });
+          console.log(`[assignDailySocialQuests] 🎯 Generating ${platform} quest for user ${userId}`);
           
-          // Add definition for frontend compatibility
-          const questWithDefinition = {
-            ...userQuest,
-            definition: quest
-          };
+          // Generate personalized quest using template engine
+          const personalizedQuest = await socialQuestTemplateEngine.generatePersonalizedQuest(userId, platform);
           
-          createdQuests.push(questWithDefinition);
-          console.log(`[assignDailySocialQuests] Assigned social quest ${quest.title} to user ${userId}`);
+          if (personalizedQuest) {
+            console.log(`[assignDailySocialQuests] ✅ Generated personalized quest: "${personalizedQuest.title}"`);
+            
+            // Create quest definition on-the-fly from template
+            const questDefinition = await this.createQuestDefinition({
+              title: personalizedQuest.title,
+              description: personalizedQuest.description,
+              type: 'social_quest',
+              targetCount: 1,
+              targetAction: personalizedQuest.targetAction,
+              xpReward: personalizedQuest.xpReward,
+              badgeReward: null,
+              requiredProfileCompletion: 0,
+              requiredCareerStage: null,
+              requiredIndustry: null,
+              muskTip: personalizedQuest.muskTip,
+              isActive: true,
+              category: 'social_media',
+              difficulty: 'beginner',
+              estimatedTimeMinutes: personalizedQuest.estimatedTimeMinutes,
+              instructions: personalizedQuest.description,
+              successCriteria: `Complete the ${personalizedQuest.targetAction} and engage with responses`,
+              contentType: 'general_post',
+              platform: personalizedQuest.platform,
+              difficultyLevel: 'beginner',
+              weekNumber: currentWeek,
+              year: currentYear
+            });
+            
+            // Create user quest assignment
+            const userQuest = await this.createUserQuest({
+              userId: userId,
+              questDefinitionId: questDefinition.id,
+              status: 'active',
+              progress: 0,
+              assignedAt: now,
+              weekNumber: currentWeek,
+              year: currentYear,
+              assignedDate: currentDate
+            });
+            
+            // Add definition for frontend compatibility
+            const questWithDefinition = {
+              ...userQuest,
+              definition: questDefinition
+            };
+            
+            generatedQuests.push(questWithDefinition);
+            console.log(`[assignDailySocialQuests] 🎉 Successfully assigned personalized ${platform} quest to user ${userId}`);
+          } else {
+            console.log(`[assignDailySocialQuests] ⚠️ Failed to generate ${platform} quest for user ${userId}`);
+          }
         } catch (error) {
-          console.error(`[assignDailySocialQuests] Error creating social quest ${quest.id} for user ${userId}:`, error);
+          console.error(`[assignDailySocialQuests] ❌ Error generating ${platform} quest for user ${userId}:`, error);
         }
       }
       
-      return createdQuests;
+      // If no template-generated quests were created, provide a fallback
+      if (generatedQuests.length === 0) {
+        console.log(`[assignDailySocialQuests] 🔄 No template quests generated, creating fallback quest for user ${userId}`);
+        
+        const fallbackDefinition = await this.createQuestDefinition({
+          title: 'Share Your Professional Journey',
+          description: 'Create a post about your professional experience and what you have learned in your career.',
+          type: 'social_quest',
+          targetCount: 1,
+          targetAction: 'create_linkedin_post',
+          xpReward: 50,
+          badgeReward: null,
+          requiredProfileCompletion: 0,
+          requiredCareerStage: null,
+          requiredIndustry: null,
+          muskTip: 'Your experience is valuable. Share it to build your professional brand.',
+          isActive: true,
+          category: 'social_media',
+          difficulty: 'beginner',
+          estimatedTimeMinutes: 15,
+          instructions: 'Create a LinkedIn post sharing your professional insights',
+          successCriteria: 'Complete the LinkedIn post and engage with responses',
+          contentType: 'general_post',
+          platform: 'linkedin',
+          difficultyLevel: 'beginner',
+          weekNumber: currentWeek,
+          year: currentYear
+        });
+        
+        const fallbackUserQuest = await this.createUserQuest({
+          userId: userId,
+          questDefinitionId: fallbackDefinition.id,
+          status: 'active',
+          progress: 0,
+          assignedAt: now,
+          weekNumber: currentWeek,
+          year: currentYear,
+          assignedDate: currentDate
+        });
+        
+        generatedQuests.push({
+          ...fallbackUserQuest,
+          definition: fallbackDefinition
+        });
+      }
+      
+      console.log(`[assignDailySocialQuests] 🏆 Successfully assigned ${generatedQuests.length} template-based social quests to user ${userId}`);
+      return generatedQuests;
+      
     } catch (error) {
       console.error(`[db.assignDailySocialQuests] Error assigning daily social quests to user ${userId}:`, error);
       return [];
