@@ -11390,7 +11390,8 @@ export class DatabaseStorage implements IStorage {
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.dismissed_reason as "dismissedReason", uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year,
-          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
+          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward", 
+          qd.type, qd.platform, qd.content_type as "contentType"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
