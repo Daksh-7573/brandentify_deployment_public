@@ -3,45 +3,27 @@ import { Button } from '@/components/ui/button';
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 /**
  * Set of authentication buttons for the application
  */
 export function GoogleLoginButton({ className = '' }: { className?: string }) {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { signInWithGoogle, isLoading } = useAuth();
   
   const handleGoogleLogin = async () => {
     try {
-      setIsLoading(true);
-      
-      // Get Google OAuth URL from server
-      const response = await fetch('/api/auth/google/url', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.oauthUrl) {
-          window.location.href = data.oauthUrl;
-        } else {
-          throw new Error('Failed to get OAuth URL');
-        }
-      } else {
-        throw new Error('Failed to initiate Google authentication');
-      }
+      console.log('[LOGIN BUTTON] Starting Google authentication via popup...');
+      await signInWithGoogle();
+      console.log('[LOGIN BUTTON] ✅ Google authentication completed successfully');
     } catch (error) {
-      console.error('Google login error:', error);
+      console.error('[LOGIN BUTTON] ❌ Google login error:', error);
       toast({
         title: "Google login failed",
         description: "There was a problem signing in with Google. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
   
