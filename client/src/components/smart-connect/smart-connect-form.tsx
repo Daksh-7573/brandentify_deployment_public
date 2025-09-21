@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -32,6 +32,9 @@ const smartConnectSchema = z.object({
 
 type SmartConnectFormValues = z.infer<typeof smartConnectSchema>;
 
+// Storage key for form persistence
+const SMART_CONNECT_FORM_STORAGE_KEY = 'smartConnect_formState';
+
 // Default form values
 const defaultValues: Partial<SmartConnectFormValues> = {
   lookingFor: "",
@@ -44,15 +47,87 @@ const defaultValues: Partial<SmartConnectFormValues> = {
   remotePreference: false,
 };
 
+// Helper functions for localStorage operations
+const saveFormState = (values: SmartConnectFormValues) => {
+  try {
+    localStorage.setItem(SMART_CONNECT_FORM_STORAGE_KEY, JSON.stringify(values));
+  } catch (error) {
+    console.warn('Failed to save Smart Connect form state:', error);
+  }
+};
+
+const loadFormState = (): Partial<SmartConnectFormValues> => {
+  try {
+    const stored = localStorage.getItem(SMART_CONNECT_FORM_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Validate that the stored data matches our expected structure
+      return {
+        ...defaultValues,
+        ...parsed,
+        skills: Array.isArray(parsed.skills) ? parsed.skills : []
+      };
+    }
+  } catch (error) {
+    console.warn('Failed to load Smart Connect form state:', error);
+  }
+  return defaultValues;
+};
+
+const clearFormState = () => {
+  try {
+    localStorage.removeItem(SMART_CONNECT_FORM_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear Smart Connect form state:', error);
+  }
+};
+
 export function SmartConnectForm({ userId }: { userId: number }) {
   const [skillInput, setSkillInput] = useState("");
+  const [isFormLoaded, setIsFormLoaded] = useState(false);
   const queryClient = useQueryClient();
   
-  // Initialize the form
+  // Initialize the form with loaded state
   const form = useForm<SmartConnectFormValues>({
     resolver: zodResolver(smartConnectSchema),
-    defaultValues,
+    defaultValues: loadFormState(),
   });
+
+  // Load saved form state on mount
+  useEffect(() => {
+    const savedState = loadFormState();
+    
+    // Reset form with saved state
+    form.reset(savedState);
+    setIsFormLoaded(true);
+    
+    console.log('[SmartConnect] Form state loaded from localStorage:', savedState);
+  }, [form]);
+
+  // Auto-save form state on changes (debounced)
+  const debouncedSave = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (values: SmartConnectFormValues) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (isFormLoaded) { // Only save if form is fully loaded
+            saveFormState(values);
+            console.log('[SmartConnect] Form state auto-saved:', values);
+          }
+        }, 1000); // 1 second debounce
+      };
+    })(),
+    [isFormLoaded]
+  );
+
+  // Watch all form values and auto-save
+  const watchedValues = form.watch();
+  useEffect(() => {
+    if (isFormLoaded) {
+      debouncedSave(watchedValues as SmartConnectFormValues);
+    }
+  }, [watchedValues, debouncedSave, isFormLoaded]);
   
   // Watch for industry change to conditionally show domain field
   const selectedIndustry = form.watch("industry");
@@ -70,6 +145,10 @@ export function SmartConnectForm({ userId }: { userId: number }) {
         title: "Smart Connect request submitted",
         description: "We're finding the best professional matches for you.",
       });
+      
+      // Clear saved form state after successful submission
+      clearFormState();
+      console.log('[SmartConnect] Form state cleared after successful submission');
       
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
@@ -233,28 +312,34 @@ export function SmartConnectForm({ userId }: { userId: number }) {
             />
             
             {/* Domain - conditionally shown based on industry selection */}
-            {selectedIndustry && (
-              <FormField
-                control={form.control}
-                name="domain"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base">Domain Expertise</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder={`e.g. Specific area within ${selectedIndustry}`} 
-                        {...field} 
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Specific domain or expertise within the selected industry
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="domain"
+              render={({ field }) => (
+                <FormItem style={{ 
+                  display: selectedIndustry ? 'block' : 'none',
+                  opacity: selectedIndustry ? 1 : 0,
+                  transition: 'opacity 0.3s ease-in-out'
+                }}>
+                  <FormLabel className="text-base">Domain Expertise</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder={selectedIndustry ? `e.g. Specific area within ${selectedIndustry}` : "Select an industry first"} 
+                      {...field} 
+                      value={field.value || ""}
+                      disabled={!selectedIndustry}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {selectedIndustry 
+                      ? "Specific domain or expertise within the selected industry"
+                      : "Please select an industry to specify your domain expertise"
+                    }
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             {/* Location */}
             <FormField
