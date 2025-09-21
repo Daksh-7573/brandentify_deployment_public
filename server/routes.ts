@@ -1199,20 +1199,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
           console.log('✅ [AUTH-GUARD] Valid session found for user:', decoded.email);
           
-          // Get the target user ID from the URL
+          // PROFILE PICTURE PERSISTENCE FIX: Enhanced user ID validation
           const targetUserId = req.params.id;
           const authenticatedUserId = decoded.userId?.toString();
+          const authenticatedEmail = decoded.email;
           
           console.log('🔍 [AUTH-GUARD] Target user ID:', targetUserId);
           console.log('🔍 [AUTH-GUARD] Authenticated user ID:', authenticatedUserId);
+          console.log('🔍 [AUTH-GUARD] Authenticated email:', authenticatedEmail);
           
-          // Ensure user can only update their own profile
-          if (authenticatedUserId && targetUserId !== authenticatedUserId) {
-            console.log('❌ [AUTH-GUARD] User attempting to update different user profile');
-            return res.status(403).json({
+          // Enhanced user validation - handle both numeric IDs and Firebase UIDs
+          let isAuthorizedUser = false;
+          
+          try {
+            // Method 1: Direct ID comparison (works if both are same format)
+            if (authenticatedUserId && targetUserId === authenticatedUserId) {
+              isAuthorizedUser = true;
+              console.log('✅ [AUTH-GUARD] Direct ID match - user authorized');
+            }
+            
+            // Method 2: Look up user in database to get both IDs for comparison
+            if (!isAuthorizedUser) {
+              let targetUser = null;
+              
+              // Try to find target user by numeric ID first
+              if (/^\d+$/.test(targetUserId)) {
+                console.log('🔍 [AUTH-GUARD] Target ID is numeric, looking up by ID:', targetUserId);
+                targetUser = await storage.getUser(parseInt(targetUserId));
+              } else {
+                console.log('🔍 [AUTH-GUARD] Target ID is not numeric, looking up by username/Firebase UID:', targetUserId);
+                targetUser = await storage.getUserByUsername(targetUserId);
+              }
+              
+              if (targetUser) {
+                // Check if authenticated user matches target user by multiple criteria
+                const targetUserNumericId = targetUser.id.toString();
+                const targetUserFirebaseUid = targetUser.username; // Firebase UID stored in username
+                const targetUserEmail = targetUser.email;
+                
+                console.log('🔍 [AUTH-GUARD] Target user found - ID:', targetUserNumericId, 'UID:', targetUserFirebaseUid, 'Email:', targetUserEmail);
+                
+                // Check all possible matches
+                if (
+                  (authenticatedUserId === targetUserNumericId) ||
+                  (authenticatedUserId === targetUserFirebaseUid) ||
+                  (authenticatedEmail === targetUserEmail)
+                ) {
+                  isAuthorizedUser = true;
+                  console.log('✅ [AUTH-GUARD] User authorized via database lookup');
+                }
+              }
+            }
+            
+            // Final authorization check
+            if (!isAuthorizedUser) {
+              console.log('❌ [AUTH-GUARD] User not authorized to update this profile');
+              console.log('🔍 [AUTH-GUARD] Debug info - targetUserId:', targetUserId, 'authenticatedUserId:', authenticatedUserId);
+              return res.status(403).json({
+                success: false,
+                error: 'You can only update your own profile picture',
+                code: 'UNAUTHORIZED_UPDATE',
+                debug: {
+                  targetUserId,
+                  authenticatedUserId: authenticatedUserId ? `${authenticatedUserId.substring(0, 8)}...` : null
+                }
+              });
+            }
+            
+          } catch (dbError) {
+            console.error('❌ [AUTH-GUARD] Database lookup error during authorization:', dbError);
+            return res.status(500).json({
               success: false,
-              error: 'You can only update your own profile picture',
-              code: 'UNAUTHORIZED_UPDATE'
+              error: 'Authorization validation failed',
+              code: 'AUTH_DB_ERROR'
             });
           }
           
