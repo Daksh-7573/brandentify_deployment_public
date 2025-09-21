@@ -53,10 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Check if we're on published domain and should use server session
       const hostname = window.location.hostname;
-      const isPublishedDomain = hostname.includes('replit.app');
+      const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
       
       if (isPublishedDomain) {
-        console.log('AuthProvider: Published domain detected, checking server session');
+        console.log('AuthProvider: Replit domain detected, checking server session', hostname);
         try {
           console.log('AuthProvider: Fetching server session for published domain...');
           const response = await fetch('/api/auth/session', {
