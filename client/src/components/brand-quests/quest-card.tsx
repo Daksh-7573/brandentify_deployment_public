@@ -184,6 +184,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     if (titleLower.includes('facebook')) return '📘';
     if (titleLower.includes('tiktok')) return '🎵';
     if (titleLower.includes('youtube')) return '📺';
+    if (titleLower.includes('pinterest')) return '📌';
+    if (titleLower.includes('medium')) return '📝';
     return '📱'; // Default social media icon
   };
 

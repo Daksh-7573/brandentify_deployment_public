@@ -12617,7 +12617,7 @@ export class DatabaseStorage implements IStorage {
       const { socialQuestTemplateEngine } = await import('./services/social-quest-template-engine');
       
       // Generate personalized quests for multiple platforms
-      const platforms = ['linkedin', 'instagram', 'twitter'];
+      const platforms = ['linkedin', 'instagram', 'twitter', 'youtube', 'facebook', 'tiktok', 'pinterest', 'medium'];
       const generatedQuests: any[] = [];
       
       // Try to generate 1-2 personalized quests for different platforms
