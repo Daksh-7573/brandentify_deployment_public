@@ -36,8 +36,16 @@ export function ProfilePictureDialog({
   
   console.log("ProfilePictureDialog rendered with open:", open);
   
-  // Use the profile picture mutation hook with the provided userId or the authenticated user's ID
-  const actualUserId = userId || (authUser?.id ?? 1);
+  // PROFILE PICTURE PERSISTENCE FIX: Use Firebase UID to match JWT token
+  // JWT tokens contain Firebase UID as userId, so we need to use authUser.uid, not authUser.id
+  const actualUserId = userId || (authUser?.uid ?? authUser?.id ?? 1);
+  
+  console.log('[PROFILE DIALOG DEBUG] Auth user data:', {
+    id: authUser?.id,
+    uid: authUser?.uid,
+    email: authUser?.email
+  });
+  console.log('[PROFILE DIALOG DEBUG] Using actualUserId:', actualUserId);
   // Make a direct mutation with useMutation to upload the profile picture
   const profilePictureMutation = useMutation({
     mutationFn: async (base64Image: string) => {
