@@ -86,7 +86,33 @@ export function ProfilePictureDialog({
         return res;
       } catch (error) {
         console.error("API request failed:", error);
-        throw new Error("Failed to update profile picture. Please try again.");
+        
+        // Enhanced error handling with specific feedback
+        if (error instanceof Response) {
+          const status = error.status;
+          const errorData = await error.json().catch(() => null);
+          
+          console.error('[PROFILE DIALOG ERROR] HTTP Error:', {
+            status,
+            statusText: error.statusText,
+            errorData,
+            url: error.url
+          });
+          
+          if (status === 401) {
+            throw new Error("Authentication required. Please log in again and try uploading your profile picture.");
+          } else if (status === 403) {
+            throw new Error("You don't have permission to update this profile picture. Please make sure you're logged in with the correct account.");
+          } else if (status >= 500) {
+            throw new Error("Server error occurred while uploading. Please try again in a moment.");
+          } else {
+            const message = errorData?.error || errorData?.message || "Unknown error occurred";
+            throw new Error(`Upload failed: ${message}`);
+          }
+        } else {
+          console.error('[PROFILE DIALOG ERROR] Network or other error:', error);
+          throw new Error("Network error occurred. Please check your connection and try again.");
+        }
       }
     },
     onSuccess: async (data) => {
@@ -174,11 +200,39 @@ export function ProfilePictureDialog({
     },
     onError: (error: Error) => {
       setIsUploading(false);
+      
+      // Enhanced error feedback with actionable messages
+      const errorMessage = error.message || "Failed to update profile picture. Please try again.";
+      const isAuthError = errorMessage.includes("Authentication") || errorMessage.includes("permission");
+      const isNetworkError = errorMessage.includes("Network");
+      
+      console.log('[PROFILE DIALOG] Upload failed with error:', {
+        message: errorMessage,
+        isAuthError,
+        isNetworkError,
+        userId: actualUserId,
+        authUser: authUser ? {
+          id: authUser.id,
+          uid: authUser.uid,
+          email: authUser.email
+        } : null
+      });
+      
       toast({
-        title: "Error!",
-        description: error.message || "Failed to update profile picture. Please try again.",
+        title: isAuthError ? "Authentication Error" : isNetworkError ? "Connection Error" : "Upload Failed",
+        description: errorMessage,
         variant: "destructive",
       });
+      
+      // Additional debugging for authentication errors
+      if (isAuthError) {
+        console.log('[PROFILE DIALOG] Authentication error details:', {
+          targetUserId: actualUserId,
+          authUserData: authUser,
+          suggestion: "User may need to log out and log back in to refresh authentication"
+        });
+      }
+      
       console.error("Failed to update profile picture:", error);
     }
   });
