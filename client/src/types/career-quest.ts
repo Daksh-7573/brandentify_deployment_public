@@ -7,6 +7,7 @@ export type QuestType =
   | 'resume'
   | 'visibility'
   | 'social_post'
+  | 'social_quest'
   | 'daily'
   | 'weekly'
   | 'monthly'
@@ -48,6 +49,12 @@ export interface QuestDefinition {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  
+  // Social quest fields
+  platform?: string;        // Social media platform (instagram, linkedin, twitter, etc.)
+  contentType?: string;     // Type of content (linkedin_post, instagram_carousel, etc.)
+  estimatedTimeMinutes?: number; // Time to complete the quest
+  difficultyLevel?: string; // beginner, intermediate, advanced
   
   // Additional fields for hashtag suggestions
   industry?: string;  // Suggested industry context
@@ -155,6 +162,7 @@ export const getQuestTypeIcon = (type: QuestType): string => {
     resume: '📄',
     visibility: '👁️',
     social_post: '📱',
+    social_quest: '🎯',
     daily: '⏱️',
     weekly: '📅',
     monthly: '🗓️',

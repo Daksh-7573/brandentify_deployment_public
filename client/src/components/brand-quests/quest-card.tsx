@@ -211,6 +211,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             <div className="flex items-center gap-2">
               <span className="text-xl text-white">{getQuestIcon()}</span>
               <h3 className="text-lg font-semibold text-white">{questDefinition?.title}</h3>
+              {/* Show platform badge for social quests */}
+              {((questDefinition as any)?.platform || (quest.definition as any)?.platform) && (
+                <Badge variant="outline" className="ml-2 bg-purple-500/20 text-purple-300 border-purple-400/30 backdrop-blur-sm text-xs px-2 py-0.5">
+                  {((questDefinition as any)?.platform || (quest.definition as any)?.platform)?.charAt(0).toUpperCase() + 
+                   ((questDefinition as any)?.platform || (quest.definition as any)?.platform)?.slice(1)}
+                </Badge>
+              )}
             </div>
             {questDefinition?.badgeReward && (
               <Badge variant="outline" className="ml-7 mt-1 bg-black/30 text-white border-white/10 backdrop-blur-sm">
