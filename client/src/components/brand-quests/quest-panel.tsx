@@ -167,15 +167,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             
             {/* Career Quest Sub-tabs for Daily/Completed/Missed */}
             <Tabs value={careerSubTab} onValueChange={setCareerSubTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-black/10 backdrop-blur-sm border border-white/5 h-8">
-                <TabsTrigger value="daily" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Daily ({dailyCareerForCount.length})
+              <TabsList className="grid grid-cols-3 mb-2 dark-tabs-list border border-white/5 w-full h-auto">
+                <TabsTrigger value="daily" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Daily</span>
+                  <span className="text-xs">({dailyCareerForCount.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="completed" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Completed ({completedCareerForCount.length})
+                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Completed</span>
+                  <span className="text-xs">({completedCareerForCount.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="missed" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Missed ({missedCareerForCount.length})
+                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Missed</span>
+                  <span className="text-xs">({missedCareerForCount.length})</span>
                 </TabsTrigger>
               </TabsList>
               
@@ -205,15 +208,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             
             {/* Social Quest Sub-tabs for Daily/Completed/Missed */}
             <Tabs value={socialSubTab} onValueChange={setSocialSubTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-black/10 backdrop-blur-sm border border-white/5 h-8">
-                <TabsTrigger value="daily" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Daily ({dailySocialForCount.length})
+              <TabsList className="grid grid-cols-3 mb-2 dark-tabs-list border border-white/5 w-full h-auto">
+                <TabsTrigger value="daily" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Daily</span>
+                  <span className="text-xs">({dailySocialForCount.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="completed" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Completed ({completedSocialForCount.length})
+                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Completed</span>
+                  <span className="text-xs">({completedSocialForCount.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="missed" className="text-xs py-1 data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/60">
-                  Missed ({missedSocialForCount.length})
+                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                  <span>Missed</span>
+                  <span className="text-xs">({missedSocialForCount.length})</span>
                 </TabsTrigger>
               </TabsList>
               
