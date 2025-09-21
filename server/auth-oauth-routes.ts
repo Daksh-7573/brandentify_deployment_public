@@ -214,6 +214,217 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
 }
 
 /**
+ * ⚡ CRITICAL POPUP FIX: Lightweight popup authentication flow
+ * Processes Google OAuth for popup windows WITHOUT database session creation
+ */
+async function handlePopupAuthenticationFlow(req: Request, res: Response, code: string, state: string) {
+  try {
+    console.log('🪟 [POPUP-FLOW] Starting lightweight popup authentication');
+    
+    // Basic state validation (simplified for popup)
+    const stateData = stateStore.get(state);
+    if (!stateData || stateData.timestamp < Date.now() - 15 * 60 * 1000) {
+      console.error('❌ [POPUP-FLOW] Invalid or expired state');
+      return res.send(`
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'GOOGLE_AUTH_ERROR',
+              error: 'invalid_state',
+              message: 'Authentication session expired'
+            }, window.location.origin);
+          }
+          window.close();
+        </script>
+      `);
+    }
+    
+    // Clean up state
+    stateStore.delete(state);
+    
+    // Exchange code for token (minimal processing)
+    const host = req.get('host') || 'localhost:5000';
+    const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    
+    let redirectUri;
+    if (isDevelopment) {
+      redirectUri = 'http://localhost:5000/api/auth/google/callback';
+    } else {
+      redirectUri = `https://${host}/api/auth/google/callback`;
+    }
+    
+    console.log('🪟 [POPUP-FLOW] Exchanging code for token...');
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: CLIENT_ID!,
+        client_secret: CLIENT_SECRET!,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: redirectUri,
+      }),
+    });
+    
+    if (!tokenResponse.ok) {
+      console.error('❌ [POPUP-FLOW] Token exchange failed');
+      return res.send(`
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'GOOGLE_AUTH_ERROR',
+              error: 'token_exchange_failed',
+              message: 'Authentication failed'
+            }, window.location.origin);
+          }
+          window.close();
+        </script>
+      `);
+    }
+    
+    const tokenData = await tokenResponse.json();
+    
+    // Get user info from Google (lightweight)
+    console.log('🪟 [POPUP-FLOW] Fetching user info...');
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { 'Authorization': `Bearer ${tokenData.access_token}` },
+    });
+    
+    if (!userResponse.ok) {
+      console.error('❌ [POPUP-FLOW] User info fetch failed');
+      return res.send(`
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'GOOGLE_AUTH_ERROR',
+              error: 'user_info_failed',
+              message: 'Failed to get user information'
+            }, window.location.origin);
+          }
+          window.close();
+        </script>
+      `);
+    }
+    
+    const googleUser = await userResponse.json();
+    console.log('✅ [POPUP-FLOW] Got user info:', { email: googleUser.email, name: googleUser.name });
+    
+    // Find or create user (simplified lookup)
+    let user = await storage.getUserByGoogleId(googleUser.id);
+    if (!user) {
+      user = await storage.getUserByEmail(googleUser.email);
+    }
+    if (!user) {
+      // Create minimal user record for popup
+      user = await storage.createUser({
+        username: googleUser.id,
+        email: googleUser.email,
+        name: googleUser.name || 'Google User',
+        photoURL: googleUser.picture || '',
+        googleId: googleUser.id,
+        firebaseUid: googleUser.id,
+        authProvider: 'google',
+        lastLoginAt: new Date()
+      });
+    }
+    
+    // Create session token for parent window
+    const sessionToken = jwt.sign({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)
+    }, JWT_SECRET);
+    
+    console.log('✅ [POPUP-FLOW] Sending session token to parent window for user:', user.email);
+    
+    // Return HTML that sends token to parent window and closes popup
+    const popupResponseHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Authentication Successful</title>
+          <style>
+            body { 
+              font-family: system-ui, sans-serif;
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              height: 100vh; 
+              margin: 0; 
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+            }
+            .container { text-align: center; }
+            .checkmark { font-size: 48px; margin-bottom: 16px; }
+            .message { font-size: 18px; margin-bottom: 8px; }
+            .submessage { font-size: 14px; opacity: 0.8; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="checkmark">✅</div>
+            <div class="message">Authentication Successful!</div>
+            <div class="submessage">Closing popup and logging you in...</div>
+          </div>
+          <script>
+            console.log('[POPUP-FLOW] Sending success message to parent window');
+            try {
+              if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                  type: 'GOOGLE_AUTH_SUCCESS',
+                  data: {
+                    success: true,
+                    sessionToken: '${sessionToken}',
+                    user: {
+                      id: ${user.id},
+                      email: '${user.email}',
+                      name: '${user.name?.replace(/'/g, "\\'")}',
+                      username: '${user.username}',
+                      photoURL: '${user.photoURL || ''}'
+                    },
+                    timestamp: new Date().toISOString()
+                  }
+                }, window.location.origin);
+                
+                console.log('[POPUP-FLOW] Message sent, closing popup in 500ms');
+                setTimeout(() => window.close(), 500);
+              } else {
+                console.warn('[POPUP-FLOW] No parent window, redirecting to dashboard');
+                window.location.href = '/dashboard';
+              }
+            } catch (error) {
+              console.error('[POPUP-FLOW] Error:', error);
+              window.location.href = '/dashboard';
+            }
+          </script>
+        </body>
+      </html>
+    `;
+    
+    res.set('Content-Type', 'text/html');
+    return res.send(popupResponseHTML);
+    
+  } catch (error: any) {
+    console.error('❌ [POPUP-FLOW] Critical error:', error);
+    return res.send(`
+      <script>
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'GOOGLE_AUTH_ERROR',
+            error: 'popup_auth_failed',
+            message: 'Popup authentication failed'
+          }, window.location.origin);
+        }
+        window.close();
+      </script>
+    `);
+  }
+}
+
+/**
  * Handle Google OAuth callback - processes the authorization code
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
@@ -242,6 +453,16 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     });
     
     const { code, state, error } = req.query;
+    
+    // ⚡ CRITICAL FIX: Detect popup requests IMMEDIATELY before any authentication
+    const isPopupRequest = req.query.popup === 'true';
+    console.log('🔍 [POPUP-DETECTION-CRITICAL] Popup detection at START of callback:', {
+      popupQuery: req.query.popup,
+      isPopupRequest,
+      code: !!code,
+      state: !!state,
+      timestamp: new Date().toISOString()
+    });
     
     // Handle OAuth errors with detailed logging
     if (error) {
@@ -274,6 +495,14 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       });
       return res.redirect('/auth?error=missing_params&message=Authentication%20response%20incomplete.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
+    
+    // ⚡ CRITICAL POPUP FIX: Handle popup authentication IMMEDIATELY, skip normal database flow
+    if (isPopupRequest) {
+      console.log('🪟 [POPUP-AUTH-CRITICAL] POPUP REQUEST DETECTED - Starting lightweight popup-only flow');
+      return handlePopupAuthenticationFlow(req, res, code as string, state as string);
+    }
+    
+    console.log('🌐 [NORMAL-AUTH] Non-popup request, continuing with full authentication flow');
     
     // Enhanced state parameter validation with detailed logging
     const stateData = stateStore.get(state as string);
@@ -600,21 +829,13 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       authProvider: 'google'
     });
     
-    // POPUP COMMUNICATION FIX: Detect popup requests BEFORE authentication
-    const isPopupRequest = req.query.popup === 'true';
+    // POPUP COMMUNICATION FIX: Get current host for processing
     const currentHost = req.get('host') || 'localhost:5000';
     
-    console.log('🔍 [POPUP-DETECTION] Popup context analysis:', {
-      popupQuery: req.query.popup,
-      isPopupRequest,
-      currentHost,
-      referer: req.get('referer') || 'none',
-      userAgent: (req.get('user-agent') || '').substring(0, 50)
-    });
-    
-    // POPUP COMMUNICATION FIX: Handle popup requests IMMEDIATELY (before session cookies)
+    // ⚠️ NOTE: Popup requests are now handled at the START of OAuth callback function
+    // This code should never execute as popup requests exit early via handlePopupAuthenticationFlow()
     if (isPopupRequest) {
-      console.log('🪟 [POPUP-AUTH] Detected popup request, returning postMessage HTML WITHOUT setting cookies');
+      console.error('🚨 [CRITICAL-ERROR] Popup request reached normal auth flow - this should never happen!');
       
       // Create session token for parent window communication (but don't set cookie here)
       const sessionData = {
