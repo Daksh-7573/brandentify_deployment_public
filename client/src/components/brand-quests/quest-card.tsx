@@ -175,7 +175,19 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   }
 
 
-  // Get platform-specific icon for social_post quests
+  // Get platform-specific icon based on quest title
+  const getPlatformIconFromTitle = (title: string): string => {
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('linkedin')) return '💼';
+    if (titleLower.includes('instagram')) return '📸'; 
+    if (titleLower.includes('twitter')) return '🐦';
+    if (titleLower.includes('facebook')) return '📘';
+    if (titleLower.includes('tiktok')) return '🎵';
+    if (titleLower.includes('youtube')) return '📺';
+    return '📱'; // Default social media icon
+  };
+
+  // Get platform-specific icon for social_post quests (legacy)
   const getPlatformIcon = (targetAction: string): string => {
     const platformIcons: { [key: string]: string } = {
       'post_linkedin_suggestion': '💼',
@@ -196,6 +208,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const getQuestIcon = (): string => {
     const questType = questDefinition?.type || quest.questType || 'pulse_creation';
     const targetAction = questDefinition?.targetAction || quest.targetAction;
+    const title = questDefinition?.title || '';
+    
+    // For social quests, use platform-specific icons based on title
+    if (isSocialQuest || questType === 'social_quest') {
+      return getPlatformIconFromTitle(title);
+    }
     
     if (questType === 'social_post' && targetAction) {
       return getPlatformIcon(targetAction);
