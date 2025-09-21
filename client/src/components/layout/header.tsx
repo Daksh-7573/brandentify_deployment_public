@@ -94,6 +94,39 @@ export default function Header() {
       }
     }
   }, [path, checkUnreadMessages, userId]);
+  
+  // PROFILE PICTURE PERSISTENCE FIX: Listen for profile picture updates
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: CustomEvent) => {
+      const { newPhotoURL } = event.detail;
+      console.log('[HEADER] 🖼️ Profile picture updated event received, refreshing header data');
+      
+      // Immediately update cache with new photo
+      if (userId) {
+        queryClient.setQueryData(['/api/users', userId], (oldData: any) => {
+          if (oldData) {
+            console.log('[HEADER] ✅ Immediate cache update with new profile picture');
+            return {
+              ...oldData,
+              photoURL: newPhotoURL
+            };
+          }
+          return oldData;
+        });
+        
+        // Also invalidate to ensure fresh data from server
+        queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      }
+    };
+
+    // Add event listener for profile picture updates
+    window.addEventListener('profile-picture-updated', handleProfilePictureUpdate as EventListener);
+    
+    // Cleanup event listener
+    return () => {
+      window.removeEventListener('profile-picture-updated', handleProfilePictureUpdate as EventListener);
+    };
+  }, [userId]);
 
   // Determine which photo URL to use (prioritize base64 uploaded image over Google image)
   // Only use Google image if no base64 uploaded image exists
