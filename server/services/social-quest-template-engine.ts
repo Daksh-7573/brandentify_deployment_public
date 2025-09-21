@@ -170,6 +170,142 @@ export class SocialQuestTemplateEngine {
   }
 
   /**
+   * Intelligent platform selection based on user profile
+   */
+  async selectOptimalPlatforms(userId: number): Promise<string[]> {
+    try {
+      // Get user profile data
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!user.length) return ['linkedin']; // Default fallback
+
+      const userProfile = user[0];
+
+      // Get career goals for additional context
+      const goals = await db
+        .select()
+        .from(careerGoals)
+        .where(eq(careerGoals.userId, userId));
+
+      // Platform-audience mapping based on industry, domain, and goals
+      const platformMapping = this.createPlatformMapping(userProfile, goals);
+      
+      // Select 1-2 most relevant platforms
+      return platformMapping.slice(0, 2);
+
+    } catch (error) {
+      console.error('[TemplateEngine] Error selecting platforms:', error);
+      return ['linkedin']; // Safe fallback
+    }
+  }
+
+  /**
+   * Create intelligent platform mapping based on user profile
+   */
+  private createPlatformMapping(user: any, goals: any[]): string[] {
+    const platformScores: { [platform: string]: number } = {
+      linkedin: 0,
+      instagram: 0,
+      twitter: 0,
+      youtube: 0,
+      facebook: 0,
+      tiktok: 0,
+      pinterest: 0,
+      medium: 0
+    };
+
+    // Industry-based platform preferences
+    const industryPlatforms: { [industry: string]: string[] } = {
+      'Technology': ['linkedin', 'twitter', 'medium', 'youtube'],
+      'Healthcare': ['linkedin', 'medium', 'facebook', 'youtube'],
+      'Finance': ['linkedin', 'twitter', 'medium'],
+      'Hospitality': ['instagram', 'linkedin', 'pinterest', 'facebook'],
+      'Real Estate': ['instagram', 'facebook', 'linkedin', 'youtube'],
+      'Education': ['linkedin', 'medium', 'youtube', 'twitter'],
+      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest'],
+      'Design': ['instagram', 'pinterest', 'linkedin', 'medium'],
+      'Retail': ['instagram', 'facebook', 'tiktok', 'pinterest'],
+      'Media': ['instagram', 'twitter', 'tiktok', 'youtube'],
+      'Consulting': ['linkedin', 'medium', 'twitter'],
+      'Non-profit': ['facebook', 'instagram', 'linkedin', 'medium']
+    };
+
+    // Domain-based platform preferences
+    const domainPlatforms: { [domain: string]: string[] } = {
+      'UX Design': ['instagram', 'pinterest', 'linkedin', 'medium'],
+      'Software Development': ['twitter', 'linkedin', 'medium', 'youtube'],
+      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest'],
+      'Sales': ['linkedin', 'twitter', 'facebook'],
+      'Project Management': ['linkedin', 'medium', 'twitter'],
+      'Content Creation': ['instagram', 'youtube', 'tiktok', 'medium'],
+      'Data Science': ['linkedin', 'twitter', 'medium', 'youtube'],
+      'HR': ['linkedin', 'facebook', 'medium'],
+      'Customer Service': ['linkedin', 'twitter', 'facebook'],
+      'Finance': ['linkedin', 'twitter', 'medium']
+    };
+
+    // Goal-based platform alignment
+    const goalPlatforms: { [goal: string]: string[] } = {
+      'networking': ['linkedin', 'twitter', 'facebook'],
+      'job_search': ['linkedin', 'twitter'],
+      'thought_leadership': ['linkedin', 'medium', 'twitter'],
+      'brand_building': ['instagram', 'linkedin', 'pinterest'],
+      'skill_development': ['linkedin', 'youtube', 'medium'],
+      'business_growth': ['linkedin', 'instagram', 'facebook'],
+      'content_creation': ['instagram', 'youtube', 'tiktok', 'medium']
+    };
+
+    // Score platforms based on industry
+    if (user.industry && industryPlatforms[user.industry]) {
+      industryPlatforms[user.industry].forEach((platform, index) => {
+        platformScores[platform] += (4 - index); // Higher score for earlier platforms
+      });
+    }
+
+    // Score platforms based on domain
+    if (user.domain && domainPlatforms[user.domain]) {
+      domainPlatforms[user.domain].forEach((platform, index) => {
+        platformScores[platform] += (4 - index);
+      });
+    }
+
+    // Score platforms based on career goals
+    goals.forEach(goal => {
+      const goalType = this.categorizeGoal(goal.title);
+      if (goalPlatforms[goalType]) {
+        goalPlatforms[goalType].forEach((platform, index) => {
+          platformScores[platform] += (3 - index);
+        });
+      }
+    });
+
+    // Always give LinkedIn a baseline score (it's universally valuable for professionals)
+    platformScores.linkedin += 2;
+
+    // Convert scores to sorted platform list
+    return Object.entries(platformScores)
+      .sort(([, a], [, b]) => b - a)
+      .map(([platform]) => platform)
+      .filter(platform => platformScores[platform] > 0);
+  }
+
+  /**
+   * Categorize career goal into platform-relevant category
+   */
+  private categorizeGoal(goalTitle: string): string {
+    const title = goalTitle.toLowerCase();
+    
+    if (title.includes('network') || title.includes('connect')) return 'networking';
+    if (title.includes('job') || title.includes('career') || title.includes('position')) return 'job_search';
+    if (title.includes('lead') || title.includes('expert') || title.includes('authority')) return 'thought_leadership';
+    if (title.includes('brand') || title.includes('visibility') || title.includes('recognition')) return 'brand_building';
+    if (title.includes('skill') || title.includes('learn') || title.includes('develop')) return 'skill_development';
+    if (title.includes('business') || title.includes('revenue') || title.includes('client')) return 'business_growth';
+    if (title.includes('content') || title.includes('create') || title.includes('publish')) return 'content_creation';
+    
+    return 'networking'; // Default fallback
+  }
+
+  /**
    * Generate personalized quest using template and user brand variables
    */
   async generatePersonalizedQuest(
