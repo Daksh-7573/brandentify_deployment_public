@@ -887,16 +887,47 @@ export async function checkSessionRoute(req: Request, res: Response) {
         authProvider: user.authProvider || 'unknown'
       });
       
+      // PROFILE PICTURE PERSISTENCE FIX: Determine photo URL with priority logic
+      // Priority: 1. Custom uploaded (base64) 2. Google photo 3. Null
+      let finalPhotoURL = null;
+      let photoSource = 'none';
+      
+      if (user.photoURL) {
+        if (user.photoURL.startsWith('data:image/')) {
+          // Custom uploaded base64 image - highest priority
+          finalPhotoURL = user.photoURL;
+          photoSource = 'custom_upload';
+          console.log('✅ [SESSION-CHECK] Using custom uploaded profile picture');
+        } else if (user.photoURL.startsWith('http')) {
+          // Google/external URL - lower priority
+          finalPhotoURL = user.photoURL;
+          photoSource = 'google_oauth';
+          console.log('✅ [SESSION-CHECK] Using Google OAuth profile picture');
+        } else {
+          // Unknown format - log for debugging
+          console.log('⚠️ [SESSION-CHECK] Unknown photoURL format:', user.photoURL.substring(0, 50) + '...');
+          finalPhotoURL = user.photoURL;
+          photoSource = 'unknown';
+        }
+      }
+      
+      console.log('🖼️ [SESSION-CHECK] Photo resolution:', {
+        hasPhoto: !!finalPhotoURL,
+        photoSource,
+        photoLength: finalPhotoURL ? finalPhotoURL.length : 0
+      });
+
       // Return sanitized user data (same format as OAuth callback)
       const clientUser = {
         id: user.id,
         username: user.username,
         email: user.email,
         name: user.name,
-        photoURL: user.photoURL,
+        photoURL: finalPhotoURL,
         profileCompleted: user.profileCompleted || 0,
-        authProvider: 'google',
-        emailVerified: user.emailVerified
+        authProvider: user.authProvider || 'google', // Use actual auth provider from database
+        emailVerified: user.emailVerified,
+        photoSource // Add photo source tracking for frontend
       };
       
       console.log('✅ Session valid, returning user data');
