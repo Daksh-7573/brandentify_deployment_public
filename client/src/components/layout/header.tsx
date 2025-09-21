@@ -22,12 +22,12 @@ export default function Header() {
   const userId = user?.id || 1; // Use numeric database ID or demo fallback
   
   // Use TanStack Query to fetch and cache user data
-  const { data: userData, isError } = useQuery({
+  const { data: userData, isLoading, isError } = useQuery({
     queryKey: ['/api/users', userId],
     queryFn: async () => {
       if (!userId) return null;
       
-      console.log(`Fetching user data for header with ID: ${userId}`);
+      console.log(`[HEADER PERFORMANCE] Fetching user data for ID: ${userId}`);
       const response = await apiRequest('GET', `/api/users/${userId}`);
       
       if (response.status === 404) {
@@ -36,7 +36,7 @@ export default function Header() {
       }
       
       const data = await response.json();
-      console.log("Fetched user data for header:", data);
+      console.log("[HEADER PERFORMANCE] User data loaded:", data ? 'SUCCESS' : 'NULL');
       return data;
     },
     enabled: !!userId, // Only run query if userId exists
@@ -129,15 +129,28 @@ export default function Header() {
     };
   }, [userId]);
 
-  // Determine which photo URL to use (prioritize base64 uploaded image over Google image)
-  // Only use Google image if no base64 uploaded image exists
-  const photoURL = userData?.photoURL || user?.photoURL;
+  // PERFORMANCE FIX: Determine photo URL with proper loading states
+  // Wait for userData to load before showing any photo to prevent flicker
+  const getPhotoURL = () => {
+    // Show placeholder while loading to prevent flicker
+    if (isLoading) {
+      return "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+    }
+    
+    // Priority: Custom Upload > Google Photo > Default
+    return userData?.photoURL || user?.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+  };
   
-  // Debug logging for photo URL priority
-  console.log('[HEADER DEBUG] userData?.photoURL:', userData?.photoURL ? 'BASE64_IMAGE_EXISTS' : 'NULL');
-  console.log('[HEADER DEBUG] user?.photoURL:', user?.photoURL ? 'GOOGLE_IMAGE_EXISTS' : 'NULL');
-  console.log('[HEADER DEBUG] Final photoURL source:', photoURL === userData?.photoURL ? 'USING_BASE64' : 'USING_GOOGLE');
-  console.log('[HEADER DEBUG] userId used for query:', userId);
+  const photoURL = getPhotoURL();
+  
+  // Performance monitoring logs
+  console.log('[HEADER PERFORMANCE] isLoading:', isLoading);
+  console.log('[HEADER PERFORMANCE] userData ready:', !!userData);
+  console.log('[HEADER PERFORMANCE] Photo source:', 
+    isLoading ? 'LOADING_PLACEHOLDER' : 
+    userData?.photoURL ? 'CUSTOM_UPLOAD' : 
+    user?.photoURL ? 'GOOGLE_PHOTO' : 'DEFAULT');
+  console.log('[HEADER PERFORMANCE] userId:', userId);
 
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-50">
@@ -157,7 +170,7 @@ export default function Header() {
                     Brandentifier
                   </span>
                 </div>
-                {isDemoMode && (
+                {userId === 1 && (
                   <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
                     Demo Mode
                   </Badge>
