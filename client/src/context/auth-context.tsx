@@ -71,14 +71,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     .then(sessionData => {
       if (sessionData.success && sessionData.user) {
         console.log('[Auth Context] ✅ Found valid JWT session:', sessionData.user.email);
-        setUser({
-          uid: sessionData.user.id.toString(),
-          ...sessionData.user
-        });
+        
+        // PROFILE PICTURE PERSISTENCE FIX: Enhanced photo URL handling
+        const userData = sessionData.user;
+        let finalPhotoURL = userData.photoURL;
+        
+        // Log photo source information from backend
+        if (userData.photoSource) {
+          console.log('[Auth Context] 📸 Photo source from backend:', userData.photoSource);
+        }
+        
+        // Apply photo URL priority logic on frontend as well
+        if (userData.photoURL) {
+          if (userData.photoURL.startsWith('data:image/')) {
+            console.log('[Auth Context] ✅ Using custom uploaded profile picture');
+          } else if (userData.photoURL.startsWith('http')) {
+            console.log('[Auth Context] ✅ Using Google OAuth profile picture');
+          }
+        } else {
+          console.log('[Auth Context] ℹ️ No profile picture available');
+        }
+
+        const authUser = {
+          uid: userData.id.toString(),
+          ...userData,
+          photoURL: finalPhotoURL
+        };
+        
+        setUser(authUser);
         setIsLoading(false);
         
-        // Store in session storage for consistency
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionData.user));
+        // Store in session storage for consistency with photo source tracking
+        const sessionUserData = {
+          ...userData,
+          photoURL: finalPhotoURL,
+          photoSource: userData.photoSource || 'unknown'
+        };
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
+        
+        console.log('[Auth Context] 💾 Updated session storage with photo source tracking');
       } else {
         throw new Error('Invalid session data');
       }
@@ -105,14 +136,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleProfilePictureUpdate = (event: any) => {
       console.log('[Auth Context] 🔄 Profile picture updated, syncing auth context');
-      const { newPhotoURL } = event.detail;
+      const { newPhotoURL, photoSource } = event.detail;
       
       if (user && newPhotoURL) {
         const updatedUser = {
           ...user,
-          photoURL: newPhotoURL
+          photoURL: newPhotoURL,
+          photoSource: photoSource || 'custom_upload' // Default to custom upload
         };
         setUser(updatedUser);
+        
+        // PROFILE PICTURE PERSISTENCE FIX: Update session storage immediately
+        const currentSessionData = sessionStorage.getItem('brandentifier_user');
+        if (currentSessionData) {
+          try {
+            const sessionUser = JSON.parse(currentSessionData);
+            const updatedSessionUser = {
+              ...sessionUser,
+              photoURL: newPhotoURL,
+              photoSource: photoSource || 'custom_upload'
+            };
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(updatedSessionUser));
+            console.log('[Auth Context] 💾 Updated session storage with new profile picture');
+          } catch (error) {
+            console.error('[Auth Context] ❌ Failed to update session storage:', error);
+          }
+        }
+        
         console.log('[Auth Context] ✅ Auth context synced with new profile picture');
       }
     };
@@ -333,17 +383,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Refresh user data
+  // Refresh user data with profile picture persistence fix
   const refreshUserData = async () => {
     if (!user) return;
     
     try {
-      const userData = await fetchUserData(user.uid, user.email || undefined);
-      if (userData) {
-        setUser(userData);
+      console.log('[Auth Context] 🔄 Refreshing user data with photo persistence logic');
+      
+      // Check server-side session again to get latest data
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const sessionData = await response.json();
+        if (sessionData.success && sessionData.user) {
+          // PROFILE PICTURE PERSISTENCE FIX: Apply same photo priority logic
+          const userData = sessionData.user;
+          let finalPhotoURL = userData.photoURL;
+          
+          // Log photo source information from backend
+          if (userData.photoSource) {
+            console.log('[Auth Context] 🔄 Refresh - Photo source from backend:', userData.photoSource);
+          }
+          
+          // Apply photo URL priority logic
+          if (userData.photoURL) {
+            if (userData.photoURL.startsWith('data:image/')) {
+              console.log('[Auth Context] 🔄 Refresh - Using custom uploaded profile picture');
+            } else if (userData.photoURL.startsWith('http')) {
+              console.log('[Auth Context] 🔄 Refresh - Using Google OAuth profile picture');
+            }
+          }
+
+          const authUser = {
+            uid: userData.id.toString(),
+            ...userData,
+            photoURL: finalPhotoURL
+          };
+          
+          setUser(authUser);
+          
+          // Update session storage
+          const sessionUserData = {
+            ...userData,
+            photoURL: finalPhotoURL,
+            photoSource: userData.photoSource || 'unknown'
+          };
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
+          
+          console.log('[Auth Context] ✅ User data refreshed with photo persistence logic');
+        }
+      } else {
+        // Fallback to old method if session check fails
+        const userData = await fetchUserData(user.uid, user.email || undefined);
+        if (userData) {
+          setUser(userData);
+          console.log('[Auth Context] ✅ User data refreshed via fallback method');
+        }
       }
     } catch (error) {
-      console.error("Error refreshing user data:", error);
+      console.error("[Auth Context] Error refreshing user data:", error);
     }
   };
 

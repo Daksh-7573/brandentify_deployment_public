@@ -215,15 +215,19 @@ export function useProfilePicture(userId: number | string | null = null) {
             if (response.ok) {
               const sessionData = await response.json();
               if (sessionData.success && sessionData.user) {
-                // Update session storage to sync auth context on next check
+                // PROFILE PICTURE PERSISTENCE FIX: Update session storage with photo source
                 sessionStorage.setItem('brandentifier_user', JSON.stringify({
                   ...sessionData.user,
-                  photoURL: newPhotoURL
+                  photoURL: newPhotoURL,
+                  photoSource: 'custom_upload' // Mark as custom uploaded image
                 }));
                 
-                // Trigger a manual refresh by dispatching a custom event
+                // PROFILE PICTURE PERSISTENCE FIX: Include photo source in event
                 window.dispatchEvent(new CustomEvent('profile-picture-updated', { 
-                  detail: { newPhotoURL } 
+                  detail: { 
+                    newPhotoURL,
+                    photoSource: 'custom_upload' // Mark as custom uploaded image
+                  } 
                 }));
               }
             }
