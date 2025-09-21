@@ -9,7 +9,7 @@ import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trop
 import NotificationBell from "@/components/notifications/notification-bell";
 
 export default function Header() {
-  const { user, isDemoMode, signOut, refreshUserData } = useAuth();
+  const { user, signOut } = useAuth();
   const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
@@ -17,8 +17,9 @@ export default function Header() {
   // Helper function to check if current path matches
   const isActive = (routePath: string) => path === routePath;
   
-  // Get the user ID for queries - use same logic as profile page for consistency
-  const userId = isDemoMode ? 1 : (user?.username || user?.id?.toString() || user?.uid || '');
+  // PERFORMANCE FIX: Use same numeric database ID logic as all other pages
+  // This eliminates redundant API calls and cache inconsistencies
+  const userId = user?.id || 1; // Use numeric database ID or demo fallback
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
