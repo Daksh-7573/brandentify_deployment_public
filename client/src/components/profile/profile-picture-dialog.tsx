@@ -36,9 +36,9 @@ export function ProfilePictureDialog({
   
   console.log("ProfilePictureDialog rendered with open:", open);
   
-  // PROFILE PICTURE PERSISTENCE FIX: Use Firebase UID to match JWT token
-  // JWT tokens contain Firebase UID as userId, so we need to use authUser.uid, not authUser.id
-  const actualUserId = userId || (authUser?.uid ?? authUser?.id ?? 1);
+  // PROFILE PICTURE PERSISTENCE FIX: Use numeric database ID to match JWT token
+  // JWT tokens contain numeric database ID as userId, so we need to use authUser.id (not authUser.uid)
+  const actualUserId = userId || (authUser?.id ?? 1);
   
   console.log('[PROFILE DIALOG DEBUG] Auth user data:', {
     id: authUser?.id,
