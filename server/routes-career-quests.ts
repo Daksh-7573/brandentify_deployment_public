@@ -756,13 +756,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // Get today's active quests
+        // Get today's active quests (note: will need to add definitions separately)
         quests = await storage.getCurrentDayUserQuests(userId);
       } else if (bucket === 'completed') {
-        // Get completed user quests
-        quests = await storage.getCompletedUserQuests(userId);
+        // Get completed user quests (without definitions for now)
+        const allQuests = await storage.getUserQuestsByUserId(userId);
+        quests = allQuests.filter((q: any) => q.status === 'completed');
       } else if (bucket === 'missed') {
-        // Get all user quests and filter by expired/dismissed status
+        // Get all user quests (without definitions for now) and filter by expired/dismissed status
         const allQuests = await storage.getUserQuestsByUserId(userId);
         quests = allQuests.filter((q: any) => q.status === 'expired' || q.status === 'dismissed');
       }
@@ -791,15 +792,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // Get today's active social quests
+        // Get today's active social quests (note: will need to add definitions separately)
         quests = await storage.getCurrentDaySocialQuests(userId);
       } else if (bucket === 'completed') {
-        // Get all user social quests and filter by completed status
-        const allQuests = await storage.getUserSocialQuests(userId);
+        // Get all user social quests with definitions and filter by completed status
+        const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
         quests = allQuests.filter((q: any) => q.status === 'completed');
       } else if (bucket === 'missed') {
-        // Get all user social quests and filter by expired/dismissed status
-        const allQuests = await storage.getUserSocialQuests(userId);
+        // Get all user social quests with definitions and filter by expired/dismissed status
+        const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
         quests = allQuests.filter((q: any) => q.status === 'expired' || q.status === 'dismissed');
       }
 
