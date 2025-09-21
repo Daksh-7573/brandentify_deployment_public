@@ -698,3 +698,62 @@ export const getCurrentWeekNumber = (): number => {
 export const getCurrentYear = (): number => {
   return new Date().getFullYear();
 };
+
+// Bucket-based Quest Hooks for Daily/Completed/Missed functionality
+export const useUserCareerQuestsByBucket = (userId?: number, bucket?: 'daily' | 'completed' | 'missed') => {
+  return useQuery({
+    queryKey: [userId && bucket ? `/api/users/${userId}/quests/bucket/${bucket}` : null],
+    queryFn: async () => {
+      if (!userId || !bucket) {
+        return [];
+      }
+      
+      try {
+        const res = await fetch(`/api/users/${userId}/quests/bucket/${bucket}`);
+        if (!res.ok) {
+          console.error(`Failed to fetch ${bucket} career quests, status:`, res.status);
+          return [];
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          return [];
+        }
+        return res.json();
+      } catch (error) {
+        console.error(`Error fetching ${bucket} career quests:`, error);
+        return [];
+      }
+    },
+    enabled: !!userId && !!bucket
+  });
+};
+
+export const useUserSocialQuestsByBucket = (userId?: number, bucket?: 'daily' | 'completed' | 'missed') => {
+  return useQuery({
+    queryKey: [userId && bucket ? `/api/users/${userId}/social-quests/bucket/${bucket}` : null],
+    queryFn: async () => {
+      if (!userId || !bucket) {
+        return [];
+      }
+      
+      try {
+        const res = await fetch(`/api/users/${userId}/social-quests/bucket/${bucket}`);
+        if (!res.ok) {
+          console.error(`Failed to fetch ${bucket} social quests, status:`, res.status);
+          return [];
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Expected JSON but got', contentType);
+          return [];
+        }
+        return res.json();
+      } catch (error) {
+        console.error(`Error fetching ${bucket} social quests:`, error);
+        return [];
+      }
+    },
+    enabled: !!userId && !!bucket
+  });
+};

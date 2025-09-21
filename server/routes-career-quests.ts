@@ -739,6 +739,78 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Route to get quests by bucket (daily/completed/missed)
+  apiRouter.get("/users/:userId/quests/bucket/:bucket", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const bucket = req.params.bucket as 'daily' | 'completed' | 'missed';
+      
+      if (!userId || isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      if (!['daily', 'completed', 'missed'].includes(bucket)) {
+        return res.status(400).json({ error: 'Invalid bucket type' });
+      }
+
+      let quests: any[] = [];
+
+      if (bucket === 'daily') {
+        // Get today's active quests
+        quests = await storage.getCurrentDayUserQuests(userId);
+      } else if (bucket === 'completed') {
+        // Get completed quests - you can implement date range filtering
+        quests = await storage.getUserQuestsByStatus(userId, 'completed');
+      } else if (bucket === 'missed') {
+        // Get expired/dismissed quests
+        const expired = await storage.getUserQuestsByStatus(userId, 'expired');
+        const dismissed = await storage.getUserQuestsByStatus(userId, 'dismissed');
+        quests = [...expired, ...dismissed];
+      }
+
+      res.json(quests || []);
+    } catch (error) {
+      console.error('Error fetching bucket quests:', error);
+      res.status(500).json({ error: 'Failed to fetch bucket quests' });
+    }
+  });
+
+  // Route to get social quests by bucket (daily/completed/missed)
+  apiRouter.get("/users/:userId/social-quests/bucket/:bucket", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const bucket = req.params.bucket as 'daily' | 'completed' | 'missed';
+      
+      if (!userId || isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      if (!['daily', 'completed', 'missed'].includes(bucket)) {
+        return res.status(400).json({ error: 'Invalid bucket type' });
+      }
+
+      let quests: any[] = [];
+
+      if (bucket === 'daily') {
+        // Get today's active social quests
+        quests = await storage.getCurrentDayUserSocialQuests(userId);
+      } else if (bucket === 'completed') {
+        // Get completed social quests
+        quests = await storage.getUserSocialQuestsByStatus(userId, 'completed');
+      } else if (bucket === 'missed') {
+        // Get expired/dismissed social quests
+        const expired = await storage.getUserSocialQuestsByStatus(userId, 'expired');
+        const dismissed = await storage.getUserSocialQuestsByStatus(userId, 'dismissed');
+        quests = [...expired, ...dismissed];
+      }
+
+      res.json(quests || []);
+    } catch (error) {
+      console.error('Error fetching social bucket quests:', error);
+      res.status(500).json({ error: 'Failed to fetch social bucket quests' });
+    }
+  });
+
   // Daily quest retrieval route
   apiRouter.get("/users/:userId/quests/current-day", async (req, res) => {
     try {
