@@ -11395,7 +11395,7 @@ export class DatabaseStorage implements IStorage {
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
-        ORDER BY uq.created_at DESC
+        ORDER BY uq.assigned_at DESC
       `, [userId]);
       
       return result.rows;
