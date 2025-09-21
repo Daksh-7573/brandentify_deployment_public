@@ -467,16 +467,31 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         name: existingUser.name,
         googleId: existingUser.googleId
       });
-      // Update existing user with latest Google info
+      
+      // PROFILE PICTURE PERSISTENCE FIX: Preserve custom uploaded photos
+      // Only use Google photo if user hasn't uploaded a custom one
+      let finalPhotoURL = existingUser.photoURL;
+      
+      if (existingUser.photoURL && existingUser.photoURL.startsWith('data:image/')) {
+        // User has custom uploaded image - preserve it
+        finalPhotoURL = existingUser.photoURL;
+        console.log('🖼️ [AUTH-FIX] Preserving custom uploaded profile picture');
+      } else if (userData.photoURL && userData.photoURL.startsWith('http')) {
+        // No custom image, use latest Google photo  
+        finalPhotoURL = userData.photoURL;
+        console.log('🖼️ [AUTH-FIX] Using Google profile picture');
+      }
+      
+      // Update existing user with latest Google info but preserve photo priority
       user = await storage.updateUser(existingUser.id, {
         name: userData.name,
-        photoURL: userData.photoURL,
+        photoURL: finalPhotoURL,
         googleId: userData.googleId,
         firebaseUid: userData.firebaseUid,
         authProvider: 'google',
         lastLoginAt: new Date()
       });
-      console.log('✅ [AUTH-FIX] Updated existing user profile');
+      console.log('✅ [AUTH-FIX] Updated existing user profile with photo preservation');
     } else {
       // Fallback: check by email for legacy users who may not have googleId stored
       console.log('🔍 [AUTH-FIX] No user found by Google ID, checking by email as fallback');
@@ -484,10 +499,24 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       
       if (userByEmail) {
         console.log('✅ [AUTH-FIX] Found legacy user by email, updating with Google ID');
+        
+        // PROFILE PICTURE PERSISTENCE FIX: Preserve custom uploaded photos for legacy users too
+        let finalPhotoURL = userByEmail.photoURL;
+        
+        if (userByEmail.photoURL && userByEmail.photoURL.startsWith('data:image/')) {
+          // User has custom uploaded image - preserve it
+          finalPhotoURL = userByEmail.photoURL;
+          console.log('🖼️ [AUTH-FIX] Preserving custom uploaded profile picture (legacy user)');
+        } else if (userData.photoURL && userData.photoURL.startsWith('http')) {
+          // No custom image, use latest Google photo  
+          finalPhotoURL = userData.photoURL;
+          console.log('🖼️ [AUTH-FIX] Using Google profile picture (legacy user)');
+        }
+        
         // Update legacy user with Google ID fields
         user = await storage.updateUser(userByEmail.id, {
           name: userData.name,
-          photoURL: userData.photoURL,
+          photoURL: finalPhotoURL,
           googleId: userData.googleId,
           firebaseUid: userData.firebaseUid,
           authProvider: 'google',
