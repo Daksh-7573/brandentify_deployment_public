@@ -53,7 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Check if we're on published domain and should use server session
       const hostname = window.location.hostname;
+      console.log('AuthProvider: Current hostname:', hostname);
       const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
+      console.log('AuthProvider: Domain check result:', { hostname, isPublishedDomain });
       
       if (isPublishedDomain) {
         console.log('AuthProvider: Replit domain detected, checking server session', hostname);
