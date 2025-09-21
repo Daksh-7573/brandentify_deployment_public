@@ -12633,7 +12633,7 @@ export class DatabaseStorage implements IStorage {
             const questDefinition = await this.createQuestDefinition({
               title: personalizedQuest.title,
               description: personalizedQuest.description,
-              type: 'social_quest',
+              type: 'pulse_creation',
               targetCount: 1,
               targetAction: personalizedQuest.targetAction,
               xpReward: personalizedQuest.xpReward,
@@ -12690,7 +12690,7 @@ export class DatabaseStorage implements IStorage {
         const fallbackDefinition = await this.createQuestDefinition({
           title: 'Share Your Professional Journey',
           description: 'Create a post about your professional experience and what you have learned in your career.',
-          type: 'social_quest',
+          type: 'pulse_creation',
           targetCount: 1,
           targetAction: 'create_linkedin_post',
           xpReward: 50,
