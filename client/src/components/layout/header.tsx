@@ -53,15 +53,17 @@ export default function Header() {
     }
   }, [userId]);
   
-  // Function to check for unread messages
+  // PERFORMANCE FIX: Function to check for unread messages using numeric user ID
   const checkUnreadMessages = useCallback(async () => {
     if (!userId) return;
     
     try {
+      // Use numeric user ID for consistency across all API calls
       const response = await apiRequest('GET', `/api/messaging/unread/count?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setHasUnreadMessages(data.count > 0);
+        console.log('[HEADER PERFORMANCE] Unread messages check completed for userId:', userId);
       }
     } catch (error) {
       console.error('Error checking for unread messages:', error);
@@ -91,6 +93,7 @@ export default function Header() {
       
       // Mark all messages as read when visiting the messages page
       if (userId) {
+        console.log('[HEADER PERFORMANCE] Marking all messages as read for userId:', userId);
         apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
       }
     }
