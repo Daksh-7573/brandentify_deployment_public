@@ -214,6 +214,59 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
 }
 
 /**
+ * Get current authenticated user session - Required by AuthCallback component
+ */
+export async function getCurrentUserRoute(req: Request, res: Response) {
+  try {
+    console.log('🔍 [GET-USER] Checking current user session');
+    
+    // Extract JWT token from cookies or Authorization header
+    const token = req.cookies?.brandentifier_session || req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      console.log('🔍 [GET-USER] No auth token found');
+      return res.status(401).json({ success: false, error: 'No authentication token' });
+    }
+    
+    try {
+      // Verify JWT token
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      console.log('🔍 [GET-USER] Token verified for user ID:', decoded.userId);
+      
+      // Get user from database
+      const user = await storage.getUser(decoded.userId);
+      
+      if (!user) {
+        console.log('🔍 [GET-USER] User not found in database:', decoded.userId);
+        return res.status(401).json({ success: false, error: 'User not found' });
+      }
+      
+      console.log('✅ [GET-USER] User session found:', user.email);
+      
+      // Return user data (excluding sensitive fields)
+      const userResponse = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+        photoURL: user.photoURL,
+        uid: user.firebaseUid // For compatibility
+      };
+      
+      res.json(userResponse);
+      
+    } catch (jwtError) {
+      console.log('🔍 [GET-USER] Invalid JWT token:', jwtError);
+      return res.status(401).json({ success: false, error: 'Invalid authentication token' });
+    }
+    
+  } catch (error: any) {
+    console.error('❌ [GET-USER-ERROR] Error getting current user:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+}
+
+/**
  * Handle Google OAuth callback - processes the authorization code
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
