@@ -88,6 +88,26 @@ export default function AuthPage() {
           iconColor: 'text-orange-400',
           retryable: true
         };
+      case 'access_denied':
+        return {
+          icon: UserX,
+          title: 'Sign-In Cancelled',
+          message: 'You cancelled the Google sign-in process or denied permission.',
+          guidance: 'To use Brandentifier, we need permission to access your basic profile information (name, email, and photo). Please try signing in again and grant the required permissions.',
+          color: 'border-blue-500/50 bg-blue-500/10',
+          iconColor: 'text-blue-400',
+          retryable: true
+        };
+      case 'invalid_request':
+        return {
+          icon: AlertTriangle,
+          title: 'Invalid Authentication Request',
+          message: 'The authentication request was malformed or invalid.',
+          guidance: 'This is usually a temporary issue. Please try signing in again.',
+          color: 'border-yellow-500/50 bg-yellow-500/10',
+          iconColor: 'text-yellow-400',
+          retryable: true
+        };
       case 'oauth_error':
         return {
           icon: AlertTriangle,

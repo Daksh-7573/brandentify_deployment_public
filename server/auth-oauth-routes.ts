@@ -589,15 +589,17 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         timestamp: new Date().toISOString()
       });
       
-      // Provide specific error messages based on OAuth error types
-      let errorMessage = 'Authentication was cancelled or failed. Please try again.';
+      // Provide specific error messages and types based on OAuth error types
       if (error === 'access_denied') {
-        errorMessage = 'Authentication was cancelled. You need to grant permission to continue.';
+        const errorMessage = 'Authentication was cancelled. You need to grant permission to continue.';
+        return res.redirect(`/auth?error=access_denied&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
       } else if (error === 'invalid_request') {
-        errorMessage = 'Authentication request was invalid. Please try again.';
+        const errorMessage = 'Authentication request was invalid. Please try again.';
+        return res.redirect(`/auth?error=invalid_request&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
+      } else {
+        const errorMessage = 'Authentication was cancelled or failed. Please try again.';
+        return res.redirect(`/auth?error=oauth_error&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
       }
-      
-      return res.redirect(`/auth?error=oauth_error&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
     }
     
     if (!code || !state) {
