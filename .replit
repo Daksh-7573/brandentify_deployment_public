@@ -15,8 +15,64 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 41273
+localPort = 5001
 externalPort = 3000
+
+[[ports]]
+localPort = 33727
+externalPort = 8008
+
+[[ports]]
+localPort = 35973
+externalPort = 5000
+
+[[ports]]
+localPort = 36383
+externalPort = 6800
+
+[[ports]]
+localPort = 36807
+externalPort = 6000
+
+[[ports]]
+localPort = 37785
+externalPort = 8000
+
+[[ports]]
+localPort = 40945
+externalPort = 8099
+
+[[ports]]
+localPort = 41013
+externalPort = 3002
+
+[[ports]]
+localPort = 41463
+externalPort = 3003
+
+[[ports]]
+localPort = 41765
+externalPort = 4200
+
+[[ports]]
+localPort = 41817
+externalPort = 8081
+
+[[ports]]
+localPort = 44391
+externalPort = 5173
+
+[[ports]]
+localPort = 45213
+externalPort = 8080
+
+[[ports]]
+localPort = 45415
+externalPort = 9000
+
+[[ports]]
+localPort = 46571
+externalPort = 3001
 
 [workflows]
 runButton = "Project"

@@ -8,36 +8,25 @@ import { Request, Response } from "express";
 import { storage } from "./storage";
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
-import { generateCSRFToken, verifyCSRFToken } from './security';
 
 // Google OAuth URLs
 const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-// Get OAuth credentials from environment - FAIL FAST if missing
+// Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 
-// Critical security validation - fail fast if secrets are missing
-if (!JWT_SECRET) {
-  console.error('❌ CRITICAL: JWT_SECRET environment variable is required for authentication security');
-  process.exit(1);
-}
-
-// Type-safe JWT secret (guaranteed to be defined after fail-fast check)
-const VERIFIED_JWT_SECRET = JWT_SECRET as string;
-
-// Allowed redirect URIs (whitelist for security) - Using stable published domain only
+// Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
-  'https://brandentifier.replit.app/api/auth/google/callback', // Stable published domain
-  'https://brandentifier.com/api/auth/google/callback', 
-  'https://www.brandentifier.com/api/auth/google/callback',
-  'http://localhost:5000/api/auth/google/callback', // Local development
-  'http://127.0.0.1:5000/api/auth/google/callback'
-  // Removed dynamic picard domains - use published domain + session exchange instead
+  'https://brandentifier.replit.app/api/auth/google/callback',
+  'https://brandentifier.com/api/auth/google/callback',
+  'http://localhost:5000/api/auth/google/callback',
+  'http://127.0.0.1:5000/api/auth/google/callback',
+  // Current Replit preview domain
+  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google/callback'
 ];
 
 // Improved domain pattern matching for Replit environments
@@ -57,8 +46,6 @@ interface SessionExchangeData {
   timestamp: number;
   returnHost: string;
   userId: number;
-  userAgent?: string;
-  ip?: string;
 }
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
@@ -93,22 +80,9 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
-// Enhanced OAuth credentials validation with fail-fast
 if (!CLIENT_ID || !CLIENT_SECRET) {
-  console.error('❌ CRITICAL: Missing Google OAuth credentials');
-  console.error('❌ Required environment variables: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET');
-  console.error('❌ Please configure these in your environment before starting the application');
-  process.exit(1);
+  console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
 }
-
-// Type-safe OAuth credentials (guaranteed to be defined after fail-fast check)
-const VERIFIED_CLIENT_ID = CLIENT_ID as string;
-const VERIFIED_CLIENT_SECRET = CLIENT_SECRET as string;
-
-// Log successful credential loading (without exposing secrets)
-console.log('✅ [AUTH-SECURITY] OAuth credentials successfully loaded');
-console.log('✅ [AUTH-SECURITY] Client ID configured:', VERIFIED_CLIENT_ID.substring(0, 8) + '...');
-console.log('✅ [AUTH-SECURITY] JWT secret configured: ✓');
 
 /**
  * Generate Google OAuth URL - avoids Firebase routing issues
@@ -126,10 +100,8 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       'Surrogate-Control': 'no-store'
     });
     
-    // CLIENT_ID is guaranteed to exist due to fail-fast validation above
-    // but keeping this check for extra security
-    if (!VERIFIED_CLIENT_ID) {
-      throw new Error('Google Client ID not configured - this should never happen');
+    if (!CLIENT_ID) {
+      throw new Error('Google Client ID not configured');
     }
     
     // Enhanced environment-based redirect URI determination with better domain handling
@@ -146,13 +118,6 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    // Enhanced pattern matching debugging
-    console.log('🔍 [OAUTH-DEBUG] Pattern matching results:');
-    REPLIT_DOMAIN_PATTERNS.forEach((pattern, index) => {
-      const matches = pattern.test(host);
-      console.log(`  Pattern ${index + 1}: ${pattern.toString()} - Match: ${matches}`);
-    });
-    
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
     // Store original host in state for post-auth redirect
     let redirectUri;
@@ -163,11 +128,15 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // CRITICAL FIX: Always use stable published domain for ALL Replit domains
-      // This ensures Google OAuth callback always hits a whitelisted URI
-      // Session exchange system handles cross-domain return to original host
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-      console.log('🔧 [OAUTH-FIX] Using stable published domain for Replit OAuth callback');
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // For published domains, still use stable redirect URI
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        // Preview domain: use current domain
+        redirectUri = `https://${host}/api/auth/google/callback`;
+      } else {
+        // Published domain: use stable redirect URI
+        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      }
     } else {
       // Fallback for unknown domains - use current host if HTTPS
       console.log('⚠️ [OAUTH-URL] Unknown domain, using current host as fallback');
@@ -194,7 +163,7 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     // Build OAuth URL with OpenID Connect scope
     const params = new URLSearchParams({
-      client_id: VERIFIED_CLIENT_ID,
+      client_id: CLIENT_ID,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'openid email profile',
@@ -245,311 +214,6 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
 }
 
 /**
- * Get current authenticated user session - Required by AuthCallback component
- */
-export async function getCurrentUserRoute(req: Request, res: Response) {
-  try {
-    console.log('🔍 [GET-USER] Checking current user session');
-    
-    // Extract JWT token from cookies or Authorization header
-    const token = req.cookies?.brandentifier_session || req.headers.authorization?.replace('Bearer ', '');
-    
-    if (!token) {
-      console.log('🔍 [GET-USER] No auth token found');
-      return res.status(401).json({ success: false, error: 'No authentication token' });
-    }
-    
-    try {
-      // Verify JWT token with guaranteed secret
-      const decoded = jwt.verify(token, VERIFIED_JWT_SECRET) as any;
-      console.log('🔍 [GET-USER] Token verified for user ID:', decoded.userId);
-      
-      // Get user from database
-      const user = await storage.getUser(decoded.userId);
-      
-      if (!user) {
-        console.log('🔍 [GET-USER] User not found in database:', decoded.userId);
-        return res.status(401).json({ success: false, error: 'User not found' });
-      }
-      
-      console.log('✅ [GET-USER] User session found:', user.email);
-      
-      // Return user data (excluding sensitive fields)
-      const userResponse = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        photoURL: user.photoURL,
-        uid: user.firebaseUid // For compatibility
-      };
-      
-      res.json(userResponse);
-      
-    } catch (jwtError) {
-      console.log('🔍 [GET-USER] Invalid JWT token:', jwtError);
-      return res.status(401).json({ success: false, error: 'Invalid authentication token' });
-    }
-    
-  } catch (error: any) {
-    console.error('❌ [GET-USER-ERROR] Error getting current user:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-}
-
-/**
- * Generate CSRF token for client-side auth operations
- */
-export async function generateCSRFTokenRoute(req: Request, res: Response) {
-  try {
-    // Extract session ID from cookie if available for token binding
-    let sessionId = 'anonymous';
-    const sessionCookie = req.cookies?.brandentifier_session;
-    
-    if (sessionCookie && JWT_SECRET) {
-      try {
-        const decoded = jwt.verify(sessionCookie, VERIFIED_JWT_SECRET) as any;
-        sessionId = decoded.userId?.toString() || decoded.id?.toString() || 'authenticated';
-      } catch (error) {
-        // Continue with anonymous binding if session is invalid
-      }
-    }
-    
-    const csrfToken = generateCSRFToken(sessionId);
-    
-    // Set CSRF token in cookie for double-submit pattern
-    res.cookie('XSRF-TOKEN', csrfToken, {
-      httpOnly: false, // Client needs to read this for header
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 60 * 1000 // 30 minutes
-    });
-    
-    // Also return in response body
-    res.setHeader('Cache-Control', 'no-store');
-    res.json({
-      success: true,
-      csrfToken
-    });
-    
-  } catch (error: any) {
-    console.error('❌ [CSRF-TOKEN] Generation error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to generate CSRF token' 
-    });
-  }
-}
-
-// Validation schema for secure session exchange
-const sessionExchangeSchema = z.object({
-  code: z.string().min(1, 'Exchange code is required'),
-  csrfToken: z.string().min(1, 'CSRF token is required')
-});
-
-/**
- * Accept session exchange code - SECURE POST endpoint with CSRF protection
- */
-export async function secureSessionExchangeRoute(req: Request, res: Response) {
-  try {
-    console.log('🔄 [SECURE-SESSION-EXCHANGE] Processing secure session exchange...');
-    
-    // Validate request body
-    const validation = sessionExchangeSchema.safeParse(req.body);
-    if (!validation.success) {
-      console.log('❌ [SECURE-SESSION-EXCHANGE] Invalid request body:', validation.error.errors);
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid request body',
-        details: validation.error.errors
-      });
-    }
-    
-    const { code, csrfToken } = validation.data;
-    
-    // Verify CSRF token (additional layer - middleware should have caught this)
-    const sessionCookie = req.cookies?.brandentifier_session;
-    let sessionId = 'anonymous';
-    if (sessionCookie && JWT_SECRET) {
-      try {
-        const decoded = jwt.verify(sessionCookie, VERIFIED_JWT_SECRET) as any;
-        sessionId = decoded.userId?.toString() || decoded.id?.toString() || 'authenticated';
-      } catch (error) {
-        // Continue with anonymous binding
-      }
-    }
-    
-    if (!verifyCSRFToken(csrfToken, sessionId)) {
-      console.log('❌ [SECURE-SESSION-EXCHANGE] CSRF token validation failed');
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Invalid CSRF token' 
-      });
-    }
-
-    // Get session data from exchange store
-    const sessionData = sessionExchangeStore.get(code);
-    
-    if (!sessionData) {
-      console.log('❌ [SECURE-SESSION-EXCHANGE] Invalid or expired exchange code');
-      return res.status(401).json({ success: false, error: 'Invalid or expired exchange code' });
-    }
-    
-    // Check if code is expired (2 minutes - shortened for security)
-    const codeAge = Date.now() - sessionData.timestamp;
-    if (codeAge > 2 * 60 * 1000) {
-      console.log('❌ [SECURE-SESSION-EXCHANGE] Exchange code expired');
-      sessionExchangeStore.delete(code); // Clean up expired code
-      return res.status(401).json({ success: false, error: 'Exchange code expired' });
-    }
-    
-    // Verify IP and User-Agent binding for additional security
-    const clientIP = req.ip || req.connection.remoteAddress;
-    const clientUA = req.get('User-Agent');
-    
-    if (sessionData.ip && clientIP && sessionData.ip !== clientIP) {
-      console.warn(`⚠️ [SECURE-SESSION-EXCHANGE] IP mismatch: expected ${sessionData.ip}, got ${clientIP}`);
-      sessionExchangeStore.delete(code);
-      return res.status(403).json({ success: false, error: 'Security validation failed' });
-    }
-    
-    if (sessionData.userAgent && clientUA && sessionData.userAgent !== clientUA) {
-      console.warn('⚠️ [SECURE-SESSION-EXCHANGE] User-Agent mismatch');
-      sessionExchangeStore.delete(code);
-      return res.status(403).json({ success: false, error: 'Security validation failed' });
-    }
-    
-    // Delete the code immediately (one-time use)
-    sessionExchangeStore.delete(code);
-    
-    // Get user data from database - using getAllUsers as workaround for missing getUserById
-    const allUsers = await storage.getAllUsers();
-    const userData = allUsers.find(user => user.id === sessionData.userId);
-    if (!userData) {
-      console.log('❌ [SECURE-SESSION-EXCHANGE] User not found in database');
-      return res.status(404).json({ success: false, error: 'User not found' });
-    }
-    
-    // Set secure session cookie
-    const currentHost = req.get('host') || 'localhost';
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      domain: currentHost.includes('brandentifier.com') 
-        ? '.brandentifier.com' 
-        : undefined
-    };
-    
-    res.cookie('brandentifier_session', sessionData.sessionToken, cookieOptions);
-    
-    console.log('✅ [SECURE-SESSION-EXCHANGE] Session handoff completed successfully');
-    console.log('✅ [SECURE-SESSION-EXCHANGE] User ID:', sessionData.userId);
-    
-    // Return user data (never return tokens)
-    res.json({
-      success: true,
-      user: {
-        id: userData.id,
-        email: userData.email,
-        name: userData.name,
-        photoURL: userData.photoURL,
-        username: userData.username
-      }
-    });
-    
-  } catch (error: any) {
-    console.error('❌ [SECURE-SESSION-EXCHANGE] Critical error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Internal server error' 
-    });
-  }
-}
-
-/**
- * Legacy GET endpoint handler - returns 405 Method Not Allowed
- */
-export async function legacySessionExchangeRoute(req: Request, res: Response) {
-  console.warn(`⚠️ [LEGACY-SESSION-EXCHANGE] Blocked insecure GET request from ${req.ip}`);
-  
-  res.status(405)
-    .set('Allow', 'POST')
-    .set('Cache-Control', 'no-store')
-    .json({
-      success: false,
-      error: 'Method not allowed. Use POST /api/auth/session/exchange instead',
-      code: 'METHOD_NOT_ALLOWED',
-      allowedMethods: ['POST']
-    });
-}
-
-/**
- * Accept session exchange code - handles cross-domain session transfer
- * @deprecated Use secureSessionExchangeRoute instead
- */
-export async function acceptSessionExchangeRoute(req: Request, res: Response) {
-  try {
-    console.log('🔄 [SESSION-ACCEPT] Processing session exchange...');
-    
-    const { code } = req.query;
-    
-    if (!code || typeof code !== 'string') {
-      console.log('❌ [SESSION-ACCEPT] No exchange code provided');
-      return res.status(400).json({ success: false, error: 'Missing exchange code' });
-    }
-    
-    // Get session data from exchange store
-    const sessionData = sessionExchangeStore.get(code);
-    
-    if (!sessionData) {
-      console.log('❌ [SESSION-ACCEPT] Invalid or expired exchange code');
-      return res.status(401).json({ success: false, error: 'Invalid or expired exchange code' });
-    }
-    
-    // Check if code is expired (5 minutes)
-    const codeAge = Date.now() - sessionData.timestamp;
-    if (codeAge > 5 * 60 * 1000) {
-      console.log('❌ [SESSION-ACCEPT] Exchange code expired');
-      sessionExchangeStore.delete(code);
-      return res.status(401).json({ success: false, error: 'Exchange code expired' });
-    }
-    
-    // Delete the exchange code (single use)
-    sessionExchangeStore.delete(code);
-    
-    // Set the session cookie on the current domain
-    const currentHost = req.get('host') || 'localhost:5000';
-    const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
-    
-    const cookieOptions = {
-      httpOnly: true,
-      secure: isSecure,
-      sameSite: 'none' as const, // Use 'none' for cross-domain
-      path: '/',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    };
-    
-    console.log('🍪 [SESSION-ACCEPT] Setting session cookie on domain:', currentHost);
-    res.cookie('brandentifier_session', sessionData.sessionToken, cookieOptions);
-    
-    // Return success
-    res.json({ 
-      success: true, 
-      message: 'Session accepted successfully',
-      userId: sessionData.userId
-    });
-    
-    console.log('✅ [SESSION-ACCEPT] Session exchange completed successfully');
-    
-  } catch (error: any) {
-    console.error('❌ [SESSION-ACCEPT] Error accepting session:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
-}
-
-/**
  * Handle Google OAuth callback - processes the authorization code
  */
 export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response) {
@@ -589,17 +253,15 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         timestamp: new Date().toISOString()
       });
       
-      // Provide specific error messages and types based on OAuth error types
+      // Provide specific error messages based on OAuth error types
+      let errorMessage = 'Authentication was cancelled or failed. Please try again.';
       if (error === 'access_denied') {
-        const errorMessage = 'Authentication was cancelled. You need to grant permission to continue.';
-        return res.redirect(`/auth?error=access_denied&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
+        errorMessage = 'Authentication was cancelled. You need to grant permission to continue.';
       } else if (error === 'invalid_request') {
-        const errorMessage = 'Authentication request was invalid. Please try again.';
-        return res.redirect(`/auth?error=invalid_request&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
-      } else {
-        const errorMessage = 'Authentication was cancelled or failed. Please try again.';
-        return res.redirect(`/auth?error=oauth_error&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
+        errorMessage = 'Authentication request was invalid. Please try again.';
       }
+      
+      return res.redirect(`/auth?error=oauth_error&message=${encodeURIComponent(errorMessage)}&canRetry=true`);
     }
     
     if (!code || !state) {
@@ -678,13 +340,6 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
-    // Enhanced pattern matching debugging for callback
-    console.log('🔍 [OAUTH-CALLBACK-DEBUG] Pattern matching results:');
-    REPLIT_DOMAIN_PATTERNS.forEach((pattern, index) => {
-      const matches = pattern.test(host);
-      console.log(`  Pattern ${index + 1}: ${pattern.toString()} - Match: ${matches}`);
-    });
-    
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
     let redirectUri;
     
@@ -693,11 +348,15 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // CRITICAL FIX: Always use stable published domain for ALL Replit domains
-      // This ensures Google OAuth callback always hits a whitelisted URI
-      // Session exchange system handles cross-domain return to original host
-      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-      console.log('🔧 [OAUTH-FIX] Using stable published domain for Replit OAuth callback');
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // For published domains, still use stable redirect URI
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        // Preview domain: use current domain
+        redirectUri = `https://${host}/api/auth/google/callback`;
+      } else {
+        // Published domain: use stable redirect URI
+        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      }
     } else {
       // Fallback for unknown domains - use current host if HTTPS
       console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using current host as fallback');
@@ -715,8 +374,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: VERIFIED_CLIENT_ID,
-        client_secret: VERIFIED_CLIENT_SECRET,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
         code: code as string,
         grant_type: 'authorization_code',
         redirect_uri: redirectUri,
@@ -916,8 +575,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
     };
     
-    // Sign JWT with verified secret
-    const sessionToken = jwt.sign(tokenPayload, VERIFIED_JWT_SECRET, { 
+    // Sign JWT with secret
+    const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
       algorithm: 'HS256'
     });
     
@@ -963,10 +622,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         userId: user.id
       });
       
-      // Build session acceptance URL on return domain - redirect to auth-callback page with exchange code
+      // Build session acceptance URL on return domain
       const sessionAcceptUrl = returnHost.includes('localhost') 
-        ? `http://${returnHost}/auth-callback?exchange_code=${exchangeCode}`
-        : `https://${returnHost}/auth-callback?exchange_code=${exchangeCode}`;
+        ? `http://${returnHost}/auth/accept-session?code=${exchangeCode}`
+        : `https://${returnHost}/auth/accept-session?code=${exchangeCode}`;
       
       console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
       console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
@@ -1070,38 +729,14 @@ export async function acceptSessionRoute(req: Request, res: Response) {
       return res.redirect('/auth?error=exchange_code_expired&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
-    // Enhanced security validation: Host, User-Agent, and IP verification
+    // Validate that we're on the correct return host
     const currentHost = req.get('host') || '';
-    const currentUserAgent = req.get('User-Agent') || '';
-    const currentIP = req.ip || req.connection.remoteAddress || '';
-    
     if (exchangeData.returnHost !== currentHost) {
       console.error('❌ [SESSION-ACCEPT] Host mismatch:', {
         expectedHost: exchangeData.returnHost,
         actualHost: currentHost
       });
-      sessionExchangeStore.delete(code); // Security: Remove on failed validation
       return res.redirect('/auth?error=host_mismatch&message=Authentication%20domain%20mismatch.%20Please%20try%20signing%20in%20again.&canRetry=true');
-    }
-    
-    // Validate User-Agent consistency (if captured during exchange)
-    if (exchangeData.userAgent && exchangeData.userAgent !== currentUserAgent) {
-      console.error('❌ [SESSION-ACCEPT] User-Agent mismatch (potential security issue):', {
-        expectedUA: exchangeData.userAgent?.substring(0, 50) + '...',
-        actualUA: currentUserAgent?.substring(0, 50) + '...'
-      });
-      sessionExchangeStore.delete(code); // Security: Remove on failed validation
-      return res.redirect('/auth?error=security_mismatch&message=Security%20validation%20failed.%20Please%20try%20signing%20in%20again.&canRetry=true');
-    }
-    
-    // Validate IP consistency (if captured during exchange) - allow some flexibility for proxy scenarios
-    if (exchangeData.ip && exchangeData.ip !== currentIP) {
-      console.warn('⚠️ [SESSION-ACCEPT] IP address changed during session exchange:', {
-        expectedIP: exchangeData.ip,
-        actualIP: currentIP,
-        note: 'This may be normal for mobile/proxy users'
-      });
-      // Continue but log for monitoring - IP changes can be legitimate
     }
     
     console.log('✅ [SESSION-ACCEPT] Exchange code valid, setting session cookie');
@@ -1241,9 +876,9 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
     }
     
-    // Verify JWT token with guaranteed secret
+    // Verify JWT token
     try {
-      const decoded = jwt.verify(sessionToken, VERIFIED_JWT_SECRET) as any;
+      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
       console.log('✅ Valid session found for user:', decoded.email);
       console.log('🔍 [SESSION-CHECK] Token payload:', {
         userId: decoded.userId,

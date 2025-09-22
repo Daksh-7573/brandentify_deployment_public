@@ -759,8 +759,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get today's active quests (note: will need to add definitions separately)
         quests = await storage.getCurrentDayUserQuests(userId);
       } else if (bucket === 'completed') {
-        // Get completed user quests with definitions
-        quests = await storage.getCompletedUserQuestsWithDefinitions(userId);
+        // Get completed user quests (without definitions for now)
+        const allQuests = await storage.getUserQuestsByUserId(userId);
+        quests = allQuests.filter((q: any) => q.status === 'completed');
       } else if (bucket === 'missed') {
         // Get all user quests (without definitions for now) and filter by expired/dismissed status
         const allQuests = await storage.getUserQuestsByUserId(userId);
@@ -1665,11 +1666,13 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         return res.status(400).json({ message: 'Invalid bucket. Must be daily, completed, or missed' });
       }
       
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
       let socialQuestsWithDefinitions = [];
       
-      // Query based on bucket type for social quests  
+      // Query based on bucket type for social quests
       if (bucket === 'daily') {
-        // Active social quests assigned within last 24 hours (rolling window)
+        // Active social quests assigned today
         const result = await db.execute(sql`
           SELECT 
             uq.id,
@@ -1695,7 +1698,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           FROM user_quests uq
           JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
           WHERE uq.user_id = ${userId} 
-            AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
+            AND uq.assigned_date = ${currentDate}
             AND uq.status = 'active'
             AND EXISTS (
               SELECT 1 FROM user_social_quests usq 
@@ -1797,26 +1800,6 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     } catch (error) {
       console.error(`[POST /users/${req.params.userId}/social-quests/assign-daily] Error:`, error);
       res.status(500).json({ message: 'Failed to assign daily social quests' });
-    }
-  });
-
-  // On-demand daily quest assignment endpoint
-  apiRouter.post("/users/:userId/quests/daily/ensure", async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: 'Invalid user ID' });
-      }
-      
-      console.log(`[POST /users/${userId}/quests/daily/ensure] Ensuring daily quests for user ${userId}`);
-      
-      const result = await storage.ensureDailyQuestsForUser(userId);
-      
-      console.log(`[POST /users/${userId}/quests/daily/ensure] ✅ Ensured quests: ${result.careerQuests.length} career + ${result.socialQuests.length} social`);
-      res.json(result);
-    } catch (error) {
-      console.error(`[POST /users/${req.params.userId}/quests/daily/ensure] Error:`, error);
-      res.status(500).json({ message: 'Failed to ensure daily quests' });
     }
   });
 

@@ -1,11 +1,4 @@
 import { createContext, useState, useEffect, ReactNode, useRef } from "react";
-import { 
-  getNetworkConfig, 
-  calculateRetryDelay, 
-  getConnectionErrorMessage, 
-  logNetworkPerformance,
-  type NetworkConfig 
-} from "../utils/network-detection";
 
 // Simple auth user type
 type AuthUser = {
@@ -46,131 +39,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
     
-    // Get network-aware configuration for adaptive timeouts
-    const networkConfig = getNetworkConfig();
-    console.log('AuthProvider: Network configuration:', {
-      connectionType: networkConfig.connectionType,
-      requestTimeout: `${networkConfig.requestTimeout}ms`,
-      failsafeTimeout: `${networkConfig.failsafeTimeout}ms`,
-      maxRetries: networkConfig.maxRetries
-    });
-    
-    // Connection-aware failsafe timeout to prevent infinite loading
+    // Failsafe timeout to prevent infinite loading - cleared when auth check completes
     timeoutRef.current = setTimeout(() => {
       if (loadingRef.current) {
-        console.warn(`AuthProvider: Failsafe timeout (${networkConfig.failsafeTimeout}ms) - forcing loading to false`);
+        console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
         setIsLoading(false);
         loadingRef.current = false;
       }
-    }, networkConfig.failsafeTimeout);
+    }, 3000); // 3 second maximum loading time
     
     const checkAuth = async () => {
       console.log('AuthProvider: Running checkAuth');
       
-      // Get network-aware configuration for this authentication attempt
-      const networkConfig = getNetworkConfig();
-      
       // Check if we're on published domain and should use server session
       const hostname = window.location.hostname;
       console.log('AuthProvider: Current hostname:', hostname);
-      const isPublishedDomain = hostname.includes('replit.app') || 
-                               hostname.includes('replit.dev') || 
-                               hostname.includes('brandentifier.com');
-      console.log('AuthProvider: Domain check result:', { 
-        hostname, 
-        isPublishedDomain,
-        supportedDomains: ['replit.app', 'replit.dev', 'brandentifier.com']
-      });
+      const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
+      console.log('AuthProvider: Domain check result:', { hostname, isPublishedDomain });
       
       if (isPublishedDomain) {
-        console.log('AuthProvider: Production domain detected, checking server session', hostname);
-        console.log(`AuthProvider: Using ${networkConfig.connectionType} connection profile with ${networkConfig.maxRetries} retries`);
-        
-        // Enhanced retry logic with connection-aware configuration
-        let retryCount = 0;
-        
-        while (retryCount <= networkConfig.maxRetries) {
-          const startTime = Date.now();
+        console.log('AuthProvider: Replit domain detected, checking server session', hostname);
+        try {
+          console.log('AuthProvider: Fetching server session for published domain...');
+          const response = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include',
+            cache: 'no-store', // Never cache auth requests
+            headers: {
+              'Accept': 'application/json',
+            }
+          });
           
-          try {
-            console.log(`AuthProvider: Fetching server session (attempt ${retryCount + 1}/${networkConfig.maxRetries + 1})`);
-            console.log(`AuthProvider: Using ${networkConfig.requestTimeout}ms timeout for ${networkConfig.connectionType} connection`);
-            
-            const response = await fetch('/api/auth/session', {
-              method: 'GET',
-              credentials: 'include',
-              cache: 'no-store', // Never cache auth requests
-              headers: {
-                'Accept': 'application/json',
-              },
-              // Adaptive timeout based on connection type
-              signal: AbortSignal.timeout(networkConfig.requestTimeout)
-            });
+          console.log('AuthProvider: Server session response:', {
+            status: response.status,
+            ok: response.ok,
+            url: response.url
+          });
           
-            console.log('AuthProvider: Server session response:', {
-              status: response.status,
-              ok: response.ok,
-              url: response.url,
-              attempt: retryCount + 1
-            });
+          if (response.ok) {
+            const data = await response.json();
+            console.log('AuthProvider: Raw server response:', data);
             
-            if (response.ok) {
-              const data = await response.json();
-              console.log('AuthProvider: Raw server response:', data);
-              
-              // Log successful network performance
-              logNetworkPerformance('auth-session-check', startTime, networkConfig, true);
-              
-              // Handle both direct user object and wrapped {success, user} response
-              let userData;
-              if (data.success !== undefined && data.user) {
-                // Wrapped response format: {success: true, user: {...}}
-                userData = data.user;
-                console.log('AuthProvider: Unwrapped user from server response');
-              } else if (data.id || data.email) {
-                // Direct user object format
-                userData = data;
-                console.log('AuthProvider: Direct user object from server');
-              } else {
-                console.warn('AuthProvider: Unexpected server response format:', data);
-                throw new Error('Invalid session response format');
-              }
-              
-              console.log('AuthProvider: Server session found for user:', userData.email);
-              setUser(userData);
-              // Store in sessionStorage for consistency
-              sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-              return;
-            } else if (response.status === 401 || response.status === 403) {
-              // Authentication failed - don't retry
-              console.log('AuthProvider: No server session found, status:', response.status);
-              sessionStorage.removeItem('brandentifier_user');
-              break; // Exit retry loop
+            // Handle both direct user object and wrapped {success, user} response
+            let userData;
+            if (data.success !== undefined && data.user) {
+              // Wrapped response format: {success: true, user: {...}}
+              userData = data.user;
+              console.log('AuthProvider: Unwrapped user from server response');
+            } else if (data.id || data.email) {
+              // Direct user object format
+              userData = data;
+              console.log('AuthProvider: Direct user object from server');
             } else {
-              // Server error - might be worth retrying
-              console.warn(`AuthProvider: Server error (${response.status}), may retry`);
-              throw new Error(`Server responded with ${response.status}`);
-            }
-          } catch (error) {
-            // Log failed network performance
-            logNetworkPerformance('auth-session-check', startTime, networkConfig, false, error as Error);
-            
-            console.error(`AuthProvider: Error checking server session (attempt ${retryCount + 1}):`, error);
-            
-            // If this was the last retry, fall back to sessionStorage
-            if (retryCount >= networkConfig.maxRetries) {
-              console.log('AuthProvider: Max retries reached, falling back to sessionStorage check');
-              console.log(getConnectionErrorMessage(networkConfig.connectionType, false));
-              break;
+              console.warn('AuthProvider: Unexpected server response format:', data);
+              throw new Error('Invalid session response format');
             }
             
-            // Smart exponential backoff based on connection type
-            const delay = calculateRetryDelay(retryCount, networkConfig);
-            console.log(`AuthProvider: ${getConnectionErrorMessage(networkConfig.connectionType, true)}`);
-            console.log(`AuthProvider: Retrying in ${delay}ms (attempt ${retryCount + 1}/${networkConfig.maxRetries + 1})`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            retryCount++;
+            console.log('AuthProvider: Server session found for user:', userData.email);
+            setUser(userData);
+            // Store in sessionStorage for consistency
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+            return;
+          } else {
+            console.log('AuthProvider: No server session found, status:', response.status);
+            // Clear any stale sessionStorage
+            sessionStorage.removeItem('brandentifier_user');
           }
+        } catch (error) {
+          console.error('AuthProvider: Error checking server session:', error);
+          console.log('AuthProvider: Falling back to sessionStorage check');
+          // Fall back to sessionStorage check
         }
       }
       

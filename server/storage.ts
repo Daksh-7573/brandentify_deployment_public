@@ -585,8 +585,6 @@ export interface IStorage {
   assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
   getCurrentDayUserQuests(userId: number): Promise<UserQuest[]>;
   assignDailyQuestsToUser(userId: number): Promise<UserQuest[]>;
-  ensureDailyQuestsForUser(userId: number): Promise<{ careerQuests: UserQuest[], socialQuests: any[] }>;
-  getCompletedUserQuestsWithDefinitions(userId: number): Promise<UserQuest[]>;
   
   // User XP operations
   getUserXp(userId: number): Promise<UserXp | undefined>;
@@ -7114,7 +7112,9 @@ export class MemStorage implements IStorage {
 
   async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
     try {
-      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} within last 24 hours (rolling window)`);
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
       
       // Check if user_quests table exists
       const tableExists = await pool.query(`
@@ -7156,7 +7156,7 @@ export class MemStorage implements IStorage {
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
-          AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
+          AND uq.assigned_date = $2
           AND qd.type NOT IN ('social_quest', 'social_post')
           AND uq.status = 'active'
         ORDER BY 
@@ -7166,9 +7166,9 @@ export class MemStorage implements IStorage {
             ELSE 0
           END,
           uq.assigned_at DESC
-      `, [userId]);
+      `, [userId, currentDate]);
       
-      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} within last 24 hours`);
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
       
       // Add definition object for frontend compatibility (similar to social quests)
       return result.rows.map(row => ({
@@ -12435,118 +12435,6 @@ export class DatabaseStorage implements IStorage {
     return createdQuests;
   }
 
-  async ensureDailyQuestsForUser(userId: number): Promise<{ careerQuests: UserQuest[], socialQuests: any[] }> {
-    try {
-      console.log(`[db.ensureDailyQuestsForUser] Ensuring daily quests for user ${userId}`);
-      
-      // Check for existing daily quests (both career and social)
-      const existingCareerQuests = await this.getCurrentDayUserQuests(userId);
-      const existingSocialQuests = await this.getCurrentDaySocialQuests(userId);
-      
-      let careerQuests = existingCareerQuests;
-      let socialQuests = existingSocialQuests;
-      
-      // Assign new career quests if none exist for today
-      if (existingCareerQuests.length === 0) {
-        console.log(`[db.ensureDailyQuestsForUser] No career quests found, assigning new ones for user ${userId}`);
-        careerQuests = await this.assignDailyQuestsToUser(userId);
-      } else {
-        console.log(`[db.ensureDailyQuestsForUser] Found ${existingCareerQuests.length} existing career quests for user ${userId}`);
-      }
-      
-      // Assign new social quests if none exist for today
-      if (existingSocialQuests.length === 0) {
-        console.log(`[db.ensureDailyQuestsForUser] No social quests found, assigning new ones for user ${userId}`);
-        socialQuests = await this.assignDailySocialQuests(userId);
-      } else {
-        console.log(`[db.ensureDailyQuestsForUser] Found ${existingSocialQuests.length} existing social quests for user ${userId}`);
-      }
-      
-      console.log(`[db.ensureDailyQuestsForUser] ✅ Daily quests ensured for user ${userId}: ${careerQuests.length} career + ${socialQuests.length} social`);
-      
-      return {
-        careerQuests,
-        socialQuests
-      };
-    } catch (error) {
-      console.error(`[db.ensureDailyQuestsForUser] Error ensuring daily quests for user ${userId}:`, error);
-      return { careerQuests: [], socialQuests: [] };
-    }
-  }
-
-  async getCompletedUserQuestsWithDefinitions(userId: number): Promise<UserQuest[]> {
-    try {
-      console.log(`[db.getCompletedUserQuestsWithDefinitions] Fetching completed quests with definitions for user ${userId}`);
-      
-      // Check if user_quests table exists
-      const tableExists = await pool.query(`
-        SELECT EXISTS (
-          SELECT 1 FROM information_schema.tables
-          WHERE table_name = 'user_quests'
-        );
-      `);
-      
-      if (!tableExists.rows[0].exists) {
-        console.log(`[db.getCompletedUserQuestsWithDefinitions] user_quests table does not exist`);
-        return [];
-      }
-      
-      const result = await pool.query(`
-        SELECT 
-          uq.id,
-          uq.user_id as "userId",
-          uq.quest_definition_id as "questDefinitionId",
-          uq.status,
-          uq.progress,
-          uq.assigned_at as "assignedAt",
-          uq.completed_at as "completedAt",
-          uq.dismissed_reason as "dismissedReason",
-          uq.xp_earned as "xpEarned",
-          uq.badge_earned as "badgeEarned",
-          uq.week_number as "weekNumber",
-          uq.year,
-          uq.assigned_date as "assignedDate",
-          -- Quest definition fields
-          qd.title,
-          qd.description,
-          qd.type,
-          qd.target_count as "targetCount",
-          qd.target_action as "targetAction",
-          qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward",
-          qd.musk_tip as "muskTip"
-        FROM user_quests uq
-        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-        WHERE uq.user_id = $1 
-          AND uq.status = 'completed'
-        ORDER BY uq.completed_at DESC
-        LIMIT 50
-      `, [userId]);
-      
-      console.log(`[db.getCompletedUserQuestsWithDefinitions] Found ${result.rows.length} completed quests for user ${userId}`);
-      
-      // Add definition object for frontend compatibility
-      return result.rows.map(row => ({
-        ...row,
-        definition: {
-          id: row.questDefinitionId,
-          title: row.title,
-          description: row.description,
-          type: row.type,
-          targetCount: row.targetCount,
-          targetAction: row.targetAction,
-          xpReward: row.xpReward,
-          badgeReward: row.badgeReward,
-          muskTip: row.muskTip
-        }
-      }));
-    } catch (error) {
-      console.error(`[db.getCompletedUserQuestsWithDefinitions] Error fetching completed quests for user ${userId}:`, error);
-      // Return empty array to prevent cascading errors
-      return [];
-    }
-  }
-
   // Utility function to get ISO week number
   getWeekNumber(date: Date): number {
     // Create a copy of the date to avoid modifying the original
@@ -12665,7 +12553,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCurrentDaySocialQuests(userId: number): Promise<any[]> {
     try {
-      console.log(`[db.getCurrentDaySocialQuests] Fetching social quests for user ${userId} within last 24 hours (rolling window)`);
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       
       const result = await pool.query(`
         SELECT 
@@ -12682,10 +12570,10 @@ export class DatabaseStorage implements IStorage {
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
           AND qd.type IN ('social_quest', 'social_post')
-          AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
+          AND uq.assigned_date = $2
           AND uq.status = 'active'
         ORDER BY uq.assigned_at DESC
-      `, [userId]);
+      `, [userId, currentDate]);
       
       // Add definition object for frontend compatibility
       return result.rows.map(row => ({
@@ -12935,8 +12823,6 @@ export const storage = {
   assignWeeklyQuestsToUser: (userId: number) => dbStorage.assignWeeklyQuestsToUser(userId),
   getCurrentDayUserQuests: (userId: number) => dbStorage.getCurrentDayUserQuests(userId),
   assignDailyQuestsToUser: (userId: number) => dbStorage.assignDailyQuestsToUser(userId),
-  ensureDailyQuestsForUser: (userId: number) => dbStorage.ensureDailyQuestsForUser(userId),
-  getCompletedUserQuestsWithDefinitions: (userId: number) => dbStorage.getCompletedUserQuestsWithDefinitions(userId),
   
   // Social Quest method delegates
   getAllSocialQuestDefinitions: () => dbStorage.getAllSocialQuestDefinitions(),

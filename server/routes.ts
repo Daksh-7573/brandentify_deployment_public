@@ -61,10 +61,8 @@ import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
-import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute, generateCSRFTokenRoute, secureSessionExchangeRoute, legacySessionExchangeRoute } from "./auth-oauth-routes";
-import { csrfProtection, loggingRedactionMiddleware } from "./security";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -1197,11 +1195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Verify JWT token
         try {
-          const JWT_SECRET = process.env.JWT_SECRET;
-          if (!JWT_SECRET) {
-            console.error('❌ CRITICAL: JWT_SECRET missing during auth verification');
-            return res.status(500).json({ message: 'Server configuration error' });
-          }
+          const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
           const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
           console.log('✅ [AUTH-GUARD] Valid session found for user:', decoded.email);
           
@@ -7290,84 +7284,6 @@ ${extractedText.substring(0, 5000)}
   weeklyQuestScheduler.startScheduler();
   console.log("Weekly Quest Scheduler started");
 
-  // Daily Quest Scheduler API endpoints
-  apiRouter.get('/daily-quest-scheduler/status', async (req: Request, res: Response) => {
-    try {
-      const status = dailyQuestScheduler.getSchedulerStatus();
-      res.json({
-        success: true,
-        status
-      });
-    } catch (error) {
-      console.error('[Daily Scheduler API] Error getting status:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error getting scheduler status'
-      });
-    }
-  });
-
-  apiRouter.post('/daily-quest-scheduler/trigger-expiration', async (req: Request, res: Response) => {
-    try {
-      console.log('[Daily Scheduler API] Manual expiration trigger requested');
-      const expiredCount = await dailyQuestScheduler.triggerDailyExpiration();
-      
-      res.json({
-        success: true,
-        message: `Successfully expired ${expiredCount} quests`,
-        expiredCount
-      });
-    } catch (error) {
-      console.error('[Daily Scheduler API] Error triggering expiration:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error triggering daily quest expiration'
-      });
-    }
-  });
-
-  apiRouter.post('/daily-quest-scheduler/trigger-assignment', async (req: Request, res: Response) => {
-    try {
-      console.log('[Daily Scheduler API] Manual assignment trigger requested');
-      const result = await dailyQuestScheduler.triggerDailyAssignment();
-      
-      res.json({
-        success: true,
-        message: 'Daily quest assignment completed',
-        result
-      });
-    } catch (error) {
-      console.error('[Daily Scheduler API] Error triggering assignment:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error triggering daily quest assignment'
-      });
-    }
-  });
-
-  apiRouter.post('/daily-quest-scheduler/trigger-full', async (req: Request, res: Response) => {
-    try {
-      console.log('[Daily Scheduler API] Manual full process trigger requested');
-      const result = await dailyQuestScheduler.triggerFullDailyProcess();
-      
-      res.json({
-        success: true,
-        message: 'Daily quest full process completed',
-        result
-      });
-    } catch (error) {
-      console.error('[Daily Scheduler API] Error triggering full process:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error triggering daily quest full process'
-      });
-    }
-  });
-
-  // Start the daily scheduler
-  dailyQuestScheduler.startScheduler();
-  console.log("Daily Quest Scheduler started");
-
   // Post Suggestion routes
   apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
     try {
@@ -7417,17 +7333,6 @@ ${extractedText.substring(0, 5000)}
   // Custom OAuth routes (bypasses Firebase blocked routes) - API route avoids client collision
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
-  app.get("/api/auth/me", getCurrentUserRoute); // Get current authenticated user
-  
-  // CSRF Token endpoint - provides tokens for secure auth operations
-  app.get("/api/auth/csrf", generateCSRFTokenRoute);
-  
-  // SECURE session exchange (POST with CSRF protection)
-  app.post("/api/auth/session/exchange", csrfProtection, secureSessionExchangeRoute);
-  
-  // Legacy GET endpoint - returns 405 Method Not Allowed for security
-  app.get("/api/auth/session/accept", legacySessionExchangeRoute); // DEPRECATED: Returns 405
-  app.get("/api/auth/session/exchange", legacySessionExchangeRoute); // DEPRECATED: Returns 405
   
   // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
   app.get('/auth-callback', (req: Request, res: Response) => {
@@ -7443,7 +7348,7 @@ ${extractedText.substring(0, 5000)}
   });
   
   app.get("/api/auth/session", checkSessionRoute);
-  // Legacy endpoint removed - frontend uses /api/auth/session/accept instead
+  app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed

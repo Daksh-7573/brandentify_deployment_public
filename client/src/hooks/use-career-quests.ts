@@ -1,5 +1,4 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
 import { QuestDefinition, UserQuest, UserXp, UserBadge, XpTransaction } from '@/types/career-quest';
 import { queryClient } from '@/lib/queryClient';
 
@@ -327,7 +326,7 @@ export const useUserDailySocialQuests = (userId?: number) => {
   });
 };
 
-// Combined daily quests (both career and social) with auto-ensure functionality
+// Combined daily quests (both career and social)
 export const useUserCombinedDailyQuests = (userId?: number) => {
   const {
     data: careerQuests,
@@ -343,9 +342,6 @@ export const useUserCombinedDailyQuests = (userId?: number) => {
     refetch: refetchSocial
   } = useUserDailySocialQuests(userId);
   
-  const ensureDailyQuests = useEnsureDailyQuests();
-  const hasTriedEnsure = useRef(false);
-  
   const isLoading = isLoadingCareer || isLoadingSocial;
   const error = careerError || socialError;
   
@@ -355,39 +351,6 @@ export const useUserCombinedDailyQuests = (userId?: number) => {
     ...(socialQuests || []).map(quest => ({ ...quest, questType: 'social' }))
   ];
   
-  // Auto-ensure logic: if both queries have completed successfully but returned empty arrays,
-  // and we haven't called ensure yet, call it automatically
-  useEffect(() => {
-    const shouldEnsure = !isLoading && 
-                        !error && 
-                        userId && 
-                        combinedQuests.length === 0 && 
-                        !ensureDailyQuests.isPending &&
-                        !hasTriedEnsure.current;
-    
-    if (shouldEnsure) {
-      console.log(`[AUTO-ENSURE] No daily quests found for user ${userId}, calling ensure endpoint`);
-      hasTriedEnsure.current = true;
-      
-      ensureDailyQuests.mutate({ userId }, {
-        onSuccess: () => {
-          console.log(`[AUTO-ENSURE] Daily quests ensured for user ${userId}, refetching data`);
-          // Refetch will happen automatically due to query invalidation in mutation
-        },
-        onError: (error) => {
-          console.error(`[AUTO-ENSURE] Failed to ensure daily quests for user ${userId}:`, error);
-          // Reset the flag so we can try again later
-          hasTriedEnsure.current = false;
-        }
-      });
-    }
-  }, [isLoading, error, userId, combinedQuests.length, ensureDailyQuests]);
-  
-  // Reset the flag when userId changes 
-  useEffect(() => {
-    hasTriedEnsure.current = false;
-  }, [userId]);
-  
   const refetch = () => {
     refetchCareer();
     refetchSocial();
@@ -395,8 +358,8 @@ export const useUserCombinedDailyQuests = (userId?: number) => {
   
   return {
     data: combinedQuests,
-    isLoading: isLoading || ensureDailyQuests.isPending,
-    error: error || ensureDailyQuests.error,
+    isLoading,
+    error,
     refetch
   };
 };
@@ -434,49 +397,6 @@ export const useAssignDailyQuests = () => {
       });
       queryClient.invalidateQueries({ 
         queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] 
-      });
-    }
-  });
-};
-
-// Ensure daily quests for user (on-demand assignment)
-export const useEnsureDailyQuests = () => {
-  return useMutation({
-    mutationFn: async ({ userId }: { userId: number }) => {
-      const res = await fetch(`/api/users/${userId}/quests/daily/ensure`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!res.ok) {
-        const text = await res.text();
-        try {
-          const errorJson = JSON.parse(text);
-          throw new Error(errorJson.message || 'Failed to ensure daily quests');
-        } catch (e) {
-          throw new Error(`Failed to ensure daily quests: ${text.slice(0, 100)}`);
-        }
-      }
-      return res.json() as Promise<{careerQuests: UserQuest[], socialQuests: any[]}>;
-    },
-    onSuccess: (data, variables) => {
-      // Invalidate all quest caches to show new quests
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests/current-day`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/social-quests/current-day`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/social-quests-with-definitions`] 
       });
     }
   });
