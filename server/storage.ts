@@ -12740,6 +12740,7 @@ export const storage = {
   ...dbStorage,
   
   // User methods
+  getAllUsers: () => dbStorage.getAllUsers(),
   getUser: (id: number) => dbStorage.getUser(id),
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
   getUserByGoogleId: (googleId: string) => dbStorage.getUserByGoogleId(googleId),
