@@ -1,4 +1,11 @@
 import { createContext, useState, useEffect, ReactNode, useRef } from "react";
+import { 
+  getNetworkConfig, 
+  calculateRetryDelay, 
+  getConnectionErrorMessage, 
+  logNetworkPerformance,
+  type NetworkConfig 
+} from "../utils/network-detection";
 
 // Simple auth user type
 type AuthUser = {
@@ -39,17 +46,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
     
-    // Failsafe timeout to prevent infinite loading - cleared when auth check completes
+    // Get network-aware configuration for adaptive timeouts
+    const networkConfig = getNetworkConfig();
+    console.log('AuthProvider: Network configuration:', {
+      connectionType: networkConfig.connectionType,
+      requestTimeout: `${networkConfig.requestTimeout}ms`,
+      failsafeTimeout: `${networkConfig.failsafeTimeout}ms`,
+      maxRetries: networkConfig.maxRetries
+    });
+    
+    // Connection-aware failsafe timeout to prevent infinite loading
     timeoutRef.current = setTimeout(() => {
       if (loadingRef.current) {
-        console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
+        console.warn(`AuthProvider: Failsafe timeout (${networkConfig.failsafeTimeout}ms) - forcing loading to false`);
         setIsLoading(false);
         loadingRef.current = false;
       }
-    }, 10000); // 10 second maximum loading time for better network resilience
+    }, networkConfig.failsafeTimeout);
     
     const checkAuth = async () => {
       console.log('AuthProvider: Running checkAuth');
+      
+      // Get network-aware configuration for this authentication attempt
+      const networkConfig = getNetworkConfig();
       
       // Check if we're on published domain and should use server session
       const hostname = window.location.hostname;
@@ -65,13 +84,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (isPublishedDomain) {
         console.log('AuthProvider: Production domain detected, checking server session', hostname);
-        // Retry logic for better network resilience
-        let retryCount = 0;
-        const maxRetries = 2;
+        console.log(`AuthProvider: Using ${networkConfig.connectionType} connection profile with ${networkConfig.maxRetries} retries`);
         
-        while (retryCount <= maxRetries) {
+        // Enhanced retry logic with connection-aware configuration
+        let retryCount = 0;
+        
+        while (retryCount <= networkConfig.maxRetries) {
+          const startTime = Date.now();
+          
           try {
-            console.log(`AuthProvider: Fetching server session for published domain... (attempt ${retryCount + 1})`);
+            console.log(`AuthProvider: Fetching server session (attempt ${retryCount + 1}/${networkConfig.maxRetries + 1})`);
+            console.log(`AuthProvider: Using ${networkConfig.requestTimeout}ms timeout for ${networkConfig.connectionType} connection`);
+            
             const response = await fetch('/api/auth/session', {
               method: 'GET',
               credentials: 'include',
@@ -79,8 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               headers: {
                 'Accept': 'application/json',
               },
-              // Add timeout for individual requests
-              signal: AbortSignal.timeout(8000) // 8 second timeout per request
+              // Adaptive timeout based on connection type
+              signal: AbortSignal.timeout(networkConfig.requestTimeout)
             });
           
             console.log('AuthProvider: Server session response:', {
@@ -93,6 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (response.ok) {
               const data = await response.json();
               console.log('AuthProvider: Raw server response:', data);
+              
+              // Log successful network performance
+              logNetworkPerformance('auth-session-check', startTime, networkConfig, true);
               
               // Handle both direct user object and wrapped {success, user} response
               let userData;
@@ -125,17 +152,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               throw new Error(`Server responded with ${response.status}`);
             }
           } catch (error) {
+            // Log failed network performance
+            logNetworkPerformance('auth-session-check', startTime, networkConfig, false, error as Error);
+            
             console.error(`AuthProvider: Error checking server session (attempt ${retryCount + 1}):`, error);
             
             // If this was the last retry, fall back to sessionStorage
-            if (retryCount >= maxRetries) {
+            if (retryCount >= networkConfig.maxRetries) {
               console.log('AuthProvider: Max retries reached, falling back to sessionStorage check');
+              console.log(getConnectionErrorMessage(networkConfig.connectionType, false));
               break;
             }
             
-            // Wait before retry (exponential backoff)
-            const delay = Math.min(1000 * Math.pow(2, retryCount), 3000);
-            console.log(`AuthProvider: Retrying in ${delay}ms...`);
+            // Smart exponential backoff based on connection type
+            const delay = calculateRetryDelay(retryCount, networkConfig);
+            console.log(`AuthProvider: ${getConnectionErrorMessage(networkConfig.connectionType, true)}`);
+            console.log(`AuthProvider: Retrying in ${delay}ms (attempt ${retryCount + 1}/${networkConfig.maxRetries + 1})`);
             await new Promise(resolve => setTimeout(resolve, delay));
             retryCount++;
           }
