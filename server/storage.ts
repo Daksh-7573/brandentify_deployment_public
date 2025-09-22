@@ -7112,9 +7112,7 @@ export class MemStorage implements IStorage {
 
   async getCurrentDayUserQuests(userId: number): Promise<UserQuest[]> {
     try {
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      
-      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} within last 24 hours (rolling window)`);
       
       // Check if user_quests table exists
       const tableExists = await pool.query(`
@@ -7156,7 +7154,7 @@ export class MemStorage implements IStorage {
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
-          AND uq.assigned_date = $2
+          AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
           AND qd.type NOT IN ('social_quest', 'social_post')
           AND uq.status = 'active'
         ORDER BY 
@@ -7166,9 +7164,9 @@ export class MemStorage implements IStorage {
             ELSE 0
           END,
           uq.assigned_at DESC
-      `, [userId, currentDate]);
+      `, [userId]);
       
-      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} within last 24 hours`);
       
       // Add definition object for frontend compatibility (similar to social quests)
       return result.rows.map(row => ({
@@ -12553,7 +12551,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCurrentDaySocialQuests(userId: number): Promise<any[]> {
     try {
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      console.log(`[db.getCurrentDaySocialQuests] Fetching social quests for user ${userId} within last 24 hours (rolling window)`);
       
       const result = await pool.query(`
         SELECT 
@@ -12570,10 +12568,10 @@ export class DatabaseStorage implements IStorage {
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
           AND qd.type IN ('social_quest', 'social_post')
-          AND uq.assigned_date = $2
+          AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
           AND uq.status = 'active'
         ORDER BY uq.assigned_at DESC
-      `, [userId, currentDate]);
+      `, [userId]);
       
       // Add definition object for frontend compatibility
       return result.rows.map(row => ({

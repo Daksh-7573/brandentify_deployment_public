@@ -1666,13 +1666,11 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         return res.status(400).json({ message: 'Invalid bucket. Must be daily, completed, or missed' });
       }
       
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      
       let socialQuestsWithDefinitions = [];
       
-      // Query based on bucket type for social quests
+      // Query based on bucket type for social quests  
       if (bucket === 'daily') {
-        // Active social quests assigned today
+        // Active social quests assigned within last 24 hours (rolling window)
         const result = await db.execute(sql`
           SELECT 
             uq.id,
@@ -1698,7 +1696,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           FROM user_quests uq
           JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
           WHERE uq.user_id = ${userId} 
-            AND uq.assigned_date = ${currentDate}
+            AND uq.assigned_at >= NOW() - INTERVAL '24 hours'
             AND uq.status = 'active'
             AND EXISTS (
               SELECT 1 FROM user_social_quests usq 
