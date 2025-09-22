@@ -1,7 +1,8 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique, index } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { sql } from 'drizzle-orm';
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
 // User model  
@@ -1638,3 +1639,25 @@ export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignme
 
 export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
 export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
+
+// Session storage table for Replit Auth
+// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// Auth data for Replit integration
+export interface UpsertUserReplitData {
+  email?: string | null;
+  name?: string | null;
+  photoURL?: string | null;
+  firebaseUid?: string | null; // Repurposed for Replit ID
+  authProvider?: string;
+  lastLoginAt?: Date;
+}
