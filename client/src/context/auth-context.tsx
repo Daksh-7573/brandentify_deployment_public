@@ -341,16 +341,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }, 1000);
       
-    } catch (popupError) {
-      // If popup fails completely, use redirect
-      console.log('Popup failed, using redirect method:', popupError);
-      const redirectResponse = await fetch('/api/auth/google/url');
-      const redirectData = await redirectResponse.json();
-      window.location.href = redirectData.oauthUrl;
-      return;
-    }
-      
     } catch (error: any) {
+      // If popup fails, try redirect method first
+      if (error.message && error.message.includes('popup')) {
+        console.log('Popup failed, using redirect method:', error);
+        try {
+          const redirectResponse = await fetch('/api/auth/google/url');
+          const redirectData = await redirectResponse.json();
+          window.location.href = redirectData.oauthUrl;
+          return;
+        } catch (redirectError) {
+          console.error('Redirect fallback also failed:', redirectError);
+        }
+      }
       console.error("[Auth Context] Google sign-in error:", {
         errorMessage: error.message,
         errorStack: error.stack,
