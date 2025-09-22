@@ -8,6 +8,8 @@ import { Request, Response } from "express";
 import { storage } from "./storage";
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+import { generateCSRFToken, verifyCSRFToken } from './security';
 
 // Google OAuth URLs
 const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -296,7 +298,195 @@ export async function getCurrentUserRoute(req: Request, res: Response) {
 }
 
 /**
+ * Generate CSRF token for client-side auth operations
+ */
+export async function generateCSRFTokenRoute(req: Request, res: Response) {
+  try {
+    // Extract session ID from cookie if available for token binding
+    let sessionId = 'anonymous';
+    const sessionCookie = req.cookies?.brandentifier_session;
+    
+    if (sessionCookie && JWT_SECRET) {
+      try {
+        const decoded = jwt.verify(sessionCookie, VERIFIED_JWT_SECRET) as any;
+        sessionId = decoded.userId?.toString() || decoded.id?.toString() || 'authenticated';
+      } catch (error) {
+        // Continue with anonymous binding if session is invalid
+      }
+    }
+    
+    const csrfToken = generateCSRFToken(sessionId);
+    
+    // Set CSRF token in cookie for double-submit pattern
+    res.cookie('XSRF-TOKEN', csrfToken, {
+      httpOnly: false, // Client needs to read this for header
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 60 * 1000 // 30 minutes
+    });
+    
+    // Also return in response body
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({
+      success: true,
+      csrfToken
+    });
+    
+  } catch (error: any) {
+    console.error('❌ [CSRF-TOKEN] Generation error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to generate CSRF token' 
+    });
+  }
+}
+
+// Validation schema for secure session exchange
+const sessionExchangeSchema = z.object({
+  code: z.string().min(1, 'Exchange code is required'),
+  csrfToken: z.string().min(1, 'CSRF token is required')
+});
+
+/**
+ * Accept session exchange code - SECURE POST endpoint with CSRF protection
+ */
+export async function secureSessionExchangeRoute(req: Request, res: Response) {
+  try {
+    console.log('🔄 [SECURE-SESSION-EXCHANGE] Processing secure session exchange...');
+    
+    // Validate request body
+    const validation = sessionExchangeSchema.safeParse(req.body);
+    if (!validation.success) {
+      console.log('❌ [SECURE-SESSION-EXCHANGE] Invalid request body:', validation.error.errors);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Invalid request body',
+        details: validation.error.errors
+      });
+    }
+    
+    const { code, csrfToken } = validation.data;
+    
+    // Verify CSRF token (additional layer - middleware should have caught this)
+    const sessionCookie = req.cookies?.brandentifier_session;
+    let sessionId = 'anonymous';
+    if (sessionCookie && JWT_SECRET) {
+      try {
+        const decoded = jwt.verify(sessionCookie, VERIFIED_JWT_SECRET) as any;
+        sessionId = decoded.userId?.toString() || decoded.id?.toString() || 'authenticated';
+      } catch (error) {
+        // Continue with anonymous binding
+      }
+    }
+    
+    if (!verifyCSRFToken(csrfToken, sessionId)) {
+      console.log('❌ [SECURE-SESSION-EXCHANGE] CSRF token validation failed');
+      return res.status(403).json({ 
+        success: false, 
+        error: 'Invalid CSRF token' 
+      });
+    }
+
+    // Get session data from exchange store
+    const sessionData = sessionExchangeStore.get(code);
+    
+    if (!sessionData) {
+      console.log('❌ [SECURE-SESSION-EXCHANGE] Invalid or expired exchange code');
+      return res.status(401).json({ success: false, error: 'Invalid or expired exchange code' });
+    }
+    
+    // Check if code is expired (2 minutes - shortened for security)
+    const codeAge = Date.now() - sessionData.timestamp;
+    if (codeAge > 2 * 60 * 1000) {
+      console.log('❌ [SECURE-SESSION-EXCHANGE] Exchange code expired');
+      sessionExchangeStore.delete(code); // Clean up expired code
+      return res.status(401).json({ success: false, error: 'Exchange code expired' });
+    }
+    
+    // Verify IP and User-Agent binding for additional security
+    const clientIP = req.ip || req.connection.remoteAddress;
+    const clientUA = req.get('User-Agent');
+    
+    if (sessionData.ip && clientIP && sessionData.ip !== clientIP) {
+      console.warn(`⚠️ [SECURE-SESSION-EXCHANGE] IP mismatch: expected ${sessionData.ip}, got ${clientIP}`);
+      sessionExchangeStore.delete(code);
+      return res.status(403).json({ success: false, error: 'Security validation failed' });
+    }
+    
+    if (sessionData.userAgent && clientUA && sessionData.userAgent !== clientUA) {
+      console.warn('⚠️ [SECURE-SESSION-EXCHANGE] User-Agent mismatch');
+      sessionExchangeStore.delete(code);
+      return res.status(403).json({ success: false, error: 'Security validation failed' });
+    }
+    
+    // Delete the code immediately (one-time use)
+    sessionExchangeStore.delete(code);
+    
+    // Get user data from database
+    const userData = await storage.getUserById(sessionData.userId);
+    if (!userData) {
+      console.log('❌ [SECURE-SESSION-EXCHANGE] User not found in database');
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    
+    // Set secure session cookie
+    const currentHost = req.get('host') || 'localhost';
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      domain: currentHost.includes('brandentifier.com') 
+        ? '.brandentifier.com' 
+        : undefined
+    };
+    
+    res.cookie('brandentifier_session', sessionData.sessionToken, cookieOptions);
+    
+    console.log('✅ [SECURE-SESSION-EXCHANGE] Session handoff completed successfully');
+    console.log('✅ [SECURE-SESSION-EXCHANGE] User ID:', sessionData.userId);
+    
+    // Return user data (never return tokens)
+    res.json({
+      success: true,
+      user: {
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL,
+        username: userData.username
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('❌ [SECURE-SESSION-EXCHANGE] Critical error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+}
+
+/**
+ * Legacy GET endpoint handler - returns 405 Method Not Allowed
+ */
+export async function legacySessionExchangeRoute(req: Request, res: Response) {
+  console.warn(`⚠️ [LEGACY-SESSION-EXCHANGE] Blocked insecure GET request from ${req.ip}`);
+  
+  res.status(405)
+    .set('Allow', 'POST')
+    .set('Cache-Control', 'no-store')
+    .json({
+      success: false,
+      error: 'Method not allowed. Use POST /api/auth/session/exchange instead',
+      code: 'METHOD_NOT_ALLOWED',
+      allowedMethods: ['POST']
+    });
+}
+
+/**
  * Accept session exchange code - handles cross-domain session transfer
+ * @deprecated Use secureSessionExchangeRoute instead
  */
 export async function acceptSessionExchangeRoute(req: Request, res: Response) {
   try {

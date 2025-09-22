@@ -62,7 +62,8 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute, generateCSRFTokenRoute, secureSessionExchangeRoute, legacySessionExchangeRoute } from "./auth-oauth-routes";
+import { csrfProtection, loggingRedactionMiddleware } from "./security";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7338,7 +7339,16 @@ ${extractedText.substring(0, 5000)}
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
   app.get("/api/auth/me", getCurrentUserRoute); // Get current authenticated user
-  app.get("/api/auth/session/accept", acceptSessionExchangeRoute); // Accept cross-domain session exchange
+  
+  // CSRF Token endpoint - provides tokens for secure auth operations
+  app.get("/api/auth/csrf", generateCSRFTokenRoute);
+  
+  // SECURE session exchange (POST with CSRF protection)
+  app.post("/api/auth/session/exchange", csrfProtection, secureSessionExchangeRoute);
+  
+  // Legacy GET endpoint - returns 405 Method Not Allowed for security
+  app.get("/api/auth/session/accept", legacySessionExchangeRoute); // DEPRECATED: Returns 405
+  app.get("/api/auth/session/exchange", legacySessionExchangeRoute); // DEPRECATED: Returns 405
   
   // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
   app.get('/auth-callback', (req: Request, res: Response) => {
