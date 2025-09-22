@@ -87,66 +87,51 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // 🚀 CRITICAL FIX: COMPLETE AUTH BYPASS - Never intercept ANY authentication-related routes
-  const isAuthRoute = url.pathname.startsWith('/auth/') || 
-                     url.pathname.startsWith('/__/auth/') || 
-                     url.pathname === '/auth-callback' || 
-                     url.pathname.startsWith('/api/auth/') ||
-                     url.pathname.startsWith('/oauth') ||
-                     url.pathname.includes('callback');
+  // 🚀 CRITICAL FIX: COMPLETE API BYPASS - Never intercept ANY /api/* requests 
+  const isApiRoute = url.pathname.startsWith('/api/');
   
-  if (isAuthRoute) {
-    console.log('[SW v6] 🚀 AUTHENTICATION ROUTE BYPASS - Direct to server:', request.url);
-    console.log('[SW v6] 🔍 Route details:', {
+  if (isApiRoute) {
+    console.log('[SW v8] 🚀 API ROUTE BYPASS - Direct to server:', request.url);
+    console.log('[SW v8] 🔍 Route details:', {
       pathname: url.pathname,
       method: request.method,
       mode: request.mode,
       credentials: request.credentials
     });
     
-    // COMPLETE BYPASS - No service worker interference
-    event.respondWith(
-      fetch(request, { 
-        cache: 'no-store', // Never cache auth requests
-        credentials: 'include', // Include cookies for sessions
-        redirect: 'follow' // Allow OAuth redirects
-      }).then(response => {
-        console.log('[SW v6] ✅ Auth request successful:', response.status, response.url);
-        return response;
-      }).catch(error => {
-        console.error('[SW v6] ❌ Auth request failed:', error);
-        return new Response('Authentication Error - Please try again', {
-          status: 503,
-          headers: { 'Content-Type': 'text/html' }
-        });
-      })
-    );
-    return;
+    // COMPLETE BYPASS - No service worker interference whatsoever
+    return; // Let the request go directly to network with zero SW interference
   }
   
-  // ⚠️ CRITICAL FIX: Enhanced navigation handling for published domains
+  // ⚠️ CRITICAL FIX: Enhanced navigation handling - NEVER intercept /api/* navigations
   if (request.mode === 'navigate') {
-    console.log('[SW v6] 🧭 Navigation request - checking for auth context:', request.url);
+    // CRITICAL: If navigation is to /api/* route, let it pass directly to server
+    if (url.pathname.startsWith('/api/')) {
+      console.log('[SW v8] 🚀 API NAVIGATION BYPASS - Direct to server:', request.url);
+      return; // Complete bypass for API routes
+    }
+    
+    console.log('[SW v8] 🧭 Navigation request - checking for auth context:', request.url);
     
     // Enhanced logging for published domain debugging
     const isPublishedDomain = url.hostname.includes('replit.app');
-    console.log('[SW v6] 🌐 Domain context:', {
+    console.log('[SW v8] 🌐 Domain context:', {
       hostname: url.hostname,
       isPublished: isPublishedDomain,
       pathname: url.pathname
     });
     
-    // NEVER intercept navigation requests - prevents redirect loops
+    // For non-API navigations, handle normally
     event.respondWith(
       fetch(request, { 
         cache: 'no-store', // Force fresh request
         credentials: 'include', // Include cookies for auth
         redirect: 'follow' // Allow redirects
       }).then(response => {
-        console.log('[SW v6] ✅ Navigation successful:', response.status, response.url);
+        console.log('[SW v8] ✅ Navigation successful:', response.status, response.url);
         return response;
       }).catch(error => {
-        console.error('[SW v6] ❌ Navigation failed:', error);
+        console.error('[SW v8] ❌ Navigation failed:', error);
         return new Response('<!DOCTYPE html><html><body><h1>Network Error</h1><p>Please check your connection and try again.</p></body></html>', {
           status: 503,
           headers: { 'Content-Type': 'text/html' }
@@ -191,31 +176,7 @@ self.addEventListener('fetch', event => {
     );
   }
   
-  // 🚀 CRITICAL FIX: COMPLETE API BYPASS - Never cache API responses to prevent stale data
-  else if (request.url.includes('/api/')) {
-    console.log('[SW v6] 🚀 API ROUTE BYPASS - Direct to server (no cache):', request.url);
-    
-    // COMPLETE BYPASS - No service worker caching interference
-    event.respondWith(
-      fetch(request, { 
-        cache: 'no-store', // Never cache API requests
-        credentials: 'include' // Include cookies for sessions
-      }).then(response => {
-        console.log('[SW v6] ✅ API request successful:', response.status, request.url);
-        return response;
-      }).catch(error => {
-        console.error('[SW v6] ❌ API request failed:', error);
-        return new Response(JSON.stringify({ 
-          error: 'API request failed', 
-          message: 'Please check your connection and try again',
-          timestamp: new Date().toISOString()
-        }), {
-          status: 503,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      })
-    );
-  }
+  // API routes are already handled by the bypass above, no need for additional handling
   
   // Runtime caching for dynamic content
   else if (RUNTIME_CACHE_PATTERNS.some(pattern => pattern.test(request.url))) {
