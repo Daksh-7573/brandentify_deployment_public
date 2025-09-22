@@ -878,14 +878,38 @@ export async function acceptSessionRoute(req: Request, res: Response) {
       return res.redirect('/auth?error=exchange_code_expired&message=Authentication%20session%20expired.%20Please%20try%20signing%20in%20again.&canRetry=true');
     }
     
-    // Validate that we're on the correct return host
+    // Enhanced security validation: Host, User-Agent, and IP verification
     const currentHost = req.get('host') || '';
+    const currentUserAgent = req.get('User-Agent') || '';
+    const currentIP = req.ip || req.connection.remoteAddress || '';
+    
     if (exchangeData.returnHost !== currentHost) {
       console.error('❌ [SESSION-ACCEPT] Host mismatch:', {
         expectedHost: exchangeData.returnHost,
         actualHost: currentHost
       });
+      sessionExchangeStore.delete(code); // Security: Remove on failed validation
       return res.redirect('/auth?error=host_mismatch&message=Authentication%20domain%20mismatch.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    // Validate User-Agent consistency (if captured during exchange)
+    if (exchangeData.userAgent && exchangeData.userAgent !== currentUserAgent) {
+      console.error('❌ [SESSION-ACCEPT] User-Agent mismatch (potential security issue):', {
+        expectedUA: exchangeData.userAgent?.substring(0, 50) + '...',
+        actualUA: currentUserAgent?.substring(0, 50) + '...'
+      });
+      sessionExchangeStore.delete(code); // Security: Remove on failed validation
+      return res.redirect('/auth?error=security_mismatch&message=Security%20validation%20failed.%20Please%20try%20signing%20in%20again.&canRetry=true');
+    }
+    
+    // Validate IP consistency (if captured during exchange) - allow some flexibility for proxy scenarios
+    if (exchangeData.ip && exchangeData.ip !== currentIP) {
+      console.warn('⚠️ [SESSION-ACCEPT] IP address changed during session exchange:', {
+        expectedIP: exchangeData.ip,
+        actualIP: currentIP,
+        note: 'This may be normal for mobile/proxy users'
+      });
+      // Continue but log for monitoring - IP changes can be legitimate
     }
     
     console.log('✅ [SESSION-ACCEPT] Exchange code valid, setting session cookie');
