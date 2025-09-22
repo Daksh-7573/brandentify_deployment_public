@@ -205,10 +205,10 @@ export default function TimelineStoryteller2({
 
 
   return (
-    <div className="timeline-storyteller-2 relative bg-gray-50 pb-20">
+    <div className="timeline-storyteller-2 relative bg-gray-50">
       
       {/* Animated Dot Navigator (side navigation) */}
-      <div className="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
+      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
         <div className="flex flex-col space-y-4 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg">
           {Object.keys(chapterRefs).map((section) => {
             // Direct click handler that also updates the active chapter
@@ -257,7 +257,7 @@ export default function TimelineStoryteller2({
       <section 
         id="hero" 
         ref={chapterRefs.hero} 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 px-4 md:px-6 py-24"
+        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50"
         onClick={() => setActiveChapter('hero')}
       >
         {/* Background decorative elements */}
@@ -268,7 +268,7 @@ export default function TimelineStoryteller2({
           </div>
         </div>
 
-        <div className="relative z-10 max-w-4xl w-full text-center">
+        <div className="relative z-10 max-w-4xl w-full text-center mx-auto flex flex-col justify-center min-h-[70vh]">
           {/* Profile photo with floating animation */}
           <div className="animate-float mb-8 inline-block relative">
             {/* Glow effect behind profile picture */}
@@ -437,7 +437,7 @@ export default function TimelineStoryteller2({
         <section 
           id="services" 
           ref={chapterRefs.services}
-          className="py-24 px-4 md:px-6 bg-gradient-to-b from-white to-blue-50 min-h-[90vh] relative"
+          className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-white to-blue-50"
           onClick={() => setActiveChapter('services')}
         >
           <div className="mx-auto max-w-4xl relative z-10">
@@ -512,7 +512,7 @@ export default function TimelineStoryteller2({
       <section 
         id="projects" 
         ref={chapterRefs.projects}
-        className="py-24 px-4 md:px-6 bg-gradient-to-b from-blue-50 to-purple-50 min-h-[90vh]"
+        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-blue-50 to-purple-50"
         onClick={() => setActiveChapter('projects')}
       >
         <div className="mx-auto max-w-4xl">
@@ -628,7 +628,7 @@ export default function TimelineStoryteller2({
       <section 
         id="career" 
         ref={chapterRefs.career}
-        className="py-24 px-4 md:px-6 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-[90vh]"
+        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-purple-50 to-indigo-50"
         onClick={() => setActiveChapter('career')}
       >
         <div className="mx-auto max-w-4xl">
@@ -639,8 +639,9 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Career Path</h2>
           </div>
           
-          {/* Experience timeline */}
-          <div className="relative mt-12 animate-fade-in">
+          {/* Career content */}
+          <div className="relative">
+            <div className="relative animate-fade-in">
             {/* Timeline vertical line */}
             <div className="timeline-vertical-line absolute top-0 bottom-0 h-full"></div>
             
@@ -741,6 +742,7 @@ export default function TimelineStoryteller2({
                 </div>
               )}
             </div>
+            </div>
           </div>
         </div>
       </section>
@@ -749,7 +751,7 @@ export default function TimelineStoryteller2({
       <section 
         id="education" 
         ref={chapterRefs.education}
-        className="py-24 px-4 md:px-8 bg-gradient-to-b from-indigo-50 to-pink-50 min-h-[90vh]"
+        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-indigo-50 to-pink-50"
         onClick={() => setActiveChapter('education')}
       >
         <div className="mx-auto max-w-4xl">
