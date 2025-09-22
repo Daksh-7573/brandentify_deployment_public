@@ -62,7 +62,7 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
