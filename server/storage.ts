@@ -563,6 +563,7 @@ export interface IStorage {
   
   // User Quest operations
   getUserQuestsByUserId(userId: number): Promise<UserQuest[]>;
+  getUserQuestsWithDefinitions(userId: number): Promise<any[]>;
   getUserQuestById(id: number): Promise<UserQuest | undefined>;
   getActiveUserQuests(userId: number): Promise<UserQuest[]>;
   getCompletedUserQuests(userId: number): Promise<UserQuest[]>;
@@ -12547,6 +12548,45 @@ export class DatabaseStorage implements IStorage {
       }));
     } catch (error) {
       console.error(`[db.getUserSocialQuestsWithDefinitions] Error fetching social quests with definitions for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getUserQuestsWithDefinitions(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.assigned_at as "assignedAt", 
+          uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
+          uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND qd.type NOT IN ('social_quest', 'social_post')
+        ORDER BY uq.assigned_at DESC
+      `, [userId]);
+      
+      // Add definition object for frontend compatibility
+      return result.rows.map(row => ({
+        ...row,
+        definition: {
+          id: row.questDefinitionId,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          targetCount: row.targetCount,
+          targetAction: row.targetAction,
+          xpReward: row.xpReward,
+          badgeReward: row.badgeReward,
+          muskTip: row.muskTip
+        }
+      }));
+    } catch (error) {
+      console.error(`[db.getUserQuestsWithDefinitions] Error fetching regular quests with definitions for user ${userId}:`, error);
       return [];
     }
   }
