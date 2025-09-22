@@ -364,36 +364,43 @@ export async function setupSecurity(app: any) {
     })
   );
   
-  // 2. Set up CORS with whitelisted origins
+  // 2. Set up CORS with whitelisted origins - SECURITY FIXED
   const corsOptions = {
     origin: function (origin: any, callback: any) {
       // Debug logging
-      console.log(`CORS: Checking origin: ${origin}`);
-      console.log(`CORS: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
-      console.log(`CORS: NODE_ENV: ${process.env.NODE_ENV}`);
+      console.log(`CORS Security: Checking origin: ${origin}`);
+      console.log(`CORS Security: ALLOWED_ORIGINS:`, ALLOWED_ORIGINS);
+      console.log(`CORS Security: NODE_ENV: ${process.env.NODE_ENV}`);
       
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) {
-        console.log('CORS: Allowing request with no origin');
+        console.log('CORS Security: Allowing request with no origin');
         return callback(null, true);
       }
       
       // Allow all Replit domains and development
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
-        console.log('CORS: Origin found in ALLOWED_ORIGINS');
+        console.log('CORS Security: Origin found in ALLOWED_ORIGINS');
         callback(null, true);
       } else if (process.env.NODE_ENV === 'development') {
-        console.log('CORS: Allowing due to development mode');
+        console.log('CORS Security: Allowing due to development mode');
         callback(null, true);
       } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
-        console.log('CORS: Allowing Replit domain');
+        console.log('CORS Security: Allowing Replit domain');
         callback(null, true);
       } else {
-        console.log(`CORS: Rejecting origin: ${origin}`);
+        console.log(`CORS Security: Rejecting origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
-    credentials: true,
+    credentials: function (req: any, callback: any) {
+      // CRITICAL FIX: Only allow credentials when we have a specific origin
+      // Never allow credentials with wildcard origin (security violation)
+      const origin = req.get('origin');
+      const allowCredentials = !!origin; // Only true if origin exists
+      console.log(`CORS Security: Credentials allowed: ${allowCredentials} for origin: ${origin}`);
+      callback(null, allowCredentials);
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']
   };

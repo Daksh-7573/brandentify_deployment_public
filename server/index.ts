@@ -71,59 +71,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS Configuration using explicit allowlist (security best practice)
-const ALLOWED_ORIGINS = [
-  'https://brandentifier.com',
-  'https://www.brandentifier.com',
-  'https://brandentifier.replit.app',
-  'http://localhost:3000',
-  'http://localhost:5000',
-  'http://127.0.0.1:5000',
-  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev'
-];
-
-app.use((req, res, next) => {
-  const origin = req.get('origin');
-  
-  console.log('CORS: Checking origin:', origin);
-  console.log('CORS: ALLOWED_ORIGINS:', ALLOWED_ORIGINS);
-  console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
-  
-  // Set CORS headers based on allowlist or for no-origin requests (direct access)
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    // Origin-specific CORS for authenticated requests
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Allowing origin:', origin);
-  } else if (!origin) {
-    // No-origin requests (direct access) - no credentials needed
-    res.header('Access-Control-Allow-Origin', '*');
-    console.log('CORS: Allowing request with no origin');
-  } else if (ALLOWED_ORIGINS.includes(origin)) {
-    // Fallback: Allow origin but log it
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Origin found in ALLOWED_ORIGINS');
-  } else {
-    console.log('CORS: Blocking unauthorized origin:', origin);
-    // For unauthorized origins, don't set CORS headers
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  
-  // Forcibly remove X-Frame-Options to allow iframe embedding
-  res.removeHeader('X-Frame-Options');
-  res.header('X-Content-Type-Options', 'nosniff');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  
-  next();
-});
+// CORS handling removed from here - now properly handled by security middleware
+// This eliminates the conflicting manual CORS setup that was overriding
+// the security middleware's proper credentials handling
 
 // 🚫 DISABLE Firebase proxies in production - they cause redirect loops
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -144,8 +94,9 @@ if (isDevelopment) {
       },
       proxyRes: (proxyRes: any, req: any, res: any) => {
         console.log(`🔥 [DEV AUTH PROXY] Response from Firebase: ${proxyRes.statusCode} for ${req.url}`);
+        // FIXED: Remove conflicting CORS credentials with wildcard origin
         proxyRes.headers['access-control-allow-origin'] = '*';
-        proxyRes.headers['access-control-allow-credentials'] = 'true';
+        // SECURITY: Never set credentials=true with wildcard origin
       },
       error: (err: any, req: any, res: any) => {
         console.error(`🚨 [DEV AUTH PROXY] Error proxying to Firebase:`, err);
