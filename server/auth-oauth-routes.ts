@@ -339,8 +339,13 @@ export async function handleGoogleOAuthPopupCallbackRoute(req: Request, res: Res
       'Surrogate-Control': 'no-store',
       'X-Auth-Handler': 'popup-only-callback',
       'X-Auth-Timestamp': new Date().toISOString(),
-      'X-Popup-Flow': 'true'
+      'X-Popup-Flow': 'true',
+      'X-Popup-Mode': 'true'
     });
+
+    // CRITICAL: Clear any session cookies that might have been set
+    res.clearCookie('session');
+    res.clearCookie('brandentifier_session');
     
     const { code, state, error } = req.query;
     
@@ -600,6 +605,7 @@ export async function handleGoogleOAuthPopupCallbackRoute(req: Request, res: Res
       <html>
       <head>
         <title>Authentication Successful</title>
+        <meta name="popup-callback" content="true">
         <style>
           body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
           .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
@@ -610,15 +616,31 @@ export async function handleGoogleOAuthPopupCallbackRoute(req: Request, res: Res
         <h2>Completing authentication...</h2>
         <div class="spinner"></div>
         <script>
-          console.log('[POPUP] Sending exchange code to opener window');
-          if (window.opener) {
+          // CRITICAL: Prevent any navigation or app loading
+          console.log('[POPUP-CALLBACK] This is a popup callback, preventing app load');
+          
+          // Block any attempts to navigate or load the main app
+          window.addEventListener('beforeunload', (e) => {
+            console.log('[POPUP-CALLBACK] Popup closing as expected');
+          });
+
+          // Prevent any router initialization
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.href);
+          }
+
+          console.log('[POPUP-CALLBACK] Sending exchange code to opener window');
+          if (window.opener && !window.opener.closed) {
             window.opener.postMessage({
               type: 'oauth:success',
               exchangeCode: '${exchangeCode}'
             }, '*');
-            setTimeout(() => window.close(), 1000);
+            console.log('[POPUP-CALLBACK] Exchange code sent, closing popup');
+            setTimeout(() => {
+              window.close();
+            }, 500);
           } else {
-            console.error('[POPUP] No opener window found');
+            console.error('[POPUP-CALLBACK] No opener window found');
             document.body.innerHTML = '<h2>Error: Unable to complete authentication</h2><p>Please close this window and try again.</p>';
           }
         </script>
