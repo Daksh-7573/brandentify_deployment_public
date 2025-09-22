@@ -57,7 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isPublishedDomain = hostname.includes('replit.app') || 
                                hostname.includes('replit.dev') || 
                                hostname.includes('brandentifier.com');
-      console.log('AuthProvider: Domain check result:', { hostname, isPublishedDomain });
+      console.log('AuthProvider: Domain check result:', { 
+        hostname, 
+        isPublishedDomain,
+        supportedDomains: ['replit.app', 'replit.dev', 'brandentifier.com']
+      });
       
       if (isPublishedDomain) {
         console.log('AuthProvider: Production domain detected, checking server session', hostname);
