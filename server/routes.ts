@@ -8223,6 +8223,29 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Quest Scheduler Test Endpoint
+  app.post('/api/test-daily-quest-scheduler', async (req: Request, res: Response) => {
+    try {
+      console.log('[DEBUG] Manual Daily Quest Scheduler Trigger');
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      
+      const result = await dailyQuestScheduler.triggerFullDailyProcess();
+      console.log('[DEBUG] Scheduler result:', result);
+      
+      res.json({
+        success: true,
+        result,
+        message: 'Daily quest assignment completed'
+      });
+    } catch (error) {
+      console.error('[DEBUG] Manual quest scheduler error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
