@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
         loadingRef.current = false;
       }
-    }, 3000); // 3 second maximum loading time
+    }, 10000); // 10 second maximum loading time for better network resilience
     
     const checkAuth = async () => {
       console.log('AuthProvider: Running checkAuth');
@@ -54,61 +54,87 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Check if we're on published domain and should use server session
       const hostname = window.location.hostname;
       console.log('AuthProvider: Current hostname:', hostname);
-      const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
+      const isPublishedDomain = hostname.includes('replit.app') || 
+                               hostname.includes('replit.dev') || 
+                               hostname.includes('brandentifier.com');
       console.log('AuthProvider: Domain check result:', { hostname, isPublishedDomain });
       
       if (isPublishedDomain) {
-        console.log('AuthProvider: Replit domain detected, checking server session', hostname);
-        try {
-          console.log('AuthProvider: Fetching server session for published domain...');
-          const response = await fetch('/api/auth/session', {
-            method: 'GET',
-            credentials: 'include',
-            cache: 'no-store', // Never cache auth requests
-            headers: {
-              'Accept': 'application/json',
-            }
-          });
+        console.log('AuthProvider: Production domain detected, checking server session', hostname);
+        // Retry logic for better network resilience
+        let retryCount = 0;
+        const maxRetries = 2;
+        
+        while (retryCount <= maxRetries) {
+          try {
+            console.log(`AuthProvider: Fetching server session for published domain... (attempt ${retryCount + 1})`);
+            const response = await fetch('/api/auth/session', {
+              method: 'GET',
+              credentials: 'include',
+              cache: 'no-store', // Never cache auth requests
+              headers: {
+                'Accept': 'application/json',
+              },
+              // Add timeout for individual requests
+              signal: AbortSignal.timeout(8000) // 8 second timeout per request
+            });
           
-          console.log('AuthProvider: Server session response:', {
-            status: response.status,
-            ok: response.ok,
-            url: response.url
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            console.log('AuthProvider: Raw server response:', data);
+            console.log('AuthProvider: Server session response:', {
+              status: response.status,
+              ok: response.ok,
+              url: response.url,
+              attempt: retryCount + 1
+            });
             
-            // Handle both direct user object and wrapped {success, user} response
-            let userData;
-            if (data.success !== undefined && data.user) {
-              // Wrapped response format: {success: true, user: {...}}
-              userData = data.user;
-              console.log('AuthProvider: Unwrapped user from server response');
-            } else if (data.id || data.email) {
-              // Direct user object format
-              userData = data;
-              console.log('AuthProvider: Direct user object from server');
+            if (response.ok) {
+              const data = await response.json();
+              console.log('AuthProvider: Raw server response:', data);
+              
+              // Handle both direct user object and wrapped {success, user} response
+              let userData;
+              if (data.success !== undefined && data.user) {
+                // Wrapped response format: {success: true, user: {...}}
+                userData = data.user;
+                console.log('AuthProvider: Unwrapped user from server response');
+              } else if (data.id || data.email) {
+                // Direct user object format
+                userData = data;
+                console.log('AuthProvider: Direct user object from server');
+              } else {
+                console.warn('AuthProvider: Unexpected server response format:', data);
+                throw new Error('Invalid session response format');
+              }
+              
+              console.log('AuthProvider: Server session found for user:', userData.email);
+              setUser(userData);
+              // Store in sessionStorage for consistency
+              sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+              return;
+            } else if (response.status === 401 || response.status === 403) {
+              // Authentication failed - don't retry
+              console.log('AuthProvider: No server session found, status:', response.status);
+              sessionStorage.removeItem('brandentifier_user');
+              break; // Exit retry loop
             } else {
-              console.warn('AuthProvider: Unexpected server response format:', data);
-              throw new Error('Invalid session response format');
+              // Server error - might be worth retrying
+              console.warn(`AuthProvider: Server error (${response.status}), may retry`);
+              throw new Error(`Server responded with ${response.status}`);
+            }
+          } catch (error) {
+            console.error(`AuthProvider: Error checking server session (attempt ${retryCount + 1}):`, error);
+            
+            // If this was the last retry, fall back to sessionStorage
+            if (retryCount >= maxRetries) {
+              console.log('AuthProvider: Max retries reached, falling back to sessionStorage check');
+              break;
             }
             
-            console.log('AuthProvider: Server session found for user:', userData.email);
-            setUser(userData);
-            // Store in sessionStorage for consistency
-            sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-            return;
-          } else {
-            console.log('AuthProvider: No server session found, status:', response.status);
-            // Clear any stale sessionStorage
-            sessionStorage.removeItem('brandentifier_user');
+            // Wait before retry (exponential backoff)
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 3000);
+            console.log(`AuthProvider: Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            retryCount++;
           }
-        } catch (error) {
-          console.error('AuthProvider: Error checking server session:', error);
-          console.log('AuthProvider: Falling back to sessionStorage check');
-          // Fall back to sessionStorage check
         }
       }
       
