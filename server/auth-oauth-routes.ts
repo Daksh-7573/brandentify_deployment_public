@@ -142,6 +142,13 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
     });
     
+    // Enhanced pattern matching debugging
+    console.log('🔍 [OAUTH-DEBUG] Pattern matching results:');
+    REPLIT_DOMAIN_PATTERNS.forEach((pattern, index) => {
+      const matches = pattern.test(host);
+      console.log(`  Pattern ${index + 1}: ${pattern.toString()} - Match: ${matches}`);
+    });
+    
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
     // Store original host in state for post-auth redirect
     let redirectUri;
@@ -474,6 +481,13 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       isReplitDomain,
       isBrandentifierCom,
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find(pattern => pattern.test(host))?.toString()
+    });
+    
+    // Enhanced pattern matching debugging for callback
+    console.log('🔍 [OAUTH-CALLBACK-DEBUG] Pattern matching results:');
+    REPLIT_DOMAIN_PATTERNS.forEach((pattern, index) => {
+      const matches = pattern.test(host);
+      console.log(`  Pattern ${index + 1}: ${pattern.toString()} - Match: ${matches}`);
     });
     
     // Use static redirect URI for all non-localhost domains (Google OAuth requirement)
