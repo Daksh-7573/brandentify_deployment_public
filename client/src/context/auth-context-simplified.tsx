@@ -1,8 +1,7 @@
-// Replit Auth Context - replaces broken Firebase authentication
-// Uses Replit OAuth integration for Google login and other providers
-
-import React, { createContext, useContext } from "react";
-import { useAuth as useReplitAuth } from "@/hooks/useAuth";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser, Auth, GoogleAuthProvider } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from '@/lib/queryClient';
 
 interface User {
   uid: string;
@@ -34,8 +33,9 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Use the new Replit Auth system
-  const { user: replitUser, isLoading, isAuthenticated } = useReplitAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   // Create or update user in backend
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {

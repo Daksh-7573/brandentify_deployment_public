@@ -183,16 +183,8 @@ import {
   smartPostSuggestions, SmartPostSuggestions, InsertSmartPostSuggestions
 } from "@shared/schema-musk-suggestions";
 
-// Import User types for Replit Auth
-import { User, UpsertUserReplitData } from "@shared/schema";
-
 // Interface for all storage operations
 export interface IStorage {
-  // User operations for Replit Auth (IMPORTANT - mandatory for Replit Auth)
-  getUser(id: number): Promise<User | undefined>;
-  getUserByReplitId(replitId: string): Promise<User | undefined>;
-  upsertUserByReplit(userData: UpsertUserReplitData): Promise<User>;
-
   // Career Goal operations
   getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]>;
   getCareerGoalById(id: number): Promise<CareerGoal | undefined>;
