@@ -205,10 +205,10 @@ export default function TimelineStoryteller2({
 
 
   return (
-    <div className="timeline-storyteller-2 relative bg-gray-50">
+    <div className="timeline-storyteller-2 relative bg-gray-50 pb-20">
       
       {/* Animated Dot Navigator (side navigation) */}
-      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
+      <div className="fixed right-5 top-1/2 transform -translate-y-1/2 z-50 hidden md:block">
         <div className="flex flex-col space-y-4 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg">
           {Object.keys(chapterRefs).map((section) => {
             // Direct click handler that also updates the active chapter
@@ -257,7 +257,7 @@ export default function TimelineStoryteller2({
       <section 
         id="hero" 
         ref={chapterRefs.hero} 
-        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50 px-4 md:px-6 py-24"
         onClick={() => setActiveChapter('hero')}
       >
         {/* Background decorative elements */}
@@ -268,7 +268,7 @@ export default function TimelineStoryteller2({
           </div>
         </div>
 
-        <div className="relative z-10 max-w-4xl w-full text-center mx-auto flex flex-col justify-center min-h-[70vh]">
+        <div className="relative z-10 max-w-4xl w-full text-center">
           {/* Profile photo with floating animation */}
           <div className="animate-float mb-8 inline-block relative">
             {/* Glow effect behind profile picture */}
@@ -378,11 +378,10 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Skills & Expertise</h2>
           </div>
           
-          {/* Skills content */}
-          <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-              {sortedSkills.length > 0 ? (
-                sortedSkills.map((skill) => (
+          {/* Skills carousel */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {sortedSkills.length > 0 ? (
+              sortedSkills.map((skill) => (
                 <div 
                   key={skill.id} 
                   className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100 hover:shadow-lg hover:translate-y-[-2px] transition-all"
@@ -427,7 +426,6 @@ export default function TimelineStoryteller2({
                 <p className="text-gray-500">Your skills will appear here</p>
               </div>
             )}
-            </div>
           </div>
         </div>
       </section>
@@ -437,7 +435,7 @@ export default function TimelineStoryteller2({
         <section 
           id="services" 
           ref={chapterRefs.services}
-          className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-white to-blue-50"
+          className="py-24 px-4 md:px-6 bg-gradient-to-b from-white to-blue-50 min-h-[90vh] relative"
           onClick={() => setActiveChapter('services')}
         >
           <div className="mx-auto max-w-4xl relative z-10">
@@ -448,9 +446,8 @@ export default function TimelineStoryteller2({
               <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Services</h2>
             </div>
             
-            {/* Services content */}
-            <div className="relative">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {/* Services grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
               {sortedServices.map((service) => (
                 <div 
                   key={service.id} 
@@ -502,7 +499,6 @@ export default function TimelineStoryteller2({
                   </div>
                 </div>
               ))}
-              </div>
             </div>
           </div>
         </section>
@@ -512,7 +508,7 @@ export default function TimelineStoryteller2({
       <section 
         id="projects" 
         ref={chapterRefs.projects}
-        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-blue-50 to-purple-50"
+        className="py-24 px-4 md:px-6 bg-gradient-to-b from-blue-50 to-purple-50 min-h-[90vh]"
         onClick={() => setActiveChapter('projects')}
       >
         <div className="mx-auto max-w-4xl">
@@ -523,9 +519,8 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Project Showcase</h2>
           </div>
           
-          {/* Projects content */}
-          <div className="relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
+          {/* Project Gallery - 3 projects per row, square thumbnails */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
               sortedProjects.slice(0, 6).map((project) => (
                 <div 
@@ -619,7 +614,6 @@ export default function TimelineStoryteller2({
                 <p className="text-gray-500">Your projects will appear here</p>
               </div>
             )}
-            </div>
           </div>
         </div>
       </section>
@@ -628,7 +622,7 @@ export default function TimelineStoryteller2({
       <section 
         id="career" 
         ref={chapterRefs.career}
-        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-purple-50 to-indigo-50"
+        className="py-24 px-4 md:px-6 bg-gradient-to-b from-purple-50 to-indigo-50 min-h-[90vh]"
         onClick={() => setActiveChapter('career')}
       >
         <div className="mx-auto max-w-4xl">
@@ -639,9 +633,8 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Career Path</h2>
           </div>
           
-          {/* Career content */}
-          <div className="relative">
-            <div className="relative animate-fade-in">
+          {/* Experience timeline */}
+          <div className="relative mt-12 animate-fade-in">
             {/* Timeline vertical line */}
             <div className="timeline-vertical-line absolute top-0 bottom-0 h-full"></div>
             
@@ -742,7 +735,6 @@ export default function TimelineStoryteller2({
                 </div>
               )}
             </div>
-            </div>
           </div>
         </div>
       </section>
@@ -751,7 +743,7 @@ export default function TimelineStoryteller2({
       <section 
         id="education" 
         ref={chapterRefs.education}
-        className="relative scroll-mt-24 md:scroll-mt-32 py-24 px-4 md:px-6 min-h-[90vh] bg-gradient-to-b from-indigo-50 to-pink-50"
+        className="py-24 px-4 md:px-8 bg-gradient-to-b from-indigo-50 to-pink-50 min-h-[90vh]"
         onClick={() => setActiveChapter('education')}
       >
         <div className="mx-auto max-w-4xl">
