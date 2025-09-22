@@ -585,6 +585,7 @@ export interface IStorage {
   assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]>;
   getCurrentDayUserQuests(userId: number): Promise<UserQuest[]>;
   assignDailyQuestsToUser(userId: number): Promise<UserQuest[]>;
+  ensureDailyQuestsForUser(userId: number): Promise<{ careerQuests: UserQuest[], socialQuests: any[] }>;
   
   // User XP operations
   getUserXp(userId: number): Promise<UserXp | undefined>;
@@ -12433,6 +12434,45 @@ export class DatabaseStorage implements IStorage {
     return createdQuests;
   }
 
+  async ensureDailyQuestsForUser(userId: number): Promise<{ careerQuests: UserQuest[], socialQuests: any[] }> {
+    try {
+      console.log(`[db.ensureDailyQuestsForUser] Ensuring daily quests for user ${userId}`);
+      
+      // Check for existing daily quests (both career and social)
+      const existingCareerQuests = await this.getCurrentDayUserQuests(userId);
+      const existingSocialQuests = await this.getCurrentDaySocialQuests(userId);
+      
+      let careerQuests = existingCareerQuests;
+      let socialQuests = existingSocialQuests;
+      
+      // Assign new career quests if none exist for today
+      if (existingCareerQuests.length === 0) {
+        console.log(`[db.ensureDailyQuestsForUser] No career quests found, assigning new ones for user ${userId}`);
+        careerQuests = await this.assignDailyQuestsToUser(userId);
+      } else {
+        console.log(`[db.ensureDailyQuestsForUser] Found ${existingCareerQuests.length} existing career quests for user ${userId}`);
+      }
+      
+      // Assign new social quests if none exist for today
+      if (existingSocialQuests.length === 0) {
+        console.log(`[db.ensureDailyQuestsForUser] No social quests found, assigning new ones for user ${userId}`);
+        socialQuests = await this.assignDailySocialQuests(userId);
+      } else {
+        console.log(`[db.ensureDailyQuestsForUser] Found ${existingSocialQuests.length} existing social quests for user ${userId}`);
+      }
+      
+      console.log(`[db.ensureDailyQuestsForUser] ✅ Daily quests ensured for user ${userId}: ${careerQuests.length} career + ${socialQuests.length} social`);
+      
+      return {
+        careerQuests,
+        socialQuests
+      };
+    } catch (error) {
+      console.error(`[db.ensureDailyQuestsForUser] Error ensuring daily quests for user ${userId}:`, error);
+      return { careerQuests: [], socialQuests: [] };
+    }
+  }
+
   // Utility function to get ISO week number
   getWeekNumber(date: Date): number {
     // Create a copy of the date to avoid modifying the original
@@ -12821,6 +12861,7 @@ export const storage = {
   assignWeeklyQuestsToUser: (userId: number) => dbStorage.assignWeeklyQuestsToUser(userId),
   getCurrentDayUserQuests: (userId: number) => dbStorage.getCurrentDayUserQuests(userId),
   assignDailyQuestsToUser: (userId: number) => dbStorage.assignDailyQuestsToUser(userId),
+  ensureDailyQuestsForUser: (userId: number) => dbStorage.ensureDailyQuestsForUser(userId),
   
   // Social Quest method delegates
   getAllSocialQuestDefinitions: () => dbStorage.getAllSocialQuestDefinitions(),

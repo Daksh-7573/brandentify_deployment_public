@@ -1801,5 +1801,25 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // On-demand daily quest assignment endpoint
+  apiRouter.post("/users/:userId/quests/daily/ensure", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      console.log(`[POST /users/${userId}/quests/daily/ensure] Ensuring daily quests for user ${userId}`);
+      
+      const result = await storage.ensureDailyQuestsForUser(userId);
+      
+      console.log(`[POST /users/${userId}/quests/daily/ensure] ✅ Ensured quests: ${result.careerQuests.length} career + ${result.socialQuests.length} social`);
+      res.json(result);
+    } catch (error) {
+      console.error(`[POST /users/${req.params.userId}/quests/daily/ensure] Error:`, error);
+      res.status(500).json({ message: 'Failed to ensure daily quests' });
+    }
+  });
+
   console.log("Career Quests and Social Quests routes loaded");
 }
