@@ -573,11 +573,12 @@ export const useCompleteQuest = () => {
       questId: number,
       userId: number
     }) => {
-      const res = await fetch(`/api/user-quests/${questId}/complete`, {
+      const res = await fetch(`/api/users/${userId}/quests/${questId}/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ earnedXp: 25 })
       });
       
       if (!res.ok) {
