@@ -19,10 +19,82 @@ export function AuthCallback() {
         console.log('🔄 Current URL:', window.location.href);
         console.log('🔄 URL params:', window.location.search);
         
-        // Check if this looks like an OAuth callback
+        // Check if this looks like an OAuth callback or session exchange
         const urlParams = new URLSearchParams(window.location.search);
         const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('authuser');
+        const hasExchangeCode = urlParams.has('exchange_code');
         console.log('🔄 Has OAuth params:', hasAuthParams);
+        console.log('🔄 Has exchange code:', hasExchangeCode);
+        
+        // Handle session exchange code first (cross-domain handoff)
+        if (hasExchangeCode) {
+          console.log('🔄 Processing session exchange code...');
+          const exchangeCode = urlParams.get('exchange_code');
+          
+          try {
+            // Accept the session exchange
+            const exchangeResponse = await fetch(`/api/auth/session/accept?code=${exchangeCode}`, {
+              credentials: 'include',
+              cache: 'no-store', // Bypass service worker cache
+              headers: {
+                'Cache-Control': 'no-cache'
+              }
+            });
+            
+            if (!exchangeResponse.ok) {
+              throw new Error('Failed to accept session exchange');
+            }
+            
+            const exchangeResult = await exchangeResponse.json();
+            console.log('✅ Session exchange successful:', exchangeResult);
+            
+            // Now get user data
+            const userResponse = await fetch('/api/auth/me', {
+              credentials: 'include',
+              cache: 'no-store', // Bypass service worker cache
+              headers: {
+                'Cache-Control': 'no-cache'
+              }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              console.log('✅ User data retrieved after exchange:', userData.email);
+              
+              // Store authentication data
+              sessionStorage.setItem('user_authenticated', 'true');
+              sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+              localStorage.setItem('auth_success', 'true');
+
+              setStatus('success');
+              setMessage(`Welcome back, ${userData.name || userData.email}!`);
+
+              toast({
+                title: 'Welcome back!',
+                description: 'Successfully logged in to Brandentifier.',
+              });
+
+              // Redirect to dashboard
+              const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+              setTimeout(() => {
+                window.location.href = returnUrl;
+              }, 2000);
+              
+              return;
+            } else {
+              throw new Error('Failed to get user data after session exchange');
+            }
+            
+          } catch (exchangeError: any) {
+            console.error('❌ Session exchange failed:', exchangeError);
+            setStatus('error');
+            setMessage('Session transfer failed. Please try logging in again.');
+            setTimeout(() => {
+              window.location.href = '/auth';
+            }, 3000);
+            return;
+          }
+        }
         
         // Only proceed if we're actually in a callback scenario
         if (!hasAuthParams && !window.location.pathname.includes('callback')) {
@@ -37,7 +109,11 @@ export function AuthCallback() {
         
         // Check if user is already authenticated via custom OAuth
         const response = await fetch('/api/auth/me', {
-          credentials: 'include'
+          credentials: 'include',
+          cache: 'no-store', // Bypass service worker cache
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
         });
         
         let result = null;
@@ -103,7 +179,13 @@ export function AuthCallback() {
           }
           
           // Check if user is already authenticated via custom OAuth
-          const authCheck = await fetch('/api/auth/me', { credentials: 'include' });
+          const authCheck = await fetch('/api/auth/me', { 
+            credentials: 'include',
+            cache: 'no-store', // Bypass service worker cache
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          });
           if (authCheck.ok) {
             console.log('User already authenticated via custom OAuth, redirecting...');
             window.location.href = '/industry-pulse';

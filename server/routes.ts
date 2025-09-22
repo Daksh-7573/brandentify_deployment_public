@@ -62,7 +62,7 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, getCurrentUserRoute, acceptSessionExchangeRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7334,6 +7334,7 @@ ${extractedText.substring(0, 5000)}
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
   app.get("/api/auth/me", getCurrentUserRoute); // Get current authenticated user
+  app.get("/api/auth/session/accept", acceptSessionExchangeRoute); // Accept cross-domain session exchange
   
   // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
   app.get('/auth-callback', (req: Request, res: Response) => {

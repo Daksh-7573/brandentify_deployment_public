@@ -17,16 +17,16 @@ const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 // Get OAuth credentials from environment
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
 
-// Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
+// Allowed redirect URIs (whitelist for security) - Using stable published domain only
 const ALLOWED_REDIRECT_URIS = [
-  'https://brandentifier.replit.app/api/auth/google/callback',
-  'https://brandentifier.com/api/auth/google/callback',
-  'http://localhost:5000/api/auth/google/callback',
-  'http://127.0.0.1:5000/api/auth/google/callback',
-  // Current Replit preview domain
-  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google/callback'
+  'https://brandentifier.replit.app/api/auth/google/callback', // Stable published domain
+  'https://brandentifier.com/api/auth/google/callback', 
+  'https://www.brandentifier.com/api/auth/google/callback',
+  'http://localhost:5000/api/auth/google/callback', // Local development
+  'http://127.0.0.1:5000/api/auth/google/callback'
+  // Removed dynamic picard domains - use published domain + session exchange instead
 ];
 
 // Improved domain pattern matching for Replit environments
@@ -262,6 +262,69 @@ export async function getCurrentUserRoute(req: Request, res: Response) {
     
   } catch (error: any) {
     console.error('❌ [GET-USER-ERROR] Error getting current user:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+}
+
+/**
+ * Accept session exchange code - handles cross-domain session transfer
+ */
+export async function acceptSessionExchangeRoute(req: Request, res: Response) {
+  try {
+    console.log('🔄 [SESSION-ACCEPT] Processing session exchange...');
+    
+    const { code } = req.query;
+    
+    if (!code || typeof code !== 'string') {
+      console.log('❌ [SESSION-ACCEPT] No exchange code provided');
+      return res.status(400).json({ success: false, error: 'Missing exchange code' });
+    }
+    
+    // Get session data from exchange store
+    const sessionData = sessionExchangeStore.get(code);
+    
+    if (!sessionData) {
+      console.log('❌ [SESSION-ACCEPT] Invalid or expired exchange code');
+      return res.status(401).json({ success: false, error: 'Invalid or expired exchange code' });
+    }
+    
+    // Check if code is expired (5 minutes)
+    const codeAge = Date.now() - sessionData.timestamp;
+    if (codeAge > 5 * 60 * 1000) {
+      console.log('❌ [SESSION-ACCEPT] Exchange code expired');
+      sessionExchangeStore.delete(code);
+      return res.status(401).json({ success: false, error: 'Exchange code expired' });
+    }
+    
+    // Delete the exchange code (single use)
+    sessionExchangeStore.delete(code);
+    
+    // Set the session cookie on the current domain
+    const currentHost = req.get('host') || 'localhost:5000';
+    const isSecure = currentHost.includes('replit.app') || currentHost.includes('replit.dev') || currentHost.includes('brandentifier.com');
+    
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'none' as const, // Use 'none' for cross-domain
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+    
+    console.log('🍪 [SESSION-ACCEPT] Setting session cookie on domain:', currentHost);
+    res.cookie('brandentifier_session', sessionData.sessionToken, cookieOptions);
+    
+    // Return success
+    res.json({ 
+      success: true, 
+      message: 'Session accepted successfully',
+      userId: sessionData.userId
+    });
+    
+    console.log('✅ [SESSION-ACCEPT] Session exchange completed successfully');
+    
+  } catch (error: any) {
+    console.error('❌ [SESSION-ACCEPT] Error accepting session:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 }
@@ -675,10 +738,10 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         userId: user.id
       });
       
-      // Build session acceptance URL on return domain
+      // Build session acceptance URL on return domain - redirect to auth-callback page with exchange code
       const sessionAcceptUrl = returnHost.includes('localhost') 
-        ? `http://${returnHost}/auth/accept-session?code=${exchangeCode}`
-        : `https://${returnHost}/auth/accept-session?code=${exchangeCode}`;
+        ? `http://${returnHost}/auth-callback?exchange_code=${exchangeCode}`
+        : `https://${returnHost}/auth-callback?exchange_code=${exchangeCode}`;
       
       console.log('🔄 [SESSION-HANDOFF] Cross-domain handoff initiated');
       console.log('✅ [SESSION-HANDOFF] Generated exchange code and redirecting to:', sessionAcceptUrl);
