@@ -32,13 +32,41 @@ export function AuthCallback() {
           const exchangeCode = urlParams.get('exchange_code');
           
           try {
-            // Accept the session exchange
-            const exchangeResponse = await fetch(`/api/auth/session/accept?code=${exchangeCode}`, {
+            // Get CSRF token first for secure session exchange
+            let csrfToken = '';
+            try {
+              const csrfResponse = await fetch('/api/auth/csrf', { 
+                method: 'GET',
+                credentials: 'include',
+                cache: 'no-store'
+              });
+              if (csrfResponse.ok) {
+                const csrfData = await csrfResponse.json();
+                csrfToken = csrfData.csrfToken;
+                console.log('✅ [SESSION-EXCHANGE] CSRF token retrieved successfully');
+              } else {
+                console.warn('⚠️ [SESSION-EXCHANGE] Failed to get CSRF token, session exchange will likely fail');
+                throw new Error('Failed to get CSRF token for secure session exchange');
+              }
+            } catch (csrfError) {
+              console.error('❌ [SESSION-EXCHANGE] CSRF token request failed:', csrfError);
+              throw new Error('CSRF token required for secure session exchange');
+            }
+
+            // Accept the session exchange using secure POST endpoint
+            const exchangeResponse = await fetch('/api/auth/session/exchange', {
+              method: 'POST',
               credentials: 'include',
               cache: 'no-store', // Bypass service worker cache
               headers: {
-                'Cache-Control': 'no-cache'
-              }
+                'Cache-Control': 'no-cache',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+              },
+              body: JSON.stringify({ 
+                code: exchangeCode,
+                csrfToken: csrfToken
+              })
             });
             
             if (!exchangeResponse.ok) {

@@ -422,8 +422,9 @@ export async function secureSessionExchangeRoute(req: Request, res: Response) {
     // Delete the code immediately (one-time use)
     sessionExchangeStore.delete(code);
     
-    // Get user data from database
-    const userData = await storage.getUserById(sessionData.userId);
+    // Get user data from database - using getAllUsers as workaround for missing getUserById
+    const allUsers = await storage.getAllUsers();
+    const userData = allUsers.find(user => user.id === sessionData.userId);
     if (!userData) {
       console.log('❌ [SECURE-SESSION-EXCHANGE] User not found in database');
       return res.status(404).json({ success: false, error: 'User not found' });
