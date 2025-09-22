@@ -378,10 +378,11 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Skills & Expertise</h2>
           </div>
           
-          {/* Skills carousel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-            {sortedSkills.length > 0 ? (
-              sortedSkills.map((skill) => (
+          {/* Skills content */}
+          <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              {sortedSkills.length > 0 ? (
+                sortedSkills.map((skill) => (
                 <div 
                   key={skill.id} 
                   className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100 hover:shadow-lg hover:translate-y-[-2px] transition-all"
@@ -426,6 +427,7 @@ export default function TimelineStoryteller2({
                 <p className="text-gray-500">Your skills will appear here</p>
               </div>
             )}
+            </div>
           </div>
         </div>
       </section>
@@ -446,8 +448,9 @@ export default function TimelineStoryteller2({
               <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Services</h2>
             </div>
             
-            {/* Services grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+            {/* Services content */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
               {sortedServices.map((service) => (
                 <div 
                   key={service.id} 
@@ -499,6 +502,7 @@ export default function TimelineStoryteller2({
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         </section>
@@ -519,8 +523,9 @@ export default function TimelineStoryteller2({
             <h2 className="text-3xl font-bold text-gray-800 animate-fade-in">Project Showcase</h2>
           </div>
           
-          {/* Project Gallery - 3 projects per row, square thumbnails */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
+          {/* Projects content */}
+          <div className="relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
               sortedProjects.slice(0, 6).map((project) => (
                 <div 
@@ -614,6 +619,7 @@ export default function TimelineStoryteller2({
                 <p className="text-gray-500">Your projects will appear here</p>
               </div>
             )}
+            </div>
           </div>
         </div>
       </section>
