@@ -484,11 +484,11 @@ export default function TimelineStoryteller2({
                       <div className="flex justify-between items-center">
                         <div className="text-center">
                           <div className="text-sm text-gray-600">INR</div>
-                          <div className="text-lg font-bold text-gray-900">₹{service.priceInr || 0}</div>
+                          <div className="text-lg font-bold text-gray-900">₹{Number(service.priceInr) || 0}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-sm text-gray-600">USD</div>
-                          <div className="text-lg font-bold text-gray-900">${service.priceUsd || 0}</div>
+                          <div className="text-lg font-bold text-gray-900">${Number(service.priceUsd) || 0}</div>
                         </div>
                       </div>
                     </div>
@@ -501,7 +501,7 @@ export default function TimelineStoryteller2({
                           {service.features.slice(0, 3).map((feature, idx) => (
                             <li key={idx} className="text-xs text-gray-600 flex items-center gap-2">
                               <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0" />
-                              {feature}
+                              {String(feature)}
                             </li>
                           ))}
                         </ul>
@@ -590,7 +590,7 @@ export default function TimelineStoryteller2({
       </Dialog>
 
       {/* Custom Animations */}
-      <style jsx global>{`
+      <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
