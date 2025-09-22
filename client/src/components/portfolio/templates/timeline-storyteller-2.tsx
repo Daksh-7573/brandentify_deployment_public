@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { ProfileImage } from "@/components/ui/profile-image";
+import PortfolioCtaButtons from "@/components/portfolio/portfolio-cta-buttons";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import { 
@@ -25,24 +26,14 @@ import {
   ExternalLink, 
   User, 
   Clock, 
-  Download,
   Gift,
   Lightbulb,
   Search,
-  MessageSquare,
   Volume2, 
   VolumeX, 
   Globe,
   LucideIcon
 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -51,8 +42,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 
 // TypeScript Types
@@ -123,14 +112,6 @@ export default function TimelineStoryteller2({
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeProjectImageIndex, setActiveProjectImageIndex] = useState(0);
 
-  // Contact form state
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    message: '',
-    purpose: 'collaboration'
-  });
   const [isMuted, setIsMuted] = useState(true);
 
   // Scroll to a section
@@ -222,21 +203,6 @@ export default function TimelineStoryteller2({
     });
   };
 
-  // Handle contact form submission
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real implementation, this would send the message
-    console.log("Contact form submitted:", contactForm);
-    
-    // Reset form and close modal
-    setContactForm({
-      name: '',
-      email: '',
-      message: '',
-      purpose: 'collaboration'
-    });
-    setIsContactModalOpen(false);
-  };
 
   return (
     <div className="timeline-storyteller-2 relative bg-gray-50 pb-20">
@@ -372,35 +338,22 @@ export default function TimelineStoryteller2({
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-500">
-            <Button 
-              className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
-              onClick={() => setIsContactModalOpen(true)}
-            >
-              <MessageSquare className="h-4 w-4" />
-              Let's Talk
-            </Button>
-            
-            <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2">
-              <Download className="h-4 w-4" />
-              Grab My Resume
-            </Button>
-            
-            {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
-              <MentorshipButton 
-                userId={currentUserId}
-                mentorId={userInfo.id}
-                variant="outline"
-                className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2"
-                buttonText="Mentor"
-                showIcon={true}
-              />
-            ) : (
-              <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2" disabled>
-                <User className="h-4 w-4" />
-                Mentor
-              </Button>
-            )}
+          <div className="animate-fade-in delay-500">
+            <PortfolioCtaButtons
+              variant="creative"
+              userEmail={userInfo.email}
+              userName={userInfo.name}
+              userId={userInfo.id}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              buttonStyle={{
+                minWidth: '140px',
+                height: '44px',
+                fontSize: '14px',
+                fontWeight: '500',
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(99, 102, 241, 0.1)'
+              }}
+            />
           </div>
         </div>
         
@@ -1031,81 +984,6 @@ export default function TimelineStoryteller2({
         </DialogContent>
       </Dialog>
 
-      {/* Contact modal */}
-      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Get in Touch</DialogTitle>
-            <DialogDescription>
-              Fill out this form to send me a message. I'll get back to you as soon as possible.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleContactSubmit} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label htmlFor="modal-contact-name">Your Name</Label>
-              <Input 
-                id="modal-contact-name" 
-                value={contactForm.name}
-                onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                placeholder="Enter your name" 
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="modal-contact-email">Email Address</Label>
-              <Input 
-                id="modal-contact-email" 
-                type="email"
-                value={contactForm.email}
-                onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                placeholder="Enter your email" 
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="modal-contact-purpose">Purpose</Label>
-              <Select 
-                value={contactForm.purpose}
-                onValueChange={(value) => setContactForm({...contactForm, purpose: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a purpose" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="collaboration">Collaboration</SelectItem>
-                  <SelectItem value="job">Job Opportunity</SelectItem>
-                  <SelectItem value="mentorship">Mentorship</SelectItem>
-                  <SelectItem value="general">General Inquiry</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="modal-contact-message">Message</Label>
-              <Textarea 
-                id="modal-contact-message" 
-                value={contactForm.message}
-                onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                placeholder="What would you like to discuss?" 
-                rows={4}
-                required
-              />
-            </div>
-            
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsContactModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                Send Message
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/* CSS for Timeline Animation */}
       <style jsx global>{`
