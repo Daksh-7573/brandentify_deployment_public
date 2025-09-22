@@ -25,8 +25,14 @@ import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
-// Secure JWT signing key (in production, this should be in environment variables)
-const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+// Secure JWT signing key - REQUIRED environment variable
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Security validation - fail fast if JWT secret is missing
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required for security operations');
+  process.exit(1);
+}
 const JWT_EXPIRES = '24h';
 
 // Encryption key for data at rest (in production, this should be in environment variables)

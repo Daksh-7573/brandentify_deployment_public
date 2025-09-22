@@ -14,10 +14,16 @@ const GOOGLE_OAUTH_BASE_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-// Get OAuth credentials from environment
+// Get OAuth credentials from environment - FAIL FAST if missing
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Critical security validation - fail fast if secrets are missing
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required for authentication security');
+  process.exit(1);
+}
 
 // Allowed redirect URIs (whitelist for security) - Using stable published domain only
 const ALLOWED_REDIRECT_URIS = [

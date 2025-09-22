@@ -1195,7 +1195,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Verify JWT token
         try {
-          const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
+          const JWT_SECRET = process.env.JWT_SECRET;
+          if (!JWT_SECRET) {
+            console.error('❌ CRITICAL: JWT_SECRET missing during auth verification');
+            return res.status(500).json({ message: 'Server configuration error' });
+          }
           const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
           console.log('✅ [AUTH-GUARD] Valid session found for user:', decoded.email);
           
