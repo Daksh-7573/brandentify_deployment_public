@@ -25,6 +25,9 @@ if (!JWT_SECRET) {
   process.exit(1);
 }
 
+// Type-safe JWT secret (guaranteed to be defined after fail-fast check)
+const VERIFIED_JWT_SECRET = JWT_SECRET as string;
+
 // Allowed redirect URIs (whitelist for security) - Using stable published domain only
 const ALLOWED_REDIRECT_URIS = [
   'https://brandentifier.replit.app/api/auth/google/callback', // Stable published domain
@@ -86,9 +89,22 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
+// Enhanced OAuth credentials validation with fail-fast
 if (!CLIENT_ID || !CLIENT_SECRET) {
-  console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+  console.error('❌ CRITICAL: Missing Google OAuth credentials');
+  console.error('❌ Required environment variables: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET');
+  console.error('❌ Please configure these in your environment before starting the application');
+  process.exit(1);
 }
+
+// Type-safe OAuth credentials (guaranteed to be defined after fail-fast check)
+const VERIFIED_CLIENT_ID = CLIENT_ID as string;
+const VERIFIED_CLIENT_SECRET = CLIENT_SECRET as string;
+
+// Log successful credential loading (without exposing secrets)
+console.log('✅ [AUTH-SECURITY] OAuth credentials successfully loaded');
+console.log('✅ [AUTH-SECURITY] Client ID configured:', VERIFIED_CLIENT_ID.substring(0, 8) + '...');
+console.log('✅ [AUTH-SECURITY] JWT secret configured: ✓');
 
 /**
  * Generate Google OAuth URL - avoids Firebase routing issues
@@ -106,8 +122,10 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       'Surrogate-Control': 'no-store'
     });
     
-    if (!CLIENT_ID) {
-      throw new Error('Google Client ID not configured');
+    // CLIENT_ID is guaranteed to exist due to fail-fast validation above
+    // but keeping this check for extra security
+    if (!VERIFIED_CLIENT_ID) {
+      throw new Error('Google Client ID not configured - this should never happen');
     }
     
     // Enhanced environment-based redirect URI determination with better domain handling
@@ -165,7 +183,7 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     
     // Build OAuth URL with OpenID Connect scope
     const params = new URLSearchParams({
-      client_id: CLIENT_ID,
+      client_id: VERIFIED_CLIENT_ID,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'openid email profile',
@@ -231,8 +249,8 @@ export async function getCurrentUserRoute(req: Request, res: Response) {
     }
     
     try {
-      // Verify JWT token
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      // Verify JWT token with guaranteed secret
+      const decoded = jwt.verify(token, VERIFIED_JWT_SECRET) as any;
       console.log('🔍 [GET-USER] Token verified for user ID:', decoded.userId);
       
       // Get user from database
@@ -488,8 +506,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        client_id: VERIFIED_CLIENT_ID,
+        client_secret: VERIFIED_CLIENT_SECRET,
         code: code as string,
         grant_type: 'authorization_code',
         redirect_uri: redirectUri,
@@ -689,8 +707,8 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
     };
     
-    // Sign JWT with secret
-    const sessionToken = jwt.sign(tokenPayload, JWT_SECRET, { 
+    // Sign JWT with verified secret
+    const sessionToken = jwt.sign(tokenPayload, VERIFIED_JWT_SECRET, { 
       algorithm: 'HS256'
     });
     
@@ -990,9 +1008,9 @@ export async function checkSessionRoute(req: Request, res: Response) {
       });
     }
     
-    // Verify JWT token
+    // Verify JWT token with guaranteed secret
     try {
-      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+      const decoded = jwt.verify(sessionToken, VERIFIED_JWT_SECRET) as any;
       console.log('✅ Valid session found for user:', decoded.email);
       console.log('🔍 [SESSION-CHECK] Token payload:', {
         userId: decoded.userId,
