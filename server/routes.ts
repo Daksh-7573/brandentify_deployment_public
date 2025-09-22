@@ -62,7 +62,7 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, createGoogleOAuthPopupURLRoute, handleGoogleOAuthPopupCallbackRoute, acceptSessionExchangeRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7333,11 +7333,6 @@ ${extractedText.substring(0, 5000)}
   // Custom OAuth routes (bypasses Firebase blocked routes) - API route avoids client collision
   app.get("/api/auth/google/url", createGoogleOAuthURLRoute);
   app.get("/api/auth/google/callback", handleGoogleOAuthCallbackRoute); // Fixed: API route avoids client collision
-  
-  // POPUP-SPECIFIC OAuth routes - completely separate callback to prevent double login
-  app.get("/api/auth/google/popup/url", createGoogleOAuthPopupURLRoute);
-  app.get("/api/auth/google/callback-popup", handleGoogleOAuthPopupCallbackRoute);
-  app.post("/api/auth/session/exchange", acceptSessionExchangeRoute);
   
   // BRIDGE: Handle any stray Google redirects to /auth-callback by forwarding to proper API endpoint
   app.get('/auth-callback', (req: Request, res: Response) => {

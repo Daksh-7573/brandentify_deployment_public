@@ -2,7 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/auth-context";
+import { AuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
