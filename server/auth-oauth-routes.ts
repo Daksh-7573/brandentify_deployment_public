@@ -128,15 +128,11 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
-      // For published domains, still use stable redirect URI
-      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
-        // Preview domain: use current domain
-        redirectUri = `https://${host}/api/auth/google/callback`;
-      } else {
-        // Published domain: use stable redirect URI
-        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-      }
+      // CRITICAL FIX: Always use stable published domain for ALL Replit domains
+      // This ensures Google OAuth callback always hits a whitelisted URI
+      // Session exchange system handles cross-domain return to original host
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      console.log('🔧 [OAUTH-FIX] Using stable published domain for Replit OAuth callback');
     } else {
       // Fallback for unknown domains - use current host if HTTPS
       console.log('⚠️ [OAUTH-URL] Unknown domain, using current host as fallback');
@@ -464,15 +460,11 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     } else if (isBrandentifierCom) {
       redirectUri = 'https://brandentifier.com/api/auth/google/callback';
     } else if (isReplitDomain) {
-      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
-      // For published domains, still use stable redirect URI
-      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
-        // Preview domain: use current domain
-        redirectUri = `https://${host}/api/auth/google/callback`;
-      } else {
-        // Published domain: use stable redirect URI
-        redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
-      }
+      // CRITICAL FIX: Always use stable published domain for ALL Replit domains
+      // This ensures Google OAuth callback always hits a whitelisted URI
+      // Session exchange system handles cross-domain return to original host
+      redirectUri = 'https://brandentifier.replit.app/api/auth/google/callback';
+      console.log('🔧 [OAUTH-FIX] Using stable published domain for Replit OAuth callback');
     } else {
       // Fallback for unknown domains - use current host if HTTPS
       console.log('⚠️ [OAUTH-CALLBACK] Unknown domain, using current host as fallback');
