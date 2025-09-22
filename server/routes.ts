@@ -7354,7 +7354,7 @@ ${extractedText.substring(0, 5000)}
   });
   
   app.get("/api/auth/session", checkSessionRoute);
-  app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
+  // Legacy endpoint removed - frontend uses /api/auth/session/accept instead
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed
