@@ -1001,7 +1001,6 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
       errorStack: error.stack,
       host: req.get('host'),
       userAgent: req.get('user-agent'),
-      timestamp: new Date().toISOString(),
       referer: req.get('referer'),
       timestamp: new Date().toISOString(),
       query: req.query
