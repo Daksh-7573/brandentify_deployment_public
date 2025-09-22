@@ -586,6 +586,7 @@ export interface IStorage {
   getCurrentDayUserQuests(userId: number): Promise<UserQuest[]>;
   assignDailyQuestsToUser(userId: number): Promise<UserQuest[]>;
   ensureDailyQuestsForUser(userId: number): Promise<{ careerQuests: UserQuest[], socialQuests: any[] }>;
+  getCompletedUserQuestsWithDefinitions(userId: number): Promise<UserQuest[]>;
   
   // User XP operations
   getUserXp(userId: number): Promise<UserXp | undefined>;
@@ -12473,6 +12474,79 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getCompletedUserQuestsWithDefinitions(userId: number): Promise<UserQuest[]> {
+    try {
+      console.log(`[db.getCompletedUserQuestsWithDefinitions] Fetching completed quests with definitions for user ${userId}`);
+      
+      // Check if user_quests table exists
+      const tableExists = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.tables
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableExists.rows[0].exists) {
+        console.log(`[db.getCompletedUserQuestsWithDefinitions] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          uq.id,
+          uq.user_id as "userId",
+          uq.quest_definition_id as "questDefinitionId",
+          uq.status,
+          uq.progress,
+          uq.assigned_at as "assignedAt",
+          uq.completed_at as "completedAt",
+          uq.dismissed_reason as "dismissedReason",
+          uq.xp_earned as "xpEarned",
+          uq.badge_earned as "badgeEarned",
+          uq.week_number as "weekNumber",
+          uq.year,
+          uq.assigned_date as "assignedDate",
+          -- Quest definition fields
+          qd.title,
+          qd.description,
+          qd.type,
+          qd.target_count as "targetCount",
+          qd.target_action as "targetAction",
+          qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward",
+          qd.musk_tip as "muskTip"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 
+          AND uq.status = 'completed'
+        ORDER BY uq.completed_at DESC
+        LIMIT 50
+      `, [userId]);
+      
+      console.log(`[db.getCompletedUserQuestsWithDefinitions] Found ${result.rows.length} completed quests for user ${userId}`);
+      
+      // Add definition object for frontend compatibility
+      return result.rows.map(row => ({
+        ...row,
+        definition: {
+          id: row.questDefinitionId,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          targetCount: row.targetCount,
+          targetAction: row.targetAction,
+          xpReward: row.xpReward,
+          badgeReward: row.badgeReward,
+          muskTip: row.muskTip
+        }
+      }));
+    } catch (error) {
+      console.error(`[db.getCompletedUserQuestsWithDefinitions] Error fetching completed quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
+      return [];
+    }
+  }
+
   // Utility function to get ISO week number
   getWeekNumber(date: Date): number {
     // Create a copy of the date to avoid modifying the original
@@ -12862,6 +12936,7 @@ export const storage = {
   getCurrentDayUserQuests: (userId: number) => dbStorage.getCurrentDayUserQuests(userId),
   assignDailyQuestsToUser: (userId: number) => dbStorage.assignDailyQuestsToUser(userId),
   ensureDailyQuestsForUser: (userId: number) => dbStorage.ensureDailyQuestsForUser(userId),
+  getCompletedUserQuestsWithDefinitions: (userId: number) => dbStorage.getCompletedUserQuestsWithDefinitions(userId),
   
   // Social Quest method delegates
   getAllSocialQuestDefinitions: () => dbStorage.getAllSocialQuestDefinitions(),

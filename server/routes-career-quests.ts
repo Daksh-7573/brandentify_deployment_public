@@ -759,9 +759,8 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get today's active quests (note: will need to add definitions separately)
         quests = await storage.getCurrentDayUserQuests(userId);
       } else if (bucket === 'completed') {
-        // Get completed user quests (without definitions for now)
-        const allQuests = await storage.getUserQuestsByUserId(userId);
-        quests = allQuests.filter((q: any) => q.status === 'completed');
+        // Get completed user quests with definitions
+        quests = await storage.getCompletedUserQuestsWithDefinitions(userId);
       } else if (bucket === 'missed') {
         // Get all user quests (without definitions for now) and filter by expired/dismissed status
         const allQuests = await storage.getUserQuestsByUserId(userId);
