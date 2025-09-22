@@ -29,6 +29,16 @@ const ALLOWED_REDIRECT_URIS = [
   'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google/callback'
 ];
 
+// Popup-specific redirect URIs (never set cookies)
+const POPUP_REDIRECT_URIS = [
+  'https://brandentifier.replit.app/api/auth/google/callback-popup',
+  'https://brandentifier.com/api/auth/google/callback-popup',
+  'http://localhost:5000/api/auth/google/callback-popup',
+  'http://127.0.0.1:5000/api/auth/google/callback-popup',
+  // Current Replit preview domain
+  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/google/callback-popup'
+];
+
 // Improved domain pattern matching for Replit environments
 const REPLIT_DOMAIN_PATTERNS = [
   /^[a-zA-Z0-9-]+\.replit\.app$/,                    // Published domains like brandentifier.replit.app
@@ -82,6 +92,105 @@ setInterval(() => {
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error('Missing Google OAuth credentials. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET');
+}
+
+/**
+ * Generate Google OAuth URL for popup authentication - uses dedicated popup callback
+ */
+export async function createGoogleOAuthPopupURLRoute(req: Request, res: Response) {
+  try {
+    console.log('🚀 Creating Google OAuth Popup URL');
+    console.log('🔍 [DEBUG] Client ID (first 8 chars):', CLIENT_ID?.substring(0, 8) + '...');
+    
+    // Set cache control headers for auth endpoint
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
+    
+    if (!CLIENT_ID) {
+      throw new Error('Google Client ID not configured');
+    }
+    
+    // Use popup-specific redirect URI
+    const host = req.get('Host') || '';
+    const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
+    
+    console.log('🌐 [POPUP-OAUTH-URL] Domain analysis:', {
+      host,
+      isDevelopment,
+      isReplitDomain,
+      isBrandentifierCom
+    });
+    
+    let popupRedirectUri;
+    
+    if (isDevelopment) {
+      popupRedirectUri = 'http://localhost:5000/api/auth/google/callback-popup';
+    } else if (isBrandentifierCom) {
+      popupRedirectUri = 'https://brandentifier.com/api/auth/google/callback-popup';
+    } else if (isReplitDomain) {
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        popupRedirectUri = `https://${host}/api/auth/google/callback-popup`;
+      } else {
+        popupRedirectUri = 'https://brandentifier.replit.app/api/auth/google/callback-popup';
+      }
+    } else {
+      console.log('⚠️ [POPUP-OAUTH-URL] Unknown domain, using current host as fallback');
+      popupRedirectUri = `https://${host}/api/auth/google/callback-popup`;
+    }
+    
+    console.log('✅ [POPUP-OAUTH-URL] Selected popup redirect URI:', popupRedirectUri);
+    
+    // Create state for popup (simplified)
+    const stateData = {
+      nonce: crypto.randomBytes(16).toString('base64url'),
+      returnHost: host,
+      timestamp: Date.now(),
+      ip: req.ip || req.connection.remoteAddress || 'unknown',
+      popup: true // Mark as popup request
+    };
+    
+    const state = Buffer.from(JSON.stringify(stateData)).toString('base64url');
+    stateStore.set(state, { 
+      timestamp: Date.now(), 
+      ip: req.ip || req.connection.remoteAddress || 'unknown'
+    });
+    
+    // Build OAuth URL for popup
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: popupRedirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      access_type: 'online',
+      prompt: 'select_account',
+      state: state
+    });
+    
+    const oauthUrl = `${GOOGLE_OAUTH_BASE_URL}?${params.toString()}`;
+    
+    console.log('✅ Generated popup OAuth URL successfully');
+    
+    res.json({
+      success: true,
+      oauthUrl: oauthUrl,
+      redirectUri: popupRedirectUri
+    });
+    
+  } catch (error: any) {
+    console.error('❌ [POPUP-OAUTH-URL-ERROR] Error creating popup OAuth URL:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Unable to start popup authentication. Please try again.',
+      errorCode: 'POPUP_OAUTH_URL_CREATION_FAILED',
+      canRetry: true
+    });
+  }
 }
 
 /**
@@ -210,6 +319,337 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       canRetry: true,
       suggestedActions: ['Try refreshing the page', 'Check your internet connection', 'Try again in a few minutes']
     });
+  }
+}
+
+/**
+ * 🪟 POPUP-ONLY OAuth Callback - NEVER sets cookies, only returns exchange code
+ * This endpoint is specifically for popup authentication to prevent double login
+ */
+export async function handleGoogleOAuthPopupCallbackRoute(req: Request, res: Response) {
+  try {
+    console.log('🪟 [POPUP-CALLBACK] Processing popup-only OAuth callback');
+    console.log('🔍 [POPUP-CALLBACK] Query params:', req.query);
+    
+    // CRITICAL: Set headers to prevent caching and ensure no session cookies
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+      'X-Auth-Handler': 'popup-only-callback',
+      'X-Auth-Timestamp': new Date().toISOString(),
+      'X-Popup-Flow': 'true'
+    });
+    
+    const { code, state, error } = req.query;
+    
+    // Handle OAuth errors
+    if (error) {
+      console.error('❌ [POPUP-CALLBACK] OAuth error:', error);
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Authentication Error</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'oauth:error',
+                error: '${error}',
+                message: 'Authentication failed. Please try again.'
+              }, '*');
+              window.close();
+            }
+          </script>
+        </body>
+        </html>
+      `;
+      return res.send(errorHtml);
+    }
+    
+    if (!code || !state) {
+      console.error('❌ [POPUP-CALLBACK] Missing code or state');
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Authentication Error</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'oauth:error',
+                error: 'missing_params',
+                message: 'Authentication response incomplete. Please try again.'
+              }, '*');
+              window.close();
+            }
+          </script>
+        </body>
+        </html>
+      `;
+      return res.send(errorHtml);
+    }
+    
+    // Basic state validation 
+    const stateData = stateStore.get(state as string);
+    if (!stateData || stateData.timestamp < Date.now() - 15 * 60 * 1000) {
+      console.error('❌ [POPUP-CALLBACK] Invalid or expired state');
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Authentication Error</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'oauth:error',
+                error: 'invalid_state',
+                message: 'Authentication session invalid. Please try again.'
+              }, '*');
+              window.close();
+            }
+          </script>
+        </body>
+        </html>
+      `;
+      return res.send(errorHtml);
+    }
+    
+    stateStore.delete(state as string);
+    
+    // Get popup redirect URI for token exchange
+    const host = req.get('Host') || '';
+    const isDevelopment = host.includes('localhost') || host.includes('127.0.0.1');
+    const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some(pattern => pattern.test(host));
+    const isBrandentifierCom = host.includes('brandentifier.com');
+    
+    let popupRedirectUri;
+    if (isDevelopment) {
+      popupRedirectUri = 'http://localhost:5000/api/auth/google/callback-popup';
+    } else if (isBrandentifierCom) {
+      popupRedirectUri = 'https://brandentifier.com/api/auth/google/callback-popup';
+    } else if (isReplitDomain) {
+      if (host.includes('.picard.replit.dev') || host.includes('.replit.dev')) {
+        popupRedirectUri = `https://${host}/api/auth/google/callback-popup`;
+      } else {
+        popupRedirectUri = 'https://brandentifier.replit.app/api/auth/google/callback-popup';
+      }
+    } else {
+      popupRedirectUri = `https://${host}/api/auth/google/callback-popup`;
+    }
+    
+    console.log('🔄 [POPUP-CALLBACK] Exchanging code for token...');
+    
+    // Exchange code for token
+    const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: CLIENT_ID!,
+        client_secret: CLIENT_SECRET!,
+        code: code as string,
+        grant_type: 'authorization_code',
+        redirect_uri: popupRedirectUri,
+      }),
+    });
+    
+    if (!tokenResponse.ok) {
+      console.error('❌ [POPUP-CALLBACK] Token exchange failed');
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Authentication Error</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'oauth:error',
+                error: 'token_exchange_failed',
+                message: 'Authentication failed. Please try again.'
+              }, '*');
+              window.close();
+            }
+          </script>
+        </body>
+        </html>
+      `;
+      return res.send(errorHtml);
+    }
+    
+    const tokenData = await tokenResponse.json();
+    
+    // Get user info from Google
+    const userResponse = await fetch(GOOGLE_USER_INFO_URL, {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+      },
+    });
+    
+    if (!userResponse.ok) {
+      console.error('❌ [POPUP-CALLBACK] Failed to fetch user info');
+      const errorHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><title>Authentication Error</title></head>
+        <body>
+          <script>
+            if (window.opener) {
+              window.opener.postMessage({
+                type: 'oauth:error',
+                error: 'user_info_failed',
+                message: 'Failed to retrieve profile. Please try again.'
+              }, '*');
+              window.close();
+            }
+          </script>
+        </body>
+        </html>
+      `;
+      return res.send(errorHtml);
+    }
+    
+    const googleUser = await userResponse.json();
+    console.log('✅ [POPUP-CALLBACK] User info received:', {
+      email: googleUser.email,
+      name: googleUser.name,
+      id: googleUser.id
+    });
+    
+    // Create or get user (but DON'T create session yet)
+    const userData = {
+      firebaseUid: googleUser.id,
+      email: googleUser.email || '',
+      name: googleUser.name || 'Google User',
+      photoURL: googleUser.picture || '',
+      googleId: googleUser.id,
+      authProvider: 'google',
+      emailVerified: googleUser.verified_email || false
+    };
+    
+    // Find or create user
+    let existingUser = await storage.getUserByGoogleId(userData.googleId);
+    let user;
+    
+    if (existingUser) {
+      console.log('✅ [POPUP-CALLBACK] Found existing user:', existingUser.id);
+      
+      // Preserve custom uploaded photos
+      let finalPhotoURL = existingUser.photoURL;
+      if (existingUser.photoURL && existingUser.photoURL.startsWith('data:image/')) {
+        finalPhotoURL = existingUser.photoURL;
+      } else if (userData.photoURL && userData.photoURL.startsWith('http')) {
+        finalPhotoURL = userData.photoURL;
+      }
+      
+      user = await storage.updateUser(existingUser.id, {
+        name: userData.name,
+        photoURL: finalPhotoURL,
+        googleId: userData.googleId,
+        firebaseUid: userData.firebaseUid,
+        authProvider: 'google',
+        lastLoginAt: new Date()
+      });
+    } else {
+      console.log('🆕 [POPUP-CALLBACK] Creating new user');
+      user = await storage.createUser({
+        firebaseUid: userData.firebaseUid,
+        username: userData.firebaseUid,
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL,
+        googleId: userData.googleId,
+        authProvider: userData.authProvider,
+        profileCompleted: 0,
+        lastLoginAt: new Date()
+      });
+    }
+    
+    if (!user) {
+      throw new Error('Failed to create or update user');
+    }
+    
+    // Create session token (but DON'T set cookie here)
+    const sessionToken = jwt.sign(
+      { 
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        authProvider: 'google'
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    // Create single-use exchange code for main window
+    const exchangeCode = crypto.randomBytes(32).toString('base64url');
+    sessionExchangeStore.set(exchangeCode, {
+      sessionToken,
+      timestamp: Date.now(),
+      returnHost: host,
+      userId: user.id
+    });
+    
+    console.log('✅ [POPUP-CALLBACK] Created exchange code for main window');
+    
+    // Return minimal HTML that sends exchange code to opener and closes popup
+    const successHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Authentication Successful</title>
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+          .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+      </head>
+      <body>
+        <h2>Completing authentication...</h2>
+        <div class="spinner"></div>
+        <script>
+          console.log('[POPUP] Sending exchange code to opener window');
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'oauth:success',
+              exchangeCode: '${exchangeCode}'
+            }, '*');
+            setTimeout(() => window.close(), 1000);
+          } else {
+            console.error('[POPUP] No opener window found');
+            document.body.innerHTML = '<h2>Error: Unable to complete authentication</h2><p>Please close this window and try again.</p>';
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    
+    // CRITICAL: Send HTML response, NO cookies set
+    res.send(successHtml);
+    
+  } catch (error: any) {
+    console.error('❌ [POPUP-CALLBACK] Critical error:', error);
+    const errorHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head><title>Authentication Error</title></head>
+      <body>
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'oauth:error',
+              error: 'callback_error',
+              message: 'Authentication failed. Please try again.'
+            }, '*');
+            window.close();
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    res.send(errorHtml);
   }
 }
 
@@ -1007,6 +1447,104 @@ export async function handleGoogleOAuthCallbackRoute(req: Request, res: Response
     }
     
     res.redirect(`/auth?error=callback_error&message=${encodeURIComponent(userMessage)}&canRetry=true&errorCode=OAUTH_CALLBACK_ERROR`);
+  }
+}
+
+/**
+ * Accept session exchange code and set authentication cookie in main window
+ * This is called by the main window after receiving exchange code from popup
+ */
+export async function acceptSessionExchangeRoute(req: Request, res: Response) {
+  try {
+    console.log('🔄 [SESSION-EXCHANGE] Processing session exchange from popup');
+    
+    const { exchangeCode } = req.body;
+    
+    if (!exchangeCode) {
+      console.error('❌ [SESSION-EXCHANGE] Missing exchange code');
+      return res.status(400).json({
+        success: false,
+        error: 'Exchange code required',
+        errorCode: 'MISSING_EXCHANGE_CODE'
+      });
+    }
+    
+    // Get session data from exchange code
+    const exchangeData = sessionExchangeStore.get(exchangeCode);
+    
+    if (!exchangeData) {
+      console.error('❌ [SESSION-EXCHANGE] Invalid or expired exchange code');
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid or expired exchange code',
+        errorCode: 'INVALID_EXCHANGE_CODE'
+      });
+    }
+    
+    // Check if exchange code is expired (5 minutes)
+    if (exchangeData.timestamp < Date.now() - 5 * 60 * 1000) {
+      console.error('❌ [SESSION-EXCHANGE] Exchange code expired');
+      sessionExchangeStore.delete(exchangeCode);
+      return res.status(400).json({
+        success: false,
+        error: 'Exchange code expired',
+        errorCode: 'EXCHANGE_CODE_EXPIRED'
+      });
+    }
+    
+    // Remove exchange code (single use)
+    sessionExchangeStore.delete(exchangeCode);
+    
+    console.log('✅ [SESSION-EXCHANGE] Valid exchange code, setting session cookie');
+    
+    // Set session cookie in main window
+    res.cookie('session', exchangeData.sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
+    });
+    
+    // Get user info for response  
+    const user = await storage.getUserByFirebaseUid(exchangeData.userId.toString());
+    
+    if (!user) {
+      console.error('❌ [SESSION-EXCHANGE] User not found');
+      return res.status(400).json({
+        success: false,
+        error: 'User not found',
+        errorCode: 'USER_NOT_FOUND'
+      });
+    }
+    
+    console.log('✅ [SESSION-EXCHANGE] Session created successfully for user:', user.id);
+    
+    // Return user data for frontend
+    const clientUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      photoURL: user.photoURL,
+      profileCompleted: user.profileCompleted || 0,
+      authProvider: user.authProvider || 'google',
+      emailVerified: user.emailVerified
+    };
+    
+    res.json({
+      success: true,
+      user: clientUser,
+      message: 'Authentication successful'
+    });
+    
+  } catch (error: any) {
+    console.error('❌ [SESSION-EXCHANGE] Critical error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Authentication failed',
+      errorCode: 'SESSION_EXCHANGE_ERROR'
+    });
   }
 }
 

@@ -188,96 +188,100 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // POPUP COMMUNICATION FIX: Sign in with Google using proper popup messaging
+  // POPUP COMMUNICATION FIX: Sign in with Google using NEW popup-only flow
   const signInWithGoogle = async () => {
     if (isLoading) return;
     
     setIsLoading(true);
     
     try {
-      console.log("Starting Google sign-in with custom OAuth");
+      console.log("🔐 Starting Google sign-in with NEW popup-only flow");
       
-      // Use server-side OAuth flow for all domains
-      console.log("🚀 Using server-side OAuth flow for all domains");
-      
-      // Get OAuth URL from our server
-      const response = await fetch('/api/auth/google/url', {
+      // Get popup-specific OAuth URL from our server (NEW ENDPOINT)
+      const response = await fetch('/api/auth/google/popup/url', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
       
       if (!response.ok) {
-        throw new Error('Failed to get OAuth URL');
+        throw new Error('Failed to get popup OAuth URL');
       }
       
       const data = await response.json();
-      console.log('✅ Got OAuth URL, redirecting to Google...');
+      console.log('✅ Got popup OAuth URL, opening popup...');
       
-      // POPUP COMMUNICATION FIX: Proper popup-parent messaging pattern
-      try {
-        // Add popup=true parameter to OAuth URL for reliable backend detection
-        const popupOAuthUrl = data.oauthUrl + (data.oauthUrl.includes('?') ? '&' : '?') + 'popup=true';
-        console.log('[POPUP AUTH] Opening popup with URL:', popupOAuthUrl);
+      // Open popup with popup-specific URL (no query parameter needed)
+      console.log('[POPUP AUTH NEW] Opening popup with dedicated popup callback URL');
+      
+      const popup = window.open(
+        data.oauthUrl,
+        'google-auth-popup',
+        'width=500,height=600,left=' + 
+        (window.screen.width / 2 - 250) + 
+        ',top=' + (window.screen.height / 2 - 300) + 
+        ',scrollbars=yes,resizable=yes'
+      );
+      
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        // Popup blocked or failed, use redirect method
+        console.log('Popup blocked, using redirect method');
+        const redirectResponse = await fetch('/api/auth/google/url');
+        const redirectData = await redirectResponse.json();
+        window.location.href = redirectData.oauthUrl;
+        return;
+      }
+      
+      console.log('[POPUP AUTH NEW] OAuth popup opened, waiting for exchange code...');
+      
+      // NEW: Listen for exchange code from popup
+      const handleAuthMessage = async (event: MessageEvent) => {
+        console.log('[POPUP AUTH NEW] Received message from popup:', event.data);
         
-        const popup = window.open(
-          popupOAuthUrl,
-          'google-auth',
-          'width=500,height=600,left=' + 
-          (window.screen.width / 2 - 250) + 
-          ',top=' + (window.screen.height / 2 - 300) + 
-          ',scrollbars=yes,resizable=yes'
-        );
-        
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-          // Popup blocked or failed, use redirect method
-          console.log('Popup blocked, using redirect method');
-          window.location.href = data.oauthUrl;
+        // Verify origin for security
+        if (event.origin !== window.location.origin) {
+          console.warn('[POPUP AUTH NEW] Ignoring message from unauthorized origin:', event.origin);
           return;
         }
         
-        console.log('[POPUP AUTH] OAuth popup opened, waiting for completion...');
-        
-        // FIXED: Add proper message listener for popup communication
-        const handleAuthMessage = (event: MessageEvent) => {
-          console.log('[POPUP AUTH] Received message from popup:', event.data);
+        if (event.data.type === 'oauth:success' && event.data.exchangeCode) {
+          console.log('[POPUP AUTH NEW] ✅ Got exchange code, exchanging for session in main window');
           
-          // Verify origin for security
-          if (event.origin !== window.location.origin) {
-            console.warn('[POPUP AUTH] Ignoring message from unauthorized origin:', event.origin);
-            return;
+          // Close popup immediately
+          if (popup && !popup.closed) {
+            popup.close();
           }
           
-          if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-            console.log('[POPUP AUTH] ✅ Authentication successful, processing session token');
+          // Remove event listener
+          window.removeEventListener('message', handleAuthMessage);
+          
+          try {
+            // NEW: Exchange code for session in main window only
+            const exchangeResponse = await fetch('/api/auth/session/exchange', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                exchangeCode: event.data.exchangeCode
+              })
+            });
             
-            // Close popup immediately
-            if (popup && !popup.closed) {
-              popup.close();
-            }
+            const exchangeData = await exchangeResponse.json();
             
-            // Remove event listener
-            window.removeEventListener('message', handleAuthMessage);
-            
-            // POPUP COMMUNICATION FIX: Set session cookie and update auth state
-            const { sessionToken, user: userData } = event.data.data;
-            
-            if (sessionToken && userData) {
-              console.log('[POPUP AUTH] Setting session cookie for main window authentication');
+            if (exchangeData.success && exchangeData.user) {
+              console.log('[POPUP AUTH NEW] ✅ Session exchange successful - ONLY main window authenticated');
               
-              // Set the session cookie in the main window
-              document.cookie = `brandentifier_session=${sessionToken}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax${window.location.protocol === 'https:' ? '; secure' : ''}`;
-              
-              // Update user state immediately without API call
+              // Update user state with exchanged session
               const authUser = {
-                uid: userData.id.toString(),
-                id: userData.id,
-                username: userData.username,
-                email: userData.email,
-                name: userData.name,
-                photoURL: userData.photoURL || null
+                uid: exchangeData.user.id.toString(),
+                id: exchangeData.user.id,
+                username: exchangeData.user.username,
+                email: exchangeData.user.email,
+                name: exchangeData.user.name,
+                photoURL: exchangeData.user.photoURL || null
               };
               
-              console.log('[POPUP AUTH] ✅ Main window authenticated successfully:', authUser.email);
+              console.log('[POPUP AUTH NEW] 🎉 Main window authenticated (NO DOUBLE LOGIN):', authUser.email);
               setUser(authUser);
               setIsLoading(false);
               
@@ -285,57 +289,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               queryClient.invalidateQueries({ queryKey: ['/api/users'] });
               
             } else {
-              console.error('[POPUP AUTH] ❌ Missing session token or user data');
-              // Fallback to normal auth state check
-              fetchAuthState();
+              console.error('[POPUP AUTH NEW] ❌ Session exchange failed:', exchangeData);
+              toast({
+                title: "Authentication Failed",
+                description: exchangeData.error || "Session exchange failed. Please try again.",
+                variant: "destructive"
+              });
               setIsLoading(false);
             }
-            
-          } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
-            console.error('[POPUP AUTH] ❌ Authentication failed:', event.data.error);
-            
-            // Close popup
-            if (popup && !popup.closed) {
-              popup.close();
-            }
-            
-            // Remove event listener
-            window.removeEventListener('message', handleAuthMessage);
-            
+          } catch (exchangeError) {
+            console.error('[POPUP AUTH NEW] ❌ Exchange request failed:', exchangeError);
             toast({
               title: "Authentication Failed",
-              description: event.data.error || "Google authentication was not successful. Please try again.",
+              description: "Session exchange failed. Please try again.",
               variant: "destructive"
             });
-            
             setIsLoading(false);
           }
-        };
-        
-        // Add message listener
-        window.addEventListener('message', handleAuthMessage);
-        
-        // FIXED: Monitor popup closure as fallback (but don't reload page)
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            window.removeEventListener('message', handleAuthMessage);
-            console.log('[POPUP AUTH] Popup closed without message, checking auth state...');
-            
-            // Check auth state without full page reload
-            fetchAuthState();
-            setIsLoading(false);
+          
+        } else if (event.data.type === 'oauth:error') {
+          console.error('[POPUP AUTH NEW] ❌ Authentication failed:', event.data.error);
+          
+          // Close popup
+          if (popup && !popup.closed) {
+            popup.close();
           }
-        }, 1000);
-        
-        return;
-        
-      } catch (popupError) {
-        // If popup fails completely, use redirect
-        console.log('Popup failed, using redirect method:', popupError);
-        window.location.href = data.oauthUrl;
-        return;
-      }
+          
+          // Remove event listener
+          window.removeEventListener('message', handleAuthMessage);
+          
+          toast({
+            title: "Authentication Failed",
+            description: event.data.message || "Google authentication failed. Please try again.",
+            variant: "destructive"
+          });
+          
+          setIsLoading(false);
+        }
+      };
+      
+      // Add message listener
+      window.addEventListener('message', handleAuthMessage);
+      
+      // Monitor popup closure as fallback
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', handleAuthMessage);
+          console.log('[POPUP AUTH NEW] Popup closed without message, authentication cancelled');
+          setIsLoading(false);
+        }
+      }, 1000);
+      
+    } catch (popupError) {
+      // If popup fails completely, use redirect
+      console.log('Popup failed, using redirect method:', popupError);
+      const redirectResponse = await fetch('/api/auth/google/url');
+      const redirectData = await redirectResponse.json();
+      window.location.href = redirectData.oauthUrl;
+      return;
+    }
       
     } catch (error: any) {
       console.error("[Auth Context] Google sign-in error:", {
