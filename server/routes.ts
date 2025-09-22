@@ -7242,6 +7242,145 @@ ${extractedText.substring(0, 5000)}
       });
     }
   });
+
+  // ========================================
+  // QUEST COMPLETION & PROGRESS ENDPOINTS
+  // ========================================
+  
+  // Complete a career quest
+  apiRouter.post('/users/:userId/quests/:questId/complete', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const questId = parseInt(req.params.questId);
+      const { earnedXp = 25 } = req.body; // Default 25 XP per quest
+
+      if (isNaN(userId) || isNaN(questId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID or quest ID'
+        });
+      }
+
+      console.log(`[Quest Completion] User ${userId} completing quest ${questId} for ${earnedXp} XP`);
+
+      // Complete the quest and award XP
+      const completedQuest = await storage.completeUserQuest(questId, earnedXp);
+      
+      if (!completedQuest) {
+        return res.status(404).json({
+          success: false,
+          message: 'Quest not found or already completed'
+        });
+      }
+
+      // Award XP to user
+      await storage.incrementUserXp(userId, earnedXp, 'quest_completion', questId);
+
+      console.log(`[Quest Completion] ✅ Quest ${questId} completed by user ${userId}, awarded ${earnedXp} XP`);
+
+      res.json({
+        success: true,
+        message: 'Quest completed successfully!',
+        quest: completedQuest,
+        xpAwarded: earnedXp
+      });
+
+    } catch (error) {
+      console.error(`[Quest Completion] Error completing quest ${req.params.questId}:`, error);
+      res.status(500).json({
+        success: false,
+        message: 'Error completing quest'
+      });
+    }
+  });
+
+  // Complete a social quest
+  apiRouter.post('/users/:userId/social-quests/:questId/complete', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const questId = parseInt(req.params.questId);
+      const { earnedXp = 30 } = req.body; // Default 30 XP for social quests
+
+      if (isNaN(userId) || isNaN(questId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID or quest ID'
+        });
+      }
+
+      console.log(`[Social Quest Completion] User ${userId} completing social quest ${questId} for ${earnedXp} XP`);
+
+      // Complete the quest and award XP
+      const completedQuest = await storage.completeUserQuest(questId, earnedXp);
+      
+      if (!completedQuest) {
+        return res.status(404).json({
+          success: false,
+          message: 'Social quest not found or already completed'
+        });
+      }
+
+      // Award XP to user
+      await storage.incrementUserXp(userId, earnedXp, 'social_quest_completion', questId);
+
+      console.log(`[Social Quest Completion] ✅ Social quest ${questId} completed by user ${userId}, awarded ${earnedXp} XP`);
+
+      res.json({
+        success: true,
+        message: 'Social quest completed successfully!',
+        quest: completedQuest,
+        xpAwarded: earnedXp
+      });
+
+    } catch (error) {
+      console.error(`[Social Quest Completion] Error completing social quest ${req.params.questId}:`, error);
+      res.status(500).json({
+        success: false,
+        message: 'Error completing social quest'
+      });
+    }
+  });
+
+  // Increment quest progress (for multi-step quests)
+  apiRouter.post('/users/:userId/quests/:questId/progress', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const questId = parseInt(req.params.questId);
+
+      if (isNaN(userId) || isNaN(questId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID or quest ID'
+        });
+      }
+
+      console.log(`[Quest Progress] User ${userId} incrementing progress for quest ${questId}`);
+
+      const updatedQuest = await storage.incrementQuestProgress(questId);
+      
+      if (!updatedQuest) {
+        return res.status(404).json({
+          success: false,
+          message: 'Quest not found'
+        });
+      }
+
+      console.log(`[Quest Progress] ✅ Quest ${questId} progress incremented for user ${userId}`);
+
+      res.json({
+        success: true,
+        message: 'Quest progress updated!',
+        quest: updatedQuest
+      });
+
+    } catch (error) {
+      console.error(`[Quest Progress] Error updating quest progress ${req.params.questId}:`, error);
+      res.status(500).json({
+        success: false,
+        message: 'Error updating quest progress'
+      });
+    }
+  });
   
   console.log("Personalized Quest Assignment API loaded");
 
