@@ -55,6 +55,8 @@ interface SessionExchangeData {
   timestamp: number;
   returnHost: string;
   userId: number;
+  userAgent?: string;
+  ip?: string;
 }
 
 const sessionExchangeStore = new Map<string, SessionExchangeData>();
