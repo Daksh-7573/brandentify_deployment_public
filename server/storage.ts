@@ -12852,6 +12852,7 @@ export const storage = {
   
   // User Quest methods
   getUserQuestsByUserId: (userId: number) => dbStorage.getUserQuestsByUserId(userId),
+  getUserQuestsWithDefinitions: (userId: number) => dbStorage.getUserQuestsWithDefinitions(userId),
   getUserQuestById: (id: number) => dbStorage.getUserQuestById(id),
   getActiveUserQuests: (userId: number) => dbStorage.getActiveUserQuests(userId),
   getCompletedUserQuests: (userId: number) => dbStorage.getCompletedUserQuests(userId),
