@@ -87,25 +87,17 @@ const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
 
 
 
-const DevLoginPage = lazy(() => import("@/pages/dev-login"));
 const SimpleLoginPage = lazy(() => import("@/pages/simple-login"));
 const ReliableLoginPage = lazy(() => import("@/pages/reliable-login"));
 const UniversalLoginPage = lazy(() => import("@/pages/universal-login"));
 const SimpleUniversalLoginPage = lazy(() => import("@/pages/simple-universal-login"));
 const EasyLoginPage = lazy(() => import("@/pages/easy-login"));
-const GoogleAuthFixPage = lazy(() => import("@/pages/google-auth-fix"));
 const ReplitDomainLogin = lazy(() => import("@/pages/replit-domain-login"));
-const UniversalGoogleAuthPage = lazy(() => import("@/pages/universal-google-auth"));
-const CrossDomainGoogleAuth = lazy(() => import("@/pages/cross-domain-google-auth"));
 const ReplitRedirectAuth = lazy(() => import("@/pages/replit-redirect-auth"));
 const GoogleRedirectOnly = lazy(() => import("@/pages/google-redirect-only"));
 const DomainDebug = lazy(() => import("@/pages/domain-debug"));
 const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
-const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
-const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
-const GoogleAuthDebug = lazy(() => import("@/pages/google-auth-debug"));
-const AuthCleaner = lazy(() => import("@/pages/auth-cleaner"));
 const SmartConnectPage = lazy(() => import("@/pages/smart-connect"));
 const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
 const ResumePage = lazy(() => import("@/pages/resume"));
@@ -199,78 +191,6 @@ function Router() {
 
 
 
-      <Route path="/auth-test" component={() => {
-        const AuthTest = lazy(() => import("@/pages/auth-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/simple-auth-test" component={() => {
-        const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <SimpleAuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-popup-fix" component={() => {
-        const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthPopupFix />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-flow-test" component={() => {
-        const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthFlowTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-debug-detailed" component={() => {
-        const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthDebugDetailed />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-enhanced-popup" component={() => {
-        const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthEnhancedPopup />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-redirect-test" component={() => {
-        const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthRedirectTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-direct-oauth" component={() => {
-        const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthDirectOAuth />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-working-test" component={() => {
-        const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthWorkingTest />
-          </Suspense>
-        );
-      }} />
 
       <Route path="/auth-callback" component={AuthCallbackPage} />
       <Route path="/_/auth/callback" component={AuthCallbackPage} />
@@ -295,7 +215,6 @@ function Router() {
         <>
           <Route path="/login" component={() => <PageRedirect to="/auth" />} />
           <Route path="/auth-status" component={AuthStatusPage} />
-          <Route path="/dev-login" component={DevLoginPage} />
           <Route path="/simple-login" component={SimpleLoginPage} />
           <Route path="/reliable-login" component={ReliableLoginPage} />
           <Route path="/universal-login" component={UniversalLoginPage} />
@@ -309,42 +228,11 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/dev-auth" component={() => {
-        const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <DevAuthUtilityPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-test" component={FirebaseAuthTest} />
-      <Route path="/google-auth-test" component={GoogleAuthTest} />
-      <Route path="/google-auth-debug" component={GoogleAuthDebug} />
-      <Route path="/auth-cleaner" component={AuthCleaner} />
-      <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
-      <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
-      <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
       <Route path="/replit-login" component={ReplitDomainLogin} />
       <Route path="/replit-redirect-auth" component={ReplitRedirectAuth} />
       <Route path="/google-login" component={GoogleRedirectOnly} />
       <Route path="/domain-debug" component={DomainDebug} />
       <Route path="/replit-auth" component={FinalReplitAuth} />
-      <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <AuthDebugPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-popup-debug" component={() => {
-        const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <AuthPopupDebugPage />
-          </Suspense>
-        );
-      }} />
           <Route path="/verify-email" component={EmailVerification} />
         </>
       )}
