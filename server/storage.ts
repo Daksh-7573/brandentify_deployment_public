@@ -11208,12 +11208,34 @@ export class DatabaseStorage implements IStorage {
       console.log('[db.getAllQuestDefinitions] Fetching all quest definitions');
       const result = await db.execute(sql`
         SELECT 
-          id, title, description, category, difficulty, xp_reward as "xpReward",
-          estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt",
+          category,
+          difficulty,
+          estimated_time_minutes as "estimatedTimeMinutes",
+          instructions,
+          success_criteria as "successCriteria",
+          content_type as "contentType",
+          platform,
+          difficulty_level as "difficultyLevel",
+          week_number as "weekNumber",
+          year
         FROM quest_definitions
-        ORDER BY category, difficulty, title
+        WHERE is_active = true OR is_active IS NULL
+        ORDER BY created_at DESC
       `);
       
       console.log(`[db.getAllQuestDefinitions] Found ${result.rows.length} quest definitions`);
