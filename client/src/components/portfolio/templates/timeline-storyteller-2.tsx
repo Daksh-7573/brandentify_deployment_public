@@ -484,11 +484,11 @@ export default function TimelineStoryteller2({
                       <div className="flex justify-between items-center">
                         <div className="text-center">
                           <div className="text-sm text-gray-600">INR</div>
-                          <div className="text-lg font-bold text-gray-900">₹{Number(service.priceInr) || 0}</div>
+                          <div className="text-lg font-bold text-gray-900">₹{service.priceInr ? Number(service.priceInr) : 0}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-sm text-gray-600">USD</div>
-                          <div className="text-lg font-bold text-gray-900">${Number(service.priceUsd) || 0}</div>
+                          <div className="text-lg font-bold text-gray-900">${service.priceUsd ? Number(service.priceUsd) : 0}</div>
                         </div>
                       </div>
                     </div>
