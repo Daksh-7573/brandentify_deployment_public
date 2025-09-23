@@ -33,6 +33,13 @@ export default function BrandQuestsPage() {
   // Use actual user ID from authentication
   const userId = user?.id;
   
+  // Debug logging for authentication state
+  console.log(`[BRAND QUESTS PAGE DEBUG] Component rendered with user:`, {
+    userId: user?.id,
+    authenticated: !!user,
+    timestamp: new Date().toISOString()
+  });
+  
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId);
   
   if (!userId) {
