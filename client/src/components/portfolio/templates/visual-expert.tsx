@@ -591,7 +591,7 @@ export default function VisualExpert({
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col items-center text-center relative">
             {/* Profile Image with animated border */}
-            <div className="profile-image-container mb-8 animate-fade-in">
+            <div className="profile-image-container mb-8 animate-fade-in mx-auto flex justify-center">
               <div className="profile-image-border"></div>
               <div className="profile-image-wrap">
                 <ProfileImage
