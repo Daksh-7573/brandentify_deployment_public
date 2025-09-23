@@ -337,7 +337,7 @@ export default function TimelineStoryteller2({
                   {/* Content Card */}
                   <div className={`w-5/12 ${index % 2 === 0 ? 'mr-auto pr-8' : 'ml-auto pl-8'}`}>
                     <Card 
-                      className={`transform transition-shadow duration-500 ${item.type === 'project' ? 'cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-blue-200' : ''} ${
+                      className={`timeline-card transform transition-shadow duration-500 ${item.type === 'project' ? 'cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-blue-200' : ''} ${
                         activeTimelineNode === item.id ? 'shadow-xl ring-1 ring-blue-300' : 'shadow-md'
                       }`}
                       onClick={() => {
@@ -347,7 +347,7 @@ export default function TimelineStoryteller2({
                         }
                       }}
                     >
-                      <CardContent className="p-6">
+                      <CardContent className="card-content p-6">
                         <div className="flex items-start gap-3 mb-3">
                           <div className="p-2 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100">
                             <item.icon className="w-5 h-5 text-blue-600" />
@@ -458,9 +458,9 @@ export default function TimelineStoryteller2({
               {userServices.map((service) => (
                 <Card 
                   key={service.id} 
-                  className="group transition-shadow duration-500 hover:shadow-lg border-0 bg-white/80 backdrop-blur-sm"
+                  className="service-card group transition-shadow duration-500 hover:shadow-lg border-0 bg-white/80 backdrop-blur-sm"
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="card-content p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="font-bold text-gray-900 mb-2">{service.title}</h3>
@@ -510,7 +510,7 @@ export default function TimelineStoryteller2({
 
                     {/* CTA Buttons */}
                     <div className="flex gap-2">
-                      <Button className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 text-sm">
+                      <Button className="cta-button flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 text-sm">
                         Hire Me
                       </Button>
                       <Button variant="outline" className="text-sm">
@@ -528,7 +528,7 @@ export default function TimelineStoryteller2({
       {/* Sticky Call-to-Action Footer */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
         <div className="flex gap-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-white/50 p-2">
-          <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-full px-6">
+          <Button className="cta-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-full px-6">
             <MessageCircle className="w-4 h-4 mr-2" />
             Let's Talk
           </Button>
@@ -575,7 +575,7 @@ export default function TimelineStoryteller2({
                 
                 {selectedProject.projectUrl && (
                   <div className="flex gap-2">
-                    <Button asChild className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                    <Button asChild className="cta-button bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                       <a href={selectedProject.projectUrl} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-2" />
                         View Project
@@ -599,10 +599,178 @@ export default function TimelineStoryteller2({
             scroll-behavior: auto !important;
           }
         }
+
+        /* Enhanced Timeline Hover Effects */
+        .timeline-node {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
         
+        .timeline-node:hover {
+          transform: scale(1.1);
+        }
+        
+        .timeline-node:hover::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: -10px;
+          right: -10px;
+          bottom: -10px;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: pulse-glow 2s ease-in-out infinite;
+          z-index: -1;
+        }
+
+        @keyframes pulse-glow {
+          0%, 100% { 
+            opacity: 0.5;
+            transform: scale(1); 
+          }
+          50% { 
+            opacity: 0.8;
+            transform: scale(1.2); 
+          }
+        }
+
+        /* Card Hover Effects */
+        .timeline-card {
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transform-style: preserve-3d;
+        }
+
+        .timeline-card:hover {
+          transform: translateY(-8px) rotateX(2deg);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 
+                      0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .timeline-card:hover .card-content {
+          transform: translateZ(10px);
+        }
+
+        .card-content {
+          transition: transform 0.3s ease;
+        }
+
+        /* Project Thumbnail Effects */
+        .project-thumbnail {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-thumbnail:hover {
+          transform: scale(1.05);
+        }
+
+        .project-thumbnail:hover .thumbnail-overlay {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .thumbnail-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+          color: white;
+          padding: 1rem;
+          opacity: 0;
+          transform: translateY(100%);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Skills Progress Ring Animation */
+        .skill-ring {
+          transition: all 0.3s ease;
+        }
+
+        .skill-ring:hover {
+          transform: rotate(5deg) scale(1.02);
+        }
+
+        .skill-ring:hover .progress-fill {
+          animation: progress-boost 0.6s ease-in-out;
+        }
+
+        @keyframes progress-boost {
+          0%, 100% { stroke-dasharray: var(--original-progress); }
+          50% { stroke-dasharray: calc(var(--original-progress) + 18); }
+        }
+
+        /* Service Card 3D Tilt */
+        .service-card {
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transform-style: preserve-3d;
+        }
+
+        .service-card:hover {
+          transform: rotateY(3deg) rotateX(-2deg) scale(1.02);
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* CTA Button Effects */
+        .cta-button {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cta-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-button::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+          transition: all 0.6s ease;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+        }
+
+        .cta-button:hover::before {
+          width: 300px;
+          height: 300px;
+        }
+
+        /* Magnetic Hover Effect */
+        .magnetic-node {
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
+        }
+
+        /* Tooltip Styles */
+        .timeline-tooltip {
+          position: absolute;
+          background: rgba(0, 0, 0, 0.9);
+          color: white;
+          padding: 8px 12px;
+          border-radius: 6px;
+          font-size: 0.875rem;
+          white-space: nowrap;
+          z-index: 50;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          pointer-events: none;
+        }
+
+        .timeline-tooltip.show {
+          opacity: 1;
+          transform: translateY(0);
         }
         
         @keyframes fadeInUp {
