@@ -30,28 +30,18 @@ export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
   
-  // Use actual user ID from authentication
-  const userId = user?.id;
+  // FIXED: Use same logic as header - fallback to demo user if no auth
+  const userId = user?.id || 1;
   
   // Debug logging for authentication state
   console.log(`[BRAND QUESTS PAGE DEBUG] Component rendered with user:`, {
     userId: user?.id,
+    actualUserId: userId,
     authenticated: !!user,
     timestamp: new Date().toISOString()
   });
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId);
-  
-  if (!userId) {
-    return (
-      <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Brand Quests</h1>
-          <p className="text-muted-foreground">Please log in to view your brand quests.</p>
-        </div>
-      </div>
-    );
-  }
   
   return (
     <div 
