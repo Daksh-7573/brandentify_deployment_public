@@ -297,10 +297,13 @@ export default function VisualExpert({
       
       .visual-expert-template .profile-image-container {
         position: relative;
-        margin: 0 auto;
+        margin: 0 auto !important;
         width: 180px;
         height: 180px;
         z-index: 1;
+        display: block !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
       }
       
       .visual-expert-template .profile-image-border {
