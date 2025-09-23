@@ -886,7 +886,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       // Query based on bucket type
       if (bucket === 'daily') {
-        // Active quests assigned today
+        // Active quests assigned today - WITH SELF-HEALING
         const result = await db.execute(sql`
           SELECT 
             uq.id,
@@ -917,6 +917,49 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           ORDER BY uq.assigned_at DESC
         `);
         questsWithDefinitions = result.rows;
+        
+        // 🎯 SELF-HEALING: If no quests for today, assign them automatically
+        if (questsWithDefinitions.length === 0) {
+          console.log(`[GET /users/${userId}/quests/bucket/daily] No quests found for today, auto-assigning...`);
+          try {
+            const assignedQuests = await storage.assignDailyQuestsToUser(userId);
+            console.log(`[GET /users/${userId}/quests/bucket/daily] Auto-assigned ${assignedQuests.length} quests`);
+            // Re-query to get the assigned quests with definitions
+            const reResult = await db.execute(sql`
+              SELECT 
+                uq.id,
+                uq.user_id as "userId",
+                uq.quest_definition_id as "questDefinitionId",
+                uq.status,
+                uq.progress,
+                uq.assigned_at as "assignedAt",
+                uq.completed_at as "completedAt",
+                uq.assigned_date as "assignedDate",
+                uq.xp_earned as "xpEarned",
+                uq.badge_earned as "badgeEarned",
+                uq.musk_response as "muskResponse",
+                -- Quest definition fields
+                qd.title,
+                qd.description,
+                qd.type,
+                qd.target_count as "targetCount",
+                qd.target_action as "targetAction",
+                qd.xp_reward as "xpReward",
+                qd.badge_reward as "badgeReward",
+                qd.musk_tip as "muskTip"
+              FROM user_quests uq
+              JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+              WHERE uq.user_id = ${userId} 
+                AND uq.assigned_date = ${currentDate}
+                AND uq.status = 'active'
+              ORDER BY uq.assigned_at DESC
+            `);
+            questsWithDefinitions = reResult.rows;
+          } catch (assignError) {
+            console.error(`[GET /users/${userId}/quests/bucket/daily] Self-healing assignment failed:`, assignError);
+            // Return empty array on assignment failure to prevent crashes
+          }
+        }
       } else if (bucket === 'completed') {
         // Completed quests (today and recent)
         const result = await db.execute(sql`
@@ -1744,6 +1787,53 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           ORDER BY uq.assigned_at DESC
         `);
         socialQuestsWithDefinitions = result.rows;
+        
+        // 🎯 SELF-HEALING: If no social quests for today, assign them automatically
+        if (socialQuestsWithDefinitions.length === 0) {
+          console.log(`[GET /users/${userId}/social-quests/bucket/daily] No social quests found for today, auto-assigning...`);
+          try {
+            const assignedSocialQuests = await storage.assignDailySocialQuests(userId);
+            console.log(`[GET /users/${userId}/social-quests/bucket/daily] Auto-assigned ${assignedSocialQuests.length} social quests`);
+            // Re-query to get the assigned social quests with definitions
+            const reResult = await db.execute(sql`
+              SELECT 
+                uq.id,
+                uq.user_id as "userId",
+                uq.quest_definition_id as "questDefinitionId",
+                uq.status,
+                uq.progress,
+                uq.assigned_at as "assignedAt",
+                uq.completed_at as "completedAt",
+                uq.assigned_date as "assignedDate",
+                uq.xp_earned as "xpEarned",
+                uq.badge_earned as "badgeEarned",
+                uq.musk_response as "muskResponse",
+                -- Quest definition fields
+                qd.title,
+                qd.description,
+                qd.type,
+                qd.target_count as "targetCount",
+                qd.target_action as "targetAction",
+                qd.xp_reward as "xpReward",
+                qd.badge_reward as "badgeReward",
+                qd.musk_tip as "muskTip"
+              FROM user_quests uq
+              JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+              WHERE uq.user_id = ${userId} 
+                AND uq.assigned_date = ${currentDate}
+                AND uq.status = 'active'
+                AND EXISTS (
+                  SELECT 1 FROM user_social_quests usq 
+                  WHERE usq.user_quest_id = uq.id
+                )
+              ORDER BY uq.assigned_at DESC
+            `);
+            socialQuestsWithDefinitions = reResult.rows;
+          } catch (assignError) {
+            console.error(`[GET /users/${userId}/social-quests/bucket/daily] Self-healing assignment failed:`, assignError);
+            // Return empty array on assignment failure to prevent crashes
+          }
+        }
       } else if (bucket === 'completed') {
         // Completed social quests (today and recent)
         const result = await db.execute(sql`
