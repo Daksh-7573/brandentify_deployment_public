@@ -7,6 +7,7 @@ import {
   useUserQuestsWithDefinitions, 
   useUserWeeklyQuests,
   useUserDailyQuests,
+  useUserDailySocialQuests,
   getCurrentWeekNumber, 
   getCurrentYear
 } from '@/hooks/use-career-quests';
@@ -25,11 +26,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const currentYear = getCurrentYear();
   
   const { 
-    data: dailyQuests,
+    data: dailyCareerQuests,
     isLoading: isLoadingDaily,
     error: dailyError,
     refetch: refetchDaily
   } = useUserDailyQuests(userId);
+  
+  const { 
+    data: dailySocialQuests,
+    isLoading: isLoadingSocial,
+    error: socialError,
+    refetch: refetchSocial
+  } = useUserDailySocialQuests(userId);
   
   const {
     data: allQuests,
@@ -38,22 +46,37 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchAll
   } = useUserQuestsWithDefinitions(userId);
   
+  // Combine daily career and social quests
+  const dailyQuests = [
+    ...(dailyCareerQuests || []),
+    ...(dailySocialQuests || [])
+  ];
+  
   // Removed XP progress functionality since it's now in the parent component
 
   useEffect(() => {
     const refetchInterval = setInterval(() => {
       refetchDaily();
+      refetchSocial();
       refetchAll();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchDaily, refetchAll]);
+  }, [refetchDaily, refetchSocial, refetchAll]);
   
   useEffect(() => {
     if (dailyError) {
       toast({
-        title: 'Error fetching daily quests',
+        title: 'Error fetching daily career quests',
         description: (dailyError as Error).message,
+        variant: 'destructive',
+      });
+    }
+    
+    if (socialError) {
+      toast({
+        title: 'Error fetching daily social quests',
+        description: (socialError as Error).message,
         variant: 'destructive',
       });
     }
@@ -65,7 +88,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         variant: 'destructive',
       });
     }
-  }, [dailyError, allError, toast]);
+  }, [dailyError, socialError, allError, toast]);
   
   // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
   // For completed and expired tabs, use the data from the all quests hook
@@ -131,7 +154,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             <div className="text-sm text-muted-foreground mb-2">
               {new Date().toLocaleDateString()} - Today's quests for your career growth
             </div>
-            {renderQuestsList(dailyQuests, isLoadingDaily)}
+            {renderQuestsList(dailyQuests, isLoadingDaily || isLoadingSocial)}
           </TabsContent>
           
           <TabsContent value="expired" className="space-y-4">
