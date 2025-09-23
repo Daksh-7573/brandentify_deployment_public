@@ -582,7 +582,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           )
         `);
         
-        if (!tableCheck[0].exists) {
+        if (!tableCheck.rows[0].exists) {
           console.log('[POST /users/:userId/quests] user_quests table does not exist, returning default quest');
           return res.status(201).json({
             id: 0,
@@ -1578,11 +1578,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         return res.status(400).json({ message: 'Invalid platform' });
       }
       
-      const personalizedQuest = await socialQuestPersonalizationService.generatePersonalizedSocialQuest(
-        userId, 
-        platform, 
-        'share_content'
-      );
+      // TODO: Re-enable when socialQuestPersonalizationService is available
+      // const personalizedQuest = await socialQuestPersonalizationService.generatePersonalizedSocialQuest(
+      //   userId, 
+      //   platform, 
+      //   'share_content'
+      const personalizedQuest = null; // Temporary fix
       
       res.json(personalizedQuest);
     } catch (error) {
