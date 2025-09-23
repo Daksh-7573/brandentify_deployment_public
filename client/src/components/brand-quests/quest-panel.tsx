@@ -34,6 +34,19 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     isLoading: isLoadingCurrentSocial 
   } = useUserSocialQuestsByBucket(userId, socialSubTab as 'daily' | 'completed' | 'missed');
 
+  // DEBUG: Log quest data to identify the issue
+  console.log('[QUEST PANEL DEBUG] Current quest data:', {
+    userId,
+    tabValue,
+    careerSubTab,
+    socialSubTab,
+    careerQuestCount: currentCareerQuests.length,
+    socialQuestCount: currentSocialQuests.length,
+    careerLoading: isLoadingCurrentCareer,
+    socialLoading: isLoadingCurrentSocial,
+    timestamp: new Date().toISOString()
+  });
+
   // Additional hooks for counts in tab labels
   const { data: dailyCareerForCount = [] } = useUserCareerQuestsByBucket(userId, 'daily');
   const { data: completedCareerForCount = [] } = useUserCareerQuestsByBucket(userId, 'completed');
