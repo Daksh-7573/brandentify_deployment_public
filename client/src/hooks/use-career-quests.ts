@@ -707,7 +707,7 @@ export const useUserCareerQuestsByBucket = (userId?: number, bucket?: 'daily' | 
   console.log(`[QUEST HOOK DEBUG] Hook enabled: ${!!userId && !!bucket}`);
   
   return useQuery({
-    queryKey: userId && bucket ? [`/api/users/${userId}/quests/bucket/${bucket}`] : undefined,
+    queryKey: [`/api/users/${userId || 0}/quests/bucket/${bucket || 'daily'}`],
     queryFn: async () => {
       console.log(`[QUEST API DEBUG] Starting career quest fetch for userId: ${userId}, bucket: ${bucket}`);
       
@@ -759,7 +759,7 @@ export const useUserSocialQuestsByBucket = (userId?: number, bucket?: 'daily' | 
   console.log(`[SOCIAL QUEST HOOK DEBUG] Hook enabled: ${!!userId && !!bucket}`);
   
   return useQuery({
-    queryKey: userId && bucket ? [`/api/users/${userId}/social-quests/bucket/${bucket}`] : undefined,
+    queryKey: [`/api/users/${userId || 0}/social-quests/bucket/${bucket || 'daily'}`],
     queryFn: async () => {
       console.log(`[SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: ${userId}, bucket: ${bucket}`);
       
