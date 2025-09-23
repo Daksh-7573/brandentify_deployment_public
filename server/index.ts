@@ -1,10 +1,16 @@
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+// Define __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
@@ -598,7 +604,6 @@ const projectDir = path.join(uploadsDir, 'projects');
 const mediaDir = path.join(uploadsDir, 'media');
 
 // Ensure directories exist
-import fs from 'fs';
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -885,9 +890,71 @@ setInterval(async () => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  // Force development mode to serve fresh code instead of cached assets
-  console.log("🔧 Setting up Vite development server (forced for fresh code)");
-  await setupVite(app, server);
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (isProduction) {
+    console.log("🚀 Production mode: Setting up static file serving");
+    
+    // Find the correct client build directory by checking candidates in order
+    const clientRootCandidates = [
+      path.join(__dirname, 'public'),  // when running from dist/index.js
+      path.join(process.cwd(), 'dist', 'public'),
+      path.join(process.cwd(), 'public')  // ultimate fallback
+    ];
+    
+    let clientRoot = null;
+    for (const candidate of clientRootCandidates) {
+      if (fs.existsSync(candidate)) {
+        clientRoot = candidate;
+        console.log(`[Production Static] Found client files at: ${clientRoot}`);
+        break;
+      }
+    }
+    
+    if (!clientRoot) {
+      throw new Error(
+        `Could not find client build directory. Checked: ${clientRootCandidates.join(', ')}`
+      );
+    }
+    
+    // Honor environment override if set
+    if (process.env.STATIC_ROOT && fs.existsSync(process.env.STATIC_ROOT)) {
+      clientRoot = process.env.STATIC_ROOT;
+      console.log(`[Production Static] Using STATIC_ROOT override: ${clientRoot}`);
+    }
+    
+    console.log(`[Production Static] Client files:`, fs.readdirSync(clientRoot));
+    
+    // Mount static assets with immutable cache headers
+    app.use('/assets', express.static(path.join(clientRoot, 'assets'), {
+      immutable: true,
+      maxAge: '1y'
+    }));
+    
+    // Serve all static files with proper MIME types
+    app.use(express.static(clientRoot, {
+      setHeaders: (res, path) => {
+        if (path.endsWith('.js') || path.endsWith('.mjs')) {
+          res.setHeader('Content-Type', 'application/javascript');
+        }
+      }
+    }));
+    
+    // SPA fallback - serve index.html for all non-API routes
+    app.get('*', (req, res) => {
+      // Skip API routes
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'API endpoint not found' });
+      }
+      
+      const indexPath = path.join(clientRoot, 'index.html');
+      console.log(`[Production Static] Serving SPA fallback for ${req.path} from: ${indexPath}`);
+      res.sendFile(indexPath);
+    });
+  } else {
+    console.log("🔧 Development mode: Setting up Vite development server");
+    await setupVite(app, server);
+  }
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
