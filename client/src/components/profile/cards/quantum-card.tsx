@@ -12,7 +12,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
   const profileLink = `brandentifier.com/@${userData.username}`;
 
   return (
-    <div className="quantum-card w-full h-full aspect-[2/3.5] relative overflow-hidden rounded-xl">
+    <div className="quantum-card w-full min-h-[500px] relative overflow-hidden rounded-xl" style={{aspectRatio: '2/3.5'}}>
       {/* Background gradient with tech-inspired dark background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0A0F2C] to-[#1F1B44] z-0">
         {/* Grid pattern overlay */}
@@ -20,12 +20,12 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
       </div>
 
       {/* Glassmorphism card container with angled edges */}
-      <div className="absolute inset-0 m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 overflow-hidden transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
+      <div className="absolute inset-0 m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
         {/* Glowing border effect */}
         <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-lg z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]"></div>
       
         {/* Card content */}
-        <div className="relative flex flex-col h-full w-full z-30 p-2 sm:p-4">
+        <div className="relative flex flex-col min-h-full w-full z-30 p-2 sm:p-4">
           
           {/* Subtle loading indicator instead of full overlay */}
           {isLoading && (
@@ -191,7 +191,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           </div>
           
           {/* Footer with share button */}
-          <div className="mt-2 sm:mt-4 mb-1 sm:mb-2 flex justify-center">
+          <div className="mt-auto pt-2 sm:pt-4 pb-2 sm:pb-3 flex justify-center">
             <div className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-md text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/30 shadow-[0_0_10px_rgba(34,211,238,0.15)] ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer'}`}>
               <Share2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1.5 sm:mr-2 text-cyan-400" />
               <span className="hidden sm:inline">Share Quantum Card</span>
