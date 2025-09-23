@@ -1,0 +1,217 @@
+A preload for 'https://brandentifier.replit.app/assets/App-BnagpAvn.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+brand-quests:260 [SW EMERGENCY FIX v4] Detected Replit domain: brandentifier.replit.app
+brand-quests:261 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+index-G4tKWMHO.js:1797 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+index-G4tKWMHO.js:1867 [PERF] React app initialization started
+index-G4tKWMHO.js:1867 [PERF] React rendering started
+brand-quests:396 [Skeleton] DOM loaded, preparing smooth transition
+index-G4tKWMHO.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+index-G4tKWMHO.js:1867 [Progressive Loading] Starting tiered component loading
+index-G4tKWMHO.js:1867 [Progressive Loading] ⚡ Core components ready
+index-G4tKWMHO.js:289 AuthProvider: Starting auth check, current loading state: true
+index-G4tKWMHO.js:289 AuthProvider: Running checkAuth
+index-G4tKWMHO.js:289 AuthProvider: Current hostname: brandentifier.replit.app
+index-G4tKWMHO.js:289 AuthProvider: Domain check result: {hostname: 'brandentifier.replit.app', isPublishedDomain: true}
+index-G4tKWMHO.js:289 AuthProvider: Replit domain detected, checking server session brandentifier.replit.app
+index-G4tKWMHO.js:289 AuthProvider: Fetching server session for published domain...
+index-G4tKWMHO.js:1867 [PERF] React app rendered in 44.40 ms
+index-G4tKWMHO.js:1867 [PERF] Total initialization time: 45.00 ms
+brand-quests:284 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+brand-quests:402 [Skeleton] Starting fade-out transition
+brand-quests:330 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+brand-quests:331 📊 Total page load time: 107.50ms
+brand-quests:332 🔥 Firebase init time: 107.50ms
+brand-quests:340 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 2 modulepreload links active
+brand-quests:341 ⚡ Expected improvement: 100-300ms faster cold starts
+brand-quests:346 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+brand-quests:347 ⚡ Expected improvement: 150-250ms faster auth loads
+brand-quests:376 🔄 [Strategy 4] Service Worker: Installing...
+brand-quests:381 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+brand-quests:388 📈 Performance Optimization Complete - All 4 strategies active!
+index-G4tKWMHO.js:1867 [Progressive Loading] 🚀 Secondary components loaded
+index-G4tKWMHO.js:1867 [PERF] Skeleton loader removed in 155.60 ms
+index-G4tKWMHO.js:1867 [Progressive Loading] 🔧 All components loaded in 202.40ms
+brand-quests:408 [Skeleton] Skeleton loading complete - app ready
+brand-quests:412 ⚡ [PERF] Skeleton-to-app transition: 257.90ms
+App-BnagpAvn.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+brand-quests:356 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+brand-quests:357 ⚡ Expected improvement: 50-100ms perceived performance boost
+index-G4tKWMHO.js:289 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://brandentifier.replit.app/api/auth/session'}
+index-G4tKWMHO.js:289 AuthProvider: Raw server response: {success: true, user: {…}}
+index-G4tKWMHO.js:289 AuthProvider: Unwrapped user from server response
+index-G4tKWMHO.js:289 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+index-G4tKWMHO.js:289 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+index-G4tKWMHO.js:49 Cached response for /api/users/2
+index-G4tKWMHO.js:49 Cached response for /api/users/2/experiences
+index-G4tKWMHO.js:49 Cached response for /api/users/2/educations
+index-G4tKWMHO.js:49 Cached response for /api/users/2/skills
+index-G4tKWMHO.js:49 Cached response for /api/users/2/projects
+index-G4tKWMHO.js:289 AuthProvider: Failsafe timeout - forcing loading to false
+(anonymous) @ index-G4tKWMHO.js:289
+setTimeout
+(anonymous) @ index-G4tKWMHO.js:289
+kh @ index-G4tKWMHO.js:41
+va @ index-G4tKWMHO.js:41
+Cb @ index-G4tKWMHO.js:41
+ki @ index-G4tKWMHO.js:39
+pL @ index-G4tKWMHO.js:41
+Vi @ index-G4tKWMHO.js:41
+aP @ index-G4tKWMHO.js:41
+_ @ index-G4tKWMHO.js:26
+M @ index-G4tKWMHO.js:26Understand this warning
+index-G4tKWMHO.js:289 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+brand-quests-BJXqx2W1.js:1 [BRAND QUESTS PAGE DEBUG] Component rendered with user: {userId: 2, actualUserId: 2, authenticated: true, timestamp: '2025-09-23T16:18:07.961Z'}
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] isLoading: false
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] userData ready: true
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] userId: 2
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Fetching user data for ID: 2
+index-G4tKWMHO.js:1840 Header mounted - invalidating user query
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Fetching user data for ID: 2
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Starting career quest fetch for userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Fetching from: /api/users/2/quests/bucket/daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Fetching from: /api/users/2/social-quests/bucket/daily
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Starting career quest fetch for userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Fetching from: /api/users/2/quests/bucket/completed
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Starting career quest fetch for userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Fetching from: /api/users/2/quests/bucket/missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Fetching from: /api/users/2/social-quests/bucket/completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Fetching from: /api/users/2/social-quests/bucket/missed
+index-G4tKWMHO.js:1840 [HEADER IMAGE DEBUG] Image loaded successfully
+index-G4tKWMHO.js:1840 [HEADER IMAGE DEBUG] Image source type: BASE64
+index-G4tKWMHO.js:1840 [HEADER IMAGE DEBUG] Image source length: 56659
+3use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API SUCCESS] Social quests fetched successfully: {bucket: 'daily', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API SUCCESS] Social quests fetched successfully: {bucket: 'completed', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST API SUCCESS] Social quests fetched successfully: {bucket: 'missed', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [BRAND QUESTS PAGE DEBUG] Component rendered with user: {userId: 2, actualUserId: 2, authenticated: true, timestamp: '2025-09-23T16:18:08.021Z'}
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] isLoading: false
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] userData ready: true
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] userId: 2
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-G4tKWMHO.js:49 Cached response for /api/users/2
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-G4tKWMHO.js:49 Cached response for /api/users/2
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-G4tKWMHO.js:49 Cached response for /api/users/2/skills
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-DMew2K8y.js:1 [QUEST API SUCCESS] Career quests fetched successfully: {bucket: 'completed', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-G4tKWMHO.js:49 Cached response for /api/messaging/unread/count?userId=2
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+index-G4tKWMHO.js:49 Cached response for /api/users/2/educations
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-DMew2K8y.js:1 [QUEST API SUCCESS] Career quests fetched successfully: {bucket: 'daily', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-DMew2K8y.js:1 [QUEST API SUCCESS] Career quests fetched successfully: {bucket: 'missed', count: 0, userId: 2}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-BJXqx2W1.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: completed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: missed
+use-current-user-DMew2K8y.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-G4tKWMHO.js:49 Cached response for /api/users/2/experiences
+index-G4tKWMHO.js:49 Cached response for /api/users/2/projects
+index-G4tKWMHO.js:49 Cached response for /api/messaging/unread/count?userId=2
+index-G4tKWMHO.js:1840 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+brand-quests:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKCi8vIE5vdGU6IEZpcmViYXNlIHJlbW92ZWQgLSB1c2luZyBjdXN0b20gT0F1dGggb25seQoKLy8gUGVyZm9ybWFuY2UgbWVhc3VyZW1lbnQKY29uc3QgYXBwU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CmNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIGluaXRpYWxpemF0aW9uIHN0YXJ0ZWQnKTsKCi8vIFJlbW92ZSBIVE1MIGxvYWRlciBpbW1lZGlhdGVseSB3aGVuIFJlYWN0IGFwcCBzdGFydHMKY29uc3QgbG9hZGVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FwcC1sb2FkZXInKTsKaWYgKGxvYWRlcikgewogIGxvYWRlci5zdHlsZS5vcGFjaXR5ID0gJzAnOwogIGxvYWRlci5zdHlsZS50cmFuc2l0aW9uID0gJ29wYWNpdHkgMC4xNXMgZWFzZS1vdXQnOwogIHNldFRpbWVvdXQoKCkgPT4gewogICAgbG9hZGVyLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFNrZWxldG9uIGxvYWRlciByZW1vdmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAxNTApOwp9CgovLyBDaGVjayBpZiB3ZSBzaG91bGQgdXNlIHRoZSBzaW1wbGUgYXBwIG9yIHRoZSBmdWxsIGFwcApjb25zdCB1c2VTaW1wbGVBcHAgPSBmYWxzZTsgLy8gU2V0IHRvIHRydWUgZm9yIHRlc3RpbmcKCi8vIFByb2dyZXNzaXZlIHJlbmRlcmluZyAtIHN0YXJ0IHdpdGggY3JpdGljYWwgY29tcG9uZW50cwpjb25zdCByZW5kZXJBcHAgPSAoKSA9PiB7CiAgY29uc3QgcmVuZGVyU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CiAgY29uc29sZS5sb2coJ1tQRVJGXSBSZWFjdCByZW5kZXJpbmcgc3RhcnRlZCcpOwogIAogIGNyZWF0ZVJvb3QoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInJvb3QiKSEpLnJlbmRlcigKICAgIHVzZVNpbXBsZUFwcCA/IDxTaW1wbGVBcHAgLz4gOiA8QXBwIC8+CiAgKTsKICAKICAvLyBSZXBvcnQgcmVuZGVyaW5nIHRpbWUgYWZ0ZXIgUmVhY3QgaGFzIG1vdW50ZWQKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIHJlbmRlcmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gcmVuZGVyU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gVG90YWwgaW5pdGlhbGl6YXRpb24gdGltZTonLCAocGVyZm9ybWFuY2Uubm93KCkgLSBhcHBTdGFydFRpbWUpLnRvRml4ZWQoMiksICdtcycpOwogIH0sIDApOwp9OwoKLy8gT3B0aW1pemUgcmVuZGVyaW5nIHRpbWluZwppZiAoZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2xvYWRpbmcnKSB7CiAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIHJlbmRlckFwcCk7Cn0gZWxzZSB7CiAgcmVuZGVyQXBwKCk7Cn0K was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+brand-quests:1 The resource https://brandentifier.replit.app/assets/App-BnagpAvn.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
