@@ -457,6 +457,11 @@ function Router() {
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
       </Route>
       
+      {/* Profile Quest Routes - Nested under profile */}
+      <Route path="/profile/:userId/quests">
+        {(params) => <ProtectedRoute path="/profile/:userId/quests" component={() => <BrandQuestsPage />} />}
+      </Route>
+      
       {/* Admin Panel Routes - Using lazy loading */}
       <Route path="/admin">
         <ProtectedRoute path="/admin" component={() => {
