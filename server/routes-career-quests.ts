@@ -811,7 +811,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  // Daily quest retrieval route
+  // Daily quest retrieval route with self-healing assignment
   apiRouter.get("/users/:userId/quests/current-day", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -834,8 +834,26 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.status(200).json([]);
         }
         
-        const dailyQuests = await storage.getCurrentDayUserQuests(userId);
-        res.json(dailyQuests);
+        // First, try to get existing daily quests
+        let dailyQuests = await storage.getCurrentDayUserQuests(userId);
+        
+        // Self-healing: If no quests found for today, assign them automatically
+        if (!dailyQuests || dailyQuests.length === 0) {
+          console.log(`[GET /users/${userId}/quests/current-day] No quests found, auto-assigning daily quests...`);
+          try {
+            // Assign daily career quests to this user
+            const assignedQuests = await storage.assignDailyQuestsToUser(userId);
+            console.log(`[GET /users/${userId}/quests/current-day] ✅ Auto-assigned ${assignedQuests.length} career quests`);
+            
+            // Fetch the newly assigned quests with definitions
+            dailyQuests = await storage.getCurrentDayUserQuests(userId);
+          } catch (assignError) {
+            console.error(`[GET /users/${userId}/quests/current-day] Error auto-assigning quests:`, assignError);
+            // Still return empty array to prevent crashes
+          }
+        }
+        
+        res.json(dailyQuests || []);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/quests/current-day] Database error:`, dbError);
         // Return empty array instead of error to prevent UI crashes
@@ -1637,7 +1655,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  // Social Quest Daily endpoints
+  // Social Quest Daily endpoints with self-healing assignment
   apiRouter.get("/users/:userId/social-quests/current-day", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
@@ -1645,8 +1663,26 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         return res.status(400).json({ message: 'Invalid user ID' });
       }
       
-      const dailySocialQuests = await storage.getCurrentDaySocialQuests(userId);
-      res.json(dailySocialQuests);
+      // First, try to get existing daily social quests
+      let dailySocialQuests = await storage.getCurrentDaySocialQuests(userId);
+      
+      // Self-healing: If no social quests found for today, assign them automatically
+      if (!dailySocialQuests || dailySocialQuests.length === 0) {
+        console.log(`[GET /users/${userId}/social-quests/current-day] No social quests found, auto-assigning...`);
+        try {
+          // Assign daily social quests to this user
+          const assignedSocialQuests = await storage.assignDailySocialQuests(userId);
+          console.log(`[GET /users/${userId}/social-quests/current-day] ✅ Auto-assigned ${assignedSocialQuests.length} social quests`);
+          
+          // Fetch the newly assigned social quests
+          dailySocialQuests = await storage.getCurrentDaySocialQuests(userId);
+        } catch (assignError) {
+          console.error(`[GET /users/${userId}/social-quests/current-day] Error auto-assigning social quests:`, assignError);
+          // Still return empty array to prevent crashes
+        }
+      }
+      
+      res.json(dailySocialQuests || []);
     } catch (error) {
       console.error(`[GET /users/${req.params.userId}/social-quests/current-day] Error:`, error);
       res.status(500).json({ message: 'Failed to fetch daily social quests' });
