@@ -1,0 +1,103 @@
+Portfolio Layout Prompt – The Timeline Storyteller
+Theme:
+
+Interactive, storytelling-based timeline that flows from personal intro → work experience → projects → education → services, showing the user’s journey as a visual story.
+
+🧩 Layout Sections (Prompt Style)
+
+Hero Section (All About Me)
+
+Large circular Profile Picture at top-left with soft hover zoom.
+
+Name + Title next to it in bold (e.g. “I am: Product Manager”).
+
+Location, Industry, Domain shown below name (small muted text).
+
+Looking For displayed as a highlighted badge (e.g. 🔍 “Looking for Mentor”).
+
+About Me shown as a parallax text card with 350-word limit → expands on hover/click.
+
+Timeline Story Path (Central Spine)
+
+A vertical interactive line (center of screen) → scroll-triggered animation.
+
+Nodes along the line represent different categories:
+
+Work Experience → Company logos as timeline points.
+
+Education → Institution crests/logos.
+
+Projects → Thumbnails appear at relevant years.
+
+Hover/click on each node expands into a card with details (job description, achievements, skills).
+
+Animated year markers (floating, fade-in as you scroll).
+
+Work Experience Cards
+
+Company logo + Title + Dates pinned to timeline.
+
+Expand into accordion-style panels showing:
+
+Description
+
+Key Responsibilities (bullet points)
+
+Location & Domain
+
+Education Cards
+
+Degree + Institution + Field of Study as timeline point.
+
+Expand to show: skills acquired + achievements.
+
+Projects Showcase
+
+Each project shown as square thumbnail aligned with timeline.
+
+Expand into modal with:
+
+Title + Description + Project URL
+
+Media carousel (up to 10 images / 2-min video).
+
+Tags for Industry + Category.
+
+Skills & Services Section (Side Orbit)
+
+Skills shown as circular progress rings (Beginner / Intermediate / Advanced → % fill).
+
+Services shown as cards with:
+
+Title + Category
+
+Price in INR/USD toggle
+
+Features list (hover to expand).
+
+CTA: Hire Me / Request Service buttons.
+
+Call-to-Action Footer
+
+Sticky buttons at top & bottom:
+
+Let’s Talk → Opens chat modal with dropdown + message input (max 350 chars).
+
+Grab My Resume → Direct CV/PDF download.
+
+Mentor → Sends mentorship request (5-day acceptance).
+
+✨ Visual / Animation Guidelines
+
+Parallax scrolling: As you scroll, timeline nodes float in smoothly.
+
+Micro-interactions: Hover effects on nodes, smooth accordion expand.
+
+Color scheme: Pastel gradients for timeline spine, nodes in neon glow.
+
+Typography: Bold headers (Montserrat / Poppins), clean body text (Inter).
+
+Iconography: Industry/domain badges on each card for quick recognition.
+
+⚡ Prompt Example (for AI Design Tool):
+"Design a futuristic interactive portfolio page called 'The Timeline Storyteller'. At the top, show a large profile picture, name, title, and short bio. Create a vertical timeline in the center with animated nodes for work, education, and projects. Each node expands into elegant cards with details. Add sections for skills (progress rings) and services (colorful cards). Use pastel gradients, smooth parallax scrolling, and micro-interactions. Place sticky call-to-action buttons at top and bottom: Let’s Talk, Grab My Resume, Mentor."

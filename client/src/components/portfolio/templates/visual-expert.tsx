@@ -297,13 +297,10 @@ export default function VisualExpert({
       
       .visual-expert-template .profile-image-container {
         position: relative;
-        margin: 0 auto !important;
+        margin: 0 auto;
         width: 180px;
         height: 180px;
         z-index: 1;
-        display: block !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
       }
       
       .visual-expert-template .profile-image-border {
@@ -594,7 +591,7 @@ export default function VisualExpert({
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col items-center text-center relative">
             {/* Profile Image with animated border */}
-            <div className="profile-image-container mb-8 animate-fade-in mx-auto flex justify-center">
+            <div className="profile-image-container mb-8 animate-fade-in">
               <div className="profile-image-border"></div>
               <div className="profile-image-wrap">
                 <ProfileImage
