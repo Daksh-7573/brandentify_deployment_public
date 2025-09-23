@@ -1840,5 +1840,84 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Admin endpoint for production backfill - assigns quests to all users
+  apiRouter.post("/admin/quests/assign-all-users", async (req, res) => {
+    try {
+      // Basic security check - require ADMIN_TOKEN environment variable
+      const adminToken = req.headers.authorization || req.query.token;
+      if (!adminToken || adminToken !== process.env.ADMIN_TOKEN) {
+        return res.status(401).json({ error: 'Unauthorized - Admin token required' });
+      }
+
+      console.log('[ADMIN] Starting bulk quest assignment to all users...');
+      
+      // Get all active users
+      const users = await storage.getAllUsers();
+      console.log(`[ADMIN] Found ${users.length} users for quest assignment`);
+      
+      let successCount = 0;
+      let errorCount = 0;
+      const results = [];
+      
+      // Assign quests to each user
+      for (const user of users) {
+        try {
+          // Check if user already has quests for today
+          const existingQuests = await storage.getCurrentDayUserQuests(user.id);
+          const existingSocialQuests = await storage.getCurrentDaySocialQuests(user.id);
+          
+          let careerQuests = [];
+          let socialQuests = [];
+          
+          // Assign career quests if none exist
+          if (!existingQuests || existingQuests.length === 0) {
+            careerQuests = await storage.assignDailyQuestsToUser(user.id);
+          }
+          
+          // Assign social quests if none exist  
+          if (!existingSocialQuests || existingSocialQuests.length === 0) {
+            socialQuests = await storage.assignDailySocialQuests(user.id);
+          }
+          
+          results.push({
+            userId: user.id,
+            name: user.name,
+            careerQuests: careerQuests.length,
+            socialQuests: socialQuests.length,
+            status: 'success'
+          });
+          
+          successCount++;
+          console.log(`[ADMIN] ✅ User ${user.id} (${user.name}): ${careerQuests.length} career + ${socialQuests.length} social quests`);
+          
+        } catch (userError) {
+          console.error(`[ADMIN] ❌ Error assigning quests to user ${user.id}:`, userError);
+          results.push({
+            userId: user.id,
+            name: user.name || 'Unknown',
+            error: userError.message,
+            status: 'error'
+          });
+          errorCount++;
+        }
+      }
+      
+      const summary = {
+        totalUsers: users.length,
+        successCount,
+        errorCount,
+        timestamp: new Date().toISOString(),
+        results
+      };
+      
+      console.log(`[ADMIN] ✅ Bulk assignment complete: ${successCount} success, ${errorCount} errors`);
+      res.json(summary);
+      
+    } catch (error) {
+      console.error('[ADMIN] Error in bulk quest assignment:', error);
+      res.status(500).json({ error: 'Failed to assign quests to users', details: error.message });
+    }
+  });
+
   console.log("Career Quests and Social Quests routes loaded");
 }
