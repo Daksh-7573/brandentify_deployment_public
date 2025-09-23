@@ -210,7 +210,7 @@ export default function TimelineStoryteller2({
             <div className="flex-shrink-0">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-xl opacity-30 animate-pulse scale-110" />
-                <div className="relative hover:scale-105 transition-transform duration-500">
+                <div className="relative transition-shadow duration-500">
                   <ProfileImage
                     src={userInfo.photoURL || ""}
                     alt={userInfo.name}
@@ -262,7 +262,7 @@ export default function TimelineStoryteller2({
               </div>
 
               {/* About Me - Parallax Text Card */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500 hover:scale-105">
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-shadow duration-500">
                 <h3 className="text-lg font-bold text-gray-800 mb-3">About Me</h3>
                 <p className="text-gray-600 leading-relaxed">
                   {userInfo.aboutMe || "Add your professional story and what makes you unique in your field."}
@@ -337,8 +337,8 @@ export default function TimelineStoryteller2({
                   {/* Content Card */}
                   <div className={`w-5/12 ${index % 2 === 0 ? 'mr-auto pr-8' : 'ml-auto pl-8'}`}>
                     <Card 
-                      className={`transform transition-all duration-500 hover:scale-105 hover:shadow-xl cursor-pointer ${
-                        activeTimelineNode === item.id ? 'shadow-xl scale-105' : 'shadow-md'
+                      className={`transform transition-shadow duration-500 ${item.type === 'project' ? 'cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-blue-200' : ''} ${
+                        activeTimelineNode === item.id ? 'shadow-xl ring-1 ring-blue-300' : 'shadow-md'
                       }`}
                       onClick={() => {
                         if (item.type === 'project') {
@@ -411,7 +411,7 @@ export default function TimelineStoryteller2({
                   
                   {/* Progress Circle */}
                   <div 
-                    className="absolute inset-0 rounded-full bg-gradient-to-r opacity-90 transition-all duration-1000 group-hover:scale-110"
+                    className="absolute inset-0 rounded-full bg-gradient-to-r opacity-90 transition-colors duration-1000"
                     style={{
                       background: `conic-gradient(from 0deg, 
                         ${skill.level === 'beginner' ? '#3B82F6' : skill.level === 'intermediate' ? '#8B5CF6' : '#EC4899'} 0deg,
@@ -458,7 +458,7 @@ export default function TimelineStoryteller2({
               {userServices.map((service) => (
                 <Card 
                   key={service.id} 
-                  className="group hover:scale-105 transition-all duration-500 hover:shadow-2xl border-0 bg-white/80 backdrop-blur-sm"
+                  className="group transition-shadow duration-500 hover:shadow-lg border-0 bg-white/80 backdrop-blur-sm"
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
@@ -591,6 +591,15 @@ export default function TimelineStoryteller2({
 
       {/* Custom Animations */}
       <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+          }
+        }
+        
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
