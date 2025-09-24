@@ -83,18 +83,22 @@ export default function QuantumCardPage() {
             </NeoGlassSection>
 
             {/* Quantum Card Builder Section */}
-            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg">
-              <div className="p-6">
-                <VisitingCardBuilder 
-                  userData={userData as any}
-                  selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
-                  onCardTypeSelect={(cardType) => {
-                    // Handle card type selection if needed
-                    console.log('Selected card type:', cardType);
-                  }}
-                />
-              </div>
-            </NeoGlassSection>
+            <div className="w-full mb-6 p-4 bg-blue-500/20 border border-blue-400 rounded-lg">
+              <h2 className="text-white text-xl mb-4">🔧 DEBUG: Quantum Card Builder Section</h2>
+              <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
+                <div className="p-6">
+                  <h3 className="text-white text-lg mb-4">Card Builder Component</h3>
+                  <VisitingCardBuilder 
+                    userData={userData as any}
+                    selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
+                    onCardTypeSelect={(cardType) => {
+                      // Handle card type selection if needed
+                      console.log('Selected card type:', cardType);
+                    }}
+                  />
+                </div>
+              </NeoGlassSection>
+            </div>
         </NeoGlassLayout>
 
       {/* Edit Contact Information Dialog */}
