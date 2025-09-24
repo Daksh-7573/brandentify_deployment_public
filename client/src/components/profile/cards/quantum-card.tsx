@@ -12,7 +12,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
   const profileLink = `brandentifier.com/@${userData.username}`;
 
   return (
-    <div className="quantum-card w-full min-h-[500px] relative overflow-hidden rounded-xl">
+    <div className="quantum-card w-full min-h-[500px] relative rounded-xl">
       {/* Background gradient with tech-inspired dark background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0A0F2C] to-[#1F1B44] z-0">
         {/* Grid pattern overlay */}
@@ -20,7 +20,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
       </div>
 
       {/* Glassmorphism card container with angled edges */}
-      <div className="absolute inset-0 m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
+      <div className="relative w-full h-auto m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
         {/* Glowing border effect */}
         <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-lg z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]"></div>
       
