@@ -47,7 +47,7 @@ export default function QuantumCardPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <Header />
         <NeoGlassLayout className="mx-6 mt-3 relative z-10">
             {/* Page Header */}

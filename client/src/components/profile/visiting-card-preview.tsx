@@ -16,12 +16,12 @@ interface VisitingCardPreviewProps {
 }
 
 const CardWrapper: React.FC<{children: React.ReactNode, cardType?: string}> = ({children, cardType}) => {
-  // For quantum card, use flexible height instead of strict aspect ratio
+  // For quantum card, use completely flexible height without any constraints
   const isQuantumCard = cardType === "quantum";
   
   return (
-    <div className={`visiting-card-preview w-full ${isQuantumCard ? 'min-h-[500px]' : 'h-full aspect-[2/3.5]'}`}>
-      <div className={`w-full ${isQuantumCard ? 'min-h-full' : 'h-full'}`}>
+    <div className={`visiting-card-preview w-full ${isQuantumCard ? '' : 'h-full aspect-[2/3.5]'}`}>
+      <div className={`w-full ${isQuantumCard ? '' : 'h-full'}`}>
         {children}
       </div>
     </div>

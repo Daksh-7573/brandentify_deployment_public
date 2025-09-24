@@ -242,7 +242,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         <div className="flex flex-col md:flex-row gap-8">
           {/* Card Preview */}
           <div className="flex-1 flex flex-col items-center">
-            <div className="w-full max-w-[280px]">
+            <div className="w-full max-w-[350px]">
               <VisitingCardPreview
                 userData={userData}
                 cardType={activeTab}
