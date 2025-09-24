@@ -1,0 +1,254 @@
+12The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+12The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+12The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+_app-301e8a22f64613ff.js:34 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+/~:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+/~:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+/~:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+_app-301e8a22f64613ff.js:34 [LaunchDarkly] LaunchDarkly client initialized
+main.MWI4MDAwODU3MQ.js:1 Deprecated API for given entry type.
+(anonymous) @ main.MWI4MDAwODU3MQ.js:1Understand this warning
+/repls:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+9Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'battery'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+framework-b3f3f5f43b85119b.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-b3f3f5f43b85119b.js:1Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'battery'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'battery'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Arfi%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+7A preload for '<URL>' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+30The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+Console.js:61 [SW EMERGENCY FIX v4] Detected Replit domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+Console.js:61 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkAuth
+Console.js:61 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Domain check result: Object
+Console.js:61 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Fetching server session for published domain...
+Console.js:61 [PERF] React app rendered in 23.00 ms
+Console.js:61 [PERF] Total initialization time: 23.30 ms
+Console.js:61 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [PERF] Skeleton loader removed in 157.90 ms
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 229.10ms
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 213.40ms
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 260.80ms
+Console.js:61 🔥 Firebase init time: 260.80ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 🔄 [Strategy 4] Service Worker: Installing...
+Console.js:61 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 AuthProvider: Server session response: Object
+Console.js:61 AuthProvider: Raw server response: Object
+Console.js:61 AuthProvider: Unwrapped user from server response
+Console.js:61 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 Fetching data from: /api/users/2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 40579
+2Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+2Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+Console.js:61 [SW EMERGENCY FIX v4] Detected Replit domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+Console.js:61 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkAuth
+Console.js:61 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Domain check result: {hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isPublishedDomain: true}
+Console.js:61 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Fetching server session for published domain...
+Console.js:61 [PERF] React app rendered in 24.40 ms
+Console.js:61 [PERF] Total initialization time: 25.00 ms
+Console.js:61 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+App-DAphVPve.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+Console.js:61 [PERF] Skeleton loader removed in 158.90 ms
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 232.50ms
+Console.js:61 🔥 Firebase init time: 232.50ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 🔄 [Strategy 4] Service Worker: Installing...
+Console.js:61 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 210.50ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 242.20ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session'}
+Console.js:61 AuthProvider: Raw server response: {success: true, user: {…}}
+Console.js:61 AuthProvider: Unwrapped user from server response
+Console.js:61 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ index-lfogtLLq.js:289
+setTimeout
+(anonymous) @ index-lfogtLLq.js:289
+kh @ index-lfogtLLq.js:41
+va @ index-lfogtLLq.js:41
+Eb @ index-lfogtLLq.js:41
+ki @ index-lfogtLLq.js:39
+pL @ index-lfogtLLq.js:41
+Vi @ index-lfogtLLq.js:41
+aP @ index-lfogtLLq.js:41
+_ @ index-lfogtLLq.js:26
+M @ index-lfogtLLq.js:26Understand this warning
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 Fetching data from: /api/users/2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 40579
+2Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+2Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2

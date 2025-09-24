@@ -86,7 +86,7 @@ export default function QuantumCardPage() {
             <div className="w-full mb-6 p-4 bg-blue-500/20 border border-blue-400 rounded-lg">
               <h2 className="text-white text-xl mb-4">🔧 DEBUG: Quantum Card Builder Section</h2>
               <p className="text-white mb-4">✅ This section container is rendering</p>
-              <p className="text-white mb-4">User ID: {userData?.id}</p>
+              <p className="text-white mb-4">User ID: {(userData as any)?.id}</p>
               <p className="text-white mb-4">Card Type: {(userData as any)?.visitingCardType || 'quantum'}</p>
               
               <div className="p-4 bg-green-500/20 border border-green-400 rounded">
