@@ -19,8 +19,11 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJBMkE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIiAvPjwvc3ZnPg==')] opacity-20"></div>
       </div>
 
-      {/* Glassmorphism card container with angled edges */}
-      <div className="relative w-full h-auto m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
+      {/* Decorative background with angled edges */}
+      <div className="absolute inset-0 m-1 sm:m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}></div>
+      
+      {/* Content container without clip-path constraints */}
+      <div className="relative w-full h-auto m-1 sm:m-2 z-20 overflow-visible">
         {/* Glowing border effect */}
         <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-lg z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]"></div>
       

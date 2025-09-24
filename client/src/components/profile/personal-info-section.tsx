@@ -10,7 +10,7 @@ interface PersonalInfoSectionProps {
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
   return (
-    <div className="neo-glass-card bg-white/5 backdrop-blur-md border border-white/20 rounded-lg">
+    <div className="neo-glass-card bg-white/5 backdrop-blur-md border border-white/20 rounded-lg overflow-visible">
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-white">Contact Information</h3>

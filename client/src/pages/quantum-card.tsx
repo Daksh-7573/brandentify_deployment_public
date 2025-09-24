@@ -73,7 +73,7 @@ export default function QuantumCardPage() {
             </div>
 
             {/* Contact Information Section */}
-            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg mb-6">
+            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg mb-6 overflow-visible">
               <div className="p-6">
                 <PersonalInfoSection 
                   userData={userData as any} 
