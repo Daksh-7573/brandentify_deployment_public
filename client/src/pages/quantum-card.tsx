@@ -85,19 +85,30 @@ export default function QuantumCardPage() {
             {/* Quantum Card Builder Section */}
             <div className="w-full mb-6 p-4 bg-blue-500/20 border border-blue-400 rounded-lg">
               <h2 className="text-white text-xl mb-4">🔧 DEBUG: Quantum Card Builder Section</h2>
-              <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
-                <div className="p-6">
-                  <h3 className="text-white text-lg mb-4">Card Builder Component</h3>
-                  <VisitingCardBuilder 
-                    userData={userData as any}
-                    selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
-                    onCardTypeSelect={(cardType) => {
-                      // Handle card type selection if needed
-                      console.log('Selected card type:', cardType);
-                    }}
-                  />
-                </div>
-              </NeoGlassSection>
+              <p className="text-white mb-4">✅ This section container is rendering</p>
+              <p className="text-white mb-4">User ID: {userData?.id}</p>
+              <p className="text-white mb-4">Card Type: {(userData as any)?.visitingCardType || 'quantum'}</p>
+              
+              <div className="p-4 bg-green-500/20 border border-green-400 rounded">
+                <h3 className="text-white text-lg mb-4">Card Builder Component Test</h3>
+                <p className="text-white mb-2">About to render VisitingCardBuilder component...</p>
+                
+                <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
+                  <div className="p-6">
+                    {userData ? (
+                      <VisitingCardBuilder 
+                        userData={userData as any}
+                        selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
+                        onCardTypeSelect={(cardType) => {
+                          console.log('Selected card type:', cardType);
+                        }}
+                      />
+                    ) : (
+                      <p className="text-white">❌ No userData available for VisitingCardBuilder</p>
+                    )}
+                  </div>
+                </NeoGlassSection>
+              </div>
             </div>
         </NeoGlassLayout>
 
