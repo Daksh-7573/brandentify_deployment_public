@@ -12792,6 +12792,130 @@ export class DatabaseStorage implements IStorage {
     // Use the existing updateUserQuest method since social quests use the same table  
     return this.updateUserQuest(id, socialQuest);
   }
+
+  // Search methods implementation for DatabaseStorage
+  async searchPulses(query: string): Promise<any[]> {
+    console.log(`[db.searchPulses] Searching pulses with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+
+    try {
+      // Search for pulses in the database using SQL ILIKE for case-insensitive partial matching
+      const result = await pool.query(`
+        SELECT 
+          p.id, p.title, p.content, p.industry, p.domain, p.type, p.category,
+          p.media_type as "mediaType", p.media_urls as "mediaUrls", 
+          p.poll_options as "pollOptions", p.project_id as "projectId",
+          p.likes, p.insightful_count as "insightfulCount", 
+          p.misinformed_count as "misinformedCount", p.share_count as "shareCount",
+          p.comments, p.is_published as "isPublished", 
+          p.expires_at as "expiresAt", p.created_at as "createdAt",
+          u.name as "userName", u.photo_url as "userPhotoURL"
+        FROM pulses p
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE p.is_published = true 
+        AND (
+          p.title ILIKE $1 
+          OR p.content ILIKE $1
+          OR p.industry ILIKE $1
+          OR p.domain ILIKE $1
+        )
+        ORDER BY p.created_at DESC
+        LIMIT 50
+      `, [`%${normalizedQuery}%`]);
+
+      console.log(`[db.searchPulses] Found ${result.rows.length} matching pulses`);
+      
+      // Add user info to each pulse
+      const pulsesWithUsers = result.rows.map(pulse => ({
+        ...pulse,
+        user: {
+          name: pulse.userName,
+          photoURL: pulse.userPhotoURL
+        }
+      }));
+
+      return pulsesWithUsers;
+    } catch (error) {
+      console.error('[db.searchPulses] Error searching pulses:', error);
+      return [];
+    }
+  }
+
+  async searchProfiles(query: string): Promise<any[]> {
+    console.log(`[db.searchProfiles] Searching profiles with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+
+    try {
+      // Search for user profiles in the database
+      const result = await pool.query(`
+        SELECT 
+          id, username, email, name, photo_url as "photoURL", title, 
+          about_me as "aboutMe", location, industry, domain, 
+          looking_for as "lookingFor", what_i_offer as "whatIOffer",
+          visiting_card_type as "visitingCardType", profile_completed as "profileCompleted",
+          created_at as "createdAt"
+        FROM users
+        WHERE 
+          name ILIKE $1 
+          OR title ILIKE $1
+          OR location ILIKE $1
+          OR industry ILIKE $1
+          OR domain ILIKE $1
+          OR about_me ILIKE $1
+        ORDER BY profile_completed DESC, created_at DESC
+        LIMIT 50
+      `, [`%${normalizedQuery}%`]);
+
+      console.log(`[db.searchProfiles] Found ${result.rows.length} matching profiles`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.searchProfiles] Error searching profiles:', error);
+      return [];
+    }
+  }
+
+  async searchHashtags(query: string): Promise<{id: number, name: string, count: number}[]> {
+    console.log(`[db.searchHashtags] Searching hashtags with query: "${query}"`);
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    if (!normalizedQuery) {
+      return [];
+    }
+
+    try {
+      // Search for hashtags in the database
+      const result = await pool.query(`
+        SELECT 
+          h.id, h.tag as name, h.count
+        FROM hashtags h
+        WHERE h.tag ILIKE $1
+        ORDER BY h.count DESC, h.tag ASC
+        LIMIT 50
+      `, [`%${normalizedQuery}%`]);
+
+      console.log(`[db.searchHashtags] Found ${result.rows.length} matching hashtags`);
+      
+      // Transform to the expected format
+      const hashtags = result.rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        count: row.count || 0
+      }));
+
+      return hashtags;
+    } catch (error) {
+      console.error('[db.searchHashtags] Error searching hashtags:', error);
+      return [];
+    }
+  }
 }
 
 // Create a properly typed storage instance
