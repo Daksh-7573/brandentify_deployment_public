@@ -13076,6 +13076,11 @@ export const storage = {
   getPulses: () => dbStorage.getPulses(),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
   
+  // Search methods
+  searchPulses: (query: string) => dbStorage.searchPulses(query),
+  searchProfiles: (query: string) => dbStorage.searchProfiles(query),
+  searchHashtags: (query: string) => dbStorage.searchHashtags(query),
+  
   // Poll Vote methods
   getPollVoteByUserAndPulse: (userId: number, pulseId: number) => dbStorage.getPollVoteByUserAndPulse(userId, pulseId),
   createPollVote: (vote: InsertPollVote) => dbStorage.createPollVote(vote),
