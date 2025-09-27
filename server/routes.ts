@@ -1148,6 +1148,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user by random profile link endpoint for public profiles
+  apiRouter.get("/r/:randomLink", async (req: Request, res: Response) => {
+    try {
+      const randomLink = req.params.randomLink;
+      
+      console.log(`[GET /r/:randomLink] Looking up user with random link: ${randomLink}`);
+      
+      // Query database for user with this random profile link
+      const result = await pool.query(
+        `SELECT 
+          id, username, email, password, 
+          phone_number as "phoneNumber", 
+          name, brand_name as "brandName", 
+          photo_url as "photoURL", 
+          profile_url as "profileUrl",
+          random_profile_link as "randomProfileLink",
+          title, about_me as "aboutMe", 
+          location, industry, domain, 
+          looking_for as "lookingFor", 
+          what_i_offer as "whatIOffer", 
+          visiting_card_type as "visitingCardType",
+          selected_portfolio_layout as "selectedPortfolioLayout",
+          profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", 
+          email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", 
+          created_at as "createdAt"
+        FROM users WHERE random_profile_link = $1`,
+        [randomLink]
+      );
+      
+      if (result.rows.length === 0) {
+        console.log(`[GET /r/:randomLink] No user found with random link: ${randomLink}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const user = result.rows[0];
+      console.log(`[GET /r/:randomLink] Found user with ID: ${user.id} for random link: ${randomLink}`);
+      
+      // Don't expose sensitive information in public API
+      const publicUser = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        brandName: user.brandName,
+        photoURL: user.photoURL,
+        title: user.title,
+        aboutMe: user.aboutMe,
+        location: user.location,
+        industry: user.industry,
+        domain: user.domain,
+        lookingFor: user.lookingFor,
+        whatIOffer: user.whatIOffer,
+        selectedPortfolioLayout: user.selectedPortfolioLayout,
+        visitingCardType: user.visitingCardType,
+        randomProfileLink: user.randomProfileLink,
+        createdAt: user.createdAt
+      };
+      
+      res.json(publicUser);
+    } catch (error) {
+      console.error("Error fetching user by random link:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Global middleware to log ALL PUT requests
   apiRouter.use((req: Request, res: Response, next) => {
     if (req.method === 'PUT') {
