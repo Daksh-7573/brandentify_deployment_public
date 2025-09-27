@@ -72,6 +72,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
+const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
 const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
@@ -631,6 +632,15 @@ function Router() {
       </Route>
       <Route path="/signin-callback">
         <CatchAllAuthHandler />
+      </Route>
+      
+      {/* Random profile link route */}
+      <Route path="/r/:randomLink">
+        {(params) => (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <RandomProfile />
+          </Suspense>
+        )}
       </Route>
       
       {/* Brand name public profile route - must be last to avoid conflicts */}
