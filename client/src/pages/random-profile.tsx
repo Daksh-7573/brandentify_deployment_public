@@ -201,7 +201,7 @@ const RandomProfile = () => {
       case "animated_odyssey":
         return <AnimatedOdyssey portfolioData={completePortfolioData} />;
       default:
-        return <MinimalistPro portfolioData={completePortfolioData} />;
+        return <CorporateExecutive portfolioData={completePortfolioData} />;
     }
   }
 

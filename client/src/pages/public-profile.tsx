@@ -372,7 +372,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       case 'scholar':
         return <MinimalistPro {...templateProps} />;
       default:
-        return <VisualExpert {...templateProps} />;
+        return <CorporateExecutive {...templateProps} />;
     }
   };
   

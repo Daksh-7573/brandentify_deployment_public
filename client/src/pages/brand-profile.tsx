@@ -248,7 +248,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
 
   // Render the appropriate portfolio template based on selected layout
   const renderPortfolioTemplate = () => {
-    const layout = portfolioData?.layout || 'professional';
+    const layout = portfolioData?.layout || 'corporate-executive';
     
     console.log("Rendering portfolio template:");
     console.log("- layout:", layout);
