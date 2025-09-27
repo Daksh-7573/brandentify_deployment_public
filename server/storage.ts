@@ -108,6 +108,45 @@ async function executeQuery(queryText: string, params: any[] = []) {
     throw error;
   }
 }
+
+// Generate unique random profile link
+function generateRandomProfileLink(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const length = 12; // 12 character random string
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Check if random profile link is unique
+async function ensureUniqueRandomProfileLink(): Promise<string> {
+  let attempts = 0;
+  const maxAttempts = 10;
+  
+  while (attempts < maxAttempts) {
+    const randomLink = generateRandomProfileLink();
+    
+    try {
+      const result = await executeQuery(
+        'SELECT id FROM users WHERE random_profile_link = $1',
+        [randomLink]
+      );
+      
+      if (result.rows.length === 0) {
+        return randomLink;
+      }
+    } catch (error) {
+      console.error('Error checking random profile link uniqueness:', error);
+    }
+    
+    attempts++;
+  }
+  
+  // Fallback with timestamp if all attempts fail
+  return generateRandomProfileLink() + Date.now().toString().slice(-4);
+}
 import { 
   users, User, InsertUser, 
   resumes, Resume, InsertResume,
@@ -8997,7 +9036,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    // Generate unique random profile link
+    const randomProfileLink = await ensureUniqueRandomProfileLink();
+    
+    // Add random profile link to user data
+    const userWithRandomLink = {
+      ...insertUser,
+      randomProfileLink
+    };
+    
+    const [user] = await db.insert(users).values(userWithRandomLink).returning();
     return user;
   }
 
