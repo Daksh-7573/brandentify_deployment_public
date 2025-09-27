@@ -12909,6 +12909,7 @@ export class DatabaseStorage implements IStorage {
           about_me as "aboutMe", location, industry, domain, 
           looking_for as "lookingFor", what_i_offer as "whatIOffer",
           visiting_card_type as "visitingCardType", profile_completed as "profileCompleted",
+          random_profile_link as "randomProfileLink",
           created_at as "createdAt"
         FROM users
         WHERE 

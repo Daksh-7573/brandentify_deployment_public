@@ -1257,7 +1257,7 @@ export default function CreatePulsePage() {
                                   <div className="flex-1 space-y-2">
                                     <Label className="text-white">Team Member {index + 1}</Label>
                                     <Input
-                                      placeholder="https://brandentifier.replit.app/profile/username"
+                                      placeholder="https://brandentifier.replit.app/r/abc123xyz789"
                                       value={member}
                                       onChange={(e) => updateTeamMember(index, e.target.value)}
                                       className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
@@ -1306,7 +1306,7 @@ export default function CreatePulsePage() {
                                 <Label htmlFor="client-profile" className="text-white">Client Profile Link</Label>
                                 <Input
                                   id="client-profile"
-                                  placeholder="https://brandentifier.replit.app/profile/username"
+                                  placeholder="https://brandentifier.replit.app/r/abc123xyz789"
                                   value={clientProfile}
                                   onChange={(e) => setClientProfile(e.target.value)}
                                   className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"

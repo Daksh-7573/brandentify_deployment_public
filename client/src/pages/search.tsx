@@ -46,6 +46,7 @@ type SearchResultsType = {
     photoURL: string | null;
     location: string | null;
     industry: string | null;
+    randomProfileLink: string | null;
   }>;
   hashtags: Array<{
     id: number;
@@ -60,6 +61,7 @@ type SearchResultsType = {
     photoURL: string | null;
     skills: string[];
     matchPercentage: number;
+    randomProfileLink: string | null;
     matchDetails: {
       industryMatch: number;
       domainMatch: number;
@@ -647,6 +649,7 @@ function SearchPage() {
                             photoURL: string | null;
                             location: string | null;
                             industry: string | null;
+                            randomProfileLink: string | null;
                           }) => (
                             <Card key={profile.id} className="overflow-hidden rounded-xl border border-white/10 bg-gray-900/60 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
                               <div className="bg-gradient-to-br from-white/15 via-white/10 to-white/5 h-28 relative overflow-hidden">
@@ -684,7 +687,7 @@ function SearchPage() {
                                   <div className="mt-4">
                                     <Button 
                                       className="w-full neo-glass-button rounded-full py-2 text-sm"
-                                      onClick={() => setLocation(`/profile/${profile.id}`)}
+                                      onClick={() => setLocation(profile.randomProfileLink ? `/r/${profile.randomProfileLink}` : `/profile/${profile.id}`)}
                                     >
                                       <span>View Profile</span>
                                     </Button>
@@ -967,7 +970,7 @@ function SearchPage() {
                                         </div>
                                         <button 
                                           className="mt-2 w-full px-4 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
-                                          onClick={() => setLocation(`/profile/${match.user.id}`)}
+                                          onClick={() => setLocation(match.user.randomProfileLink ? `/r/${match.user.randomProfileLink}` : `/profile/${match.user.id}`)}
                                         >
                                           <Plus className="h-3.5 w-3.5 mr-1" />
                                           <span>Connect</span>
