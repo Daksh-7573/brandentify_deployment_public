@@ -170,64 +170,35 @@ const RandomProfile = () => {
     );
   }
 
-  // Check if portfolio exists and render the appropriate template
+  // Prepare template props (used for both published and fallback portfolios)
+  const templateProps = {
+    userInfo: {
+      id: userData.id,
+      name: userData.name || userData.username,
+      title: userData.title,
+      industry: userData.industry,
+      domain: userData.domain || null,
+      location: userData.location,
+      email: userData.email || null,
+      photoURL: userData.photoURL,
+      lookingFor: userData.lookingFor,
+      jobLevel: userData.jobLevel || null,
+      aboutMe: userData.aboutMe || null,
+      whatIOffer: userData.whatIOffer || null
+    },
+    userSkills: skills || [],
+    userExperiences: experiences || [],
+    userProjects: projects || [],
+    userEducations: educations || [],
+    userServices: services || []
+  };
+
+  // Determine which layout to use
+  let layoutToRender = 'minimalist_pro';
+  
   if (portfolioData && portfolioData.isPublished) {
-    const completePortfolioData = {
-      ...portfolioData,
-      experiences,
-      projects,
-      skills,
-      educations,
-      services,
-      userData
-    };
-
-    // Render based on selected portfolio layout
-    switch (portfolioData.layout) {
-      case "minimalist_pro":
-        return <MinimalistPro portfolioData={completePortfolioData} />;
-      case "freelancer_hub":
-        return <FreelancerHub portfolioData={completePortfolioData} />;
-      case "timeline":
-        return <TimelineStoryteller2 portfolioData={completePortfolioData} />;
-      case "visual_expert":
-        return <VisualExpert portfolioData={completePortfolioData} />;
-      case "executive":
-        return <CorporateExecutive portfolioData={completePortfolioData} />;
-      case "dynamic_innovator":
-        return <DynamicInnovator portfolioData={completePortfolioData} />;
-      case "animated":
-        return <Animated portfolioData={completePortfolioData} />;
-      case "animated_odyssey":
-        return <AnimatedOdyssey portfolioData={completePortfolioData} />;
-      default:
-        return <CorporateExecutive portfolioData={completePortfolioData} />;
-    }
-  }
-
-  // Fallback: Use selectedPortfolioLayout from user data if no published portfolio exists
-  if (userData.selectedPortfolioLayout && userData.selectedPortfolioLayout !== 'autocreated') {
-    const basicPortfolioData = {
-      layout: userData.selectedPortfolioLayout,
-      publicUrl: null,
-      isPublished: true,
-      customTitle: userData.name || userData.username,
-      customBio: userData.aboutMe || '',
-      customizationOptions: {
-        theme: 'default',
-        showContact: true,
-      },
-      featuredProjects: [],
-      featuredSkills: [],
-      featuredExperiences: [],
-      skills,
-      experiences,
-      projects,
-      educations,
-      services,
-      userData
-    };
-
+    layoutToRender = portfolioData.layout;
+  } else if (userData.selectedPortfolioLayout && userData.selectedPortfolioLayout !== 'autocreated') {
     // Map selectedPortfolioLayout values to template cases
     const layoutMap: Record<string, string> = {
       'professional': 'minimalist_pro',
@@ -239,29 +210,34 @@ const RandomProfile = () => {
       'scholar': 'minimalist_pro',
       'dynamic': 'dynamic_innovator',
     };
+    layoutToRender = layoutMap[userData.selectedPortfolioLayout] || userData.selectedPortfolioLayout;
+  } else {
+    // If no layout specified, show default profile view
+    layoutToRender = '';
+  }
 
-    const templateLayout = layoutMap[userData.selectedPortfolioLayout] || userData.selectedPortfolioLayout;
-
-    // Render based on mapped layout
-    switch (templateLayout) {
+  // Render the template based on layout
+  if (layoutToRender) {
+    switch (layoutToRender) {
       case "minimalist_pro":
-        return <MinimalistPro portfolioData={basicPortfolioData} />;
+      case "minimalist":
+        return <MinimalistPro {...templateProps} />;
       case "freelancer_hub":
-        return <FreelancerHub portfolioData={basicPortfolioData} />;
+        return <FreelancerHub {...templateProps} />;
       case "timeline":
-        return <TimelineStoryteller2 portfolioData={basicPortfolioData} />;
+        return <TimelineStoryteller2 {...templateProps} />;
       case "visual_expert":
-        return <VisualExpert portfolioData={basicPortfolioData} />;
+        return <VisualExpert {...templateProps} />;
       case "executive":
-        return <CorporateExecutive portfolioData={basicPortfolioData} />;
+        return <CorporateExecutive {...templateProps} />;
       case "dynamic_innovator":
-        return <DynamicInnovator portfolioData={basicPortfolioData} />;
+        return <DynamicInnovator {...templateProps} />;
       case "animated":
-        return <Animated portfolioData={basicPortfolioData} />;
+        return <Animated {...templateProps} />;
       case "animated_odyssey":
-        return <AnimatedOdyssey portfolioData={basicPortfolioData} />;
+        return <AnimatedOdyssey {...templateProps} />;
       default:
-        return <CorporateExecutive portfolioData={basicPortfolioData} />;
+        return <MinimalistPro {...templateProps} />;
     }
   }
 
