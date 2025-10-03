@@ -407,13 +407,14 @@ export default function ProfileNeo() {
                     <User2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Portfolio</span>
                   </button>
-                  <button 
+                  {/* Resume button - Hidden temporarily */}
+                  {/* <button 
                     onClick={() => setLocation('/resume-builder')}
                     className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
                   >
                     <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Resume</span>
-                  </button>
+                  </button> */}
                   <button 
                     onClick={() => setLocation('/quantum-card')}
                     className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
