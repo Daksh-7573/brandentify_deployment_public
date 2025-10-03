@@ -256,8 +256,8 @@ export default function Header() {
                 <span>Career Capsule</span>
               </Button>
               
-              {/* Privacy & Data Control */}
-              <Button
+              {/* Privacy & Data Control - Hidden temporarily */}
+              {/* <Button
                 variant="ghost"
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
@@ -269,7 +269,7 @@ export default function Header() {
               >
                 <Shield className="h-4 w-4" />
                 <span>Privacy</span>
-              </Button>
+              </Button> */}
               
               {/* Career Capsule feature added */}
             </div>
@@ -495,7 +495,8 @@ export default function Header() {
               <span>Career Capsule</span>
             </Button>
             
-            <Button
+            {/* Privacy - Hidden temporarily */}
+            {/* <Button
               variant="ghost"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
@@ -510,7 +511,7 @@ export default function Header() {
             >
               <Shield className="h-4 w-4 mr-3 ml-0.5" />
               <span>Privacy</span>
-            </Button>
+            </Button> */}
             
             {/* Career Capsule feature added to mobile menu */}
             
