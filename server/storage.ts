@@ -7213,6 +7213,16 @@ export class MemStorage implements IStorage {
       
       console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
       
+      // Debug: Log the first row to see what fields we get
+      if (result.rows.length > 0) {
+        console.log('[db.getCurrentDayUserQuests] First row keys:', Object.keys(result.rows[0]));
+        console.log('[db.getCurrentDayUserQuests] Recommendation fields:', {
+          recommendedPostTime: result.rows[0].recommendedPostTime,
+          recommendationSource: result.rows[0].recommendationSource,
+          confidenceScore: result.rows[0].confidenceScore
+        });
+      }
+      
       // Add definition object for frontend compatibility (similar to social quests)
       return result.rows.map(row => ({
         ...row,
@@ -12365,6 +12375,9 @@ export class DatabaseStorage implements IStorage {
           uq.week_number as "weekNumber",
           uq.year,
           uq.assigned_date as "assignedDate",
+          uq.recommended_post_time as "recommendedPostTime",
+          uq.recommendation_source as "recommendationSource",
+          uq.confidence_score as "confidenceScore",
           qd.id as "definition_id",
           qd.type as "definition_type",
           qd.title as "definition_title",
@@ -12411,6 +12424,9 @@ export class DatabaseStorage implements IStorage {
         weekNumber: row.weekNumber,
         year: row.year,
         assignedDate: row.assignedDate,
+        recommendedPostTime: row.recommendedPostTime,
+        recommendationSource: row.recommendationSource,
+        confidenceScore: row.confidenceScore,
         definition: {
           id: row.definition_id,
           type: row.definition_type,
