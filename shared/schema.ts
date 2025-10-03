@@ -1136,6 +1136,9 @@ export const userQuests = pgTable("user_quests", {
   xpEarned: integer("xp_earned"), // Actual XP earned upon completion
   badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
   muskResponse: text("musk_response"), // Custom response from Musk on completion
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score"), // Confidence level 0-100
   // Removed field:
   // - dismissedReason (quest dismissal functionality removed)
 });
@@ -1591,7 +1594,25 @@ export const generatedSocialQuests = pgTable("generated_social_quests", {
   generatedAt: timestamp("generated_at").defaultNow(),
   assignedAt: timestamp("assigned_at"), // When assigned to user
   completedAt: timestamp("completed_at"), // When user completed it
-  brandImpactScore: integer("brand_impact_score").default(0) // 0-100 based on completion quality
+  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
+  brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score") // Confidence level 0-100
+});
+
+// Platform Activity Insights - stores optimal posting windows for different platforms/industries/domains
+export const platformActivityInsights = pgTable("platform_activity_insights", {
+  id: serial("id").primaryKey(),
+  platform: text("platform").notNull(), // brandentifier, linkedin, twitter, instagram, etc.
+  industry: text("industry"), // Industry filter (null = applies to all)
+  domain: text("domain"), // Domain filter (null = applies to all)
+  optimalWindowStart: text("optimal_window_start").notNull(), // Start time in UTC (e.g., "14:00")
+  optimalWindowEnd: text("optimal_window_end").notNull(), // End time in UTC (e.g., "16:00")
+  dataSource: text("data_source").notNull(), // "heuristic", "telemetry", "model"
+  confidenceScore: integer("confidence_score").notNull().default(70), // 0-100 confidence
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 // Insert schemas for template system
@@ -1639,3 +1660,11 @@ export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignme
 
 export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
 export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
+
+export const insertPlatformActivityInsightSchema = createInsertSchema(platformActivityInsights).omit({
+  id: true,
+  updatedAt: true
+});
+
+export type PlatformActivityInsight = typeof platformActivityInsights.$inferSelect;
+export type InsertPlatformActivityInsight = z.infer<typeof insertPlatformActivityInsightSchema>;

@@ -1,8 +1,9 @@
 import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
-import { userQuests } from '@shared/schema';
+import { userQuests, generatedSocialQuests, questDefinitions } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
+import { recommendationService } from './recommendation-service';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -93,6 +94,16 @@ class DailyQuestScheduler {
           const assignedCareerQuests = await storage.assignDailyQuestsToUser(user.id);
           const assignedSocialQuests = await storage.assignDailySocialQuests(user.id);
           
+          // Add posting time recommendations to career quests
+          if (assignedCareerQuests.length > 0) {
+            await this.addPostingTimeRecommendations(user, assignedCareerQuests, 'career');
+          }
+          
+          // Add posting time recommendations to social quests
+          if (assignedSocialQuests.length > 0) {
+            await this.addPostingTimeRecommendations(user, assignedSocialQuests, 'social');
+          }
+          
           const totalAssigned = assignedCareerQuests.length + assignedSocialQuests.length;
           console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedCareerQuests.length} career + ${assignedSocialQuests.length} social = ${totalAssigned} total quests for ${user.name}`);
           
@@ -143,6 +154,65 @@ class DailyQuestScheduler {
       nextRun: this.isSchedulerActive ? 'Daily at 12:01 AM UTC' : 'Not scheduled',
       description: 'Expires previous day quests and assigns new daily quests'
     };
+  }
+
+  /**
+   * Add posting time recommendations to assigned quests
+   */
+  private async addPostingTimeRecommendations(user: any, quests: any[], questType: 'career' | 'social') {
+    try {
+      for (const quest of quests) {
+        let recommendation;
+        
+        if (questType === 'career') {
+          // Career quests post on Brandentifier
+          recommendation = await recommendationService.getCareerQuestRecommendation(
+            user.industry,
+            user.domain
+          );
+          
+          // Update the career quest with recommendations
+          await db
+            .update(userQuests)
+            .set({
+              recommendedPostTime: recommendation.recommendedPostTime,
+              recommendationSource: recommendation.recommendationSource,
+              confidenceScore: recommendation.confidenceScore
+            })
+            .where(eq(userQuests.id, quest.id));
+            
+        } else if (questType === 'social') {
+          // Social quests - need to get the platform from quest definition
+          const questDef = await db
+            .select()
+            .from(questDefinitions)
+            .where(eq(questDefinitions.id, quest.questDefinitionId))
+            .limit(1);
+          
+          const platform = questDef[0]?.platform || 'linkedin'; // Default to LinkedIn
+          
+          recommendation = await recommendationService.getSocialQuestRecommendation(
+            platform,
+            user.industry,
+            user.domain
+          );
+          
+          // Update the social quest with recommendations
+          await db
+            .update(generatedSocialQuests)
+            .set({
+              recommendedPostTime: recommendation.recommendedPostTime,
+              recommendationSource: recommendation.recommendationSource,
+              confidenceScore: recommendation.confidenceScore
+            })
+            .where(eq(generatedSocialQuests.id, quest.id));
+        }
+      }
+      
+      console.log(`[DailyQuestScheduler] Added posting time recommendations to ${quests.length} ${questType} quests for user ${user.id}`);
+    } catch (error) {
+      console.error(`[DailyQuestScheduler] Error adding posting time recommendations:`, error);
+    }
   }
 
   /**

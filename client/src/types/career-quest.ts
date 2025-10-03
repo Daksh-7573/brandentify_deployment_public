@@ -69,12 +69,18 @@ export interface UserQuest {
   progress: number;
   assignedAt: string;
   completedAt?: string;
+  assignedDate?: string;  // Date in YYYY-MM-DD format for tracking
   weekNumber: number;
   year: number;
   xpEarned?: number;
   badgeEarned?: BadgeType;
   muskResponse?: string;
   muskTip?: string;       // Explicitly added to support direct muskTip property
+  
+  // Posting time recommendations
+  recommendedPostTime?: string;      // Optimal time to post (e.g., "14:00-16:00 UTC")
+  recommendationSource?: string;     // Source: "heuristic", "model", "telemetry"
+  confidenceScore?: number;          // Confidence level 0-100
   
   // Different quest definition formats based on API source
   questDefinition?: QuestDefinition;  // Original format

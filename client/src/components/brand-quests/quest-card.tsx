@@ -112,6 +112,54 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     });
   };
   
+  // Convert UTC time window to user's local timezone
+  const formatRecommendedTime = (utcTimeWindow: string): { local: string; utc: string } => {
+    try {
+      // Parse time window like "14:00-16:00 UTC"
+      const match = utcTimeWindow.match(/(\d{2}):(\d{2})-(\d{2}):(\d{2})\s*UTC/i);
+      if (!match) return { local: utcTimeWindow, utc: utcTimeWindow };
+      
+      const [, startHour, startMin, endHour, endMin] = match;
+      
+      // Create Date objects for today at the specified UTC times
+      const now = new Date();
+      const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 
+        parseInt(startHour), parseInt(startMin), 0));
+      const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 
+        parseInt(endHour), parseInt(endMin), 0));
+      
+      // Format to user's local time
+      const timeFormat = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      });
+      
+      const startLocal = timeFormat.format(startDate);
+      const endLocal = timeFormat.format(endDate);
+      
+      // Extract just the time part for end (without timezone)
+      const endTimeOnly = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }).format(endDate);
+      
+      return {
+        local: `${startLocal.split(' ')[0]} - ${endTimeOnly} ${startLocal.split(' ').slice(1).join(' ')}`,
+        utc: utcTimeWindow
+      };
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return { local: utcTimeWindow, utc: utcTimeWindow };
+    }
+  };
+  
+  const formattedPostTime = quest.recommendedPostTime 
+    ? formatRecommendedTime(quest.recommendedPostTime) 
+    : null;
+  
   // Get the Musk tip content from any available source in priority order
   const rawMuskTipContent = 
     // First check definition properties (API response structure)
@@ -259,6 +307,39 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         <p className="ml-7 mt-1 text-white/80 text-sm">
           {questDefinition?.description}
         </p>
+        
+        {/* Quest Date and Posting Time Info */}
+        <div className="ml-7 mt-3 space-y-2">
+          {quest.assignedDate && (
+            <div className="flex items-center gap-2 text-xs text-white/60">
+              <span>📅</span>
+              <span>Assigned: {new Date(quest.assignedDate).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })}</span>
+            </div>
+          )}
+          
+          {formattedPostTime && (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-xs">
+                <span>⏰</span>
+                <span className="text-emerald-400 font-medium">
+                  Best time to post: {formattedPostTime.local}
+                </span>
+                {quest.confidenceScore && quest.confidenceScore > 70 && (
+                  <span className="text-xs text-white/50">
+                    ({quest.confidenceScore}% confidence)
+                  </span>
+                )}
+              </div>
+              <div className="ml-5 text-xs text-white/40">
+                UTC: {formattedPostTime.utc}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       <div className="py-3">
         <div className="space-y-3">
