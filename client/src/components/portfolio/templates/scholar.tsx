@@ -49,6 +49,13 @@ interface ScholarProps {
     lookingFor: string | null;
     jobLevel: string | null;
     aboutMe?: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: {
     id: number;
@@ -573,9 +580,132 @@ export default function Scholar({
         </div>
       </section>
 
+      {/* My Professional Brand Section */}
+      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+        userInfo.uniqueValueProposition || 
+        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        <section className="py-12 bg-gray-50">
+          <div className="container mx-auto px-4 md:px-8">
+            <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+              <Sparkles className="h-6 w-6 mr-3 text-blue-600" />
+              My Professional Brand
+            </h2>
+            
+            <div className="space-y-6">
+              {userInfo.tagline && (
+                <div className="notebook-paper p-6 fade-in-up">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Star className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-serif font-semibold text-blue-800">Tagline</h3>
+                  </div>
+                  <p className="text-gray-800 italic text-lg">"{userInfo.tagline}"</p>
+                </div>
+              )}
+
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userInfo.visionStatement && (
+                    <div className="notebook-card p-6 rounded-lg fade-in-up">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="h-5 w-5 text-blue-600" />
+                        <h3 className="text-lg font-serif font-semibold text-blue-800">Vision</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="notebook-card p-6 rounded-lg fade-in-up">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Target className="h-5 w-5 text-blue-600" />
+                        <h3 className="text-lg font-serif font-semibold text-blue-800">Mission</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div className="notebook-paper p-6 fade-in-up">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Heart className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-serif font-semibold text-blue-800">Core Values</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {userInfo.coreValues.map((value: string, index: number) => (
+                      <Badge 
+                        key={index}
+                        className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2"
+                      >
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {userInfo.uniqueValueProposition && (
+                <div className="notebook-paper p-6 fade-in-up">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-serif font-semibold text-blue-800">What Sets Me Apart</h3>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
+                </div>
+              )}
+
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <div className="notebook-paper p-6 fade-in-up">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-serif font-semibold text-blue-800">Who I Serve</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2">Primary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              className="bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2">Secondary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              variant="outline"
+                              className="bg-blue-50 text-blue-700 border-blue-200"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* What I Offer Section - Services */}
       {hasServices && (
-        <section className="py-12 bg-gray-50">
+        <section className="py-12 bg-white">
           <div className="container mx-auto px-4 md:px-8">
             <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
               <Lightbulb className="h-6 w-6 mr-3 text-blue-600" />

@@ -46,6 +46,13 @@ interface TimelineStoryteller2Props {
     lookingFor: string | null;
     whatIOffer: string | null;
     photoURL: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -286,6 +293,146 @@ export default function TimelineStoryteller2({
           <ChevronDown className="w-8 h-8 text-gray-400" />
         </div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+        userInfo.uniqueValueProposition || 
+        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        <section className="relative py-20 px-4 md:px-8 bg-white/40 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                My Professional Brand
+              </h2>
+              <p className="text-gray-600">
+                The values and vision that drive my work
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Tagline */}
+              {userInfo.tagline && (
+                <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/50">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Award className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-lg font-bold text-gray-800">Tagline</h3>
+                  </div>
+                  <p className="text-gray-800 italic text-xl leading-relaxed">
+                    "{userInfo.tagline}"
+                  </p>
+                </div>
+              )}
+
+              {/* Vision & Mission Grid */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userInfo.visionStatement && (
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="w-6 h-6 text-purple-600" />
+                        <h3 className="text-lg font-bold text-gray-800">Vision</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {userInfo.visionStatement}
+                      </p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Target className="w-6 h-6 text-blue-600" />
+                        <h3 className="text-lg font-bold text-gray-800">Mission</h3>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {userInfo.missionStatement}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Star className="w-6 h-6 text-pink-600" />
+                    <h3 className="text-lg font-bold text-gray-800">Core Values</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {userInfo.coreValues.map((value: string, index: number) => (
+                      <Badge 
+                        key={index}
+                        className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 text-sm hover:shadow-lg transition-shadow"
+                      >
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-lg font-bold text-gray-800">What Sets Me Apart</h3>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">
+                    {userInfo.uniqueValueProposition}
+                  </p>
+                </div>
+              )}
+
+              {/* Audiences */}
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="w-6 h-6 text-blue-600" />
+                    <h3 className="text-lg font-bold text-gray-800">Who I Serve</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2">Primary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              className="bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2">Secondary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              variant="outline"
+                              className="bg-blue-50 text-blue-700 border-blue-200"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Interactive Timeline Story Path */}
       <section className="relative py-20 px-4 md:px-8">

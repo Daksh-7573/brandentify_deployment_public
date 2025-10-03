@@ -79,6 +79,13 @@ interface AnimatedOdysseyProps {
   email: string;
   aboutMe: string | null;
   whatIOffer: string | null;
+  tagline?: string | null;
+  visionStatement?: string | null;
+  missionStatement?: string | null;
+  coreValues?: string[] | null;
+  uniqueValueProposition?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
   currentUserId?: number; // Current logged-in user ID for mentorship button
 }
 
@@ -354,6 +361,188 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
           <span>Scroll</span>
         </motion.div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(tagline || visionStatement || missionStatement || 
+        (coreValues && coreValues.length > 0) || 
+        uniqueValueProposition || 
+        (primaryAudience && primaryAudience.length > 0) || 
+        (secondaryAudience && secondaryAudience.length > 0)) && (
+        <section 
+          id="brand" 
+          ref={skillsRef} 
+          className="min-h-screen flex items-center relative py-20"
+        >
+          <div className="container px-6 z-10">
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold mb-16 text-center glowing-text"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ 
+                opacity: isSkillsInView ? 1 : 0, 
+                y: isSkillsInView ? 0 : 20 
+              }}
+              transition={{ duration: 0.8 }}
+            >
+              My Professional Brand
+            </motion.h2>
+            
+            <div className="max-w-4xl mx-auto space-y-6">
+              {tagline && (
+                <motion.div
+                  className="glassmorphic-card p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: isSkillsInView ? 1 : 0, 
+                    y: isSkillsInView ? 0 : 20 
+                  }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Star className="h-6 w-6 text-accent" />
+                    <h3 className="text-xl font-bold">Tagline</h3>
+                  </div>
+                  <p className="text-lg italic text-muted-foreground">"{tagline}"</p>
+                </motion.div>
+              )}
+
+              {(visionStatement || missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {visionStatement && (
+                    <motion.div
+                      className="glassmorphic-card p-6"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ 
+                        opacity: isSkillsInView ? 1 : 0, 
+                        x: isSkillsInView ? 0 : -20 
+                      }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="h-6 w-6 text-accent" />
+                        <h3 className="text-xl font-bold">Vision</h3>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed">{visionStatement}</p>
+                    </motion.div>
+                  )}
+                  {missionStatement && (
+                    <motion.div
+                      className="glassmorphic-card p-6"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ 
+                        opacity: isSkillsInView ? 1 : 0, 
+                        x: isSkillsInView ? 0 : 20 
+                      }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Target className="h-6 w-6 text-accent" />
+                        <h3 className="text-xl font-bold">Mission</h3>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed">{missionStatement}</p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {coreValues && coreValues.length > 0 && (
+                <motion.div
+                  className="glassmorphic-card p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: isSkillsInView ? 1 : 0, 
+                    y: isSkillsInView ? 0 : 20 
+                  }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <Star className="h-6 w-6 text-accent" />
+                    <h3 className="text-xl font-bold">Core Values</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {coreValues.map((value: string, index: number) => (
+                      <Badge 
+                        key={index}
+                        className="px-4 py-2 text-base bg-primary/20 hover:bg-primary/30 border-primary/40"
+                      >
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {uniqueValueProposition && (
+                <motion.div
+                  className="glassmorphic-card p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: isSkillsInView ? 1 : 0, 
+                    y: isSkillsInView ? 0 : 20 
+                  }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="h-6 w-6 text-accent" />
+                    <h3 className="text-xl font-bold">What Sets Me Apart</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">{uniqueValueProposition}</p>
+                </motion.div>
+              )}
+
+              {((primaryAudience && primaryAudience.length > 0) || 
+                (secondaryAudience && secondaryAudience.length > 0)) && (
+                <motion.div
+                  className="glassmorphic-card p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: isSkillsInView ? 1 : 0, 
+                    y: isSkillsInView ? 0 : 20 
+                  }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <User className="h-6 w-6 text-accent" />
+                    <h3 className="text-xl font-bold">Who I Serve</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {primaryAudience && primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-muted-foreground font-medium mb-2">Primary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {primaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              className="bg-accent/30 text-accent hover:bg-accent/40"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {secondaryAudience && secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-muted-foreground font-medium mb-2">Secondary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {secondaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              variant="outline"
+                              className="border-accent/30 text-muted-foreground"
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Skills Section */}
       <section 

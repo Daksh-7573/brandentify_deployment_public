@@ -66,6 +66,13 @@ interface FreelancerHubProps {
     lookingFor: string | null;
     jobLevel: string | null;
     whatIOffer?: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: Skill[];
   userProjects: Project[];
@@ -1379,6 +1386,183 @@ export default function FreelancerHub({
           </motion.div>
         </div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+        userInfo.uniqueValueProposition || 
+        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        <section className="py-10 px-6 md:px-10">
+          <div className="max-w-4xl mx-auto">
+            <motion.h2 
+              className="text-3xl font-bold mb-8 text-center"
+              style={{ fontFamily: 'Fredoka, sans-serif' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="highlight-text">My Professional Brand</span>
+            </motion.h2>
+            
+            <div className="space-y-6">
+              {/* Tagline */}
+              {userInfo.tagline && (
+                <motion.div 
+                  className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-6 shadow-lg border-l-4 border-l-pink-400"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <h3 className="font-bold text-pink-700 mb-2 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Tagline
+                  </h3>
+                  <p className="text-gray-800 italic text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    "{userInfo.tagline}"
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Vision & Mission */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userInfo.visionStatement && (
+                    <motion.div 
+                      className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-3xl p-6 shadow-lg border-t-4 border-t-violet-400"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                    >
+                      <h3 className="font-bold text-violet-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                        <Lightbulb className="h-5 w-5 mr-2" />
+                        Vision
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {userInfo.visionStatement}
+                      </p>
+                    </motion.div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <motion.div 
+                      className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-6 shadow-lg border-t-4 border-t-blue-400"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <h3 className="font-bold text-blue-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                        <Star className="h-5 w-5 mr-2" />
+                        Mission
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {userInfo.missionStatement}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <motion.div 
+                  className="bg-white rounded-3xl p-6 shadow-lg border-l-4 border-l-rose-400"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <h3 className="font-bold text-rose-700 mb-4 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    <Heart className="h-5 w-5 mr-2" />
+                    Core Values
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {userInfo.coreValues.map((value: string, index: number) => (
+                      <span 
+                        key={index}
+                        className="px-4 py-2 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full font-medium shadow-md"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <motion.div 
+                  className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-6 shadow-lg border-l-4 border-l-amber-400"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <h3 className="font-bold text-amber-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    <Zap className="h-5 w-5 mr-2" />
+                    What Sets Me Apart
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {userInfo.uniqueValueProposition}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Audiences */}
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <motion.div 
+                  className="bg-white rounded-3xl p-6 shadow-lg border-l-4 border-l-teal-400"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <h3 className="font-bold text-teal-700 mb-4 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                    <User className="h-5 w-5 mr-2" />
+                    Who I Serve
+                  </h3>
+                  <div className="space-y-4">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Primary Audience
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((audience: string, index: number) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-full text-sm font-medium shadow-md"
+                              style={{ fontFamily: 'Poppins, sans-serif' }}
+                            >
+                              {audience}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Secondary Audience
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1.5 bg-teal-100 text-teal-700 border border-teal-300 rounded-full text-sm font-medium"
+                              style={{ fontFamily: 'Poppins, sans-serif' }}
+                            >
+                              {audience}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Skills Section */}
       <section className="py-10 px-6 md:px-10">

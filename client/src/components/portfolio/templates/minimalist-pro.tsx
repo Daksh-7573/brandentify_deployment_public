@@ -250,6 +250,100 @@ export default function MinimalistPro({
             )}
           </div>
         </section>
+
+        {/* Personal Branding Section */}
+        {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+          (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+          userInfo.uniqueValueProposition || 
+          (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+          (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+          <section className="mb-12 animate-fade-in">
+            <h2 className="section-header">My Professional Brand</h2>
+            <div className="space-y-4">
+              {/* Tagline */}
+              {userInfo.tagline && (
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <h3 className="font-medium text-gray-900 mb-2">Tagline</h3>
+                  <p className="text-gray-800 italic text-lg">"{userInfo.tagline}"</p>
+                </div>
+              )}
+
+              {/* Vision & Mission in a 2-column grid */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {userInfo.visionStatement && (
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <h3 className="font-medium text-gray-900 mb-2">Vision</h3>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <h3 className="font-medium text-gray-900 mb-2">Mission</h3>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <h3 className="font-medium text-gray-900 mb-3">Core Values</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {userInfo.coreValues.map((value: string, index: number) => (
+                      <Badge key={index} variant="outline" className="bg-primary/10 text-primary py-1">
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <h3 className="font-medium text-gray-900 mb-2">What Sets Me Apart</h3>
+                  <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
+                </div>
+              )}
+
+              {/* Audiences */}
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <h3 className="font-medium text-gray-900 mb-3">Who I Serve</h3>
+                  <div className="space-y-3">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Primary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((audience: string, index: number) => (
+                            <Badge key={index} className="bg-primary text-white">
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Secondary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                            <Badge key={index} variant="outline" className="bg-secondary/10">
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
         
         {/* What I'm Good At (Skills Section) */}
         <section className="mb-12 animate-fade-in">

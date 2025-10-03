@@ -41,6 +41,13 @@ interface CorporateExecutiveProps {
     lookingFor: string | null;
     jobLevel: string | null;
     aboutMe?: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -854,6 +861,159 @@ export default function CorporateExecutive({
           </div>
         </div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+        userInfo.uniqueValueProposition || 
+        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        <section className="py-16 px-8 bg-gray-50">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
+              My Professional Brand
+            </h2>
+            
+            <div className="space-y-6">
+              {/* Tagline */}
+              {userInfo.tagline && (
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Award className="h-5 w-5 text-[#6a0dad]" />
+                    <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Tagline
+                    </h3>
+                  </div>
+                  <p className="text-gray-800 italic text-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    "{userInfo.tagline}"
+                  </p>
+                </div>
+              )}
+
+              {/* Vision & Mission */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userInfo.visionStatement && (
+                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="h-5 w-5 text-[#6a0dad]" />
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Vision
+                        </h3>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {userInfo.visionStatement}
+                      </p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Target className="h-5 w-5 text-[#6a0dad]" />
+                        <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Mission
+                        </h3>
+                      </div>
+                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {userInfo.missionStatement}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Heart className="h-5 w-5 text-[#6a0dad]" />
+                    <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Core Values
+                    </h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {userInfo.coreValues.map((value: string, index: number) => (
+                      <Badge 
+                        key={index}
+                        className="bg-[#6a0dad] text-white hover:bg-[#5a0c9d] px-4 py-2 rounded-md font-medium"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="h-5 w-5 text-[#6a0dad]" />
+                    <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      What Sets Me Apart
+                    </h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {userInfo.uniqueValueProposition}
+                  </p>
+                </div>
+              )}
+
+              {/* Audiences */}
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="h-5 w-5 text-[#6a0dad]" />
+                    <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Who I Serve
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Primary Audience
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              className="bg-[#1e3a8a] text-white hover:bg-[#1e40af] px-3 py-1.5 rounded-md"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 font-medium mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Secondary Audience
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                            <Badge 
+                              key={index}
+                              className="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 px-3 py-1.5 rounded-md"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Expertise (Skills) Section */}
       <section id="skills" className="py-16 px-8 bg-white">

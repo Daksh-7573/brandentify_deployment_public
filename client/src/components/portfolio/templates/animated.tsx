@@ -56,6 +56,13 @@ interface AnimatedTemplateProps {
   email?: string;
   aboutMe?: string | null;
   whatIOffer?: string | null;
+  tagline?: string | null;
+  visionStatement?: string | null;
+  missionStatement?: string | null;
+  coreValues?: string[] | null;
+  uniqueValueProposition?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
   id?: number;
   currentUserId?: number;
 }
@@ -510,6 +517,166 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500/5 rounded-full filter blur-3xl"></div>
         </div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(tagline || visionStatement || missionStatement || 
+        (coreValues && coreValues.length > 0) || 
+        uniqueValueProposition || 
+        (primaryAudience && primaryAudience.length > 0) || 
+        (secondaryAudience && secondaryAudience.length > 0)) && (
+        <section id="brand" className="py-20 relative" ref={aboutMeRef}>
+          <div className="container mx-auto px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
+              transition={{ duration: 0.7 }}
+              className="mb-12 text-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                  My Professional Brand
+                </span>
+              </h2>
+            </motion.div>
+            
+            <div className="max-w-4xl mx-auto space-y-6">
+              {tagline && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Star className="h-6 w-6 text-purple-400" />
+                    <h3 className="text-xl font-semibold text-purple-300">Tagline</h3>
+                  </div>
+                  <p className="text-gray-300 italic text-lg">"{tagline}"</p>
+                </motion.div>
+              )}
+
+              {(visionStatement || missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {visionStatement && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : -20 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="h-6 w-6 text-blue-400" />
+                        <h3 className="text-xl font-semibold text-blue-300">Vision</h3>
+                      </div>
+                      <p className="text-gray-300 leading-relaxed">{visionStatement}</p>
+                    </motion.div>
+                  )}
+                  {missionStatement && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : 20 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Sparkles className="h-6 w-6 text-teal-400" />
+                        <h3 className="text-xl font-semibold text-teal-300">Mission</h3>
+                      </div>
+                      <p className="text-gray-300 leading-relaxed">{missionStatement}</p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+
+              {coreValues && coreValues.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <Star className="h-6 w-6 text-rose-400" />
+                    <h3 className="text-xl font-semibold text-rose-300">Core Values</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {coreValues.map((value: string, index: number) => (
+                      <span 
+                        key={index}
+                        className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {uniqueValueProposition && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="h-6 w-6 text-amber-400" />
+                    <h3 className="text-xl font-semibold text-amber-300">What Sets Me Apart</h3>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">{uniqueValueProposition}</p>
+                </motion.div>
+              )}
+
+              {((primaryAudience && primaryAudience.length > 0) || 
+                (secondaryAudience && secondaryAudience.length > 0)) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="bg-gradient-to-r from-indigo-900/30 to-violet-900/30 backdrop-blur-md rounded-2xl p-6 border border-indigo-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <User className="h-6 w-6 text-indigo-400" />
+                    <h3 className="text-xl font-semibold text-indigo-300">Who I Serve</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {primaryAudience && primaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-400 mb-2 font-medium">Primary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {primaryAudience.map((audience: string, index: number) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1.5 bg-indigo-500/30 border border-indigo-400/40 rounded-full text-indigo-300 text-sm font-medium"
+                            >
+                              {audience}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {secondaryAudience && secondaryAudience.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-400 mb-2 font-medium">Secondary Audience</p>
+                        <div className="flex flex-wrap gap-2">
+                          {secondaryAudience.map((audience: string, index: number) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1.5 bg-gray-700/30 border border-gray-600/40 rounded-full text-gray-300 text-sm"
+                            >
+                              {audience}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* What I Offer Section */}
       {whatIOffer && (

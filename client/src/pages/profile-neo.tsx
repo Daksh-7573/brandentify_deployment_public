@@ -614,7 +614,7 @@ export default function ProfileNeo() {
                             <h3 className="font-medium text-white">Core Values</h3>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {userData.coreValues.map((value, index) => (
+                            {userData.coreValues.map((value: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {value}
                               </span>
@@ -640,7 +640,7 @@ export default function ProfileNeo() {
                             <h3 className="font-medium text-white">Primary Audience</h3>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {userData.primaryAudience.map((audience, index) => (
+                            {userData.primaryAudience.map((audience: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {audience}
                               </span>
@@ -656,7 +656,7 @@ export default function ProfileNeo() {
                             <h3 className="font-medium text-white">Secondary Audience</h3>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            {userData.secondaryAudience.map((audience, index) => (
+                            {userData.secondaryAudience.map((audience: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {audience}
                               </span>

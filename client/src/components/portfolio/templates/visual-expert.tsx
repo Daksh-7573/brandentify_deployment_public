@@ -64,6 +64,13 @@ interface VisualExpertProps {
     domain: string | null;
     lookingFor: string | null;
     whatIOffer: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
     photoURL: string | null;
     jobLevel?: string | null;
   };
@@ -718,9 +725,162 @@ export default function VisualExpert({
           </Card>
         </div>
       </section>
+
+      {/* My Professional Brand Section */}
+      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
+        userInfo.uniqueValueProposition || 
+        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-12 scroll-reveal">
+              My Professional Brand
+            </h2>
+            
+            <div className="space-y-6">
+              {/* Tagline */}
+              {userInfo.tagline && (
+                <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                  <div className="h-2 bg-gradient-to-r from-pink-500 to-purple-600"></div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Star className="w-6 h-6 text-pink-500" />
+                      <h3 className="text-lg font-bold text-gray-800">Tagline</h3>
+                    </div>
+                    <p className="text-gray-800 italic text-xl leading-relaxed">
+                      "{userInfo.tagline}"
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Vision & Mission */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userInfo.visionStatement && (
+                    <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                      <div className="h-2 bg-gradient-to-r from-purple-500 to-indigo-600"></div>
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Lightbulb className="w-6 h-6 text-purple-500" />
+                          <h3 className="text-lg font-bold text-gray-800">Vision</h3>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">
+                          {userInfo.visionStatement}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {userInfo.missionStatement && (
+                    <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                      <div className="h-2 bg-gradient-to-r from-blue-500 to-cyan-600"></div>
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Target className="w-6 h-6 text-blue-500" />
+                          <h3 className="text-lg font-bold text-gray-800">Mission</h3>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">
+                          {userInfo.missionStatement}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                  <div className="h-2 bg-gradient-to-r from-pink-500 to-rose-600"></div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Heart className="w-6 h-6 text-rose-500" />
+                      <h3 className="text-lg font-bold text-gray-800">Core Values</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {userInfo.coreValues.map((value: string, index: number) => (
+                        <Badge 
+                          key={index}
+                          className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 text-sm shadow-sm hover:shadow-md transition-shadow"
+                        >
+                          {value}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                  <div className="h-2 bg-gradient-to-r from-amber-500 to-orange-600"></div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Sparkles className="w-6 h-6 text-amber-500" />
+                      <h3 className="text-lg font-bold text-gray-800">What Sets Me Apart</h3>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {userInfo.uniqueValueProposition}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Audiences */}
+              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+                <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+                  <div className="h-2 bg-gradient-to-r from-teal-500 to-emerald-600"></div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Users className="w-6 h-6 text-teal-500" />
+                      <h3 className="text-lg font-bold text-gray-800">Who I Serve</h3>
+                    </div>
+                    <div className="space-y-4">
+                      {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium mb-2">Primary Audience</p>
+                          <div className="flex flex-wrap gap-2">
+                            {userInfo.primaryAudience.map((audience: string, index: number) => (
+                              <Badge 
+                                key={index}
+                                className="bg-teal-500 text-white hover:bg-teal-600 shadow-sm"
+                              >
+                                {audience}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium mb-2">Secondary Audience</p>
+                          <div className="flex flex-wrap gap-2">
+                            {userInfo.secondaryAudience.map((audience: string, index: number) => (
+                              <Badge 
+                                key={index}
+                                variant="outline"
+                                className="bg-teal-50 text-teal-700 border-teal-200"
+                              >
+                                {audience}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Skills & Services */}
-      <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-white">
+      <section className="py-20 px-4 sm:px-6 md:px-8 lg:px-16 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
           <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-12 scroll-reveal">
             Skills & Expertise
