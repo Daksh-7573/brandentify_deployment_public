@@ -154,6 +154,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
         domain: domain || null,
         aboutMe: aboutMe.trim() || null,
         lookingFor: lookingFor.trim() || null,
+        // New branding fields
+        tagline: tagline.trim() || null,
+        visionStatement: visionStatement.trim() || null,
+        missionStatement: missionStatement.trim() || null,
+        coreValues: coreValues.length > 0 ? coreValues : null,
+        uniqueValueProposition: uniqueValueProposition.trim() || null,
+        primaryAudience: primaryAudience.length > 0 ? primaryAudience : null,
+        secondaryAudience: secondaryAudience.length > 0 ? secondaryAudience : null,
       };
 
       console.log("[DEBUG] Sending PUT request to:", `/api/users/${userData.id}`);

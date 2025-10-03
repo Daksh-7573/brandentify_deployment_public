@@ -9084,7 +9084,10 @@ export class DatabaseStorage implements IStorage {
       'photoURL', 'title', 'aboutMe', 'location', 'industry', 'domain', 
       'lookingFor', 'whatIOffer', 'visitingCardType', 'profileCompleted',
       'emailVerified', 'emailVerificationToken', 'emailVerificationExpires',
-      'createdAt'
+      'createdAt',
+      // New branding fields
+      'tagline', 'visionStatement', 'missionStatement', 'coreValues',
+      'uniqueValueProposition', 'primaryAudience', 'secondaryAudience'
     ];
     
     // Enhanced debugging for field filtering
