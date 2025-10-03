@@ -69,6 +69,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [uniqueValueProposition, setUniqueValueProposition] = useState(userData.uniqueValueProposition || "");
   const [primaryAudience, setPrimaryAudience] = useState<string[]>(userData.primaryAudience || []);
   const [secondaryAudience, setSecondaryAudience] = useState<string[]>(userData.secondaryAudience || []);
+  
+  // Temporary input state for comma-separated fields
+  const [coreValuesInput, setCoreValuesInput] = useState("");
+  const [primaryAudienceInput, setPrimaryAudienceInput] = useState("");
+  const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
@@ -563,10 +568,22 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             <input
               id="coreValues"
               type="text"
-              value={coreValues.join(", ")}
-              onChange={(e) => {
-                const values = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                setCoreValues(values);
+              value={coreValuesInput}
+              onChange={(e) => setCoreValuesInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const values = coreValuesInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                  setCoreValues(values);
+                  setCoreValuesInput("");
+                }
+              }}
+              onBlur={() => {
+                const values = coreValuesInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                if (values.length > 0) {
+                  setCoreValues(values);
+                  setCoreValuesInput("");
+                }
               }}
               placeholder="Enter values separated by commas (e.g., Integrity, Innovation, Consistency)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -639,10 +656,22 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             <input
               id="primaryAudience"
               type="text"
-              value={primaryAudience.join(", ")}
-              onChange={(e) => {
-                const audiences = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                setPrimaryAudience(audiences);
+              value={primaryAudienceInput}
+              onChange={(e) => setPrimaryAudienceInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const audiences = primaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                  setPrimaryAudience(audiences);
+                  setPrimaryAudienceInput("");
+                }
+              }}
+              onBlur={() => {
+                const audiences = primaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                if (audiences.length > 0) {
+                  setPrimaryAudience(audiences);
+                  setPrimaryAudienceInput("");
+                }
               }}
               placeholder="Enter audiences separated by commas (e.g., Employers, Clients, Investors)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
@@ -689,10 +718,22 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             <input
               id="secondaryAudience"
               type="text"
-              value={secondaryAudience.join(", ")}
-              onChange={(e) => {
-                const audiences = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                setSecondaryAudience(audiences);
+              value={secondaryAudienceInput}
+              onChange={(e) => setSecondaryAudienceInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const audiences = secondaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                  setSecondaryAudience(audiences);
+                  setSecondaryAudienceInput("");
+                }
+              }}
+              onBlur={() => {
+                const audiences = secondaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                if (audiences.length > 0) {
+                  setSecondaryAudience(audiences);
+                  setSecondaryAudienceInput("");
+                }
               }}
               placeholder="Enter audiences separated by commas (e.g., Peers, Networks, Collaborators)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
