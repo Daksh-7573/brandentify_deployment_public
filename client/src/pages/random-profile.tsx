@@ -88,7 +88,7 @@ const RandomProfile = () => {
 
   // Fetch portfolio data if user exists
   const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery<PortfolioData>({
-    queryKey: ['/api/portfolios', userData?.id],
+    queryKey: ['/api/users', userData?.id, 'portfolio'],
     enabled: !!userData?.id,
     retry: 1,
     staleTime: 5 * 60 * 1000,
