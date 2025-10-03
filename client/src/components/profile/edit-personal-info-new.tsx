@@ -563,7 +563,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Core Values
           </label>
-          <p className="text-xs text-white/60 -mt-1">(3–5 keywords: Integrity, Innovation, Consistency, etc.) (max 5 keywords)</p>
+          <p className="text-xs text-white/60 -mt-1">(3–5 keywords: Integrity, Innovation, Consistency, etc.) Press Enter to add (max 5)</p>
           <div className="space-y-2">
             <input
               id="coreValues"
@@ -573,19 +573,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  const values = coreValuesInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                  setCoreValues(values);
-                  setCoreValuesInput("");
+                  const trimmedValue = coreValuesInput.trim();
+                  if (trimmedValue && coreValues.length < 5 && !coreValues.includes(trimmedValue)) {
+                    setCoreValues([...coreValues, trimmedValue]);
+                    setCoreValuesInput("");
+                  }
                 }
               }}
-              onBlur={() => {
-                const values = coreValuesInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                if (values.length > 0) {
-                  setCoreValues(values);
-                  setCoreValuesInput("");
-                }
-              }}
-              placeholder="Enter values separated by commas (e.g., Integrity, Innovation, Consistency)"
+              placeholder="Type a value and press Enter (e.g., Integrity)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
               style={{ 
                 backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -651,7 +646,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Primary Audience
           </label>
-          <p className="text-xs text-white/60 -mt-1">(Employers, clients, investors, community, etc.) (max 5 audience names)</p>
+          <p className="text-xs text-white/60 -mt-1">(Employers, clients, investors, community, etc.) Press Enter to add (max 5)</p>
           <div className="space-y-2">
             <input
               id="primaryAudience"
@@ -661,19 +656,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  const audiences = primaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                  setPrimaryAudience(audiences);
-                  setPrimaryAudienceInput("");
+                  const trimmedValue = primaryAudienceInput.trim();
+                  if (trimmedValue && primaryAudience.length < 5 && !primaryAudience.includes(trimmedValue)) {
+                    setPrimaryAudience([...primaryAudience, trimmedValue]);
+                    setPrimaryAudienceInput("");
+                  }
                 }
               }}
-              onBlur={() => {
-                const audiences = primaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                if (audiences.length > 0) {
-                  setPrimaryAudience(audiences);
-                  setPrimaryAudienceInput("");
-                }
-              }}
-              placeholder="Enter audiences separated by commas (e.g., Employers, Clients, Investors)"
+              placeholder="Type an audience and press Enter (e.g., Employers)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
               style={{ 
                 backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -713,7 +703,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Secondary Audience
           </label>
-          <p className="text-xs text-white/60 -mt-1">(Peers, industry networks, collaborators) (max 5 audience names)</p>
+          <p className="text-xs text-white/60 -mt-1">(Peers, industry networks, collaborators) Press Enter to add (max 5)</p>
           <div className="space-y-2">
             <input
               id="secondaryAudience"
@@ -723,19 +713,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  const audiences = secondaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                  setSecondaryAudience(audiences);
-                  setSecondaryAudienceInput("");
+                  const trimmedValue = secondaryAudienceInput.trim();
+                  if (trimmedValue && secondaryAudience.length < 5 && !secondaryAudience.includes(trimmedValue)) {
+                    setSecondaryAudience([...secondaryAudience, trimmedValue]);
+                    setSecondaryAudienceInput("");
+                  }
                 }
               }}
-              onBlur={() => {
-                const audiences = secondaryAudienceInput.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
-                if (audiences.length > 0) {
-                  setSecondaryAudience(audiences);
-                  setSecondaryAudienceInput("");
-                }
-              }}
-              placeholder="Enter audiences separated by commas (e.g., Peers, Networks, Collaborators)"
+              placeholder="Type an audience and press Enter (e.g., Peers)"
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
               style={{ 
                 backgroundColor: 'rgba(18,18,18,0.95) !important', 
