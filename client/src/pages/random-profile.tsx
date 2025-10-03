@@ -194,51 +194,44 @@ const RandomProfile = () => {
   };
 
   // Determine which layout to use
-  let layoutToRender = 'minimalist_pro';
+  // Priority: Published portfolio > Default to Corporate Executive
+  let layoutToRender = 'executive'; // Default: Corporate Executive
   
   if (portfolioData && portfolioData.isPublished) {
+    // User has published a portfolio - use that layout
     layoutToRender = portfolioData.layout;
-  } else if (userData.selectedPortfolioLayout && userData.selectedPortfolioLayout !== 'autocreated') {
-    // Map selectedPortfolioLayout values to template cases
-    const layoutMap: Record<string, string> = {
-      'professional': 'minimalist_pro',
-      'creative': 'visual_expert',
-      'executive': 'executive',
-      'freelancer': 'freelancer_hub',
-      'timeline': 'timeline',
-      'animated': 'animated',
-      'scholar': 'minimalist_pro',
-      'dynamic': 'dynamic_innovator',
-    };
-    layoutToRender = layoutMap[userData.selectedPortfolioLayout] || userData.selectedPortfolioLayout;
-  } else {
-    // If no layout specified, show default profile view
-    layoutToRender = '';
   }
 
   // Render the template based on layout
-  if (layoutToRender) {
-    switch (layoutToRender) {
-      case "minimalist_pro":
-      case "minimalist":
-        return <MinimalistPro {...templateProps} />;
-      case "freelancer_hub":
-        return <FreelancerHub {...templateProps} />;
-      case "timeline":
-        return <TimelineStoryteller2 {...templateProps} />;
-      case "visual_expert":
-        return <VisualExpert {...templateProps} />;
-      case "executive":
-        return <CorporateExecutive {...templateProps} />;
-      case "dynamic_innovator":
-        return <DynamicInnovator {...templateProps} />;
-      case "animated":
-        return <Animated {...templateProps} />;
-      case "animated_odyssey":
-        return <AnimatedOdyssey {...templateProps} />;
-      default:
-        return <MinimalistPro {...templateProps} />;
-    }
+  switch (layoutToRender) {
+    case "minimalist_pro":
+    case "minimalist":
+    case "professional":
+      return <MinimalistPro {...templateProps} />;
+    case "freelancer_hub":
+    case "freelancer":
+      return <FreelancerHub {...templateProps} />;
+    case "timeline":
+    case "timeline-storyteller-2":
+      return <TimelineStoryteller2 {...templateProps} />;
+    case "visual_expert":
+    case "visual-expert":
+    case "creative":
+      return <VisualExpert {...templateProps} />;
+    case "executive":
+    case "corporate-executive":
+      return <CorporateExecutive {...templateProps} />;
+    case "dynamic_innovator":
+    case "dynamic-innovator":
+    case "dynamic":
+      return <DynamicInnovator {...templateProps} />;
+    case "animated":
+      return <Animated {...templateProps} />;
+    case "animated_odyssey":
+    case "animated-odyssey":
+      return <AnimatedOdyssey {...templateProps} />;
+    default:
+      return <CorporateExecutive {...templateProps} />;
   }
 
   // Default profile view if no portfolio is published
