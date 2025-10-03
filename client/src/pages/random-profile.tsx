@@ -226,7 +226,24 @@ const RandomProfile = () => {
     case "dynamic":
       return <DynamicInnovator {...templateProps} />;
     case "animated":
-      return <Animated {...templateProps} />;
+      return <Animated 
+        name={userData.name || userData.username}
+        title={userData.title || ''}
+        industry={userData.industry || ''}
+        domain={userData.domain || ''}
+        location={userData.location || ''}
+        photoURL={userData.photoURL}
+        skills={skills || []}
+        projects={projects || []}
+        experiences={experiences || []}
+        educations={educations || []}
+        services={services || []}
+        lookingFor={userData.lookingFor || undefined}
+        email={userData.email || undefined}
+        aboutMe={userData.aboutMe}
+        whatIOffer={userData.whatIOffer}
+        id={userData.id}
+      />;
     case "animated_odyssey":
     case "animated-odyssey":
       return <AnimatedOdyssey {...templateProps} />;
