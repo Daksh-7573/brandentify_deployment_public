@@ -1639,7 +1639,10 @@ export class MemStorage implements IStorage {
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
+        core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
         FROM users WHERE id = $1
       `;
       
@@ -1693,7 +1696,10 @@ export class MemStorage implements IStorage {
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
+        core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
         FROM users WHERE email = $1
       `;
       
@@ -1721,7 +1727,10 @@ export class MemStorage implements IStorage {
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
+        core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
         FROM users WHERE username = $1
       `;
       
@@ -1773,7 +1782,10 @@ export class MemStorage implements IStorage {
         brand_name as "brandName",
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
+        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
+        core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
         FROM users WHERE LOWER(brand_name) = LOWER($1)
       `;
       
