@@ -371,14 +371,15 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
           </div>
         )}
 
-        {/* Professional Overview */}
+        {/* Elevator Pitch */}
         <div className="space-y-2">
           <label htmlFor="aboutMe" className="text-sm font-medium text-white flex items-center gap-2">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>
-            Professional Overview
+            Elevator Pitch
           </label>
+          <p className="text-xs text-white/60 -mt-1">(30-second version of who you are and what you do) (max 75 words)</p>
           <textarea
             id="aboutMe"
             value={aboutMe}

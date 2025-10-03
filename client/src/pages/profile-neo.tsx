@@ -510,10 +510,10 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* Professional Overview */}
+                      {/* Elevator Pitch */}
                       <div>
                         <div className="mb-2">
-                          <h3 className="font-medium text-white">Professional Overview</h3>
+                          <h3 className="font-medium text-white">Elevator Pitch</h3>
                         </div>
                         <p className="text-white/80 text-sm">
                           {userData?.aboutMe || "Add a professional summary to introduce yourself to other professionals."}
@@ -629,15 +629,16 @@ export default function ProfileNeo() {
         </NeoGlassLayout>
       </div>
       
-      {/* Edit Professional Overview Dialog */}
+      {/* Edit Elevator Pitch Dialog */}
       <Dialog open={showEditAboutDialog} onOpenChange={setShowEditAboutDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Professional Overview</DialogTitle>
+            <DialogTitle className="text-white">Edit Elevator Pitch</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="about" className="text-white">Professional Overview</Label>
+              <Label htmlFor="about" className="text-white">Elevator Pitch</Label>
+              <p className="text-xs text-white/60">(30-second version of who you are and what you do) (max 75 words)</p>
               <Textarea
                 id="about"
                 value={aboutMe || ""}
