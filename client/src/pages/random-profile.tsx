@@ -79,7 +79,7 @@ const RandomProfile = () => {
   const randomLink = params?.randomLink;
 
   // Fetch user data by random link
-  const { data: userData, isLoading: isUserLoading, error: userError } = useQuery({
+  const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData>({
     queryKey: [`/api/r/${randomLink}`],
     enabled: !!randomLink,
     retry: 2,
@@ -87,7 +87,7 @@ const RandomProfile = () => {
   });
 
   // Fetch portfolio data if user exists
-  const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery({
+  const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery<PortfolioData>({
     queryKey: ['/api/portfolios', userData?.id],
     enabled: !!userData?.id,
     retry: 1,
@@ -95,27 +95,27 @@ const RandomProfile = () => {
   });
 
   // Fetch user experiences, projects, etc.
-  const { data: experiences = [] } = useQuery({
+  const { data: experiences = [] } = useQuery<any[]>({
     queryKey: ['/api/users', userData?.id, 'experiences'],
     enabled: !!userData?.id,
   });
 
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [] } = useQuery<any[]>({
     queryKey: ['/api/users', userData?.id, 'projects'],
     enabled: !!userData?.id,
   });
 
-  const { data: skills = [] } = useQuery({
+  const { data: skills = [] } = useQuery<any[]>({
     queryKey: ['/api/users', userData?.id, 'skills'],
     enabled: !!userData?.id,
   });
 
-  const { data: educations = [] } = useQuery({
+  const { data: educations = [] } = useQuery<any[]>({
     queryKey: ['/api/users', userData?.id, 'educations'],
     enabled: !!userData?.id,
   });
 
-  const { data: services = [] } = useQuery({
+  const { data: services = [] } = useQuery<any[]>({
     queryKey: ['/api/users', userData?.id, 'services'],
     enabled: !!userData?.id,
   });
@@ -202,6 +202,66 @@ const RandomProfile = () => {
         return <AnimatedOdyssey portfolioData={completePortfolioData} />;
       default:
         return <CorporateExecutive portfolioData={completePortfolioData} />;
+    }
+  }
+
+  // Fallback: Use selectedPortfolioLayout from user data if no published portfolio exists
+  if (userData.selectedPortfolioLayout && userData.selectedPortfolioLayout !== 'autocreated') {
+    const basicPortfolioData = {
+      layout: userData.selectedPortfolioLayout,
+      publicUrl: null,
+      isPublished: true,
+      customTitle: userData.name || userData.username,
+      customBio: userData.aboutMe || '',
+      customizationOptions: {
+        theme: 'default',
+        showContact: true,
+      },
+      featuredProjects: [],
+      featuredSkills: [],
+      featuredExperiences: [],
+      skills,
+      experiences,
+      projects,
+      educations,
+      services,
+      userData
+    };
+
+    // Map selectedPortfolioLayout values to template cases
+    const layoutMap: Record<string, string> = {
+      'professional': 'minimalist_pro',
+      'creative': 'visual_expert',
+      'executive': 'executive',
+      'freelancer': 'freelancer_hub',
+      'timeline': 'timeline',
+      'animated': 'animated',
+      'scholar': 'minimalist_pro',
+      'dynamic': 'dynamic_innovator',
+    };
+
+    const templateLayout = layoutMap[userData.selectedPortfolioLayout] || userData.selectedPortfolioLayout;
+
+    // Render based on mapped layout
+    switch (templateLayout) {
+      case "minimalist_pro":
+        return <MinimalistPro portfolioData={basicPortfolioData} />;
+      case "freelancer_hub":
+        return <FreelancerHub portfolioData={basicPortfolioData} />;
+      case "timeline":
+        return <TimelineStoryteller2 portfolioData={basicPortfolioData} />;
+      case "visual_expert":
+        return <VisualExpert portfolioData={basicPortfolioData} />;
+      case "executive":
+        return <CorporateExecutive portfolioData={basicPortfolioData} />;
+      case "dynamic_innovator":
+        return <DynamicInnovator portfolioData={basicPortfolioData} />;
+      case "animated":
+        return <Animated portfolioData={basicPortfolioData} />;
+      case "animated_odyssey":
+        return <AnimatedOdyssey portfolioData={basicPortfolioData} />;
+      default:
+        return <CorporateExecutive portfolioData={basicPortfolioData} />;
     }
   }
 
