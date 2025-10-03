@@ -20,4 +20,12 @@ export interface UserData {
   profileCompleted?: boolean;
   visitingCardType?: string | null;
   createdAt?: Date | string | null;
+  // New branding fields
+  tagline?: string | null;
+  visionStatement?: string | null;
+  missionStatement?: string | null;
+  coreValues?: string[] | null;
+  uniqueValueProposition?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
 }

@@ -60,6 +60,15 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   };
 
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
+  
+  // New branding fields state
+  const [tagline, setTagline] = useState(userData.tagline || "");
+  const [visionStatement, setVisionStatement] = useState(userData.visionStatement || "");
+  const [missionStatement, setMissionStatement] = useState(userData.missionStatement || "");
+  const [coreValues, setCoreValues] = useState<string[]>(userData.coreValues || []);
+  const [uniqueValueProposition, setUniqueValueProposition] = useState(userData.uniqueValueProposition || "");
+  const [primaryAudience, setPrimaryAudience] = useState<string[]>(userData.primaryAudience || []);
+  const [secondaryAudience, setSecondaryAudience] = useState<string[]>(userData.secondaryAudience || []);
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
@@ -70,6 +79,15 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
+    
+    // Initialize new branding fields
+    setTagline(userData.tagline || "");
+    setVisionStatement(userData.visionStatement || "");
+    setMissionStatement(userData.missionStatement || "");
+    setCoreValues(userData.coreValues || []);
+    setUniqueValueProposition(userData.uniqueValueProposition || "");
+    setPrimaryAudience(userData.primaryAudience || []);
+    setSecondaryAudience(userData.secondaryAudience || []);
     
     // Validate lookingFor value before setting it
     const rawLookingFor = userData.lookingFor || "";
@@ -444,7 +462,258 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
           </div>
         </div>
 
+        {/* Tagline / Personal Motto */}
+        <div className="space-y-2">
+          <label htmlFor="tagline" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Tagline / Personal Motto
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(e.g., "Empowering ideas through innovation") (max 15 words)</p>
+          <input
+            id="tagline"
+            type="text"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            placeholder="Enter your personal motto"
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
+            data-testid="input-tagline"
+          />
+        </div>
 
+        {/* Vision Statement */}
+        <div className="space-y-2">
+          <label htmlFor="visionStatement" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 16v-4m0-4h.01"></path>
+            </svg>
+            Vision Statement
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(Where you want to go long-term) (max 40 words)</p>
+          <textarea
+            id="visionStatement"
+            value={visionStatement}
+            onChange={(e) => setVisionStatement(e.target.value)}
+            placeholder="Describe your long-term vision"
+            rows={3}
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
+            data-testid="textarea-vision-statement"
+          />
+        </div>
+
+        {/* Mission Statement */}
+        <div className="space-y-2">
+          <label htmlFor="missionStatement" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            Mission Statement
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(What you stand for, how you create impact) (max 50 words)</p>
+          <textarea
+            id="missionStatement"
+            value={missionStatement}
+            onChange={(e) => setMissionStatement(e.target.value)}
+            placeholder="Describe your mission and how you create impact"
+            rows={3}
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
+            data-testid="textarea-mission-statement"
+          />
+        </div>
+
+        {/* Core Values */}
+        <div className="space-y-2">
+          <label htmlFor="coreValues" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+            Core Values
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(3–5 keywords: Integrity, Innovation, Consistency, etc.) (max 5 keywords)</p>
+          <div className="space-y-2">
+            <input
+              id="coreValues"
+              type="text"
+              value={coreValues.join(", ")}
+              onChange={(e) => {
+                const values = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                setCoreValues(values);
+              }}
+              placeholder="Enter values separated by commas (e.g., Integrity, Innovation, Consistency)"
+              className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+              style={{ 
+                backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                color: 'white !important',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.2) !important'
+              }}
+              data-testid="input-core-values"
+            />
+            {coreValues.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {coreValues.map((value, index) => (
+                  <span key={index} className="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-sm text-white flex items-center gap-2">
+                    {value}
+                    <button
+                      type="button"
+                      onClick={() => setCoreValues(coreValues.filter((_, i) => i !== index))}
+                      className="hover:text-red-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Unique Value Proposition */}
+        <div className="space-y-2">
+          <label htmlFor="uniqueValueProposition" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Unique Value Proposition (UVP)
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(What sets you apart from others in your space) (max 25 words)</p>
+          <textarea
+            id="uniqueValueProposition"
+            value={uniqueValueProposition}
+            onChange={(e) => setUniqueValueProposition(e.target.value)}
+            placeholder="What makes you unique?"
+            rows={2}
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
+            data-testid="textarea-unique-value-proposition"
+          />
+        </div>
+
+        {/* Primary Audience */}
+        <div className="space-y-2">
+          <label htmlFor="primaryAudience" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Primary Audience
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(Employers, clients, investors, community, etc.) (max 5 audience names)</p>
+          <div className="space-y-2">
+            <input
+              id="primaryAudience"
+              type="text"
+              value={primaryAudience.join(", ")}
+              onChange={(e) => {
+                const audiences = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                setPrimaryAudience(audiences);
+              }}
+              placeholder="Enter audiences separated by commas (e.g., Employers, Clients, Investors)"
+              className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+              style={{ 
+                backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                color: 'white !important',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.2) !important'
+              }}
+              data-testid="input-primary-audience"
+            />
+            {primaryAudience.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {primaryAudience.map((audience, index) => (
+                  <span key={index} className="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-sm text-white flex items-center gap-2">
+                    {audience}
+                    <button
+                      type="button"
+                      onClick={() => setPrimaryAudience(primaryAudience.filter((_, i) => i !== index))}
+                      className="hover:text-red-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Secondary Audience */}
+        <div className="space-y-2">
+          <label htmlFor="secondaryAudience" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Secondary Audience
+          </label>
+          <p className="text-xs text-white/60 -mt-1">(Peers, industry networks, collaborators) (max 5 audience names)</p>
+          <div className="space-y-2">
+            <input
+              id="secondaryAudience"
+              type="text"
+              value={secondaryAudience.join(", ")}
+              onChange={(e) => {
+                const audiences = e.target.value.split(",").map(v => v.trim()).filter(Boolean).slice(0, 5);
+                setSecondaryAudience(audiences);
+              }}
+              placeholder="Enter audiences separated by commas (e.g., Peers, Networks, Collaborators)"
+              className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+              style={{ 
+                backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                color: 'white !important',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.2) !important'
+              }}
+              data-testid="input-secondary-audience"
+            />
+            {secondaryAudience.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {secondaryAudience.map((audience, index) => (
+                  <span key={index} className="bg-white/10 border border-white/20 px-3 py-1 rounded-full text-sm text-white flex items-center gap-2">
+                    {audience}
+                    <button
+                      type="button"
+                      onClick={() => setSecondaryAudience(secondaryAudience.filter((_, i) => i !== index))}
+                      className="hover:text-red-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Profile URL field removed per user request */}
       </div>
@@ -485,6 +754,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 domain: domain || null,
                 aboutMe: aboutMe.trim() || null,
                 lookingFor: lookingFor.trim() || null,
+                // New branding fields
+                tagline: tagline.trim() || null,
+                visionStatement: visionStatement.trim() || null,
+                missionStatement: missionStatement.trim() || null,
+                coreValues: coreValues.length > 0 ? coreValues : null,
+                uniqueValueProposition: uniqueValueProposition.trim() || null,
+                primaryAudience: primaryAudience.length > 0 ? primaryAudience : null,
+                secondaryAudience: secondaryAudience.length > 0 ? secondaryAudience : null,
               };
 
               // Validate and ensure lookingFor value is correct
