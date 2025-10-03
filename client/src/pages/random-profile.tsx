@@ -80,7 +80,7 @@ const RandomProfile = () => {
 
   // Fetch user data by random link
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery({
-    queryKey: ['/api/r', randomLink],
+    queryKey: [`/api/r/${randomLink}`],
     enabled: !!randomLink,
     retry: 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
