@@ -88,7 +88,7 @@ const RandomProfile = () => {
 
   // Fetch portfolio data if user exists
   const { data: portfolioData, isLoading: isPortfolioLoading } = useQuery<PortfolioData>({
-    queryKey: ['/api/users', userData?.id, 'portfolio'],
+    queryKey: [`/api/users/${userData?.id}/portfolio`],
     enabled: !!userData?.id,
     retry: 1,
     staleTime: 5 * 60 * 1000,
@@ -96,27 +96,27 @@ const RandomProfile = () => {
 
   // Fetch user experiences, projects, etc.
   const { data: experiences = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'experiences'],
+    queryKey: [`/api/users/${userData?.id}/experiences`],
     enabled: !!userData?.id,
   });
 
   const { data: projects = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'projects'],
+    queryKey: [`/api/users/${userData?.id}/projects`],
     enabled: !!userData?.id,
   });
 
   const { data: skills = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'skills'],
+    queryKey: [`/api/users/${userData?.id}/skills`],
     enabled: !!userData?.id,
   });
 
   const { data: educations = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'educations'],
+    queryKey: [`/api/users/${userData?.id}/educations`],
     enabled: !!userData?.id,
   });
 
   const { data: services = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', userData?.id, 'services'],
+    queryKey: [`/api/users/${userData?.id}/services`],
     enabled: !!userData?.id,
   });
 
