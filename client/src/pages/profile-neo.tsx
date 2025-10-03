@@ -576,6 +576,94 @@ export default function ProfileNeo() {
                           )}
                         </div>
                       </div>
+
+                      {/* Tagline / Personal Motto */}
+                      {userData?.tagline && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Tagline / Personal Motto</h3>
+                          </div>
+                          <p className="text-white/80 text-sm italic">"{userData.tagline}"</p>
+                        </div>
+                      )}
+
+                      {/* Vision Statement */}
+                      {userData?.visionStatement && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Vision Statement</h3>
+                          </div>
+                          <p className="text-white/80 text-sm">{userData.visionStatement}</p>
+                        </div>
+                      )}
+
+                      {/* Mission Statement */}
+                      {userData?.missionStatement && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Mission Statement</h3>
+                          </div>
+                          <p className="text-white/80 text-sm">{userData.missionStatement}</p>
+                        </div>
+                      )}
+
+                      {/* Core Values */}
+                      {userData?.coreValues && userData.coreValues.length > 0 && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Core Values</h3>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {userData.coreValues.map((value, index) => (
+                              <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                                {value}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Unique Value Proposition */}
+                      {userData?.uniqueValueProposition && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Unique Value Proposition</h3>
+                          </div>
+                          <p className="text-white/80 text-sm">{userData.uniqueValueProposition}</p>
+                        </div>
+                      )}
+
+                      {/* Primary Audience */}
+                      {userData?.primaryAudience && userData.primaryAudience.length > 0 && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Primary Audience</h3>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {userData.primaryAudience.map((audience, index) => (
+                              <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                                {audience}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Secondary Audience */}
+                      {userData?.secondaryAudience && userData.secondaryAudience.length > 0 && (
+                        <div>
+                          <div className="mb-2">
+                            <h3 className="font-medium text-white">Secondary Audience</h3>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {userData.secondaryAudience.map((audience, index) => (
+                              <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                                {audience}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
