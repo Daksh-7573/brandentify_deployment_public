@@ -75,8 +75,19 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [primaryAudienceInput, setPrimaryAudienceInput] = useState("");
   const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
-  // Parse existing combined job title on component load and when userData changes
+  // Track if this is the initial mount to prevent overwriting user edits
+  const isInitialMount = React.useRef(true);
+  const previousUserDataId = React.useRef(userData.id);
+
+  // Parse existing combined job title on component load ONLY (don't reset on every data change)
   React.useEffect(() => {
+    // Only reset form if this is the initial mount OR if we're editing a different user
+    const shouldReset = isInitialMount.current || previousUserDataId.current !== userData.id;
+    
+    if (!shouldReset) {
+      return; // Don't overwrite user's typed values
+    }
+    
     // Reset form state when userData changes
     console.log("[FORM INIT] userData.lookingFor (raw):", userData.lookingFor);
     setName(userData.name || "");
@@ -135,6 +146,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
       setSelectedJobTitleFromDropdown('');
       setJobTitle('');
     }
+    
+    // Mark that we've completed the initial mount
+    isInitialMount.current = false;
+    previousUserDataId.current = userData.id;
   }, [userData, jobTitlesData]);
 
   // Brand name and phone number fields removed per user request

@@ -1,0 +1,645 @@
+[PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [DIALOG STATE] showEditPersonalInfoDialog changed to: true
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-ORDDUALW.js?v=581ea615:326
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627Understand this error
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ chunk-ORDDUALW.js?v=581ea615:340
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627Understand this warning
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [BUTTON] Save button clicked! SyntheticBaseEvent {_reactName: 'onClick', _targetInst: null, type: 'click', nativeEvent: PointerEvent, target: button.neo-glass-button.flex.items-center.gap-2.py-2.5.px-6.text-white.bg-gradient-to-r.from-blue-5…, …}
+Console.js:61 [BUTTON] Starting direct save operation
+Console.js:61 [SAVE DEBUG] Current field values:
+Console.js:61   - tagline: 
+Console.js:61   - visionStatement: 
+Console.js:61   - missionStatement: 
+Console.js:61   - coreValues: (3) ['Life', 'world', 'Innovatio']
+Console.js:61   - uniqueValueProposition: 
+Console.js:61   - primaryAudience: []
+Console.js:61   - secondaryAudience: []
+Console.js:61 [SAVE DEBUG] Prepared updateData: {
+  "name": "Nishant Chopra",
+  "title": "Student Product Manager",
+  "location": "Gandhinagar, Gujarat, India",
+  "industry": "Hospitality",
+  "domain": "Corporate Travel",
+  "aboutMe": "I am a Student Product Manager with a background in Healthcare and Biotechnology. I am passionate about creating innovative solutions that improve patient outcomes and healthcare delivery. My expertise includes product strategy, user research, and cross-functional team collaboration. I am currently seeking new job opportunities where I can apply my skills and make a meaningful impact.",
+  "lookingFor": "career_advice",
+  "tagline": null,
+  "visionStatement": null,
+  "missionStatement": null,
+  "coreValues": [
+    "Life",
+    "world",
+    "Innovatio"
+  ],
+  "uniqueValueProposition": null,
+  "primaryAudience": null,
+  "secondaryAudience": null
+}
+Console.js:61 [BUTTON] Combined job title: Student Product Manager
+Console.js:61 [BUTTON] Raw lookingFor state value: career_advice
+Console.js:61 [BUTTON] lookingFor type: string
+Console.js:61 [BUTTON] Valid lookingFor values: (8) ['job_opportunities', 'mentorship', 'networking', 'collaboration', 'investment', 'learning', 'career_advice', 'business_partnerships']
+Console.js:61 [BUTTON] Is lookingFor valid? true
+Console.js:61 [BUTTON] Using valid lookingFor value: career_advice
+Console.js:61 [BUTTON] Final validated data: {name: 'Nishant Chopra', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', domain: 'Corporate Travel', …}
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/2
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"name":"Nishant Chopra","title":"Student Product …,"primaryAudience":null,"secondaryAudience":null}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: (14) ['name', 'title', 'location', 'industry', 'domain', 'aboutMe', 'lookingFor', 'tagline', 'visionStatement', 'missionStatement', 'coreValues', 'uniqueValueProposition', 'primaryAudience', 'secondaryAudience']
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 200
+Console.js:61 [API CLIENT DEBUG] Status text: OK
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', cache-control: 'no-cache, no-store, must-revalidate', …}
+Console.js:61 [BUTTON] Response status: 200
+Console.js:61 [BUTTON] API response: Response {type: 'basic', url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2', redirected: false, status: 200, ok: true, …}
+Console.js:61 [BUTTON] Updating cache immediately with: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [BUTTON] Cache updated immediately, now invalidating for fresh data
+Console.js:61 Fetching data from: /api/users
+Console.js:61 useProfileServices hook - fetching data for: 2
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:864
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:864
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 useProfileServices hook - received data: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1759556908401}
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Fetching data from: /api/users
+Console.js:61 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+(anonymous) @ @tanstack_react-query.js?v=581ea615:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=581ea615:515
+Promise.catch
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:864
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+(anonymous) @ @tanstack_react-query.js?v=581ea615:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=581ea615:515
+Promise.catch
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:864
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 Fetching data from: /api/users
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 useProfileServices hook - fetching data for: 2
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:869
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:869
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 useProfileServices hook - received data: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1759556910454}
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Cached response for /api/users/2
+Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 Fetching data from: /api/users
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+(anonymous) @ @tanstack_react-query.js?v=581ea615:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=581ea615:515
+Promise.catch
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:869
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+(anonymous) @ @tanstack_react-query.js?v=581ea615:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=581ea615:515
+Promise.catch
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1726
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1725
+batch @ @tanstack_react-query.js?v=581ea615:583
+refetchQueries @ @tanstack_react-query.js?v=581ea615:1724
+(anonymous) @ @tanstack_react-query.js?v=581ea615:1716
+batch @ @tanstack_react-query.js?v=581ea615:583
+invalidateQueries @ @tanstack_react-query.js?v=581ea615:1705
+onClick @ edit-personal-info-new.tsx:869
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=581ea615:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=581ea615:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=581ea615:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=581ea615:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=581ea615:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=581ea615:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=581ea615:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=581ea615:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=581ea615:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=581ea615:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=581ea615:5449Understand this error
+Console.js:61 [BUTTON] Calling parent onSave callback
+Console.js:61 [DEBUG] onSave called from profile dialog
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 [FORM INIT] userData.lookingFor (raw): career_advice
+Console.js:61 [FORM INIT] userData.lookingFor (sanitized): career_advice
+Console.js:61 [FORM INIT] Set lookingFor to: career_advice
+Console.js:61 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+Console.js:61 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [USER ID DEBUG] Selected userIdentifier: 2
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+Console.js:61 Profile page render - userIdentifier: 2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: 2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Student Product Manager', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 Skills component - Using userIdentifier: 2
+Console.js:61 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 WorkExperience component - Using userIdentifier: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+Console.js:61 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
