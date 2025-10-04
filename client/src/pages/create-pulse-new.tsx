@@ -114,6 +114,11 @@ export default function CreatePulsePage() {
     }
   };
   
+  // Word count helper function
+  const getWordCount = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+  
   // Handle pulse creation
   const handleCreatePulse = async () => {
     if (!user) {
@@ -583,7 +588,15 @@ export default function CreatePulsePage() {
                   <div className="space-y-4 sm:space-y-6">
                     <>
                       <div className="space-y-1 sm:space-y-2">
-                        <Label htmlFor="title" className="text-white text-sm sm:text-base">Title</Label>
+                        <div className="flex justify-between items-center">
+                          <Label htmlFor="title" className="text-white text-sm sm:text-base">Title</Label>
+                          <span className={cn(
+                            "text-xs",
+                            getWordCount(pulseTitle) > 25 ? "text-red-400" : "text-gray-400"
+                          )}>
+                            {getWordCount(pulseTitle)}/25 words
+                          </span>
+                        </div>
                         <Input 
                           id="title" 
                           placeholder="Enter a title for your pulse" 
@@ -591,10 +604,21 @@ export default function CreatePulsePage() {
                           onChange={(e) => setPulseTitle(e.target.value)}
                           className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                         />
+                        {getWordCount(pulseTitle) > 25 && (
+                          <p className="text-xs text-red-400">Title must be 25 words or less</p>
+                        )}
                       </div>
                       
                       <div className="space-y-1 sm:space-y-2">
-                        <Label htmlFor="content" className="text-white text-sm sm:text-base">Content</Label>
+                        <div className="flex justify-between items-center">
+                          <Label htmlFor="content" className="text-white text-sm sm:text-base">Description</Label>
+                          <span className={cn(
+                            "text-xs",
+                            getWordCount(pulseContent) > 50 ? "text-red-400" : "text-gray-400"
+                          )}>
+                            {getWordCount(pulseContent)}/50 words
+                          </span>
+                        </div>
                         <Textarea 
                           id="content" 
                           placeholder="What's on your mind? Share your professional thoughts, insights, or ask a question." 
@@ -603,6 +627,9 @@ export default function CreatePulsePage() {
                           onChange={(e) => setPulseContent(e.target.value)}
                           className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 text-sm sm:text-base min-h-[80px] sm:min-h-[100px] resize-y"
                         />
+                        {getWordCount(pulseContent) > 50 && (
+                          <p className="text-xs text-red-400">Description must be 50 words or less</p>
+                        )}
                       </div>
                       
                       <div className="space-y-1 sm:space-y-2">
