@@ -807,40 +807,6 @@ export default function CreatePulsePage() {
                               <p className="text-xs text-gray-400">Select video file (max 120 seconds, 25MB)</p>
                             </div>
                           </div>
-
-                          <div className="text-center text-white/50 text-sm">or</div>
-
-                          <div className="space-y-1 sm:space-y-2">
-                            <Label htmlFor="insights-video-url" className="text-white text-sm sm:text-base flex items-center gap-2">
-                              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                              Add Video URL
-                            </Label>
-                            <div className="flex space-x-2">
-                              <Input
-                                id="insights-video-url"
-                                placeholder="https://example.com/video.mp4"
-                                type="url"
-                                value={mediaUrlInput}
-                                onChange={(e) => setMediaUrlInput(e.target.value)}
-                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base flex-1"
-                                onKeyPress={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    addMediaUrl();
-                                  }
-                                }}
-                              />
-                              <Button 
-                                type="button" 
-                                onClick={addMediaUrl}
-                                disabled={mediaUrls.length >= 1}
-                                className="neo-glass-button secondary px-3 sm:px-4 h-9 sm:h-10 text-sm"
-                              >
-                                Add
-                              </Button>
-                            </div>
-                            <p className="text-xs text-gray-400">Add video URL directly for preview</p>
-                          </div>
                           
                           {mediaUrls.length > 0 && (
                             <div className="mt-3 sm:mt-4">
