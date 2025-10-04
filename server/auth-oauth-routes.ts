@@ -543,34 +543,19 @@ export async function handleGoogleOAuthCallbackRoute(
         googleId: existingUser.googleId,
       });
 
-      // PROFILE PICTURE PERSISTENCE FIX: Preserve custom uploaded photos
-      // Only use Google photo if user hasn't uploaded a custom one
-      let finalPhotoURL = existingUser.photoURL;
+      // ONE-TIME SYNC: Preserve user's Brandentifier name and photo
+      // Google data only used on initial signup, not on subsequent logins
+      console.log("🔒 [ONE-TIME-SYNC] Preserving Brandentifier profile data (name and photo)");
 
-      if (
-        existingUser.photoURL &&
-        existingUser.photoURL.startsWith("data:image/")
-      ) {
-        // User has custom uploaded image - preserve it
-        finalPhotoURL = existingUser.photoURL;
-        console.log("🖼️ [AUTH-FIX] Preserving custom uploaded profile picture");
-      } else if (userData.photoURL && userData.photoURL.startsWith("http")) {
-        // No custom image, use latest Google photo
-        finalPhotoURL = userData.photoURL;
-        console.log("🖼️ [AUTH-FIX] Using Google profile picture");
-      }
-
-      // Update existing user with latest Google info but preserve photo priority
+      // Update only technical fields, preserve user's customized name and photo
       user = await storage.updateUser(existingUser.id, {
-        name: userData.name,
-        photoURL: finalPhotoURL,
         googleId: userData.googleId,
         firebaseUid: userData.firebaseUid,
         authProvider: "google",
         lastLoginAt: new Date(),
       });
       console.log(
-        "✅ [AUTH-FIX] Updated existing user profile with photo preservation",
+        "✅ [AUTH-FIX] Updated existing user login timestamp, preserved profile data",
       );
     } else {
       // Fallback: check by email for legacy users who may not have googleId stored
@@ -584,30 +569,14 @@ export async function handleGoogleOAuthCallbackRoute(
           "✅ [AUTH-FIX] Found legacy user by email, updating with Google ID",
         );
 
-        // PROFILE PICTURE PERSISTENCE FIX: Preserve custom uploaded photos for legacy users too
-        let finalPhotoURL = userByEmail.photoURL;
+        // ONE-TIME SYNC: Preserve user's Brandentifier name and photo for legacy users
+        // Google data only used on initial signup, not on subsequent logins
+        console.log(
+          "🔒 [ONE-TIME-SYNC] Preserving Brandentifier profile data for legacy user (name and photo)",
+        );
 
-        if (
-          userByEmail.photoURL &&
-          userByEmail.photoURL.startsWith("data:image/")
-        ) {
-          // User has custom uploaded image - preserve it
-          finalPhotoURL = userByEmail.photoURL;
-          console.log(
-            "🖼️ [AUTH-FIX] Preserving custom uploaded profile picture (legacy user)",
-          );
-        } else if (userData.photoURL && userData.photoURL.startsWith("http")) {
-          // No custom image, use latest Google photo
-          finalPhotoURL = userData.photoURL;
-          console.log(
-            "🖼️ [AUTH-FIX] Using Google profile picture (legacy user)",
-          );
-        }
-
-        // Update legacy user with Google ID fields
+        // Update legacy user with Google ID fields only, preserve name and photo
         user = await storage.updateUser(userByEmail.id, {
-          name: userData.name,
-          photoURL: finalPhotoURL,
           googleId: userData.googleId,
           firebaseUid: userData.firebaseUid,
           authProvider: "google",
