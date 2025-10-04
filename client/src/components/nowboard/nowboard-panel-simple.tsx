@@ -204,6 +204,15 @@ export default function NowboardPanelSimple() {
 
   // Simple submit handler
   const handleSubmit = () => {
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "Please wait while we load your profile.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!newItemContent.trim()) {
       toast({
         title: "Empty update",
