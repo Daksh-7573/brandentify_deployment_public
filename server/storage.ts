@@ -9251,7 +9251,16 @@ export class DatabaseStorage implements IStorage {
         
         // Add WHERE clause and returning
         updateQuery += updateParts.join(', ');
-        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+        updateQuery += ` WHERE id = $${paramIndex} RETURNING ` +
+          `id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", ` +
+          `photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, ` +
+          `looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", ` +
+          `profile_completed as "profileCompleted", email_verified as "emailVerified", ` +
+          `email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", ` +
+          `created_at as "createdAt", tagline, vision_statement as "visionStatement", ` +
+          `mission_statement as "missionStatement", core_values as "coreValues", ` +
+          `unique_value_proposition as "uniqueValueProposition", primary_audience as "primaryAudience", ` +
+          `secondary_audience as "secondaryAudience"`;
         updateValues.push(id);
         
         console.log(`[DatabaseStorage.updateUser] Fallback SQL query:`, updateQuery);
