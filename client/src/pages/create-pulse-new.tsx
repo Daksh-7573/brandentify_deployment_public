@@ -1038,40 +1038,6 @@ export default function CreatePulsePage() {
                                       <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
                                     </div>
                                   </div>
-
-                                  <div className="text-center text-white/50 text-sm">or</div>
-
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="image-url" className="text-white text-sm sm:text-base flex items-center gap-2">
-                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                                      Add Image URL
-                                    </Label>
-                                    <div className="flex space-x-2">
-                                      <Input
-                                        id="image-url"
-                                        placeholder="https://example.com/image.jpg"
-                                        type="url"
-                                        value={mediaUrlInput}
-                                        onChange={(e) => setMediaUrlInput(e.target.value)}
-                                        className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base flex-1"
-                                        onKeyPress={(e) => {
-                                          if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            addMediaUrl();
-                                          }
-                                        }}
-                                      />
-                                      <Button 
-                                        type="button" 
-                                        onClick={addMediaUrl}
-                                        disabled={mediaUrls.length >= 10}
-                                        className="neo-glass-button secondary px-3 sm:px-4 h-9 sm:h-10 text-sm"
-                                      >
-                                        Add
-                                      </Button>
-                                    </div>
-                                    <p className="text-xs text-gray-400">Add image URLs directly for preview</p>
-                                  </div>
                                   
                                   {mediaUrls.length > 0 && (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 sm:mt-4">
