@@ -9636,6 +9636,88 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  // Project Collaborator operations
+  async getProjectCollaboratorsByProjectId(projectId: number): Promise<ProjectCollaborator[]> {
+    const collaborators = await db
+      .select()
+      .from(projectCollaborators)
+      .where(eq(projectCollaborators.projectId, projectId));
+    return collaborators;
+  }
+
+  async getProjectCollaboratorById(id: number): Promise<ProjectCollaborator | undefined> {
+    const [collaborator] = await db
+      .select()
+      .from(projectCollaborators)
+      .where(eq(projectCollaborators.id, id));
+    return collaborator || undefined;
+  }
+
+  async createProjectCollaborator(insertCollaborator: InsertProjectCollaborator): Promise<ProjectCollaborator> {
+    const [collaborator] = await db
+      .insert(projectCollaborators)
+      .values(insertCollaborator)
+      .returning();
+    return collaborator;
+  }
+
+  async updateProjectCollaborator(id: number, collaboratorData: Partial<ProjectCollaborator>): Promise<ProjectCollaborator | undefined> {
+    const [updatedCollaborator] = await db
+      .update(projectCollaborators)
+      .set(collaboratorData)
+      .where(eq(projectCollaborators.id, id))
+      .returning();
+    return updatedCollaborator || undefined;
+  }
+
+  async deleteProjectCollaborator(id: number): Promise<boolean> {
+    const result = await db
+      .delete(projectCollaborators)
+      .where(eq(projectCollaborators.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Project Endorsement operations
+  async getProjectEndorsementsByProjectId(projectId: number): Promise<ProjectEndorsement[]> {
+    const endorsements = await db
+      .select()
+      .from(projectEndorsements)
+      .where(eq(projectEndorsements.projectId, projectId));
+    return endorsements;
+  }
+
+  async getProjectEndorsementById(id: number): Promise<ProjectEndorsement | undefined> {
+    const [endorsement] = await db
+      .select()
+      .from(projectEndorsements)
+      .where(eq(projectEndorsements.id, id));
+    return endorsement || undefined;
+  }
+
+  async createProjectEndorsement(insertEndorsement: InsertProjectEndorsement): Promise<ProjectEndorsement> {
+    const [endorsement] = await db
+      .insert(projectEndorsements)
+      .values(insertEndorsement)
+      .returning();
+    return endorsement;
+  }
+
+  async updateProjectEndorsement(id: number, endorsementData: Partial<ProjectEndorsement>): Promise<ProjectEndorsement | undefined> {
+    const [updatedEndorsement] = await db
+      .update(projectEndorsements)
+      .set(endorsementData)
+      .where(eq(projectEndorsements.id, id))
+      .returning();
+    return updatedEndorsement || undefined;
+  }
+
+  async deleteProjectEndorsement(id: number): Promise<boolean> {
+    const result = await db
+      .delete(projectEndorsements)
+      .where(eq(projectEndorsements.id, id));
+    return result.rowCount > 0;
+  }
+
   // Portfolio operations
   async getPortfolioByUserId(userId: number): Promise<Portfolio | undefined> {
     try {
