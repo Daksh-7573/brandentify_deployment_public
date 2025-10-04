@@ -95,21 +95,32 @@ app.use((req, res, next) => {
   console.log('CORS: ALLOWED_ORIGINS:', ALLOWED_ORIGINS);
   console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
   
-  // Set CORS headers based on allowlist or for no-origin requests (direct access)
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    // Origin-specific CORS for authenticated requests
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Allowing origin:', origin);
-  } else if (!origin) {
+  // Check if origin is allowed
+  let isAllowed = false;
+  
+  if (!origin) {
     // No-origin requests (direct access) - no credentials needed
     res.header('Access-Control-Allow-Origin', '*');
     console.log('CORS: Allowing request with no origin');
+    isAllowed = true;
   } else if (ALLOWED_ORIGINS.includes(origin)) {
-    // Fallback: Allow origin but log it
+    // Exact match in allowlist
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
     console.log('CORS: Origin found in ALLOWED_ORIGINS');
+    isAllowed = true;
+  } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
+    // Wildcard match for all Replit domains
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Allowing Replit domain:', origin);
+    isAllowed = true;
+  } else if (process.env.NODE_ENV === 'development') {
+    // Development mode - allow all
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    console.log('CORS: Allowing due to development mode');
+    isAllowed = true;
   } else {
     console.log('CORS: Blocking unauthorized origin:', origin);
     // For unauthorized origins, don't set CORS headers
