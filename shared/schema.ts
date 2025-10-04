@@ -641,7 +641,10 @@ export const pollVotes = pgTable("poll_votes", {
   userId: integer("user_id").references(() => users.id).notNull(),
   optionIndex: integer("option_index").notNull(), // Index of the option that was voted for
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  // Ensure each user can only vote once per poll
+  userPollUnique: unique().on(table.userId, table.pulseId),
+}));
 
 // Pulse flags model - tracks flagged inappropriate content
 export const pulseFlags = pgTable("pulse_flags", {
