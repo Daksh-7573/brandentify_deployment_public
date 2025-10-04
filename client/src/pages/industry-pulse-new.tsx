@@ -884,7 +884,7 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
 }
 
 // Project Details Component
-function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
+function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onViewProject?: (project: any) => void }) {
   const [_, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [projectDetails, setProjectDetails] = useState<any>(null);
@@ -954,7 +954,8 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
                 variant="outline" 
                 size="sm" 
                 className="hover:bg-green-50 hover:border-green-200 border-muted"
-                onClick={() => setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
+                onClick={() => onViewProject ? onViewProject(projectDetails) : setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
+                data-testid="button-view-project"
               >
                 View Project
               </Button>
@@ -1008,6 +1009,10 @@ export default function IndustryPulsePage() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
+  
+  // Project modal state
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   
   // Smart refresh state
   const [hasNewContent, setHasNewContent] = useState(false);
@@ -1279,7 +1284,13 @@ export default function IndustryPulsePage() {
                             )}
                             
                             {pulse.type === 'project' && (
-                              <ProjectDetails pulse={pulse} />
+                              <ProjectDetails 
+                                pulse={pulse} 
+                                onViewProject={(project) => {
+                                  setSelectedProject(project);
+                                  setIsProjectModalOpen(true);
+                                }}
+                              />
                             )}
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-4">
@@ -1302,6 +1313,92 @@ export default function IndustryPulsePage() {
         </div>
       </div>
       </div>
+      
+      {/* Project Detail Modal */}
+      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto neo-glass-card bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-white">{selectedProject?.title}</DialogTitle>
+            {selectedProject?.category && (
+              <p className="text-sm text-white/60">{selectedProject.category}</p>
+            )}
+          </DialogHeader>
+          
+          {selectedProject && (
+            <div className="space-y-4">
+              {selectedProject.description && (
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Description</h3>
+                  <p className="text-white/80 whitespace-pre-wrap">{selectedProject.description}</p>
+                </div>
+              )}
+              
+              {selectedProject.startDate && (
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Start Date</h3>
+                  <p className="text-white/80">{selectedProject.startDate}</p>
+                </div>
+              )}
+              
+              {selectedProject.projectUrl && (
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Project URL</h3>
+                  <a 
+                    href={selectedProject.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 hover:underline"
+                  >
+                    {selectedProject.projectUrl}
+                  </a>
+                </div>
+              )}
+              
+              {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Project Media</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selectedProject.mediaUrls.map((url: string, index: number) => (
+                      <img 
+                        key={index}
+                        src={url} 
+                        alt={`Project media ${index + 1}`}
+                        className="w-full h-40 object-cover rounded-lg"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedProject.collaborators && selectedProject.collaborators.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Collaborators</h3>
+                  <div className="space-y-2">
+                    {selectedProject.collaborators.map((collab: any) => (
+                      <div key={collab.id} className="flex items-center gap-2">
+                        <span className="text-white/80">{collab.name}</span>
+                        {collab.role && (
+                          <span className="text-xs text-white/60">({collab.role})</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsProjectModalOpen(false)}
+              className="border-white/20 text-white hover:bg-white/10"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
