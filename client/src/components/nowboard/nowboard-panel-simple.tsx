@@ -153,6 +153,11 @@ export default function NowboardPanelSimple() {
 
   // Use the actual current user's ID from auth context
   const userId = user?.id;
+  
+  // Debug logging
+  console.log("[NOWBOARD DEBUG] user:", user);
+  console.log("[NOWBOARD DEBUG] userId:", userId);
+  console.log("[NOWBOARD DEBUG] newItemContent:", newItemContent);
 
   // Fetch nowboard items with error handling
   const { data: nowboardItems = [], isLoading } = useQuery<NowboardItem[]>({
