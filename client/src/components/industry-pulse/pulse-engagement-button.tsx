@@ -23,13 +23,15 @@ export default function PulseEngagementButton({
   onClick
 }: PulseEngagementButtonProps) {
   // Get user's existing reaction status
-  const { data: userReactionData } = useQuery<{ id: number } | null>({
+  const { data: userReactionData } = useQuery<{ id: number; reactionType: string } | null>({
     queryKey: [`/api/pulses/${pulseId}/reactions/user/${userId}`],
     refetchOnWindowFocus: false
   });
   
-  const userReactionId = type === "insightful" || type === "misinformed" 
-    ? userReactionData?.id 
+  // Check if this specific reaction type is active (not just any reaction)
+  const userReactionId = (type === "insightful" || type === "misinformed") && 
+                         userReactionData?.reactionType === type
+    ? userReactionData.id 
     : undefined;
   
   const isActive = !!userReactionId;

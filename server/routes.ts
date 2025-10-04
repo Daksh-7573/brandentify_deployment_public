@@ -6654,7 +6654,62 @@ ${extractedText.substring(0, 5000)}
         maxQuota = reactionType === "insightful" ? quota.insightful_max : quota.misinformed_max;
       }
       
-      // Check if user has exceeded quota
+      // Check if user already has a reaction on this pulse
+      const existingReaction = await pool.query(`
+        SELECT id, reaction_type FROM pulse_reactions 
+        WHERE pulse_id = $1 AND user_id = $2
+      `, [pulseId, userId]);
+      
+      // If user already has a reaction of a DIFFERENT type, remove it first (switch reaction)
+      if (existingReaction.rows.length > 0) {
+        const existing = existingReaction.rows[0];
+        
+        if (existing.reaction_type !== reactionType) {
+          console.log(`[POST /pulse-reactions] User switching from ${existing.reaction_type} to ${reactionType}`);
+          
+          // Delete the old reaction
+          await pool.query(`DELETE FROM pulse_reactions WHERE id = $1`, [existing.id]);
+          
+          // Decrement the old reaction count
+          if (existing.reaction_type === "insightful") {
+            await pool.query(`
+              UPDATE pulses 
+              SET insightful_count = GREATEST(0, insightful_count - 1)
+              WHERE id = $1
+            `, [pulseId]);
+          } else if (existing.reaction_type === "misinformed") {
+            await pool.query(`
+              UPDATE pulses 
+              SET misinformed_count = GREATEST(0, misinformed_count - 1)
+              WHERE id = $1
+            `, [pulseId]);
+          }
+          
+          // Restore quota for old reaction
+          if (existing.reaction_type === "insightful") {
+            await pool.query(`
+              UPDATE user_reaction_quotas 
+              SET insightful_quota_used = GREATEST(0, insightful_quota_used - 1)
+              WHERE user_id = $1 AND date = $2
+            `, [userId, today]);
+          } else if (existing.reaction_type === "misinformed") {
+            await pool.query(`
+              UPDATE user_reaction_quotas 
+              SET misinformed_quota_used = GREATEST(0, misinformed_quota_used - 1)
+              WHERE user_id = $1 AND date = $2
+            `, [userId, today]);
+          }
+        } else {
+          // User is trying to add the same reaction type they already have
+          console.log(`[POST /pulse-reactions] User already has ${reactionType} reaction`);
+          return res.status(409).json({ 
+            message: "You already have this reaction on this pulse",
+            existingReaction: existing
+          });
+        }
+      }
+      
+      // Check if user has exceeded quota (after potential switch)
       if (currentUsed >= maxQuota) {
         return res.status(429).json({ 
           message: "Daily reaction quota exceeded",
@@ -6666,7 +6721,7 @@ ${extractedText.substring(0, 5000)}
         });
       }
       
-      // Create the reaction
+      // Create the new reaction
       const result = await pool.query(`
         INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type)
         VALUES ($1, $2, $3)
