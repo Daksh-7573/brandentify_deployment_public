@@ -5,7 +5,7 @@ import { Loader2, Lightbulb } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { NowboardMenu } from "./nowboard-menu";
 
@@ -153,11 +153,6 @@ export default function NowboardPanelSimple() {
 
   // Use the actual current user's ID from auth context
   const userId = user?.id;
-  
-  // Debug logging
-  console.log("[NOWBOARD DEBUG] user:", user);
-  console.log("[NOWBOARD DEBUG] userId:", userId);
-  console.log("[NOWBOARD DEBUG] newItemContent:", newItemContent);
 
   // Fetch nowboard items with error handling
   const { data: nowboardItems = [], isLoading } = useQuery<NowboardItem[]>({

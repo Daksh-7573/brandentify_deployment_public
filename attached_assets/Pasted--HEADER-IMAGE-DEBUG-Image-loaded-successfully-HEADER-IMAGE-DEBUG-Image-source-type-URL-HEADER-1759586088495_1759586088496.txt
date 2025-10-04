@@ -1,0 +1,1057 @@
+[HEADER IMAGE DEBUG] Image loaded successfully
+ [HEADER IMAGE DEBUG] Image source type: URL
+ [HEADER IMAGE DEBUG] Image source length: 127
+ Cached response for /api/users/2
+ [HEADER PERFORMANCE] User data loaded: SUCCESS
+ [HEADER PERFORMANCE] isLoading: false
+ [HEADER PERFORMANCE] userData ready: true
+ [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+ [HEADER PERFORMANCE] userId: 2
+ [HEADER IMAGE DEBUG] Image loaded successfully
+ [HEADER IMAGE DEBUG] Image source type: BASE64
+ [HEADER IMAGE DEBUG] Image source length: 40579
+ Cached response for /api/messaging/unread/count?userId=2
+ [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+ [HEADER PERFORMANCE] isLoading: false
+ [HEADER PERFORMANCE] userData ready: true
+ [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+ [HEADER PERFORMANCE] userId: 2
+ Cached response for /api/messaging/unread/count?userId=2
+ [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+ [HEADER PERFORMANCE] isLoading: false
+ [HEADER PERFORMANCE] userData ready: true
+ [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+ [HEADER PERFORMANCE] userId: 2
+ Fetching data from: /api/users/1/reaction-quota
+ Fetching data from: /api/pulses/204/reactions
+ Fetching data from: /api/pulses/203/reactions
+ Fetching data from: /api/pulses/202/reactions
+ Fetching data from: /api/pulses/201/reactions
+ Fetching data from: /api/pulses/200/reactions
+ Fetching data from: /api/pulses/199/reactions
+ Fetching data from: /api/pulses/198/reactions
+ Fetching data from: /api/pulses/197/reactions
+ Fetching data from: /api/pulses/196/reactions
+ Fetching data from: /api/pulses/195/reactions
+ Fetching data from: /api/pulses/194/reactions
+ Fetching data from: /api/pulses/193/reactions
+ Fetching data from: /api/pulses/192/reactions
+ Fetching data from: /api/pulses/191/reactions
+ Fetching data from: /api/pulses/190/reactions
+ Fetching data from: /api/pulses/189/reactions
+ Fetching data from: /api/pulses/188/reactions
+ Fetching data from: /api/pulses/187/reactions
+ Fetching data from: /api/pulses/186/reactions
+ Fetching data from: /api/pulses/185/reactions
+ Fetching data from: /api/pulses/184/reactions
+ Fetching data from: /api/pulses/183/reactions
+ Fetching data from: /api/pulses/182/reactions
+ Fetching data from: /api/pulses/181/reactions
+ Fetching data from: /api/pulses/180/reactions
+ Fetching data from: /api/pulses/179/reactions
+ Fetching data from: /api/pulses/178/reactions
+ Fetching data from: /api/pulses/177/reactions
+ Fetching data from: /api/pulses/176/reactions
+ Fetching data from: /api/pulses/175/reactions
+ Fetching data from: /api/pulses/174/reactions
+ Fetching data from: /api/pulses/173/reactions
+ Fetching data from: /api/pulses/172/reactions
+ Fetching data from: /api/pulses/171/reactions
+ Fetching data from: /api/pulses/170/reactions
+ Fetching data from: /api/pulses/169/reactions
+ Fetching data from: /api/pulses/168/reactions
+ Fetching data from: /api/pulses/167/reactions
+ Fetching data from: /api/pulses/166/reactions
+ Fetching data from: /api/pulses/165/reactions
+ Fetching data from: /api/pulses/164/reactions
+ Fetching data from: /api/pulses/163/reactions
+ Fetching data from: /api/pulses/162/reactions
+ Fetching data from: /api/pulses/161/reactions
+ Fetching data from: /api/pulses/160/reactions
+ Fetching data from: /api/poll-votes/user/1/pulse/159
+ Fetching data from: /api/pulses/159/poll-votes
+ Fetching data from: /api/pulses/159/reactions
+ Fetching data from: /api/poll-votes/user/1/pulse/158
+ Fetching data from: /api/pulses/158/poll-votes
+ Fetching data from: /api/pulses/158/reactions
+ Fetching data from: /api/pulses/157/reactions
+ Fetching data from: /api/pulses/156/reactions
+ Fetching data from: /api/pulses/155/reactions
+ Fetching data from: /api/pulses/154/reactions
+ Fetching data from: /api/pulses/153/reactions
+ Fetching data from: /api/pulses/152/reactions
+ Fetching data from: /api/pulses/151/reactions
+ Fetching data from: /api/pulses/150/reactions
+ Fetching data from: /api/pulses/149/reactions
+ Fetching data from: /api/pulses/148/reactions
+ Fetching data from: /api/pulses/147/reactions
+ Fetching data from: /api/pulses/146/reactions
+ Fetching data from: /api/pulses/145/reactions
+ Fetching data from: /api/pulses/144/reactions
+ Fetching data from: /api/pulses/143/reactions
+ Fetching data from: /api/pulses/142/reactions
+ Fetching data from: /api/pulses/141/reactions
+ Fetching data from: /api/pulses/140/reactions
+ Fetching data from: /api/pulses/139/reactions
+ Fetching data from: /api/pulses/138/reactions
+ Fetching data from: /api/pulses/137/reactions
+ Fetching data from: /api/pulses/136/reactions
+ Fetching data from: /api/pulses/135/reactions
+ Fetching data from: /api/pulses/134/reactions
+ Fetching data from: /api/pulses/133/reactions
+ Fetching data from: /api/pulses/132/reactions
+ Fetching data from: /api/pulses/131/reactions
+ Fetching data from: /api/pulses/130/reactions
+ Fetching data from: /api/pulses/129/reactions
+ Fetching data from: /api/pulses/128/reactions
+ Fetching data from: /api/pulses/127/reactions
+ Fetching data from: /api/pulses/126/reactions
+ Fetching data from: /api/pulses/125/reactions
+ Fetching data from: /api/pulses/124/reactions
+ Fetching data from: /api/pulses/123/reactions
+ Fetching data from: /api/pulses/122/reactions
+ Fetching data from: /api/pulses/121/reactions
+ Fetching data from: /api/pulses/120/reactions
+ Fetching data from: /api/pulses/119/reactions
+ Fetching data from: /api/pulses/118/reactions
+ Fetching data from: /api/pulses/117/reactions
+ Fetching data from: /api/pulses/116/reactions
+ Fetching data from: /api/pulses/115/reactions
+ Fetching data from: /api/pulses/114/reactions
+ Fetching data from: /api/pulses/113/reactions
+ Fetching data from: /api/pulses/112/reactions
+ Fetching data from: /api/pulses/111/reactions
+ Fetching data from: /api/pulses/110/reactions
+ Fetching data from: /api/pulses/109/reactions
+ Fetching data from: /api/pulses/108/reactions
+ Fetching data from: /api/pulses/107/reactions
+ Fetching data from: /api/pulses/106/reactions
+ Fetching data from: /api/pulses/105/reactions
+ Fetching data from: /api/pulses/104/reactions
+ Fetching data from: /api/pulses/103/reactions
+ Fetching data from: /api/pulses/102/reactions
+ Fetching data from: /api/pulses/101/reactions
+ Fetching data from: /api/pulses/100/reactions
+ Fetching data from: /api/pulses/99/reactions
+ Fetching data from: /api/pulses/98/reactions
+ Fetching data from: /api/pulses/97/reactions
+ Fetching data from: /api/pulses/96/reactions
+ Fetching data from: /api/pulses/95/reactions
+ Fetching data from: /api/pulses/94/reactions
+ Fetching data from: /api/pulses/93/reactions
+ Fetching data from: /api/pulses/92/reactions
+ Fetching data from: /api/pulses/91/reactions
+ Fetching data from: /api/pulses/90/reactions
+ Fetching data from: /api/pulses/89/reactions
+ Fetching data from: /api/pulses/88/reactions
+ Fetching data from: /api/pulses/87/reactions
+ Fetching data from: /api/pulses/86/reactions
+ Fetching data from: /api/pulses/85/reactions
+ Fetching data from: /api/pulses/84/reactions
+ Fetching data from: /api/pulses/83/reactions
+ Fetching data from: /api/pulses/82/reactions
+ Fetching data from: /api/pulses/81/reactions
+ Fetching data from: /api/pulses/80/reactions
+ Fetching data from: /api/pulses/79/reactions
+ Fetching data from: /api/pulses/78/reactions
+ Fetching data from: /api/pulses/77/reactions
+ Fetching data from: /api/pulses/76/reactions
+ Fetching data from: /api/pulses/75/reactions
+ Fetching data from: /api/pulses/74/reactions
+ Fetching data from: /api/pulses/73/reactions
+ Fetching data from: /api/pulses/72/reactions
+ Fetching data from: /api/pulses/71/reactions
+ Fetching data from: /api/pulses/70/reactions
+ Fetching data from: /api/pulses/69/reactions
+ Fetching data from: /api/pulses/68/reactions
+ Fetching data from: /api/pulses/67/reactions
+ Fetching data from: /api/pulses/66/reactions
+ Fetching data from: /api/pulses/65/reactions
+ Fetching data from: /api/pulses/64/reactions
+ Fetching data from: /api/pulses/63/reactions
+ Fetching data from: /api/pulses/62/reactions
+ Fetching data from: /api/pulses/61/reactions
+ Fetching data from: /api/pulses/60/reactions
+ Fetching data from: /api/pulses/59/reactions
+ Fetching data from: /api/pulses/58/reactions
+ Fetching data from: /api/pulses/57/reactions
+ Fetching data from: /api/pulses/56/reactions
+ Fetching data from: /api/pulses/55/reactions
+ Fetching data from: /api/pulses/54/reactions
+ Fetching data from: /api/pulses/53/reactions
+ Fetching data from: /api/pulses/52/reactions
+ Fetching data from: /api/pulses/51/reactions
+ Fetching data from: /api/pulses/50/reactions
+ Fetching data from: /api/pulses/49/reactions
+ Fetching data from: /api/pulses/48/reactions
+ Fetching data from: /api/pulses/47/reactions
+ Fetching data from: /api/pulses/46/reactions
+ Fetching data from: /api/pulses/45/reactions
+ Fetching data from: /api/pulses/44/reactions
+ Fetching data from: /api/pulses/43/reactions
+ Fetching data from: /api/pulses/42/reactions
+ Fetching data from: /api/poll-votes/user/1/pulse/41
+ Fetching data from: /api/pulses/41/poll-votes
+ Fetching data from: /api/pulses/41/reactions
+ Fetching data from: /api/poll-votes/user/1/pulse/40
+ Fetching data from: /api/pulses/40/poll-votes
+ Fetching data from: /api/pulses/40/reactions
+ Fetching data from: /api/pulses/39/reactions
+ Fetching data from: /api/pulses/38/reactions
+ Fetching data from: /api/pulses/37/reactions
+ Fetching data from: /api/pulses/36/reactions
+ Fetching data from: /api/pulses/35/reactions
+ Fetching data from: /api/pulses/34/reactions
+ Fetching data from: /api/pulses/33/reactions
+ Fetching data from: /api/pulses/32/reactions
+ Fetching data from: /api/pulses/31/reactions
+ Fetching data from: /api/pulses/30/reactions
+ Fetching data from: /api/pulses/29/reactions
+ Fetching data from: /api/pulses/28/reactions
+ Fetching data from: /api/pulses/27/reactions
+ Fetching data from: /api/pulses/26/reactions
+ Fetching data from: /api/pulses/25/reactions
+ Fetching data from: /api/pulses/24/reactions
+ Fetching data from: /api/pulses/23/reactions
+ Fetching data from: /api/pulses/22/reactions
+ Fetching data from: /api/pulses/21/reactions
+ Fetching data from: /api/pulses/20/reactions
+ Fetching data from: /api/pulses/19/reactions
+ Fetching data from: /api/pulses/18/reactions
+ Fetching data from: /api/pulses/17/reactions
+ Fetching data from: /api/pulses/16/reactions
+ Fetching data from: /api/pulses/15/reactions
+ Fetching data from: /api/pulses/14/reactions
+ Fetching data from: /api/pulses/13/reactions
+ Fetching data from: /api/pulses/12/reactions
+Console.js:61 Fetching data from: /api/pulses/11/reactions
+Console.js:61 Fetching data from: /api/pulses/10/reactions
+Console.js:61 Fetching data from: /api/pulses/9/reactions
+Console.js:61 Fetching data from: /api/pulses/7/reactions
+Console.js:61 Pulse received for carousel: Object
+Console.js:61 Media URLs: Array(5)
+Console.js:61 Media localStorage keys: Array(0)
+Console.js:61 Using mediaUrls for carousel: Array(5)
+Console.js:61 Fetching data from: /api/pulses/6/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/4
+Console.js:61 Fetching data from: /api/pulses/4/poll-votes
+Console.js:61 Fetching data from: /api/pulses/4/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/3
+Console.js:61 Fetching data from: /api/pulses/3/poll-votes
+Console.js:61 Fetching data from: /api/pulses/3/reactions
+Console.js:61 Fetching data from: /api/pulses/2/reactions
+Console.js:61 Fetching data from: /api/pulses/1/reactions
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1759585861888:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1759585861888:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/40
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1759585861928:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1759585861928:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 Request timeout for: /api/poll-votes/user/1/pulse/4
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/4
+Console.js:61 Request timeout for: /api/pulses/4/poll-votes
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Error parsing response as JSON: AbortError: The user aborted a request.
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/pulses/4/poll-votes: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Request timeout for: /api/pulses/4/reactions
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Error parsing response as JSON: AbortError: The user aborted a request.
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/pulses/4/reactions: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Request timeout for: /api/poll-votes/user/1/pulse/3
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Request timeout for: /api/pulses/3/poll-votes
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Request timeout for: /api/pulses/3/reactions
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Request timeout for: /api/pulses/2/reactions
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 Request timeout for: /api/pulses/1/reactions
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+3dashboard:1 Uncaught (in promise) AbortError: The user aborted a request.Understand this error
+5dashboard:1 Uncaught (in promise) Request timeout after 10 secondsUnderstand this error
+Console.js:61 Fetching data from: /api/pulses/4/poll-votes
+Console.js:61 Fetching data from: /api/pulses/4/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/3
+Console.js:61 Fetching data from: /api/pulses/3/poll-votes
+Console.js:61 Fetching data from: /api/pulses/3/reactions
+Console.js:61 Fetching data from: /api/pulses/2/reactions
+Console.js:61 Fetching data from: /api/pulses/1/reactions
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1759585872948:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1759585872948:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/3
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [SW EMERGENCY FIX v4] Detected Replit domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+Console.js:61 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=u15LH5fYlrFJ' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=u15LH5fYlrFJ' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+Console.js:61 [Skeleton] Backup removal after 3s
+Console.js:61 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkAuth
+Console.js:61 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Domain check result: {hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isPublishedDomain: true}
+Console.js:61 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Fetching server session for published domain...
+Console.js:61 [PERF] React app rendered in 41.10 ms
+Console.js:61 [PERF] Total initialization time: 41.70 ms
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4800.80ms
+Console.js:61 🔥 Firebase init time: 4800.70ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 🔄 [Strategy 4] Service Worker: Installing...
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [PERF] Skeleton loader removed in 166.70 ms
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 212.30ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4958.50ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session'}
+Console.js:61 AuthProvider: Raw server response: {success: true, user: {…}}
+Console.js:61 AuthProvider: Unwrapped user from server response
+Console.js:61 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:45
+setTimeout
+(anonymous) @ simple-auth-context.tsx:43
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this warning
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [NOWBOARD DEBUG] user: null
+Console.js:61 [NOWBOARD DEBUG] userId: undefined
+Console.js:61 [NOWBOARD DEBUG] newItemContent: 
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 Fetching data from: /api/pulses
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 127
+Console.js:61 Cached response for /api/users/2
+Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 40579
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [NOWBOARD DEBUG] user: null
+Console.js:61 [NOWBOARD DEBUG] userId: undefined
+Console.js:61 [NOWBOARD DEBUG] newItemContent: 
+Console.js:61 Fetching data from: /api/users/1/reaction-quota
+Console.js:61 Fetching data from: /api/pulses/204/reactions
+Console.js:61 Fetching data from: /api/pulses/203/reactions
+Console.js:61 Fetching data from: /api/pulses/202/reactions
+Console.js:61 Fetching data from: /api/pulses/201/reactions
+Console.js:61 Fetching data from: /api/pulses/200/reactions
+Console.js:61 Fetching data from: /api/pulses/199/reactions
+Console.js:61 Fetching data from: /api/pulses/198/reactions
+Console.js:61 Fetching data from: /api/pulses/197/reactions
+Console.js:61 Fetching data from: /api/pulses/196/reactions
+Console.js:61 Fetching data from: /api/pulses/195/reactions
+Console.js:61 Fetching data from: /api/pulses/194/reactions
+Console.js:61 Fetching data from: /api/pulses/193/reactions
+Console.js:61 Fetching data from: /api/pulses/192/reactions
+Console.js:61 Fetching data from: /api/pulses/191/reactions
+Console.js:61 Fetching data from: /api/pulses/190/reactions
+Console.js:61 Fetching data from: /api/pulses/189/reactions
+Console.js:61 Fetching data from: /api/pulses/188/reactions
+Console.js:61 Fetching data from: /api/pulses/187/reactions
+Console.js:61 Fetching data from: /api/pulses/186/reactions
+Console.js:61 Fetching data from: /api/pulses/185/reactions
+Console.js:61 Fetching data from: /api/pulses/184/reactions
+Console.js:61 Fetching data from: /api/pulses/183/reactions
+Console.js:61 Fetching data from: /api/pulses/182/reactions
+Console.js:61 Fetching data from: /api/pulses/181/reactions
+Console.js:61 Fetching data from: /api/pulses/180/reactions
+Console.js:61 Fetching data from: /api/pulses/179/reactions
+Console.js:61 Fetching data from: /api/pulses/178/reactions
+Console.js:61 Fetching data from: /api/pulses/177/reactions
+Console.js:61 Fetching data from: /api/pulses/176/reactions
+Console.js:61 Fetching data from: /api/pulses/175/reactions
+Console.js:61 Fetching data from: /api/pulses/174/reactions
+Console.js:61 Fetching data from: /api/pulses/173/reactions
+Console.js:61 Fetching data from: /api/pulses/172/reactions
+Console.js:61 Fetching data from: /api/pulses/171/reactions
+Console.js:61 Fetching data from: /api/pulses/170/reactions
+Console.js:61 Fetching data from: /api/pulses/169/reactions
+Console.js:61 Fetching data from: /api/pulses/168/reactions
+Console.js:61 Fetching data from: /api/pulses/167/reactions
+Console.js:61 Fetching data from: /api/pulses/166/reactions
+Console.js:61 Fetching data from: /api/pulses/165/reactions
+Console.js:61 Fetching data from: /api/pulses/164/reactions
+Console.js:61 Fetching data from: /api/pulses/163/reactions
+Console.js:61 Fetching data from: /api/pulses/162/reactions
+Console.js:61 Fetching data from: /api/pulses/161/reactions
+Console.js:61 Fetching data from: /api/pulses/160/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/159
+Console.js:61 Fetching data from: /api/pulses/159/poll-votes
+Console.js:61 Fetching data from: /api/pulses/159/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/158
+Console.js:61 Fetching data from: /api/pulses/158/poll-votes
+Console.js:61 Fetching data from: /api/pulses/158/reactions
+Console.js:61 Fetching data from: /api/pulses/157/reactions
+Console.js:61 Fetching data from: /api/pulses/156/reactions
+Console.js:61 Fetching data from: /api/pulses/155/reactions
+Console.js:61 Fetching data from: /api/pulses/154/reactions
+Console.js:61 Fetching data from: /api/pulses/153/reactions
+Console.js:61 Fetching data from: /api/pulses/152/reactions
+Console.js:61 Fetching data from: /api/pulses/151/reactions
+Console.js:61 Fetching data from: /api/pulses/150/reactions
+Console.js:61 Fetching data from: /api/pulses/149/reactions
+Console.js:61 Fetching data from: /api/pulses/148/reactions
+Console.js:61 Fetching data from: /api/pulses/147/reactions
+Console.js:61 Fetching data from: /api/pulses/146/reactions
+Console.js:61 Fetching data from: /api/pulses/145/reactions
+Console.js:61 Fetching data from: /api/pulses/144/reactions
+Console.js:61 Fetching data from: /api/pulses/143/reactions
+Console.js:61 Fetching data from: /api/pulses/142/reactions
+Console.js:61 Fetching data from: /api/pulses/141/reactions
+Console.js:61 Fetching data from: /api/pulses/140/reactions
+Console.js:61 Fetching data from: /api/pulses/139/reactions
+Console.js:61 Fetching data from: /api/pulses/138/reactions
+Console.js:61 Fetching data from: /api/pulses/137/reactions
+Console.js:61 Fetching data from: /api/pulses/136/reactions
+Console.js:61 Fetching data from: /api/pulses/135/reactions
+Console.js:61 Fetching data from: /api/pulses/134/reactions
+Console.js:61 Fetching data from: /api/pulses/133/reactions
+Console.js:61 Fetching data from: /api/pulses/132/reactions
+Console.js:61 Fetching data from: /api/pulses/131/reactions
+Console.js:61 Fetching data from: /api/pulses/130/reactions
+Console.js:61 Fetching data from: /api/pulses/129/reactions
+Console.js:61 Fetching data from: /api/pulses/128/reactions
+Console.js:61 Fetching data from: /api/pulses/127/reactions
+Console.js:61 Fetching data from: /api/pulses/126/reactions
+Console.js:61 Fetching data from: /api/pulses/125/reactions
+Console.js:61 Fetching data from: /api/pulses/124/reactions
+Console.js:61 Fetching data from: /api/pulses/123/reactions
+Console.js:61 Fetching data from: /api/pulses/122/reactions
+Console.js:61 Fetching data from: /api/pulses/121/reactions
+Console.js:61 Fetching data from: /api/pulses/120/reactions
+Console.js:61 Fetching data from: /api/pulses/119/reactions
+Console.js:61 Fetching data from: /api/pulses/118/reactions
+Console.js:61 Fetching data from: /api/pulses/117/reactions
+Console.js:61 Fetching data from: /api/pulses/116/reactions
+Console.js:61 Fetching data from: /api/pulses/115/reactions
+Console.js:61 Fetching data from: /api/pulses/114/reactions
+Console.js:61 Fetching data from: /api/pulses/113/reactions
+Console.js:61 Fetching data from: /api/pulses/112/reactions
+Console.js:61 Fetching data from: /api/pulses/111/reactions
+Console.js:61 Fetching data from: /api/pulses/110/reactions
+Console.js:61 Fetching data from: /api/pulses/109/reactions
+Console.js:61 Fetching data from: /api/pulses/108/reactions
+Console.js:61 Fetching data from: /api/pulses/107/reactions
+Console.js:61 Fetching data from: /api/pulses/106/reactions
+Console.js:61 Fetching data from: /api/pulses/105/reactions
+Console.js:61 Fetching data from: /api/pulses/104/reactions
+Console.js:61 Fetching data from: /api/pulses/103/reactions
+Console.js:61 Fetching data from: /api/pulses/102/reactions
+Console.js:61 Fetching data from: /api/pulses/101/reactions
+Console.js:61 Fetching data from: /api/pulses/100/reactions
+Console.js:61 Fetching data from: /api/pulses/99/reactions
+Console.js:61 Fetching data from: /api/pulses/98/reactions
+Console.js:61 Fetching data from: /api/pulses/97/reactions
+Console.js:61 Fetching data from: /api/pulses/96/reactions
+Console.js:61 Fetching data from: /api/pulses/95/reactions
+Console.js:61 Fetching data from: /api/pulses/94/reactions
+Console.js:61 Fetching data from: /api/pulses/93/reactions
+Console.js:61 Fetching data from: /api/pulses/92/reactions
+Console.js:61 Fetching data from: /api/pulses/91/reactions
+Console.js:61 Fetching data from: /api/pulses/90/reactions
+Console.js:61 Fetching data from: /api/pulses/89/reactions
+Console.js:61 Fetching data from: /api/pulses/88/reactions
+Console.js:61 Fetching data from: /api/pulses/87/reactions
+Console.js:61 Fetching data from: /api/pulses/86/reactions
+Console.js:61 Fetching data from: /api/pulses/85/reactions
+Console.js:61 Fetching data from: /api/pulses/84/reactions
+Console.js:61 Fetching data from: /api/pulses/83/reactions
+Console.js:61 Fetching data from: /api/pulses/82/reactions
+Console.js:61 Fetching data from: /api/pulses/81/reactions
+Console.js:61 Fetching data from: /api/pulses/80/reactions
+Console.js:61 Fetching data from: /api/pulses/79/reactions
+Console.js:61 Fetching data from: /api/pulses/78/reactions
+Console.js:61 Fetching data from: /api/pulses/77/reactions
+Console.js:61 Fetching data from: /api/pulses/76/reactions
+Console.js:61 Fetching data from: /api/pulses/75/reactions
+Console.js:61 Fetching data from: /api/pulses/74/reactions
+Console.js:61 Fetching data from: /api/pulses/73/reactions
+Console.js:61 Fetching data from: /api/pulses/72/reactions
+Console.js:61 Fetching data from: /api/pulses/71/reactions
+Console.js:61 Fetching data from: /api/pulses/70/reactions
+Console.js:61 Fetching data from: /api/pulses/69/reactions
+Console.js:61 Fetching data from: /api/pulses/68/reactions
+Console.js:61 Fetching data from: /api/pulses/67/reactions
+Console.js:61 Fetching data from: /api/pulses/66/reactions
+Console.js:61 Fetching data from: /api/pulses/65/reactions
+Console.js:61 Fetching data from: /api/pulses/64/reactions
+Console.js:61 Fetching data from: /api/pulses/63/reactions
+Console.js:61 Fetching data from: /api/pulses/62/reactions
+Console.js:61 Fetching data from: /api/pulses/61/reactions
+Console.js:61 Fetching data from: /api/pulses/60/reactions
+Console.js:61 Fetching data from: /api/pulses/59/reactions
+Console.js:61 Fetching data from: /api/pulses/58/reactions
+Console.js:61 Fetching data from: /api/pulses/57/reactions
+Console.js:61 Fetching data from: /api/pulses/56/reactions
+Console.js:61 Fetching data from: /api/pulses/55/reactions
+Console.js:61 Fetching data from: /api/pulses/54/reactions
+Console.js:61 Fetching data from: /api/pulses/53/reactions
+Console.js:61 Fetching data from: /api/pulses/52/reactions
+Console.js:61 Fetching data from: /api/pulses/51/reactions
+Console.js:61 Fetching data from: /api/pulses/50/reactions
+Console.js:61 Fetching data from: /api/pulses/49/reactions
+Console.js:61 Fetching data from: /api/pulses/48/reactions
+Console.js:61 Fetching data from: /api/pulses/47/reactions
+Console.js:61 Fetching data from: /api/pulses/46/reactions
+Console.js:61 Fetching data from: /api/pulses/45/reactions
+Console.js:61 Fetching data from: /api/pulses/44/reactions
+Console.js:61 Fetching data from: /api/pulses/43/reactions
+Console.js:61 Fetching data from: /api/pulses/42/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/41
+Console.js:61 Fetching data from: /api/pulses/41/poll-votes
+Console.js:61 Fetching data from: /api/pulses/41/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/40
+Console.js:61 Fetching data from: /api/pulses/40/poll-votes
+Console.js:61 Fetching data from: /api/pulses/40/reactions
+Console.js:61 Fetching data from: /api/pulses/39/reactions
+Console.js:61 Fetching data from: /api/pulses/38/reactions
+Console.js:61 Fetching data from: /api/pulses/37/reactions
+Console.js:61 Fetching data from: /api/pulses/36/reactions
+Console.js:61 Fetching data from: /api/pulses/35/reactions
+Console.js:61 Fetching data from: /api/pulses/34/reactions
+Console.js:61 Fetching data from: /api/pulses/33/reactions
+Console.js:61 Fetching data from: /api/pulses/32/reactions
+Console.js:61 Fetching data from: /api/pulses/31/reactions
+Console.js:61 Fetching data from: /api/pulses/30/reactions
+Console.js:61 Fetching data from: /api/pulses/29/reactions
+Console.js:61 Fetching data from: /api/pulses/28/reactions
+Console.js:61 Fetching data from: /api/pulses/27/reactions
+Console.js:61 Fetching data from: /api/pulses/26/reactions
+Console.js:61 Fetching data from: /api/pulses/25/reactions
+Console.js:61 Fetching data from: /api/pulses/24/reactions
+Console.js:61 Fetching data from: /api/pulses/23/reactions
+Console.js:61 Fetching data from: /api/pulses/22/reactions
+Console.js:61 Fetching data from: /api/pulses/21/reactions
+Console.js:61 Fetching data from: /api/pulses/20/reactions
+Console.js:61 Fetching data from: /api/pulses/19/reactions
+Console.js:61 Fetching data from: /api/pulses/18/reactions
+Console.js:61 Fetching data from: /api/pulses/17/reactions
+Console.js:61 Fetching data from: /api/pulses/16/reactions
+Console.js:61 Fetching data from: /api/pulses/15/reactions
+Console.js:61 Fetching data from: /api/pulses/14/reactions
+Console.js:61 Fetching data from: /api/pulses/13/reactions
+Console.js:61 Fetching data from: /api/pulses/12/reactions
+Console.js:61 Fetching data from: /api/pulses/11/reactions
+Console.js:61 Fetching data from: /api/pulses/10/reactions
+Console.js:61 Fetching data from: /api/pulses/9/reactions
+Console.js:61 Fetching data from: /api/pulses/7/reactions
+Console.js:61 Pulse received for carousel: {id: 6, userId: 4, type: 'media-pulse', category: null, title: ' file extension not allowed. I try to upload JPG image. But it still shows error.', …}
+Console.js:61 Media URLs: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+Console.js:61 Media localStorage keys: []
+Console.js:61 Using mediaUrls for carousel: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+Console.js:61 Fetching data from: /api/pulses/6/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/4
+Console.js:61 Fetching data from: /api/pulses/4/poll-votes
+Console.js:61 Fetching data from: /api/pulses/4/reactions
+Console.js:61 Fetching data from: /api/poll-votes/user/1/pulse/3
+Console.js:61 Fetching data from: /api/pulses/3/poll-votes
+Console.js:61 Fetching data from: /api/pulses/3/reactions
+Console.js:61 Fetching data from: /api/pulses/2/reactions
+Console.js:61 Fetching data from: /api/pulses/1/reactions
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1759586065822 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/40
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1759586065905 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/4
+injected.js:278  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1759586065911 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:278
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 No poll vote found (expected): /api/poll-votes/user/1/pulse/3
+Console.js:61 Request timeout for: /api/pulses/3/reactions
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:323
+setTimeout
+(anonymous) @ queryClient.ts:322
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this warning
+Console.js:61 Request timeout for: /api/pulses/2/reactions
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:323
+setTimeout
+(anonymous) @ queryClient.ts:322
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this warning
+Console.js:61 Request timeout for: /api/pulses/1/reactions
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:323
+setTimeout
+(anonymous) @ queryClient.ts:322
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this warning
+3dashboard:1 Uncaught (in promise) Request timeout after 10 seconds
+Promise.then
+t.send @ request.js:145
+window.fetch @ Network.js:220
+apply @ injected.js:278
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=581ea615:840
+run @ @tanstack_react-query.js?v=581ea615:494
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19416
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=581ea615:555
+flush @ @tanstack_react-query.js?v=581ea615:569
+batch @ @tanstack_react-query.js?v=581ea615:587
+dispatch_fn @ @tanstack_react-query.js?v=581ea615:996
+setData @ @tanstack_react-query.js?v=581ea615:696
+onSuccess @ @tanstack_react-query.js?v=581ea615:897
+resolve @ @tanstack_react-query.js?v=581ea615:456
+Promise.then
+run @ @tanstack_react-query.js?v=581ea615:498
+start @ @tanstack_react-query.js?v=581ea615:536
+fetch @ @tanstack_react-query.js?v=581ea615:926
+executeFetch_fn @ @tanstack_react-query.js?v=581ea615:2211
+onSubscribe @ @tanstack_react-query.js?v=581ea615:1898
+subscribe @ @tanstack_react-query.js?v=581ea615:24
+(anonymous) @ @tanstack_react-query.js?v=581ea615:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=581ea615:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=581ea615:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19432
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 Fetching data from: /api/pulses/3/reactions
+Console.js:61 Fetching data from: /api/pulses/2/reactions
+Console.js:61 Fetching data from: /api/pulses/1/reactions
