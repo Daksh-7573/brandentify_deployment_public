@@ -151,8 +151,8 @@ export default function NowboardPanelSimple() {
   const [newItemContent, setNewItemContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"learning" | "growth" | "launch" | "planning" | "collaboration" | "visibility">("learning");
 
-  // For now, use hardcoded user ID since we know the current user is ID 4
-  const userId = 4;
+  // Use the actual current user's ID from auth context
+  const userId = user?.id;
 
   // Fetch nowboard items with error handling
   const { data: nowboardItems = [], isLoading } = useQuery<NowboardItem[]>({
