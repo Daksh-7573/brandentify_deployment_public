@@ -75,16 +75,17 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [primaryAudienceInput, setPrimaryAudienceInput] = useState("");
   const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
-  // Track if this is the initial mount to prevent overwriting user edits
-  const isInitialMount = React.useRef(true);
+  // Track if form has been initialized to prevent overwriting user edits
+  const hasInitialized = React.useRef(false);
   const previousUserDataId = React.useRef(userData.id);
 
   // Parse existing combined job title on component load ONLY (don't reset on every data change)
   React.useEffect(() => {
-    // Only reset form if this is the initial mount OR if we're editing a different user
-    const shouldReset = isInitialMount.current || previousUserDataId.current !== userData.id;
+    // Only initialize form once per dialog open OR if we're editing a different user
+    const isDifferentUser = previousUserDataId.current !== userData.id;
+    const shouldInitialize = !hasInitialized.current || isDifferentUser;
     
-    if (!shouldReset) {
+    if (!shouldInitialize) {
       return; // Don't overwrite user's typed values
     }
     
@@ -147,8 +148,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
       setJobTitle('');
     }
     
-    // Mark that we've completed the initial mount
-    isInitialMount.current = false;
+    // Mark that we've completed initialization
+    hasInitialized.current = true;
     previousUserDataId.current = userData.id;
   }, [userData, jobTitlesData]);
 
