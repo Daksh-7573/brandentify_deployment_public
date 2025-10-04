@@ -921,7 +921,15 @@ export default function CreatePulsePage() {
                           <div className="space-y-4 sm:space-y-6">
                             {/* Project Title */}
                             <div className="space-y-1 sm:space-y-2">
-                              <Label htmlFor="project-title" className="text-white text-sm sm:text-base">Project Title*</Label>
+                              <div className="flex justify-between items-center">
+                                <Label htmlFor="project-title" className="text-white text-sm sm:text-base">Project Title*</Label>
+                                <span className={cn(
+                                  "text-xs",
+                                  getWordCount(pulseTitle) > 25 ? "text-red-400" : "text-gray-400"
+                                )}>
+                                  {getWordCount(pulseTitle)}/25 words
+                                </span>
+                              </div>
                               <Input
                                 id="project-title"
                                 placeholder="Enter your project title"
@@ -930,11 +938,22 @@ export default function CreatePulsePage() {
                                 className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                                 required
                               />
+                              {getWordCount(pulseTitle) > 25 && (
+                                <p className="text-xs text-red-400">Project Title must be 25 words or less</p>
+                              )}
                             </div>
                             
                             {/* Project Description */}
                             <div className="space-y-1 sm:space-y-2">
-                              <Label htmlFor="project-description" className="text-white text-sm sm:text-base">Project Description*</Label>
+                              <div className="flex justify-between items-center">
+                                <Label htmlFor="project-description" className="text-white text-sm sm:text-base">Project Description*</Label>
+                                <span className={cn(
+                                  "text-xs",
+                                  getWordCount(pulseContent) > 50 ? "text-red-400" : "text-gray-400"
+                                )}>
+                                  {getWordCount(pulseContent)}/50 words
+                                </span>
+                              </div>
                               <Textarea
                                 id="project-description"
                                 placeholder="Describe your project, challenges faced, and solutions implemented"
@@ -943,6 +962,9 @@ export default function CreatePulsePage() {
                                 className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-[80px] sm:min-h-[120px] text-sm sm:text-base resize-y"
                                 required
                               />
+                              {getWordCount(pulseContent) > 50 && (
+                                <p className="text-xs text-red-400">Project Description must be 50 words or less</p>
+                              )}
                             </div>
                             
                             {/* Industry Selection */}
