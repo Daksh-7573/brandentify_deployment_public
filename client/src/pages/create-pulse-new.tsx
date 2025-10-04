@@ -714,22 +714,38 @@ export default function CreatePulsePage() {
                       </div>
                       
                       {pollOptions.map((option, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Input
-                            placeholder={`Option ${index + 1}`}
-                            value={option}
-                            onChange={(e) => updatePollOption(index, e.target.value)}
-                            className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
-                          />
-                          {pollOptions.length > 2 && (
-                            <button
-                              type="button"
-                              onClick={() => removePollOption(index)}
-                              className="neo-glass-button neo-glass-icon-button min-w-[32px] h-8 sm:min-w-[36px] sm:h-9"
-                            >
-                              <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                            </button>
-                          )}
+                        <div key={index} className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 space-y-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs text-gray-400">Option {index + 1}</span>
+                                <span className={cn(
+                                  "text-xs",
+                                  getWordCount(option) > 25 ? "text-red-400" : "text-gray-400"
+                                )}>
+                                  {getWordCount(option)}/25 words
+                                </span>
+                              </div>
+                              <Input
+                                placeholder={`Option ${index + 1}`}
+                                value={option}
+                                onChange={(e) => updatePollOption(index, e.target.value)}
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
+                              />
+                              {getWordCount(option) > 25 && (
+                                <p className="text-xs text-red-400">Option must be 25 words or less</p>
+                              )}
+                            </div>
+                            {pollOptions.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() => removePollOption(index)}
+                                className="neo-glass-button neo-glass-icon-button min-w-[32px] h-8 sm:min-w-[36px] sm:h-9 self-start mt-6"
+                              >
+                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ))}
                   </div>
