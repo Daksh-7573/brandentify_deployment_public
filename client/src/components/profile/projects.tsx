@@ -1144,8 +1144,9 @@ export default function Projects() {
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(255,255,255,0.3) rgba(255,255,255,0.1)'
           }}>
-            <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
-              <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
+            <Form {...projectForm}>
+              <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
+                <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
                   <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Details</TabsTrigger>
                   <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20">Media</TabsTrigger>
