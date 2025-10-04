@@ -78,6 +78,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   // Track if form has been initialized to prevent overwriting user edits
   const hasInitialized = React.useRef(false);
   const previousUserDataId = React.useRef(userData.id);
+  const jobTitlesFetched = React.useRef(false);
 
   // Parse existing combined job title on component load ONLY (don't reset on every data change)
   React.useEffect(() => {
@@ -151,7 +152,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     // Mark that we've completed initialization
     hasInitialized.current = true;
     previousUserDataId.current = userData.id;
-  }, [userData, jobTitlesData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData.id]); // Only depend on ID - we intentionally ignore other userData fields to prevent resetting user input
 
   // Brand name and phone number fields removed per user request
 
