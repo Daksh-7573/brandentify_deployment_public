@@ -1420,6 +1420,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[PUT /users/:id] Updating user with ID: ${idParam}`);
       console.log(`[PUT /users/:id] Update data:`, userData);
       
+      // DEBUG: Log new branding fields specifically
+      console.log(`[PUT /users/:id] ===== BRANDING FIELDS DEBUG =====`);
+      console.log(`[PUT /users/:id] tagline:`, userData.tagline);
+      console.log(`[PUT /users/:id] visionStatement:`, userData.visionStatement);
+      console.log(`[PUT /users/:id] missionStatement:`, userData.missionStatement);
+      console.log(`[PUT /users/:id] coreValues:`, userData.coreValues);
+      console.log(`[PUT /users/:id] uniqueValueProposition:`, userData.uniqueValueProposition);
+      console.log(`[PUT /users/:id] primaryAudience:`, userData.primaryAudience);
+      console.log(`[PUT /users/:id] secondaryAudience:`, userData.secondaryAudience);
+      console.log(`[PUT /users/:id] ===== END BRANDING FIELDS =====`);
+      
       // DEBUG: Log detailed information about the request for troubleshooting
       console.log(`[PUT /users/:id] ===== DETAILED DEBUG INFO =====`);
       console.log(`[PUT /users/:id] Headers:`, req.headers);

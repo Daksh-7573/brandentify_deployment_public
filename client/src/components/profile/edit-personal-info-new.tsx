@@ -780,6 +780,15 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               // Use either dropdown selection OR custom text input (not both combined)
               const combinedJobTitle = selectedJobTitleFromDropdown || jobTitle.trim() || null;
               
+              console.log("[SAVE DEBUG] Current field values:");
+              console.log("  - tagline:", tagline);
+              console.log("  - visionStatement:", visionStatement);
+              console.log("  - missionStatement:", missionStatement);
+              console.log("  - coreValues:", coreValues);
+              console.log("  - uniqueValueProposition:", uniqueValueProposition);
+              console.log("  - primaryAudience:", primaryAudience);
+              console.log("  - secondaryAudience:", secondaryAudience);
+              
               const updateData = {
                 name: name.trim(),
                 title: combinedJobTitle,
@@ -797,6 +806,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 primaryAudience: primaryAudience.length > 0 ? primaryAudience : null,
                 secondaryAudience: secondaryAudience.length > 0 ? secondaryAudience : null,
               };
+              
+              console.log("[SAVE DEBUG] Prepared updateData:", JSON.stringify(updateData, null, 2));
 
               // Validate and ensure lookingFor value is correct
               const validLookingForValues = Object.keys(LOOKING_FOR_OPTIONS);
