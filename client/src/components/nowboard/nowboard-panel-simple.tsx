@@ -204,15 +204,6 @@ export default function NowboardPanelSimple() {
 
   // Simple submit handler
   const handleSubmit = () => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "Please wait while we load your profile.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     if (!newItemContent.trim()) {
       toast({
         title: "Empty update",
@@ -232,7 +223,7 @@ export default function NowboardPanelSimple() {
     }
     
     createMutation.mutate({
-      userId,
+      userId: userId!,
       content: newItemContent,
       category: selectedCategory,
       visibility: "public"
@@ -291,7 +282,7 @@ export default function NowboardPanelSimple() {
               <button
                 onClick={handleSubmit}
                 className="neo-glass-button px-4 py-1.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ml-auto flex items-center gap-2"
-                disabled={createMutation.isPending || !newItemContent.trim()}
+                disabled={createMutation.isPending || !newItemContent.trim() || !userId}
               >
                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Share
