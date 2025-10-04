@@ -119,6 +119,20 @@ export default function CreatePulsePage() {
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
   };
   
+  // Check if any word limits are exceeded
+  const hasWordLimitErrors = (): boolean => {
+    if (getWordCount(pulseTitle) > 25) return true;
+    if (getWordCount(pulseContent) > 50) return true;
+    
+    if (pulseType === 'poll') {
+      for (const option of pollOptions) {
+        if (option.trim() && getWordCount(option) > 25) return true;
+      }
+    }
+    
+    return false;
+  };
+  
   // Handle pulse creation
   const handleCreatePulse = async () => {
     if (!user) {
@@ -137,6 +151,39 @@ export default function CreatePulsePage() {
         variant: "destructive",
       });
       return;
+    }
+    
+    // Validate word counts
+    if (getWordCount(pulseTitle) > 25) {
+      toast({
+        title: "Title Too Long",
+        description: "Title must be 25 words or less.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (getWordCount(pulseContent) > 50) {
+      toast({
+        title: "Description Too Long",
+        description: "Description must be 50 words or less.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate poll options word count if it's a poll
+    if (pulseType === 'poll') {
+      for (let i = 0; i < pollOptions.length; i++) {
+        if (pollOptions[i].trim() && getWordCount(pollOptions[i]) > 25) {
+          toast({
+            title: "Poll Option Too Long",
+            description: `Option ${i + 1} must be 25 words or less.`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
     }
     
     // Common pulse data
@@ -1262,7 +1309,7 @@ export default function CreatePulsePage() {
                   <button 
                     type="button"
                     onClick={handleCreatePulse}
-                    disabled={createPulseMutation.isPending}
+                    disabled={createPulseMutation.isPending || hasWordLimitErrors()}
                     className="neo-glass-button primary w-full sm:w-auto flex items-center justify-center gap-2 h-10 sm:h-12 text-sm sm:text-base px-4 sm:px-6"
                   >
                     {createPulseMutation.isPending ? (
