@@ -68,10 +68,14 @@ export default function ProfileNeo() {
   
   // State variables
   const [showEditPersonalInfoDialog, setShowEditPersonalInfoDialog] = useState(false);
+  const [dialogKey, setDialogKey] = useState(0);
   
-  // Debug: Track dialog state changes
+  // Debug: Track dialog state changes and update key when dialog opens
   useEffect(() => {
     console.log("[DIALOG STATE] showEditPersonalInfoDialog changed to:", showEditPersonalInfoDialog);
+    if (showEditPersonalInfoDialog) {
+      setDialogKey(prev => prev + 1); // Force form remount when dialog opens
+    }
   }, [showEditPersonalInfoDialog]);
   const [showEditAboutDialog, setShowEditAboutDialog] = useState(false);
   const [aboutMe, setAboutMe] = useState<string | null>(null);
@@ -931,6 +935,7 @@ export default function ProfileNeo() {
             </div>
           ) : userData ? (
             <EditPersonalInfoNew
+              key={`edit-personal-info-${userData.id}-${dialogKey}`}
               userData={{
                 id: userData.id || 0,
                 username: userData.username || '',

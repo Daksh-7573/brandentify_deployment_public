@@ -75,85 +75,21 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [primaryAudienceInput, setPrimaryAudienceInput] = useState("");
   const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
-  // Track if form has been initialized to prevent overwriting user edits
-  const hasInitialized = React.useRef(false);
-  const previousUserDataId = React.useRef(userData.id);
-  const jobTitlesFetched = React.useRef(false);
-
-  // Parse existing combined job title on component load ONLY (don't reset on every data change)
+  // Initialize job title state based on userData - check if it matches dropdown or is custom
   React.useEffect(() => {
-    // Only initialize form once per dialog open OR if we're editing a different user
-    const isDifferentUser = previousUserDataId.current !== userData.id;
-    const shouldInitialize = !hasInitialized.current || isDifferentUser;
-    
-    if (!shouldInitialize) {
-      return; // Don't overwrite user's typed values
-    }
-    
-    // Reset form state when userData changes
-    console.log("[FORM INIT] userData.lookingFor (raw):", userData.lookingFor);
-    setName(userData.name || "");
-    setLocation(userData.location || "");
-    setIndustry(userData.industry || "");
-    setDomain(userData.domain || "");
-    setAboutMe(userData.aboutMe || "");
-    
-    // Initialize new branding fields
-    setTagline(userData.tagline || "");
-    setVisionStatement(userData.visionStatement || "");
-    setMissionStatement(userData.missionStatement || "");
-    setCoreValues(userData.coreValues || []);
-    setUniqueValueProposition(userData.uniqueValueProposition || "");
-    setPrimaryAudience(userData.primaryAudience || []);
-    setSecondaryAudience(userData.secondaryAudience || []);
-    
-    // Validate lookingFor value before setting it
-    const rawLookingFor = userData.lookingFor || "";
-    const validKeys = Object.keys(LOOKING_FOR_OPTIONS);
-    const isValidLookingFor = rawLookingFor && validKeys.includes(rawLookingFor);
-    
-    if (isValidLookingFor) {
-      setLookingFor(rawLookingFor);
-      console.log("[FORM INIT] userData.lookingFor (sanitized):", rawLookingFor);
-    } else if (rawLookingFor) {
-      console.warn("[FORM INIT] Invalid lookingFor detected, clearing:", rawLookingFor);
-      setLookingFor("");
-      console.log("[FORM INIT] userData.lookingFor (sanitized):", "");
-    } else {
-      setLookingFor("");
-      console.log("[FORM INIT] userData.lookingFor (sanitized):", "");
-    }
-    console.log("[FORM INIT] Set lookingFor to:", isValidLookingFor ? rawLookingFor : "");
-    
-    if (userData.title && jobTitlesData?.jobTitles) {
-      const existingTitle = userData.title;
-      const availableTitles = jobTitlesData.jobTitles || [];
-      
-      // Check if the title exactly matches any dropdown option
-      const matchedDropdownTitle = availableTitles.find((title: string) => 
-        existingTitle === title
-      );
+    const existingTitle = userData.title || "";
+    if (existingTitle && jobTitlesData?.jobTitles) {
+      const matchedDropdownTitle = jobTitlesData.jobTitles.find((jt: any) => jt.title === existingTitle)?.title;
       
       if (matchedDropdownTitle) {
-        // Use dropdown selection
         setSelectedJobTitleFromDropdown(matchedDropdownTitle);
         setJobTitle('');
       } else {
-        // Use custom text input
         setSelectedJobTitleFromDropdown('');
         setJobTitle(existingTitle);
       }
-    } else {
-      // Clear job title fields if no title
-      setSelectedJobTitleFromDropdown('');
-      setJobTitle('');
     }
-    
-    // Mark that we've completed initialization
-    hasInitialized.current = true;
-    previousUserDataId.current = userData.id;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData.id]); // Only depend on ID - we intentionally ignore other userData fields to prevent resetting user input
+  }, [userData.title, jobTitlesData]);
 
   // Brand name and phone number fields removed per user request
 
