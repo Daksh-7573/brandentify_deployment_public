@@ -152,15 +152,18 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
       clearFormState();
       console.log('[SmartConnect] Form state cleared after successful submission');
       
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
+      // DON'T invalidate queries - it might be causing navigation
+      // queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
       
       console.log('[SmartConnect] About to call onSuccess callback to switch tabs');
       
       // Call onSuccess callback to switch to results tab with data
       if (onSuccess) {
+        console.log('[SmartConnect] Calling onSuccess with data');
         onSuccess(data);
-        console.log('[SmartConnect] onSuccess callback executed');
+        console.log('[SmartConnect] onSuccess callback executed successfully');
+      } else {
+        console.log('[SmartConnect] WARNING: onSuccess callback is undefined!');
       }
     },
     onError: (error) => {

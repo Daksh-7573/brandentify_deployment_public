@@ -1,0 +1,267 @@
+[SW EMERGENCY FIX v4] Detected Replit domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 [SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops
+Console.js:61 [SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=KJIqombfZhLT' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=KJIqombfZhLT' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+Console.js:61 [Skeleton] Backup removal after 3s
+Console.js:61 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [PERF] React app rendered in 50.70 ms
+Console.js:61 [PERF] Total initialization time: 51.30 ms
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkAuth
+Console.js:61 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Domain check result: {hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isPublishedDomain: true}
+Console.js:61 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 AuthProvider: Fetching server session for published domain...
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4096.50ms
+Console.js:61 🔥 Firebase init time: 4096.40ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 🔄 [Strategy 4] Service Worker: Installing...
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [PERF] Skeleton loader removed in 183.50 ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4254.40ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 1
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 1
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 127
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 1
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 1
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 205.40ms
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 1
+Console.js:61 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session'}
+Console.js:61 AuthProvider: Raw server response: {success: true, user: {…}}
+Console.js:61 AuthProvider: Unwrapped user from server response
+Console.js:61 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] Fetching user data for ID: 2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 Cached response for /api/users/1
+Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 Cached response for /api/messaging/unread/count?userId=1
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 1
+Console.js:61 [HEADER PERFORMANCE] isLoading: true
+Console.js:61 [HEADER PERFORMANCE] userData ready: false
+Console.js:61 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 Cached response for /api/users/2
+Console.js:61 [HEADER PERFORMANCE] User data loaded: SUCCESS
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 40579
+Console.js:61 Cached response for /api/messaging/unread/count?userId=1
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 1
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:45
+setTimeout
+(anonymous) @ simple-auth-context.tsx:43
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=581ea615:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=581ea615:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=581ea615:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=581ea615:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=581ea615:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=581ea615:19328
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this warning
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+search-fixed.tsx:926 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=581ea615:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=581ea615:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=581ea615:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19765:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18678
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+search-fixed.tsx:926 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=581ea615:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=581ea615:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=581ea615:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19765:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=581ea615:18736
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18684
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 The above error occurred in the <SearchPage> component:
+
+    at SearchPage (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/search-fixed.tsx:44:29)
+    at Route (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=581ea615:191:16)
+    at Switch (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=581ea615:247:17)
+    at Router (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=rqyZulZRnK1ANsasBMFZt:240:56)
+    at Suspense
+    at AuthProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/simple-auth-context.tsx:28:32)
+    at QueryClientProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=581ea615:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Mt.forEach.n.<computed> @ Console.js:61
+logCapturedError @ chunk-RPCDYKBN.js?v=581ea615:14032
+update.callback @ chunk-RPCDYKBN.js?v=581ea615:14052
+callCallback @ chunk-RPCDYKBN.js?v=581ea615:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=581ea615:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=581ea615:17093
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=581ea615:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19353
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18760
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+chunk-RPCDYKBN.js?v=581ea615:19413 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=581ea615:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=581ea615:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=581ea615:19116:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19753
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=581ea615:18736
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18684
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
