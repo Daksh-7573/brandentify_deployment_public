@@ -907,9 +907,9 @@ function SearchPage() {
                                 </Card>
                               ))}
                             </div>
-                          ) : matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 ? (
+                          ) : matchMutation.isSuccess && matchMutation.data?.matches && matchMutation.data.matches.length > 0 ? (
                             <div className="space-y-4">
-                              {matchMutation.data.map((match: any) => (
+                              {matchMutation.data.matches.map((match: any) => (
                                 <Card key={match.id} className="border border-white/20 bg-gray-800/40 overflow-hidden shadow-lg hover:shadow-xl transition-all hover:bg-gray-700/40">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
@@ -999,9 +999,9 @@ function SearchPage() {
                             </div>
                           )}
                         </CardContent>
-                        {showMatchResults && matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 && (
+                        {showMatchResults && matchMutation.isSuccess && matchMutation.data?.matches && matchMutation.data.matches.length > 0 && (
                           <CardFooter className="flex justify-between">
-                            <p className="text-sm text-gray-300">Showing top {matchMutation.data.length} matches</p>
+                            <p className="text-sm text-gray-300">Showing top {matchMutation.data.matches.length} matches</p>
                             <button 
                               className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center gap-1.5 text-white"
                             >
