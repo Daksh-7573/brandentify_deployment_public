@@ -1,0 +1,134 @@
+[HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=2
+Console.js:61 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+Console.js:61 [HEADER PERFORMANCE] isLoading: false
+Console.js:61 [HEADER PERFORMANCE] userData ready: true
+Console.js:61 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+Console.js:61 [HEADER PERFORMANCE] userId: 2
+search-fixed.tsx:926 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=581ea615:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=581ea615:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=581ea615:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19765:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18678
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+search-fixed.tsx:926 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=581ea615:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=581ea615:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=581ea615:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19765:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+callCallback2 @ chunk-RPCDYKBN.js?v=581ea615:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=581ea615:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=581ea615:3733
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19765
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=581ea615:18736
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18684
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+Console.js:61 The above error occurred in the <SearchPage> component:
+
+    at SearchPage (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/search-fixed.tsx:44:29)
+    at Route (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=581ea615:191:16)
+    at Switch (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=581ea615:247:17)
+    at Router (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?t=1759823379991&v=93sEV6-hgNJ4ZcoMIMlt8:240:56)
+    at Suspense
+    at AuthProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/simple-auth-context.tsx:28:32)
+    at QueryClientProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=581ea615:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Mt.forEach.n.<computed> @ Console.js:61
+logCapturedError @ chunk-RPCDYKBN.js?v=581ea615:14032
+update.callback @ chunk-RPCDYKBN.js?v=581ea615:14052
+callCallback @ chunk-RPCDYKBN.js?v=581ea615:11248
+commitUpdateQueue @ chunk-RPCDYKBN.js?v=581ea615:11265
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=581ea615:17093
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=581ea615:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=581ea615:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=581ea615:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=581ea615:19353
+commitRoot @ chunk-RPCDYKBN.js?v=581ea615:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=581ea615:18760
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18718
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error
+chunk-RPCDYKBN.js?v=581ea615:19413 Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at search-fixed.tsx:926:57
+    at Array.map (<anonymous>)
+    at SearchPage (search-fixed.tsx:912:51)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=581ea615:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=581ea615:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=581ea615:15924:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=581ea615:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=581ea615:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=581ea615:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=581ea615:19116:15)
+(anonymous) @ search-fixed.tsx:926
+SearchPage @ search-fixed.tsx:912
+renderWithHooks @ chunk-RPCDYKBN.js?v=581ea615:11548
+updateFunctionComponent @ chunk-RPCDYKBN.js?v=581ea615:14582
+beginWork @ chunk-RPCDYKBN.js?v=581ea615:15924
+beginWork$1 @ chunk-RPCDYKBN.js?v=581ea615:19753
+performUnitOfWork @ chunk-RPCDYKBN.js?v=581ea615:19198
+workLoopSync @ chunk-RPCDYKBN.js?v=581ea615:19137
+renderRootSync @ chunk-RPCDYKBN.js?v=581ea615:19116
+recoverFromConcurrentError @ chunk-RPCDYKBN.js?v=581ea615:18736
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=581ea615:18684
+workLoop @ chunk-RPCDYKBN.js?v=581ea615:197
+flushWork @ chunk-RPCDYKBN.js?v=581ea615:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=581ea615:384Understand this error

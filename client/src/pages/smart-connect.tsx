@@ -27,6 +27,7 @@ export function SmartConnectPage() {
   });
 
   const [hasError, setHasError] = useState(false);
+  const [searchResults, setSearchResults] = useState<any>(null);
   
   // Get current user ID (in demo mode, use 1)
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<{ id: number }>({
@@ -128,7 +129,10 @@ export function SmartConnectPage() {
                 >
                   <SmartConnectForm 
                     userId={userId} 
-                    onSuccess={() => setActiveStep("results")}
+                    onSuccess={(results) => {
+                      setSearchResults(results);
+                      setActiveStep("results");
+                    }}
                   />
                 </motion.div>
               </TabsContent>
@@ -139,7 +143,7 @@ export function SmartConnectPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <MatchResults userId={userId} />
+                  <MatchResults userId={userId} results={searchResults} />
                 </motion.div>
               </TabsContent>
             </Tabs>

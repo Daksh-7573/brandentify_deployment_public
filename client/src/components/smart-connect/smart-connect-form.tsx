@@ -82,7 +82,7 @@ const clearFormState = () => {
   }
 };
 
-export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSuccess?: () => void }) {
+export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSuccess?: (results: any) => void }) {
   const [skillInput, setSkillInput] = useState("");
   const [isFormLoaded, setIsFormLoaded] = useState(false);
   const queryClient = useQueryClient();
@@ -140,7 +140,7 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
         ...values,
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Smart Connect request submitted",
         description: "We're finding the best professional matches for you.",
@@ -153,9 +153,9 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
       
-      // Call onSuccess callback to switch to results tab
+      // Call onSuccess callback to switch to results tab with data
       if (onSuccess) {
-        onSuccess();
+        onSuccess(data);
       }
     },
     onError: (error) => {

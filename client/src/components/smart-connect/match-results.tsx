@@ -50,11 +50,11 @@ interface SmartConnectResponse {
   matchingCriteria: any;
 }
 
-export function MatchResults({ userId }: { userId: number }) {
+export function MatchResults({ userId, results }: { userId: number; results?: SmartConnectResponse | null }) {
   const [expandedMatch, setExpandedMatch] = useState<number | null>(null);
   
-  // Fetch match results
-  const { data, isLoading, error } = useQuery<SmartConnectResponse>({
+  // Fetch match results only if not provided
+  const { data: fetchedData, isLoading, error } = useQuery<SmartConnectResponse>({
     queryKey: ["/api/smart-connect", userId],
     queryFn: async () => {
       const response = await fetch(`/api/smart-connect?userId=${userId}`);
@@ -63,7 +63,11 @@ export function MatchResults({ userId }: { userId: number }) {
       }
       return response.json();
     },
+    enabled: !results, // Only fetch if results not provided
   });
+  
+  // Use provided results or fetched data
+  const data = results || fetchedData;
   
   const toggleExpand = (matchId: number) => {
     if (expandedMatch === matchId) {
@@ -73,8 +77,8 @@ export function MatchResults({ userId }: { userId: number }) {
     }
   };
   
-  // Loading state
-  if (isLoading) {
+  // Loading state - only show if fetching and no results provided
+  if (isLoading && !results) {
     return <MatchResultsLoading />;
   }
   
