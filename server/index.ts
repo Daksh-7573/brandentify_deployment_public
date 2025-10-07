@@ -816,70 +816,6 @@ console.log("Starting Daily Quest Scheduler system...");
 dailyQuestScheduler.startScheduler();
 console.log("Daily Quest Scheduler started - expiring previous day quests and assigning new daily quests at 12:01 AM UTC");
 
-// 🚀 SYSTEM-WIDE DAILY QUEST HEALING SERVICE
-// This ensures ALL users (new, existing, current) get their daily quests automatically
-async function ensureAllUsersHaveDailyQuests() {
-  try {
-    console.log("🔄 [QUEST HEALING] Starting system-wide daily quest check for ALL users...");
-    
-    // Get all active users
-    const allUsers = await storage.getAllUsers();
-    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    let usersProcessed = 0;
-    let questsAssigned = 0;
-    
-    for (const user of allUsers) {
-      try {
-        // Check if user has daily career quests for today
-        const existingCareerQuests = await storage.getCurrentDayUserQuests(user.id);
-        
-        if (existingCareerQuests.length === 0) {
-          console.log(`🎯 [QUEST HEALING] User ${user.id} (${user.name || user.email}) missing career quests - assigning now...`);
-          const careerQuests = await storage.assignDailyQuestsToUser(user.id);
-          questsAssigned += careerQuests.length;
-          console.log(`✅ [QUEST HEALING] Assigned ${careerQuests.length} career quests to user ${user.id}`);
-        }
-        
-        // Check if user has daily social quests for today
-        const existingSocialQuests = await storage.getCurrentDaySocialQuests(user.id);
-        
-        if (existingSocialQuests.length === 0) {
-          console.log(`🎯 [QUEST HEALING] User ${user.id} (${user.name || user.email}) missing social quests - assigning now...`);
-          const socialQuests = await storage.assignDailySocialQuests(user.id);
-          questsAssigned += socialQuests.length;
-          console.log(`✅ [QUEST HEALING] Assigned ${socialQuests.length} social quests to user ${user.id}`);
-        }
-        
-        usersProcessed++;
-      } catch (userError) {
-        console.error(`❌ [QUEST HEALING] Error processing user ${user.id}:`, userError);
-      }
-    }
-    
-    console.log(`🏆 [QUEST HEALING] System-wide healing complete! Processed ${usersProcessed} users, assigned ${questsAssigned} quests`);
-    return { usersProcessed, questsAssigned };
-    
-  } catch (error) {
-    console.error("❌ [QUEST HEALING] System-wide quest healing failed:", error);
-    return { usersProcessed: 0, questsAssigned: 0 };
-  }
-}
-
-// Run the healing service immediately on server boot
-console.log("🚀 [QUEST HEALING] Initializing system-wide daily quest healing...");
-ensureAllUsersHaveDailyQuests().then((result) => {
-  console.log(`🎉 [QUEST HEALING] Boot healing completed - ${result.questsAssigned} quests assigned to ${result.usersProcessed} users`);
-});
-
-// Schedule healing service to run every hour as failsafe  
-setInterval(async () => {
-  const result = await ensureAllUsersHaveDailyQuests();
-  if (result.questsAssigned > 0) {
-    console.log(`🔄 [QUEST HEALING] Hourly healing assigned ${result.questsAssigned} quests`);
-  }
-}, 60 * 60 * 1000); // Every 60 minutes
-
 (async () => {
   const server = await registerRoutes(app);
   
@@ -984,6 +920,71 @@ setInterval(async () => {
     
     // 🔍 DATABASE VERIFICATION - Critical for database unification verification
     await logDatabaseStartupInfo();
+    
+    // 🚀 SYSTEM-WIDE DAILY QUEST HEALING SERVICE
+    // This ensures ALL users (new, existing, current) get their daily quests automatically
+    // IMPORTANT: Must run AFTER database connection is established
+    async function ensureAllUsersHaveDailyQuests() {
+      try {
+        console.log("🔄 [QUEST HEALING] Starting system-wide daily quest check for ALL users...");
+        
+        // Get all active users
+        const allUsers = await storage.getAllUsers();
+        const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        
+        let usersProcessed = 0;
+        let questsAssigned = 0;
+        
+        for (const user of allUsers) {
+          try {
+            // Check if user has daily career quests for today
+            const existingCareerQuests = await storage.getCurrentDayUserQuests(user.id);
+            
+            if (existingCareerQuests.length === 0) {
+              console.log(`🎯 [QUEST HEALING] User ${user.id} (${user.name || user.email}) missing career quests - assigning now...`);
+              const careerQuests = await storage.assignDailyQuestsToUser(user.id);
+              questsAssigned += careerQuests.length;
+              console.log(`✅ [QUEST HEALING] Assigned ${careerQuests.length} career quests to user ${user.id}`);
+            }
+            
+            // Check if user has daily social quests for today
+            const existingSocialQuests = await storage.getCurrentDaySocialQuests(user.id);
+            
+            if (existingSocialQuests.length === 0) {
+              console.log(`🎯 [QUEST HEALING] User ${user.id} (${user.name || user.email}) missing social quests - assigning now...`);
+              const socialQuests = await storage.assignDailySocialQuests(user.id);
+              questsAssigned += socialQuests.length;
+              console.log(`✅ [QUEST HEALING] Assigned ${socialQuests.length} social quests to user ${user.id}`);
+            }
+            
+            usersProcessed++;
+          } catch (userError) {
+            console.error(`❌ [QUEST HEALING] Error processing user ${user.id}:`, userError);
+          }
+        }
+        
+        console.log(`🏆 [QUEST HEALING] System-wide healing complete! Processed ${usersProcessed} users, assigned ${questsAssigned} quests`);
+        return { usersProcessed, questsAssigned };
+        
+      } catch (error) {
+        console.error("❌ [QUEST HEALING] System-wide quest healing failed:", error);
+        return { usersProcessed: 0, questsAssigned: 0 };
+      }
+    }
+
+    // Run the healing service immediately after server starts and database is ready
+    console.log("🚀 [QUEST HEALING] Initializing system-wide daily quest healing...");
+    ensureAllUsersHaveDailyQuests().then((result) => {
+      console.log(`🎉 [QUEST HEALING] Boot healing completed - ${result.questsAssigned} quests assigned to ${result.usersProcessed} users`);
+    });
+
+    // Schedule healing service to run every hour as failsafe  
+    setInterval(async () => {
+      const result = await ensureAllUsersHaveDailyQuests();
+      if (result.questsAssigned > 0) {
+        console.log(`🔄 [QUEST HEALING] Hourly healing assigned ${result.questsAssigned} quests`);
+      }
+    }, 60 * 60 * 1000); // Every 60 minutes
   });
   
   server.on('error', (err) => {
