@@ -126,7 +126,10 @@ export function SmartConnectPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <SmartConnectForm userId={userId} />
+                  <SmartConnectForm 
+                    userId={userId} 
+                    onSuccess={() => setActiveStep("results")}
+                  />
                 </motion.div>
               </TabsContent>
               

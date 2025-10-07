@@ -82,7 +82,7 @@ const clearFormState = () => {
   }
 };
 
-export function SmartConnectForm({ userId }: { userId: number }) {
+export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSuccess?: () => void }) {
   const [skillInput, setSkillInput] = useState("");
   const [isFormLoaded, setIsFormLoaded] = useState(false);
   const queryClient = useQueryClient();
@@ -152,6 +152,11 @@ export function SmartConnectForm({ userId }: { userId: number }) {
       
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
+      
+      // Call onSuccess callback to switch to results tab
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError: (error) => {
       console.error("Smart Connect error:", error);
