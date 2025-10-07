@@ -20,7 +20,7 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/api/auth/demo-login", async (req: Request, res: Response) => {
+router.post("/demo-login", async (req: Request, res: Response) => {
   try {
     // Try to get the demo account (email: demo@brandentifier.com)
     let user = await storage.getUserByEmail('demo@brandentifier.com');

@@ -7593,7 +7593,7 @@ ${extractedText.substring(0, 5000)}
   console.log("Mentorship Connect routes loaded");
   
   // Domain-independent authentication routes
-  app.use(demoAuthRoutes);
+  app.use('/api/auth', demoAuthRoutes);
   app.use(directAuthRoutes);
   console.log("Universal authentication routes loaded");
   
