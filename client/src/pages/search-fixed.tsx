@@ -218,6 +218,7 @@ function SearchPage() {
   
   // Helper function to get user initials for avatar fallback
   const getInitials = (name: string) => {
+    if (!name) return "?";
     return name
       .split(" ")
       .map((n) => n[0])
