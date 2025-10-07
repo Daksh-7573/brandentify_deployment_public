@@ -277,13 +277,15 @@ function Router() {
       <Route path="/_/auth/callback" component={AuthCallbackPage} />
       <Route path="/auth/callback" component={AuthCallbackPage} />
       
+      {/* Critical route - must be outside conditional to avoid conflict with /:brandName */}
+      <Route path="/search" component={SearchPage} />
+      
       {/* Tier 2: Secondary Routes (Load after 50ms) */}
       {secondaryLoaded && (
         <>
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
           )} />
-          <Route path="/search" component={SearchPage} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
           <Route path="/@:username">
             {(params) => <PublicProfile username={params.username} />}
