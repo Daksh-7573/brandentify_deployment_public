@@ -141,6 +141,8 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
       });
     },
     onSuccess: (data) => {
+      console.log('[SmartConnect] POST request successful, received data:', data);
+      
       toast({
         title: "Smart Connect request submitted",
         description: "We're finding the best professional matches for you.",
@@ -153,9 +155,12 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ["/api/smart-connect"] });
       
+      console.log('[SmartConnect] About to call onSuccess callback to switch tabs');
+      
       // Call onSuccess callback to switch to results tab with data
       if (onSuccess) {
         onSuccess(data);
+        console.log('[SmartConnect] onSuccess callback executed');
       }
     },
     onError: (error) => {
@@ -170,6 +175,7 @@ export function SmartConnectForm({ userId, onSuccess }: { userId: number; onSucc
   
   // Submit handler
   function onSubmit(values: SmartConnectFormValues) {
+    console.log('[SmartConnect] Form submitted, mutation starting');
     smartConnectMutation.mutate(values);
   }
   
