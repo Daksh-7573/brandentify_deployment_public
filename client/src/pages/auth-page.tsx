@@ -355,19 +355,34 @@ export default function AuthPage() {
                       <Button
                         onClick={async () => {
                           try {
+                            // First logout current session
+                            await fetch('/api/auth/logout', {
+                              method: 'POST',
+                              credentials: 'include'
+                            });
+                            
+                            // Then login with demo account
                             const response = await fetch('/api/auth/demo-login', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               credentials: 'include'
                             });
                             
+                            console.log('Demo login response:', response.status, response.ok);
+                            
                             if (response.ok) {
+                              const data = await response.json();
+                              console.log('Demo login success:', data);
+                              // Hard reload to clear all caches
                               window.location.href = '/dashboard';
                             } else {
-                              console.error('Demo login failed');
+                              const error = await response.json();
+                              console.error('Demo login failed:', error);
+                              alert('Demo login failed: ' + error.message);
                             }
                           } catch (error) {
                             console.error('Demo login error:', error);
+                            alert('Demo login error: ' + error);
                           }
                         }}
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
