@@ -182,13 +182,13 @@ function SearchPage() {
       }
       
       const data = await response.json();
-      return data.matches || [];
+      return data;
     },
     onSuccess: (data) => {
       setShowMatchResults(true);
       toast({
         title: "Match results ready",
-        description: `Found ${data.length} potential connections for you`
+        description: `Found ${data.matches?.length || 0} potential connections for you`
       });
     },
     onError: () => {
