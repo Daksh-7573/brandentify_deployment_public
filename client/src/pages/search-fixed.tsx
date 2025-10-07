@@ -922,13 +922,15 @@ function SearchPage() {
                                         <h4 className="font-medium text-white">{match.name}</h4>
                                         <p className="text-sm text-gray-300">{match.title}</p>
                                         
-                                        <div className="flex flex-wrap gap-1 mt-2">
-                                          {match.skills.map((skill: string, i: number) => (
-                                            <Badge key={i} variant="outline" className="text-xs font-normal bg-white/10 text-white border-white/20">
-                                              {skill}
-                                            </Badge>
-                                          ))}
-                                        </div>
+                                        {match.skills && match.skills.length > 0 && (
+                                          <div className="flex flex-wrap gap-1 mt-2">
+                                            {match.skills.map((skill: string, i: number) => (
+                                              <Badge key={i} variant="outline" className="text-xs font-normal bg-white/10 text-white border-white/20">
+                                                {skill}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        )}
                                         
                                         <div className="flex items-center mt-3 text-xs text-gray-300">
                                           <MapPin size={12} className="mr-1" />
@@ -957,34 +959,40 @@ function SearchPage() {
                                     </div>
                                     
                                     {/* Match Details */}
-                                    <div className="mt-3 pt-3 border-t border-white/10">
-                                      <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
-                                      <div className="grid grid-cols-4 gap-2">
-                                        {match.matchDetails.complementaryMatch && (
-                                          <div>
-                                            <p className="text-xs text-gray-300">Goals Match</p>
-                                            <div className="flex items-center mt-1">
-                                              <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
-                                              <span className="text-xs text-white">{match.matchDetails.complementaryMatch}%</span>
+                                    {match.matchDetails && (
+                                      <div className="mt-3 pt-3 border-t border-white/10">
+                                        <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
+                                        <div className="grid grid-cols-4 gap-2">
+                                          {match.matchDetails.complementaryMatch && (
+                                            <div>
+                                              <p className="text-xs text-gray-300">Goals Match</p>
+                                              <div className="flex items-center mt-1">
+                                                <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
+                                                <span className="text-xs text-white">{match.matchDetails.complementaryMatch}%</span>
+                                              </div>
                                             </div>
-                                          </div>
-                                        )}
-                                        <div>
-                                          <p className="text-xs text-gray-300">Industry</p>
-                                          <div className="flex items-center mt-1">
-                                            <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
-                                            <span className="text-xs text-white">{match.matchDetails.industryMatch}%</span>
-                                          </div>
-                                        </div>
-                                        <div>
-                                          <p className="text-xs text-gray-300">Domain</p>
-                                          <div className="flex items-center mt-1">
-                                            <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
-                                            <span className="text-xs text-white">{match.matchDetails.domainMatch}%</span>
-                                          </div>
+                                          )}
+                                          {match.matchDetails.industryMatch !== undefined && (
+                                            <div>
+                                              <p className="text-xs text-gray-300">Industry</p>
+                                              <div className="flex items-center mt-1">
+                                                <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
+                                                <span className="text-xs text-white">{match.matchDetails.industryMatch}%</span>
+                                              </div>
+                                            </div>
+                                          )}
+                                          {match.matchDetails.domainMatch !== undefined && (
+                                            <div>
+                                              <p className="text-xs text-gray-300">Domain</p>
+                                              <div className="flex items-center mt-1">
+                                                <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
+                                                <span className="text-xs text-white">{match.matchDetails.domainMatch}%</span>
+                                              </div>
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
-                                    </div>
+                                    )}
                                   </CardContent>
                                 </Card>
                               ))}
