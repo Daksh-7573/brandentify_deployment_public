@@ -22,7 +22,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Constants for form options
-import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@shared/constants";
+import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS } from "@shared/constants";
 
 // Types for search
 type SearchCategory = "pulses" | "profiles" | "hashtags" | "smart-connect";
@@ -65,7 +65,6 @@ type SearchResultsType = {
     matchDetails: {
       industryMatch: number;
       domainMatch: number;
-      experienceMatch: number;
       complementaryMatch?: number;
     }
   }>;
@@ -88,7 +87,6 @@ function SearchPage() {
   const [industry, setIndustry] = useState("");
   const [domain, setDomain] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const [experience, setExperience] = useState("");
   const [lookingFor, setLookingFor] = useState("");
   const [domains, setDomains] = useState<string[]>([]);
   
@@ -164,7 +162,6 @@ function SearchPage() {
         industry,
         domain,
         targetJobTitle: jobTitle,
-        experienceLevel: experience,
         lookingFor,
         skills: [],
         location: ""
@@ -206,10 +203,10 @@ function SearchPage() {
   const handleMatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!industry || !domain || !jobTitle || !experience || !lookingFor) {
+    if (!industry || !domain || !lookingFor) {
       toast({
         title: "Incomplete form",
-        description: "Please fill out all fields for better matching",
+        description: "Please fill out Industry, Domain, and Looking For fields",
         variant: "destructive"
       });
       return;
@@ -823,32 +820,12 @@ function SearchPage() {
                               </div>
                               
                               <div className="space-y-2">
-                                <Label htmlFor="job-title" className="text-white">Job Title</Label>
+                                <Label htmlFor="job-title" className="text-white">Job Title <span className="text-white/50 text-sm">(Optional)</span></Label>
                                 <JobTitleCombobox
                                   value={jobTitle}
                                   onChange={setJobTitle}
                                   className="neo-glass-input"
                                 />
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="experience" className="text-white">Experience Level</Label>
-                                <Select
-                                  value={experience}
-                                  onValueChange={setExperience}
-                                >
-                                  <SelectTrigger id="experience" className="neo-glass-input">
-                                    <SelectValue placeholder="Select experience level" />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
-                                    <SelectGroup>
-                                      <SelectLabel>Experience Levels</SelectLabel>
-                                      {EXPERIENCE_LEVELS.map((exp) => (
-                                        <SelectItem key={exp} value={exp}>{exp}</SelectItem>
-                                      ))}
-                                    </SelectGroup>
-                                  </SelectContent>
-                                </Select>
                               </div>
                               
                               <div className="space-y-2 md:col-span-2">
