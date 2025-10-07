@@ -420,7 +420,7 @@ function SearchPage() {
               </div>
 
               {/* Main Tabs: Search vs Smart Connect */}
-              <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
+              <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="w-full">
                 <TabsList className="mb-6 dark-tabs-list">
                   <TabsTrigger 
                     value="search" 
