@@ -819,6 +819,31 @@ console.log("Daily Quest Scheduler started - expiring previous day quests and as
 (async () => {
   const server = await registerRoutes(app);
   
+  // 🚀 DAILY QUEST AUTO-GENERATION - Runs immediately after routes are registered
+  console.log("========================================");
+  console.log("🚀 QUEST AUTO-GENERATION STARTING");
+  console.log("========================================");
+  try {
+    const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+    const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
+    console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
+    
+    // Schedule hourly failsafe
+    setInterval(async () => {
+      try {
+        console.log("🔄 [HOURLY] Running quest check...");
+        const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
+        if (hourlyResult.successfulAssignments > 0) {
+          console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
+        }
+      } catch (hourlyError) {
+        console.error("❌ [HOURLY] Quest check failed:", hourlyError);
+      }
+    }, 60 * 60 * 1000); // Every 60 minutes
+  } catch (bootError) {
+    console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
+  }
+  
   // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
   console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
   app.use(apiGateway.routeRequest);
@@ -920,91 +945,6 @@ console.log("Daily Quest Scheduler started - expiring previous day quests and as
     
     // 🔍 DATABASE VERIFICATION - Critical for database unification verification
     await logDatabaseStartupInfo();
-    
-    // 🚀 SYSTEM-WIDE DAILY QUEST HEALING SERVICE
-    // This ensures ALL users (new, existing, current) get their daily quests automatically
-    // IMPORTANT: Must run AFTER database connection is established
-    
-    // Status tracking for diagnostics
-    let lastHealRun: Date | null = null;
-    let healInProgress = false;
-    
-    async function ensureAllUsersHaveDailyQuests() {
-      if (healInProgress) {
-        log('[QuestHealing] Skipping - already in progress');
-        return { usersProcessed: 0, questsAssigned: 0 };
-      }
-      
-      healInProgress = true;
-      try {
-        log("🔄 [QuestHealing] Starting system-wide daily quest check for ALL users...");
-        
-        // Get all active users
-        const allUsers = await storage.getAllUsers();
-        const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        
-        let usersProcessed = 0;
-        let questsAssigned = 0;
-        
-        for (const user of allUsers) {
-          try {
-            // Check if user has daily career quests for today
-            const existingCareerQuests = await storage.getCurrentDayUserQuests(user.id);
-            
-            if (existingCareerQuests.length === 0) {
-              log(`🎯 [QuestHealing] User ${user.id} (${user.name || user.email}) missing career quests - assigning now...`);
-              const careerQuests = await storage.assignDailyQuestsToUser(user.id);
-              questsAssigned += careerQuests.length;
-              log(`✅ [QuestHealing] Assigned ${careerQuests.length} career quests to user ${user.id}`);
-            }
-            
-            // Check if user has daily social quests for today
-            const existingSocialQuests = await storage.getCurrentDaySocialQuests(user.id);
-            
-            if (existingSocialQuests.length === 0) {
-              log(`🎯 [QuestHealing] User ${user.id} (${user.name || user.email}) missing social quests - assigning now...`);
-              const socialQuests = await storage.assignDailySocialQuests(user.id);
-              questsAssigned += socialQuests.length;
-              log(`✅ [QuestHealing] Assigned ${socialQuests.length} social quests to user ${user.id}`);
-            }
-            
-            usersProcessed++;
-          } catch (userError) {
-            log(`❌ [QuestHealing] Error processing user ${user.id}:`, userError);
-          }
-        }
-        
-        lastHealRun = new Date();
-        log(`🏆 [QuestHealing] Complete! Processed ${usersProcessed} users, assigned ${questsAssigned} quests at ${lastHealRun.toISOString()}`);
-        return { usersProcessed, questsAssigned };
-        
-      } catch (error) {
-        log("❌ [QuestHealing] System-wide quest healing failed:", error);
-        return { usersProcessed: 0, questsAssigned: 0 };
-      } finally {
-        healInProgress = false;
-      }
-    }
-
-    // Run the healing service immediately after server starts and database is ready
-    log("🚀 [QuestHealing] Initializing system-wide daily quest healing...");
-    ensureAllUsersHaveDailyQuests().then((result) => {
-      log(`🎉 [QuestHealing] Boot healing completed - ${result.questsAssigned} quests assigned to ${result.usersProcessed} users`);
-    }).catch(err => {
-      log("❌ [QuestHealing] Boot healing failed:", err);
-    });
-
-    // Schedule healing service to run every hour as failsafe  
-    setInterval(async () => {
-      try {
-        const result = await ensureAllUsersHaveDailyQuests();
-        if (result.questsAssigned > 0) {
-          log(`🔄 [QuestHealing] Hourly healing assigned ${result.questsAssigned} quests`);
-        }
-      } catch (err) {
-        log("❌ [QuestHealing] Hourly interval error:", err);
-      }
-    }, 60 * 60 * 1000); // Every 60 minutes
   });
   
   server.on('error', (err) => {
