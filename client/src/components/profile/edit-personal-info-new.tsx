@@ -109,6 +109,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     setUniqueValueProposition(userData.uniqueValueProposition || "");
     setPrimaryAudience(userData.primaryAudience || []);
     setSecondaryAudience(userData.secondaryAudience || []);
+    
+    // CRITICAL FIX: Also sync the input strings for array fields
+    // Without this, the inputs show as empty and onBlur clears the arrays
+    setCoreValuesInput(userData.coreValues ? userData.coreValues.join(", ") : "");
+    setPrimaryAudienceInput(userData.primaryAudience ? userData.primaryAudience.join(", ") : "");
+    setSecondaryAudienceInput(userData.secondaryAudience ? userData.secondaryAudience.join(", ") : "");
   }, [userData]);
 
   // Brand name and phone number fields removed per user request

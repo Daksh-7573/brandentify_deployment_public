@@ -9183,6 +9183,27 @@ export class DatabaseStorage implements IStorage {
           case 'emailVerificationExpires':
             updateData.emailVerificationExpires = value;
             break;
+          case 'tagline':
+            updateData.tagline = value;
+            break;
+          case 'visionStatement':
+            updateData.visionStatement = value;
+            break;
+          case 'missionStatement':
+            updateData.missionStatement = value;
+            break;
+          case 'coreValues':
+            updateData.coreValues = value;
+            break;
+          case 'uniqueValueProposition':
+            updateData.uniqueValueProposition = value;
+            break;
+          case 'primaryAudience':
+            updateData.primaryAudience = value;
+            break;
+          case 'secondaryAudience':
+            updateData.secondaryAudience = value;
+            break;
           default:
             updateData[key] = value;
         }
