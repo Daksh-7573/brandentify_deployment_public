@@ -32,7 +32,6 @@ import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
-import demoAuthRoutes from "./routes-auth-demo";
 import directAuthRoutes from "./routes-direct-auth";
 import profileServicesRoutes from "./routes-services-sync";
 import adminRoutes from "./routes-admin";
@@ -7593,7 +7592,6 @@ ${extractedText.substring(0, 5000)}
   console.log("Mentorship Connect routes loaded");
   
   // Domain-independent authentication routes
-  app.use('/api/auth', demoAuthRoutes);
   app.use(directAuthRoutes);
   console.log("Universal authentication routes loaded");
   
