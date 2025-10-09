@@ -343,55 +343,6 @@ export default function AuthPage() {
                       
                       <FastQuickAuth />
                       
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-white/20" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">demo account</span>
-                        </div>
-                      </div>
-                      
-                      <Button
-                        onClick={async () => {
-                          try {
-                            // First logout current session
-                            await fetch('/api/auth/logout', {
-                              method: 'POST',
-                              credentials: 'include'
-                            });
-                            
-                            // Then login with demo account
-                            const response = await fetch('/api/auth/demo-login', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              credentials: 'include'
-                            });
-                            
-                            console.log('Demo login response:', response.status, response.ok);
-                            
-                            if (response.ok) {
-                              const data = await response.json();
-                              console.log('Demo login success:', data);
-                              // Hard reload to clear all caches
-                              window.location.href = '/dashboard';
-                            } else {
-                              const error = await response.json();
-                              console.error('Demo login failed:', error);
-                              alert('Demo login failed: ' + error.message);
-                            }
-                          } catch (error) {
-                            console.error('Demo login error:', error);
-                            alert('Demo login error: ' + error);
-                          }
-                        }}
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-                        data-testid="button-demo-login"
-                      >
-                        <Sparkles className="h-5 w-5 mr-2" />
-                        Try Demo Account
-                      </Button>
-                      
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
                           By continuing, you agree to our Terms of Service and Privacy Policy
