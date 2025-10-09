@@ -91,6 +91,26 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     }
   }, [userData.title, jobTitlesData]);
 
+  // Sync form state when userData changes (e.g., after refresh or cache update)
+  useEffect(() => {
+    console.log('[EDIT FORM] Syncing form state with userData:', userData);
+    setName(userData.name || "");
+    setLocation(userData.location || "");
+    setIndustry(userData.industry || "");
+    setDomain(userData.domain || "");
+    setAboutMe(userData.aboutMe || "");
+    setLookingFor(userData.lookingFor || "");
+    
+    // Sync branding fields
+    setTagline(userData.tagline || "");
+    setVisionStatement(userData.visionStatement || "");
+    setMissionStatement(userData.missionStatement || "");
+    setCoreValues(userData.coreValues || []);
+    setUniqueValueProposition(userData.uniqueValueProposition || "");
+    setPrimaryAudience(userData.primaryAudience || []);
+    setSecondaryAudience(userData.secondaryAudience || []);
+  }, [userData]);
+
   // Brand name and phone number fields removed per user request
 
   const handleSave = async () => {
