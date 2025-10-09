@@ -948,7 +948,14 @@ export default function ProfileNeo() {
                 domain: userData.domain || '',
                 aboutMe: userData.aboutMe || '',
                 lookingFor: userData.lookingFor || '',
-                photoURL: userData.photoURL || ''
+                photoURL: userData.photoURL || '',
+                tagline: userData.tagline || '',
+                visionStatement: userData.visionStatement || '',
+                missionStatement: userData.missionStatement || '',
+                coreValues: userData.coreValues || [],
+                uniqueValueProposition: userData.uniqueValueProposition || '',
+                primaryAudience: userData.primaryAudience || [],
+                secondaryAudience: userData.secondaryAudience || []
               }}
               userIdentifier={userIdentifier}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
