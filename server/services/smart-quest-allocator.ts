@@ -58,7 +58,7 @@ export class SmartQuestAllocator {
    */
   async allocateDailyQuests(userId: number): Promise<QuestAllocationResult> {
     try {
-      console.log(`[SmartQuestAllocator] Starting allocation for user ${userId}`);
+      console.log(`[SmartQuestAllocator] 🎯 Starting allocation for user ${userId}`);
       
       // Get user profile and brand goals
       const userProfile = await this.getUserProfile(userId);
