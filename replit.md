@@ -9,6 +9,26 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 Latest modifications with dates
 
+### October 10, 2025 - Impact-Weighted Quest Assignment System
+- **COMPLETED: Dynamic Quest Allocation System** - Replaced fixed "1 Career + 1 Social" format with intelligent impact-weighted assignment
+- **Quest Impact Scoring**: Predefined impact values for 40+ quest types across 3 categories:
+  - High Impact (80-100): Career-defining activities like updating LinkedIn headline, portfolio showcase
+  - Medium Impact (40-79): Profile optimization, skill demonstrations, industry engagement  
+  - Quick Win (10-39): Daily engagement activities, micro-learning tasks
+- **Smart Quest Allocator**: Determines optimal daily quest quantity (1-4) based on total impact value
+  - Single high-impact quest (85+): One career-defining task
+  - 2 quests (120+ total): Balanced career/social mix
+  - 3 quests (180+ total): Comprehensive daily strategy
+  - 4 quests (250+ total): Maximum productivity push
+  - 60-minute daily time cap respected
+  - Fallback to 1+1 format if system can't determine optimal mix
+- **Intelligent Hashtag Generator**: Context-aware, audience-targeted hashtag system (NO random tags)
+  - 6-layer hashtag system: Primary (industry/domain), Audience-targeted, Goal-aligned, Platform-specific, Content-type, Geographic
+  - Considers: user industry, domain expertise, Brand Goals, target audience, platform, content type
+  - Comprehensive industry/domain mappings for all professional sectors
+- **Database Schema**: Added `suggestedHashtags` (text array) and `hashtagContext` (text) to userQuests table
+- **Architect Verdict**: PASS - System integrates coherently with consistent data contracts and proper failover logic
+
 ### October 7, 2025 - Brand Quest Auto-Generation System Fixed
 - **FIXED: Daily Quest Auto-Assignment** - Fully operational automatic quest generation system
 - **System Architecture**: Three-layer failsafe approach for reliable daily quest assignment
