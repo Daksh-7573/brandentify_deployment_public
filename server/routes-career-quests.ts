@@ -476,6 +476,11 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
               qd.required_career_stage as "requiredCareerStage",
               qd.required_industry as "requiredIndustry",
               qd.musk_tip as "muskTip",
+              qd.deliverable_format as "deliverableFormat",
+              qd.quantity_value as "quantityValue",
+              qd.quantity_type as "quantityType",
+              qd.platform_constraints as "platformConstraints",
+              qd.guidance_snippet as "guidanceSnippet",
               qd.is_active as "isActive",
               qd.created_at as "createdAt",
               qd.updated_at as "updatedAt"
@@ -503,6 +508,11 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
                 requiredCareerStage: row.requiredCareerStage,
                 requiredIndustry: row.requiredIndustry,
                 muskTip: row.muskTip,
+                deliverableFormat: row.deliverableFormat,
+                quantityValue: row.quantityValue,
+                quantityType: row.quantityType,
+                platformConstraints: row.platformConstraints,
+                guidanceSnippet: row.guidanceSnippet,
                 isActive: row.isActive,
                 createdAt: row.createdAt,
                 updatedAt: row.updatedAt
