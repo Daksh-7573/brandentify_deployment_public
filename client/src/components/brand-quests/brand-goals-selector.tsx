@@ -124,6 +124,17 @@ export function BrandGoalsSelector() {
     saveGoalsMutation.mutate(selectedGoals);
   };
 
+  // Check if current selection differs from saved goals
+  const hasChanges = () => {
+    const savedGoals = existingGoals?.selectedGoals || [];
+    if (selectedGoals.length !== savedGoals.length) return true;
+    
+    // Sort both arrays and compare
+    const sortedCurrent = [...selectedGoals].sort();
+    const sortedSaved = [...savedGoals].sort();
+    return sortedCurrent.some((goal, idx) => goal !== sortedSaved[idx]);
+  };
+
   if (isLoading) {
     return (
       <div className="p-6 text-center text-white/60">
@@ -193,14 +204,14 @@ export function BrandGoalsSelector() {
       <div className="flex justify-end pt-4">
         <Button
           onClick={handleSave}
-          disabled={selectedGoals.length === 0 || saveGoalsMutation.isPending}
+          disabled={selectedGoals.length === 0 || saveGoalsMutation.isPending || !hasChanges()}
           data-testid="button-save-goals"
           className={`
-            ${selectedGoals.length > 0 ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600'}
+            ${selectedGoals.length > 0 && hasChanges() ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600'}
             text-white px-6 py-2 rounded-lg font-semibold transition-colors
           `}
         >
-          {saveGoalsMutation.isPending ? 'Saving...' : 'Save Goals'}
+          {saveGoalsMutation.isPending ? 'Saving...' : hasChanges() ? 'Save My Goals' : 'Saved ✓'}
         </Button>
       </div>
     </div>
