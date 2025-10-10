@@ -9,6 +9,25 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 Latest modifications with dates
 
+### October 10, 2025 - Audience-Based Platform Selection for Social Quests
+- **COMPLETED: Audience-Driven Platform Algorithm** - Platform selection now based on where user's target audiences are most active
+- **Primary & Secondary Audience Support**: Leverages user's `primaryAudience` and `secondaryAudience` fields from profile
+- **Comprehensive Audience Mappings**: 40+ audience-to-platform mappings covering:
+  - Professional audiences (C-Suite, Entrepreneurs, Tech Professionals, etc.) → LinkedIn, Twitter, Medium
+  - Consumer demographics (Gen Z, Millennials, Gen X, etc.) → TikTok, Instagram, Facebook
+  - Creative audiences (Influencers, Artists, Content Creators) → Instagram, YouTube, Pinterest
+  - Student & Educator audiences → LinkedIn, YouTube, Twitter
+  - Local & Community audiences → Google, Facebook, Instagram
+  - B2B audiences → LinkedIn, Twitter, Medium
+  - Niche audiences (Developers, Gamers, Fitness, etc.) → Platform-specific recommendations
+- **Weighted Scoring System**: 
+  - Primary audience: 5-point weight (highest priority)
+  - Secondary audience: 3-point weight (supporting platforms)
+  - LinkedIn baseline: +1 bonus (universally valuable for professionals)
+- **Smart Selection**: Algorithm selects 2-3 optimal platforms based on audience demographics
+- **Example**: User targeting "Gen Z Consumers" + "Content Creators" → Gets TikTok, Instagram, YouTube
+- **Platform Strategy**: NO Brandentifier platform in social quests - only external platforms where audiences actively engage
+
 ### October 10, 2025 - Brand Goal Strict Filtering Implementation
 - **COMPLETED: Strict Brand Goal Filtering** - Users ONLY receive quests matching their selected Brand Goals (Option B implementation)
 - **Brand Goal Quest Mapper**: Comprehensive mapping service connecting all 12 Brand Goals to relevant quest types

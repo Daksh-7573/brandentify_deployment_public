@@ -1,5 +1,6 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { notifications, insertNotificationSchema } from "./notification-schema";
@@ -1716,7 +1717,7 @@ export type InsertPlatformActivityInsight = z.infer<typeof insertPlatformActivit
 export const brandGoals = pgTable("brand_goals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull().unique(),
-  selectedGoals: text("selected_goals").array().notNull().default('{}'), // Array of selected goal IDs (max 3)
+  selectedGoals: text("selected_goals").array().notNull().default(sql`'{}'`), // Array of selected goal IDs (max 3)
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
