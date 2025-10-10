@@ -91,21 +91,25 @@ export default function BrandQuestsPage() {
           </NeoGlassSection>
 
           <NeoGlassSection>
-            <Tabs defaultValue="quests" className="w-full">
+            <Tabs defaultValue="goals" className="w-full">
               <TabsList className="grid w-full grid-cols-2 dark-tabs-list border border-white/5 mb-6">
-                <TabsTrigger 
-                  value="quests"
-                  className="dark-tabs-trigger"
-                >
-                  Brand Quests
-                </TabsTrigger>
                 <TabsTrigger 
                   value="goals"
                   className="dark-tabs-trigger"
                 >
                   Brand Goals
                 </TabsTrigger>
+                <TabsTrigger 
+                  value="quests"
+                  className="dark-tabs-trigger"
+                >
+                  Brand Quests
+                </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="goals" className="mt-0">
+                <BrandGoalsSelector />
+              </TabsContent>
 
               <TabsContent value="quests" className="mt-0">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
@@ -119,10 +123,6 @@ export default function BrandQuestsPage() {
                     <BadgeDisplay userId={userId} />
                   </div>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="goals" className="mt-0">
-                <BrandGoalsSelector />
               </TabsContent>
             </Tabs>
           </NeoGlassSection>
