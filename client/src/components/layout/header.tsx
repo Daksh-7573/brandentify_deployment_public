@@ -5,8 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield, LogOut } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -332,48 +339,70 @@ export default function Header() {
             {/* Notification Bell */}
             <NotificationBell className="hidden sm:flex" />
             
-            {/* User profile section - combined name and avatar */}
-            <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg backdrop-blur-sm border transition-all duration-300 group ${
-                isActive('/profile') 
-                  ? 'text-white bg-white/20 border-white/40 shadow-md' 
-                  : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
-              }`}
-              onClick={() => setLocation('/profile')}
-            >
-              {/* User name */}
-              <span className="text-sm font-medium text-white hidden md:block">
-                {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
-              </span>
-              
-              {/* User avatar */}
-              <div className="relative">
+            {/* User profile section - dropdown menu with sign out */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <div 
-                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-white/30 transition-all"
+                  className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg backdrop-blur-sm border transition-all duration-300 group ${
+                    isActive('/profile') 
+                      ? 'text-white bg-white/20 border-white/40 shadow-md' 
+                      : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
+                  }`}
                 >
-                  <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20 shadow-sm group-hover:shadow-md transition-all">
-                    <img 
-                      className="h-full w-full object-cover" 
-                      src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                      alt="User profile"
-                      onLoad={() => {
-                        console.log('[HEADER IMAGE DEBUG] Image loaded successfully');
-                        console.log('[HEADER IMAGE DEBUG] Image source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
-                        console.log('[HEADER IMAGE DEBUG] Image source length:', photoURL?.length || 'N/A');
-                      }}
-                      onError={(e) => {
-                        console.error('[HEADER IMAGE DEBUG] Image failed to load');
-                        console.error('[HEADER IMAGE DEBUG] Failed source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
-                        console.error('[HEADER IMAGE DEBUG] Failed source length:', photoURL?.length || 'N/A');
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                      }}
-                    />
+                  {/* User name */}
+                  <span className="text-sm font-medium text-white hidden md:block">
+                    {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
+                  </span>
+                  
+                  {/* User avatar */}
+                  <div className="relative">
+                    <div 
+                      className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-white/30 transition-all"
+                    >
+                      <span className="sr-only">Open user menu</span>
+                      <div className="h-8 w-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20 shadow-sm group-hover:shadow-md transition-all">
+                        <img 
+                          className="h-full w-full object-cover" 
+                          src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                          alt="User profile"
+                          onLoad={() => {
+                            console.log('[HEADER IMAGE DEBUG] Image loaded successfully');
+                            console.log('[HEADER IMAGE DEBUG] Image source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
+                            console.log('[HEADER IMAGE DEBUG] Image source length:', photoURL?.length || 'N/A');
+                          }}
+                          onError={(e) => {
+                            console.error('[HEADER IMAGE DEBUG] Image failed to load');
+                            console.error('[HEADER IMAGE DEBUG] Failed source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
+                            console.error('[HEADER IMAGE DEBUG] Failed source length:', photoURL?.length || 'N/A');
+                            const target = e.target as HTMLImageElement;
+                            target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 neo-glass-card border-white/20">
+                <DropdownMenuItem 
+                  onClick={() => setLocation('/profile')}
+                  className="cursor-pointer text-white/90 hover:text-white focus:text-white hover:bg-white/10 focus:bg-white/10"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  My Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/20" />
+                <DropdownMenuItem 
+                  onClick={async () => {
+                    await signOut();
+                  }}
+                  className="cursor-pointer text-red-400 hover:text-red-300 focus:text-red-300 hover:bg-red-500/10 focus:bg-red-500/10"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
