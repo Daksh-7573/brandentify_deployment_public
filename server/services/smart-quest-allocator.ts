@@ -13,6 +13,7 @@
 
 import { questImpactScorer, QuestImpactScore } from './quest-impact-scorer';
 import { ProfileCompletenessChecker } from './profile-completeness-checker';
+import { BrandGoalQuestMapper } from './brand-goal-quest-mapper';
 import { db } from '../db';
 import { users, questDefinitions, userQuests, brandGoals } from '@shared/schema';
 import { eq, and, inArray, ne, notInArray } from 'drizzle-orm';
@@ -74,8 +75,8 @@ export class SmartQuestAllocator {
         console.log(`[SmartQuestAllocator] Missing fields: ${profileStatus.missingFields.join(', ')}`);
       }
 
-      // Get available quest pool (career + social)
-      const availableCareerQuests = await this.getAvailableCareerQuests(userId, profileStatus.focusArea);
+      // Get available quest pool (career + social) - STRICT Brand Goal filtering
+      const availableCareerQuests = await this.getAvailableCareerQuests(userId, profileStatus.focusArea, userGoals);
       const availableSocialQuests = await this.getAvailableSocialQuests(userId);
       
       console.log(`[SmartQuestAllocator] Available: ${availableCareerQuests.length} career, ${availableSocialQuests.length} social`);
@@ -319,9 +320,15 @@ export class SmartQuestAllocator {
 
   /**
    * Get available career quests (not yet assigned today)
-   * Filtered based on profile focus: 'profile' or 'pulse'
+   * STRICTLY filtered by:
+   * 1. Profile focus (profile-building vs pulse-creation)
+   * 2. Selected Brand Goals (ONLY matching quest types)
    */
-  private async getAvailableCareerQuests(userId: number, focusArea: 'profile' | 'pulse' = 'profile'): Promise<any[]> {
+  private async getAvailableCareerQuests(
+    userId: number, 
+    focusArea: 'profile' | 'pulse' = 'profile',
+    userGoals: string[] = []
+  ): Promise<any[]> {
     const todayDateString = new Date().toISOString().split('T')[0];
     
     // Get today's assigned quest IDs
@@ -335,26 +342,50 @@ export class SmartQuestAllocator {
     
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
-    // Define quest types based on focus area
-    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking'] as const;
-    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking'] as const;
+    // Step 1: Define quest types based on focus area
+    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking'];
+    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking'];
     
-    const allowedTypes = focusArea === 'profile' ? [...profileBuildingTypes] : [...pulseFocusedTypes];
+    const focusAreaTypes = focusArea === 'profile' ? profileBuildingTypes : pulseFocusedTypes;
     
-    // Get career quests not assigned today, filtered by focus area
+    // Step 2: Get quest types allowed by Brand Goals (STRICT)
+    const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
+    
+    // Step 3: Intersect both - quest must match BOTH focus area AND Brand Goals
+    let finalAllowedTypes: string[];
+    
+    if (userGoals.length === 0) {
+      // No Brand Goals selected - use only focus area types (fallback)
+      console.log('[SmartQuestAllocator] ⚠️ No Brand Goals selected - using focus area types only');
+      finalAllowedTypes = focusAreaTypes;
+    } else {
+      // STRICT: Only quests that match BOTH focus area AND Brand Goals
+      finalAllowedTypes = focusAreaTypes.filter(type => brandGoalAllowedTypes.includes(type));
+      console.log(`[SmartQuestAllocator] 🎯 Brand Goal filtering: ${brandGoalAllowedTypes.length} goal types × ${focusAreaTypes.length} focus types = ${finalAllowedTypes.length} allowed types`);
+    }
+    
+    // If no matching types after intersection, return empty
+    if (finalAllowedTypes.length === 0) {
+      console.log('[SmartQuestAllocator] ❌ No quest types match both Brand Goals and focus area');
+      return [];
+    }
+    
+    // Get career quests not assigned today, filtered by final allowed types
     const careerQuestsQuery = assignedIds.length > 0
       ? db.select()
           .from(questDefinitions)
           .where(and(
             ne(questDefinitions.type, 'social_post'),
+            ne(questDefinitions.type, 'social_quest'),
             notInArray(questDefinitions.id, assignedIds),
-            inArray(questDefinitions.type, allowedTypes as any)
+            inArray(questDefinitions.type, finalAllowedTypes as any)
           ))
       : db.select()
           .from(questDefinitions)
           .where(and(
             ne(questDefinitions.type, 'social_post'),
-            inArray(questDefinitions.type, allowedTypes as any)
+            ne(questDefinitions.type, 'social_quest'),
+            inArray(questDefinitions.type, finalAllowedTypes as any)
           ));
     
     return await careerQuestsQuery;
