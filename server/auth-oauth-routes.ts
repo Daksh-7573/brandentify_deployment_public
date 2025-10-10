@@ -1169,3 +1169,34 @@ export async function checkSessionRoute(req: Request, res: Response) {
     });
   }
 }
+
+/**
+ * Handle user logout - clears session cookie
+ */
+export async function logoutRoute(req: Request, res: Response) {
+  try {
+    console.log("🚪 [LOGOUT] Processing logout request");
+    
+    // Clear the session cookie
+    res.clearCookie("brandentifier_session", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+    
+    console.log("✅ [LOGOUT] Session cookie cleared successfully");
+    
+    return res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error: any) {
+    console.error("❌ [LOGOUT] Logout error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Logout failed",
+      message: error.message,
+    });
+  }
+}

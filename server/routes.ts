@@ -61,7 +61,7 @@ import directAnalyticsRoutes from "./routes-direct-analytics";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -7617,6 +7617,7 @@ ${extractedText.substring(0, 5000)}
   });
   
   app.get("/api/auth/session", checkSessionRoute);
+  app.post("/api/auth/logout", logoutRoute); // Logout endpoint
   app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
   console.log("Custom OAuth routes loaded");
   
