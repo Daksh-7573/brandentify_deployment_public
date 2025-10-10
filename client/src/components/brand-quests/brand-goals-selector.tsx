@@ -179,7 +179,7 @@ export function BrandGoalsSelector() {
                       className={`
                         w-full p-3 rounded-lg text-left flex items-center gap-3 transition-all
                         ${isSelected 
-                          ? 'bg-blue-500/20 border-2 border-blue-500' 
+                          ? 'bg-[rgba(81,69,205,0.2)] border-2 border-[rgba(81,69,205,0.8)]' 
                           : 'bg-white/5 border border-white/10 hover:bg-white/10'
                         }
                         ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -187,7 +187,7 @@ export function BrandGoalsSelector() {
                     >
                       <div className={`
                         w-5 h-5 rounded flex items-center justify-center flex-shrink-0
-                        ${isSelected ? 'bg-blue-500' : 'border border-white/30'}
+                        ${isSelected ? 'bg-[rgba(81,69,205,0.9)]' : 'border border-white/30'}
                       `}>
                         {isSelected && <Check className="w-4 h-4 text-white" />}
                       </div>
