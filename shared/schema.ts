@@ -1153,6 +1153,12 @@ export const questDefinitions = pgTable("quest_definitions", {
   muskTip: text("musk_tip"), // Enhanced tip from Musk about this specific content type
   estimatedTimeMinutes: integer("estimated_time_minutes").default(15), // Time to complete the quest
   difficultyLevel: text("difficulty_level").default("beginner"), // beginner, intermediate, advanced
+  // Structured deliverable metadata for specific, actionable quests
+  deliverableFormat: text("deliverable_format"), // e.g., "60-second video", "LinkedIn post", "carousel with 10 slides"
+  quantityValue: integer("quantity_value"), // Specific count: 3, 500, 10, etc.
+  quantityType: text("quantity_type"), // What we're counting: "hashtags", "words", "slides", "connections", etc.
+  platformConstraints: text("platform_constraints"), // Specific platform requirements: "vertical format", "16:9 ratio", etc.
+  guidanceSnippet: text("guidance_snippet"), // Specific action guidance: "Use canva.com", "Record on phone", etc.
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
