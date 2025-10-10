@@ -16,20 +16,23 @@ export class BrandGoalQuestMapper {
     'visibility_1': [ // Improve visibility on social media networks
       'visibility',
       'pulse_creation',
-      'networking'
+      'networking',
+      'engagement'
     ],
     
     'visibility_2': [ // Increase brand recognition among target audience
       'visibility',
       'profile_update',
       'pulse_creation',
-      'networking'
+      'networking',
+      'engagement'
     ],
     
     'visibility_3': [ // Establish consistent online presence across platforms
       'pulse_creation',
       'visibility',
-      'profile_update'
+      'profile_update',
+      'engagement'
     ],
     
     'visibility_4': [ // Appear in search results for name/expertise
@@ -43,7 +46,8 @@ export class BrandGoalQuestMapper {
     'visibility_5': [ // Grow follower base with engaged audience
       'visibility',
       'networking',
-      'pulse_creation'
+      'pulse_creation',
+      'engagement'
     ],
     
     // PROFESSIONAL & CAREER GROWTH GOALS
@@ -52,7 +56,8 @@ export class BrandGoalQuestMapper {
       'portfolio',
       'resume',
       'learning',
-      'visibility'
+      'visibility',
+      'engagement'
     ],
     
     'professional_2': [ // Attract new business opportunities
@@ -60,18 +65,21 @@ export class BrandGoalQuestMapper {
       'portfolio',
       'visibility',
       'pulse_creation',
-      'profile_update'
+      'profile_update',
+      'engagement'
     ],
     
     'professional_3': [ // Get featured on podcasts/collaborations
       'networking',
       'visibility',
       'pulse_creation',
-      'portfolio'
+      'portfolio',
+      'engagement'
     ],
     
     // ENGAGEMENT & COMMUNITY GOALS
     'engagement_1': [ // Build loyal community around brand
+      'engagement',
       'networking',
       'pulse_creation',
       'visibility'
@@ -82,14 +90,16 @@ export class BrandGoalQuestMapper {
       'portfolio',
       'visibility',
       'pulse_creation',
-      'networking'
+      'networking',
+      'engagement'
     ],
     
     'monetization_2': [ // Convert followers into leads/customers
       'networking',
       'pulse_creation',
       'portfolio',
-      'profile_update'
+      'profile_update',
+      'engagement'
     ],
     
     'monetization_3': [ // Launch own product/service
