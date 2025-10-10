@@ -90,26 +90,42 @@ export default function BrandQuestsPage() {
             )}
           </NeoGlassSection>
 
-          <NeoGlassSection className="mb-4 sm:mb-6">
-            <BrandGoalsSelector />
+          <NeoGlassSection>
+            <Tabs defaultValue="quests" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1 rounded-lg mb-6">
+                <TabsTrigger 
+                  value="quests"
+                  className="data-[state=active]:bg-[rgba(81,69,205,0.9)] data-[state=active]:text-white text-white/70 transition-all"
+                >
+                  Brand Quests
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="goals"
+                  className="data-[state=active]:bg-[rgba(81,69,205,0.9)] data-[state=active]:text-white text-white/70 transition-all"
+                >
+                  Brand Goals
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="quests" className="mt-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
+                  {/* Main content - Quests */}
+                  <div className="lg:col-span-2 order-2 lg:order-1">
+                    <QuestPanel userId={userId} />
+                  </div>
+                  
+                  {/* Sidebar - Badges */}
+                  <div className="order-1 lg:order-2">
+                    <BadgeDisplay userId={userId} />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="goals" className="mt-0">
+                <BrandGoalsSelector />
+              </TabsContent>
+            </Tabs>
           </NeoGlassSection>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
-            {/* Main content - Quests */}
-            <div className="lg:col-span-2 order-2 lg:order-1">
-              {/* Quests Panel */}
-              <NeoGlassSection>
-                <QuestPanel userId={userId} />
-              </NeoGlassSection>
-            </div>
-            
-            {/* Sidebar - Badges */}
-            <div className="order-1 lg:order-2">
-              <NeoGlassSection>
-                <BadgeDisplay userId={userId} />
-              </NeoGlassSection>
-            </div>
-          </div>
         </div>
       </NeoGlassLayout>
       </div>
