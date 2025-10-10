@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { AuthContext } from '@/context/simple-auth-context';
-import { useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Check } from 'lucide-react';
@@ -62,13 +61,15 @@ export function BrandGoalsSelector() {
       const response = await fetch(`/api/brand-goals/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch goals');
       return response.json();
-    },
-    onSuccess: (data) => {
-      if (data?.selectedGoals) {
-        setSelectedGoals(data.selectedGoals);
-      }
     }
   });
+
+  // Update selectedGoals when data is fetched
+  useEffect(() => {
+    if (existingGoals?.selectedGoals) {
+      setSelectedGoals(existingGoals.selectedGoals);
+    }
+  }, [existingGoals]);
 
   // Don't render until user is loaded
   if (!userId) {
