@@ -170,13 +170,14 @@ export class SocialQuestTemplateEngine {
   }
 
   /**
-   * Intelligent platform selection based on user profile
+   * Intelligent platform selection based on user profile and Brand Goals
+   * Returns 2-3 optimal platforms (NO BRANDENTIFIER)
    */
   async selectOptimalPlatforms(userId: number): Promise<string[]> {
     try {
       // Get user profile data
       const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-      if (!user.length) return ['linkedin']; // Default fallback
+      if (!user.length) return ['linkedin', 'twitter']; // Default fallback
 
       const userProfile = user[0];
 
@@ -186,20 +187,23 @@ export class SocialQuestTemplateEngine {
         .from(careerGoals)
         .where(eq(careerGoals.userId, userId));
 
-      // Platform-audience mapping based on industry, domain, and goals
+      // Platform-audience mapping based on industry, domain, Brand Goals
       const platformMapping = this.createPlatformMapping(userProfile, goals);
       
-      // Select 1-2 most relevant platforms
-      return platformMapping.slice(0, 2);
+      // Select 2-3 most relevant platforms based on scores
+      // Always include at least 2 platforms for diversity
+      const topPlatforms = platformMapping.slice(0, 3);
+      return topPlatforms.length >= 2 ? topPlatforms : [...topPlatforms, 'linkedin'];
 
     } catch (error) {
       console.error('[TemplateEngine] Error selecting platforms:', error);
-      return ['linkedin']; // Safe fallback
+      return ['linkedin', 'twitter']; // Safe fallback
     }
   }
 
   /**
    * Create intelligent platform mapping based on user profile
+   * NO BRANDENTIFIER - only external platforms
    */
   private createPlatformMapping(user: any, goals: any[]): string[] {
     const platformScores: { [platform: string]: number } = {
@@ -210,48 +214,58 @@ export class SocialQuestTemplateEngine {
       facebook: 0,
       tiktok: 0,
       pinterest: 0,
-      medium: 0
+      medium: 0,
+      reddit: 0,
+      google: 0  // Google My Business
     };
 
-    // Industry-based platform preferences
+    // Industry-based platform preferences (NO BRANDENTIFIER)
     const industryPlatforms: { [industry: string]: string[] } = {
-      'Technology': ['linkedin', 'twitter', 'medium', 'youtube'],
-      'Healthcare': ['linkedin', 'medium', 'facebook', 'youtube'],
-      'Finance': ['linkedin', 'twitter', 'medium'],
-      'Hospitality': ['instagram', 'linkedin', 'pinterest', 'facebook'],
-      'Real Estate': ['instagram', 'facebook', 'linkedin', 'youtube'],
-      'Education': ['linkedin', 'medium', 'youtube', 'twitter'],
-      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest'],
-      'Design': ['instagram', 'pinterest', 'linkedin', 'medium'],
-      'Retail': ['instagram', 'facebook', 'tiktok', 'pinterest'],
-      'Media': ['instagram', 'twitter', 'tiktok', 'youtube'],
-      'Consulting': ['linkedin', 'medium', 'twitter'],
-      'Non-profit': ['facebook', 'instagram', 'linkedin', 'medium']
+      'Technology': ['linkedin', 'twitter', 'reddit', 'medium', 'youtube'],
+      'Healthcare': ['linkedin', 'medium', 'facebook', 'youtube', 'google'],
+      'Finance': ['linkedin', 'twitter', 'medium', 'reddit'],
+      'Hospitality': ['instagram', 'google', 'facebook', 'linkedin', 'pinterest'],
+      'Real Estate': ['instagram', 'facebook', 'google', 'linkedin', 'youtube'],
+      'Education': ['linkedin', 'medium', 'youtube', 'twitter', 'facebook'],
+      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest', 'tiktok'],
+      'Design': ['instagram', 'pinterest', 'linkedin', 'medium', 'twitter'],
+      'Retail': ['instagram', 'facebook', 'google', 'tiktok', 'pinterest'],
+      'Media': ['instagram', 'twitter', 'tiktok', 'youtube', 'reddit'],
+      'Consulting': ['linkedin', 'medium', 'twitter', 'google'],
+      'Non-profit': ['facebook', 'instagram', 'linkedin', 'medium', 'twitter'],
+      'Agriculture': ['facebook', 'instagram', 'youtube', 'linkedin', 'google'],
+      'Manufacturing': ['linkedin', 'youtube', 'google', 'twitter', 'facebook'],
+      'Legal': ['linkedin', 'medium', 'twitter', 'google'],
+      'Arts': ['instagram', 'tiktok', 'pinterest', 'youtube', 'twitter']
     };
 
-    // Domain-based platform preferences
+    // Domain-based platform preferences (NO BRANDENTIFIER)
     const domainPlatforms: { [domain: string]: string[] } = {
-      'UX Design': ['instagram', 'pinterest', 'linkedin', 'medium'],
-      'Software Development': ['twitter', 'linkedin', 'medium', 'youtube'],
-      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest'],
-      'Sales': ['linkedin', 'twitter', 'facebook'],
-      'Project Management': ['linkedin', 'medium', 'twitter'],
-      'Content Creation': ['instagram', 'youtube', 'tiktok', 'medium'],
-      'Data Science': ['linkedin', 'twitter', 'medium', 'youtube'],
-      'HR': ['linkedin', 'facebook', 'medium'],
-      'Customer Service': ['linkedin', 'twitter', 'facebook'],
-      'Finance': ['linkedin', 'twitter', 'medium']
+      'UX Design': ['instagram', 'pinterest', 'linkedin', 'medium', 'twitter'],
+      'Software Development': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube'],
+      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest', 'facebook'],
+      'Sales': ['linkedin', 'twitter', 'facebook', 'google'],
+      'Project Management': ['linkedin', 'medium', 'twitter', 'facebook'],
+      'Content Creation': ['instagram', 'youtube', 'tiktok', 'medium', 'twitter'],
+      'Data Science': ['linkedin', 'twitter', 'reddit', 'medium', 'youtube'],
+      'HR': ['linkedin', 'facebook', 'medium', 'twitter'],
+      'Customer Service': ['linkedin', 'twitter', 'facebook', 'reddit'],
+      'Finance': ['linkedin', 'twitter', 'medium', 'reddit'],
+      'Product Management': ['linkedin', 'twitter', 'medium', 'reddit'],
+      'DevOps': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube'],
+      'Cybersecurity': ['linkedin', 'twitter', 'reddit', 'medium'],
+      'AI/ML': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube']
     };
 
-    // Goal-based platform alignment
+    // Goal-based platform alignment (NO BRANDENTIFIER)
     const goalPlatforms: { [goal: string]: string[] } = {
-      'networking': ['linkedin', 'twitter', 'facebook'],
-      'job_search': ['linkedin', 'twitter'],
-      'thought_leadership': ['linkedin', 'medium', 'twitter'],
-      'brand_building': ['instagram', 'linkedin', 'pinterest'],
-      'skill_development': ['linkedin', 'youtube', 'medium'],
-      'business_growth': ['linkedin', 'instagram', 'facebook'],
-      'content_creation': ['instagram', 'youtube', 'tiktok', 'medium']
+      'networking': ['linkedin', 'twitter', 'facebook', 'reddit'],
+      'job_search': ['linkedin', 'twitter', 'google'],
+      'thought_leadership': ['linkedin', 'medium', 'twitter', 'youtube'],
+      'brand_building': ['instagram', 'linkedin', 'pinterest', 'tiktok'],
+      'skill_development': ['linkedin', 'youtube', 'medium', 'reddit'],
+      'business_growth': ['linkedin', 'instagram', 'facebook', 'google'],
+      'content_creation': ['instagram', 'youtube', 'tiktok', 'medium', 'twitter']
     };
 
     // Score platforms based on industry
