@@ -207,8 +207,11 @@ export function BrandGoalsSelector() {
           disabled={selectedGoals.length === 0 || saveGoalsMutation.isPending || !hasChanges()}
           data-testid="button-save-goals"
           className={`
-            ${selectedGoals.length > 0 && hasChanges() ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600'}
-            text-white px-6 py-2 rounded-lg font-semibold transition-colors
+            ${selectedGoals.length > 0 && hasChanges() 
+              ? 'neo-glass-button' 
+              : 'bg-gray-600/50 text-white/50 border border-white/10'
+            }
+            px-6 py-2.5 rounded-lg font-semibold transition-all
           `}
         >
           {saveGoalsMutation.isPending ? 'Saving...' : hasChanges() ? 'Save My Goals' : 'Saved ✓'}
