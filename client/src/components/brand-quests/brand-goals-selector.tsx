@@ -49,7 +49,7 @@ const BRAND_GOALS = {
 
 export function BrandGoalsSelector() {
   const { user } = useContext(AuthContext);
-  const userId = user?.id || 1;
+  const userId = user?.id;
   const { toast } = useToast();
   
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -57,6 +57,7 @@ export function BrandGoalsSelector() {
   // Fetch existing brand goals
   const { data: existingGoals, isLoading } = useQuery({
     queryKey: ['/api/brand-goals', userId],
+    enabled: !!userId,
     queryFn: async () => {
       const response = await fetch(`/api/brand-goals/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch goals');
@@ -69,13 +70,28 @@ export function BrandGoalsSelector() {
     }
   });
 
+  // Don't render until user is loaded
+  if (!userId) {
+    return (
+      <div className="p-6 text-center text-white/60">
+        Loading...
+      </div>
+    );
+  }
+
   // Save brand goals mutation
   const saveGoalsMutation = useMutation({
     mutationFn: async (goals: string[]) => {
+      const payload = { 
+        userId: user?.id, 
+        selectedGoals: goals 
+      };
+      console.log('[BrandGoalsSelector] Saving with payload:', payload);
+      
       return apiRequest({
         url: '/api/brand-goals',
         method: 'POST',
-        body: { userId, selectedGoals: goals }
+        body: payload
       });
     },
     onSuccess: () => {
@@ -85,7 +101,8 @@ export function BrandGoalsSelector() {
         description: "✅ Your daily quests will now adapt to match your focus.",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('[BrandGoalsSelector] Save error:', error);
       toast({
         title: "Error",
         description: "Failed to save goals. Please try again.",
