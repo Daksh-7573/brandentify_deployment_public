@@ -194,6 +194,8 @@ import {
   // Mentorship Connect models
   mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
   mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback,
+  // Brand Goals models
+  brandGoals, BrandGoal, InsertBrandGoal,
   // Career Capsule models - removed
   // These models have been commented out in the schema
   // careerCapsules, CareerCapsule, InsertCareerCapsule,
@@ -763,6 +765,10 @@ export interface IStorage {
     endTime?: Date;
     reason?: string;
   }>;
+  
+  // Brand Goals operations
+  getBrandGoalsByUserId(userId: number): Promise<BrandGoal | undefined>;
+  saveBrandGoals(userId: number, selectedGoals: string[]): Promise<BrandGoal>;
 }
 
 // In-memory implementation of the storage
@@ -13114,6 +13120,44 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
+
+  // Brand Goals operations
+  async getBrandGoalsByUserId(userId: number): Promise<BrandGoal | undefined> {
+    try {
+      const result = await pool.query(`
+        SELECT * FROM brand_goals WHERE user_id = $1
+      `, [userId]);
+
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getBrandGoalsByUserId] Error:', error);
+      return undefined;
+    }
+  }
+
+  async saveBrandGoals(userId: number, selectedGoals: string[]): Promise<BrandGoal> {
+    try {
+      // Use upsert (insert or update) to save the goals
+      const result = await pool.query(`
+        INSERT INTO brand_goals (user_id, selected_goals, updated_at)
+        VALUES ($1, $2, CURRENT_TIMESTAMP)
+        ON CONFLICT (user_id) 
+        DO UPDATE SET 
+          selected_goals = EXCLUDED.selected_goals,
+          updated_at = CURRENT_TIMESTAMP
+        RETURNING *
+      `, [userId, selectedGoals]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.saveBrandGoals] Error:', error);
+      throw error;
+    }
+  }
 }
 
 // Create a properly typed storage instance
@@ -13458,5 +13502,9 @@ export const storage = {
   upsertUserInterest: (interest: any) => dbStorage.upsertUserInterest(interest),
   followUser: (followerId: number, followeeId: number) => dbStorage.followUser(followerId, followeeId),
   unfollowUser: (followerId: number, followeeId: number) => dbStorage.unfollowUser(followerId, followeeId),
-  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId)
+  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId),
+  
+  // Brand Goals methods
+  getBrandGoalsByUserId: (userId: number) => dbStorage.getBrandGoalsByUserId(userId),
+  saveBrandGoals: (userId: number, selectedGoals: string[]) => dbStorage.saveBrandGoals(userId, selectedGoals)
 } as IStorage;

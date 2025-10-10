@@ -4,6 +4,7 @@ import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
+import { BrandGoalsSelector } from '@/components/brand-quests/brand-goals-selector';
 // Removed HashtagSuggestions and NowboardSuggestions as they're now integrated into quests
 // BrandQuestDemo import removed per request
 import { useToast } from '@/hooks/use-toast';
@@ -87,6 +88,10 @@ export default function BrandQuestsPage() {
                 No XP data available
               </div>
             )}
+          </NeoGlassSection>
+
+          <NeoGlassSection className="mb-4 sm:mb-6">
+            <BrandGoalsSelector />
           </NeoGlassSection>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">

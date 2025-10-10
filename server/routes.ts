@@ -58,6 +58,7 @@ import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
+import { createBrandGoalsRoutes } from "./routes-brand-goals";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
@@ -7698,6 +7699,10 @@ ${extractedText.substring(0, 5000)}
   // Notification routes
   apiRouter.use('/notifications', notificationRoutes);
   console.log("Notification routes loaded");
+  
+  // Brand Goals routes
+  apiRouter.use(createBrandGoalsRoutes(storage));
+  console.log("Brand Goals routes loaded");
   
   // Career capsule creation is now handled by ultra early handler in server/index.ts
   
