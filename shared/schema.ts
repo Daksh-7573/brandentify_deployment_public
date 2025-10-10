@@ -1707,3 +1707,19 @@ export const insertPlatformActivityInsightSchema = createInsertSchema(platformAc
 
 export type PlatformActivityInsight = typeof platformActivityInsights.$inferSelect;
 export type InsertPlatformActivityInsight = z.infer<typeof insertPlatformActivityInsightSchema>;
+
+// Brand Goals - User's selected brand building goals
+export const brandGoals = pgTable("brand_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  selectedGoals: text("selected_goals").array().notNull().default('{}'), // Array of selected goal IDs (max 3)
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertBrandGoalSchema = createInsertSchema(brandGoals).omit({
+  id: true,
+  updatedAt: true
+});
+
+export type BrandGoal = typeof brandGoals.$inferSelect;
+export type InsertBrandGoal = z.infer<typeof insertBrandGoalSchema>;

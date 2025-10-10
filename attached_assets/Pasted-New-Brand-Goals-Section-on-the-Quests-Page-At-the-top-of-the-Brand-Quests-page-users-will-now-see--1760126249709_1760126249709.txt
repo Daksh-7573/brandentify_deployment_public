@@ -1,0 +1,77 @@
+New Brand Goals Section on the Quests Page
+
+At the top of the Brand Quests page, users will now see a new section titled:
+
+“🎯 Choose Your Brand Goals”
+
+It explains:
+
+“Select up to 3 goals that match what you want to achieve right now. Your daily Brand Quests will be personalized based on these goals.”
+
+So, before doing any daily quests, users quickly pick the 3 things they care most about.
+
+2️⃣ Four Main Goal Categories
+
+We’ve organized all 12 goals into 4 easy groups:
+
+Visibility & Awareness – (Grow audience, get discovered)
+
+Professional & Career Growth – (Build authority, attract opportunities)
+
+Engagement & Community – (Build and connect with loyal followers)
+
+Monetization & Impact – (Earn, collaborate, and launch products)
+
+Each category expands to show specific goals, like:
+
+“Improve visibility on social media”
+
+“Attract new business opportunities”
+
+“Build a loyal community”
+
+“Launch my own product or service”
+
+3️⃣ Users Can Select Up to 3 Goals
+
+The system lets you pick up to 3 — so it’s focused and not overwhelming.
+
+Once 3 are selected, the others get temporarily disabled (you can deselect to change).
+
+It shows a small counter like “2/3 selected” at the top.
+
+Example:
+
+If I choose:
+✅ Increase brand recognition
+✅ Attract new business opportunities
+✅ Build a loyal community
+Then the rest of the goals are greyed out.
+
+4️⃣ Save Goals Button
+
+After choosing, users click “Save Goals” — it saves their preferences to their account.
+
+This triggers a small success message:
+
+“✅ Goals saved! Your daily quests will now adapt to match your focus.”
+
+These saved goals are remembered for each user, so next time they log in, they’ll see their selected goals already active.
+
+5️⃣ Design & UX Experience
+
+We’re making this feel light and easy to use:
+
+Each goal appears as a card or toggle (tap to select, tap again to deselect).
+
+The cards are grouped in collapsible accordion sections (to reduce clutter).
+
+Clean layout with emojis, icons, and colors (consistent with Brandentifier style).
+
+Works great on both mobile (as a bottom slide-up sheet) and desktop (inline panel).
+
+Clear button states:
+
+Disabled until you choose something
+
+“Save” turns blue when goals are picked
