@@ -170,8 +170,8 @@ export class SocialQuestTemplateEngine {
   }
 
   /**
-   * Intelligent platform selection based on user profile and Brand Goals
-   * Returns 2-3 optimal platforms (NO BRANDENTIFIER)
+   * Intelligent platform selection based on user's target audiences
+   * Returns 2-3 optimal platforms where their audiences are most active (NO BRANDENTIFIER)
    */
   async selectOptimalPlatforms(userId: number): Promise<string[]> {
     try {
@@ -181,14 +181,8 @@ export class SocialQuestTemplateEngine {
 
       const userProfile = user[0];
 
-      // Get career goals for additional context
-      const goals = await db
-        .select()
-        .from(careerGoals)
-        .where(eq(careerGoals.userId, userId));
-
-      // Platform-audience mapping based on industry, domain, Brand Goals
-      const platformMapping = this.createPlatformMapping(userProfile, goals);
+      // Platform selection based on where user's audiences are most active
+      const platformMapping = this.createAudienceBasedPlatformMapping(userProfile);
       
       // Select 2-3 most relevant platforms based on scores
       // Always include at least 2 platforms for diversity
@@ -202,10 +196,11 @@ export class SocialQuestTemplateEngine {
   }
 
   /**
-   * Create intelligent platform mapping based on user profile
+   * Create audience-based platform mapping
+   * Selects platforms based on where user's PRIMARY and SECONDARY audiences are most active
    * NO BRANDENTIFIER - only external platforms
    */
-  private createPlatformMapping(user: any, goals: any[]): string[] {
+  private createAudienceBasedPlatformMapping(user: any): string[] {
     const platformScores: { [platform: string]: number } = {
       linkedin: 0,
       instagram: 0,
@@ -219,81 +214,91 @@ export class SocialQuestTemplateEngine {
       google: 0  // Google My Business
     };
 
-    // Industry-based platform preferences (NO BRANDENTIFIER)
-    const industryPlatforms: { [industry: string]: string[] } = {
-      'Technology': ['linkedin', 'twitter', 'reddit', 'medium', 'youtube'],
-      'Healthcare': ['linkedin', 'medium', 'facebook', 'youtube', 'google'],
-      'Finance': ['linkedin', 'twitter', 'medium', 'reddit'],
-      'Hospitality': ['instagram', 'google', 'facebook', 'linkedin', 'pinterest'],
-      'Real Estate': ['instagram', 'facebook', 'google', 'linkedin', 'youtube'],
-      'Education': ['linkedin', 'medium', 'youtube', 'twitter', 'facebook'],
-      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest', 'tiktok'],
-      'Design': ['instagram', 'pinterest', 'linkedin', 'medium', 'twitter'],
-      'Retail': ['instagram', 'facebook', 'google', 'tiktok', 'pinterest'],
-      'Media': ['instagram', 'twitter', 'tiktok', 'youtube', 'reddit'],
-      'Consulting': ['linkedin', 'medium', 'twitter', 'google'],
-      'Non-profit': ['facebook', 'instagram', 'linkedin', 'medium', 'twitter'],
-      'Agriculture': ['facebook', 'instagram', 'youtube', 'linkedin', 'google'],
-      'Manufacturing': ['linkedin', 'youtube', 'google', 'twitter', 'facebook'],
-      'Legal': ['linkedin', 'medium', 'twitter', 'google'],
-      'Arts': ['instagram', 'tiktok', 'pinterest', 'youtube', 'twitter']
+    // Audience-to-platform mapping (where each audience type is most active)
+    const audiencePlatforms: { [audience: string]: string[] } = {
+      // Professional Audiences
+      'C-Suite Executives': ['linkedin', 'twitter', 'medium'],
+      'Business Leaders': ['linkedin', 'twitter', 'medium', 'youtube'],
+      'Entrepreneurs': ['linkedin', 'twitter', 'instagram', 'youtube', 'reddit'],
+      'Startup Founders': ['twitter', 'linkedin', 'reddit', 'medium', 'youtube'],
+      'Investors': ['linkedin', 'twitter', 'medium', 'reddit'],
+      'Industry Professionals': ['linkedin', 'twitter', 'reddit', 'medium'],
+      'Tech Professionals': ['twitter', 'linkedin', 'reddit', 'medium', 'youtube'],
+      'Marketing Professionals': ['linkedin', 'twitter', 'instagram', 'facebook'],
+      'Sales Professionals': ['linkedin', 'twitter', 'facebook', 'instagram'],
+      'HR Professionals': ['linkedin', 'twitter', 'facebook'],
+      'Freelancers': ['linkedin', 'instagram', 'twitter', 'facebook', 'pinterest'],
+      'Consultants': ['linkedin', 'medium', 'twitter', 'google'],
+      
+      // Consumer Audiences
+      'Gen Z Consumers': ['tiktok', 'instagram', 'youtube', 'twitter', 'reddit'],
+      'Millennials': ['instagram', 'twitter', 'facebook', 'youtube', 'reddit'],
+      'Gen X': ['facebook', 'linkedin', 'twitter', 'youtube', 'instagram'],
+      'Baby Boomers': ['facebook', 'linkedin', 'youtube', 'google'],
+      'Young Adults (18-24)': ['tiktok', 'instagram', 'twitter', 'youtube', 'reddit'],
+      'Adults (25-34)': ['instagram', 'twitter', 'facebook', 'linkedin', 'youtube'],
+      'Middle-aged Adults (35-54)': ['facebook', 'linkedin', 'twitter', 'youtube', 'instagram'],
+      'Seniors (55+)': ['facebook', 'youtube', 'google', 'linkedin'],
+      
+      // Creative & Content Audiences
+      'Content Creators': ['youtube', 'instagram', 'tiktok', 'twitter', 'medium'],
+      'Influencers': ['instagram', 'tiktok', 'youtube', 'twitter'],
+      'Artists & Designers': ['instagram', 'pinterest', 'twitter', 'tiktok', 'medium'],
+      'Writers & Bloggers': ['medium', 'twitter', 'linkedin', 'instagram'],
+      'Photographers': ['instagram', 'pinterest', 'facebook', 'twitter'],
+      'Video Creators': ['youtube', 'tiktok', 'instagram', 'twitter', 'facebook'],
+      
+      // Students & Educators
+      'Students': ['instagram', 'tiktok', 'twitter', 'youtube', 'reddit'],
+      'Educators & Teachers': ['linkedin', 'twitter', 'youtube', 'facebook', 'pinterest'],
+      'Academic Professionals': ['linkedin', 'twitter', 'medium', 'reddit', 'youtube'],
+      'Researchers': ['linkedin', 'twitter', 'medium', 'reddit'],
+      
+      // Local & Community
+      'Local Customers': ['google', 'facebook', 'instagram', 'twitter'],
+      'Community Members': ['facebook', 'instagram', 'twitter', 'reddit'],
+      'Homeowners': ['pinterest', 'facebook', 'instagram', 'google', 'youtube'],
+      'Parents': ['facebook', 'instagram', 'pinterest', 'youtube', 'tiktok'],
+      
+      // B2B Audiences
+      'Small Business Owners': ['linkedin', 'facebook', 'google', 'instagram', 'twitter'],
+      'Corporate Decision Makers': ['linkedin', 'twitter', 'medium'],
+      'Procurement Teams': ['linkedin', 'twitter', 'google'],
+      'Partner Organizations': ['linkedin', 'twitter', 'medium', 'youtube'],
+      
+      // Niche Audiences
+      'Developers': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube'],
+      'Gamers': ['twitter', 'reddit', 'youtube', 'tiktok', 'instagram'],
+      'Fitness Enthusiasts': ['instagram', 'tiktok', 'youtube', 'facebook', 'pinterest'],
+      'Fashion Enthusiasts': ['instagram', 'pinterest', 'tiktok', 'facebook', 'youtube'],
+      'Foodies': ['instagram', 'tiktok', 'facebook', 'pinterest', 'youtube'],
+      'Travelers': ['instagram', 'pinterest', 'facebook', 'youtube', 'twitter'],
+      'Pet Owners': ['instagram', 'facebook', 'tiktok', 'pinterest', 'youtube'],
+      'DIY & Crafters': ['pinterest', 'instagram', 'youtube', 'tiktok', 'facebook']
     };
 
-    // Domain-based platform preferences (NO BRANDENTIFIER)
-    const domainPlatforms: { [domain: string]: string[] } = {
-      'UX Design': ['instagram', 'pinterest', 'linkedin', 'medium', 'twitter'],
-      'Software Development': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube'],
-      'Marketing': ['instagram', 'linkedin', 'twitter', 'pinterest', 'facebook'],
-      'Sales': ['linkedin', 'twitter', 'facebook', 'google'],
-      'Project Management': ['linkedin', 'medium', 'twitter', 'facebook'],
-      'Content Creation': ['instagram', 'youtube', 'tiktok', 'medium', 'twitter'],
-      'Data Science': ['linkedin', 'twitter', 'reddit', 'medium', 'youtube'],
-      'HR': ['linkedin', 'facebook', 'medium', 'twitter'],
-      'Customer Service': ['linkedin', 'twitter', 'facebook', 'reddit'],
-      'Finance': ['linkedin', 'twitter', 'medium', 'reddit'],
-      'Product Management': ['linkedin', 'twitter', 'medium', 'reddit'],
-      'DevOps': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube'],
-      'Cybersecurity': ['linkedin', 'twitter', 'reddit', 'medium'],
-      'AI/ML': ['twitter', 'reddit', 'linkedin', 'medium', 'youtube']
-    };
-
-    // Goal-based platform alignment (NO BRANDENTIFIER)
-    const goalPlatforms: { [goal: string]: string[] } = {
-      'networking': ['linkedin', 'twitter', 'facebook', 'reddit'],
-      'job_search': ['linkedin', 'twitter', 'google'],
-      'thought_leadership': ['linkedin', 'medium', 'twitter', 'youtube'],
-      'brand_building': ['instagram', 'linkedin', 'pinterest', 'tiktok'],
-      'skill_development': ['linkedin', 'youtube', 'medium', 'reddit'],
-      'business_growth': ['linkedin', 'instagram', 'facebook', 'google'],
-      'content_creation': ['instagram', 'youtube', 'tiktok', 'medium', 'twitter']
-    };
-
-    // Score platforms based on industry
-    if (user.industry && industryPlatforms[user.industry]) {
-      industryPlatforms[user.industry].forEach((platform, index) => {
-        platformScores[platform] += (4 - index); // Higher score for earlier platforms
-      });
-    }
-
-    // Score platforms based on domain
-    if (user.domain && domainPlatforms[user.domain]) {
-      domainPlatforms[user.domain].forEach((platform, index) => {
-        platformScores[platform] += (4 - index);
-      });
-    }
-
-    // Score platforms based on career goals
-    goals.forEach(goal => {
-      const goalType = this.categorizeGoal(goal.title);
-      if (goalPlatforms[goalType]) {
-        goalPlatforms[goalType].forEach((platform, index) => {
-          platformScores[platform] += (3 - index);
+    // Score platforms based on PRIMARY audience (higher weight - 5 points)
+    const primaryAudiences = user.primaryAudience || [];
+    primaryAudiences.forEach((audience: string) => {
+      if (audiencePlatforms[audience]) {
+        audiencePlatforms[audience].forEach((platform, index) => {
+          platformScores[platform] += (5 - index); // 5, 4, 3, 2, 1 points
         });
       }
     });
 
-    // Always give LinkedIn a baseline score (it's universally valuable for professionals)
-    platformScores.linkedin += 2;
+    // Score platforms based on SECONDARY audience (lower weight - 3 points)
+    const secondaryAudiences = user.secondaryAudience || [];
+    secondaryAudiences.forEach((audience: string) => {
+      if (audiencePlatforms[audience]) {
+        audiencePlatforms[audience].forEach((platform, index) => {
+          platformScores[platform] += (3 - index); // 3, 2, 1 points
+        });
+      }
+    });
+
+    // LinkedIn baseline bonus (always valuable for professionals)
+    platformScores.linkedin += 1;
 
     // Convert scores to sorted platform list
     return Object.entries(platformScores)
@@ -302,22 +307,6 @@ export class SocialQuestTemplateEngine {
       .filter(platform => platformScores[platform] > 0);
   }
 
-  /**
-   * Categorize career goal into platform-relevant category
-   */
-  private categorizeGoal(goalTitle: string): string {
-    const title = goalTitle.toLowerCase();
-    
-    if (title.includes('network') || title.includes('connect')) return 'networking';
-    if (title.includes('job') || title.includes('career') || title.includes('position')) return 'job_search';
-    if (title.includes('lead') || title.includes('expert') || title.includes('authority')) return 'thought_leadership';
-    if (title.includes('brand') || title.includes('visibility') || title.includes('recognition')) return 'brand_building';
-    if (title.includes('skill') || title.includes('learn') || title.includes('develop')) return 'skill_development';
-    if (title.includes('business') || title.includes('revenue') || title.includes('client')) return 'business_growth';
-    if (title.includes('content') || title.includes('create') || title.includes('publish')) return 'content_creation';
-    
-    return 'networking'; // Default fallback
-  }
 
   /**
    * Generate personalized quest using template and user brand variables
