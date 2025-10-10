@@ -7268,6 +7268,10 @@ ${extractedText.substring(0, 5000)}
   // Career Quests routes
   setupCareerQuestsRoutes(apiRouter, storage);
   
+  // Brand Goals routes - MUST be before Quest Progress Middleware to prevent body consumption
+  apiRouter.use(createBrandGoalsRoutes(storage));
+  console.log("Brand Goals routes loaded");
+  
   // Setup Quest Progress Tracking Middleware
   setupQuestProgressMiddleware(apiRouter, storage);
   console.log("Quest Progress Tracking Middleware loaded");
@@ -7699,10 +7703,6 @@ ${extractedText.substring(0, 5000)}
   // Notification routes
   apiRouter.use('/notifications', notificationRoutes);
   console.log("Notification routes loaded");
-  
-  // Brand Goals routes
-  apiRouter.use(createBrandGoalsRoutes(storage));
-  console.log("Brand Goals routes loaded");
   
   // Career capsule creation is now handled by ultra early handler in server/index.ts
   
