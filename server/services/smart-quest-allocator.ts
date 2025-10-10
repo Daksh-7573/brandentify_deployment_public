@@ -12,6 +12,7 @@
  */
 
 import { questImpactScorer, QuestImpactScore } from './quest-impact-scorer';
+import { ProfileCompletenessChecker } from './profile-completeness-checker';
 import { db } from '../db';
 import { users, questDefinitions, userQuests, brandGoals } from '@shared/schema';
 import { eq, and, inArray, ne, notInArray } from 'drizzle-orm';
@@ -65,8 +66,16 @@ export class SmartQuestAllocator {
       
       console.log(`[SmartQuestAllocator] User: ${userProfile?.name}, Goals: ${userGoals.join(', ')}`);
 
+      // Check profile completeness to determine quest focus
+      const profileStatus = await ProfileCompletenessChecker.checkProfileCompleteness(userId);
+      console.log(`[SmartQuestAllocator] Profile ${profileStatus.completionPercentage}% complete - Focus: ${profileStatus.focusArea}`);
+      
+      if (profileStatus.missingFields.length > 0) {
+        console.log(`[SmartQuestAllocator] Missing fields: ${profileStatus.missingFields.join(', ')}`);
+      }
+
       // Get available quest pool (career + social)
-      const availableCareerQuests = await this.getAvailableCareerQuests(userId);
+      const availableCareerQuests = await this.getAvailableCareerQuests(userId, profileStatus.focusArea);
       const availableSocialQuests = await this.getAvailableSocialQuests(userId);
       
       console.log(`[SmartQuestAllocator] Available: ${availableCareerQuests.length} career, ${availableSocialQuests.length} social`);
@@ -310,8 +319,9 @@ export class SmartQuestAllocator {
 
   /**
    * Get available career quests (not yet assigned today)
+   * Filtered based on profile focus: 'profile' or 'pulse'
    */
-  private async getAvailableCareerQuests(userId: number): Promise<any[]> {
+  private async getAvailableCareerQuests(userId: number, focusArea: 'profile' | 'pulse' = 'profile'): Promise<any[]> {
     const todayDateString = new Date().toISOString().split('T')[0];
     
     // Get today's assigned quest IDs
@@ -325,17 +335,27 @@ export class SmartQuestAllocator {
     
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
-    // Get career quests not assigned today
+    // Define quest types based on focus area
+    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking'] as const;
+    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking'] as const;
+    
+    const allowedTypes = focusArea === 'profile' ? [...profileBuildingTypes] : [...pulseFocusedTypes];
+    
+    // Get career quests not assigned today, filtered by focus area
     const careerQuestsQuery = assignedIds.length > 0
       ? db.select()
           .from(questDefinitions)
           .where(and(
             ne(questDefinitions.type, 'social_post'),
-            notInArray(questDefinitions.id, assignedIds)
+            notInArray(questDefinitions.id, assignedIds),
+            inArray(questDefinitions.type, allowedTypes as any)
           ))
       : db.select()
           .from(questDefinitions)
-          .where(ne(questDefinitions.type, 'social_post'));
+          .where(and(
+            ne(questDefinitions.type, 'social_post'),
+            inArray(questDefinitions.type, allowedTypes as any)
+          ));
     
     return await careerQuestsQuery;
   }
