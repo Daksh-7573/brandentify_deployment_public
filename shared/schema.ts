@@ -1178,6 +1178,8 @@ export const userQuests = pgTable("user_quests", {
   recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
   recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
   confidenceScore: integer("confidence_score"), // Confidence level 0-100
+  suggestedHashtags: text("suggested_hashtags").array(), // AI-generated intelligent hashtags based on context
+  hashtagContext: text("hashtag_context"), // Explanation of why these hashtags were chosen
   // Removed field:
   // - dismissedReason (quest dismissal functionality removed)
 });

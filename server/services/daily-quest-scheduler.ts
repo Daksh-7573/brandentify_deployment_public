@@ -4,6 +4,8 @@ import { db } from '../db';
 import { userQuests, generatedSocialQuests, questDefinitions } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
+import { smartQuestAllocator } from './smart-quest-allocator';
+import { intelligentHashtagGenerator } from './intelligent-hashtag-generator';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -90,22 +92,20 @@ class DailyQuestScheduler {
         try {
           console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
           
-          // Assign both career and social quests daily
-          const assignedCareerQuests = await storage.assignDailyQuestsToUser(user.id);
-          const assignedSocialQuests = await storage.assignDailySocialQuests(user.id);
+          // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
+          const allocation = await smartQuestAllocator.allocateDailyQuests(user.id);
           
-          // Add posting time recommendations to career quests
-          if (assignedCareerQuests.length > 0) {
-            await this.addPostingTimeRecommendations(user, assignedCareerQuests, 'career');
+          console.log(`[DailyQuestScheduler] 🎯 Smart Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social) - Strategy: ${allocation.allocationStrategy}`);
+          
+          // Assign quests based on smart allocation
+          const assignedQuests = await this.assignSelectedQuests(user.id, allocation);
+          
+          // Add posting time recommendations and intelligent hashtags
+          if (assignedQuests.length > 0) {
+            await this.enhanceQuestsWithRecommendations(user, assignedQuests);
           }
           
-          // Add posting time recommendations to social quests
-          if (assignedSocialQuests.length > 0) {
-            await this.addPostingTimeRecommendations(user, assignedSocialQuests, 'social');
-          }
-          
-          const totalAssigned = assignedCareerQuests.length + assignedSocialQuests.length;
-          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedCareerQuests.length} career + ${assignedSocialQuests.length} social = ${totalAssigned} total quests for ${user.name}`);
+          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} total quests for ${user.name}`);
           
           successCount++;
           
@@ -213,6 +213,109 @@ class DailyQuestScheduler {
     } catch (error) {
       console.error(`[DailyQuestScheduler] Error adding posting time recommendations:`, error);
     }
+  }
+
+  /**
+   * Assign selected quests from smart allocator
+   */
+  private async assignSelectedQuests(userId: number, allocation: any): Promise<any[]> {
+    const assignedQuests: any[] = [];
+    const todayDateString = this.getTodayDateString();
+    const currentWeek = this.getWeekNumber(new Date());
+    const currentYear = new Date().getFullYear();
+
+    try {
+      for (const selectedQuest of allocation.selectedQuests) {
+        const [quest] = await db
+          .insert(userQuests)
+          .values({
+            userId,
+            questDefinitionId: selectedQuest.questDefinitionId,
+            status: 'active',
+            progress: 0,
+            assignedAt: new Date(),
+            assignedDate: todayDateString,
+            weekNumber: currentWeek,
+            year: currentYear
+          })
+          .returning();
+        
+        assignedQuests.push({
+          ...quest,
+          category: selectedQuest.category,
+          questType: selectedQuest.questType
+        });
+      }
+
+      console.log(`[DailyQuestScheduler] Successfully assigned ${assignedQuests.length} quests for user ${userId}`);
+      return assignedQuests;
+      
+    } catch (error) {
+      console.error('[DailyQuestScheduler] Error assigning selected quests:', error);
+      return assignedQuests;
+    }
+  }
+
+  /**
+   * Enhance quests with posting time recommendations and intelligent hashtags
+   */
+  private async enhanceQuestsWithRecommendations(user: any, quests: any[]): Promise<void> {
+    try {
+      for (const quest of quests) {
+        // Get quest definition for details
+        const [questDef] = await db
+          .select()
+          .from(questDefinitions)
+          .where(eq(questDefinitions.id, quest.questDefinitionId))
+          .limit(1);
+
+        if (!questDef) continue;
+
+        // Determine platform (career quests use Brandentifier, social quests have platform field)
+        const platform = quest.category === 'social' ? (questDef.platform || 'LinkedIn') : 'Brandentifier';
+        
+        // Get posting time recommendation
+        const recommendation = quest.category === 'career'
+          ? await recommendationService.getCareerQuestRecommendation(user.industry, user.domain)
+          : await recommendationService.getSocialQuestRecommendation(platform, user.industry, user.domain);
+
+        // Generate intelligent hashtags
+        const hashtagResult = await intelligentHashtagGenerator.generateIntelligentHashtags({
+          userId: user.id,
+          platform,
+          contentType: questDef.type || 'post',
+          questType: quest.questType || questDef.targetAction || 'default',
+          userGoals: [] // Will be fetched from brandGoals in the hashtag generator
+        });
+
+        // Update quest with recommendations and hashtags
+        await db
+          .update(userQuests)
+          .set({
+            recommendedPostTime: recommendation.recommendedPostTime,
+            recommendationSource: recommendation.recommendationSource,
+            confidenceScore: recommendation.confidenceScore,
+            suggestedHashtags: hashtagResult.hashtags,
+            hashtagContext: hashtagResult.context
+          })
+          .where(eq(userQuests.id, quest.id));
+
+        console.log(`[DailyQuestScheduler] Enhanced quest ${quest.id}: Time: ${recommendation.recommendedPostTime}, Hashtags: ${hashtagResult.hashtags.join(', ')}`);
+      }
+    } catch (error) {
+      console.error('[DailyQuestScheduler] Error enhancing quests:', error);
+    }
+  }
+
+  /**
+   * Get week number for quest tracking
+   */
+  private getWeekNumber(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   }
 
   /**
