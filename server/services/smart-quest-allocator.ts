@@ -348,7 +348,7 @@ export class SmartQuestAllocator {
     
     const focusAreaTypes = focusArea === 'profile' ? profileBuildingTypes : pulseFocusedTypes;
     
-    // Step 2: Get quest types allowed by Brand Goals (STRICT)
+    // Step 2: Get quest types allowed by Brand Goals (STRICT FILTERING)
     const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
     
     // Step 3: Intersect both - quest must match BOTH focus area AND Brand Goals
