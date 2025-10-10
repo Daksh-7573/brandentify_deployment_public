@@ -14,7 +14,7 @@
 import { questImpactScorer, QuestImpactScore } from './quest-impact-scorer';
 import { db } from '../db';
 import { users, questDefinitions, userQuests, brandGoals } from '@shared/schema';
-import { eq, and, inArray, ne } from 'drizzle-orm';
+import { eq, and, inArray, ne, notInArray } from 'drizzle-orm';
 
 export interface QuestAllocationResult {
   totalQuests: number;
@@ -299,15 +299,13 @@ export class SmartQuestAllocator {
    * Get user's brand goals
    */
   private async getUserBrandGoals(userId: number): Promise<string[]> {
-    const goals = await db
+    const [userGoals] = await db
       .select()
       .from(brandGoals)
-      .where(and(
-        eq(brandGoals.userId, userId),
-        eq(brandGoals.isActive, true)
-      ));
+      .where(eq(brandGoals.userId, userId))
+      .limit(1);
     
-    return goals.map(g => g.goalType);
+    return userGoals?.selectedGoals || [];
   }
 
   /**
@@ -333,7 +331,7 @@ export class SmartQuestAllocator {
           .from(questDefinitions)
           .where(and(
             ne(questDefinitions.type, 'social_post'),
-            ne(questDefinitions.id, inArray(questDefinitions.id, assignedIds))
+            notInArray(questDefinitions.id, assignedIds)
           ))
       : db.select()
           .from(questDefinitions)
@@ -365,7 +363,7 @@ export class SmartQuestAllocator {
           .from(questDefinitions)
           .where(and(
             eq(questDefinitions.type, 'social_post'),
-            ne(questDefinitions.id, inArray(questDefinitions.id, assignedIds))
+            notInArray(questDefinitions.id, assignedIds)
           ))
       : db.select()
           .from(questDefinitions)
