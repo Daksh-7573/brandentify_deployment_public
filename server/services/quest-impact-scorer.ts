@@ -220,6 +220,57 @@ export class QuestImpactScorer {
       impactLevel: 'quick_win',
       estimatedMinutes: 3,
       description: 'Follow relevant industry hashtags'
+    },
+    
+    // BRANDENTIFIER ENGAGEMENT QUESTS
+    'deep_engage_single_pulse': {
+      questType: 'deep_engage_single_pulse',
+      impactScore: 60,
+      impactLevel: 'medium',
+      estimatedMinutes: 15,
+      description: 'React, comment thoughtfully (50+ words), and share a pulse with your own commentary'
+    },
+    'comment_on_pulse': {
+      questType: 'comment_on_pulse',
+      impactScore: 40,
+      impactLevel: 'medium',
+      estimatedMinutes: 10,
+      description: 'Leave thoughtful comments on pulses in your industry'
+    },
+    'any_engagement': {
+      questType: 'any_engagement',
+      impactScore: 35,
+      impactLevel: 'quick_win',
+      estimatedMinutes: 10,
+      description: 'Complete engagement actions: reactions, comments, votes, or shares'
+    },
+    'engage_with_industry': {
+      questType: 'engage_with_industry',
+      impactScore: 35,
+      impactLevel: 'quick_win',
+      estimatedMinutes: 10,
+      description: 'Engage with pulses from professionals in your industry'
+    },
+    'share_pulse': {
+      questType: 'share_pulse',
+      impactScore: 25,
+      impactLevel: 'quick_win',
+      estimatedMinutes: 5,
+      description: 'Share valuable pulses with your network'
+    },
+    'react_to_pulse': {
+      questType: 'react_to_pulse',
+      impactScore: 20,
+      impactLevel: 'quick_win',
+      estimatedMinutes: 5,
+      description: 'React to pulses with insightful or misinformed markers'
+    },
+    'vote_on_poll': {
+      questType: 'vote_on_poll',
+      impactScore: 15,
+      impactLevel: 'quick_win',
+      estimatedMinutes: 3,
+      description: 'Participate in industry polls on Brandentifier'
     }
   };
 
@@ -266,10 +317,17 @@ export class QuestImpactScorer {
         'skill_showcase_post': 1.15
       },
       'engagement_community': {
+        'deep_engage_single_pulse': 1.35,
+        'comment_on_pulse': 1.3,
         'linkedin_comment_engagement': 1.3,
+        'any_engagement': 1.25,
+        'engage_with_industry': 1.25,
         'industry_poll': 1.25,
+        'share_pulse': 1.2,
         'connection_request': 1.2,
-        'twitter_engagement': 1.2
+        'twitter_engagement': 1.2,
+        'react_to_pulse': 1.15,
+        'vote_on_poll': 1.15
       },
       'monetization_impact': {
         'client_testimonial_post': 1.3,

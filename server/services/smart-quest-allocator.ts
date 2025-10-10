@@ -343,8 +343,8 @@ export class SmartQuestAllocator {
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
     // Step 1: Define quest types based on focus area
-    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking'];
-    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking'];
+    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking', 'engagement'];
+    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking', 'engagement'];
     
     const focusAreaTypes = focusArea === 'profile' ? profileBuildingTypes : pulseFocusedTypes;
     
