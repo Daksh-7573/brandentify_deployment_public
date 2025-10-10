@@ -370,11 +370,12 @@ export class SmartQuestAllocator {
       return [];
     }
     
-    // Get career quests not assigned today, filtered by final allowed types
+    // Get career quests not assigned today, filtered by final allowed types (ACTIVE ONLY)
     const careerQuestsQuery = assignedIds.length > 0
       ? db.select()
           .from(questDefinitions)
           .where(and(
+            eq(questDefinitions.isActive, true), // Only active quests
             ne(questDefinitions.type, 'social_post'),
             ne(questDefinitions.type, 'social_quest'),
             notInArray(questDefinitions.id, assignedIds),
@@ -383,6 +384,7 @@ export class SmartQuestAllocator {
       : db.select()
           .from(questDefinitions)
           .where(and(
+            eq(questDefinitions.isActive, true), // Only active quests
             ne(questDefinitions.type, 'social_post'),
             ne(questDefinitions.type, 'social_quest'),
             inArray(questDefinitions.type, finalAllowedTypes as any)
@@ -408,17 +410,21 @@ export class SmartQuestAllocator {
     
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
-    // Get social quests not assigned today
+    // Get social quests not assigned today (ACTIVE ONLY)
     const socialQuestsQuery = assignedIds.length > 0
       ? db.select()
           .from(questDefinitions)
           .where(and(
+            eq(questDefinitions.isActive, true), // Only active quests
             eq(questDefinitions.type, 'social_post'),
             notInArray(questDefinitions.id, assignedIds)
           ))
       : db.select()
           .from(questDefinitions)
-          .where(eq(questDefinitions.type, 'social_post'));
+          .where(and(
+            eq(questDefinitions.isActive, true), // Only active quests
+            eq(questDefinitions.type, 'social_post')
+          ));
     
     return await socialQuestsQuery;
   }
