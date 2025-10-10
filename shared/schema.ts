@@ -1227,6 +1227,86 @@ export const xpTransactions = pgTable("xp_transactions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// ============================================================
+// TREND INTELLIGENCE SYSTEM
+// ============================================================
+
+// Trend source enum - tracks where trends come from
+export const trendSourceEnum = pgEnum("trend_source", [
+  "news_api",      // NewsAPI or similar news aggregators
+  "twitter",       // Twitter/X API
+  "linkedin",      // LinkedIn API
+  "rss_feed",      // RSS feed aggregators
+  "google_trends", // Google Trends API
+  "reddit",        // Reddit API
+  "internal"       // Internal Brandentifier analytics
+]);
+
+// Industry trends model - stores normalized trend data per industry/domain
+export const industryTrends = pgTable("industry_trends", {
+  id: serial("id").primaryKey(),
+  
+  // Core trend data
+  topic: text("topic").notNull(), // Main trend topic/keyword
+  content: text("content").notNull(), // Summary or headline of the trend
+  
+  // Categorization
+  industry: text("industry").notNull(), // Target industry (e.g., "Technology", "Healthcare")
+  domain: text("domain"), // Specific domain (e.g., "AI/ML", "Corporate Travel")
+  
+  // Trend metrics
+  velocityScore: integer("velocity_score").notNull().default(50), // 0-100, how fast it's trending
+  sentimentScore: integer("sentiment_score").default(50), // 0-100, negative to positive
+  relevanceScore: integer("relevance_score").notNull().default(50), // 0-100, relevance to industry
+  
+  // Geographic context
+  region: text("region").default("global"), // "global", "US", "EU", etc.
+  
+  // Source metadata
+  source: trendSourceEnum("source").notNull(),
+  sourceUrl: text("source_url"), // Original URL
+  sourceMetadata: jsonb("source_metadata"), // Additional source-specific data
+  
+  // Cache management
+  fetchedAt: timestamp("fetched_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(), // TTL for cache invalidation
+  
+  // Provenance tracking
+  adapterVersion: text("adapter_version"), // Version of the adapter that fetched this
+  processingMetadata: jsonb("processing_metadata"), // Normalization details
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Trend source health - tracks API health, rate limits, and reliability
+export const trendSourceHealth = pgTable("trend_source_health", {
+  id: serial("id").primaryKey(),
+  source: trendSourceEnum("source").notNull().unique(),
+  
+  // Health metrics
+  isActive: boolean("is_active").notNull().default(true),
+  lastSuccessAt: timestamp("last_success_at"),
+  lastFailureAt: timestamp("last_failure_at"),
+  consecutiveFailures: integer("consecutive_failures").notNull().default(0),
+  
+  // Rate limiting
+  requestsToday: integer("requests_today").notNull().default(0),
+  dailyLimit: integer("daily_limit").notNull().default(100),
+  lastResetAt: timestamp("last_reset_at").defaultNow(),
+  
+  // Performance metrics
+  averageResponseTime: integer("average_response_time"), // milliseconds
+  trendsIngested: integer("trends_ingested").notNull().default(0),
+  
+  // Error tracking
+  lastError: text("last_error"),
+  errorMetadata: jsonb("error_metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas for Career Quests
 export const insertQuestDefinitionSchema = createInsertSchema(questDefinitions).omit({
   id: true,
@@ -1271,6 +1351,28 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 
 export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+// Insert schemas for Trend Intelligence
+export const insertIndustryTrendSchema = createInsertSchema(industryTrends).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  fetchedAt: true
+});
+
+export const insertTrendSourceHealthSchema = createInsertSchema(trendSourceHealth).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastResetAt: true
+});
+
+// Export types for Trend Intelligence
+export type IndustryTrend = typeof industryTrends.$inferSelect;
+export type InsertIndustryTrend = z.infer<typeof insertIndustryTrendSchema>;
+
+export type TrendSourceHealth = typeof trendSourceHealth.$inferSelect;
+export type InsertTrendSourceHealth = z.infer<typeof insertTrendSourceHealthSchema>;
 
 
 // Brand of the Day model - for storing and tracking featured profiles
