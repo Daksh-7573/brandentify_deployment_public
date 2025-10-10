@@ -92,16 +92,16 @@ export default function BrandQuestsPage() {
 
           <NeoGlassSection>
             <Tabs defaultValue="quests" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-white/5 p-1 rounded-lg mb-6">
+              <TabsList className="grid w-full grid-cols-2 dark-tabs-list border border-white/5 mb-6">
                 <TabsTrigger 
                   value="quests"
-                  className="data-[state=active]:bg-[rgba(81,69,205,0.9)] data-[state=active]:text-white text-white/70 transition-all"
+                  className="dark-tabs-trigger"
                 >
                   Brand Quests
                 </TabsTrigger>
                 <TabsTrigger 
                   value="goals"
-                  className="data-[state=active]:bg-[rgba(81,69,205,0.9)] data-[state=active]:text-white text-white/70 transition-all"
+                  className="dark-tabs-trigger"
                 >
                   Brand Goals
                 </TabsTrigger>
