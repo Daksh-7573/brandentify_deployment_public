@@ -1052,6 +1052,7 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
+  "engagement", // Brandentifier platform engagement (comments, reactions, discussions)
   "social_post", // Social Media Post Suggestions
   "social_quest" // Social Media Quest Activities
 ]);
