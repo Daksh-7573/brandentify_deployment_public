@@ -36,6 +36,7 @@ export function createBrandGoalsRoutes(storage: IStorage) {
   // Save brand goals for a user
   router.post("/brand-goals", async (req: Request, res: Response) => {
     try {
+      console.log('[POST /api/brand-goals] Request body:', JSON.stringify(req.body));
       const validatedData = insertBrandGoalSchema.parse(req.body);
       
       const savedGoals = await storage.saveBrandGoals(
