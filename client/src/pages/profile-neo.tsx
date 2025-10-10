@@ -582,92 +582,92 @@ export default function ProfileNeo() {
                       </div>
 
                       {/* Tagline / Personal Motto */}
-                      {userData?.tagline && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Tagline / Personal Motto</h3>
-                          </div>
-                          <p className="text-white/80 text-sm italic">"{userData.tagline}"</p>
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Tagline / Personal Motto</h3>
                         </div>
-                      )}
+                        <p className="text-white/80 text-sm italic">
+                          {userData?.tagline ? `"${userData.tagline}"` : 'Not specified'}
+                        </p>
+                      </div>
 
                       {/* Vision Statement */}
-                      {userData?.visionStatement && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Vision Statement</h3>
-                          </div>
-                          <p className="text-white/80 text-sm">{userData.visionStatement}</p>
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Vision Statement</h3>
                         </div>
-                      )}
+                        <p className="text-white/80 text-sm">{userData?.visionStatement || 'Not specified'}</p>
+                      </div>
 
                       {/* Mission Statement */}
-                      {userData?.missionStatement && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Mission Statement</h3>
-                          </div>
-                          <p className="text-white/80 text-sm">{userData.missionStatement}</p>
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Mission Statement</h3>
                         </div>
-                      )}
+                        <p className="text-white/80 text-sm">{userData?.missionStatement || 'Not specified'}</p>
+                      </div>
 
                       {/* Core Values */}
-                      {userData?.coreValues && userData.coreValues.length > 0 && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Core Values</h3>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {userData.coreValues.map((value: string, index: number) => (
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Core Values</h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {userData?.coreValues && userData.coreValues.length > 0 ? (
+                            userData.coreValues.map((value: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {value}
                               </span>
-                            ))}
-                          </div>
+                            ))
+                          ) : (
+                            <p className="text-white/80 text-sm">Not specified</p>
+                          )}
                         </div>
-                      )}
+                      </div>
 
                       {/* Unique Value Proposition */}
-                      {userData?.uniqueValueProposition && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Unique Value Proposition</h3>
-                          </div>
-                          <p className="text-white/80 text-sm">{userData.uniqueValueProposition}</p>
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Unique Value Proposition</h3>
                         </div>
-                      )}
+                        <p className="text-white/80 text-sm">{userData?.uniqueValueProposition || 'Not specified'}</p>
+                      </div>
 
                       {/* Primary Audience */}
-                      {userData?.primaryAudience && userData.primaryAudience.length > 0 && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Primary Audience</h3>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {userData.primaryAudience.map((audience: string, index: number) => (
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Primary Audience</h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {userData?.primaryAudience && userData.primaryAudience.length > 0 ? (
+                            userData.primaryAudience.map((audience: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {audience}
                               </span>
-                            ))}
-                          </div>
+                            ))
+                          ) : (
+                            <p className="text-white/80 text-sm">Not specified</p>
+                          )}
                         </div>
-                      )}
+                      </div>
 
                       {/* Secondary Audience */}
-                      {userData?.secondaryAudience && userData.secondaryAudience.length > 0 && (
-                        <div>
-                          <div className="mb-2">
-                            <h3 className="font-medium text-white">Secondary Audience</h3>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {userData.secondaryAudience.map((audience: string, index: number) => (
+                      <div>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Secondary Audience</h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {userData?.secondaryAudience && userData.secondaryAudience.length > 0 ? (
+                            userData.secondaryAudience.map((audience: string, index: number) => (
                               <span key={index} className="px-3 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                                 {audience}
                               </span>
-                            ))}
-                          </div>
+                            ))
+                          ) : (
+                            <p className="text-white/80 text-sm">Not specified</p>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
