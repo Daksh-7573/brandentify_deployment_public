@@ -91,7 +91,7 @@ export function BrandGoalsSelector() {
       return apiRequest({
         url: '/api/brand-goals',
         method: 'POST',
-        body: payload
+        data: payload
       });
     },
     onSuccess: () => {
