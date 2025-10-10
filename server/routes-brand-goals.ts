@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import express, { Router, Request, Response } from "express";
 import type { IStorage } from "./storage";
 import { insertBrandGoalSchema } from "@shared/schema";
 
@@ -33,10 +33,14 @@ export function createBrandGoalsRoutes(storage: IStorage) {
     }
   });
 
-  // Save brand goals for a user
-  router.post("/brand-goals", async (req: Request, res: Response) => {
+  // Save brand goals for a user  
+  router.post("/brand-goals", express.json(), async (req: Request, res: Response) => {
     try {
+      console.log('[POST /api/brand-goals] Headers:', req.headers);
+      console.log('[POST /api/brand-goals] Content-Type:', req.get('content-type'));
       console.log('[POST /api/brand-goals] Request body:', JSON.stringify(req.body));
+      console.log('[POST /api/brand-goals] Body keys:', Object.keys(req.body || {}));
+      
       const validatedData = insertBrandGoalSchema.parse(req.body);
       
       const savedGoals = await storage.saveBrandGoals(
