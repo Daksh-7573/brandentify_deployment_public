@@ -87,9 +87,26 @@ class DailyQuestScheduler {
 
       let successCount = 0;
       let errorCount = 0;
+      let skippedCount = 0;
 
       for (const user of users) {
         try {
+          // CRITICAL: Check if user already has quests assigned today
+          const todayDateString = this.getTodayDateString();
+          const existingTodayQuests = await db
+            .select()
+            .from(userQuests)
+            .where(and(
+              eq(userQuests.userId, user.id),
+              eq(userQuests.assignedDate, todayDateString)
+            ));
+          
+          if (existingTodayQuests.length > 0) {
+            console.log(`[DailyQuestScheduler] ⏭️ Skipping user ${user.id} (${user.name}) - already has ${existingTodayQuests.length} quests assigned today`);
+            skippedCount++;
+            continue;
+          }
+          
           console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
           
           // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
@@ -115,9 +132,9 @@ class DailyQuestScheduler {
         }
       }
 
-      console.log(`[DailyQuestScheduler] Daily assignment complete: ${successCount} success, ${errorCount} errors`);
+      console.log(`[DailyQuestScheduler] Daily assignment complete: ${successCount} success, ${skippedCount} skipped (already assigned), ${errorCount} errors`);
       
-      return { successCount, errorCount };
+      return { successCount, errorCount, skippedCount };
       
     } catch (error) {
       console.error('[DailyQuestScheduler] Fatal error in daily assignment:', error);

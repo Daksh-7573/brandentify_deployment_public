@@ -9,6 +9,28 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 Latest modifications with dates
 
+### October 10, 2025 - Quest Specificity System & Duplicate Prevention Fix
+- **COMPLETED: Specific, Actionable Quest System** - Transformed quests from generic to highly specific with structured metadata
+- **Metadata Schema**: Added 5 new fields to quest_definitions table:
+  - `deliverable_format`: Exact deliverable type (e.g., "60-second vertical video", "LinkedIn text post")
+  - `quantity_value`: Specific count (e.g., 3, 60, 500)
+  - `quantity_type`: What we're counting (e.g., "hashtags", "seconds", "words")
+  - `platform_constraints`: Platform requirements (e.g., "Vertical format 9:16", "Brandentifier platform only")
+  - `guidance_snippet`: Step-by-step how-to guidance
+- **Quest Templates**: Created 21 new specific quest templates across all types:
+  - Profile: "Craft unique value proposition in exactly 25 words", "Upload professional headshot (square 1:1, min 400x400px)"
+  - Content: "Post 150-300 word industry insight", "Create poll with 3-4 answer options"
+  - Portfolio: "Upload project with metrics", "Create 500-800 word case study"
+  - Resume: "Add 3 quantified achievements with %, $, or # metrics"
+  - Engagement: "Comment on 2 pulses (30+ words each)", "Vote on 2 industry polls"
+  - Visibility: "Create 60-second vertical video", "Write LinkedIn post with exactly 3 hashtags"
+- **UI Enhancement**: Quest cards now display deliverable specs in dedicated blue info boxes with icons
+- **FIXED: Duplicate Quest Bug** - Prevented multiple quest assignments per day
+  - **Root Cause**: Daily scheduler ran on every server restart + hourly backup without checking existing assignments
+  - **Solution**: Added check to skip users who already have quests assigned today
+  - **Impact**: Reduced Nishant Chopra's quests from 20+ duplicates to 3 proper daily quests
+  - **Verification**: All 23 users now properly skipped on scheduler re-runs (0 success, 23 skipped, 0 errors)
+
 ### October 10, 2025 - Brandentifier Engagement Quests Added to Career Quests
 - **COMPLETED: Engagement Quest System** - Added internal platform engagement activities to Career Quest system
 - **Engagement Features**: 4 types of Brandentifier engagement activities integrated
