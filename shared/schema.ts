@@ -1180,6 +1180,8 @@ export const userQuests = pgTable("user_quests", {
   confidenceScore: integer("confidence_score"), // Confidence level 0-100
   suggestedHashtags: text("suggested_hashtags").array(), // AI-generated intelligent hashtags based on context
   hashtagContext: text("hashtag_context"), // Explanation of why these hashtags were chosen
+  brandGoalsSnapshot: text("brand_goals_snapshot"), // JSON snapshot of user's Brand Goals when quest was completed (for smart profile quest tracking)
+  profileSnapshot: text("profile_snapshot"), // JSON snapshot of user profile when quest was completed (for smart regeneration logic)
   // Removed field:
   // - dismissedReason (quest dismissal functionality removed)
 });
