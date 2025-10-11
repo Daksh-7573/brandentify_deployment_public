@@ -59,8 +59,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { data: missedSocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'missed');
 
   // Fetch instant quests (trending opportunities) by type
-  const { data: careerInstantQuests = [], isLoading: isLoadingCareerInstant } = useInstantQuests(userId, 'career');
-  const { data: socialInstantQuests = [], isLoading: isLoadingSocialInstant } = useInstantQuests(userId, 'social');
+  // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
+  // const { data: careerInstantQuests = [], isLoading: isLoadingCareerInstant } = useInstantQuests(userId, 'career');
+  // const { data: socialInstantQuests = [], isLoading: isLoadingSocialInstant } = useInstantQuests(userId, 'social');
+  const careerInstantQuests: any[] = [];
+  const socialInstantQuests: any[] = [];
+  const isLoadingCareerInstant = false;
+  const isLoadingSocialInstant = false;
 
   // Combined loading states
   const isLoadingDaily = isLoadingCurrentCareer || isLoadingCurrentSocial;

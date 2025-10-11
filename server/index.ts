@@ -824,9 +824,10 @@ trendRefreshScheduler.startScheduler();
 console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
 
 // Start Trend Spike Scheduler for instant quest generation
-console.log("Starting Trend Spike Scheduler for instant quests...");
-trendSpikeScheduler.start();
-console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
+// DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
+// console.log("Starting Trend Spike Scheduler for instant quests...");
+// trendSpikeScheduler.start();
+// console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
 
 (async () => {
   const server = await registerRoutes(app);
