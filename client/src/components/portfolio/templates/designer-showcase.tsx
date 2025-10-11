@@ -242,11 +242,21 @@ export default function DesignerShowcase({
                   <p className="text-white/70">{userInfo.missionStatement}</p>
                 </div>
               )}
-              {userInfo.uniqueValueProposition && (
-                <div className="md:col-span-2">
-                  <h3 className="text-xl font-semibold text-pink-400 mb-2">What I Offer</h3>
-                  <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
-                </div>
+              {(userInfo.uniqueValueProposition || userInfo.whatIOffer) && (
+                <>
+                  {userInfo.uniqueValueProposition && (
+                    <div>
+                      <h3 className="text-xl font-semibold text-pink-400 mb-2">Unique Value Proposition</h3>
+                      <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
+                    </div>
+                  )}
+                  {userInfo.whatIOffer && (
+                    <div>
+                      <h3 className="text-xl font-semibold text-amber-400 mb-2">What I Offer</h3>
+                      <p className="text-white/70">{userInfo.whatIOffer}</p>
+                    </div>
+                  )}
+                </>
               )}
               {userInfo.coreValues && userInfo.coreValues.length > 0 && (
                 <div className="md:col-span-2">
