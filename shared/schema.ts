@@ -1194,6 +1194,33 @@ export const userQuests = pgTable("user_quests", {
   // - dismissedReason (quest dismissal functionality removed)
 });
 
+// Instant quest status enum
+export const instantQuestStatusEnum = pgEnum("instant_quest_status", [
+  "pending",
+  "accepted",
+  "dismissed",
+  "expired"
+]);
+
+// Instant Quests model - stores trending opportunity quests that appear based on real-time trend spikes
+export const instantQuests = pgTable("instant_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  trendTopic: text("trend_topic").notNull(), // Main trending topic
+  trendKeywords: text("trend_keywords").array(), // Keywords related to the trend
+  careerQuestDefinitionId: integer("career_quest_definition_id").references(() => questDefinitions.id),
+  socialQuestDefinitionId: integer("social_quest_definition_id").references(() => questDefinitions.id),
+  suggestedHashtags: text("suggested_hashtags").array(), // Hashtags for this trending topic
+  status: instantQuestStatusEnum("status").notNull().default("pending"),
+  spikeScore: integer("spike_score"), // The trend spike score when detected
+  relevanceScore: integer("relevance_score"), // How relevant this trend is to the user (0-100)
+  feedSources: text("feed_sources").array(), // Which RSS feeds mentioned this trend
+  expiresAt: timestamp("expires_at").notNull(), // When this instant quest expires (6 hours)
+  createdAt: timestamp("created_at").defaultNow(),
+  acceptedAt: timestamp("accepted_at"), // When user accepted the quest
+  dismissedAt: timestamp("dismissed_at"), // When user dismissed the quest
+});
+
 // User XP model - tracks user XP balance and history (further simplified)
 export const userXp = pgTable("user_xp", {
   id: serial("id").primaryKey(),
@@ -1320,6 +1347,13 @@ export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
   completedAt: true
 });
 
+export const insertInstantQuestSchema = createInsertSchema(instantQuests).omit({
+  id: true,
+  createdAt: true,
+  acceptedAt: true,
+  dismissedAt: true
+});
+
 export const insertUserXpSchema = createInsertSchema(userXp).omit({
   id: true,
   createdAt: true,
@@ -1342,6 +1376,9 @@ export type InsertQuestDefinition = z.infer<typeof insertQuestDefinitionSchema>;
 
 export type UserQuest = typeof userQuests.$inferSelect;
 export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
+
+export type InstantQuest = typeof instantQuests.$inferSelect;
+export type InsertInstantQuest = z.infer<typeof insertInstantQuestSchema>;
 
 export type UserXp = typeof userXp.$inferSelect;
 export type InsertUserXp = z.infer<typeof insertUserXpSchema>;
