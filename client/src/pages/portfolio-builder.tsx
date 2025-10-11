@@ -42,7 +42,7 @@ import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innov
 import Animated from "@/components/portfolio/templates/animated";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
-import DesignerPortfolio from "@/pages/designer-portfolio";
+import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -1224,7 +1224,32 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "designer-portfolio" && (
-              <DesignerPortfolio />
+              <DesignerShowcase
+                userInfo={{
+                  id: userData?.id,
+                  name: userData?.name || user?.name || '',
+                  title: userData?.title || null,
+                  email: userData?.email || user?.email || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
+                  aboutMe: userData?.aboutMe || null,
+                  location: userData?.location || null,
+                  industry: userData?.industry || null,
+                  domain: userData?.domain || null,
+                  lookingFor: userData?.lookingFor || null,
+                  whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  jobLevel: userData?.jobLevel || null,
+                  tagline: (userData as any)?.tagline || null,
+                  visionStatement: (userData as any)?.visionStatement || null,
+                  missionStatement: (userData as any)?.missionStatement || null,
+                  coreValues: (userData as any)?.coreValues || [],
+                  uniqueValueProposition: (userData as any)?.uniqueValueProposition || null
+                }}
+                userSkills={skills || []}
+                userExperiences={experiences || []}
+                userProjects={projects || []}
+                userEducations={educations || []}
+                userServices={services || []}
+              />
             )}
             
             <div className="flex justify-between">
