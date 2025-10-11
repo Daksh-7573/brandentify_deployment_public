@@ -188,8 +188,77 @@ export default function DesignerShowcase({
         </div>
       </div>
 
+      {/* Professional Profile Section - Key Details */}
+      {(userInfo.industry || userInfo.domain || userInfo.lookingFor || userInfo.tagline || userInfo.uniqueValueProposition) && (
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <motion.div {...anim.fadeIn} className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/30">
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+              <Award className="w-8 h-8 text-purple-400" />
+              Professional Profile
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Industry & Domain */}
+              {(userInfo.industry || userInfo.domain) && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5" />
+                    Industry & Domain
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {userInfo.industry && (
+                      <Badge className="bg-purple-500/30 text-purple-200 border-purple-400/40 text-base px-4 py-1">
+                        {userInfo.industry}
+                      </Badge>
+                    )}
+                    {userInfo.domain && (
+                      <Badge className="bg-indigo-500/30 text-indigo-200 border-indigo-400/40 text-base px-4 py-1">
+                        {userInfo.domain}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Tagline / Personal Motto */}
+              {userInfo.tagline && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
+                    <Star className="w-5 h-5" />
+                    Tagline / Personal Motto
+                  </h3>
+                  <p className="text-white/90 text-lg italic font-medium">&quot;{userInfo.tagline}&quot;</p>
+                </div>
+              )}
+
+              {/* I am looking for - HIGHLIGHTED */}
+              {userInfo.lookingFor && (
+                <div className="md:col-span-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-6 border-2 border-yellow-500/40">
+                  <h3 className="text-xl font-bold text-yellow-300 flex items-center gap-2 mb-3">
+                    <Users className="w-6 h-6" />
+                    I am looking for
+                  </h3>
+                  <p className="text-white text-lg font-medium">{userInfo.lookingFor}</p>
+                </div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <div className="md:col-span-2 space-y-3">
+                  <h3 className="text-lg font-semibold text-purple-300 flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    Unique Value Proposition
+                  </h3>
+                  <p className="text-white/90 text-base leading-relaxed">{userInfo.uniqueValueProposition}</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
       {/* About Section */}
-      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
+      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
         <section className="max-w-7xl mx-auto px-6 py-16">
           <motion.div {...anim.fadeIn} className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
@@ -209,12 +278,6 @@ export default function DesignerShowcase({
                 <div>
                   <h3 className="text-xl font-semibold text-indigo-400 mb-2">Mission</h3>
                   <p className="text-white/70">{userInfo.missionStatement}</p>
-                </div>
-              )}
-              {userInfo.uniqueValueProposition && (
-                <div className="md:col-span-2">
-                  <h3 className="text-xl font-semibold text-pink-400 mb-2">What I Offer</h3>
-                  <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
                 </div>
               )}
               {userInfo.coreValues && userInfo.coreValues.length > 0 && (
