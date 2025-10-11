@@ -24,6 +24,7 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
 import { trendRefreshScheduler } from "./services/trend-intelligence/trend-refresh-scheduler";
+import { trendSpikeScheduler } from "./services/trend-intelligence/trend-spike-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 import { logDatabaseStartupInfo } from "./db";
@@ -821,6 +822,11 @@ console.log("Daily Quest Scheduler started - expiring previous day quests and as
 console.log("Starting Trend Intelligence Refresh Scheduler...");
 trendRefreshScheduler.startScheduler();
 console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
+
+// Start Trend Spike Scheduler for instant quest generation
+console.log("Starting Trend Spike Scheduler for instant quests...");
+trendSpikeScheduler.start();
+console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
 
 (async () => {
   const server = await registerRoutes(app);
