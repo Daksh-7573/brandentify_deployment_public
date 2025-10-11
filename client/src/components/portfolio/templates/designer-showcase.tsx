@@ -164,14 +164,45 @@ export default function DesignerShowcase({
               <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
                 {userInfo.name}
               </h1>
-              <p className="text-2xl text-white/80 mb-4">{userInfo.title || userInfo.tagline || "Creative Professional"}</p>
+              <p className="text-2xl text-white/80 mb-2">{userInfo.title || "Creative Professional"}</p>
+              
+              {/* Industry & Domain under Job Title */}
+              {(userInfo.industry || userInfo.domain) && (
+                <div className="flex items-center gap-2 text-white/70 mb-4 justify-center md:justify-start">
+                  <Briefcase className="w-4 h-4" />
+                  <span>
+                    {userInfo.industry}
+                    {userInfo.industry && userInfo.domain && " • "}
+                    {userInfo.domain}
+                  </span>
+                </div>
+              )}
+              
               {userInfo.location && (
-                <div className="flex items-center gap-2 text-white/60 mb-6 justify-center md:justify-start">
+                <div className="flex items-center gap-2 text-white/60 mb-2 justify-center md:justify-start">
                   <MapPin className="w-5 h-5" />
                   <span>{userInfo.location}</span>
                 </div>
               )}
-              <div className="flex gap-4 justify-center md:justify-start flex-wrap">
+              
+              {/* Tagline under Location */}
+              {userInfo.tagline && (
+                <p className="text-lg text-white/70 italic mb-3 justify-center md:justify-start">
+                  "{userInfo.tagline}"
+                </p>
+              )}
+              
+              {/* I am Looking for under Tagline (highlighted) */}
+              {userInfo.lookingFor && (
+                <div className="mb-6 inline-block">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 py-2 text-base">
+                    <Users className="w-4 h-4 mr-2 inline" />
+                    Looking for: {userInfo.lookingFor.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </Badge>
+                </div>
+              )}
+              
+              <div className="flex gap-4 justify-center md:justify-start flex-wrap mt-4">
                 <Button onClick={() => setShowMentorModal(true)} className="bg-purple-600 hover:bg-purple-700">
                   <Star className="w-4 h-4 mr-2" />
                   Book a Mentorship
