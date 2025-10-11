@@ -42,6 +42,7 @@ import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innov
 import Animated from "@/components/portfolio/templates/animated";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
+import DesignerPortfolio from "@/pages/designer-portfolio";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -76,7 +77,8 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
+    "designer-portfolio"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -483,6 +485,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
+    },
+    { 
+      id: "designer-portfolio", 
+      name: "The Designer Showcase", 
+      description: `✔ Theme: Neo-Glass, Modern, Visually Rich
+✔ Best For: Designers, Creative Professionals, Portfolio-First Careers`,
+      theme: "#A855F7"
     }
   ];
 
@@ -1212,6 +1221,10 @@ export default function PortfolioBuilder() {
                   />
                 </CardContent>
               </Card>
+            )}
+            
+            {form.watch("layout") === "designer-portfolio" && (
+              <DesignerPortfolio />
             )}
             
             <div className="flex justify-between">
