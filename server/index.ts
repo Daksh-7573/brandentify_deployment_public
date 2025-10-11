@@ -23,6 +23,7 @@ import { apiGateway } from "./services/api-gateway";
 import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
+import { trendRefreshScheduler } from "./services/trend-intelligence/trend-refresh-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 import { logDatabaseStartupInfo } from "./db";
@@ -815,6 +816,11 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
 console.log("Starting Daily Quest Scheduler system...");
 dailyQuestScheduler.startScheduler();
 console.log("Daily Quest Scheduler started - expiring previous day quests and assigning new daily quests at 12:01 AM UTC");
+
+// Start Trend Intelligence Refresh Scheduler for market trend tracking
+console.log("Starting Trend Intelligence Refresh Scheduler...");
+trendRefreshScheduler.startScheduler();
+console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
 
 (async () => {
   const server = await registerRoutes(app);
