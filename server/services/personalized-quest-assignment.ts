@@ -63,6 +63,9 @@ export class PersonalizedQuestAssignment {
       for (const missingRec of missingRecommendations) {
         const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
         
+        // Generate deliverable specifications based on platform/action
+        const deliverableSpecs = this.getDeliverableSpecifications(missingRec.targetAction, missingRec.platform);
+        
         const [newQuest] = await db
           .insert(questDefinitions)
           .values({
@@ -73,7 +76,13 @@ export class PersonalizedQuestAssignment {
             targetAction: missingRec.targetAction,
             xpReward: this.getXpRewardByPriority(missingRec.priority),
             badgeReward: null,
-            muskTip: questData.muskTip
+            muskTip: questData.muskTip,
+            // Add specific deliverable requirements
+            deliverableFormat: deliverableSpecs.format,
+            quantityValue: deliverableSpecs.quantityValue,
+            quantityType: deliverableSpecs.quantityType,
+            platformConstraints: deliverableSpecs.constraints,
+            guidanceSnippet: deliverableSpecs.guidance
           })
           .returning();
 
@@ -308,6 +317,122 @@ export class PersonalizedQuestAssignment {
       1: 30  // Lowest priority platforms
     };
     return xpMap[priority] || 50;
+  }
+
+  /**
+   * Generate specific deliverable requirements based on platform and action
+   */
+  private getDeliverableSpecifications(targetAction: string, platform: string): {
+    format: string;
+    quantityValue: number | null;
+    quantityType: string | null;
+    constraints: string | null;
+    guidance: string | null;
+  } {
+    // Define specifications for each platform/action combination
+    const specs: { [key: string]: any } = {
+      // LinkedIn
+      'create_linkedin_post': {
+        format: 'LinkedIn Post',
+        quantityValue: 300,
+        quantityType: 'words minimum',
+        constraints: 'Professional tone, include industry insights, use 3-5 hashtags',
+        guidance: 'Write directly in LinkedIn post composer or draft in document first'
+      },
+      'create_linkedin_article': {
+        format: 'LinkedIn Article',
+        quantityValue: 800,
+        quantityType: 'words minimum',
+        constraints: 'Professional article format with header image, subheadings, and clear structure',
+        guidance: 'Use LinkedIn article editor with compelling headline and visual elements'
+      },
+      'create_linkedin_video': {
+        format: 'LinkedIn Video Post',
+        quantityValue: 90,
+        quantityType: 'seconds maximum',
+        constraints: 'Square or horizontal format (1:1 or 16:9), professional background, clear audio',
+        guidance: 'Record on mobile with good lighting, add captions for accessibility'
+      },
+      // Instagram
+      'create_instagram_reel': {
+        format: 'Instagram Reel',
+        quantityValue: 60,
+        quantityType: 'seconds maximum',
+        constraints: 'Vertical format (9:16), hook in first 3 seconds, trending audio optional',
+        guidance: 'Record on mobile, use Instagram native editor or CapCut for editing'
+      },
+      'create_instagram_story': {
+        format: 'Instagram Story',
+        quantityValue: 1,
+        quantityType: 'story slide',
+        constraints: 'Vertical format (9:16), interactive elements (polls/questions) encouraged',
+        guidance: 'Create in Instagram Stories, use stickers and text overlays'
+      },
+      'create_instagram_post': {
+        format: 'Instagram Carousel Post',
+        quantityValue: 5,
+        quantityType: 'slides',
+        constraints: 'Square format (1:1), cohesive visual theme, engaging captions',
+        guidance: 'Design in Canva, export as individual slides, upload to Instagram'
+      },
+      // Twitter/X
+      'create_twitter_thread': {
+        format: 'Twitter Thread',
+        quantityValue: 5,
+        quantityType: 'tweets minimum',
+        constraints: 'Each tweet under 280 characters, numbered for clarity (1/5, 2/5, etc.)',
+        guidance: 'Draft in notes app first, then post sequentially on Twitter'
+      },
+      'create_twitter_post': {
+        format: 'Twitter Post',
+        quantityValue: 280,
+        quantityType: 'characters maximum',
+        constraints: 'Concise message, 1-2 hashtags, optional image/video',
+        guidance: 'Write directly in Twitter composer, attach visual if relevant'
+      },
+      // YouTube
+      'create_youtube_short': {
+        format: 'YouTube Short',
+        quantityValue: 60,
+        quantityType: 'seconds maximum',
+        constraints: 'Vertical format (9:16), strong hook in first 3 seconds, clear CTA',
+        guidance: 'Record on mobile, edit in YouTube Shorts editor or mobile app'
+      },
+      'create_youtube_video': {
+        format: 'YouTube Video',
+        quantityValue: 8,
+        quantityType: 'minutes minimum',
+        constraints: 'Horizontal format (16:9), custom thumbnail, clear title and description',
+        guidance: 'Script content, record with good lighting/audio, edit in video software'
+      },
+      // TikTok
+      'create_tiktok_video': {
+        format: 'TikTok Video',
+        quantityValue: 60,
+        quantityType: 'seconds maximum',
+        constraints: 'Vertical format (9:16), trending sounds/effects, engaging first 3 seconds',
+        guidance: 'Record in TikTok app, use native effects and trending audio'
+      },
+      // Generic/Fallback for Brandentifier Pulse
+      'create_pulse': {
+        format: 'Brandentifier Pulse Post',
+        quantityValue: 1,
+        quantityType: 'post with 1-5 images or 1 video',
+        constraints: 'Professional content, industry-relevant, engaging format',
+        guidance: 'Create in Brandentifier feed with text and optional media'
+      }
+    };
+
+    // Return specifications or defaults
+    const spec = specs[targetAction] || {
+      format: platform ? `${platform} Post` : 'Social Media Post',
+      quantityValue: 1,
+      quantityType: 'post',
+      constraints: 'Follow platform best practices and community guidelines',
+      guidance: 'Create content using platform native tools'
+    };
+
+    return spec;
   }
 
   /**
