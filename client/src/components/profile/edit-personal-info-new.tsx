@@ -34,22 +34,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [isJobTitleDropdownOpen, setIsJobTitleDropdownOpen] = useState(false);
-
-  // Fetch job titles from backend
-  const { data: jobTitlesData, isLoading: jobTitlesLoading } = useQuery({
-    queryKey: ['/api/job-titles'],
-    queryFn: async () => {
-      const response = await fetch('/api/job-titles');
-      if (!response.ok) throw new Error('Failed to fetch job titles');
-      return response.json();
-    },
-  });
-
   // Form state
   const [name, setName] = useState(userData.name || "");
-  const [jobTitle, setJobTitle] = useState(""); // Text input only
-  const [selectedJobTitleFromDropdown, setSelectedJobTitleFromDropdown] = useState(""); // Dropdown value
+  const [jobTitle, setJobTitle] = useState(userData.title || "");
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
@@ -75,26 +62,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [primaryAudienceInput, setPrimaryAudienceInput] = useState("");
   const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
-  // Initialize job title state based on userData - check if it matches dropdown or is custom
-  React.useEffect(() => {
-    const existingTitle = userData.title || "";
-    if (existingTitle && jobTitlesData?.jobTitles) {
-      const matchedDropdownTitle = jobTitlesData.jobTitles.find((jt: any) => jt.title === existingTitle)?.title;
-      
-      if (matchedDropdownTitle) {
-        setSelectedJobTitleFromDropdown(matchedDropdownTitle);
-        setJobTitle('');
-      } else {
-        setSelectedJobTitleFromDropdown('');
-        setJobTitle(existingTitle);
-      }
-    }
-  }, [userData.title, jobTitlesData]);
 
   // Sync form state when userData changes (e.g., after refresh or cache update)
   useEffect(() => {
     console.log('[EDIT FORM] Syncing form state with userData:', userData);
     setName(userData.name || "");
+    setJobTitle(userData.title || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
@@ -128,12 +101,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     
     setIsLoading(true);
     try {
-      // Use either dropdown selection OR custom text input (not both combined)
-      const combinedJobTitle = selectedJobTitleFromDropdown || jobTitle.trim() || null;
-      
       const updateData = {
         name: name.trim(),
-        title: combinedJobTitle,
+        title: jobTitle.trim() || null,
         location: location.trim() || null,
         industry: industry || null,
         domain: domain || null,
@@ -151,7 +121,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
 
       console.log("[DEBUG] Sending PUT request to:", `/api/users/${userData.id}`);
       console.log("[DEBUG] Update data:", updateData);
-      console.log("[DEBUG] Combined job title being saved:", combinedJobTitle);
       
       const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
       console.log("[DEBUG] API response:", response);
@@ -159,8 +128,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
       // Create the updated user data object for immediate cache update
       const updatedUserData = {
         ...userData,
-        ...updateData,
-        title: combinedJobTitle
+        ...updateData
       };
 
       console.log("[DEBUG] Updating cache immediately with:", updatedUserData);
@@ -242,64 +210,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             <Briefcase className="h-4 w-4" />
             Job Title
           </label>
-          <div className="space-y-3">
-            {/* Dropdown for quick selection - keeps its own value */}
-            <div className="relative">
-              <select
-                id="jobTitleDropdown"
-                value={selectedJobTitleFromDropdown}
-                onChange={(e) => {
-                  setSelectedJobTitleFromDropdown(e.target.value);
-                  // Clear custom text when dropdown is selected
-                  if (e.target.value) {
-                    setJobTitle("");
-                  }
-                }}
-                disabled={jobTitlesLoading}
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
-                style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
-              >
-                <option value="">Select from common job titles</option>
-                {jobTitlesData?.jobTitles?.map((title: string) => (
-                  <option key={title} value={title} className="bg-gray-800 text-white">
-                    {title}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
-            </div>
-            
-            {/* Text input for custom job title - independent value */}
-            <input
-              id="jobTitle"
-              type="text"
-              value={jobTitle}
-              onChange={(e) => {
-                setJobTitle(e.target.value);
-                // Clear dropdown when custom text is entered
-                if (e.target.value) {
-                  setSelectedJobTitleFromDropdown("");
-                }
-              }}
-              placeholder="Enter your custom job title"
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-            />
-            
-            {/* Help text explaining the functionality */}
-            <p className="text-xs text-white/60 mt-2">
-              Select from common titles OR enter a custom job title. Only one selection will be used.
-            </p>
-            
-            {/* Display current selection */}
-            {(selectedJobTitleFromDropdown || jobTitle) && (
-              <div className="mt-2 p-2 bg-white/5 rounded-md border border-white/10">
-                <p className="text-xs text-white/70 mb-1">Current job title:</p>
-                <p className="text-sm text-white font-medium">
-                  {selectedJobTitleFromDropdown || jobTitle}
-                </p>
-              </div>
-            )}
-          </div>
+          <input
+            id="jobTitle"
+            type="text"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            placeholder="Enter your job title"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
+          />
         </div>
 
         {/* Location */}
@@ -757,9 +675,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             setIsLoading(true);
             
             try {
-              // Use either dropdown selection OR custom text input (not both combined)
-              const combinedJobTitle = selectedJobTitleFromDropdown || jobTitle.trim() || null;
-              
               console.log("[SAVE DEBUG] Current field values:");
               console.log("  - tagline:", tagline);
               console.log("  - visionStatement:", visionStatement);
@@ -771,7 +686,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               
               const updateData = {
                 name: name.trim(),
-                title: combinedJobTitle,
+                title: jobTitle.trim() || null,
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
@@ -793,7 +708,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               const validLookingForValues = Object.keys(LOOKING_FOR_OPTIONS);
               const isValidLookingFor = lookingFor && validLookingForValues.includes(lookingFor);
               
-              console.log("[BUTTON] Combined job title:", combinedJobTitle);
+              console.log("[BUTTON] Job title:", jobTitle);
               console.log("[BUTTON] Raw lookingFor state value:", lookingFor);
               console.log("[BUTTON] lookingFor type:", typeof lookingFor);
               console.log("[BUTTON] Valid lookingFor values:", validLookingForValues);
@@ -829,7 +744,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               const updatedUserData = {
                 ...userData,
                 ...updateData,
-                title: combinedJobTitle,
                 aboutMe: aboutMe.trim() || null
               };
 
