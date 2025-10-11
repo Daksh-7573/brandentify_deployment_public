@@ -197,6 +197,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
 
   const { cleanContent: muskTipContent, hashtags: extractedHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
   
+  // Get hashtags from database or extracted from tip
+  const displayHashtags = quest.suggestedHashtags && quest.suggestedHashtags.length > 0 
+    ? quest.suggestedHashtags 
+    : extractedHashtags;
+  
   // Check if this is a Social Quest (platform-specific social media quest)
   // Check both targetAction and quest title patterns since targetAction might be empty
   const socialQuestActions = ['post_linkedin_suggestion', 'post_instagram_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_facebook_suggestion', 'post_tiktok_suggestion'];
@@ -204,16 +209,18 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   const isSocialQuest = socialQuestActions.includes(questDefinition.targetAction || '') ||
     socialQuestTitles.some(platform => questDefinition.title?.includes(platform)) ||
-    extractedHashtags.length > 0; // If it has hashtag suggestions, it's likely a social quest
+    displayHashtags.length > 0; // If it has hashtag suggestions, it's likely a social quest
   
   // Debug logging (only for Social Quests)
-  if (isSocialQuest || extractedHashtags.length > 0) {
+  if (isSocialQuest || displayHashtags.length > 0) {
     console.log('Quest Debug:', {
       title: questDefinition.title,
       targetAction: questDefinition.targetAction,
       isSocialQuest,
-      hasHashtags: extractedHashtags.length > 0,
-      hashtags: extractedHashtags,
+      hasHashtags: displayHashtags.length > 0,
+      hashtags: displayHashtags,
+      suggestedHashtags: quest.suggestedHashtags,
+      extractedHashtags: extractedHashtags,
       rawMuskTip: rawMuskTipContent,
       // Additional debug info
       definitionTargetAction: quest.definition?.targetAction,
@@ -417,13 +424,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               )}
               
               {/* Add StaticHashtagSuggestions component for Social Quests */}
-              {isSocialQuest && extractedHashtags.length > 0 && (
+              {isSocialQuest && displayHashtags.length > 0 && (
                 <div className="mt-3">
                   <div className="text-sm font-medium text-white/70 mb-2">
                     <span className="mr-1">💡</span> Musk's hashtag suggestions:
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {extractedHashtags.map((hashtag: string, index: number) => (
+                    {displayHashtags.map((hashtag: string, index: number) => (
                       <button
                         key={index}
                         onClick={() => {
