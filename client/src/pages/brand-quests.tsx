@@ -5,6 +5,7 @@ import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 import { BrandGoalsSelector } from '@/components/brand-quests/brand-goals-selector';
+import { InstantQuestPanel } from '@/components/brand-quests/instant-quest-panel';
 // Removed HashtagSuggestions and NowboardSuggestions as they're now integrated into quests
 // BrandQuestDemo import removed per request
 import { useToast } from '@/hooks/use-toast';
@@ -92,7 +93,7 @@ export default function BrandQuestsPage() {
 
           <NeoGlassSection>
             <Tabs defaultValue="goals" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 dark-tabs-list border border-white/5 mb-6">
+              <TabsList className="grid w-full grid-cols-3 dark-tabs-list border border-white/5 mb-6">
                 <TabsTrigger 
                   value="goals"
                   className="dark-tabs-trigger"
@@ -104,6 +105,13 @@ export default function BrandQuestsPage() {
                   className="dark-tabs-trigger"
                 >
                   Brand Quests
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="opportunities"
+                  className="dark-tabs-trigger"
+                  data-testid="tab-opportunities"
+                >
+                  Trending Opportunities
                 </TabsTrigger>
               </TabsList>
 
@@ -123,6 +131,10 @@ export default function BrandQuestsPage() {
                     <BadgeDisplay userId={userId} />
                   </div>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="opportunities" className="mt-0">
+                <InstantQuestPanel userId={userId} />
               </TabsContent>
             </Tabs>
           </NeoGlassSection>
