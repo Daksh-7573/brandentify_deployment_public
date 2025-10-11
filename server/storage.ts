@@ -7213,7 +7213,12 @@ export class MemStorage implements IStorage {
           qd.target_action as "targetAction",
           qd.xp_reward as "xpReward",
           qd.badge_reward as "badgeReward",
-          qd.musk_tip as "muskTip"
+          qd.musk_tip as "muskTip",
+          qd.deliverable_format as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          qd.guidance_snippet as "guidanceSnippet"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
@@ -7253,7 +7258,12 @@ export class MemStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          muskTip: row.muskTip,
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet
         }
       }));
     } catch (error) {
@@ -12851,7 +12861,12 @@ export class DatabaseStorage implements IStorage {
           qd.title, qd.description, qd.type, qd.target_count as "targetCount",
           qd.target_action as "targetAction", qd.xp_reward as "xpReward",
           qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip",
-          qd.platform, qd.content_type as "contentType"
+          qd.platform, qd.content_type as "contentType",
+          qd.deliverable_format as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          qd.guidance_snippet as "guidanceSnippet"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
@@ -12875,7 +12890,12 @@ export class DatabaseStorage implements IStorage {
           badgeReward: row.badgeReward,
           muskTip: row.muskTip,
           platform: row.platform,
-          contentType: row.contentType
+          contentType: row.contentType,
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet
         }
       }));
     } catch (error) {
