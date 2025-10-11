@@ -1202,14 +1202,20 @@ export const instantQuestStatusEnum = pgEnum("instant_quest_status", [
   "expired"
 ]);
 
+// Instant Quest category enum - career (Brandentifier) or social (external platforms)
+export const instantQuestCategoryEnum = pgEnum("instant_quest_category", [
+  "career", // For Brandentifier platform engagement (posting pulse, etc.)
+  "social"  // For external social platforms (LinkedIn, Twitter, etc.)
+]);
+
 // Instant Quests model - stores trending opportunity quests that appear based on real-time trend spikes
 export const instantQuests = pgTable("instant_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
+  questType: instantQuestCategoryEnum("quest_type").notNull(), // 'career' for Brandentifier, 'social' for external platforms
   trendTopic: text("trend_topic").notNull(), // Main trending topic
   trendKeywords: text("trend_keywords").array(), // Keywords related to the trend
-  careerQuestDefinitionId: integer("career_quest_definition_id").references(() => questDefinitions.id),
-  socialQuestDefinitionId: integer("social_quest_definition_id").references(() => questDefinitions.id),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id), // Link to the generated quest
   suggestedHashtags: text("suggested_hashtags").array(), // Hashtags for this trending topic
   status: instantQuestStatusEnum("status").notNull().default("pending"),
   spikeScore: integer("spike_score"), // The trend spike score when detected
