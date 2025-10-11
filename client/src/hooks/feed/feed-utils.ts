@@ -24,6 +24,29 @@ export function formatFeedDate(date: Date | string): string {
   }
 }
 
+// Map brand goals to relevant keywords for content matching
+const BRAND_GOAL_KEYWORDS: Record<string, string[]> = {
+  // Visibility & Awareness
+  'visibility_1': ['visibility', 'social media', 'reach', 'audience growth', 'followers', 'discovery'],
+  'visibility_2': ['brand recognition', 'awareness', 'reputation', 'known for', 'recognized'],
+  'visibility_3': ['consistency', 'online presence', 'posting schedule', 'content strategy'],
+  'visibility_4': ['SEO', 'search', 'google', 'findable', 'searchability', 'discoverability'],
+  'visibility_5': ['followers', 'audience', 'community', 'engagement rate', 'subscriber'],
+  
+  // Professional & Career Growth
+  'professional_1': ['thought leader', 'authority', 'expert', 'credibility', 'influence', 'niche'],
+  'professional_2': ['opportunities', 'clients', 'business', 'partnerships', 'deals', 'projects'],
+  'professional_3': ['podcast', 'interview', 'collaboration', 'guest', 'featured', 'speaking'],
+  
+  // Engagement & Community
+  'engagement_1': ['community', 'loyal', 'fans', 'tribe', 'connection', 'relationship', 'audience'],
+  
+  // Monetization & Impact
+  'monetization_1': ['sponsorship', 'brand deals', 'partnership', 'collaboration', 'sponsored'],
+  'monetization_2': ['leads', 'customers', 'conversion', 'sales', 'funnel', 'clients'],
+  'monetization_3': ['product', 'service', 'launch', 'course', 'offering', 'own brand']
+};
+
 /**
  * Calculate relevance score for feed items
  * Higher score = more relevant to the user
@@ -36,6 +59,7 @@ export function calculateRelevanceScore(
     recentSearches?: string[];
     followedUsers?: number[];
     followedHashtags?: string[];
+    brandGoals?: string[];
   }
 ): number {
   let score = 0;
@@ -66,6 +90,23 @@ export function calculateRelevanceScore(
     
     // +20 points per matching hashtag (up to 3 hashtags for max 60 points)
     score += Math.min(matchingHashtags.length * 20, 60);
+  }
+  
+  // If aligns with user's brand goals
+  if (item.content && userPreferences.brandGoals) {
+    const contentLower = (item.content + ' ' + (item.title || '')).toLowerCase();
+    
+    userPreferences.brandGoals.forEach(goalId => {
+      const keywords = BRAND_GOAL_KEYWORDS[goalId] || [];
+      const matchCount = keywords.filter(keyword => 
+        contentLower.includes(keyword.toLowerCase())
+      ).length;
+      
+      // +25 points for goal-aligned content (stronger than interests)
+      if (matchCount > 0) {
+        score += 25;
+      }
+    });
   }
   
   // If contains user's interests

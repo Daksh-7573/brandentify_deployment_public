@@ -67,12 +67,19 @@ export default function PulseFeed() {
     refetchOnWindowFocus: false
   });
   
+  // Fetch user's brand goals
+  const { data: brandGoalsData } = useQuery<{ selectedGoals?: string[] }>({
+    queryKey: [`/api/brand-goals/${userId}`],
+    refetchOnWindowFocus: false
+  });
+  
   // User preferences for relevance sorting
   const userPreferences = {
     interests: (user as any)?.interests || [],
     industry: (user as any)?.industry || "",
     followedUsers: (user as any)?.following || [],
-    followedHashtags: followedHashtags
+    followedHashtags: followedHashtags,
+    brandGoals: brandGoalsData?.selectedGoals || []
   };
   
   // Use the shared feed algorithm hook
