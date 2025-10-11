@@ -25,6 +25,7 @@ import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
+import { setupInstantQuestsRoutes } from "./routes-instant-quests";
 import { setupQuestProgressMiddleware } from "./routes-quest-progress";
 import { postSuggestionService } from "./services/post-suggestion-service";
 import mentorshipRoutes from "./routes-mentorship";
@@ -7281,6 +7282,10 @@ ${extractedText.substring(0, 5000)}
   
   // Career Quests routes
   setupCareerQuestsRoutes(apiRouter, storage);
+  
+  // Instant Quests routes (Trend-based instant quest opportunities)
+  setupInstantQuestsRoutes(apiRouter);
+  console.log("Instant Quests routes loaded");
   
   // Brand Goals routes - MUST be before Quest Progress Middleware to prevent body consumption
   apiRouter.use(createBrandGoalsRoutes(storage));
