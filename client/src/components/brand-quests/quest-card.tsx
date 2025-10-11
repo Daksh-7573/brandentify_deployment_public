@@ -335,28 +335,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 <span>{(questDefinition as any).guidanceSnippet}</span>
               </div>
             )}
-            {quest.suggestedHashtags && quest.suggestedHashtags.length > 0 && (
-              <div className="flex items-start gap-2 text-xs text-blue-200">
-                <span className="font-semibold">🏷️ Hashtags:</span>
-                <div className="flex flex-wrap gap-1">
-                  {quest.suggestedHashtags.map((tag: string, i: number) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        navigator.clipboard.writeText(`#${tag}`);
-                        toast({
-                          title: "Copied!",
-                          description: `#${tag} copied to clipboard`
-                        });
-                      }}
-                      className="text-blue-300 hover:text-blue-100 hover:underline cursor-pointer"
-                    >
-                      #{tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
         
