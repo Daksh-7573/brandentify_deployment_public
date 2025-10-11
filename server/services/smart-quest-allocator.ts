@@ -416,14 +416,14 @@ export class SmartQuestAllocator {
           .from(questDefinitions)
           .where(and(
             eq(questDefinitions.isActive, true), // Only active quests
-            eq(questDefinitions.type, 'social_post'),
+            eq(questDefinitions.type, 'social_quest'),
             notInArray(questDefinitions.id, assignedIds)
           ))
       : db.select()
           .from(questDefinitions)
           .where(and(
             eq(questDefinitions.isActive, true), // Only active quests
-            eq(questDefinitions.type, 'social_post')
+            eq(questDefinitions.type, 'social_quest')
           ));
     
     return await socialQuestsQuery;
