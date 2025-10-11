@@ -230,6 +230,18 @@ export default function DesignerShowcase({
             {userInfo.aboutMe && <p className="text-white/80 leading-relaxed mb-6">{userInfo.aboutMe}</p>}
             
             <div className="grid md:grid-cols-2 gap-6">
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div className="md:col-span-2">
+                  <h3 className="text-xl font-semibold text-cyan-400 mb-3">Core Values</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {userInfo.coreValues.map((value, i) => (
+                      <Badge key={i} className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               {userInfo.visionStatement && (
                 <div>
                   <h3 className="text-xl font-semibold text-purple-400 mb-2">Vision</h3>
@@ -257,18 +269,6 @@ export default function DesignerShowcase({
                     </div>
                   )}
                 </>
-              )}
-              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                <div className="md:col-span-2">
-                  <h3 className="text-xl font-semibold text-cyan-400 mb-3">Core Values</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {userInfo.coreValues.map((value, i) => (
-                      <Badge key={i} className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
-                        {value}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
               )}
             </div>
           </motion.div>
