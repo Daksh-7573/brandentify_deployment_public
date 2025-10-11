@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Download, Calendar, Mail, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import type { User, Skill, Project, WorkExperience, Education } from "@shared/schema";
 
 // Animation configuration with reduced motion support
 const useAnimationConfig = () => {
@@ -30,7 +31,7 @@ const useAnimationConfig = () => {
 };
 
 // Skill progress bar with animation
-function SkillBar({ skill, delay = 0 }: { skill: any; delay?: number }) {
+function SkillBar({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
   const [progress, setProgress] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   
@@ -67,7 +68,7 @@ function SkillBar({ skill, delay = 0 }: { skill: any; delay?: number }) {
 }
 
 // Project card with hover overlay
-function ProjectCard({ project, onClick }: { project: any; onClick: () => void }) {
+function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
   const anim = useAnimationConfig();
   
   return (
@@ -112,7 +113,7 @@ function ProjectCard({ project, onClick }: { project: any; onClick: () => void }
 
 export default function DesignerPortfolio() {
   const { user } = useAuth();
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showMentorModal, setShowMentorModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const anim = useAnimationConfig();
@@ -120,31 +121,31 @@ export default function DesignerPortfolio() {
   const userId = user?.id || 1;
   
   // Fetch user profile data
-  const { data: profile } = useQuery<any>({
+  const { data: profile } = useQuery<User>({
     queryKey: ['/api/user', userId],
     enabled: !!userId
   });
   
   // Fetch skills
-  const { data: skills = [] } = useQuery<any[]>({
+  const { data: skills = [] } = useQuery<Skill[]>({
     queryKey: ['/api/skills', userId],
     enabled: !!userId
   });
   
   // Fetch projects
-  const { data: projects = [] } = useQuery<any[]>({
+  const { data: projects = [] } = useQuery<Project[]>({
     queryKey: ['/api/projects', userId],
     enabled: !!userId
   });
   
   // Fetch work experiences
-  const { data: experiences = [] } = useQuery<any[]>({
+  const { data: experiences = [] } = useQuery<WorkExperience[]>({
     queryKey: ['/api/work-experiences', userId],
     enabled: !!userId
   });
   
   // Fetch education
-  const { data: education = [] } = useQuery<any[]>({
+  const { data: education = [] } = useQuery<Education[]>({
     queryKey: ['/api/education', userId],
     enabled: !!userId
   });
@@ -173,16 +174,14 @@ export default function DesignerPortfolio() {
           <div className="flex flex-col md:flex-row items-start gap-8">
             {/* Profile Photo */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
+              {...anim.fadeIn}
               className="relative"
             >
               <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
                 {profile.photoURL ? (
                   <img 
-                    src={profile.photoURL} 
-                    alt={profile.name}
+                    src={profile.photoURL || undefined} 
+                    alt={profile.name || undefined}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -196,9 +195,7 @@ export default function DesignerPortfolio() {
             {/* Profile Info */}
             <div className="flex-1">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
+                {...anim.fadeIn}
               >
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
                   {profile.name || profile.username}
@@ -350,7 +347,7 @@ export default function DesignerPortfolio() {
               What I'm Good At
             </motion.h2>
             <div className="grid md:grid-cols-2 gap-6">
-              {skills.map((skill: any, idx: number) => (
+              {skills.map((skill, idx) => (
                 <SkillBar key={skill.id} skill={skill} delay={idx * 100} />
               ))}
             </div>
@@ -366,7 +363,7 @@ export default function DesignerPortfolio() {
               Project Showcase
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project: any) => (
+              {projects.map((project) => (
                 <ProjectCard 
                   key={project.id} 
                   project={project}
@@ -386,7 +383,7 @@ export default function DesignerPortfolio() {
               Career Path
             </motion.h2>
             <div className="space-y-8">
-              {experiences.map((exp: any, idx: number) => (
+              {experiences.map((exp, idx) => (
                 <motion.div
                   key={exp.id}
                   {...anim.fadeIn}
@@ -412,13 +409,13 @@ export default function DesignerPortfolio() {
                       {exp.description && (
                         <p className="text-white/80 mb-3">{exp.description}</p>
                       )}
-                      {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 && (
+                      {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 ? (
                         <ul className="list-disc list-inside space-y-1 text-white/70 text-sm">
-                          {exp.keyResponsibilities.map((resp: string, i: number) => (
+                          {(exp.keyResponsibilities as string[]).map((resp, i) => (
                             <li key={i}>{resp}</li>
                           ))}
                         </ul>
-                      )}
+                      ) : null}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -436,7 +433,7 @@ export default function DesignerPortfolio() {
               Academic Background
             </motion.h2>
             <div className="grid md:grid-cols-2 gap-6">
-              {education.map((edu: any) => (
+              {education.map((edu) => (
                 <motion.div key={edu.id} {...anim.fadeIn} {...anim.hoverLift}>
                   <Card className="bg-white/10 backdrop-blur-xl border-white/20 h-full">
                     <CardContent className="p-6">
@@ -453,15 +450,15 @@ export default function DesignerPortfolio() {
                       {edu.fieldOfStudy && (
                         <p className="text-white/80 mb-3">Field: {edu.fieldOfStudy}</p>
                       )}
-                      {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                      {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {edu.skillsAcquired.map((skill: string, i: number) => (
+                          {(edu.skillsAcquired as string[]).map((skill, i) => (
                             <Badge key={i} className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-xs">
                               {skill}
                             </Badge>
                           ))}
                         </div>
-                      )}
+                      ) : null}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -509,7 +506,7 @@ export default function DesignerPortfolio() {
                 
                 {selectedProject.projectUrl && (
                   <Button
-                    onClick={() => window.open(selectedProject.projectUrl, '_blank')}
+                    onClick={() => window.open(selectedProject.projectUrl || undefined, '_blank')}
                     className="w-full bg-purple-600 hover:bg-purple-700"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
