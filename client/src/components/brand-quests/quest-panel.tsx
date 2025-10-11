@@ -6,9 +6,11 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   useUserCombinedDailyQuests,
   useUserCareerQuestsByBucket,
-  useUserSocialQuestsByBucket
+  useUserSocialQuestsByBucket,
+  useInstantQuests
 } from '@/hooks/use-career-quests';
 import { QuestCard } from './quest-card';
+import { InstantQuestCard } from './instant-quest-card';
 import { cn } from '@/lib/utils';
 
 interface QuestPanelProps {
@@ -55,6 +57,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { data: dailySocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'daily');
   const { data: completedSocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'completed');
   const { data: missedSocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'missed');
+
+  // Fetch instant quests (trending opportunities) by type
+  const { data: careerInstantQuests = [], isLoading: isLoadingCareerInstant } = useInstantQuests(userId, 'career');
+  const { data: socialInstantQuests = [], isLoading: isLoadingSocialInstant } = useInstantQuests(userId, 'social');
 
   // Combined loading states
   const isLoadingDaily = isLoadingCurrentCareer || isLoadingCurrentSocial;
@@ -199,6 +205,25 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                 <div className="text-xs text-white/60 mb-2">
                   {new Date().toLocaleDateString()} - Today's career quests
                 </div>
+                
+                {/* Show career instant quests (trending opportunities) first */}
+                {isLoadingCareerInstant ? (
+                  <div className="mb-4">
+                    <Skeleton className="w-full h-[180px] rounded-md" />
+                  </div>
+                ) : careerInstantQuests && careerInstantQuests.length > 0 ? (
+                  <div className="mb-4 space-y-3">
+                    <div className="text-xs font-semibold text-yellow-400/90 uppercase tracking-wide flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                      Trending Now
+                    </div>
+                    {careerInstantQuests.map((quest: any) => (
+                      <InstantQuestCard key={quest.id} quest={quest} />
+                    ))}
+                  </div>
+                ) : null}
+                
+                {/* Regular career quests */}
                 {renderQuestsList(currentCareerQuests, isLoadingDaily)}
               </TabsContent>
               
@@ -240,6 +265,25 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                 <div className="text-xs text-white/60 mb-2">
                   {new Date().toLocaleDateString()} - Today's social media quests
                 </div>
+                
+                {/* Show social instant quests (trending opportunities) first */}
+                {isLoadingSocialInstant ? (
+                  <div className="mb-4">
+                    <Skeleton className="w-full h-[180px] rounded-md" />
+                  </div>
+                ) : socialInstantQuests && socialInstantQuests.length > 0 ? (
+                  <div className="mb-4 space-y-3">
+                    <div className="text-xs font-semibold text-yellow-400/90 uppercase tracking-wide flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                      Trending Now
+                    </div>
+                    {socialInstantQuests.map((quest: any) => (
+                      <InstantQuestCard key={quest.id} quest={quest} />
+                    ))}
+                  </div>
+                ) : null}
+                
+                {/* Regular social quests */}
                 {renderQuestsList(currentSocialQuests, isLoadingDaily)}
               </TabsContent>
               

@@ -804,3 +804,55 @@ export const useUserSocialQuestsByBucket = (userId?: number, bucket?: 'daily' | 
     enabled: !!userId && !!bucket
   });
 };
+
+// ========================================
+// INSTANT QUEST HOOKS (Trending Opportunities)
+// ========================================
+
+/**
+ * Fetch pending instant quests for a user, optionally filtered by quest type
+ */
+export const useInstantQuests = (userId?: number, questType?: 'career' | 'social') => {
+  return useQuery({
+    queryKey: [userId ? `/api/instant-quests/pending/${userId}` : null, questType],
+    queryFn: async () => {
+      if (!userId) {
+        return [];
+      }
+      
+      try {
+        const url = questType 
+          ? `/api/instant-quests/pending/${userId}?questType=${questType}`
+          : `/api/instant-quests/pending/${userId}`;
+        
+        console.log(`[INSTANT QUEST API] Fetching from: ${url}`);
+        const res = await fetch(url);
+        
+        if (!res.ok) {
+          console.error(`[INSTANT QUEST API ERROR] Failed to fetch instant quests, status:`, res.status);
+          return [];
+        }
+        
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error(`[INSTANT QUEST API ERROR] Expected JSON but got ${contentType}`);
+          return [];
+        }
+        
+        const data = await res.json();
+        console.log(`[INSTANT QUEST API SUCCESS] Instant quests fetched:`, {
+          questType,
+          count: Array.isArray(data) ? data.length : 'Not an array',
+          userId
+        });
+        
+        return data;
+      } catch (error) {
+        console.error(`[INSTANT QUEST API ERROR] Error fetching instant quests:`, error);
+        return [];
+      }
+    },
+    enabled: !!userId,
+    refetchInterval: 60000 // Refetch every minute to check for new trending topics
+  });
+};
