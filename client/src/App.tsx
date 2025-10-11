@@ -74,6 +74,7 @@ const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
 const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
+const DesignerPortfolio = lazy(() => import("@/pages/designer-portfolio"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
 const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
@@ -287,6 +288,9 @@ function Router() {
             <ProtectedRoute path="/profile" component={ProfileNeo} />
           )} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
+          <Route path="/designer-portfolio" component={() => (
+            <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
+          )} />
           <Route path="/@:username">
             {(params) => <PublicProfile username={params.username} />}
           </Route>

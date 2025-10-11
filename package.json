@@ -78,7 +78,7 @@
     "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "firebase": "^11.6.0",
-    "framer-motion": "^11.13.1",
+    "framer-motion": "^11.18.2",
     "helmet": "^8.1.0",
     "helmet-csp": "^4.0.0",
     "http-proxy-middleware": "^3.0.5",
