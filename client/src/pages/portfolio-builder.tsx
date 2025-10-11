@@ -119,7 +119,11 @@ export default function PortfolioBuilder() {
     lookingFor: string | null;
     whatIOffer: string | null;
     aboutMe: string | null;
-    // Add other fields as needed
+    tagline: string | null;
+    visionStatement: string | null;
+    missionStatement: string | null;
+    coreValues: string[] | null;
+    uniqueValueProposition: string | null;
   };
   
   // Fetch user profile data with proper typing
@@ -1238,11 +1242,11 @@ export default function PortfolioBuilder() {
                   lookingFor: userData?.lookingFor || null,
                   whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
                   jobLevel: userData?.jobLevel || null,
-                  tagline: (userData as any)?.tagline || null,
-                  visionStatement: (userData as any)?.visionStatement || null,
-                  missionStatement: (userData as any)?.missionStatement || null,
-                  coreValues: (userData as any)?.coreValues || [],
-                  uniqueValueProposition: (userData as any)?.uniqueValueProposition || null
+                  tagline: userData?.tagline || null,
+                  visionStatement: userData?.visionStatement || null,
+                  missionStatement: userData?.missionStatement || null,
+                  coreValues: userData?.coreValues || [],
+                  uniqueValueProposition: userData?.uniqueValueProposition || null
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
