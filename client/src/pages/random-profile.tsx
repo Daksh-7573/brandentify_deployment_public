@@ -23,6 +23,7 @@ import CorporateExecutive from "@/components/portfolio/templates/corporate-execu
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
+import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 
 // Type for our user data
 interface UserData {
@@ -247,6 +248,8 @@ const RandomProfile = () => {
     case "animated_odyssey":
     case "animated-odyssey":
       return <AnimatedOdyssey {...templateProps} />;
+    case "designer-portfolio":
+      return <DesignerShowcase {...templateProps} />;
     default:
       return <CorporateExecutive {...templateProps} />;
   }

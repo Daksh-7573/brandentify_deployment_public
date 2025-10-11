@@ -16,6 +16,7 @@ import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Animated from "@/components/portfolio/templates/animated";
 import DynamicInnovator from "@/components/portfolio/templates/dynamic-innovator";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
+import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 
 interface UserData {
   id: number;
@@ -391,6 +392,15 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
             ...templateProps.userInfo,
             jobLevel: templateProps.userInfo.jobLevel || null
           }}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'designer-portfolio':
+        return <DesignerShowcase 
+          userInfo={templateProps.userInfo}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
