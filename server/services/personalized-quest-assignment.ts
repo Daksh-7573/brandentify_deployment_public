@@ -333,11 +333,11 @@ export class PersonalizedQuestAssignment {
     const specs: { [key: string]: any } = {
       // LinkedIn
       'create_linkedin_post': {
-        format: 'LinkedIn Post',
+        format: 'LinkedIn Text Post (with 1-2 images optional)',
         quantityValue: 300,
         quantityType: 'words minimum',
-        constraints: 'Professional tone, include industry insights, use 3-5 hashtags',
-        guidance: 'Write directly in LinkedIn post composer or draft in document first'
+        constraints: 'Professional tone, include industry insights, hook in first line',
+        guidance: 'Write directly in LinkedIn post composer, add relevant image if available'
       },
       'create_linkedin_article': {
         format: 'LinkedIn Article',
