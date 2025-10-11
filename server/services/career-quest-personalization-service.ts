@@ -1,6 +1,8 @@
 import { db } from '../db';
 import { users, questDefinitions, careerGoals, userHashtagFollows, hashtags } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { trendIntelligenceService } from './trend-intelligence/trend-intelligence-service';
+import { dynamicQuestNarrativeGenerator } from './trend-intelligence/dynamic-quest-narrative-generator';
 
 interface EnhancedUserProfile {
   industry: string;
@@ -35,11 +37,11 @@ export class CareerQuestPersonalizationService {
   /**
    * Get personalized content for a specific quest type based on user profile
    */
-  getPersonalizedQuestContent(questType: string, targetAction: string, userProfile: UserProfile | EnhancedUserProfile | null): {
+  async getPersonalizedQuestContent(questType: string, targetAction: string, userProfile: UserProfile | EnhancedUserProfile | null): Promise<{
     title: string;
     description: string;
     muskTip: string;
-  } {
+  }> {
     // More flexible fallback - use enhanced content if we have industry OR domain
     if (!userProfile || (!userProfile.industry && !userProfile.domain)) {
       return this.getDefaultContent(questType, targetAction);
@@ -63,9 +65,9 @@ export class CareerQuestPersonalizationService {
       case 'update_resume':
         return this.getPersonalizedResumeContent(industry, domain, enhancedProfile);
       case 'add_project':
-        return this.getPersonalizedPortfolioContent(industry, domain, enhancedProfile);
+        return await this.getPersonalizedPortfolioContent(industry, domain, enhancedProfile);
       case 'create_content':
-        return this.getPersonalizedContentContent(industry, domain, enhancedProfile);
+        return await this.getPersonalizedContentContent(industry, domain, enhancedProfile);
       default:
         return this.getDefaultContent(questType, targetAction);
     }
@@ -193,11 +195,45 @@ export class CareerQuestPersonalizationService {
     };
   }
 
-  private getPersonalizedPortfolioContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
+  private async getPersonalizedPortfolioContent(industry: string, domain: string, profile?: EnhancedUserProfile): Promise<{
     title: string;
     description: string;
     muskTip: string;
-  } {
+  }> {
+    // Try to get trend-aware content using Trend Intelligence System
+    try {
+      const trendBundle = await trendIntelligenceService.getTrendBundle(industry, domain);
+      
+      if (trendBundle && trendBundle.trends.length > 0) {
+        console.log(`[QuestPersonalization] Using trend-aware portfolio generation for ${industry}/${domain}`);
+        
+        const narrative = await dynamicQuestNarrativeGenerator.generateNarrative(
+          {
+            questType: 'portfolio_building',
+            industry,
+            domain,
+            userProfile: {
+              title: profile?.title,
+              name: profile?.name,
+              brandGoals: profile?.goals?.map(g => g.title)
+            },
+            deliverableFormat: 'Project showcase',
+            platform: 'Brandentifier'
+          },
+          trendBundle
+        );
+        
+        return {
+          title: narrative.title,
+          description: narrative.description,
+          muskTip: narrative.muskTip
+        };
+      }
+    } catch (error) {
+      console.error('[QuestPersonalization] Trend-aware portfolio generation failed, using fallback:', error);
+    }
+    
+    // Fallback to original logic if trends unavailable
     let description = `Add a project showcasing your ${industry.toLowerCase()} expertise or ${domain.toLowerCase()} solutions`;
     let muskTip = `Include ${industry} projects that demonstrate your impact and showcase your ${domain} expertise with measurable results.`;
     
@@ -217,11 +253,52 @@ export class CareerQuestPersonalizationService {
     };
   }
 
-  private getPersonalizedContentContent(industry: string, domain: string, profile?: EnhancedUserProfile): {
+  private async getPersonalizedContentContent(industry: string, domain: string, profile?: EnhancedUserProfile): Promise<{
     title: string;
     description: string;
     muskTip: string;
-  } {
+  }> {
+    // Try to get trend-aware content using Trend Intelligence System
+    try {
+      const trendBundle = await trendIntelligenceService.getTrendBundle(industry, domain);
+      
+      if (trendBundle && trendBundle.trends.length > 0) {
+        console.log(`[QuestPersonalization] Using trend-aware generation for ${industry}/${domain}`);
+        
+        const narrative = await dynamicQuestNarrativeGenerator.generateNarrative(
+          {
+            questType: 'content_creation',
+            industry,
+            domain,
+            userProfile: {
+              title: profile?.title,
+              name: profile?.name,
+              brandGoals: profile?.goals?.map(g => g.title)
+            },
+            deliverableFormat: 'Professional post or article',
+            platform: 'Brandentifier or LinkedIn'
+          },
+          trendBundle
+        );
+        
+        // Enhance with hashtag interests
+        let muskTip = narrative.muskTip;
+        if (profile?.followedHashtags && profile.followedHashtags.length > 0) {
+          const relevantHashtags = profile.followedHashtags.slice(0, 3).map(h => `#${h.tag}`).join(' ');
+          muskTip += ` Consider using hashtags you follow: ${relevantHashtags}`;
+        }
+        
+        return {
+          title: narrative.title,
+          description: narrative.description,
+          muskTip
+        };
+      }
+    } catch (error) {
+      console.error('[QuestPersonalization] Trend-aware generation failed, using fallback:', error);
+    }
+    
+    // Fallback to original logic if trends unavailable
     let description = `Share professional insights about ${industry.toLowerCase()} trends or ${domain.toLowerCase()} best practices`;
     let muskTip = `${industry} professionals who share ${domain} insights build thought leadership. Focus on industry challenges, innovative solutions, and market trends.`;
     
@@ -414,7 +491,7 @@ export class CareerQuestPersonalizationService {
       const skillQuests = await db.select().from(questDefinitions).where(eq(questDefinitions.targetAction, 'add_skill'));
       
       if (skillQuests.length > 0) {
-          const personalizedContent = this.getPersonalizedQuestContent('profile_update', 'add_skill', userProfile);
+          const personalizedContent = await this.getPersonalizedQuestContent('profile_update', 'add_skill', userProfile);
           
           await db.update(questDefinitions)
             .set({
@@ -436,15 +513,15 @@ export class CareerQuestPersonalizationService {
   /**
    * Get enhanced personalized quest content using goals, location, and hashtags
    */
-  getEnhancedQuestContent(questType: string, targetAction: string, userProfile: EnhancedUserProfile): {
+  async getEnhancedQuestContent(questType: string, targetAction: string, userProfile: EnhancedUserProfile): Promise<{
     title: string;
     description: string;
     muskTip: string;
-  } {
+  }> {
     const { industry, domain, location, goals, followedHashtags } = userProfile;
     
     // Get base content first
-    const baseContent = this.getPersonalizedQuestContent(questType, targetAction, userProfile);
+    const baseContent = await this.getPersonalizedQuestContent(questType, targetAction, userProfile);
     
     // Enhance with goals context
     let enhancedDescription = baseContent.description;
