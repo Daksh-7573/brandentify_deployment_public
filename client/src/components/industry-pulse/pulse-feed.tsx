@@ -28,6 +28,10 @@ interface PulseItem {
   mediaUrls?: string[];
   // Poll specific
   pollOptions?: string[];
+  // Hashtags
+  hashtags?: string[] | any[];
+  // Relevance scoring
+  relevanceScore?: number;
   // User info for display
   user?: {
     name: string | null;
@@ -57,11 +61,18 @@ export default function PulseFeed() {
     return undefined; // "all" tab
   };
   
+  // Fetch user's followed hashtags
+  const { data: followedHashtags = [] } = useQuery<string[]>({
+    queryKey: [`/api/users/${userId}/followed-hashtags`],
+    refetchOnWindowFocus: false
+  });
+  
   // User preferences for relevance sorting
   const userPreferences = {
-    interests: user?.interests || [],
-    industry: user?.industry || "",
-    followedUsers: user?.following || []
+    interests: (user as any)?.interests || [],
+    industry: (user as any)?.industry || "",
+    followedUsers: (user as any)?.following || [],
+    followedHashtags: followedHashtags
   };
   
   // Use the shared feed algorithm hook
@@ -98,17 +109,30 @@ export default function PulseFeed() {
         sortByRelevance(items, userPreferences);
       }
     },
-    refreshInterval: 60000, // Refresh every minute
+    refreshInterval: 120000, // Refresh every 2 minutes
     sortFunction: relevanceSort 
       ? (a, b) => {
-          // If we have calculated relevance scores, use them
+          // Relevance mode: use calculated relevance scores
           if (a.relevanceScore && b.relevanceScore) {
             return b.relevanceScore - a.relevanceScore;
           }
           // Otherwise fall back to date sorting
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         }
-      : (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      : (a, b) => {
+          // Personalized Recency mode: Recent + from followed users/hashtags first
+          const aDate = new Date(a.createdAt).getTime();
+          const bDate = new Date(b.createdAt).getTime();
+          
+          const aIsFollowed = userPreferences.followedUsers?.includes(a.userId);
+          const bIsFollowed = userPreferences.followedUsers?.includes(b.userId);
+          
+          // Boost items from followed users by treating them as if posted 12 hours earlier
+          const aAdjustedDate = aIsFollowed ? aDate + (12 * 60 * 60 * 1000) : aDate;
+          const bAdjustedDate = bIsFollowed ? bDate + (12 * 60 * 60 * 1000) : bDate;
+          
+          return bAdjustedDate - aAdjustedDate;
+        }
   });
   
   // Toggle between relevance and recency sorting

@@ -6030,7 +6030,9 @@ ${extractedText.substring(0, 5000)}
       const hashtags = await storage.getFollowedHashtagsByUserId(userId);
       console.log(`[GET /users/:userId/followed-hashtags] Found ${hashtags.length} followed hashtags for user ${userId}`);
       
-      return res.json(hashtags);
+      // Return array of tag strings for easy consumption in frontend
+      const tagStrings = hashtags.map(h => h.tag).filter(Boolean);
+      return res.json(tagStrings);
     } catch (error) {
       console.error("[GET /users/:userId/followed-hashtags] Error:", error);
       return res.status(500).json({ message: "Internal server error" });

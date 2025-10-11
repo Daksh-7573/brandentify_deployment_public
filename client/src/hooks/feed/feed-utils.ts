@@ -35,6 +35,7 @@ export function calculateRelevanceScore(
     industry?: string;
     recentSearches?: string[];
     followedUsers?: number[];
+    followedHashtags?: string[];
   }
 ): number {
   let score = 0;
@@ -50,6 +51,21 @@ export function calculateRelevanceScore(
   // If matches user's industry
   if (item.industry === userPreferences.industry) {
     score += 20;
+  }
+  
+  // If contains hashtags the user follows
+  if (item.hashtags && userPreferences.followedHashtags) {
+    const itemHashtags = Array.isArray(item.hashtags) 
+      ? item.hashtags.map((h: any) => typeof h === 'string' ? h : h.tag).filter(Boolean)
+      : [];
+    
+    const followedHashtagsLower = userPreferences.followedHashtags.map(h => h.toLowerCase());
+    const matchingHashtags = itemHashtags.filter((tag: string) => 
+      followedHashtagsLower.includes(tag.toLowerCase())
+    );
+    
+    // +20 points per matching hashtag (up to 3 hashtags for max 60 points)
+    score += Math.min(matchingHashtags.length * 20, 60);
   }
   
   // If contains user's interests
