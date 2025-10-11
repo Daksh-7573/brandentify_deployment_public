@@ -67,20 +67,47 @@ export class InstantQuestMatcher {
     // Calculate relevance scores for each user
     const userRelevanceScores = await this.calculateRelevanceScores(trend, relevantUsers);
 
-    // Create instant quest records
-    const questRecords: InsertInstantQuest[] = relevantUsers.map(userId => ({
-      userId,
-      trendTopic: trend.topic,
-      trendKeywords: trend.keywords,
-      careerQuestDefinitionId: careerQuestId,
-      socialQuestDefinitionId: socialQuestId,
-      suggestedHashtags: trend.relevantHashtags,
-      status: 'pending' as const,
-      spikeScore: trend.spikeScore,
-      relevanceScore: userRelevanceScores.get(userId) || 50,
-      feedSources: trend.feedSources.slice(0, 5), // Limit to 5 sources
-      expiresAt: new Date(Date.now() + 6 * 60 * 60 * 1000) // 6 hours from now
-    }));
+    // Create TWO instant quest records per user: one career (Brandentifier) and one social (external platforms)
+    const questRecords: InsertInstantQuest[] = [];
+    
+    for (const userId of relevantUsers) {
+      const relevanceScore = userRelevanceScores.get(userId) || 50;
+      const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000); // 6 hours from now
+      
+      // Career quest - for Brandentifier platform (e.g., "Post a Pulse about this trend")
+      if (careerQuestId) {
+        questRecords.push({
+          userId,
+          questType: 'career' as const,
+          trendTopic: trend.topic,
+          trendKeywords: trend.keywords,
+          questDefinitionId: careerQuestId,
+          suggestedHashtags: trend.relevantHashtags,
+          status: 'pending' as const,
+          spikeScore: trend.spikeScore,
+          relevanceScore,
+          feedSources: trend.feedSources.slice(0, 5),
+          expiresAt
+        });
+      }
+      
+      // Social quest - for external platforms (e.g., "Share on LinkedIn about this trend")
+      if (socialQuestId) {
+        questRecords.push({
+          userId,
+          questType: 'social' as const,
+          trendTopic: trend.topic,
+          trendKeywords: trend.keywords,
+          questDefinitionId: socialQuestId,
+          suggestedHashtags: trend.relevantHashtags,
+          status: 'pending' as const,
+          spikeScore: trend.spikeScore,
+          relevanceScore,
+          feedSources: trend.feedSources.slice(0, 5),
+          expiresAt
+        });
+      }
+    }
 
     // Batch insert (1000 records at a time)
     let totalInserted = 0;
@@ -90,7 +117,7 @@ export class InstantQuestMatcher {
       totalInserted += batch.length;
     }
 
-    console.log(`[InstantQuestMatcher] ✅ Created ${totalInserted} instant quests for "${trend.topic}"`);
+    console.log(`[InstantQuestMatcher] ✅ Created ${totalInserted} instant quests for "${trend.topic}" (${relevantUsers.length} users x 2 quest types)`);
 
     return {
       trendTopic: trend.topic,
@@ -204,7 +231,7 @@ export class InstantQuestMatcher {
 
     return {
       careerQuestId: careerQuest.length > 0 ? careerQuest[0].id : null,
-      socialQuestDefinitionId: socialQuest.length > 0 ? socialQuest[0].id : null
+      socialQuestId: socialQuest.length > 0 ? socialQuest[0].id : null
     };
   }
 
