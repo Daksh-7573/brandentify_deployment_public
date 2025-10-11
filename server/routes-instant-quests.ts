@@ -16,7 +16,7 @@ import { eq, and, gte } from "drizzle-orm";
 export function setupInstantQuestsRoutes(apiRouter: Router) {
   
   /**
-   * Get pending instant quests for a user
+   * Get pending instant quests for a user (optionally filtered by quest_type)
    */
   apiRouter.get("/instant-quests/pending/:userId", async (req, res) => {
     try {
@@ -25,44 +25,42 @@ export function setupInstantQuestsRoutes(apiRouter: Router) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
 
+      const questType = req.query.questType as string | undefined; // 'career' or 'social'
       const now = new Date();
+
+      // Build where conditions
+      const whereConditions = [
+        eq(instantQuests.userId, userId),
+        eq(instantQuests.status, "pending"),
+        gte(instantQuests.expiresAt, now)
+      ];
+
+      // Add quest type filter if provided
+      if (questType === 'career' || questType === 'social') {
+        whereConditions.push(eq(instantQuests.questType, questType));
+      }
 
       // Get pending instant quests that haven't expired
       const pendingQuests = await db
         .select()
         .from(instantQuests)
-        .where(
-          and(
-            eq(instantQuests.userId, userId),
-            eq(instantQuests.status, "pending"),
-            gte(instantQuests.expiresAt, now)
-          )
-        )
+        .where(and(...whereConditions))
         .orderBy(instantQuests.createdAt);
 
       // Get quest definitions for each quest
       const questsWithDefinitions = await Promise.all(
         pendingQuests.map(async (quest) => {
-          const careerQuestDef = quest.careerQuestDefinitionId
+          const questDef = quest.questDefinitionId
             ? await db
                 .select()
                 .from(questDefinitions)
-                .where(eq(questDefinitions.id, quest.careerQuestDefinitionId))
-                .limit(1)
-            : [];
-
-          const socialQuestDef = quest.socialQuestDefinitionId
-            ? await db
-                .select()
-                .from(questDefinitions)
-                .where(eq(questDefinitions.id, quest.socialQuestDefinitionId))
+                .where(eq(questDefinitions.id, quest.questDefinitionId))
                 .limit(1)
             : [];
 
           return {
             ...quest,
-            careerQuest: careerQuestDef[0] || null,
-            socialQuest: socialQuestDef[0] || null
+            questDefinition: questDef[0] || null
           };
         })
       );
@@ -75,19 +73,13 @@ export function setupInstantQuestsRoutes(apiRouter: Router) {
   });
 
   /**
-   * Accept an instant quest
+   * Accept an instant quest (converts it to a regular user quest)
    */
   apiRouter.post("/instant-quests/:id/accept", async (req, res) => {
     try {
       const questId = parseInt(req.params.id);
       if (isNaN(questId)) {
         return res.status(400).json({ message: "Invalid quest ID" });
-      }
-
-      const { questType } = req.body; // 'career' or 'social'
-
-      if (!questType || (questType !== 'career' && questType !== 'social')) {
-        return res.status(400).json({ message: "Invalid quest type. Must be 'career' or 'social'" });
       }
 
       // Update instant quest status to accepted
@@ -104,10 +96,15 @@ export function setupInstantQuestsRoutes(apiRouter: Router) {
         return res.status(404).json({ message: "Instant quest not found" });
       }
 
+      // TODO: Create a regular user quest from this instant quest
+      // This would involve:
+      // 1. Getting the quest definition
+      // 2. Creating a new user_quest record
+      // 3. Customizing the narrative with the trending topic context
+
       res.json({ 
         message: "Instant quest accepted", 
-        quest: updatedQuest,
-        selectedType: questType 
+        quest: updatedQuest
       });
     } catch (error) {
       console.error(`[POST /instant-quests/${req.params.id}/accept] Error:`, error);
