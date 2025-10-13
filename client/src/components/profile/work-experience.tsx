@@ -918,14 +918,6 @@ export default function WorkExperience() {
                   <h4 className="text-lg font-semibold text-white">{experience.title}</h4>
                   <p className="text-blue-400 mb-2">{experience.company}</p>
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-3">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      {experience.location}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <CalendarIcon className="w-4 h-4" />
-                      {experience.startDate && formatDate(new Date(experience.startDate))} - {experience.endDate ? formatDate(new Date(experience.endDate)) : 'Present'}
-                    </span>
                     {experience.industry && (
                       <span className="flex items-center gap-1">
                         <Building className="w-4 h-4" />
@@ -938,6 +930,14 @@ export default function WorkExperience() {
                         {experience.domain}
                       </span>
                     )}
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {experience.location}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <CalendarIcon className="w-4 h-4" />
+                      {experience.startDate && formatDate(new Date(experience.startDate))} - {experience.endDate ? formatDate(new Date(experience.endDate)) : 'Present'}
+                    </span>
                   </div>
                   {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
                     <div className="mt-3">
