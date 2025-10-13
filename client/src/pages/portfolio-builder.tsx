@@ -503,9 +503,9 @@ export default function PortfolioBuilder() {
     { 
       id: "photographer-portfolio", 
       name: "The Photographer Portfolio", 
-      description: `✔ Theme: Image-First, Minimal, Photography-Focused
-✔ Best For: Photographers, Visual Artists, Videographers, Image-Driven Creators`,
-      theme: "#4F46E5"
+      description: `✔ Theme: Creative, Animation-Rich, Photography-Focused with Camera Effects
+✔ Best For: Photographers, Visual Artists, Videographers, Creative Image-Driven Professionals`,
+      theme: "#FFB84D"
     },
     { 
       id: "pastel-dreamscape", 
@@ -1293,16 +1293,11 @@ export default function PortfolioBuilder() {
                   industry: userData?.industry || null,
                   domain: userData?.domain || null,
                   lookingFor: userData?.lookingFor || null,
-                  whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                  jobLevel: userData?.jobLevel || null,
                   tagline: userData?.tagline || null,
                   visionStatement: userData?.visionStatement || null,
                   missionStatement: userData?.missionStatement || null,
                   coreValues: userData?.coreValues || [],
-                  uniqueValueProposition: userData?.uniqueValueProposition || null,
-                  brandName: userData?.brandName || null,
-                  primaryAudience: userData?.primaryAudience || [],
-                  secondaryAudience: userData?.secondaryAudience || []
+                  uniqueValueProposition: userData?.uniqueValueProposition || null
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
