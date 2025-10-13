@@ -1,19 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { 
-  Mail, MapPin, MessageCircle, X, ChevronDown, 
-  Sparkles, Star, Circle, Heart, Send,
+  Mail, MapPin, ChevronDown, 
+  Sparkles, Star, Heart,
   Briefcase, GraduationCap, Award, Code
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import type { User, Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
+import type { Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
 
 interface PastelDreamscapeProps {
   userInfo: {
@@ -161,13 +156,13 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
 // Skill Petal Component (Radial Layout)
 function SkillPetals({ skills }: { skills: Skill[] }) {
   const displaySkills = skills.slice(0, 8);
-  const radius = 180;
+  const radius = 200;
   
   return (
-    <div className="relative w-full h-[500px] flex items-center justify-center">
+    <div className="relative w-full h-[550px] flex items-center justify-center">
       {/* Center Circle */}
       <motion.div
-        className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
         animate={{
           scale: [1, 1.1, 1],
           rotate: 360,
@@ -182,7 +177,8 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
 
       {/* Skill Petals */}
       {displaySkills.map((skill, index) => {
-        const angle = (index * 360) / displaySkills.length;
+        // Start from top (270 degrees or -90 degrees) and go clockwise
+        const angle = -90 + (index * 360) / displaySkills.length;
         const radian = (angle * Math.PI) / 180;
         const x = radius * Math.cos(radian);
         const y = radius * Math.sin(radian);
@@ -192,9 +188,9 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
             key={skill.id}
             className="absolute"
             style={{
-              left: `calc(50% + ${x}px)`,
-              top: `calc(50% + ${y}px)`,
-              transform: "translate(-50%, -50%)",
+              left: '50%',
+              top: '50%',
+              transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
             }}
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -538,138 +534,6 @@ function EducationAccordion({ educations }: { educations: Education[] }) {
   );
 }
 
-// Contact Form
-function ContactSection({ userEmail }: { userEmail: string | null }) {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast({
-        title: "Message Sent!",
-        description: "Thank you for reaching out. I'll get back to you soon!",
-      });
-      setFormData({ name: "", email: "", message: "" });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="relative">
-      {/* Orbiting Contact Button */}
-      <motion.div
-        className="absolute -top-20 left-1/2 -translate-x-1/2"
-        animate={{
-          y: [0, -10, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      >
-        <div className="relative">
-          <motion.div
-            className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center shadow-xl cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Mail className="w-10 h-10 text-white" />
-          </motion.div>
-          {/* Orbit Effect */}
-          <motion.div
-            className="absolute -inset-3 border-2 border-dashed border-purple-300 rounded-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          />
-        </div>
-      </motion.div>
-
-      <GlassCard className="p-8 mt-16">
-        <h3 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          Let's Connect
-        </h3>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Input
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              className="backdrop-blur-md bg-white/60 border-white/80 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <Input
-              type="email"
-              placeholder="Your Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-              className="backdrop-blur-md bg-white/60 border-white/80 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <Textarea
-              placeholder="Your Message"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              required
-              rows={5}
-              className="backdrop-blur-md bg-white/60 border-white/80 rounded-xl resize-none"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {isSubmitting ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              >
-                <Circle className="w-5 h-5" />
-              </motion.div>
-            ) : (
-              <span className="flex items-center gap-2">
-                Send Message <Send className="w-5 h-5" />
-              </span>
-            )}
-          </Button>
-        </form>
-
-        {userEmail && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Or email me directly at{" "}
-              <a href={`mailto:${userEmail}`} className="text-purple-600 hover:underline font-semibold">
-                {userEmail}
-              </a>
-            </p>
-          </div>
-        )}
-      </GlassCard>
-    </div>
-  );
-}
-
 // Main Component
 export default function PastelDreamscape({
   userInfo,
@@ -693,7 +557,7 @@ export default function PastelDreamscape({
       {/* Content Container */}
       <div className="relative z-10">
         {/* Hero Section - Split Diagonal */}
-        <section className="min-h-screen flex items-center justify-center px-6 py-20">
+        <section className="min-h-screen flex items-center justify-center px-6 py-24">
           <div className="container mx-auto max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               {/* Left Side - Text Content */}
@@ -712,9 +576,15 @@ export default function PastelDreamscape({
                     {userInfo.name}
                   </h1>
                   {userInfo.title && (
-                    <h2 className="text-2xl md:text-3xl text-gray-700 font-semibold">
+                    <h2 className="text-2xl md:text-3xl text-gray-700 font-semibold mb-2">
                       {userInfo.title}
                     </h2>
+                  )}
+                  {userInfo.location && (
+                    <div className="flex items-center gap-2 text-gray-600 mb-2">
+                      <MapPin className="w-5 h-5" />
+                      <span className="text-lg">{userInfo.location}</span>
+                    </div>
                   )}
                 </motion.div>
 
@@ -735,12 +605,6 @@ export default function PastelDreamscape({
                   transition={{ delay: 0.6 }}
                   className="flex flex-wrap gap-3"
                 >
-                  {userInfo.location && (
-                    <Badge className="bg-white/60 text-gray-700 border-white/80 text-sm px-4 py-2">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {userInfo.location}
-                    </Badge>
-                  )}
                   {userInfo.industry && (
                     <Badge className="bg-gradient-to-r from-pink-400 to-purple-400 text-white border-0 text-sm px-4 py-2">
                       {userInfo.industry}
@@ -758,10 +622,33 @@ export default function PastelDreamscape({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="flex items-center gap-2 text-purple-600 font-semibold"
+                    className="space-y-3"
                   >
-                    <Sparkles className="w-5 h-5" />
-                    <span>Looking for: {userInfo.lookingFor}</span>
+                    <div className="flex items-center gap-2 text-purple-600 font-semibold">
+                      <Sparkles className="w-5 h-5" />
+                      <span>Looking for: {userInfo.lookingFor}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {userInfo.email && (
+                        <>
+                          <Button
+                            onClick={() => window.location.href = `mailto:${userInfo.email}`}
+                            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-full px-6"
+                          >
+                            <Mail className="w-4 h-4 mr-2" />
+                            Let's Talk
+                          </Button>
+                          <Button
+                            onClick={() => window.location.href = `mailto:${userInfo.email}?subject=Mentorship Inquiry`}
+                            variant="outline"
+                            className="border-2 border-purple-400 text-purple-600 hover:bg-purple-50 rounded-full px-6"
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Mentor
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </motion.div>
@@ -858,7 +745,7 @@ export default function PastelDreamscape({
 
         {/* About Section - Floating Glass Capsule */}
         {userInfo.aboutMe && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-4xl">
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
@@ -903,9 +790,32 @@ export default function PastelDreamscape({
           </section>
         )}
 
+        {/* What I Offer Section */}
+        {userInfo.whatIOffer && (
+          <section className="py-24 px-6">
+            <div className="container mx-auto max-w-4xl">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                  What I Offer
+                </h2>
+                <GlassCard className="p-10">
+                  <p className="text-gray-700 text-lg leading-relaxed text-center">
+                    {userInfo.whatIOffer}
+                  </p>
+                </GlassCard>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
         {/* Skills Section - Radial Petals */}
         {userSkills.length > 0 && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-6xl">
               <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 My Skills
@@ -917,7 +827,7 @@ export default function PastelDreamscape({
 
         {/* Projects Section - Animated Mosaic */}
         {userProjects.length > 0 && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-7xl">
               <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 Featured Projects
@@ -938,7 +848,7 @@ export default function PastelDreamscape({
 
         {/* Experience Section - Timeline Ribbon */}
         {userExperiences.length > 0 && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-6xl">
               <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 My Journey
@@ -959,10 +869,10 @@ export default function PastelDreamscape({
 
         {/* Services Section - Isometric Cards */}
         {userServices.length > 0 && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-7xl">
               <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                What I Offer
+                Services
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {userServices.map((service, index) => (
@@ -975,7 +885,7 @@ export default function PastelDreamscape({
 
         {/* Education Section - Accordion */}
         {userEducations.length > 0 && (
-          <section className="py-20 px-6">
+          <section className="py-24 px-6">
             <div className="container mx-auto max-w-4xl">
               <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 Education
@@ -984,13 +894,6 @@ export default function PastelDreamscape({
             </div>
           </section>
         )}
-
-        {/* Contact Section */}
-        <section className="py-20 px-6">
-          <div className="container mx-auto max-w-2xl">
-            <ContactSection userEmail={userInfo.email} />
-          </div>
-        </section>
 
         {/* Footer */}
         <footer className="py-10 text-center">
