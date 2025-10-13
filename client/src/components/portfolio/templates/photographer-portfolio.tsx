@@ -1,284 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Calendar, MapPin, Heart, MessageCircle, ExternalLink, Camera, Play, Target, Compass } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { ChevronLeft, ChevronRight, X, Phone, Mail, MapPin, Instagram, Award, Star, MessageCircle } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { User, Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
-
-// Animation configuration with reduced motion support
-const useAnimationConfig = () => {
-  const prefersReducedMotion = useReducedMotion();
-  
-  return {
-    duration: prefersReducedMotion ? 0 : 0.2,
-    fadeIn: prefersReducedMotion ? {} : { 
-      initial: { opacity: 0, y: 20 },
-      whileInView: { opacity: 1, y: 0 },
-      viewport: { once: true },
-      transition: { duration: 0.3, ease: "easeOut" }
-    },
-    hoverLift: prefersReducedMotion ? {} : {
-      whileHover: { y: -4, boxShadow: "0 10px 30px rgba(0,0,0,0.15)", transition: { duration: 0.15 } }
-    }
-  };
-};
-
-// Skill bar component with sophisticated design
-function SkillBar({ skill }: { skill: Skill }) {
-  const proficiency = skill.proficiency || 0;
-  const anim = useAnimationConfig();
-  
-  return (
-    <motion.div {...anim.fadeIn} className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-sm font-medium" style={{ color: '#1A1A1A' }}>{skill.name}</span>
-        <Badge variant="outline" className="text-xs border-[#A8A8A8]" style={{ color: '#555555' }}>
-          {skill.level}
-        </Badge>
-      </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#EAEAEA' }}>
-        <motion.div 
-          className="h-full rounded-full"
-          style={{ backgroundColor: '#6366F1' }}
-          initial={{ width: 0 }}
-          whileInView={{ width: `${proficiency}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-// Masonry Gallery Item
-function ProjectGalleryCard({ project, onClick, index }: { project: Project; onClick: () => void; index: number }) {
-  const anim = useAnimationConfig();
-  const mediaUrls = (project.mediaUrls as string[]) || [];
-  const isVideo = mediaUrls.length > 0 && 
-    (mediaUrls[0].endsWith('.mp4') || mediaUrls[0].endsWith('.webm'));
-  
-  // Vary aspect ratios for masonry effect
-  const aspectClass = index % 3 === 0 ? "aspect-[3/4]" : index % 3 === 1 ? "aspect-square" : "aspect-[4/3]";
-  
-  return (
-    <motion.div
-      {...anim.fadeIn}
-      {...anim.hoverLift}
-      className={`group relative ${aspectClass} rounded-xl overflow-hidden cursor-pointer`}
-      style={{ backgroundColor: '#F8F9FA' }}
-      onClick={onClick}
-      data-testid={`project-card-${project.id}`}
-    >
-      {project.thumbnailUrl ? (
-        <img 
-          src={project.thumbnailUrl} 
-          alt={project.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-      ) : (
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #F8F9FA 0%, #EAEAEA 100%)' }} />
-      )}
-      
-      {isVideo && (
-        <div className="absolute top-4 right-4 rounded-full p-2" style={{ backgroundColor: 'rgba(11, 12, 16, 0.6)', backdropFilter: 'blur(8px)' }}>
-          <Play className="w-4 h-4 text-white" />
-        </div>
-      )}
-      
-      <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-        style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.85) 100%)' }}
-      >
-        <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
-          <h3 className="text-lg font-semibold text-white mb-2">{project.title}</h3>
-          {project.category && (
-            <p className="text-sm text-white/80">{project.category}</p>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Project Modal
-function ProjectModal({ project, isOpen, onClose }: { project: Project | null; isOpen: boolean; onClose: () => void }) {
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
-  
-  if (!project) return null;
-  
-  const mediaUrls = (project.mediaUrls as string[]) || [];
-  const mediaItems = mediaUrls.length > 0 ? mediaUrls : [project.thumbnailUrl].filter(Boolean);
-  const currentMedia = mediaItems[currentMediaIndex] || project.thumbnailUrl;
-  const isVideo = currentMedia?.endsWith('.mp4') || currentMedia?.endsWith('.webm');
-  
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto" style={{ backgroundColor: '#F8F9FA' }}>
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold" style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>
-            {project.title}
-          </DialogTitle>
-          <DialogDescription style={{ color: '#555555' }}>
-            {project.category} {project.industry && `• ${project.industry}`}
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          <div className="relative aspect-video rounded-lg overflow-hidden" style={{ backgroundColor: '#EAEAEA' }}>
-            {isVideo ? (
-              <video src={currentMedia || undefined} controls className="w-full h-full object-contain" />
-            ) : (
-              <img src={currentMedia || undefined} alt={project.title} className="w-full h-full object-contain" />
-            )}
-          </div>
-          
-          {mediaItems.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {mediaItems.map((media, idx) => {
-                if (!media) return null;
-                const isVideoThumb = media.endsWith('.mp4') || media.endsWith('.webm');
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentMediaIndex(idx)}
-                    className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      idx === currentMediaIndex ? 'border-[#6366F1]' : 'border-transparent'
-                    }`}
-                    data-testid={`media-thumbnail-${idx}`}
-                  >
-                    {isVideoThumb ? (
-                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#EAEAEA' }}>
-                        <Play className="w-6 h-6" style={{ color: '#555555' }} />
-                      </div>
-                    ) : (
-                      <img src={media} alt={`${project.title} ${idx + 1}`} className="w-full h-full object-cover" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold text-lg mb-2" style={{ fontFamily: 'Inter', color: '#0B0C10' }}>Description</h4>
-              <p style={{ color: '#555555', lineHeight: '1.5' }}>{project.description}</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              {project.startDate && (
-                <div className="flex items-center gap-2 text-sm" style={{ color: '#555555' }}>
-                  <Calendar className="w-4 h-4" />
-                  <span>{new Date(project.startDate).toLocaleDateString()}</span>
-                </div>
-              )}
-              {project.projectUrl && (
-                <a 
-                  href={project.projectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm hover:opacity-80"
-                  style={{ color: '#6366F1' }}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  View Live
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// Contact Modal
-function ContactModal({ isOpen, onClose, userId }: { isOpen: boolean; onClose: () => void; userId?: number }) {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userId) return;
-    
-    setIsSubmitting(true);
-    try {
-      await apiRequest('POST', `/api/contact/${userId}`, formData);
-      
-      toast({
-        title: "Message sent!",
-        description: "Thank you for reaching out. I'll get back to you soon.",
-      });
-      
-      setFormData({ name: '', email: '', message: '' });
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md" style={{ backgroundColor: '#F8F9FA' }}>
-        <DialogHeader>
-          <DialogTitle style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>Let's create something together</DialogTitle>
-          <DialogDescription style={{ color: '#555555' }}>
-            I'm open to collaborations and mentorship.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            placeholder="Your Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            data-testid="input-contact-name"
-          />
-          <Input
-            type="email"
-            placeholder="Your Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-            data-testid="input-contact-email"
-          />
-          <Textarea
-            placeholder="Your Message"
-            value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            required
-            rows={5}
-            data-testid="textarea-contact-message"
-          />
-          <Button 
-            type="submit" 
-            className="w-full hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: '#6366F1', color: 'white' }}
-            disabled={isSubmitting}
-            data-testid="button-send-message"
-          >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 interface PhotographerPortfolioProps {
   userInfo: {
@@ -293,15 +24,9 @@ interface PhotographerPortfolioProps {
     domain: string | null;
     lookingFor: string | null;
     whatIOffer?: string | null;
-    jobLevel?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
-    coreValues?: string[];
-    uniqueValueProposition?: string | null;
-    brandName?: string | null;
-    primaryAudience?: string[];
-    secondaryAudience?: string[];
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -311,401 +36,627 @@ interface PhotographerPortfolioProps {
   currentUserId?: number;
 }
 
-export default function PhotographerPortfolio({
-  userInfo,
-  userSkills,
-  userExperiences,
-  userProjects,
-  userEducations,
-  currentUserId
-}: PhotographerPortfolioProps) {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+// Hero Carousel Component
+function HeroCarousel({ projects }: { projects: Project[] }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
+  
+  const heroImages = projects
+    .filter(p => p.thumbnailUrl)
+    .slice(0, 5)
+    .map(p => ({ url: p.thumbnailUrl!, title: p.title }));
+  
+  useEffect(() => {
+    if (prefersReducedMotion || heroImages.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [heroImages.length, prefersReducedMotion]);
+  
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+  
+  if (heroImages.length === 0) {
+    return (
+      <div className="h-screen w-full bg-black flex items-center justify-center">
+        <div className="text-white text-center">
+          <h1 className="text-5xl font-bold mb-4">Portfolio Coming Soon</h1>
+          <p className="text-xl opacity-80">Upload your stunning work to get started</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="relative h-screen w-full overflow-hidden bg-black">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentSlide}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+          className="absolute inset-0"
+        >
+          <img
+            src={heroImages[currentSlide].url}
+            alt={heroImages[currentSlide].title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        </motion.div>
+      </AnimatePresence>
+      
+      {/* Navigation Arrows */}
+      {heroImages.length > 1 && (
+        <>
+          <button
+            onClick={prevSlide}
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10"
+            data-testid="button-hero-prev"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all z-10"
+            data-testid="button-hero-next"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+      
+      {/* Slide Indicators */}
+      {heroImages.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {heroImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                idx === currentSlide ? 'bg-white w-8' : 'bg-white/40'
+              }`}
+              data-testid={`indicator-${idx}`}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 text-white/60 text-sm flex flex-col items-center gap-2 animate-bounce">
+        <span>Scroll to explore</span>
+        <ChevronRight className="w-5 h-5 rotate-90" />
+      </div>
+    </div>
+  );
+}
+
+// Category Filter Component
+function CategoryFilter({ 
+  categories, 
+  selected, 
+  onSelect 
+}: { 
+  categories: string[]; 
+  selected: string; 
+  onSelect: (cat: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-3 justify-center">
+      <button
+        onClick={() => onSelect('all')}
+        className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+          selected === 'all' 
+            ? 'bg-black text-white' 
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        }`}
+        data-testid="filter-all"
+      >
+        All Work
+      </button>
+      {categories.map((cat) => (
+        <button
+          key={cat}
+          onClick={() => onSelect(cat)}
+          className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+            selected === cat 
+              ? 'bg-black text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+          data-testid={`filter-${cat.toLowerCase()}`}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Instagram-Style Grid Item
+function GridItem({ 
+  project, 
+  onClick 
+}: { 
+  project: Project; 
+  onClick: () => void;
+}) {
+  const prefersReducedMotion = useReducedMotion();
+  
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      whileHover={prefersReducedMotion ? {} : { y: -8 }}
+      transition={{ duration: 0.3 }}
+      onClick={onClick}
+      className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+      data-testid={`grid-item-${project.id}`}
+    >
+      {project.thumbnailUrl ? (
+        <img
+          src={project.thumbnailUrl}
+          alt={project.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
+      )}
+      
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300 flex items-center justify-center">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center text-white p-4">
+          <h3 className="text-lg font-semibold mb-2">{project.title}</h3>
+          {project.category && (
+            <p className="text-sm text-white/80">{project.category}</p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Lightbox Modal
+function LightboxModal({ 
+  project, 
+  isOpen, 
+  onClose 
+}: { 
+  project: Project | null; 
+  isOpen: boolean; 
+  onClose: () => void;
+}) {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  
+  // Reset media index when project changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentMediaIndex(0);
+    }
+  }, [isOpen, project?.id]);
+  
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'ArrowLeft') {
+        prevMedia();
+      } else if (e.key === 'ArrowRight') {
+        nextMedia();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+  
+  if (!project) return null;
+  
+  const mediaUrls = (project.mediaUrls as string[]) || [];
+  const mediaItems = mediaUrls.length > 0 ? mediaUrls : [project.thumbnailUrl].filter(Boolean);
+  const currentMedia = mediaItems[currentMediaIndex] || project.thumbnailUrl;
+  
+  const nextMedia = () => setCurrentMediaIndex((prev) => (prev + 1) % mediaItems.length);
+  const prevMedia = () => setCurrentMediaIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+  
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-7xl h-[90vh] bg-black/95 border-none p-0">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-all z-50"
+          data-testid="button-close-lightbox"
+        >
+          <X className="w-6 h-6" />
+        </button>
+        
+        <div className="relative h-full flex items-center justify-center p-8">
+          <img
+            src={currentMedia || undefined}
+            alt={project.title}
+            className="max-w-full max-h-full object-contain"
+          />
+          
+          {mediaItems.length > 1 && (
+            <>
+              <button
+                onClick={prevMedia}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                data-testid="button-lightbox-prev"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={nextMedia}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                data-testid="button-lightbox-next"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+        </div>
+        
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 text-white">
+          <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
+          {project.description && <p className="text-white/80 mb-4">{project.description}</p>}
+          {project.category && (
+            <Badge className="bg-white/20 text-white border-white/30">{project.category}</Badge>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Contact Modal
+function ContactModal({ 
+  isOpen, 
+  onClose, 
+  userId 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  userId?: number;
+}) {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const anim = useAnimationConfig();
   
-  const heroImage = userProjects[0]?.thumbnailUrl || userInfo.photoURL || '/placeholder-hero.jpg';
-  
-  const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
-    setIsProjectModalOpen(true);
-  };
-  
-  const handleResumeDownload = () => {
-    if (userInfo.id) {
-      window.location.href = `/api/user/${userInfo.id}/resume`;
-    } else {
-      toast({
-        title: "Resume not available",
-        description: "Please contact me directly for my resume.",
-        variant: "destructive"
-      });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId) return;
+    
+    setIsSubmitting(true);
+    try {
+      await apiRequest('POST', `/api/contact/${userId}`, formData);
+      toast({ title: "Message sent!", description: "I'll get back to you soon." });
+      setFormData({ name: '', email: '', message: '' });
+      onClose();
+    } catch {
+      toast({ title: "Error", description: "Please try again.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8F9FA' }}>
-      {/* Hero Section with Vision/Mission Overlay */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img 
-            src={heroImage}
-            alt={userInfo.name}
-            className="w-full h-full object-cover"
-          />
-          <div 
-            className="absolute inset-0" 
-            style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.85) 100%)' }}
-          />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md bg-white">
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Let's Create Together</h2>
+            <p className="text-gray-600">Tell me about your vision</p>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              placeholder="Your Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              data-testid="input-contact-name"
+            />
+            <Input
+              type="email"
+              placeholder="Your Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              data-testid="input-contact-email"
+            />
+            <Textarea
+              placeholder="Tell me about your project..."
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              required
+              rows={5}
+              data-testid="textarea-contact-message"
+            />
+            <Button 
+              type="submit" 
+              className="w-full bg-black hover:bg-gray-800"
+              disabled={isSubmitting}
+              data-testid="button-send-message"
+            >
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </Button>
+          </form>
         </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Main Component
+export default function PhotographerPortfolio({
+  userInfo,
+  userProjects,
+  userServices,
+  currentUserId
+}: PhotographerPortfolioProps) {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  
+  const categories = Array.from(new Set(userProjects.map(p => p.category).filter(Boolean))) as string[];
+  const filteredProjects = selectedCategory === 'all' 
+    ? userProjects 
+    : userProjects.filter(p => p.category === selectedCategory);
+  
+  const handleProjectClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsLightboxOpen(true);
+  };
+  
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Fullscreen Hero Carousel */}
+      <section className="relative">
+        <HeroCarousel projects={userProjects} />
         
-        {/* Hero Content */}
-        <div className="relative h-full container mx-auto px-4 md:px-6 lg:px-8 flex items-end pb-20 md:pb-24">
-          <div className="w-full grid md:grid-cols-2 gap-8 items-end">
-            {/* Left: Profile Info */}
-            <motion.div {...anim.fadeIn} className="space-y-6">
-              <div>
-                <h1 
-                  className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white mb-3"
-                  style={{ fontFamily: 'Playfair Display', lineHeight: '1.2' }}
-                >
-                  {userInfo.name}
-                </h1>
-                {userInfo.title && (
-                  <p className="text-xl md:text-2xl text-white/90 font-light" style={{ fontFamily: 'Inter' }}>
-                    {userInfo.title}
-                  </p>
-                )}
-              </div>
-              
-              {userInfo.aboutMe && (
-                <p className="text-base md:text-lg text-white/80 max-w-lg leading-relaxed" style={{ fontFamily: 'Inter' }}>
-                  {userInfo.aboutMe}
-                </p>
-              )}
-              
-              {userInfo.location && (
-                <div className="flex items-center gap-2 text-white/70">
-                  <MapPin className="w-5 h-5" />
-                  <span style={{ fontFamily: 'Inter', fontSize: '15px' }}>{userInfo.location}</span>
-                </div>
-              )}
-              
-              {userInfo.whatIOffer && (
-                <div className="pt-4">
-                  <h3 className="text-sm font-medium text-white/60 mb-2" style={{ fontFamily: 'Inter', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    What I Offer
-                  </h3>
-                  <p className="text-white/90" style={{ fontFamily: 'Inter' }}>{userInfo.whatIOffer}</p>
-                </div>
-              )}
-              
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-3 pt-4">
-                <Button 
-                  onClick={() => setIsContactModalOpen(true)}
-                  className="rounded-lg px-6 py-3 font-medium transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: '#6366F1', color: 'white', fontFamily: 'Inter', fontSize: '15px', letterSpacing: '0.01em' }}
-                  data-testid="button-mentor"
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Mentor
-                </Button>
-                <Button 
-                  onClick={handleResumeDownload}
-                  variant="outline"
-                  className="rounded-lg px-6 py-3 font-medium transition-all hover:bg-white/10"
-                  style={{ 
-                    borderColor: 'rgba(255,255,255,0.3)', 
-                    color: 'white', 
-                    fontFamily: 'Inter', 
-                    fontSize: '15px',
-                    letterSpacing: '0.01em'
-                  }}
-                  data-testid="button-resume"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Grab my Resume
-                </Button>
-                <Button 
-                  onClick={() => setIsContactModalOpen(true)}
-                  className="rounded-lg px-6 py-3 font-medium transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: 'transparent', color: 'white', border: '2px solid #6366F1', fontFamily: 'Inter', fontSize: '15px', letterSpacing: '0.01em' }}
-                  data-testid="button-contact"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Let's Talk
-                </Button>
-              </div>
-            </motion.div>
-            
-            {/* Right: Vision & Mission Cards */}
-            <motion.div {...anim.fadeIn} className="flex flex-col gap-4 md:items-end">
-              {userInfo.visionStatement && (
-                <Card className="w-full md:w-80 rounded-xl overflow-hidden border-0">
-                  <CardContent className="p-6" style={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)' }}>
-                    <div className="flex items-start gap-3 mb-3">
-                      <Target className="w-5 h-5 mt-1" style={{ color: '#6366F1' }} />
-                      <h3 className="font-semibold text-lg" style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>Vision</h3>
-                    </div>
-                    <p className="text-sm leading-relaxed" style={{ color: '#555555', fontFamily: 'Inter', fontStyle: 'italic' }}>
-                      {userInfo.visionStatement}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-              
-              {userInfo.missionStatement && (
-                <Card className="w-full md:w-80 rounded-xl overflow-hidden border-0">
-                  <CardContent className="p-6" style={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)' }}>
-                    <div className="flex items-start gap-3 mb-3">
-                      <Compass className="w-5 h-5 mt-1" style={{ color: '#6366F1' }} />
-                      <h3 className="font-semibold text-lg" style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>Mission</h3>
-                    </div>
-                    <p className="text-sm leading-relaxed" style={{ color: '#555555', fontFamily: 'Inter', fontStyle: 'italic' }}>
-                      {userInfo.missionStatement}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-              
-              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                <Card className="w-full md:w-80 rounded-xl overflow-hidden border-0">
-                  <CardContent className="p-6" style={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)' }}>
-                    <h3 className="font-semibold text-sm mb-3" style={{ fontFamily: 'Inter', color: '#0B0C10', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Core Values
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.coreValues.map((value, idx) => (
-                        <Badge 
-                          key={idx} 
-                          className="rounded-full px-3 py-1 text-xs font-medium"
-                          style={{ backgroundColor: '#F8F9FA', color: '#555555', border: '1px solid #EAEAEA' }}
-                        >
-                          {value}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </motion.div>
+        {/* Floating Nav */}
+        <div className="absolute top-0 left-0 right-0 z-20">
+          <div className="container mx-auto px-6 py-6 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-white">{userInfo.name}</h1>
+            <Button 
+              onClick={() => setIsContactOpen(true)}
+              className="bg-white text-black hover:bg-white/90"
+              data-testid="button-book-session"
+            >
+              Book a Session
+            </Button>
           </div>
         </div>
       </section>
       
-      {/* Looking For Section */}
-      {userInfo.lookingFor && (
-        <section className="py-20 md:py-24" style={{ backgroundColor: '#0B0C10' }}>
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <motion.div {...anim.fadeIn} className="max-w-4xl mx-auto text-center">
-              <h2 
-                className="text-sm font-medium mb-4" 
-                style={{ fontFamily: 'Inter', color: '#A8A8A8', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-              >
-                Looking For
-              </h2>
-              <p 
-                className="text-2xl md:text-3xl leading-relaxed"
-                style={{ fontFamily: 'Playfair Display', color: 'white', fontWeight: 500 }}
-              >
-                {userInfo.lookingFor}
+      {/* About Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6 max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {userInfo.title && (
+              <p className="text-sm uppercase tracking-widest text-gray-500 mb-4">
+                {userInfo.title}
               </p>
-            </motion.div>
-          </div>
-        </section>
-      )}
-      
-      {/* What I'm Good At Section */}
-      {userSkills.length > 0 && (
-        <section className="py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <motion.div {...anim.fadeIn} className="max-w-5xl mx-auto">
-              <h2 
-                className="text-3xl md:text-4xl font-semibold mb-16 text-center"
-                style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}
-              >
-                What I'm Good At
-              </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8">
-                {userSkills.slice(0, 9).map((skill) => (
-                  <SkillBar key={skill.id} skill={skill} />
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
-      
-      {/* Portfolio Gallery - Masonry Layout */}
-      <section className="py-20 md:py-24" style={{ backgroundColor: 'white' }}>
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <motion.div {...anim.fadeIn}>
-            <h2 
-              className="text-3xl md:text-4xl font-semibold mb-16 text-center"
-              style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}
-            >
-              Portfolio
-            </h2>
-            
-            {userProjects.length > 0 ? (
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                {userProjects.map((project, idx) => (
-                  <div key={project.id} className="break-inside-avoid">
-                    <ProjectGalleryCard 
-                      project={project} 
-                      index={idx}
-                      onClick={() => handleProjectClick(project)}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Camera className="w-16 h-16 mx-auto mb-4" style={{ color: '#A8A8A8' }} />
-                <p style={{ color: '#555555', fontFamily: 'Inter' }}>No projects yet. Check back soon!</p>
+            )}
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">{userInfo.name}</h2>
+            {userInfo.aboutMe && (
+              <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                {userInfo.aboutMe}
+              </p>
+            )}
+            {userInfo.location && (
+              <div className="flex items-center justify-center gap-2 text-gray-500">
+                <MapPin className="w-5 h-5" />
+                <span>{userInfo.location}</span>
               </div>
             )}
           </motion.div>
         </div>
       </section>
       
-      {/* Career Path Section */}
-      {userExperiences.length > 0 && (
-        <section className="py-20 md:py-24" style={{ backgroundColor: '#F8F9FA' }}>
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <motion.div {...anim.fadeIn}>
-              <h2 
-                className="text-3xl md:text-4xl font-semibold mb-16 text-center"
-                style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}
-              >
-                Career Path
-              </h2>
-              <div className="max-w-4xl mx-auto space-y-8">
-                {userExperiences.map((exp, idx) => (
-                  <motion.div 
-                    key={exp.id}
-                    {...anim.fadeIn}
-                    className="relative pl-8 pb-8 border-l-2"
-                    style={{ borderColor: idx === 0 ? '#6366F1' : '#EAEAEA' }}
-                  >
-                    <div 
-                      className="absolute left-[-9px] top-0 w-4 h-4 rounded-full"
-                      style={{ backgroundColor: idx === 0 ? '#6366F1' : '#A8A8A8' }}
-                    />
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-semibold" style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>
-                        {exp.title}
-                      </h3>
-                      <p className="text-base font-medium" style={{ color: '#555555', fontFamily: 'Inter' }}>
-                        {exp.company}
-                      </p>
-                      <p className="text-sm" style={{ color: '#A8A8A8', fontFamily: 'Inter' }}>
-                        {new Date(exp.startDate).getFullYear()} - {!exp.endDate ? 'Present' : new Date(exp.endDate).getFullYear()}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
-      
-      {/* Education Section */}
-      {userEducations.length > 0 && (
-        <section className="py-20 md:py-24" style={{ backgroundColor: 'white' }}>
-          <div className="container mx-auto px-4 md:px-6 lg:px-8">
-            <motion.div {...anim.fadeIn}>
-              <h2 
-                className="text-3xl md:text-4xl font-semibold mb-16 text-center"
-                style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}
-              >
-                Education
-              </h2>
-              <div className="max-w-3xl mx-auto grid gap-6">
-                {userEducations.map((edu) => (
-                  <Card key={edu.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardContent className="p-6" style={{ backgroundColor: '#F8F9FA' }}>
-                      <h3 className="text-lg font-semibold mb-1" style={{ fontFamily: 'Playfair Display', color: '#0B0C10' }}>
-                        {edu.degree}
-                      </h3>
-                      <p className="text-base mb-2" style={{ color: '#555555', fontFamily: 'Inter' }}>
-                        {edu.institution}
-                      </p>
-                      <p className="text-sm" style={{ color: '#A8A8A8', fontFamily: 'Inter' }}>
-                        {new Date(edu.startDate).getFullYear()} - {!edu.endDate ? 'Present' : new Date(edu.endDate).getFullYear()}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
-      
-      {/* Contact Footer */}
-      <section className="py-24 md:py-32" style={{ background: 'linear-gradient(135deg, #0B0C10 0%, #1a1a1a 100%)' }}>
-        <div className="container mx-auto px-4 md:px-6 lg:px-8">
-          <motion.div {...anim.fadeIn} className="max-w-2xl mx-auto text-center space-y-8">
-            <h2 
-              className="text-3xl md:text-4xl font-semibold text-white"
-              style={{ fontFamily: 'Playfair Display' }}
-            >
-              Let's create something together
-            </h2>
-            <p className="text-lg text-white/70" style={{ fontFamily: 'Inter' }}>
-              I'm open to collaborations and mentorship opportunities.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button 
-                onClick={() => setIsContactModalOpen(true)}
-                variant="outline"
-                className="rounded-lg px-8 py-6 font-medium transition-all hover:bg-white/10"
-                style={{ 
-                  borderColor: 'rgba(255,255,255,0.3)', 
-                  color: 'white', 
-                  fontFamily: 'Inter', 
-                  fontSize: '15px',
-                  letterSpacing: '0.01em'
-                }}
-                data-testid="button-footer-mentor"
-              >
-                Mentor
-              </Button>
-              <Button 
-                onClick={handleResumeDownload}
-                variant="ghost"
-                className="rounded-lg px-8 py-6 font-medium transition-opacity hover:opacity-70"
-                style={{ 
-                  color: 'white', 
-                  fontFamily: 'Inter', 
-                  fontSize: '15px',
-                  letterSpacing: '0.01em'
-                }}
-                data-testid="button-footer-resume"
-              >
-                Grab my Resume
-              </Button>
-              <Button 
-                onClick={() => setIsContactModalOpen(true)}
-                className="rounded-lg px-8 py-6 font-medium transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#6366F1', color: 'white', fontFamily: 'Inter', fontSize: '15px', letterSpacing: '0.01em' }}
-                data-testid="button-footer-contact"
-              >
-                Let's Talk
-              </Button>
+      {/* Services/Pricing Section */}
+      {userServices.length > 0 && (
+        <section className="py-20 bg-gray-50">
+          <div className="container mx-auto px-6">
+            <h2 className="text-3xl font-bold text-center mb-12">Services & Pricing</h2>
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {userServices.slice(0, 3).map((service) => (
+                <Card key={service.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+                  <CardContent className="p-8">
+                    <h3 className="text-xl font-bold mb-4">{service.title}</h3>
+                    {service.description && (
+                      <p className="text-gray-600 mb-6">{service.description}</p>
+                    )}
+                    {service.priceUsd && (
+                      <div className="text-3xl font-bold mb-4">
+                        ${service.priceUsd}
+                        {service.isHourly && <span className="text-lg text-gray-500">/hr</span>}
+                      </div>
+                    )}
+                    <Button 
+                      onClick={() => setIsContactOpen(true)}
+                      className="w-full bg-black hover:bg-gray-800"
+                      data-testid={`button-book-${service.id}`}
+                    >
+                      Book Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </motion.div>
+          </div>
+        </section>
+      )}
+      
+      {/* Portfolio Grid */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Portfolio</h2>
+          
+          {/* Category Filter */}
+          <div className="mb-12">
+            <CategoryFilter
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
+          </div>
+          
+          {/* Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((project) => (
+                <GridItem
+                  key={project.id}
+                  project={project}
+                  onClick={() => handleProjectClick(project)}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
       </section>
       
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">What Clients Say</h2>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Sarah Johnson",
+                role: "Bride",
+                text: "Absolutely stunning work! Every photo captured the emotion perfectly. Couldn't be happier with our wedding album.",
+                rating: 5
+              },
+              {
+                name: "Michael Chen",
+                role: "Business Owner",
+                text: "Professional, creative, and delivered beyond expectations. Our brand photos are getting amazing engagement!",
+                rating: 5
+              },
+              {
+                name: "Emma Davis",
+                role: "Model",
+                text: "Such an amazing experience! The photos turned out incredible and the whole session was fun and relaxed.",
+                rating: 5
+              }
+            ].map((testimonial, idx) => (
+              <Card key={idx} className="border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-6 italic">"{testimonial.text}"</p>
+                  <div>
+                    <p className="font-semibold">{testimonial.name}</p>
+                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Trust Badges */}
+      <section className="py-16 bg-white border-y">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-wrap items-center justify-center gap-12 max-w-5xl mx-auto opacity-60">
+            <div className="flex items-center gap-2">
+              <Award className="w-6 h-6" />
+              <span className="text-sm font-medium">Featured in Vogue</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award className="w-6 h-6" />
+              <span className="text-sm font-medium">200+ Happy Clients</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award className="w-6 h-6" />
+              <span className="text-sm font-medium">Award Winner 2024</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Instagram className="w-6 h-6" />
+              <span className="text-sm font-medium">50K+ Followers</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Contact CTA */}
+      <section className="py-32 bg-black text-white">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Ready to Create Something Amazing?
+          </h2>
+          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            Let's bring your vision to life through stunning photography
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button 
+              onClick={() => setIsContactOpen(true)}
+              size="lg"
+              className="bg-white text-black hover:bg-gray-100 px-8"
+              data-testid="button-cta-contact"
+            >
+              <Mail className="w-5 h-5 mr-2" />
+              Get in Touch
+            </Button>
+            {userInfo.email && (
+              <Button 
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white/10 px-8"
+                asChild
+              >
+                <a href={`mailto:${userInfo.email}`} data-testid="link-email">
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Email Me
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* Floating WhatsApp Button */}
+      <a
+        href={`https://wa.me/1234567890`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-8 right-8 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white shadow-2xl hover:scale-110 transition-transform z-50"
+        data-testid="button-whatsapp"
+      >
+        <Phone className="w-6 h-6" />
+      </a>
+      
       {/* Modals */}
-      <ProjectModal project={selectedProject} isOpen={isProjectModalOpen} onClose={() => setIsProjectModalOpen(false)} />
-      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} userId={userInfo.id} />
+      <LightboxModal 
+        project={selectedProject} 
+        isOpen={isLightboxOpen} 
+        onClose={() => setIsLightboxOpen(false)} 
+      />
+      <ContactModal 
+        isOpen={isContactOpen} 
+        onClose={() => setIsContactOpen(false)} 
+        userId={userInfo.id} 
+      />
     </div>
   );
 }
