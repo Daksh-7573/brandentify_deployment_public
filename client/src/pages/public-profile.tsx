@@ -15,16 +15,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Import portfolio templates
-import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
-import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline
-import VisualExpert from "@/components/portfolio/templates/visual-expert";
-import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
-import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
-import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
-import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
-import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
+import { 
+  getPortfolioTemplate, 
+  buildPortfolioTemplateProps 
+} from "@/components/portfolio/templateRegistry";
 
 // Type for our user data
 interface UserData {
@@ -262,124 +256,35 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     // Get the current user ID from auth context for mentorship functionality
     const currentUserId = user?.id;
     
-    // Map our portfolio data to the format each template expects
-    const templateProps = {
-      userInfo: {
-        id: portfolioData.userData.id,
+    // Build template props using shared helper
+    const templateProps = buildPortfolioTemplateProps(
+      {
+        ...portfolioData.userData,
         name: portfolioData.userData.name || portfolioData.userData.username,
-        title: portfolioData.userData.title,
-        industry: portfolioData.userData.industry,
-        domain: portfolioData.userData.domain || null,
-        location: portfolioData.userData.location,
-        email: portfolioData.userData.email,
-        photoURL: portfolioData.userData.photoURL,
-        lookingFor: portfolioData.userData.lookingFor,
-        whatIOffer: portfolioData.userData.whatIOffer || null,
-        aboutMe: portfolioData.userData.aboutMe || null,
-        jobLevel: portfolioData.userData.jobLevel || null
+        tagline: portfolioData.userData.tagline || null,
+        visionStatement: portfolioData.userData.visionStatement || null,
+        missionStatement: portfolioData.userData.missionStatement || null,
+        coreValues: portfolioData.userData.coreValues || [],
+        uniqueValueProposition: portfolioData.userData.uniqueValueProposition || null,
+        brandName: portfolioData.userData.brandName || null,
+        primaryAudience: portfolioData.userData.primaryAudience || [],
+        secondaryAudience: portfolioData.userData.secondaryAudience || []
       },
-      userSkills: portfolioData.skills || [],
-      userExperiences: portfolioData.experiences || [],
-      userProjects: portfolioData.projects || [],
-      userEducations: portfolioData.educations || [],
-      userServices: portfolioData.services || [],
-      currentUserId: currentUserId // Pass the current user ID for mentorship button functionality
-    };
+      {
+        skills: portfolioData.skills,
+        experiences: portfolioData.experiences,
+        projects: portfolioData.projects,
+        educations: portfolioData.educations,
+        services: portfolioData.services
+      },
+      {
+        currentUserId: currentUserId
+      }
+    );
     
-    switch (portfolioData.layout) {
-      case 'minimalist-pro':
-        return <MinimalistPro {...templateProps} />;
-      case 'freelancer-hub':
-        return <FreelancerHub {...templateProps} />;
-      case 'timeline-storyteller-2':
-        return <TimelineStoryteller2 {...templateProps} />;
-      case 'visual-expert':
-        return <VisualExpert {...templateProps} />;
-      case 'corporate-executive':
-        return <CorporateExecutive {...templateProps} />;
-      case 'dynamic-innovator':
-        return <DynamicInnovator {...templateProps} />;
-      case 'designer-portfolio':
-        return <DesignerShowcase {...templateProps} />;
-      case 'photographer-portfolio':
-        return <PhotographerPortfolio {...templateProps} currentUserId={currentUserId} />;
-      case 'animated-odyssey':
-        // For debugging
-        console.log("AnimatedOdyssey template userInfo:", templateProps.userInfo);
-        
-        const whatIOfferContent = templateProps.userInfo.whatIOffer || 
-          "I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.";
-        
-        const aboutMeOdysseyContent = templateProps.userInfo.aboutMe || 
-          "I am a passionate software developer with a strong focus on creating innovative solutions. My background combines technical expertise with a keen eye for user experience, allowing me to deliver comprehensive applications that meet client needs.";
-          
-        return (
-          <AnimatedOdyssey
-            id={templateProps.userInfo.id}
-            name={templateProps.userInfo.name}
-            title={templateProps.userInfo.title || ''}
-            industry={templateProps.userInfo.industry || ''}
-            domain={templateProps.userInfo.domain || ''}
-            location={templateProps.userInfo.location || ''}
-            email={templateProps.userInfo.email}
-            photoURL={templateProps.userInfo.photoURL}
-            lookingFor={templateProps.userInfo.lookingFor || ''}
-            skills={templateProps.userSkills}
-            services={templateProps.userServices}
-            experiences={templateProps.userExperiences}
-            educations={templateProps.userEducations}
-            projects={templateProps.userProjects.map((p: any) => ({
-              id: p.id,
-              title: p.title,
-              description: p.description,
-              startDate: p.startDate,
-              projectUrl: p.projectUrl || null,
-              category: p.category || null,
-              industry: p.industry || null,
-              thumbnailUrl: p.thumbnailUrl || null,
-              mediaUrls: p.mediaUrls || []
-            }))}
-            whatIOffer={whatIOfferContent}
-            aboutMe={aboutMeOdysseyContent}
-            currentUserId={templateProps.currentUserId}
-          />
-        );
-      
-      case 'animated':
-        // For debugging
-        console.log("Animated template userInfo:", templateProps.userInfo);
-        
-        // Setting a sample 'whatIOffer' text for the Animated template since the DB value is null
-        const aboutMeContent = templateProps.userInfo.aboutMe || 
-          "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
-          
-        return (
-          <Animated 
-            name={templateProps.userInfo.name}
-            title={templateProps.userInfo.title || ''}
-            industry={templateProps.userInfo.industry || ''}
-            domain={templateProps.userInfo.domain || ''}
-            location={templateProps.userInfo.location || ''}
-            photoURL={templateProps.userInfo.photoURL}
-            skills={templateProps.userSkills}
-            projects={templateProps.userProjects}
-            experiences={templateProps.userExperiences}
-            educations={templateProps.userEducations}
-            services={templateProps.userServices}
-            lookingFor={templateProps.userInfo.lookingFor || ''}
-            email={templateProps.userInfo.email}
-            aboutMe={aboutMeContent}
-            whatIOffer={aboutMeContent}
-            id={templateProps.userInfo.id}
-            currentUserId={templateProps.currentUserId}
-          />
-        );
-      case 'professional':
-      case 'scholar':
-        return <MinimalistPro {...templateProps} />;
-      default:
-        return <CorporateExecutive {...templateProps} />;
-    }
+    // Get the appropriate template component and render it
+    const TemplateComponent = getPortfolioTemplate(portfolioData.layout);
+    return <TemplateComponent {...templateProps} />;
   };
   
   // If no portfolio data, show a basic profile
