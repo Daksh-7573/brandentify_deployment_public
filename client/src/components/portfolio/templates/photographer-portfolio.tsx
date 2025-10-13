@@ -690,17 +690,84 @@ export default function PhotographerPortfolio({
             Portfolio
           </motion.h2>
 
-          {/* Masonry Grid */}
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 max-w-7xl mx-auto">
-            {userProjects.map((project, idx) => (
-              <MasonryGridItem
-                key={project.id}
-                project={project}
-                onClick={() => handleProjectClick(project)}
-                height={getHeight(idx)}
-              />
-            ))}
-          </div>
+          {/* Masonry Grid - Images from First Project */}
+          {(() => {
+            // Get the first project or first project with media
+            const featuredProject = userProjects.find(p => {
+              const mediaUrls = (p.mediaUrls as string[]) || [];
+              return mediaUrls.length > 0 || p.thumbnailUrl;
+            }) || userProjects[0];
+
+            if (!featuredProject) return null;
+
+            const mediaUrls = (featuredProject.mediaUrls as string[]) || [];
+            const allImages = (mediaUrls.length > 0 
+              ? mediaUrls 
+              : [featuredProject.thumbnailUrl]).filter(Boolean) as string[];
+
+            return (
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 max-w-7xl mx-auto">
+                {allImages.map((imageUrl, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    whileHover={{ y: -6 }}
+                    onClick={() => handleProjectClick(featuredProject)}
+                    className="group relative bg-stone-200 rounded-3xl overflow-hidden cursor-pointer break-inside-avoid mb-6"
+                    style={{ height: `${getHeight(idx)}px` }}
+                    data-testid={`portfolio-image-${idx}`}
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`${featuredProject.title} - Image ${idx + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    
+                    {/* Project Details on First Image */}
+                    {idx === 0 && (
+                      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-stone-900 via-stone-900/90 to-transparent">
+                        <div className="space-y-3">
+                          <h3 className="text-2xl font-bold text-white">
+                            {featuredProject.title}
+                          </h3>
+                          {featuredProject.category && (
+                            <p className="text-sm text-amber-300 font-medium">
+                              {featuredProject.category}
+                            </p>
+                          )}
+                          {featuredProject.description && (
+                            <p className="text-stone-200 text-sm line-clamp-2">
+                              {featuredProject.description}
+                            </p>
+                          )}
+                          <Button
+                            className="bg-amber-600 hover:bg-amber-700 text-white mt-3"
+                            size="sm"
+                            data-testid="button-know-more"
+                          >
+                            Know More
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Hover Overlay for Other Images */}
+                    {idx !== 0 && (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                          <h3 className="text-xl font-bold text-white">{featuredProject.title}</h3>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </section>
 
