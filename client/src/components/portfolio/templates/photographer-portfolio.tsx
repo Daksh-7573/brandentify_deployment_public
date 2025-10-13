@@ -27,6 +27,8 @@ interface PhotographerPortfolioProps {
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -395,6 +397,22 @@ export default function PhotographerPortfolio({
                 <p className="text-2xl text-stone-600 font-light">
                   {userInfo.title || 'Photographer'}
                 </p>
+                
+                {/* Industry & Domain */}
+                {(userInfo.industry || userInfo.domain) && (
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    {userInfo.industry && (
+                      <Badge className="bg-amber-100 text-amber-800 border-amber-300 px-4 py-1.5">
+                        {userInfo.industry}
+                      </Badge>
+                    )}
+                    {userInfo.domain && (
+                      <Badge className="bg-stone-200 text-stone-700 border-stone-400 px-4 py-1.5">
+                        {userInfo.domain}
+                      </Badge>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* About Me */}
@@ -476,71 +494,111 @@ export default function PhotographerPortfolio({
         </div>
       </section>
 
-      {/* What I Offer / Looking For / Skills */}
-      <section className="py-20 bg-stone-800">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {/* What I Offer */}
-            {userInfo.whatIOffer && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="space-y-4"
-              >
-                <h3 className="text-2xl font-serif font-bold text-stone-100">
-                  What I Offer
-                </h3>
-                <p className="text-stone-300 leading-relaxed">
-                  {userInfo.whatIOffer}
-                </p>
-              </motion.div>
-            )}
+      {/* Looking For / Skills */}
+      {(userInfo.lookingFor || userSkills.length > 0) && (
+        <section className="py-20 bg-stone-800">
+          <div className="container mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+              {/* Looking For */}
+              {userInfo.lookingFor && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-2xl font-serif font-bold text-stone-100">
+                    Looking For
+                  </h3>
+                  <p className="text-stone-300 leading-relaxed">
+                    {userInfo.lookingFor}
+                  </p>
+                </motion.div>
+              )}
 
-            {/* Looking For */}
-            {userInfo.lookingFor && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="space-y-4"
-              >
-                <h3 className="text-2xl font-serif font-bold text-stone-100">
-                  Looking For
-                </h3>
-                <p className="text-stone-300 leading-relaxed">
-                  {userInfo.lookingFor}
-                </p>
-              </motion.div>
-            )}
-
-            {/* What I'm Good At - Skills */}
-            {userSkills.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="space-y-4"
-              >
-                <h3 className="text-2xl font-serif font-bold text-stone-100">
-                  What I'm Good At
-                </h3>
-                <div className="space-y-3">
-                  {userSkills.slice(0, 4).map((skill) => (
-                    <SkillBar
-                      key={skill.id}
-                      skill={skill.name}
-                      level={skill.level || 'Intermediate'}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            )}
+              {/* What I'm Good At - Skills */}
+              {userSkills.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-2xl font-serif font-bold text-stone-100">
+                    What I'm Good At
+                  </h3>
+                  <div className="space-y-3">
+                    {userSkills.slice(0, 4).map((skill) => (
+                      <SkillBar
+                        key={skill.id}
+                        skill={skill.name}
+                        level={skill.level || 'Intermediate'}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Core Values & UVP */}
+      {((userInfo.coreValues?.length ?? 0) > 0 || userInfo.uniqueValueProposition) && (
+        <section className="py-20 bg-stone-100">
+          <div className="container mx-auto px-6 max-w-6xl">
+            <div className="grid md:grid-cols-2 gap-16">
+              {/* Core Values */}
+              {(userInfo.coreValues?.length ?? 0) > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-4xl font-serif font-bold text-stone-800">
+                    Core Values
+                  </h2>
+                  <div className="space-y-4">
+                    {userInfo.coreValues?.map((value, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="w-2 h-2 bg-amber-600 rounded-full" />
+                        <span className="text-lg text-stone-700 font-medium">{value}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Unique Value Proposition */}
+              {userInfo.uniqueValueProposition && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-4xl font-serif font-bold text-stone-800">
+                    What Makes Me Unique
+                  </h2>
+                  <p className="text-lg text-stone-700 leading-relaxed">
+                    {userInfo.uniqueValueProposition}
+                  </p>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Portfolio Section */}
       <section className="py-20 bg-stone-700">
