@@ -49,10 +49,10 @@ function SkillBar({ skill, level }: { skill: string; level: string }) {
   return (
     <div className="mb-4" data-testid={`skill-${skill.toLowerCase().replace(/\s+/g, '-')}`}>
       <div className="flex justify-between mb-2">
-        <span className="text-white font-medium">{skill}</span>
-        <span className="text-stone-200 text-sm">{level}</span>
+        <span className="text-stone-100 font-medium">{skill}</span>
+        <span className="text-stone-300 text-sm">{level}</span>
       </div>
-      <div className="w-full bg-black/30 rounded-full h-1.5">
+      <div className="w-full bg-stone-700/50 rounded-full h-1.5">
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: levelWidth }}
@@ -417,9 +417,9 @@ export default function PhotographerPortfolio({
   };
 
   return (
-    <div className="min-h-screen bg-[#8B7355]">
+    <div className="min-h-screen bg-stone-100">
       {/* Hero Section - Side by Side */}
-      <section className="min-h-screen bg-[#8B7355] relative overflow-hidden">
+      <section className="min-h-screen bg-gradient-to-br from-amber-50 via-stone-100 to-amber-100 relative overflow-hidden">
         <div className="container mx-auto px-6 py-12">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen">
             {/* Left Column - Text Content */}
@@ -431,10 +431,10 @@ export default function PhotographerPortfolio({
             >
               {/* Name & Title */}
               <div>
-                <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 leading-tight">
+                <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-stone-800 mb-4 leading-tight">
                   {userInfo.name}
                 </h1>
-                <p className="text-2xl text-stone-100 font-light">
+                <p className="text-2xl text-stone-600 font-light">
                   {userInfo.title || 'Professional'}
                 </p>
               </div>
@@ -442,10 +442,10 @@ export default function PhotographerPortfolio({
               {/* Looking For */}
               {userInfo.lookingFor && (
                 <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-stone-200 uppercase tracking-wider">
+                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
                     Looking For
                   </h3>
-                  <p className="text-white leading-relaxed">
+                  <p className="text-stone-700 leading-relaxed">
                     {userInfo.lookingFor}
                   </p>
                 </div>
@@ -453,7 +453,7 @@ export default function PhotographerPortfolio({
 
               {/* Location */}
               {userInfo.location && (
-                <div className="flex items-center gap-2 text-white">
+                <div className="flex items-center gap-2 text-stone-600">
                   <MapPin className="w-5 h-5" />
                   <span className="font-medium">{userInfo.location}</span>
                 </div>
@@ -468,7 +468,7 @@ export default function PhotographerPortfolio({
                     </Badge>
                   )}
                   {userInfo.domain && (
-                    <Badge className="bg-white/20 text-white border-white/40 px-4 py-1.5">
+                    <Badge className="bg-stone-200 text-stone-700 border-stone-400 px-4 py-1.5">
                       {userInfo.domain}
                     </Badge>
                   )}
@@ -478,12 +478,12 @@ export default function PhotographerPortfolio({
               {/* Core Values */}
               {(userInfo.coreValues?.length ?? 0) > 0 && (
                 <div className="space-y-3 pt-2">
-                  <h3 className="text-sm font-semibold text-stone-200 uppercase tracking-wider">
+                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
                     Core Values
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {userInfo.coreValues?.map((value, idx) => (
-                      <Badge key={idx} variant="outline" className="border-white text-white px-3 py-1">
+                      <Badge key={idx} variant="outline" className="border-amber-600 text-amber-700 px-3 py-1">
                         {value}
                       </Badge>
                     ))}
@@ -494,7 +494,7 @@ export default function PhotographerPortfolio({
               {/* What I Offer - Services */}
               {userServices.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-stone-800">
                     What I Offer
                   </h3>
                   <div className="space-y-3">
@@ -581,7 +581,7 @@ export default function PhotographerPortfolio({
 
       {/* About Me & Skills Section */}
       {(userInfo.aboutMe || userSkills.length > 0) && (
-        <section className="py-20 bg-[#3E2723]">
+        <section className="py-20 bg-stone-800">
           <div className="container mx-auto px-6">
             <div className="max-w-6xl mx-auto space-y-16">
               {/* About Me - Full Width */}
@@ -630,7 +630,7 @@ export default function PhotographerPortfolio({
 
       {/* What Makes Me Unique with Mission & Vision */}
       {(userInfo.uniqueValueProposition || userInfo.visionStatement || userInfo.missionStatement) && (
-        <section className="py-20 bg-[#8B7355]">
+        <section className="py-20 bg-stone-100">
           <div className="container mx-auto px-6 max-w-4xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -638,12 +638,12 @@ export default function PhotographerPortfolio({
               viewport={{ once: true }}
               className="space-y-8"
             >
-              <h2 className="text-4xl font-serif font-bold text-white">
+              <h2 className="text-4xl font-serif font-bold text-stone-800">
                 What Makes Me Unique
               </h2>
               
               {userInfo.uniqueValueProposition && (
-                <p className="text-lg text-stone-100 leading-relaxed">
+                <p className="text-lg text-stone-700 leading-relaxed">
                   {userInfo.uniqueValueProposition}
                 </p>
               )}
@@ -651,7 +651,7 @@ export default function PhotographerPortfolio({
               {(userInfo.visionStatement || userInfo.missionStatement) && (
                 <div className="grid md:grid-cols-2 gap-8 pt-4">
                   {userInfo.visionStatement && (
-                    <Card className="bg-white/90 border-amber-200">
+                    <Card className="bg-amber-50 border-amber-200">
                       <CardContent className="p-6">
                         <h3 className="text-lg font-semibold text-amber-800 mb-3">Vision</h3>
                         <p className="text-stone-700 leading-relaxed">
@@ -662,7 +662,7 @@ export default function PhotographerPortfolio({
                   )}
                   
                   {userInfo.missionStatement && (
-                    <Card className="bg-white/90 border-stone-300">
+                    <Card className="bg-stone-50 border-stone-300">
                       <CardContent className="p-6">
                         <h3 className="text-lg font-semibold text-stone-800 mb-3">Mission</h3>
                         <p className="text-stone-700 leading-relaxed">
@@ -679,7 +679,7 @@ export default function PhotographerPortfolio({
       )}
 
       {/* Portfolio Section */}
-      <section className="py-20 bg-[#3E2723]">
+      <section className="py-20 bg-stone-700">
         <div className="container mx-auto px-6">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -772,7 +772,7 @@ export default function PhotographerPortfolio({
       </section>
 
       {/* Career Path & Education */}
-      <section className="py-20 bg-[#D4B896]">
+      <section className="py-20 bg-stone-200">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 max-w-6xl mx-auto">
             {/* Career Path */}
@@ -838,7 +838,7 @@ export default function PhotographerPortfolio({
                                   </Badge>
                                 )}
                                 {edu.domain && (
-                                  <Badge className="bg-white/80 text-stone-700 border-0 text-xs">
+                                  <Badge className="bg-stone-200 text-stone-700 border-0 text-xs">
                                     {edu.domain}
                                   </Badge>
                                 )}
@@ -883,7 +883,7 @@ export default function PhotographerPortfolio({
       </section>
 
       {/* Contact CTA */}
-      <section className="py-24 bg-[#3E2723] text-center">
+      <section className="py-24 bg-stone-800 text-center">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
