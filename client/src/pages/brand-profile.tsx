@@ -7,17 +7,10 @@ import { User, MapPin, Briefcase, Heart } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 // Portfolio template imports
-import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
-import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller-2";
-import VisualExpert from "@/components/portfolio/templates/visual-expert";
-import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import Scholar from "@/components/portfolio/templates/scholar";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
-import Animated from "@/components/portfolio/templates/animated";
-import DynamicInnovator from "@/components/portfolio/templates/dynamic-innovator";
-import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
-import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
-import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
+import { 
+  getPortfolioTemplate, 
+  buildPortfolioTemplateProps 
+} from "@/components/portfolio/templateRegistry";
 
 interface UserData {
   id: number;
@@ -256,182 +249,32 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     console.log("- layout:", layout);
     console.log("- portfolioData:", portfolioData);
     
-    // Prepare data for portfolio templates
-    const templateProps = {
-      userInfo: {
-        id: userData.id,
+    // Build template props using shared helper
+    const templateProps = buildPortfolioTemplateProps(
+      {
+        ...userData,
         name: userData.name || userData.username,
-        title: userData.title,
-        industry: userData.industry,
-        domain: userData.domain,
-        location: userData.location,
-        email: userData.email || null,
-        photoURL: userData.photoURL,
-        lookingFor: userData.lookingFor,
-        jobLevel: userData.jobLevel,
-        aboutMe: userData.aboutMe,
-        whatIOffer: userData.whatIOffer
+        tagline: userData.tagline || null,
+        visionStatement: userData.visionStatement || null,
+        missionStatement: userData.missionStatement || null,
+        coreValues: userData.coreValues || [],
+        uniqueValueProposition: userData.uniqueValueProposition || null,
+        brandName: userData.brandName || null,
+        primaryAudience: userData.primaryAudience || [],
+        secondaryAudience: userData.secondaryAudience || []
       },
-      userSkills: portfolioData?.skills || [],
-      userExperiences: portfolioData?.experiences || [],
-      userProjects: portfolioData?.projects || [],
-      userEducations: portfolioData?.educations || [],
-      userServices: portfolioData?.services || []
-    };
+      {
+        skills: portfolioData?.skills,
+        experiences: portfolioData?.experiences,
+        projects: portfolioData?.projects,
+        educations: portfolioData?.educations,
+        services: portfolioData?.services
+      }
+    );
     
-    console.log("Template props prepared:", templateProps);
-    console.log("Detailed data for Scholar template:");
-    console.log("- userSkills count:", templateProps.userSkills?.length || 0);
-    console.log("- userExperiences count:", templateProps.userExperiences?.length || 0);
-    console.log("- userProjects count:", templateProps.userProjects?.length || 0);
-    console.log("- userEducations count:", templateProps.userEducations?.length || 0);
-    console.log("- userServices count:", templateProps.userServices?.length || 0);
-    console.log("- Skills data sample:", templateProps.userSkills?.[0]);
-    console.log("- Projects data sample:", templateProps.userProjects?.[0]);
-    
-    switch (layout) {
-      case 'minimalist-pro':
-      case 'minimalist':
-        return <MinimalistPro 
-          userInfo={{
-            ...templateProps.userInfo,
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'timeline-storyteller-2':
-      case 'timeline':
-        return <TimelineStoryteller 
-          userInfo={{
-            ...templateProps.userInfo,
-            email: templateProps.userInfo.email || '',
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'visual-expert':
-      case 'visual':
-        return <VisualExpert 
-          userInfo={{
-            ...templateProps.userInfo,
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'freelancer-hub':
-      case 'freelancer':
-        return <FreelancerHub 
-          userInfo={{
-            ...templateProps.userInfo,
-            email: templateProps.userInfo.email || '',
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'scholar':
-        return <Scholar 
-          userInfo={{
-            ...templateProps.userInfo,
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'animated':
-        return <Animated 
-          name={templateProps.userInfo.name}
-          title={templateProps.userInfo.title || ''}
-          industry={templateProps.userInfo.industry || ''}
-          domain={templateProps.userInfo.domain || ''}
-          location={templateProps.userInfo.location || ''}
-          email={templateProps.userInfo.email || ''}
-          photoURL={templateProps.userInfo.photoURL || ''}
-          lookingFor={templateProps.userInfo.lookingFor || ''}
-          aboutMe={templateProps.userInfo.aboutMe || ''}
-          whatIOffer={templateProps.userInfo.whatIOffer || ''}
-          skills={templateProps.userSkills}
-          services={templateProps.userServices}
-          experiences={templateProps.userExperiences}
-          educations={templateProps.userEducations}
-          projects={templateProps.userProjects}
-          id={templateProps.userInfo.id}
-          currentUserId={undefined}
-        />;
-      case 'dynamic-innovator':
-      case 'dynamic':
-        return <DynamicInnovator 
-          userInfo={templateProps.userInfo}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'corporate-executive':
-      case 'corporate':
-        return <CorporateExecutive 
-          userInfo={{
-            ...templateProps.userInfo,
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'designer-portfolio':
-        return <DesignerShowcase 
-          userInfo={templateProps.userInfo}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'photographer-portfolio':
-        return <PhotographerPortfolio 
-          userInfo={templateProps.userInfo}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-      case 'professional':
-      default:
-        console.log("Rendering CorporateExecutive template with professional layout");
-        return <CorporateExecutive 
-          userInfo={{
-            ...templateProps.userInfo,
-            jobLevel: templateProps.userInfo.jobLevel || null
-          }}
-          userSkills={templateProps.userSkills}
-          userExperiences={templateProps.userExperiences}
-          userProjects={templateProps.userProjects}
-          userEducations={templateProps.userEducations}
-          userServices={templateProps.userServices}
-        />;
-    }
+    // Get the appropriate template component and render it
+    const TemplateComponent = getPortfolioTemplate(layout);
+    return <TemplateComponent {...templateProps} />;
   };
 
   return renderPortfolioTemplate();

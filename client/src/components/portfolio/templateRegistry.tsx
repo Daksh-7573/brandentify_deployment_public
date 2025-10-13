@@ -93,13 +93,24 @@ export interface PortfolioTemplateProps {
 }
 
 const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
+  // Snake case to kebab case mappings
   "minimalist_pro": "minimalist-pro",
   "animated_odyssey": "animated-odyssey",
   "corporate_executive": "corporate-executive",
   "dynamic_innovator": "dynamic-innovator",
   "freelancer_hub": "freelancer-hub",
   "designer_portfolio": "designer-portfolio",
-  "photographer_portfolio": "photographer-portfolio"
+  "photographer_portfolio": "photographer-portfolio",
+  "visual_expert": "visual-expert",
+  
+  // Legacy aliases from brand-profile and random-profile switch statements
+  "minimalist": "minimalist-pro",
+  "timeline": "timeline-storyteller-2",
+  "visual": "visual-expert",
+  "freelancer": "freelancer-hub",
+  "dynamic": "dynamic-innovator",
+  "corporate": "corporate-executive",
+  "executive": "corporate-executive"
 };
 
 export function normalizeLayoutKey(layout: string | null | undefined): PortfolioLayoutKey {
