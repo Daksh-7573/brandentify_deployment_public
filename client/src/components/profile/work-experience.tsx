@@ -917,19 +917,25 @@ export default function WorkExperience() {
                 <div className="flex-1">
                   <h4 className="text-lg font-semibold text-white">{experience.title}</h4>
                   <p className="text-blue-400 mb-2">{experience.company}</p>
+                  {/* Industry and Domain - First Line */}
+                  {(experience.industry || experience.domain) && (
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-2">
+                      {experience.industry && (
+                        <span className="flex items-center gap-1">
+                          <Building className="w-4 h-4" />
+                          {experience.industry}
+                        </span>
+                      )}
+                      {experience.domain && (
+                        <span className="flex items-center gap-1">
+                          <Globe className="w-4 h-4" />
+                          {experience.domain}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {/* Location and Dates - Second Line */}
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-3">
-                    {experience.industry && (
-                      <span className="flex items-center gap-1">
-                        <Building className="w-4 h-4" />
-                        {experience.industry}
-                      </span>
-                    )}
-                    {experience.domain && (
-                      <span className="flex items-center gap-1">
-                        <Globe className="w-4 h-4" />
-                        {experience.domain}
-                      </span>
-                    )}
                     <span className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
                       {experience.location}
