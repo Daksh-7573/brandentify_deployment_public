@@ -491,18 +491,6 @@ export default function PhotographerPortfolio({
                 </div>
               )}
 
-              {/* About Me */}
-              {userInfo.aboutMe && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
-                    About Me
-                  </h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    {userInfo.aboutMe}
-                  </p>
-                </div>
-              )}
-
               {/* What I Offer - Services */}
               {userServices.length > 0 && (
                 <div className="space-y-4">
@@ -591,30 +579,50 @@ export default function PhotographerPortfolio({
         </div>
       </section>
 
-      {/* Skills Section */}
-      {userSkills.length > 0 && (
+      {/* About Me & Skills Section */}
+      {(userInfo.aboutMe || userSkills.length > 0) && (
         <section className="py-20 bg-stone-800">
           <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="space-y-6"
-              >
-                <h2 className="text-4xl font-serif font-bold text-stone-100 mb-8">
-                  What I'm Good At
-                </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {userSkills.map((skill) => (
-                    <SkillBar
-                      key={skill.id}
-                      skill={skill.name}
-                      level={skill.level || 'Intermediate'}
-                    />
-                  ))}
-                </div>
-              </motion.div>
+            <div className="max-w-6xl mx-auto space-y-16">
+              {/* About Me - Full Width */}
+              {userInfo.aboutMe && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <h2 className="text-4xl font-serif font-bold text-stone-100 mb-6">
+                    About Me
+                  </h2>
+                  <p className="text-lg text-stone-300 leading-relaxed max-w-4xl mx-auto">
+                    {userInfo.aboutMe}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* What I'm Good At - Skills */}
+              {userSkills.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-6"
+                >
+                  <h2 className="text-4xl font-serif font-bold text-stone-100 mb-8 text-center">
+                    What I'm Good At
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {userSkills.map((skill) => (
+                      <SkillBar
+                        key={skill.id}
+                        skill={skill.name}
+                        level={skill.level || 'Intermediate'}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
         </section>
