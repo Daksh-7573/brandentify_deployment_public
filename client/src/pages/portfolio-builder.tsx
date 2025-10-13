@@ -43,6 +43,7 @@ import Animated from "@/components/portfolio/templates/animated";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
 import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
+import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -78,7 +79,7 @@ const portfolioFormSchema = z.object({
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
-    "designer-portfolio"
+    "designer-portfolio", "photographer-portfolio"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -496,6 +497,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Neo-Glass, Modern, Visually Rich
 ✔ Best For: Designers, Creative Professionals, Portfolio-First Careers`,
       theme: "#A855F7"
+    },
+    { 
+      id: "photographer-portfolio", 
+      name: "The Photographer Portfolio", 
+      description: `✔ Theme: Image-First, Minimal, Photography-Focused
+✔ Best For: Photographers, Visual Artists, Videographers, Image-Driven Creators`,
+      theme: "#4F46E5"
     }
   ];
 
@@ -1247,6 +1255,38 @@ export default function PortfolioBuilder() {
                   missionStatement: userData?.missionStatement || null,
                   coreValues: userData?.coreValues || [],
                   uniqueValueProposition: userData?.uniqueValueProposition || null
+                }}
+                userSkills={skills || []}
+                userExperiences={experiences || []}
+                userProjects={projects || []}
+                userEducations={educations || []}
+                userServices={services || []}
+              />
+            )}
+            
+            {form.watch("layout") === "photographer-portfolio" && (
+              <PhotographerPortfolio
+                userInfo={{
+                  id: userData?.id,
+                  name: userData?.name || user?.name || '',
+                  title: userData?.title || null,
+                  email: userData?.email || user?.email || null,
+                  photoURL: userData?.photoURL || user?.photoURL || null,
+                  aboutMe: userData?.aboutMe || null,
+                  location: userData?.location || null,
+                  industry: userData?.industry || null,
+                  domain: userData?.domain || null,
+                  lookingFor: userData?.lookingFor || null,
+                  whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  jobLevel: userData?.jobLevel || null,
+                  tagline: userData?.tagline || null,
+                  visionStatement: userData?.visionStatement || null,
+                  missionStatement: userData?.missionStatement || null,
+                  coreValues: userData?.coreValues || [],
+                  uniqueValueProposition: userData?.uniqueValueProposition || null,
+                  brandName: userData?.brandName || null,
+                  primaryAudience: userData?.primaryAudience || [],
+                  secondaryAudience: userData?.secondaryAudience || []
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}

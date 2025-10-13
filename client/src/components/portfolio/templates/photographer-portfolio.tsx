@@ -59,8 +59,9 @@ function SkillIndicator({ skill }: { skill: Skill }) {
 // Project gallery card
 function ProjectGalleryCard({ project, onClick }: { project: Project; onClick: () => void }) {
   const anim = useAnimationConfig();
-  const isVideo = project.mediaUrls && project.mediaUrls.length > 0 && 
-    (project.mediaUrls[0].endsWith('.mp4') || project.mediaUrls[0].endsWith('.webm'));
+  const mediaUrls = (project.mediaUrls as string[]) || [];
+  const isVideo = mediaUrls.length > 0 && 
+    (mediaUrls[0].endsWith('.mp4') || mediaUrls[0].endsWith('.webm'));
   
   return (
     <motion.div
@@ -114,7 +115,8 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
   
   if (!project) return null;
   
-  const mediaItems = project.mediaUrls || [project.thumbnailUrl].filter(Boolean);
+  const mediaUrls = (project.mediaUrls as string[]) || [];
+  const mediaItems = mediaUrls.length > 0 ? mediaUrls : [project.thumbnailUrl].filter(Boolean);
   const currentMedia = mediaItems[currentMediaIndex] || project.thumbnailUrl;
   const isVideo = currentMedia?.endsWith('.mp4') || currentMedia?.endsWith('.webm');
   
@@ -133,13 +135,13 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           <div className="relative aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
             {isVideo ? (
               <video 
-                src={currentMedia} 
+                src={currentMedia || undefined} 
                 controls 
                 className="w-full h-full object-contain"
               />
             ) : (
               <img 
-                src={currentMedia} 
+                src={currentMedia || undefined} 
                 alt={project.title}
                 className="w-full h-full object-contain"
               />
@@ -150,6 +152,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           {mediaItems.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2">
               {mediaItems.map((media, idx) => {
+                if (!media) return null;
                 const isVideoThumb = media.endsWith('.mp4') || media.endsWith('.webm');
                 return (
                   <button
@@ -218,10 +221,7 @@ function ContactModal({ isOpen, onClose, userId }: { isOpen: boolean; onClose: (
     
     setIsSubmitting(true);
     try {
-      await apiRequest(`/api/contact/${userId}`, {
-        method: 'POST',
-        body: JSON.stringify(formData)
-      });
+      await apiRequest('POST', `/api/contact/${userId}`, formData);
       
       toast({
         title: "Message sent!",
@@ -507,10 +507,15 @@ export default function PhotographerPortfolio({
                     <Card key={service.id} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <Camera className="w-10 h-10 text-indigo-600 mb-4" />
-                        <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{service.name}</h3>
+                        <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{service.title}</h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">{service.description}</p>
-                        {service.price && (
-                          <p className="text-lg font-bold text-indigo-600">{service.price}</p>
+                        {(service.priceInr || service.priceUsd) && (
+                          <p className="text-lg font-bold text-indigo-600">
+                            {service.priceInr && `₹${service.priceInr}`}
+                            {service.priceInr && service.priceUsd && ' / '}
+                            {service.priceUsd && `$${service.priceUsd}`}
+                            {service.isHourly && '/hr'}
+                          </p>
                         )}
                       </CardContent>
                     </Card>
@@ -628,9 +633,9 @@ export default function PhotographerPortfolio({
                           {edu.fieldOfStudy && (
                             <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{edu.fieldOfStudy}</p>
                           )}
-                          {edu.graduationDate && (
+                          {(edu.endDate || edu.startDate) && (
                             <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                              {new Date(edu.graduationDate).getFullYear()}
+                              {edu.endDate ? new Date(edu.endDate).getFullYear() : new Date(edu.startDate).getFullYear()}
                             </p>
                           )}
                         </div>
