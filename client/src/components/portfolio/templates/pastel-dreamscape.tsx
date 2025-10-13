@@ -156,66 +156,65 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
 // Skill Petal Component (Radial Layout)
 function SkillPetals({ skills }: { skills: Skill[] }) {
   const displaySkills = skills.slice(0, 8);
-  const radius = 200;
+  const radius = 220;
   
   return (
-    <div className="relative w-full h-[550px] flex items-center justify-center">
-      {/* Center Circle */}
-      <motion.div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
-        animate={{
-          scale: [1, 1.1, 1],
-          rotate: 360,
-        }}
-        transition={{
-          scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-        }}
-      >
-        <Star className="w-10 h-10 text-white" />
-      </motion.div>
+    <div className="relative w-full h-[600px]">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+        {/* Center Circle */}
+        <motion.div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: 360,
+          }}
+          transition={{
+            scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+          }}
+        >
+          <Star className="w-10 h-10 text-white" />
+        </motion.div>
 
-      {/* Skill Petals */}
-      {displaySkills.map((skill, index) => {
-        // Start from top (270 degrees or -90 degrees) and go clockwise
-        const angle = -90 + (index * 360) / displaySkills.length;
-        const radian = (angle * Math.PI) / 180;
-        const x = radius * Math.cos(radian);
-        const y = radius * Math.sin(radian);
+        {/* Skill Petals */}
+        {displaySkills.map((skill, index) => {
+          const angle = -90 + (index * 360) / displaySkills.length;
+          const radian = (angle * Math.PI) / 180;
+          const x = radius * Math.cos(radian);
+          const y = radius * Math.sin(radian);
 
-        return (
-          <motion.div
-            key={skill.id}
-            className="absolute"
-            style={{
-              left: '50%',
-              top: '50%',
-              transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
-            }}
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            whileHover={{ scale: 1.2, rotate: 10 }}
-          >
-            <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/60 border-2 border-white/80 shadow-lg flex flex-col items-center justify-center p-4 text-center hover:bg-white/80 transition-all duration-300">
-              <span className="font-semibold text-sm text-gray-800 mb-1">{skill.name}</span>
-              <div className="text-xs text-gray-600">{skill.level}</div>
-              {skill.proficiency && (
-                <div className="mt-2 w-full bg-gray-200 h-1 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-pink-400 to-purple-400"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.proficiency}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1, delay: index * 0.1 }}
-                  />
-                </div>
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
+          return (
+            <motion.div
+              key={skill.id}
+              className="absolute left-1/2 top-1/2"
+              style={{
+                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+              }}
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              whileHover={{ scale: 1.2, rotate: 10 }}
+            >
+              <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/60 border-2 border-white/80 shadow-lg flex flex-col items-center justify-center p-4 text-center hover:bg-white/80 transition-all duration-300">
+                <span className="font-semibold text-sm text-gray-800 mb-1">{skill.name}</span>
+                <div className="text-xs text-gray-600">{skill.level}</div>
+                {skill.proficiency && (
+                  <div className="mt-2 w-full bg-gray-200 h-1 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-pink-400 to-purple-400"
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${skill.proficiency}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1, delay: index * 0.1 }}
+                    />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -640,8 +639,7 @@ export default function PastelDreamscape({
                           </Button>
                           <Button
                             onClick={() => window.location.href = `mailto:${userInfo.email}?subject=Mentorship Inquiry`}
-                            variant="outline"
-                            className="border-2 border-purple-400 text-purple-600 hover:bg-purple-50 rounded-full px-6"
+                            className="backdrop-blur-md bg-white/60 border-2 border-white/80 text-purple-600 hover:bg-white/80 shadow-lg rounded-full px-6"
                           >
                             <Sparkles className="w-4 h-4 mr-2" />
                             Mentor
@@ -817,7 +815,7 @@ export default function PastelDreamscape({
         {userSkills.length > 0 && (
           <section className="py-24 px-6">
             <div className="container mx-auto max-w-6xl">
-              <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 My Skills
               </h2>
               <SkillPetals skills={userSkills} />
@@ -850,7 +848,7 @@ export default function PastelDreamscape({
         {userExperiences.length > 0 && (
           <section className="py-24 px-6">
             <div className="container mx-auto max-w-6xl">
-              <h2 className="text-5xl font-bold text-center mb-20 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 My Journey
               </h2>
               <div className="space-y-16">
