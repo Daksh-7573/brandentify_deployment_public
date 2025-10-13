@@ -398,6 +398,7 @@ export default function PhotographerPortfolio({
   userSkills,
   userExperiences,
   userEducations,
+  userServices,
   currentUserId
 }: PhotographerPortfolioProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -502,18 +503,65 @@ export default function PhotographerPortfolio({
                 </div>
               )}
 
-              {/* What I Offer - Card Format */}
-              {userInfo.whatIOffer && (
-                <Card className="bg-white/80 border-amber-200 shadow-md">
-                  <CardContent className="p-5">
-                    <h3 className="text-lg font-semibold text-stone-800 mb-3">
-                      What I Offer
-                    </h3>
-                    <p className="text-stone-700 leading-relaxed">
-                      {userInfo.whatIOffer}
-                    </p>
-                  </CardContent>
-                </Card>
+              {/* What I Offer - Services */}
+              {userServices.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-stone-800">
+                    What I Offer
+                  </h3>
+                  <div className="space-y-3">
+                    {userServices.map((service) => {
+                      const features = (service.features as string[]) || [];
+                      return (
+                        <Card key={service.id} className="bg-white/80 border-amber-200 shadow-md hover:shadow-lg transition-shadow">
+                          <CardContent className="p-5">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex-1">
+                                <h4 className="text-base font-semibold text-stone-800 mb-1">
+                                  {service.title}
+                                </h4>
+                                {service.category && service.category !== 'other' && (
+                                  <Badge variant="outline" className="text-xs mb-2">
+                                    {service.category}
+                                  </Badge>
+                                )}
+                              </div>
+                              {(service.priceInr || service.priceUsd) && (
+                                <div className="text-right ml-4">
+                                  {service.priceInr && (
+                                    <p className="text-amber-700 font-bold">
+                                      ₹{service.priceInr}{service.isHourly ? '/hr' : ''}
+                                    </p>
+                                  )}
+                                  {service.priceUsd && (
+                                    <p className="text-stone-600 text-sm">
+                                      ${service.priceUsd}{service.isHourly ? '/hr' : ''}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            {service.description && (
+                              <p className="text-stone-700 text-sm leading-relaxed mb-3">
+                                {service.description}
+                              </p>
+                            )}
+                            {features.length > 0 && (
+                              <ul className="space-y-1">
+                                {features.map((feature, idx) => (
+                                  <li key={idx} className="text-stone-600 text-sm flex items-start gap-2">
+                                    <span className="text-amber-600 mt-0.5">✓</span>
+                                    <span>{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </motion.div>
 
