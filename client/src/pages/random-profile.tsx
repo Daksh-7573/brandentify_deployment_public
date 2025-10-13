@@ -24,6 +24,7 @@ import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innov
 import Animated from "@/components/portfolio/templates/animated";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
+import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
 
 // Type for our user data
 interface UserData {
@@ -250,6 +251,8 @@ const RandomProfile = () => {
       return <AnimatedOdyssey {...templateProps} />;
     case "designer-portfolio":
       return <DesignerShowcase {...templateProps} />;
+    case "photographer-portfolio":
+      return <PhotographerPortfolio {...templateProps} />;
     default:
       return <CorporateExecutive {...templateProps} />;
   }
