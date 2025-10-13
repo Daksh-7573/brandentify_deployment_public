@@ -1,0 +1,279 @@
+1. Core Design Goal
+
+Create a clean, modern, photography-forward portfolio layout that balances strong imagery with brand storytelling.
+The user’s photos should dominate — text and elements must support, not compete.
+The design must feel artistic but professional, appealing to clients, collaborators, and mentors.
+
+Tone & Feel
+
+Sophisticated
+
+Confident
+
+Human + warm, not tech-heavy
+
+Minimal UI (photography in focus)
+
+Premium aesthetic (think VSCO + Behance + Squarespace hybrid)
+
+🧱 2. Grid & Layout System
+Device	Layout	Columns	Gutter	Max Width
+Desktop	1440px base	12 cols	24px	1200px container
+Tablet	1024px	8 cols	20px	920px container
+Mobile	375–768px	4 cols	16px	100% width
+
+Margins:
+Top/bottom spacing 80px desktop, 56px tablet, 32px mobile.
+Hero section should extend full-bleed (edge to edge).
+
+Vertical rhythm: Use 8px scale (8, 16, 24, 32, 48, 64px).
+
+🌈 3. Color Palette (Moodboard)
+
+Primary: Deep Charcoal #0B0C10
+Accent: Indigo #6366F1 (CTA color)
+Secondary Accent: Warm Gray #A8A8A8
+Background: Off-white #F8F9FA (light mode) or #121212 (dark mode variant)
+Text Primary: #1A1A1A
+Text Secondary: #555555
+Divider / Line: #EAEAEA
+
+Optional Gradient for Hero Overlay:
+linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.85) 100%)
+
+🔤 4. Typography System
+Type	Font	Size	Weight	Style
+Display / Name	Playfair Display or Cormorant Garamond	48–64px	600	Serif, elegant
+Section Headings	Inter	28–36px	600	Sans-serif
+Body Text	Inter	16–18px	400	Readable, neutral
+Caption / Meta	Inter	14px	400	Uppercase optional
+Button	Inter	15–16px	500	All caps, letter spacing 1%
+
+Line Height:
+
+Body: 150%
+
+Headings: 120–130%
+
+Captions: 140%
+
+🪞 5. Component Sections (with Design Guidance)
+🖼️ A. Hero / Masthead
+
+Purpose: First impression — striking large hero image with professional tone.
+
+Full-bleed background image (from portfolio)
+
+Overlay gradient (top-to-bottom fade)
+
+Left or centered vertical stack:
+
+Profile Image (120–160px circle)
+
+Name, Title, Location
+
+Tagline (short sentence in italic or accent color)
+
+3 CTA Buttons (Mentor, Grab my Resume, Let’s Talk)
+
+Optional mini social icons row (LinkedIn, Instagram)
+
+Buttons:
+
+Style: Rounded (8px radius), filled for primary, outline for secondary.
+
+Hover: Shadow lift + slight color brightness.
+
+Example:
+
+Primary: Indigo fill, white text
+
+Secondary: Transparent, Indigo border, Indigo text
+
+Layout Inspiration:
+→ “Squarespace Photographer Template”
+→ “Behance profile hero”
+
+🧑‍🎨 B. About / Brand Section
+
+Purpose: Tell personal story, build trust.
+
+Two-column layout:
+
+Left: aboutMe
+
+Right: “My Brand” card (vision, mission, UVP, coreValues)
+
+Core values as pill chips (3–5 items)
+
+Small icons for mission/vision (feather icons: target, compass, star)
+
+Accent block:
+Highlight UVP in color block (#F3F4F6) with subtle pattern background.
+
+📦 C. What I Offer / Services
+
+Purpose: Quick understanding of services & offerings.
+
+3 or 4 cards in a row
+
+Each card: small image (or gradient), service title, 1-line description
+
+Hover: image brightness + CTA “View Work”
+
+Optional light dotted border or soft drop shadow
+
+🧰 D. Skills / Tools
+
+Purpose: Show expertise visually.
+
+Horizontal skill bars or small circular meters.
+
+For photographers, use tool icons (camera, drone, editing software logos).
+
+Label with proficiency % and level badge.
+
+Soft animation (bar fill or rotation).
+
+🖼️ E. Project Showcase (Main Gallery)
+
+Purpose: The star section — all about visuals.
+
+Grid type: Masonry or justified gallery
+
+Column count: 3 (desktop), 2 (tablet), 1 (mobile)
+
+Thumbnail: Rounded corners (12px), no harsh shadow
+
+Hover Overlay:
+
+Fade-in black transparent overlay
+
+Show Project Title + small tag line (e.g., “Editorial – Fashion”)
+
+CTA: “View Project” (button or arrow icon)
+
+Clicking opens modal/lightbox:
+
+Large carousel with swipe/arrow navigation
+
+Below image: Description, category, collaborators, endorsements
+
+Dark backdrop with blurred background
+
+Accessibility Tip: Image caption always visible on focus (for screen readers).
+
+💬 F. Testimonials / Endorsements
+
+Purpose: Build credibility.
+
+2 or 3 testimonials per row.
+
+Card layout: quote mark icon, message, clientName + title, verified badge.
+
+Verified badge: subtle green tick #22C55E.
+
+Optional small animation (testimonial carousel auto-slide).
+
+🕰️ G. Career & Education Timeline
+
+Purpose: Context for expertise.
+
+Vertical timeline with subtle dots and connecting lines.
+
+Each node:
+
+Title, Company, Date range, Location
+
+Expand for keyResponsibilities
+
+Soft fade-in reveal on scroll.
+
+Education below in small stacked cards (logo + degree + institution).
+
+✉️ H. Contact / Footer Section
+
+Purpose: Invite connection.
+
+Background color shift (use dark or indigo gradient).
+
+Central CTA block:
+
+Heading: “Let’s create something together.”
+
+Subtext: short encouraging line (e.g., “I’m open to collaborations and mentorship.”)
+
+Buttons:
+
+Mentor (Outline)
+
+Grab my Resume (Ghost)
+
+Let’s Talk (Primary Fill)
+
+Below: contact form (Name, Email, Message)
+
+Optional: embedded Google Map (based on location).
+
+🧩 6. Components to Design in Figma
+Component Name	Purpose	States Required
+HeroSection	Cover intro + CTAs	Default, Hover (CTA), Responsive
+AboutCard	About + Brand info	Default, Mobile
+ServiceCard	Display offerings	Hover
+SkillBar	Visual proficiency	Animated, Static
+GalleryItem	Project thumbnail	Hover, Focus
+ProjectModal	Expanded project view	Open, Loading, Close
+TestimonialCard	Client endorsements	Default
+TimelineItem	Career/Education node	Collapsed, Expanded
+ContactSection	Footer with CTAs	Default, Mobile
+ButtonPrimary, ButtonSecondary, ButtonGhost	Reusable buttons	Default, Hover, Active
+🧠 7. Animation & Interaction Guidelines
+
+Micro-interactions only. Avoid parallax, heavy scroll effects.
+
+Fade & scale (100ms–300ms) for modals and overlays.
+
+Scroll-based animations: only opacity/translateY for reveal.
+
+Prefer motion curves: ease-out for entrances, ease-in for exits.
+
+Respect accessibility: reduce motion if user setting enabled.
+
+♿ 8. Accessibility Design
+
+Ensure all contrast ratios ≥ 4.5:1.
+
+Minimum 44px height for buttons.
+
+Keyboard focus visible on all interactive elements.
+
+Text alternatives for all images (use project titles).
+
+No text embedded in images.
+
+“Prefers-reduced-motion” friendly animations.
+
+🧮 9. Layout Deliverables (Figma Page Structure)
+📁 Brandentifier Photographer Portfolio
+ ├── 01. Color & Typography
+ ├── 02. Components Library
+ │    ├── Buttons
+ │    ├── Cards (Service, Testimonial)
+ │    ├── Galleries
+ │    ├── Timeline nodes
+ │    └── CTAs
+ ├── 03. Desktop Layout
+ │    ├── Hero
+ │    ├── About + Brand
+ │    ├── What I Offer
+ │    ├── Projects Gallery
+ │    ├── Testimonials
+ │    ├── Career + Education
+ │    ├── Footer Contact
+ ├── 04. Tablet Layout
+ ├── 05. Mobile Layout
+ ├── 06. Prototype Flows
+ │    ├── Open Project Modal
+ │    ├── Scroll Interactions
+ │    ├── Contact CTA
+ └── 07. Notes & Handoff
