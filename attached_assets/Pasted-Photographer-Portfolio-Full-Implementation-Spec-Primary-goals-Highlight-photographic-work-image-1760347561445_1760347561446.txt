@@ -1,0 +1,391 @@
+Photographer Portfolio — Full Implementation Spec
+
+Primary goals
+
+Highlight photographic work (images and video) in a visually strong, minimal layout.
+
+All fields from your data model must be displayed properly.
+
+Animations are tasteful and don’t interfere with viewing photos.
+
+Three prominent CTAs: Mentor, Grab my Resume, Let’s Talk.
+
+Mobile-first responsive design, accessible, and optimized for speed.
+
+Tech assumptions: React + Tailwind CSS, lightbox library (e.g., PhotoSwipe/GLightbox), lazy-loading images, use prefers-reduced-motion, server endpoints /api/user/profile, /api/user/resume, /api/mentor-requests, /api/contact. Use webp/jpg srcset for images.
+
+🧭 High-level Layout (Desktop & Mobile)
+
+Hero / Masthead (sticky minimal header)
+
+Big full-bleed hero image (cover photo or highlight project thumbnail) with subtle gradient overlay.
+
+Left (or centered) overlay: photoURL (small circular), name (H1), title, tagline, location.
+
+Action row with 3 CTAs: Mentor, Grab my Resume, Let’s Talk.
+
+Small social / link icons under CTAs if available.
+
+About & Brand Card
+
+Short aboutMe (max 350 words) with mission and UVP highlight boxes.
+
+Right side / below: brand details — brandName, visionStatement, missionStatement, coreValues chips, primaryAudience, secondaryAudience.
+
+Services / What I Offer
+
+whatIOffer as bullet tiles or service cards (e.g., Wedding Photography, Commercial, Editorial, Retouching).
+
+Each card with a small representative image/icon and CTA to view projects or contact.
+
+Key Stats (Optional)
+
+Small chips: Projects count, Years experience (derived), Verified endorsements count, Top locations served.
+
+Skills / Tools
+
+skills array shown as chips/badges and proficiency bars or small radial meters (camera models, editing tools, style tags).
+
+Show level as text or small label.
+
+Project Showcase (Main Visual Area)
+
+Gallery grid (masonry or justified grid) of projects (use thumbnailUrl).
+
+Each card displays overlay on hover: title, category, industry, quick tag (e.g., “Wedding — Editorial”).
+
+Clicking opens Project Modal (Lightbox + Details):
+
+Full media carousel (mediaUrls) with high-resolution images, optional video.
+
+Project description, dates, projectUrl (if live), collaborators, endorsements.
+
+Buttons: Share, Download (if allowed), Request Collaboration.
+
+Endorsements / Testimonials
+
+Client testimonials from Project Endorsements showing clientName, message, rating, isVerified badge.
+
+Option to filter verified only.
+
+Career Path / Experience
+
+Timeline list of careerPath items, showing title, company, dates, location, keyResponsibilities.
+
+Education / Workshops
+
+academicBackground cards: degrees, institutions, fieldOfStudy, skillsAcquired (e.g., workshops led).
+
+Contact / CTA Strip (Sticky or Footer)
+
+Reiterate CTAs with “Mentor”, “Grab my Resume”, “Let’s Talk”.
+
+Small contact form: name, email, message, preferred date/time (optional).
+
+Map or service area (based on location).
+
+🎨 Visual Style & Interaction Rules (Photography-first)
+
+Color & Tone: neutral background (dark or light mode option). Images are primary, so UI uses low-contrast supportive tones. Accent color: indigo/teal for CTAs.
+
+Typography: big readable serif or geometric sans for headings (e.g., Inter / Playfair for hero), body 15px–16px.
+
+Spacing: generous whitespace around images to let photos breathe.
+
+Image treatment: subtle shadow, thin rounded corners (8–12px) for thumbnails; hero images edge-to-edge.
+
+Hover / Focus: overlay fade-in (120–160ms) with title and CTA; avoid parallax or heavy transforms to preserve image integrity.
+
+Animations:
+
+Image overlay: fade + translateY(6px).
+
+Skill bars: width animate on entrance only.
+
+Project modal open: fade + scale (use prefers-reduced-motion).
+
+If prefers-reduced-motion is set, disable animations.
+
+🧩 Component Details & Data Mapping
+Hero / Masthead
+
+Fields: photoURL (portrait), name, title, tagline, location, brandName.
+
+Hero background: pick top project thumbnailUrl or configurable coverImage.
+
+CTA buttons:
+
+Mentor → open /mentor modal prefilled with userId.
+
+Grab my Resume → download /api/user/{id}/resume (if no resume, fallback to contact).
+
+Let’s Talk → open contact modal.
+
+UX Tips
+
+Make hero image clickable to open the featured project.
+
+Ensure hero text has high contrast over image (use gradient overlay).
+
+About & Brand Card
+
+Fields: aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues, primaryAudience, secondaryAudience.
+
+Present mission/vision as small highlighted callout cards under about text.
+
+coreValues as chips that can link to curated content showing examples (optional).
+
+Services / What I Offer
+
+whatIOffer → parse into 3–6 service tiles (if too long, truncate and "Read more").
+
+Each tile: title, 1-line description, small icon.
+
+Skills
+
+skills array:
+
+Display top 6 skills as radial or linear progress.
+
+Show level badge (Beginner / Intermediate / Advanced).
+
+Use accessible numeric labels for screen readers.
+
+Project Showcase (Gallery)
+
+Map: projects[]:
+
+Card: thumbnailUrl, title, category, industry, startDate.
+
+On hover: overlay show title, category, small CTA View Work.
+
+Modal detail pulls:
+
+mediaUrls carousel (images first, then video).
+
+description, startDate, projectUrl, category, industry.
+
+collaborators list with profile links.
+
+endorsements related to project (verified ribbon if isVerified).
+
+Image Serving
+
+Serve images with srcset & sizes and WebP fallback.
+
+Use loading="lazy" on thumbnails.
+
+Implement progressive blur-up (small blurry placeholder → full image) to improve perceived speed.
+
+Endorsements
+
+Map to Project Endorsements.
+
+Show clientName, clientCompany, message, rating stars, isVerified icon.
+
+Link to project that endorsement belongs to.
+
+Career Path & Education
+
+Map to careerPath[] and academicBackground[].
+
+Timeline UI with expansion for keyResponsibilities arrays.
+
+CTAs & Forms Integration
+
+Mentor: POST /api/mentor-requests { fromName, fromEmail, message, userId, preferredTimes }
+
+Grab my Resume: GET /api/user/{userId}/resume (direct download header)
+
+Let’s Talk: POST /api/contact { name, email, message, forUserId }
+
+Include toast feedback on success/failure and log analytics events.
+
+♿ Accessibility
+
+All images: alt attributes (default to project title).
+
+All interactive elements: keyboard focus states and aria-* attributes.
+
+Lightbox modal: focus trap, ESC closes, aria-modal attribute.
+
+Ensure 44px minimum touch target for CTAs.
+
+High contrast text and prefers-reduced-motion support.
+
+⚙️ API & Integration Details (Implementation-ready)
+Endpoints used (examples)
+
+GET /api/user/{userId}/profile → returns full profile with nested arrays.
+
+GET /api/user/{userId}/projects?page=x&limit=y → paginated.
+
+GET /api/user/{userId}/resume → returns resume file.
+
+POST /api/mentor-requests → payload { fromName, fromEmail, message, userId }
+
+POST /api/contact → payload { name, email, message, userId, preferredTime }
+
+Analytics events: portfolio_viewed, project_opened, resume_downloaded, mentor_requested, contact_sent.
+
+Example project JSON (sample)
+{
+  "id": 102,
+  "userId": 12,
+  "title": "Riverside Wedding",
+  "description": "A three-day wedding shoot capturing candid moments and editorial portraits. Delivered 800+ high-res images.",
+  "startDate": "2024-02-10",
+  "projectUrl": "https://live.example.com/riverside-wedding",
+  "category": "Wedding",
+  "industry": "Events",
+  "thumbnailUrl": "https://cdn.example.com/thumbs/riverside.jpg",
+  "mediaUrls": [
+    "https://cdn.example.com/projects/riverside/1.webp",
+    "https://cdn.example.com/projects/riverside/2.webp",
+    "https://cdn.example.com/projects/riverside/3.mp4"
+  ],
+  "collaborators": [
+    {"id":1,"projectId":102,"name":"Ankur Patel","role":"Assistant Photographer","profileLink":"/u/ankur"}
+  ],
+  "endorsements": [
+    {"id":501,"projectId":102,"clientName":"Priya Shah","message":"Amazing work!", "rating":5, "isVerified":true}
+  ]
+}
+
+🖼 Gallery UX & Performance Patterns
+
+Limit initial gallery load to first 18 thumbnails; load more on scroll/infinite or via “Load more”.
+
+Use responsive sizes for <img srcset>:
+
+mobile: 375–640
+
+tablet: 640–1024
+
+desktop: 1024–2048
+
+For video media (.mp4, .webm), show poster frame; play inline in modal only when user chooses.
+
+Optional watermark toggle on exports/downloads (protects photographer work). Don’t display watermark on portfolio preview unless requested.
+
+🔐 Security & DRM Considerations
+
+Protect high-res assets behind authenticated endpoints for download.
+
+If allowing downloads, ensure CORS and rate-limits; optionally require contact form submission before download.
+
+Endorsement verification flow: isVerified only true if verification token validated by backend.
+
+🔁 Responsive Behavior Summary
+
+Mobile: single column, hero stacked, gallery single-column, sticky bottom CTA bar with primary CTA.
+
+Tablet: two-column layout for hero and about, gallery 2 columns.
+
+Desktop: hero full-width, two-column (text + services), gallery 3+ columns (adaptive).
+
+✅ SEO / Social Sharing
+
+og:title = {name} — {title} or brandName.
+
+og:description = tagline or short aboutMe.
+
+og:image = hero or featured project thumbnail (use 1200×630).
+
+Use structured data (JSON-LD) for Person/CreativeWork:
+
+schema.org Person with jobTitle, image, sameAs (social links).
+
+CreativeWork for highlighted projects.
+
+🔔 UX Edge Cases & Fail Safes
+
+If no projects: show empty state with CTA to add first project and a sample project template to import.
+
+If resume is missing: disable Grab my Resume and show “Upload resume” for profile owner.
+
+If mediaUrls contains broken links: show fallback placeholder and report to Sentry/logging.
+
+Rate-limit lightbox opens to avoid heavy CPU usage on low-end devices.
+
+📦 Deliverables for Replit Team
+
+React components (functional):
+
+PhotographerPortfolioPage.jsx/tsx
+
+HeroMasthead.jsx
+
+AboutCard.jsx
+
+ServicesGrid.jsx
+
+SkillsBar.jsx
+
+ProjectGrid.jsx
+
+ProjectModal.jsx (lightbox + details)
+
+Endorsements.jsx
+
+CareerTimeline.jsx
+
+ContactModal.jsx
+
+CTAFooter.jsx
+
+Tailwind utility classes / tokens (colors, spacing, radii).
+
+Lightbox integration (PhotoSwipe or GLightbox) with accessible controls.
+
+API integration hooks:
+
+useProfile(userId), useProjects(userId), postMentorRequest, postContact.
+
+Sample data JSON for local development.
+
+QA checklist (accessibility, performance, responsiveness).
+
+Analytics events instrumentation.
+
+🔧 Small Code Snippets (React + Tailwind examples)
+
+Hero CTA (Grab Resume)
+
+<button
+  onClick={() => window.location = `/api/user/${userId}/resume`}
+  className="px-5 py-2 rounded-md border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+>
+  Grab my Resume
+</button>
+
+
+Project thumbnail (lazy + srcset)
+
+<img
+  src={thumbnailUrl}
+  srcSet={`${thumbnailUrl}?w=400 400w, ${thumbnailUrl}?w=800 800w, ${thumbnailUrl}?w=1200 1200w`}
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+  loading="lazy"
+  alt={title}
+  className="w-full h-full object-cover rounded-lg"
+/>
+
+
+Lightbox open
+
+const openProject = (project) => {
+  // prepare items for PhotoSwipe
+  const items = project.mediaUrls.map(url => ({ src: url, w: 1200, h: 800 }));
+  PhotoSwipe.open({ items });
+};
+
+✅ Final Notes / Priorities for Launch
+
+Priority 1: Project Showcase and Hero — images must look premium; optimize delivery.
+
+Priority 2: CTAs + contact flows — ensure resume download, mentor, contact work without friction.
+
+Priority 3: Performance & Accessibility — fast loads and keyboard-friendly UX.
+
+Priority 4: Analytics and SEO — track resume downloads, portfolio views, and set OG metadata.
