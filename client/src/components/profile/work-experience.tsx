@@ -101,6 +101,8 @@ export default function WorkExperience() {
   
   // State for form management
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingExperience, setEditingExperience] = useState<any>(null);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -119,9 +121,12 @@ export default function WorkExperience() {
   // Update domains when industry changes
   useEffect(() => {
     if (formData.industry && INDUSTRY_DOMAINS[formData.industry]) {
-      setDomains(INDUSTRY_DOMAINS[formData.industry]);
-      // Reset domain when industry changes
-      setFormData(prev => ({ ...prev, domain: '' }));
+      const newDomains = INDUSTRY_DOMAINS[formData.industry];
+      setDomains(newDomains);
+      // Only reset domain if the current domain is not valid for the new industry
+      if (formData.domain && !newDomains.includes(formData.domain)) {
+        setFormData(prev => ({ ...prev, domain: '' }));
+      }
     } else {
       setDomains([]);
     }
@@ -153,6 +158,45 @@ export default function WorkExperience() {
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to add career path", variant: "destructive" });
+    }
+  });
+
+  const updateExperienceMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/experiences/${data.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to update experience');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userIdentifier}/experiences`] });
+      setShowEditDialog(false);
+      setEditingExperience(null);
+      resetForm();
+      toast({ title: "Success", description: "Career path updated successfully!" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update career path", variant: "destructive" });
+    }
+  });
+
+  const deleteExperienceMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/experiences/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete experience');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userIdentifier}/experiences`] });
+      toast({ title: "Success", description: "Career path deleted successfully!" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete career path", variant: "destructive" });
     }
   });
 
@@ -197,6 +241,50 @@ export default function WorkExperience() {
     };
 
     createExperienceMutation.mutate(experienceData);
+  };
+
+  const handleEditClick = (experience: any) => {
+    setEditingExperience(experience);
+    setFormData({
+      title: experience.title || '',
+      company: experience.company || '',
+      location: experience.location || '',
+      industry: experience.industry || '',
+      domain: experience.domain || '',
+      startDate: experience.startDate ? new Date(experience.startDate) : undefined,
+      endDate: experience.endDate ? new Date(experience.endDate) : undefined,
+      keyResponsibilities: Array.isArray(experience.keyResponsibilities) 
+        ? experience.keyResponsibilities.join('\n') 
+        : '',
+      isCurrentlyWorking: experience.isCurrentlyWorking || false
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const experienceData = {
+      id: editingExperience.id,
+      userId: parseInt(userIdentifier),
+      title: formData.title,
+      company: formData.company,
+      location: formData.location,
+      industry: formData.industry,
+      domain: formData.domain,
+      startDate: formData.startDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+      endDate: formData.endDate?.toISOString().split('T')[0] || null,
+      keyResponsibilities: formData.keyResponsibilities.split('\n').filter(line => line.trim()),
+      isCurrentlyWorking: formData.isCurrentlyWorking
+    };
+
+    updateExperienceMutation.mutate(experienceData);
+  };
+
+  const handleDeleteClick = (experienceId: number) => {
+    if (window.confirm('Are you sure you want to delete this career path entry?')) {
+      deleteExperienceMutation.mutate(experienceId);
+    }
   };
 
   if (isLoading) {
@@ -509,6 +597,309 @@ export default function WorkExperience() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Experience Dialog */}
+        <Dialog open={showEditDialog} onOpenChange={(open) => {
+          setShowEditDialog(open);
+          if (!open) {
+            setEditingExperience(null);
+            resetForm();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden">
+            <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
+                 style={{
+                   scrollbarWidth: 'thin',
+                   scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+                 }}>
+              <DialogHeader>
+                <DialogTitle className="text-white">
+                  Edit Career Path
+                </DialogTitle>
+              </DialogHeader>
+
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                {/* Job Title */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-title" className="text-sm font-medium text-white">
+                    Job Title
+                  </label>
+                  <input
+                    id="edit-title"
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="Enter job title..."
+                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                    required
+                  />
+                </div>
+
+                {/* Company */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-company" className="text-sm font-medium text-white">
+                    Company
+                  </label>
+                  <input
+                    id="edit-company"
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    placeholder="Enter company name..."
+                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                    required
+                  />
+                </div>
+
+                {/* Location */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-location" className="text-sm font-medium text-white">
+                    Location
+                  </label>
+                  <Select 
+                    value={formData.location} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                  >
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <SelectValue placeholder="Select location..." style={{ color: 'white' }} />
+                    </SelectTrigger>
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
+                      {workExperienceLocations.map((location) => (
+                        <SelectItem 
+                          key={location} 
+                          value={location}
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
+                        >
+                          {location}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Industry */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-industry" className="text-sm font-medium text-white">
+                    Industry
+                  </label>
+                  <Select 
+                    value={formData.industry} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
+                  >
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <SelectValue placeholder="Select industry..." style={{ color: 'white' }} />
+                    </SelectTrigger>
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
+                      {INDUSTRIES.map((industry) => (
+                        <SelectItem 
+                          key={industry} 
+                          value={industry}
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
+                        >
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Domain */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-domain" className="text-sm font-medium text-white">
+                    Domain
+                  </label>
+                  <Select 
+                    value={formData.domain} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, domain: value }))}
+                    disabled={!formData.industry}
+                  >
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        opacity: formData.industry ? 1 : 0.5
+                      }}
+                    >
+                      <SelectValue 
+                        placeholder={formData.industry ? "Select domain..." : "Select industry first"} 
+                        style={{ color: 'white' }} 
+                      />
+                    </SelectTrigger>
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
+                      {domains.map((domain) => (
+                        <SelectItem 
+                          key={domain} 
+                          value={domain}
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
+                        >
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Date Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="edit-startDate" className="text-sm font-medium text-white">
+                      Start Date
+                    </label>
+                    <input
+                      id="edit-startDate"
+                      type="date"
+                      name="startDate"
+                      value={formData.startDate ? format(formData.startDate, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value ? new Date(e.target.value) : undefined }))}
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        colorScheme: 'dark'
+                      }}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="edit-endDate" className="text-sm font-medium text-white">
+                      End Date
+                    </label>
+                    <input
+                      id="edit-endDate"
+                      type="date"
+                      name="endDate"
+                      value={formData.endDate ? format(formData.endDate, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value ? new Date(e.target.value) : undefined }))}
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        colorScheme: 'dark'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Key Responsibilities */}
+                <div className="space-y-2">
+                  <label htmlFor="edit-keyResponsibilities" className="text-sm font-medium text-white">
+                    Key Responsibilities
+                  </label>
+                  <textarea
+                    id="edit-keyResponsibilities"
+                    name="keyResponsibilities"
+                    value={formData.keyResponsibilities}
+                    onChange={handleInputChange}
+                    placeholder="Describe your main responsibilities and achievements..."
+                    rows={4}
+                    className="w-full py-3 px-3 rounded-md border transition-all focus:outline-none resize-none"
+                    style={{
+                      background: 'rgba(18,18,18,0.95)',
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: 'white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                </div>
+
+                {/* Form Action Buttons */}
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowEditDialog(false);
+                      setEditingExperience(null);
+                      resetForm();
+                    }}
+                    className="px-6 py-3 text-white/80 font-medium rounded-md transition-all hover:text-white focus:outline-none"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updateExperienceMutation.isPending}
+                    className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30"
+                    data-testid="button-submit-edit-experience"
+                  >
+                    {updateExperienceMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Career Path"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Experience List */}
@@ -526,7 +917,7 @@ export default function WorkExperience() {
                 <div className="flex-1">
                   <h4 className="text-lg font-semibold text-white">{experience.title}</h4>
                   <p className="text-blue-400 mb-2">{experience.company}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-3">
                     <span className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
                       {experience.location}
@@ -535,6 +926,18 @@ export default function WorkExperience() {
                       <CalendarIcon className="w-4 h-4" />
                       {experience.startDate && formatDate(new Date(experience.startDate))} - {experience.endDate ? formatDate(new Date(experience.endDate)) : 'Present'}
                     </span>
+                    {experience.industry && (
+                      <span className="flex items-center gap-1">
+                        <Building className="w-4 h-4" />
+                        {experience.industry}
+                      </span>
+                    )}
+                    {experience.domain && (
+                      <span className="flex items-center gap-1">
+                        <Globe className="w-4 h-4" />
+                        {experience.domain}
+                      </span>
+                    )}
                   </div>
                   {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
                     <div className="mt-3">
@@ -548,10 +951,22 @@ export default function WorkExperience() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 ml-4">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-blue-400">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:text-blue-400"
+                    onClick={() => handleEditClick(experience)}
+                    data-testid={`button-edit-experience-${experience.id}`}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-white hover:text-red-400">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:text-red-400"
+                    onClick={() => handleDeleteClick(experience.id)}
+                    data-testid={`button-delete-experience-${experience.id}`}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
