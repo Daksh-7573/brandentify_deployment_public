@@ -9,6 +9,7 @@ import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
 import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
+import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -28,7 +29,8 @@ export type PortfolioLayoutKey =
   | "animated_odyssey"
   | "scholar"
   | "designer-portfolio"
-  | "photographer-portfolio";
+  | "photographer-portfolio"
+  | "pastel-dreamscape";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -187,7 +189,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "animated-odyssey": AnimatedOdysseyWrapper,
   "scholar": Scholar as any,
   "designer-portfolio": DesignerShowcase as any,
-  "photographer-portfolio": PhotographerPortfolio as any
+  "photographer-portfolio": PhotographerPortfolio as any,
+  "pastel-dreamscape": PastelDreamscape as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {
