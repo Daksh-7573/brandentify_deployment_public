@@ -361,7 +361,8 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "animated-odyssey", // New immersive animated template with continuous scrolling
   "freelancer-hub",
   "scholar",
-  "designer-portfolio" // Designer portfolio template with glassmorphic design
+  "designer-portfolio", // Designer portfolio template with glassmorphic design
+  "photographer-portfolio" // Photographer portfolio template with magazine-quality aesthetic
 ]);
 
 // Portfolio model
