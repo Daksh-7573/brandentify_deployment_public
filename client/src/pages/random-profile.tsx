@@ -15,16 +15,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Import portfolio templates
-import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
-import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
-import VisualExpert from "@/components/portfolio/templates/visual-expert";
-import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
-import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
-import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
-import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
-import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
+import { 
+  getPortfolioTemplate, 
+  buildPortfolioTemplateProps 
+} from "@/components/portfolio/templateRegistry";
 
 // Type for our user data
 interface UserData {
@@ -172,29 +166,6 @@ const RandomProfile = () => {
     );
   }
 
-  // Prepare template props (used for both published and fallback portfolios)
-  const templateProps = {
-    userInfo: {
-      id: userData.id,
-      name: userData.name || userData.username,
-      title: userData.title,
-      industry: userData.industry,
-      domain: userData.domain || null,
-      location: userData.location,
-      email: userData.email || null,
-      photoURL: userData.photoURL,
-      lookingFor: userData.lookingFor,
-      jobLevel: userData.jobLevel || null,
-      aboutMe: userData.aboutMe || null,
-      whatIOffer: userData.whatIOffer || null
-    },
-    userSkills: skills || [],
-    userExperiences: experiences || [],
-    userProjects: projects || [],
-    userEducations: educations || [],
-    userServices: services || []
-  };
-
   // Determine which layout to use
   // Priority: Published portfolio > Default to Corporate Executive
   let layoutToRender = 'executive'; // Default: Corporate Executive
@@ -204,58 +175,32 @@ const RandomProfile = () => {
     layoutToRender = portfolioData.layout;
   }
 
-  // Render the template based on layout
-  switch (layoutToRender) {
-    case "minimalist_pro":
-    case "minimalist":
-    case "professional":
-      return <MinimalistPro {...templateProps} />;
-    case "freelancer_hub":
-    case "freelancer":
-      return <FreelancerHub {...templateProps} />;
-    case "timeline":
-    case "timeline-storyteller-2":
-      return <TimelineStoryteller2 {...templateProps} />;
-    case "visual_expert":
-    case "visual-expert":
-    case "creative":
-      return <VisualExpert {...templateProps} />;
-    case "executive":
-    case "corporate-executive":
-      return <CorporateExecutive {...templateProps} />;
-    case "dynamic_innovator":
-    case "dynamic-innovator":
-    case "dynamic":
-      return <DynamicInnovator {...templateProps} />;
-    case "animated":
-      return <Animated 
-        name={userData.name || userData.username}
-        title={userData.title || ''}
-        industry={userData.industry || ''}
-        domain={userData.domain || ''}
-        location={userData.location || ''}
-        photoURL={userData.photoURL}
-        skills={skills || []}
-        projects={projects || []}
-        experiences={experiences || []}
-        educations={educations || []}
-        services={services || []}
-        lookingFor={userData.lookingFor || undefined}
-        email={userData.email || undefined}
-        aboutMe={userData.aboutMe}
-        whatIOffer={userData.whatIOffer}
-        id={userData.id}
-      />;
-    case "animated_odyssey":
-    case "animated-odyssey":
-      return <AnimatedOdyssey {...templateProps} />;
-    case "designer-portfolio":
-      return <DesignerShowcase {...templateProps} />;
-    case "photographer-portfolio":
-      return <PhotographerPortfolio {...templateProps} />;
-    default:
-      return <CorporateExecutive {...templateProps} />;
-  }
+  // Build template props using shared helper
+  const templateProps = buildPortfolioTemplateProps(
+    {
+      ...userData,
+      name: userData.name || userData.username,
+      tagline: userData.tagline || null,
+      visionStatement: userData.visionStatement || null,
+      missionStatement: userData.missionStatement || null,
+      coreValues: userData.coreValues || [],
+      uniqueValueProposition: userData.uniqueValueProposition || null,
+      brandName: userData.brandName || null,
+      primaryAudience: userData.primaryAudience || [],
+      secondaryAudience: userData.secondaryAudience || []
+    },
+    {
+      skills: skills,
+      experiences: experiences,
+      projects: projects,
+      educations: educations,
+      services: services
+    }
+  );
+
+  // Get the appropriate template component and render it
+  const TemplateComponent = getPortfolioTemplate(layoutToRender);
+  return <TemplateComponent {...templateProps} />;
 
   // Default profile view if no portfolio is published
   return (
