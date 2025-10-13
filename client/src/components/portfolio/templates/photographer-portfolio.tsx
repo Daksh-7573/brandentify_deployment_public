@@ -72,6 +72,7 @@ function CareerTimeline({ experiences }: { experiences: WorkExperience[] }) {
       {experiences.map((exp, idx) => {
         const startYear = exp.startDate ? new Date(exp.startDate).getFullYear() : '';
         const endYear = exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present';
+        const responsibilities = (exp.keyResponsibilities as string[]) || [];
         
         return (
           <motion.div
@@ -80,17 +81,57 @@ function CareerTimeline({ experiences }: { experiences: WorkExperience[] }) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
-            className="flex gap-4"
+            className="bg-white/60 p-6 rounded-lg border-l-4 border-amber-600"
             data-testid={`experience-${idx}`}
           >
-            <div className="text-amber-700 font-semibold min-w-[100px]">
-              {startYear} - {endYear}
-            </div>
-            <div className="flex-1">
-              <h4 className="font-bold text-stone-800 text-lg">{exp.title}</h4>
-              <p className="text-stone-600">{exp.company}</p>
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-bold text-stone-800 text-xl">{exp.title}</h4>
+                <p className="text-stone-700 font-medium">{exp.company}</p>
+                <p className="text-amber-700 font-semibold text-sm mt-1">
+                  {startYear} - {endYear}
+                </p>
+              </div>
+
+              {/* Industry, Domain, Location */}
+              {(exp.industry || exp.domain || exp.location) && (
+                <div className="flex flex-wrap gap-2">
+                  {exp.industry && (
+                    <Badge className="bg-amber-100 text-amber-800 border-0 text-xs">
+                      {exp.industry}
+                    </Badge>
+                  )}
+                  {exp.domain && (
+                    <Badge className="bg-stone-200 text-stone-700 border-0 text-xs">
+                      {exp.domain}
+                    </Badge>
+                  )}
+                  {exp.location && (
+                    <Badge variant="outline" className="text-xs flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {exp.location}
+                    </Badge>
+                  )}
+                </div>
+              )}
+
               {exp.description && (
-                <p className="text-sm text-stone-500 mt-2">{exp.description}</p>
+                <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+              )}
+
+              {/* Key Responsibilities */}
+              {responsibilities.length > 0 && (
+                <div className="pt-2">
+                  <h5 className="text-sm font-semibold text-stone-700 mb-2">Key Responsibilities:</h5>
+                  <ul className="space-y-1">
+                    {responsibilities.map((resp, idx) => (
+                      <li key={idx} className="text-sm text-stone-600 flex items-start gap-2">
+                        <span className="text-amber-600 mt-1">•</span>
+                        <span>{resp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
           </motion.div>
@@ -374,9 +415,6 @@ export default function PhotographerPortfolio({
     return heights[index % heights.length];
   };
 
-  // Get hero image
-  const heroImage = userProjects.find(p => p.thumbnailUrl)?.thumbnailUrl || userInfo.photoURL;
-  
   return (
     <div className="min-h-screen bg-stone-100">
       {/* Hero Section - Side by Side */}
@@ -388,53 +426,26 @@ export default function PhotographerPortfolio({
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="space-y-8 lg:pr-12"
+              className="space-y-6 lg:pr-12"
             >
+              {/* Name & Title */}
               <div>
                 <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-bold text-stone-800 mb-4 leading-tight">
                   {userInfo.name}
                 </h1>
                 <p className="text-2xl text-stone-600 font-light">
-                  {userInfo.title || 'Photographer'}
+                  {userInfo.title || 'Professional'}
                 </p>
-                
-                {/* Industry & Domain */}
-                {(userInfo.industry || userInfo.domain) && (
-                  <div className="flex flex-wrap gap-3 mt-4">
-                    {userInfo.industry && (
-                      <Badge className="bg-amber-100 text-amber-800 border-amber-300 px-4 py-1.5">
-                        {userInfo.industry}
-                      </Badge>
-                    )}
-                    {userInfo.domain && (
-                      <Badge className="bg-stone-200 text-stone-700 border-stone-400 px-4 py-1.5">
-                        {userInfo.domain}
-                      </Badge>
-                    )}
-                  </div>
-                )}
               </div>
 
-              {/* About Me */}
-              {userInfo.aboutMe && (
-                <div className="space-y-3">
+              {/* Looking For */}
+              {userInfo.lookingFor && (
+                <div className="space-y-2">
                   <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
-                    About me
+                    Looking For
                   </h3>
                   <p className="text-stone-700 leading-relaxed">
-                    {userInfo.aboutMe}
-                  </p>
-                </div>
-              )}
-
-              {/* What I Offer */}
-              {userInfo.whatIOffer && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
-                    What I Offer
-                  </h3>
-                  <p className="text-stone-700 leading-relaxed">
-                    {userInfo.whatIOffer}
+                    {userInfo.lookingFor}
                   </p>
                 </div>
               )}
@@ -443,46 +454,84 @@ export default function PhotographerPortfolio({
               {userInfo.location && (
                 <div className="flex items-center gap-2 text-stone-600">
                   <MapPin className="w-5 h-5" />
-                  <span>{userInfo.location}</span>
+                  <span className="font-medium">{userInfo.location}</span>
                 </div>
+              )}
+              
+              {/* Industry & Domain */}
+              {(userInfo.industry || userInfo.domain) && (
+                <div className="flex flex-wrap gap-3">
+                  {userInfo.industry && (
+                    <Badge className="bg-amber-100 text-amber-800 border-amber-300 px-4 py-1.5">
+                      {userInfo.industry}
+                    </Badge>
+                  )}
+                  {userInfo.domain && (
+                    <Badge className="bg-stone-200 text-stone-700 border-stone-400 px-4 py-1.5">
+                      {userInfo.domain}
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Core Values */}
+              {(userInfo.coreValues?.length ?? 0) > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
+                    Core Values
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {userInfo.coreValues?.map((value, idx) => (
+                      <Badge key={idx} variant="outline" className="border-amber-600 text-amber-700 px-3 py-1">
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* About Me */}
+              {userInfo.aboutMe && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider">
+                    About Me
+                  </h3>
+                  <p className="text-stone-700 leading-relaxed">
+                    {userInfo.aboutMe}
+                  </p>
+                </div>
+              )}
+
+              {/* What I Offer - Card Format */}
+              {userInfo.whatIOffer && (
+                <Card className="bg-white/80 border-amber-200 shadow-md">
+                  <CardContent className="p-5">
+                    <h3 className="text-lg font-semibold text-stone-800 mb-3">
+                      What I Offer
+                    </h3>
+                    <p className="text-stone-700 leading-relaxed">
+                      {userInfo.whatIOffer}
+                    </p>
+                  </CardContent>
+                </Card>
               )}
             </motion.div>
 
-            {/* Right Column - Hero Image */}
+            {/* Right Column - Profile Picture as Hero Image */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              {heroImage ? (
+              {userInfo.photoURL ? (
                 <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
                   <img
-                    src={heroImage}
+                    src={userInfo.photoURL}
                     alt={userInfo.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/30 to-transparent" />
-                  
-                  {/* Vision & Mission Overlay */}
-                  <div className="absolute bottom-0 right-0 left-0 p-8 text-white space-y-4">
-                    {userInfo.visionStatement && (
-                      <div>
-                        <h4 className="text-sm font-semibold mb-1">Vision</h4>
-                        <p className="italic text-sm leading-relaxed opacity-90">
-                          {userInfo.visionStatement}
-                        </p>
-                      </div>
-                    )}
-                    {userInfo.missionStatement && (
-                      <div>
-                        <h4 className="text-sm font-semibold mb-1">Mission</h4>
-                        <p className="italic text-sm leading-relaxed opacity-90">
-                          {userInfo.missionStatement}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/40 to-transparent" />
                 </div>
               ) : (
                 <div className="aspect-[3/4] rounded-3xl bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center shadow-2xl">
@@ -494,108 +543,81 @@ export default function PhotographerPortfolio({
         </div>
       </section>
 
-      {/* Looking For / Skills */}
-      {(userInfo.lookingFor || userSkills.length > 0) && (
+      {/* Skills Section */}
+      {userSkills.length > 0 && (
         <section className="py-20 bg-stone-800">
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-              {/* Looking For */}
-              {userInfo.lookingFor && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="space-y-4"
-                >
-                  <h3 className="text-2xl font-serif font-bold text-stone-100">
-                    Looking For
-                  </h3>
-                  <p className="text-stone-300 leading-relaxed">
-                    {userInfo.lookingFor}
-                  </p>
-                </motion.div>
-              )}
-
-              {/* What I'm Good At - Skills */}
-              {userSkills.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="space-y-4"
-                >
-                  <h3 className="text-2xl font-serif font-bold text-stone-100">
-                    What I'm Good At
-                  </h3>
-                  <div className="space-y-3">
-                    {userSkills.slice(0, 4).map((skill) => (
-                      <SkillBar
-                        key={skill.id}
-                        skill={skill.name}
-                        level={skill.level || 'Intermediate'}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              )}
+            <div className="max-w-4xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <h2 className="text-4xl font-serif font-bold text-stone-100 mb-8">
+                  What I'm Good At
+                </h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {userSkills.map((skill) => (
+                    <SkillBar
+                      key={skill.id}
+                      skill={skill.name}
+                      level={skill.level || 'Intermediate'}
+                    />
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Core Values & UVP */}
-      {((userInfo.coreValues?.length ?? 0) > 0 || userInfo.uniqueValueProposition) && (
+      {/* What Makes Me Unique with Mission & Vision */}
+      {(userInfo.uniqueValueProposition || userInfo.visionStatement || userInfo.missionStatement) && (
         <section className="py-20 bg-stone-100">
-          <div className="container mx-auto px-6 max-w-6xl">
-            <div className="grid md:grid-cols-2 gap-16">
-              {/* Core Values */}
-              {(userInfo.coreValues?.length ?? 0) > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="space-y-6"
-                >
-                  <h2 className="text-4xl font-serif font-bold text-stone-800">
-                    Core Values
-                  </h2>
-                  <div className="space-y-4">
-                    {userInfo.coreValues?.map((value, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="flex items-center gap-3"
-                      >
-                        <div className="w-2 h-2 bg-amber-600 rounded-full" />
-                        <span className="text-lg text-stone-700 font-medium">{value}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
+          <div className="container mx-auto px-6 max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <h2 className="text-4xl font-serif font-bold text-stone-800">
+                What Makes Me Unique
+              </h2>
+              
+              {userInfo.uniqueValueProposition && (
+                <p className="text-lg text-stone-700 leading-relaxed">
+                  {userInfo.uniqueValueProposition}
+                </p>
               )}
 
-              {/* Unique Value Proposition */}
-              {userInfo.uniqueValueProposition && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  className="space-y-6"
-                >
-                  <h2 className="text-4xl font-serif font-bold text-stone-800">
-                    What Makes Me Unique
-                  </h2>
-                  <p className="text-lg text-stone-700 leading-relaxed">
-                    {userInfo.uniqueValueProposition}
-                  </p>
-                </motion.div>
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid md:grid-cols-2 gap-8 pt-4">
+                  {userInfo.visionStatement && (
+                    <Card className="bg-amber-50 border-amber-200">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold text-amber-800 mb-3">Vision</h3>
+                        <p className="text-stone-700 leading-relaxed">
+                          {userInfo.visionStatement}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {userInfo.missionStatement && (
+                    <Card className="bg-stone-50 border-stone-300">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-semibold text-stone-800 mb-3">Mission</h3>
+                        <p className="text-stone-700 leading-relaxed">
+                          {userInfo.missionStatement}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
@@ -659,6 +681,7 @@ export default function PhotographerPortfolio({
                   {userEducations.map((edu, idx) => {
                     const startYear = edu.startDate ? new Date(edu.startDate).getFullYear() : '';
                     const endYear = edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present';
+                    const skillsAcquired = (edu.skillsAcquired as string[]) || [];
                     
                     return (
                       <motion.div
@@ -669,23 +692,62 @@ export default function PhotographerPortfolio({
                         transition={{ delay: idx * 0.1 }}
                         data-testid={`education-${idx}`}
                       >
-                        <div className="bg-amber-100/50 p-5 rounded-lg border-l-4 border-amber-600">
-                          <h4 className="font-bold text-stone-800 text-lg mb-1">
-                            {edu.degree}
-                          </h4>
-                          <p className="text-stone-700 font-medium mb-1">
-                            {edu.institution}
-                          </p>
-                          {edu.fieldOfStudy && (
-                            <p className="text-stone-600 text-sm italic">
-                              {edu.fieldOfStudy}
-                            </p>
-                          )}
-                          {(startYear || endYear) && (
-                            <p className="text-amber-700 text-sm font-semibold mt-2">
-                              {startYear} - {endYear}
-                            </p>
-                          )}
+                        <div className="bg-white/60 p-6 rounded-lg border-l-4 border-amber-600">
+                          <div className="space-y-3">
+                            <div>
+                              <h4 className="font-bold text-stone-800 text-xl mb-1">
+                                {edu.degree}
+                              </h4>
+                              <p className="text-stone-700 font-medium">
+                                {edu.institution}
+                              </p>
+                              <p className="text-amber-700 text-sm font-semibold mt-1">
+                                {startYear} - {endYear}
+                              </p>
+                            </div>
+
+                            {/* Industry, Domain, Location */}
+                            {(edu.industry || edu.domain || edu.location) && (
+                              <div className="flex flex-wrap gap-2">
+                                {edu.industry && (
+                                  <Badge className="bg-amber-100 text-amber-800 border-0 text-xs">
+                                    {edu.industry}
+                                  </Badge>
+                                )}
+                                {edu.domain && (
+                                  <Badge className="bg-stone-200 text-stone-700 border-0 text-xs">
+                                    {edu.domain}
+                                  </Badge>
+                                )}
+                                {edu.location && (
+                                  <Badge variant="outline" className="text-xs flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {edu.location}
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+
+                            {edu.fieldOfStudy && (
+                              <p className="text-stone-600 text-sm italic">
+                                Field: {edu.fieldOfStudy}
+                              </p>
+                            )}
+
+                            {/* Skills Acquired */}
+                            {skillsAcquired.length > 0 && (
+                              <div className="pt-2">
+                                <h5 className="text-sm font-semibold text-stone-700 mb-2">Skills Acquired:</h5>
+                                <div className="flex flex-wrap gap-2">
+                                  {skillsAcquired.map((skill, idx) => (
+                                    <Badge key={idx} variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     );
