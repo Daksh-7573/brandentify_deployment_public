@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Mail, MapPin, Leaf, TreePine, Flower2, Sparkles,
   Award, GraduationCap, Briefcase, Globe, Heart,
-  ExternalLink, Calendar, Users, Mountain, Bird, Butterfly,
+  ExternalLink, Calendar, Users, Mountain, Bird,
   Phone, Linkedin, Github, Twitter, Instagram, Facebook
 } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
@@ -170,10 +170,10 @@ function FloatingNatureElements() {
     { id: 'leaf4', type: 'leaf', x: 90, y: 35, size: 34, duration: 17, delay: 6, rotate: 180 },
     { id: 'leaf5', type: 'leaf', x: 12, y: 55, size: 38, duration: 19, delay: 3, rotate: 270 },
     { id: 'leaf6', type: 'leaf', x: 55, y: 75, size: 33, duration: 16, delay: 5, rotate: 30 },
-    // Butterflies
-    { id: 'butterfly1', type: 'butterfly', x: 15, y: 20, size: 28, duration: 14, delay: 1, rotate: 0 },
-    { id: 'butterfly2', type: 'butterfly', x: 70, y: 45, size: 24, duration: 16, delay: 4, rotate: 180 },
-    { id: 'butterfly3', type: 'butterfly', x: 40, y: 65, size: 26, duration: 15, delay: 7, rotate: 90 },
+    // Floating Flowers
+    { id: 'butterfly1', type: 'flower', x: 15, y: 20, size: 28, duration: 14, delay: 1, rotate: 0 },
+    { id: 'butterfly2', type: 'flower', x: 70, y: 45, size: 24, duration: 16, delay: 4, rotate: 180 },
+    { id: 'butterfly3', type: 'flower', x: 40, y: 65, size: 26, duration: 15, delay: 7, rotate: 90 },
     // Flowers
     { id: 'flower1', type: 'flower', x: 35, y: 10, size: 30, duration: 20, delay: 2, rotate: 0 },
     { id: 'flower2', type: 'flower', x: 80, y: 60, size: 28, duration: 18, delay: 5, rotate: 45 },
@@ -182,11 +182,9 @@ function FloatingNatureElements() {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
       {elements.map((el) => {
-        const Icon = el.type === 'leaf' ? Leaf : el.type === 'butterfly' ? Butterfly : Flower2;
+        const Icon = el.type === 'leaf' ? Leaf : Flower2;
         const color = el.type === 'leaf' 
           ? 'text-emerald-300/40' 
-          : el.type === 'butterfly' 
-          ? 'text-pink-300/50' 
           : 'text-rose-300/45';
 
         return (
@@ -200,18 +198,14 @@ function FloatingNatureElements() {
             initial={{ opacity: 0, y: -100 }}
             animate={{
               y: [0, 250, 500],
-              x: el.type === 'butterfly' 
-                ? [0, 60, -40, 40, 0] 
-                : [0, -30, 30, 0],
+              x: [0, -30, 30, 0],
               rotate: [el.rotate, el.rotate + 360, el.rotate + 720],
-              opacity: el.type === 'butterfly' 
-                ? [0, 0.7, 0.5, 0.7, 0] 
-                : [0, 0.6, 0.4, 0],
+              opacity: [0, 0.6, 0.4, 0],
             }}
             transition={{
               duration: el.duration,
               repeat: Infinity,
-              ease: el.type === 'butterfly' ? "easeInOut" : "linear",
+              ease: "linear",
               delay: el.delay,
             }}
           >
@@ -654,8 +648,11 @@ export default function NatureCreative({
                     <div className="relative bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg">
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{edu.degree}</h3>
                       <p className="text-emerald-600 font-medium mb-2">{edu.institution}</p>
-                      {edu.year && (
-                        <p className="text-gray-500 text-sm">{edu.year}</p>
+                      {edu.startDate && (
+                        <p className="text-gray-500 text-sm">
+                          {new Date(edu.startDate).getFullYear()}
+                          {edu.endDate && ` - ${new Date(edu.endDate).getFullYear()}`}
+                        </p>
                       )}
                     </div>
                   </motion.div>
@@ -778,7 +775,7 @@ export default function NatureCreative({
           <div className="absolute inset-0 opacity-20">
             <Leaf className="absolute top-10 left-10 text-emerald-600" size={60} />
             <Flower2 className="absolute top-20 right-20 text-rose-500" size={50} />
-            <Butterfly className="absolute bottom-20 left-1/4 text-pink-500" size={45} />
+            <Flower2 className="absolute bottom-20 left-1/4 text-pink-500" size={45} />
             <TreePine className="absolute bottom-10 right-10 text-emerald-700" size={80} />
           </div>
 
@@ -890,25 +887,13 @@ export default function NatureCreative({
                     </Badge>
                   </div>
                 )}
-                {selectedProject.technologies && selectedProject.technologies.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-800 mb-2">Technologies</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.technologies.map((tech, idx) => (
-                        <Badge key={idx} className="bg-teal-50 text-teal-700">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {selectedProject.liveUrl && (
+                {selectedProject.projectUrl && (
                   <Button
                     className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
-                    onClick={() => window.open(selectedProject.liveUrl!, '_blank')}
+                    onClick={() => window.open(selectedProject.projectUrl!, '_blank')}
                   >
                     <ExternalLink className="mr-2" size={20} />
-                    View Live Project
+                    View Project
                   </Button>
                 )}
               </div>
