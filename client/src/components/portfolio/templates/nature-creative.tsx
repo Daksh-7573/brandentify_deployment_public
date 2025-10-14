@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Mail, MapPin, Leaf, TreePine, Flower2, Sparkles,
   Award, GraduationCap, Briefcase, Globe, Heart,
-  ExternalLink, Calendar, Users, Mountain
+  ExternalLink, Calendar, Users, Mountain, Bird, Butterfly,
+  Phone, Linkedin, Github, Twitter, Instagram, Facebook
 } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import type { Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
@@ -36,124 +37,248 @@ interface NatureCreativeProps {
   currentUserId?: number;
 }
 
-// Floating Leaves Animation Component
-function FloatingLeaves() {
-  const leaves = [
-    { id: 1, x: 10, y: -10, size: 40, duration: 15, delay: 0, rotate: 45 },
-    { id: 2, x: 30, y: 20, size: 35, duration: 18, delay: 2, rotate: 120 },
-    { id: 3, x: 70, y: 10, size: 45, duration: 20, delay: 4, rotate: 90 },
-    { id: 4, x: 85, y: 40, size: 38, duration: 16, delay: 6, rotate: 180 },
-    { id: 5, x: 15, y: 60, size: 42, duration: 19, delay: 3, rotate: 270 },
-    { id: 6, x: 50, y: 80, size: 36, duration: 17, delay: 5, rotate: 30 },
+// Enhanced Multi-Layer Parallax Background
+function EnhancedParallaxBackground() {
+  const { scrollY } = useScroll();
+  
+  const skyY = useTransform(scrollY, [0, 2000], [0, -50]);
+  const cloudY = useTransform(scrollY, [0, 2000], [0, -200]);
+  const cloudY2 = useTransform(scrollY, [0, 2000], [0, -150]);
+  const mountainY = useTransform(scrollY, [0, 2000], [0, 300]);
+  const treeY = useTransform(scrollY, [0, 2000], [0, 150]);
+  const birdY = useTransform(scrollY, [0, 2000], [0, -100]);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {/* Layer 1: Animated Sky Gradient */}
+      <motion.div 
+        style={{ y: skyY }}
+        className="absolute inset-0 bg-gradient-to-b from-[#E8F4F8] via-[#F5E6FA] to-[#FFE8D9]"
+      >
+        {/* Subtle sun glow */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-yellow-200/30 rounded-full blur-3xl" />
+      </motion.div>
+      
+      {/* Layer 2: Distant Clouds */}
+      <motion.div style={{ y: cloudY }} className="absolute inset-0">
+        <div className="absolute top-10 left-[10%] w-48 h-20 bg-white/40 rounded-full blur-2xl" />
+        <div className="absolute top-24 right-[15%] w-56 h-24 bg-white/35 rounded-full blur-2xl" />
+        <div className="absolute top-40 left-[60%] w-40 h-16 bg-white/30 rounded-full blur-xl" />
+      </motion.div>
+
+      {/* Layer 2.5: Mid Clouds */}
+      <motion.div style={{ y: cloudY2 }} className="absolute inset-0">
+        <div className="absolute top-32 left-[30%] w-64 h-28 bg-white/45 rounded-full blur-2xl" />
+        <div className="absolute top-16 right-[40%] w-52 h-22 bg-white/40 rounded-full blur-xl" />
+      </motion.div>
+
+      {/* Layer 3: Flying Birds */}
+      <motion.div style={{ y: birdY }} className="absolute inset-0">
+        <motion.div
+          className="absolute top-[15%] left-[20%]"
+          animate={{
+            x: [0, 100, 200],
+            y: [0, -20, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <Bird className="text-gray-400/30" size={20} />
+        </motion.div>
+        <motion.div
+          className="absolute top-[25%] right-[30%]"
+          animate={{
+            x: [0, -80, -160],
+            y: [0, 15, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "linear",
+            delay: 2
+          }}
+        >
+          <Bird className="text-gray-400/25" size={16} />
+        </motion.div>
+      </motion.div>
+      
+      {/* Layer 4: Distant Mountains */}
+      <motion.div 
+        style={{ y: mountainY }}
+        className="absolute bottom-0 left-0 right-0 h-[500px]"
+      >
+        <svg viewBox="0 0 1440 500" className="w-full h-full" preserveAspectRatio="none">
+          {/* Far mountains */}
+          <path 
+            d="M0,500 L0,300 L240,180 L480,260 L720,140 L960,220 L1200,180 L1440,280 L1440,500 Z" 
+            fill="url(#farMountain)" 
+            opacity="0.2"
+          />
+          {/* Mid mountains */}
+          <path 
+            d="M0,500 L0,350 L360,220 L600,300 L840,200 L1080,280 L1440,260 L1440,500 Z" 
+            fill="url(#midMountain)" 
+            opacity="0.25"
+          />
+          <defs>
+            <linearGradient id="farMountain" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#B8C9E0" />
+              <stop offset="100%" stopColor="#D4E0E8" />
+            </linearGradient>
+            <linearGradient id="midMountain" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#A7C7E7" />
+              <stop offset="100%" stopColor="#C4D9D0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </motion.div>
+
+      {/* Layer 5: Forest Trees Silhouette */}
+      <motion.div 
+        style={{ y: treeY }}
+        className="absolute bottom-0 left-0 right-0 h-64 opacity-20"
+      >
+        <div className="absolute bottom-0 left-[10%] flex items-end gap-4">
+          <TreePine className="text-emerald-600" size={120} />
+          <TreePine className="text-emerald-700" size={100} />
+          <TreePine className="text-emerald-600" size={110} />
+        </div>
+        <div className="absolute bottom-0 right-[15%] flex items-end gap-3">
+          <TreePine className="text-teal-600" size={95} />
+          <TreePine className="text-teal-700" size={115} />
+          <TreePine className="text-emerald-600" size={105} />
+        </div>
+        <div className="absolute bottom-0 left-[45%] flex items-end gap-2">
+          <TreePine className="text-emerald-700" size={90} />
+          <TreePine className="text-teal-600" size={108} />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Floating Nature Elements
+function FloatingNatureElements() {
+  const elements = [
+    // Leaves
+    { id: 'leaf1', type: 'leaf', x: 5, y: -10, size: 36, duration: 16, delay: 0, rotate: 45 },
+    { id: 'leaf2', type: 'leaf', x: 25, y: 15, size: 32, duration: 18, delay: 2, rotate: 120 },
+    { id: 'leaf3', type: 'leaf', x: 75, y: 5, size: 40, duration: 20, delay: 4, rotate: 90 },
+    { id: 'leaf4', type: 'leaf', x: 90, y: 35, size: 34, duration: 17, delay: 6, rotate: 180 },
+    { id: 'leaf5', type: 'leaf', x: 12, y: 55, size: 38, duration: 19, delay: 3, rotate: 270 },
+    { id: 'leaf6', type: 'leaf', x: 55, y: 75, size: 33, duration: 16, delay: 5, rotate: 30 },
+    // Butterflies
+    { id: 'butterfly1', type: 'butterfly', x: 15, y: 20, size: 28, duration: 14, delay: 1, rotate: 0 },
+    { id: 'butterfly2', type: 'butterfly', x: 70, y: 45, size: 24, duration: 16, delay: 4, rotate: 180 },
+    { id: 'butterfly3', type: 'butterfly', x: 40, y: 65, size: 26, duration: 15, delay: 7, rotate: 90 },
+    // Flowers
+    { id: 'flower1', type: 'flower', x: 35, y: 10, size: 30, duration: 20, delay: 2, rotate: 0 },
+    { id: 'flower2', type: 'flower', x: 80, y: 60, size: 28, duration: 18, delay: 5, rotate: 45 },
   ];
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {leaves.map((leaf) => (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
+      {elements.map((el) => {
+        const Icon = el.type === 'leaf' ? Leaf : el.type === 'butterfly' ? Butterfly : Flower2;
+        const color = el.type === 'leaf' 
+          ? 'text-emerald-300/40' 
+          : el.type === 'butterfly' 
+          ? 'text-pink-300/50' 
+          : 'text-rose-300/45';
+
+        return (
+          <motion.div
+            key={el.id}
+            className="absolute"
+            style={{
+              left: `${el.x}%`,
+              top: `${el.y}%`,
+            }}
+            initial={{ opacity: 0, y: -100 }}
+            animate={{
+              y: [0, 250, 500],
+              x: el.type === 'butterfly' 
+                ? [0, 60, -40, 40, 0] 
+                : [0, -30, 30, 0],
+              rotate: [el.rotate, el.rotate + 360, el.rotate + 720],
+              opacity: el.type === 'butterfly' 
+                ? [0, 0.7, 0.5, 0.7, 0] 
+                : [0, 0.6, 0.4, 0],
+            }}
+            transition={{
+              duration: el.duration,
+              repeat: Infinity,
+              ease: el.type === 'butterfly' ? "easeInOut" : "linear",
+              delay: el.delay,
+            }}
+          >
+            <Icon className={color} size={el.size} />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Sparkle Particles
+function SparkleParticles() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-5">
+      {[...Array(12)].map((_, i) => (
         <motion.div
-          key={leaf.id}
+          key={i}
           className="absolute"
           style={{
-            left: `${leaf.x}%`,
-            top: `${leaf.y}%`,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
           }}
-          initial={{ opacity: 0, y: -100 }}
           animate={{
-            y: [0, 200, 400],
-            x: [0, -50, 50, 0],
-            rotate: [leaf.rotate, leaf.rotate + 360, leaf.rotate + 720],
-            opacity: [0, 0.6, 0.4, 0],
+            y: [-20, 20, -20],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [0.8, 1.2, 0.8],
           }}
           transition={{
-            duration: leaf.duration,
+            duration: 3 + Math.random() * 2,
             repeat: Infinity,
-            ease: "linear",
-            delay: leaf.delay,
+            delay: Math.random() * 3,
           }}
         >
-          <Leaf className="text-emerald-300/40" size={leaf.size} />
+          <Sparkles className="text-yellow-300/40" size={12 + Math.random() * 12} />
         </motion.div>
       ))}
     </div>
   );
 }
 
-// Parallax Background Layers Component
-function ParallaxBackground() {
-  const { scrollY } = useScroll();
-  
-  const mountainY = useTransform(scrollY, [0, 1000], [0, 150]);
-  const cloudY = useTransform(scrollY, [0, 1000], [0, -100]);
-  const treeY = useTransform(scrollY, [0, 1000], [0, 80]);
+// Typewriter Effect Hook
+function useTypewriter(text: string, speed: number = 50) {
+  const [displayText, setDisplayText] = useState("");
+  const [isComplete, setIsComplete] = useState(false);
 
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Soft Pastel Sky Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#E3F2FD] via-[#F0E6FA] to-[#FFE5D9]" />
-      
-      {/* Soft Clouds Layer */}
-      <motion.div 
-        style={{ y: cloudY }}
-        className="absolute inset-0"
-      >
-        <div className="absolute top-20 left-10 w-32 h-16 bg-white/50 rounded-full blur-xl" />
-        <div className="absolute top-32 right-20 w-40 h-20 bg-white/40 rounded-full blur-xl" />
-        <div className="absolute top-10 right-40 w-28 h-14 bg-white/35 rounded-full blur-lg" />
-      </motion.div>
-      
-      {/* Soft Mountains Layer */}
-      <motion.div 
-        style={{ y: mountainY }}
-        className="absolute bottom-0 left-0 right-0 h-96"
-      >
-        <svg viewBox="0 0 1200 400" className="w-full h-full" preserveAspectRatio="none">
-          <path d="M0,400 L0,200 L200,100 L400,180 L600,80 L800,160 L1000,120 L1200,200 L1200,400 Z" 
-                fill="url(#mountainGradient)" opacity="0.25"/>
-          <path d="M0,400 L0,250 L300,150 L500,220 L700,140 L900,200 L1200,180 L1200,400 Z" 
-                fill="url(#mountainGradient2)" opacity="0.2"/>
-          <defs>
-            <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#A7C7E7" />
-              <stop offset="100%" stopColor="#B8D4C8" />
-            </linearGradient>
-            <linearGradient id="mountainGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#C4D9D0" />
-              <stop offset="100%" stopColor="#D4E7D7" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </motion.div>
-      
-      {/* Soft Trees Layer */}
-      <motion.div 
-        style={{ y: treeY }}
-        className="absolute bottom-0 left-0 right-0 flex justify-around items-end h-64 opacity-15"
-      >
-        <TreePine className="text-emerald-300" size={80} />
-        <TreePine className="text-teal-300" size={100} />
-        <TreePine className="text-emerald-300" size={90} />
-        <TreePine className="text-teal-300" size={70} />
-        <TreePine className="text-emerald-300" size={95} />
-      </motion.div>
-    </div>
-  );
-}
+  useEffect(() => {
+    if (!text) {
+      setIsComplete(true);
+      return;
+    }
+    
+    let index = 0;
+    const timer = setInterval(() => {
+      if (index < text.length) {
+        setDisplayText(text.substring(0, index + 1));
+        index++;
+      } else {
+        setIsComplete(true);
+        clearInterval(timer);
+      }
+    }, speed);
 
-// Animated Branch Divider
-function BranchDivider() {
-  return (
-    <div className="w-full flex justify-center my-12">
-      <motion.div
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="relative w-64 h-1"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent" />
-        <Flower2 className="absolute -top-3 left-1/2 -translate-x-1/2 text-rose-300" size={24} />
-      </motion.div>
-    </div>
-  );
+    return () => clearInterval(timer);
+  }, [text, speed]);
+
+  return { displayText, isComplete };
 }
 
 export default function NatureCreative({
@@ -163,530 +288,572 @@ export default function NatureCreative({
   userProjects,
   userEducations,
   userServices,
-  currentUserId
+  currentUserId,
 }: NatureCreativeProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { scrollY } = useScroll();
-  const headerOpacity = useTransform(scrollY, [0, 100], [1, 0.95]);
+  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 300], [1, 0.95]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F0FF] via-[#FFF5F0] to-[#F0FFF5] relative overflow-x-hidden">
-      {/* Parallax Background */}
-      <ParallaxBackground />
-      
-      {/* Floating Leaves */}
-      <FloatingLeaves />
+    <div className="min-h-screen relative bg-gradient-to-br from-[#F5F0FF] via-[#FFF5F0] to-[#F0FFF5] overflow-hidden">
+      {/* Background Layers */}
+      <EnhancedParallaxBackground />
+      <FloatingNatureElements />
+      <SparkleParticles />
 
-      {/* Hero Section */}
-      <motion.section 
-        style={{ opacity: headerOpacity }}
-        className="relative min-h-screen flex items-center justify-center px-6 py-20"
-      >
-        <div className="max-w-5xl mx-auto text-center z-10">
-          {/* Animated Profile Photo */}
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 1, type: "spring" }}
-            className="relative inline-block mb-8"
-          >
-            <div className="absolute -inset-4 bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 rounded-full blur-lg opacity-60 animate-pulse" />
-            <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-              {userInfo.photoURL ? (
-                <img src={userInfo.photoURL} alt={userInfo.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-emerald-200 to-teal-300 flex items-center justify-center text-gray-700 text-4xl font-bold">
-                  {userInfo.name.charAt(0)}
-                </div>
-              )}
-            </div>
-            <motion.div
-              className="absolute -bottom-2 -right-2"
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Leaf className="text-emerald-300" size={32} />
-            </motion.div>
-          </motion.div>
-
-          {/* Name and Title */}
-          <motion.h1
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent"
-          >
-            {userInfo.name}
-          </motion.h1>
-
-          <motion.p
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-2xl md:text-3xl text-gray-600 mb-6 font-light"
-          >
-            {userInfo.title || userInfo.tagline || "Creative Freelancer"}
-          </motion.p>
-
-          {userInfo.location && (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="flex items-center justify-center gap-2 text-gray-500 mb-8"
-            >
-              <MapPin size={20} />
-              <span>{userInfo.location}</span>
-            </motion.div>
-          )}
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="flex flex-wrap gap-4 justify-center"
-          >
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-emerald-300 to-teal-300 hover:from-emerald-400 hover:to-teal-400 text-gray-700 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
-            >
-              <Mail className="mr-2" size={20} />
-              Let's Connect
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-emerald-300 text-gray-600 hover:bg-emerald-50 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Heart className="mr-2" size={20} />
-              Mentor Me
-            </Button>
-          </motion.div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+      {/* Main Content Container */}
+      <div className="relative z-20">
+        
+        {/* Hero Section */}
+        <motion.section 
+          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="min-h-screen flex items-center justify-center px-6 relative"
         >
-          <div className="w-6 h-10 border-2 border-emerald-300 rounded-full p-1">
+          <div className="max-w-5xl w-full">
             <motion.div
-              className="w-1.5 h-1.5 bg-emerald-300 rounded-full mx-auto"
-              animate={{ y: [0, 20, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center relative"
+            >
+              {/* Profile Photo with Nature Frame */}
+              <motion.div 
+                className="relative inline-block mb-8"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  className="absolute -inset-4 bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 rounded-full blur-xl opacity-60"
+                  animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+                <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/80 shadow-2xl">
+                  {userInfo.photoURL ? (
+                    <img 
+                      src={userInfo.photoURL} 
+                      alt={userInfo.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-emerald-200 to-teal-200 flex items-center justify-center">
+                      <span className="text-5xl text-white font-bold">
+                        {userInfo.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {/* Floating particles around photo */}
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute"
+                    style={{
+                      top: `${Math.random() * 100}%`,
+                      left: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                      y: [-10, 10, -10],
+                      x: [-5, 5, -5],
+                      opacity: [0.3, 0.7, 0.3],
+                    }}
+                    transition={{
+                      duration: 2 + Math.random(),
+                      repeat: Infinity,
+                      delay: i * 0.3,
+                    }}
+                  >
+                    <Sparkles className="text-emerald-300" size={12} />
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Name with Gradient Animation */}
+              <motion.h1 
+                className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {userInfo.name}
+              </motion.h1>
+
+              {/* Title/Tagline */}
+              {userInfo.title && (
+                <motion.p 
+                  className="text-2xl md:text-3xl text-gray-600 mb-6 font-light"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {userInfo.title}
+                </motion.p>
+              )}
+
+              {/* Location */}
+              {userInfo.location && (
+                <motion.div
+                  className="flex items-center justify-center gap-2 text-gray-500 mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <MapPin className="text-rose-400" size={20} />
+                  <span>{userInfo.location}</span>
+                </motion.div>
+              )}
+
+              {/* CTA Buttons */}
+              <motion.div
+                className="flex flex-wrap gap-4 justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
+                  data-testid="button-lets-connect"
+                >
+                  <Mail className="mr-2 group-hover:rotate-12 transition-transform" size={20} />
+                  Let's Connect
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-emerald-400 text-emerald-600 hover:bg-emerald-50 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  data-testid="button-mentor-me"
+                >
+                  <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
+                  Mentor Me
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
-        </motion.div>
-      </motion.section>
 
-      {/* About Me Section */}
-      <section className="relative py-20 px-6 bg-white/30 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto">
+          {/* Scroll indicator */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-8 text-gray-600 flex items-center justify-center gap-3">
-              <Sparkles className="text-emerald-300" />
-              About Me
-              <Sparkles className="text-emerald-300" />
-            </h2>
-            
-            {userInfo.aboutMe && (
-              <p className="text-lg text-gray-700 leading-relaxed text-center mb-6">
-                {userInfo.aboutMe}
-              </p>
-            )}
+            <div className="w-6 h-10 border-2 border-emerald-400 rounded-full flex justify-center pt-2">
+              <motion.div
+                className="w-1.5 h-1.5 bg-emerald-400 rounded-full"
+                animate={{ y: [0, 16, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
+          </motion.div>
+        </motion.section>
 
-            {userInfo.uniqueValueProposition && (
-              <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl border border-emerald-200">
-                <h3 className="text-xl font-semibold text-gray-600 mb-3">What Makes Me Unique</h3>
-                <p className="text-gray-700">{userInfo.uniqueValueProposition}</p>
-              </div>
-            )}
+        {/* About Section */}
+        {userInfo.aboutMe && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-4xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                {/* Organic blob background */}
+                <div className="absolute -inset-8 bg-gradient-to-br from-white/60 to-emerald-50/60 rounded-[3rem] blur-xl" />
+                
+                <div className="relative bg-white/40 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-emerald-100/50 shadow-xl">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl">
+                      <Leaf className="text-emerald-600" size={28} />
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800">About Me</h2>
+                  </div>
+                  <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap">
+                    {userInfo.aboutMe}
+                  </p>
+                  
+                  {/* Contact Info */}
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    {userInfo.email && (
+                      <motion.a
+                        href={`mailto:${userInfo.email}`}
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full hover:bg-emerald-100 transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        data-testid="link-email"
+                      >
+                        <Mail size={16} />
+                        <span className="text-sm">{userInfo.email}</span>
+                      </motion.a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
 
-            {userInfo.whatIOffer && (
-              <div className="mt-6 p-6 bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-3xl border border-emerald-200">
-                <h3 className="text-xl font-semibold text-gray-600 mb-3">What I Offer</h3>
-                <p className="text-gray-700">{userInfo.whatIOffer}</p>
-              </div>
-            )}
+        {/* Skills Section - Floating Leaves Layout */}
+        {userSkills.length > 0 && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-6xl mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 flex items-center justify-center gap-3"
+              >
+                <Award className="text-emerald-500" size={36} />
+                Skills & Expertise
+              </motion.h2>
 
-            {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-              <div className="mt-6 flex flex-wrap gap-3 justify-center">
-                {userInfo.coreValues.map((value, idx) => (
-                  <Badge key={idx} variant="secondary" className="px-4 py-2 text-sm bg-emerald-50 text-gray-600 border border-green-300">
-                    {value}
-                  </Badge>
+              <div className="flex flex-wrap gap-4 justify-center">
+                {userSkills.map((skill, idx) => (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                    whileHover={{ 
+                      scale: 1.1, 
+                      rotate: 5,
+                      y: -5,
+                    }}
+                    viewport={{ once: true }}
+                    transition={{ 
+                      delay: idx * 0.05,
+                      type: "spring",
+                      stiffness: 200 
+                    }}
+                    className="group relative"
+                    data-testid={`skill-${skill.id}`}
+                  >
+                    {/* Glow effect on hover */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    
+                    <div className="relative px-6 py-3 bg-white/70 backdrop-blur-sm border-2 border-emerald-200 rounded-2xl shadow-md flex items-center gap-2">
+                      <Leaf className="text-emerald-500 group-hover:rotate-12 transition-transform" size={18} />
+                      <span className="text-gray-700 font-medium">{skill.name}</span>
+                      {skill.proficiency && (
+                        <Badge className="ml-2 bg-teal-100 text-teal-700 text-xs">
+                          {skill.proficiency}
+                        </Badge>
+                      )}
+                    </div>
+                  </motion.div>
                 ))}
               </div>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
-      <BranchDivider />
-
-      {/* Skills Section */}
-      {userSkills.length > 0 && (
-        <section className="relative py-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-600"
-            >
-              Skills & Expertise
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userSkills.map((skill, idx) => (
-                <motion.div
-                  key={skill.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative"
-                >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
-                  <div className="relative p-6 bg-white rounded-2xl border border-emerald-200 shadow-lg">
-                    <div className="flex items-center gap-3 mb-3">
-                      <motion.div
-                        className="p-2 bg-emerald-50 rounded-lg"
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
-                      >
-                        <Leaf className="text-emerald-300" size={24} />
-                      </motion.div>
-                      <h3 className="text-lg font-semibold text-gray-800">{skill.name}</h3>
-                    </div>
-                    {skill.level && (
-                      <div className="mt-3">
-                        <div className="h-2 bg-emerald-50 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${skill.level === 'Expert' ? 100 : skill.level === 'Advanced' ? 80 : skill.level === 'Intermediate' ? 60 : 40}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className="h-full bg-gradient-to-r from-emerald-300 to-teal-300"
-                          />
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">{skill.level}</p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      <BranchDivider />
+        {/* Experience Section - Growing Vine Timeline */}
+        {userExperiences.length > 0 && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-5xl mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-16 flex items-center justify-center gap-3"
+              >
+                <Briefcase className="text-emerald-500" size={36} />
+                Experience Journey
+              </motion.h2>
 
-      {/* Projects Section */}
-      {userProjects.length > 0 && (
-        <section className="relative py-20 px-6 bg-white/20 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-600"
-            >
-              Featured Projects
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {userProjects.map((project, idx) => (
+              <div className="relative">
+                {/* Vine timeline */}
                 <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ height: 0 }}
+                  whileInView={{ height: "100%" }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.2 }}
-                  whileHover={{ y: -10 }}
-                  className="group relative cursor-pointer"
-                  onClick={() => setSelectedProject(project)}
-                >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 rounded-3xl opacity-0 group-hover:opacity-75 blur-lg transition duration-500" />
-                  <div className="relative bg-white rounded-3xl overflow-hidden shadow-xl border-2 border-emerald-100">
-                    {project.thumbnailUrl && (
-                      <div className="relative h-48 overflow-hidden">
-                        <motion.img
-                          src={project.thumbnailUrl}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                          whileHover={{ scale: 1.1 }}
-                          transition={{ duration: 0.4 }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
-                        {project.title}
-                        <ExternalLink className="text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity" size={18} />
-                      </h3>
-                      <p className="text-gray-600 mb-4">{project.description}</p>
-                      {project.category && (
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary" className="bg-emerald-50 text-gray-600">
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="absolute left-8 top-0 w-1 bg-gradient-to-b from-emerald-300 via-teal-300 to-cyan-300 rounded-full"
+                />
+
+                <div className="space-y-12">
+                  {userExperiences.map((exp, idx) => (
+                    <motion.div
+                      key={exp.id}
+                      initial={{ opacity: 0, x: -50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.2 }}
+                      className="relative pl-20"
+                      data-testid={`experience-${exp.id}`}
+                    >
+                      {/* Flower node on timeline */}
+                      <motion.div
+                        className="absolute left-4 top-6 w-9 h-9 bg-gradient-to-br from-rose-200 to-pink-200 rounded-full flex items-center justify-center shadow-lg"
+                        whileHover={{ scale: 1.2, rotate: 180 }}
+                        transition={{ type: "spring" }}
+                      >
+                        <Flower2 className="text-rose-600" size={20} />
+                      </motion.div>
+
+                      {/* Card */}
+                      <motion.div
+                        whileHover={{ scale: 1.02, y: -5 }}
+                        className="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg hover:shadow-xl transition-all"
+                      >
+                        <h3 className="text-xl font-bold text-gray-800 mb-1">{exp.title}</h3>
+                        <p className="text-emerald-600 font-medium mb-2">{exp.company}</p>
+                        {exp.startDate && (
+                          <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
+                            <Calendar size={14} />
+                            <span>
+                              {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                              {exp.endDate && ` - ${new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                            </span>
+                          </div>
+                        )}
+                        {exp.description && (
+                          <p className="text-gray-600 leading-relaxed">{exp.description}</p>
+                        )}
+                      </motion.div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Education Section */}
+        {userEducations.length > 0 && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-5xl mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 flex items-center justify-center gap-3"
+              >
+                <GraduationCap className="text-emerald-500" size={36} />
+                Education
+              </motion.h2>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {userEducations.map((edu, idx) => (
+                  <motion.div
+                    key={edu.id}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="relative group"
+                    data-testid={`education-${edu.id}`}
+                  >
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    <div className="relative bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg">
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{edu.degree}</h3>
+                      <p className="text-emerald-600 font-medium mb-2">{edu.institution}</p>
+                      {edu.year && (
+                        <p className="text-gray-500 text-sm">{edu.year}</p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Projects Section - Masonry Grid with Nature Borders */}
+        {userProjects.length > 0 && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-6xl mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 flex items-center justify-center gap-3"
+              >
+                <Mountain className="text-emerald-500" size={36} />
+                Featured Projects
+              </motion.h2>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userProjects.map((project, idx) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -10, scale: 1.02 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={() => setSelectedProject(project)}
+                    className="group relative cursor-pointer"
+                    data-testid={`project-card-${project.id}`}
+                  >
+                    {/* Nature-themed border glow */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-3xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    
+                    <div className="relative bg-white/60 backdrop-blur-md rounded-3xl overflow-hidden border-2 border-emerald-100 shadow-lg hover:shadow-2xl transition-all">
+                      {project.thumbnailUrl && (
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={project.thumbnailUrl}
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-gray-600 line-clamp-3 mb-4">
+                          {project.description}
+                        </p>
+                        {project.category && (
+                          <Badge className="bg-emerald-100 text-emerald-700">
                             {project.category}
                           </Badge>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <BranchDivider />
-
-      {/* Experience Section */}
-      {userExperiences.length > 0 && (
-        <section className="relative py-20 px-6">
-          <div className="max-w-4xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-600"
-            >
-              Professional Journey
-            </motion.h2>
-            
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-200 via-teal-200 to-cyan-200" />
-              
-              {userExperiences.map((exp, idx) => (
-                <motion.div
-                  key={exp.id}
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  whileHover={{ x: 10 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.2 }}
-                  className="relative pl-20 pb-12 group"
-                >
-                  {/* Timeline Dot */}
-                  <motion.div
-                    className="absolute left-5 top-0 w-8 h-8 bg-green-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center"
-                    whileHover={{ scale: 1.3, rotate: 180 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Briefcase className="text-white" size={16} />
                   </motion.div>
-                  
-                  <div className="bg-white p-6 rounded-2xl shadow-lg border border-emerald-200 group-hover:shadow-xl transition-all duration-300">
-                    <h3 className="text-xl font-bold text-gray-800">{exp.title}</h3>
-                    <p className="text-gray-500 font-semibold mb-2">{exp.company}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                      <span className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {exp.startDate} - {exp.endDate || "Present"}
-                      </span>
-                      {exp.location && (
-                        <span className="flex items-center gap-1">
-                          <MapPin size={14} />
-                          {exp.location}
-                        </span>
-                      )}
-                    </div>
-                    {exp.description && (
-                      <p className="text-gray-600">{exp.description}</p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      <BranchDivider />
+        {/* Services Section */}
+        {userServices.length > 0 && (
+          <section className="py-20 px-6 relative">
+            <div className="max-w-6xl mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12 flex items-center justify-center gap-3"
+              >
+                <Globe className="text-emerald-500" size={36} />
+                Services I Offer
+              </motion.h2>
 
-      {/* Education Section */}
-      {userEducations.length > 0 && (
-        <section className="relative py-20 px-6 bg-white/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-600"
-            >
-              Education & Growth
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 gap-6">
-              {userEducations.map((edu, idx) => (
-                <motion.div
-                  key={edu.id}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.02 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative"
-                >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
-                  <div className="relative bg-white p-6 rounded-2xl border border-emerald-200 shadow-lg">
-                    <div className="flex items-start gap-4">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userServices.map((service, idx) => (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.05, rotateZ: 2 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="group relative"
+                    data-testid={`service-${service.id}`}
+                  >
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    <div className="relative p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-emerald-200 shadow-lg text-center">
                       <motion.div
-                        className="p-3 bg-emerald-50 rounded-xl"
+                        className="inline-block p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-full mb-4"
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
                       >
-                        <GraduationCap className="text-emerald-300" size={28} />
+                        <Award className="text-emerald-300" size={32} />
                       </motion.div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-800">{edu.degree}</h3>
-                        <p className="text-gray-500 font-semibold">{edu.institution}</p>
-                        {edu.fieldOfStudy && (
-                          <p className="text-gray-600 mb-2">{edu.fieldOfStudy}</p>
-                        )}
-                        <p className="text-sm text-gray-500 flex items-center gap-1">
-                          <Calendar size={14} />
-                          {edu.startDate} - {edu.endDate || "Present"}
-                        </p>
-                      </div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
+                      <p className="text-gray-600">{service.description}</p>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
+          </section>
+        )}
+
+        {/* Contact/CTA Section - Immersive Nature Scene */}
+        <section className="relative py-24 px-6 bg-gradient-to-br from-emerald-100 via-teal-100 to-cyan-100 overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-20">
+            <Leaf className="absolute top-10 left-10 text-emerald-600" size={60} />
+            <Flower2 className="absolute top-20 right-20 text-rose-500" size={50} />
+            <Butterfly className="absolute bottom-20 left-1/4 text-pink-500" size={45} />
+            <TreePine className="absolute bottom-10 right-10 text-emerald-700" size={80} />
           </div>
-        </section>
-      )}
 
-      <BranchDivider />
-
-      {/* Services Section */}
-      {userServices.length > 0 && (
-        <section className="relative py-20 px-6">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-bold text-center mb-12 text-gray-600"
             >
-              Services I Offer
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userServices.map((service, idx) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  whileHover={{ scale: 1.05, rotateZ: 2 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="group relative"
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
+                Let's Create Something Beautiful Together
+              </h2>
+              <p className="text-xl mb-10 text-gray-600">
+                Ready to collaborate? I'm just a message away.
+              </p>
+              
+              <div className="flex flex-wrap gap-4 justify-center mb-8">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+                  onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
+                  data-testid="button-lets-connect-footer"
                 >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
-                  <div className="relative p-6 bg-white rounded-2xl border border-emerald-200 shadow-lg text-center">
-                    <motion.div
-                      className="inline-block p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-full mb-4"
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <Award className="text-emerald-300" size={32} />
-                    </motion.div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
-                    <p className="text-gray-600">{service.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  <Mail className="mr-2 group-hover:rotate-12 transition-transform" size={20} />
+                  Let's Connect
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+                  data-testid="button-mentor-me-footer"
+                >
+                  <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
+                  Mentor Me
+                </Button>
+              </div>
+
+              {userInfo.email && (
+                <motion.p
+                  className="flex items-center justify-center gap-2 text-lg text-gray-700"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Mail size={20} className="text-emerald-600" />
+                  {userInfo.email}
+                </motion.p>
+              )}
+            </motion.div>
+          </div>
+
+          {/* Floating particles in footer */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(10)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [-20, 20, -20],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              >
+                <Sparkles className="text-emerald-400/60" size={16 + Math.random() * 16} />
+              </motion.div>
+            ))}
           </div>
         </section>
-      )}
-
-      {/* Contact/CTA Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200">
-        <div className="max-w-4xl mx-auto text-center text-gray-700">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-700">Let's Create Something Amazing</h2>
-            <p className="text-xl mb-10 text-gray-600">
-              Ready to bring your ideas to life? Let's connect and make it happen.
-            </p>
-            
-            <div className="flex flex-wrap gap-4 justify-center mb-8">
-              <Button
-                size="lg"
-                className="bg-white text-gray-600 hover:bg-gray-50 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
-              >
-                <Mail className="mr-2" size={20} />
-                Let's Connect
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-gray-400 text-gray-600 hover:bg-white/50 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                <Heart className="mr-2" size={20} />
-                Mentor Me
-              </Button>
-            </div>
-
-            {userInfo.email && (
-              <motion.p
-                className="flex items-center justify-center gap-2 text-lg"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Mail size={20} />
-                {userInfo.email}
-              </motion.p>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Floating particles in footer */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [-20, 20, -20],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            >
-              <Sparkles className="text-gray-400/50" size={16 + Math.random() * 16} />
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      </div>
 
       {/* Project Modal */}
       <AnimatePresence>
@@ -714,22 +881,34 @@ export default function NatureCreative({
               )}
               <div className="p-8">
                 <h3 className="text-3xl font-bold text-gray-800 mb-4">{selectedProject.title}</h3>
-                <p className="text-gray-600 mb-6">{selectedProject.description}</p>
+                <p className="text-gray-600 mb-6 whitespace-pre-wrap">{selectedProject.description}</p>
                 {selectedProject.category && (
                   <div className="mb-6">
                     <h4 className="font-semibold text-gray-800 mb-2">Category</h4>
-                    <Badge className="bg-emerald-50 text-gray-600">
+                    <Badge className="bg-emerald-50 text-emerald-700">
                       {selectedProject.category}
                     </Badge>
                   </div>
                 )}
-                {selectedProject.projectUrl && (
+                {selectedProject.technologies && selectedProject.technologies.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-2">Technologies</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.technologies.map((tech, idx) => (
+                        <Badge key={idx} className="bg-teal-50 text-teal-700">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selectedProject.liveUrl && (
                   <Button
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                    onClick={() => window.open(selectedProject.projectUrl!, '_blank')}
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                    onClick={() => window.open(selectedProject.liveUrl!, '_blank')}
                   >
-                    <ExternalLink className="mr-2" size={18} />
-                    View Project
+                    <ExternalLink className="mr-2" size={20} />
+                    View Live Project
                   </Button>
                 )}
               </div>
