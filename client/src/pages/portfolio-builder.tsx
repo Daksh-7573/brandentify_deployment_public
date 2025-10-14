@@ -46,6 +46,7 @@ import DesignerShowcase from "@/components/portfolio/templates/designer-showcase
 import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
 import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape";
 import NatureCreative from "@/components/portfolio/templates/nature-creative";
+import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,7 +82,8 @@ const portfolioFormSchema = z.object({
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
-    "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative"
+    "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
+    "fashion-runway"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -523,6 +525,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Nature-Inspired, Parallax Effects, Full Animations & Creative Graphics
 ✔ Best For: Nature-Loving Freelancers, Creative Professionals, Outdoor Enthusiasts, Eco-Conscious Brands`,
       theme: "#10b981"
+    },
+    { 
+      id: "fashion-runway", 
+      name: "Fashion Runway", 
+      description: `✔ Theme: High-Fashion, Editorial, Minimal & Elegant
+✔ Best For: Fashion Models, Runway Models, Editorial Models, Brand Ambassadors`,
+      theme: "#000000"
     }
   ];
 
@@ -1345,6 +1354,40 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "nature-creative" && (
               <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
                 <NatureCreative
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                    jobLevel: userData?.jobLevel || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    brandName: userData?.brandName || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "fashion-runway" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <FashionRunway
                   userInfo={{
                     id: userData?.id,
                     name: userData?.name || user?.name || '',

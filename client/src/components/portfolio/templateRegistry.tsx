@@ -11,6 +11,7 @@ import DesignerShowcase from "@/components/portfolio/templates/designer-showcase
 import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
 import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape";
 import NatureCreative from "@/components/portfolio/templates/nature-creative";
+import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -32,7 +33,8 @@ export type PortfolioLayoutKey =
   | "designer-portfolio"
   | "photographer-portfolio"
   | "pastel-dreamscape"
-  | "nature-creative";
+  | "nature-creative"
+  | "fashion-runway";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -193,7 +195,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "designer-portfolio": DesignerShowcase as any,
   "photographer-portfolio": PhotographerPortfolio as any,
   "pastel-dreamscape": PastelDreamscape as any,
-  "nature-creative": NatureCreative as any
+  "nature-creative": NatureCreative as any,
+  "fashion-runway": FashionRunway as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {
