@@ -95,41 +95,54 @@ function LotusFlower({ className = "" }: { className?: string }) {
 function YogaParallaxBackground() {
   const { scrollY } = useScroll();
   
-  const layer1Y = useTransform(scrollY, [0, 2000], [0, -100]);
-  const layer2Y = useTransform(scrollY, [0, 2000], [0, -250]);
-  const layer3Y = useTransform(scrollY, [0, 2000], [0, -400]);
+  // Enhanced parallax with more dramatic movement
+  const layer1Y = useTransform(scrollY, [0, 1500], [0, -300]);
+  const layer2Y = useTransform(scrollY, [0, 1500], [0, -600]);
+  const layer3Y = useTransform(scrollY, [0, 1500], [0, -900]);
+  
+  // Rotation effects for yoga elements
+  const lotus1Rotate = useTransform(scrollY, [0, 1500], [0, 45]);
+  const lotus2Rotate = useTransform(scrollY, [0, 1500], [0, -30]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Layer 1: Soft earth tone gradient background */}
+      {/* Layer 1: Soft earth tone gradient background - slowest */}
       <motion.div 
         style={{ y: layer1Y }}
         className="absolute inset-0 bg-gradient-to-br from-white via-beige-50 to-sage-50"
       />
       
-      {/* Layer 2: Organic shapes and subtle patterns */}
+      {/* Layer 2: Organic shapes and subtle patterns - medium speed */}
       <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        {/* Soft gradient orbs */}
-        <div className="absolute top-20 right-[15%] w-96 h-96 bg-sage-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-60 left-[10%] w-[500px] h-[500px] bg-sky-200/15 rounded-full blur-3xl" />
-        <div className="absolute top-[50%] left-[40%] w-64 h-64 bg-olive-200/10 rounded-full blur-3xl" />
+        {/* Soft gradient orbs with increased opacity for visibility */}
+        <div className="absolute top-20 right-[15%] w-96 h-96 bg-sage-300/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-60 left-[10%] w-[500px] h-[500px] bg-sky-300/25 rounded-full blur-3xl" />
+        <div className="absolute top-[50%] left-[40%] w-64 h-64 bg-olive-300/20 rounded-full blur-3xl" />
         
-        {/* Lotus flowers */}
-        <LotusFlower className="absolute top-32 left-[8%] w-24 h-24" />
-        <LotusFlower className="absolute bottom-40 right-[12%] w-32 h-32" />
+        {/* Lotus flowers with rotation */}
+        <motion.div style={{ rotate: lotus1Rotate }} className="absolute top-32 left-[8%] w-28 h-28">
+          <Flower2 className="w-full h-full text-sage-500/40" strokeWidth={1.5} />
+        </motion.div>
+        <motion.div style={{ rotate: lotus2Rotate }} className="absolute bottom-40 right-[12%] w-36 h-36">
+          <Flower2 className="w-full h-full text-sage-600/40" strokeWidth={1.5} />
+        </motion.div>
       </motion.div>
 
-      {/* Layer 3: Accent elements and breathing circle */}
+      {/* Layer 3: Accent elements and breathing circle - fastest */}
       <motion.div style={{ y: layer3Y }} className="absolute inset-0">
         <BreathingCircle />
         
-        {/* Decorative lines */}
-        <div className="absolute top-[40%] left-[5%] w-1 h-24 bg-gradient-to-b from-sage-300/30 to-transparent" />
-        <div className="absolute top-[70%] right-[8%] w-1 h-32 bg-gradient-to-b from-olive-300/20 to-transparent" />
+        {/* Decorative lines with increased visibility */}
+        <div className="absolute top-[40%] left-[5%] w-2 h-32 bg-gradient-to-b from-sage-400/40 to-transparent rounded-full" />
+        <div className="absolute top-[70%] right-[8%] w-2 h-40 bg-gradient-to-b from-olive-400/30 to-transparent rounded-full" />
         
-        {/* Mandala-like circles */}
-        <div className="absolute top-[25%] right-[20%] w-16 h-16 rounded-full border border-sage-300/20" />
-        <div className="absolute top-[25%] right-[20%] w-12 h-12 rounded-full border border-sage-300/15 m-2" />
+        {/* Mandala-like circles with enhanced visibility */}
+        <div className="absolute top-[25%] right-[20%] w-20 h-20 rounded-full border-2 border-sage-400/30" />
+        <div className="absolute top-[25%] right-[20%] w-14 h-14 rounded-full border-2 border-sage-400/20 m-3" />
+        
+        {/* Additional floating elements */}
+        <div className="absolute top-[60%] left-[15%] w-3 h-3 rounded-full bg-sage-500/40" />
+        <div className="absolute top-[35%] right-[30%] w-2 h-2 rounded-full bg-olive-500/40" />
       </motion.div>
 
       {/* Subtle texture overlay */}
