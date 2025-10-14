@@ -112,19 +112,19 @@ function YogaParallaxBackground() {
         className="absolute inset-0 bg-gradient-to-br from-white via-beige-50 to-sage-50"
       />
       
-      {/* Layer 2: Organic shapes and subtle patterns - medium speed */}
+      {/* Layer 2: Organic shapes and patterns - medium speed */}
       <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        {/* Soft gradient orbs with increased opacity for visibility */}
-        <div className="absolute top-20 right-[15%] w-96 h-96 bg-sage-300/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-60 left-[10%] w-[500px] h-[500px] bg-sky-300/25 rounded-full blur-3xl" />
-        <div className="absolute top-[50%] left-[40%] w-64 h-64 bg-olive-300/20 rounded-full blur-3xl" />
+        {/* Large visible gradient orbs */}
+        <div className="absolute top-20 right-[15%] w-[500px] h-[500px] bg-sage-400/50 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-[10%] w-[600px] h-[600px] bg-sky-400/40 rounded-full blur-3xl" />
+        <div className="absolute top-[50%] left-[40%] w-96 h-96 bg-olive-400/35 rounded-full blur-3xl" />
         
-        {/* Lotus flowers with rotation */}
-        <motion.div style={{ rotate: lotus1Rotate }} className="absolute top-32 left-[8%] w-28 h-28">
-          <Flower2 className="w-full h-full text-sage-500/40" strokeWidth={1.5} />
+        {/* Large visible lotus flowers with rotation */}
+        <motion.div style={{ rotate: lotus1Rotate }} className="absolute top-40 left-[10%] w-32 h-32">
+          <Flower2 className="w-full h-full text-sage-600/70" strokeWidth={2} />
         </motion.div>
-        <motion.div style={{ rotate: lotus2Rotate }} className="absolute bottom-40 right-[12%] w-36 h-36">
-          <Flower2 className="w-full h-full text-sage-600/40" strokeWidth={1.5} />
+        <motion.div style={{ rotate: lotus2Rotate }} className="absolute bottom-48 right-[15%] w-40 h-40">
+          <Flower2 className="w-full h-full text-sage-700/70" strokeWidth={2} />
         </motion.div>
       </motion.div>
 
@@ -132,17 +132,18 @@ function YogaParallaxBackground() {
       <motion.div style={{ y: layer3Y }} className="absolute inset-0">
         <BreathingCircle />
         
-        {/* Decorative lines with increased visibility */}
-        <div className="absolute top-[40%] left-[5%] w-2 h-32 bg-gradient-to-b from-sage-400/40 to-transparent rounded-full" />
-        <div className="absolute top-[70%] right-[8%] w-2 h-40 bg-gradient-to-b from-olive-400/30 to-transparent rounded-full" />
+        {/* Thick visible decorative lines */}
+        <div className="absolute top-[40%] left-[5%] w-3 h-40 bg-gradient-to-b from-sage-500/60 to-transparent rounded-full" />
+        <div className="absolute top-[70%] right-[8%] w-3 h-48 bg-gradient-to-b from-olive-500/50 to-transparent rounded-full" />
         
-        {/* Mandala-like circles with enhanced visibility */}
-        <div className="absolute top-[25%] right-[20%] w-20 h-20 rounded-full border-2 border-sage-400/30" />
-        <div className="absolute top-[25%] right-[20%] w-14 h-14 rounded-full border-2 border-sage-400/20 m-3" />
+        {/* Large mandala circles */}
+        <div className="absolute top-[25%] right-[20%] w-24 h-24 rounded-full border-3 border-sage-500/50" />
+        <div className="absolute top-[25%] right-[20%] w-16 h-16 rounded-full border-3 border-sage-500/35 m-4" />
         
-        {/* Additional floating elements */}
-        <div className="absolute top-[60%] left-[15%] w-3 h-3 rounded-full bg-sage-500/40" />
-        <div className="absolute top-[35%] right-[30%] w-2 h-2 rounded-full bg-olive-500/40" />
+        {/* Visible floating accent dots */}
+        <div className="absolute top-[60%] left-[15%] w-4 h-4 rounded-full bg-sage-600/60" />
+        <div className="absolute top-[35%] right-[30%] w-3 h-3 rounded-full bg-olive-600/60" />
+        <div className="absolute bottom-[30%] left-[25%] w-3 h-3 rounded-full bg-sky-500/50" />
       </motion.div>
 
       {/* Subtle texture overlay */}
