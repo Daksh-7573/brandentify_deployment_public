@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Camera, Mail, Aperture, Focus, Film, Zap, Circle } from "lucide-react";
+import { Camera, Mail, Aperture, Focus, Film, Zap, Circle, X, ExternalLink, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 
 // Photography color palette
@@ -53,9 +54,13 @@ interface PhotographerPortfolioProps {
   userProjects?: Array<{
     id: number;
     title: string;
-    description: string;
+    description: string | null;
     thumbnailUrl?: string | null;
     category?: string | null;
+    industry?: string | null;
+    startDate?: string | null;
+    projectUrl?: string | null;
+    mediaUrls?: string[] | any;
   }>;
   userEducations?: Array<{
     id: number;
@@ -264,6 +269,7 @@ export default function PhotographerPortfolio({
 }: PhotographerPortfolioProps) {
   const [apertureOpen, setApertureOpen] = useState(false);
   const [shutterTrigger, setShutterTrigger] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<typeof userProjects[0] | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setApertureOpen(true), 500);
@@ -660,8 +666,10 @@ export default function PhotographerPortfolio({
                       rotateZ: 2,
                       zIndex: 10,
                     }}
+                    onClick={() => setSelectedProject(project)}
                     className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
                     style={{ transformStyle: 'preserve-3d' }}
+                    data-testid={`card-project-${project.id}`}
                   >
                     {project.thumbnailUrl ? (
                       <img
@@ -1021,6 +1029,209 @@ export default function PhotographerPortfolio({
           </div>
         </motion.div>
       </section>
+
+      {/* Portfolio Detail Modal with Photography Theme */}
+      <Dialog open={!!selectedProject} onOpenChange={(open) => !open && setSelectedProject(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0 bg-transparent border-none">
+          <AnimatePresence>
+            {selectedProject && (
+              <motion.div
+                initial={{ scale: 0, rotate: 0 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 0 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                  duration: 0.6
+                }}
+                className="relative rounded-2xl overflow-hidden"
+                style={{ background: colors.richBlack }}
+              >
+                {/* Aperture Opening Animation */}
+                <motion.div
+                  className="absolute inset-0 z-50 pointer-events-none"
+                  initial={{ 
+                    clipPath: "circle(0% at 50% 50%)",
+                    opacity: 1 
+                  }}
+                  animate={{ 
+                    clipPath: "circle(100% at 50% 50%)",
+                    opacity: [1, 0.8, 0]
+                  }}
+                  transition={{ 
+                    duration: 0.4,
+                    ease: "easeOut"
+                  }}
+                  style={{ background: colors.warmAmber }}
+                />
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="absolute top-4 right-4 z-50 p-3 rounded-full transition-all hover:scale-110"
+                  style={{ background: colors.filmGray }}
+                  data-testid="button-close-project-modal"
+                >
+                  <X size={24} color={colors.warmAmber} />
+                </button>
+
+                {/* Content */}
+                <div className="relative z-10 p-8">
+                  {/* Main Image */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
+                    className="relative w-full h-96 mb-8 rounded-xl overflow-hidden group"
+                  >
+                    {selectedProject.thumbnailUrl ? (
+                      <img
+                        src={selectedProject.thumbnailUrl}
+                        alt={selectedProject.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                        <Camera size={120} color={colors.warmAmber} opacity={0.3} />
+                      </div>
+                    )}
+                    {/* Focus Frame Effect */}
+                    <motion.div
+                      className="absolute inset-8 border-4 pointer-events-none"
+                      style={{ borderColor: colors.cameraRed }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </motion.div>
+
+                  {/* Project Details */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.5 }}
+                  >
+                    <h2 className="text-4xl font-bold mb-4" style={{ color: colors.warmAmber }}>
+                      {selectedProject.title}
+                    </h2>
+                    
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      {selectedProject.category && (
+                        <Badge className="px-4 py-2 text-base" style={{ background: colors.warmAmber, color: colors.richBlack }}>
+                          {selectedProject.category}
+                        </Badge>
+                      )}
+                      {selectedProject.industry && (
+                        <Badge className="px-4 py-2 text-base" style={{ background: colors.filmGray, color: colors.softWhite }}>
+                          {selectedProject.industry}
+                        </Badge>
+                      )}
+                      {selectedProject.startDate && (
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: colors.filmGray }}>
+                          <Calendar size={16} color={colors.warmAmber} />
+                          <span className="text-sm" style={{ color: colors.softWhite }}>
+                            {new Date(selectedProject.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    {selectedProject.description && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7, duration: 0.5 }}
+                        className="mb-8 p-6 rounded-xl"
+                        style={{ background: colors.filmGray }}
+                      >
+                        <h3 className="text-xl font-bold mb-3" style={{ color: colors.warmAmber }}>Project Description</h3>
+                        <p className="text-lg leading-relaxed opacity-90" style={{ color: colors.softWhite }}>
+                          {selectedProject.description}
+                        </p>
+                      </motion.div>
+                    )}
+
+                    {/* Project URL */}
+                    {selectedProject.projectUrl && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8, duration: 0.5 }}
+                        className="mb-8"
+                      >
+                        <a
+                          href={selectedProject.projectUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-3 px-6 py-3 rounded-full font-bold transition-all hover:scale-105"
+                          style={{ background: `linear-gradient(135deg, ${colors.warmAmber}, ${colors.cameraRed})`, color: colors.richBlack }}
+                          data-testid="link-project-url"
+                        >
+                          <ExternalLink size={20} />
+                          View Live Project
+                        </a>
+                      </motion.div>
+                    )}
+
+                    {/* Media Gallery */}
+                    {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.9, duration: 0.5 }}
+                        className="mb-8"
+                      >
+                        <h3 className="text-2xl font-bold mb-6" style={{ color: colors.warmAmber }}>
+                          <Film className="inline mr-3" size={28} />
+                          Project Gallery
+                        </h3>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {selectedProject.mediaUrls.map((url: string, idx: number) => (
+                            <motion.div
+                              key={idx}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 1.0 + idx * 0.1, duration: 0.4 }}
+                              whileHover={{ scale: 1.05 }}
+                              className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+                            >
+                              <img
+                                src={url}
+                                alt={`${selectedProject.title} - ${idx + 1}`}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                              {/* Lens Flare Effect on Hover */}
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 pointer-events-none"
+                                style={{ mixBlendMode: 'overlay' }}
+                              />
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                </div>
+
+                {/* Film Strip Border */}
+                <div className="absolute top-0 left-0 right-0 h-8 flex gap-2 px-4 py-2" style={{ background: colors.filmGray }}>
+                  {[...Array(20)].map((_, i) => (
+                    <div key={i} className="w-4 h-full rounded-sm" style={{ background: colors.warmAmber, opacity: 0.3 }} />
+                  ))}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 h-8 flex gap-2 px-4 py-2" style={{ background: colors.filmGray }}>
+                  {[...Array(20)].map((_, i) => (
+                    <div key={i} className="w-4 h-full rounded-sm" style={{ background: colors.warmAmber, opacity: 0.3 }} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
