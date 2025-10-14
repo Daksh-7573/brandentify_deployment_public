@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -217,17 +217,28 @@ function FloatingNatureElements() {
   );
 }
 
-// Sparkle Particles
+// Sparkle Particles - Memoized positions for stable rendering
 function SparkleParticles() {
+  const sparkles = useMemo(() => 
+    [...Array(12)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 12 + Math.random() * 12,
+      duration: 3 + Math.random() * 2,
+      delay: Math.random() * 3,
+    }))
+  , []);
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-5">
-      {[...Array(12)].map((_, i) => (
+      {sparkles.map((sparkle) => (
         <motion.div
-          key={i}
+          key={sparkle.id}
           className="absolute"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${sparkle.left}%`,
+            top: `${sparkle.top}%`,
           }}
           animate={{
             y: [-20, 20, -20],
@@ -235,12 +246,12 @@ function SparkleParticles() {
             scale: [0.8, 1.2, 0.8],
           }}
           transition={{
-            duration: 3 + Math.random() * 2,
+            duration: sparkle.duration,
             repeat: Infinity,
-            delay: Math.random() * 3,
+            delay: sparkle.delay,
           }}
         >
-          <Sparkles className="text-yellow-300/40" size={12 + Math.random() * 12} />
+          <Sparkles className="text-yellow-300/40" size={sparkle.size} />
         </motion.div>
       ))}
     </div>
@@ -288,6 +299,28 @@ export default function NatureCreative({
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
   const heroScale = useTransform(scrollY, [0, 300], [1, 0.95]);
+
+  // Memoize hero particles positions for stable rendering
+  const heroParticles = useMemo(() => 
+    [...Array(6)].map((_, i) => ({
+      id: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      duration: 2 + Math.random(),
+    }))
+  , []);
+
+  // Memoize footer sparkles for stable rendering
+  const footerSparkles = useMemo(() =>
+    [...Array(10)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 16 + Math.random() * 16,
+      duration: 3 + Math.random() * 2,
+      delay: Math.random() * 2,
+    }))
+  , []);
 
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-[#F5F0FF] via-[#FFF5F0] to-[#F0FFF5] overflow-hidden">
@@ -345,13 +378,13 @@ export default function NatureCreative({
                   )}
                 </div>
                 {/* Floating particles around photo */}
-                {[...Array(6)].map((_, i) => (
+                {heroParticles.map((particle) => (
                   <motion.div
-                    key={i}
+                    key={particle.id}
                     className="absolute"
                     style={{
-                      top: `${Math.random() * 100}%`,
-                      left: `${Math.random() * 100}%`,
+                      top: `${particle.top}%`,
+                      left: `${particle.left}%`,
                     }}
                     animate={{
                       y: [-10, 10, -10],
@@ -359,9 +392,9 @@ export default function NatureCreative({
                       opacity: [0.3, 0.7, 0.3],
                     }}
                     transition={{
-                      duration: 2 + Math.random(),
+                      duration: particle.duration,
                       repeat: Infinity,
-                      delay: i * 0.3,
+                      delay: particle.id * 0.3,
                     }}
                   >
                     <Sparkles className="text-emerald-300" size={12} />
@@ -827,25 +860,25 @@ export default function NatureCreative({
 
           {/* Floating particles in footer */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(10)].map((_, i) => (
+            {footerSparkles.map((sparkle) => (
               <motion.div
-                key={i}
+                key={sparkle.id}
                 className="absolute"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
+                  left: `${sparkle.left}%`,
+                  top: `${sparkle.top}%`,
                 }}
                 animate={{
                   y: [-20, 20, -20],
                   opacity: [0.3, 0.6, 0.3],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: sparkle.duration,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  delay: sparkle.delay,
                 }}
               >
-                <Sparkles className="text-emerald-400/60" size={16 + Math.random() * 16} />
+                <Sparkles className="text-emerald-400/60" size={sparkle.size} />
               </motion.div>
             ))}
           </div>
