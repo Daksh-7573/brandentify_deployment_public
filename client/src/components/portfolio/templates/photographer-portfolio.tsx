@@ -32,15 +32,23 @@ interface PhotographerPortfolioProps {
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
   };
-  userSkills?: Array<{ id: number; skillName: string; proficiencyLevel?: string | null }>;
+  userSkills?: Array<{ 
+    id: number; 
+    name: string; 
+    level?: string | null; 
+    proficiency?: number | null;
+  }>;
   userExperiences?: Array<{
     id: number;
     title: string;
     company: string;
+    industry?: string | null;
+    domain?: string | null;
     startDate: string;
     endDate?: string | null;
     description?: string | null;
     location?: string | null;
+    keyResponsibilities?: string[] | any;
   }>;
   userProjects?: Array<{
     id: number;
@@ -54,8 +62,13 @@ interface PhotographerPortfolioProps {
     institution: string;
     degree: string;
     fieldOfStudy?: string | null;
+    location?: string | null;
+    industry?: string | null;
+    domain?: string | null;
     startDate: string;
     endDate?: string | null;
+    skillsAcquired?: string[] | any;
+    academicAchievements?: string[] | any;
   }>;
   userServices?: Array<{
     id: number;
@@ -702,13 +715,14 @@ export default function PhotographerPortfolio({
             </motion.h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userSkills.map((skill, idx) => {
-                const proficiency = skill.proficiencyLevel || 'Intermediate';
+                const level = skill.level || 'Intermediate';
+                const proficiency = skill.proficiency || 50;
                 const widthMap: Record<string, string> = {
                   'Beginner': '33%',
                   'Intermediate': '66%',
                   'Advanced': '100%',
                 };
-                const width = widthMap[proficiency] || '50%';
+                const width = widthMap[level] || `${proficiency}%`;
 
                 return (
                   <motion.div
@@ -729,19 +743,19 @@ export default function PhotographerPortfolio({
                       <Aperture size={24} color={colors.warmAmber} opacity={0.3} />
                     </motion.div>
                     <h3 className="text-lg font-bold mb-3" style={{ color: colors.warmAmber }}>
-                      {skill.skillName}
+                      {skill.name}
                     </h3>
                     <div className="relative h-2 bg-black/50 rounded-full overflow-hidden">
                       <motion.div
                         className="absolute top-0 left-0 h-full rounded-full"
-                        style={{ background: `linear-gradient(90deg, ${colors.warmAmber}, ${colors.cameraRed})` }}
+                        style={{ background: `linear-gradient(90deg, ${colors.warmAmber}, ${colors.cameraRed})`, width }}
                         initial={{ width: 0 }}
                         whileInView={{ width }}
                         viewport={{ once: true }}
                         transition={{ duration: 1, delay: idx * 0.05 }}
                       />
                     </div>
-                    <p className="text-sm mt-2 opacity-70">{proficiency}</p>
+                    <p className="text-sm mt-2 opacity-70">{level} {proficiency > 0 && `(${proficiency}%)`}</p>
                   </motion.div>
                 );
               })}
@@ -806,11 +820,40 @@ export default function PhotographerPortfolio({
                         <p className="text-sm opacity-70 mb-3">
                           {startYear} - {endYear}
                         </p>
+                        
+                        {/* Industry & Domain */}
+                        {(exp.industry || exp.domain) && (
+                          <div className="flex items-center gap-2 mb-3">
+                            {exp.industry && (
+                              <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                                {exp.industry}
+                              </span>
+                            )}
+                            {exp.domain && (
+                              <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                                {exp.domain}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        
                         {exp.location && (
                           <p className="text-sm opacity-60 mb-3">📍 {exp.location}</p>
                         )}
                         {exp.description && (
-                          <p className="opacity-80 leading-relaxed">{exp.description}</p>
+                          <p className="opacity-80 leading-relaxed mb-3">{exp.description}</p>
+                        )}
+                        
+                        {/* Key Responsibilities */}
+                        {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                          <div className="mt-3">
+                            <p className="text-sm font-semibold mb-2" style={{ color: colors.warmAmber }}>Key Responsibilities:</p>
+                            <ul className="list-disc list-inside space-y-1 text-sm opacity-80">
+                              {exp.keyResponsibilities.map((resp: string, respIdx: number) => (
+                                <li key={respIdx}>{resp}</li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
                       </motion.div>
                     </motion.div>
@@ -845,41 +888,82 @@ export default function PhotographerPortfolio({
                 return (
                   <motion.div
                     key={edu.id}
-                    initial={{ opacity: 0, rotateY: 90 }}
-                    whileInView={{ opacity: 1, rotateY: 0 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1, duration: 0.6 }}
-                    whileHover={{ rotateY: 10, rotateX: 10, scale: 1.05 }}
-                    className="relative bg-white p-6 pb-16 rounded-sm shadow-2xl cursor-pointer"
-                    style={{ transformStyle: 'preserve-3d' }}
+                    transition={{ delay: idx * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="relative p-6 rounded-lg border-2"
+                    style={{ 
+                      background: colors.filmGray,
+                      borderColor: colors.warmAmber,
+                    }}
                   >
-                    {/* Polaroid photo area */}
-                    <div className="aspect-square bg-gradient-to-br from-gray-200 to-gray-300 mb-4 flex items-center justify-center">
-                      <motion.div
-                        animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      >
-                        <Aperture size={64} color={colors.filmGray} opacity={0.3} />
-                      </motion.div>
+                    {/* Icon area */}
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: `${colors.warmAmber}20` }}>
+                        <Aperture size={40} color={colors.warmAmber} />
+                      </div>
                     </div>
-                    {/* Polaroid text */}
-                    <div className="text-center" style={{ color: colors.richBlack }}>
-                      <h3 className="font-bold text-lg mb-1">{edu.degree}</h3>
-                      <p className="text-sm font-medium opacity-70">{edu.institution}</p>
+                    
+                    {/* Content */}
+                    <div className="text-center mb-4">
+                      <h3 className="font-bold text-xl mb-2" style={{ color: colors.warmAmber }}>{edu.degree}</h3>
+                      <p className="text-base font-medium opacity-90">{edu.institution}</p>
                       {edu.fieldOfStudy && (
-                        <p className="text-xs opacity-60 mt-1">{edu.fieldOfStudy}</p>
+                        <p className="text-sm opacity-70 mt-1">{edu.fieldOfStudy}</p>
                       )}
-                      <p className="text-xs opacity-50 mt-2">
+                      <p className="text-sm opacity-60 mt-2">
                         {startYear} - {endYear}
                       </p>
                     </div>
-                    {/* Flash effect on hover */}
-                    <motion.div
-                      className="absolute inset-0 bg-white pointer-events-none"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: [0, 0.8, 0] }}
-                      transition={{ duration: 0.3 }}
-                    />
+
+                    {/* Industry, Domain, Location */}
+                    {(edu.industry || edu.domain || edu.location) && (
+                      <div className="flex flex-wrap justify-center gap-2 mb-3">
+                        {edu.industry && (
+                          <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                            {edu.industry}
+                          </span>
+                        )}
+                        {edu.domain && (
+                          <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                            {edu.domain}
+                          </span>
+                        )}
+                        {edu.location && (
+                          <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                            📍 {edu.location}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Skills Acquired */}
+                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                      <div className="mt-4 text-left">
+                        <p className="text-sm font-semibold mb-2" style={{ color: colors.warmAmber }}>Skills Acquired:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {edu.skillsAcquired.map((skill: string, skillIdx: number) => (
+                            <span key={skillIdx} className="text-xs px-2 py-1 rounded-full" style={{ background: `${colors.warmAmber}30`, color: colors.softWhite }}>
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Academic Achievements */}
+                    {edu.academicAchievements && Array.isArray(edu.academicAchievements) && edu.academicAchievements.length > 0 && (
+                      <div className="mt-4 text-left">
+                        <p className="text-sm font-semibold mb-2" style={{ color: colors.warmAmber }}>Academic Achievements:</p>
+                        <ul className="list-disc list-inside space-y-1 text-sm opacity-80">
+                          {edu.academicAchievements.map((achievement: string, achIdx: number) => (
+                            <li key={achIdx}>{achievement}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
