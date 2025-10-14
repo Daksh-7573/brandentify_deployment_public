@@ -593,6 +593,49 @@ export default function NatureCreative({
                 </div>
               </motion.div>
             </div>
+
+            {/* Vision & Mission Statements - Side by Side */}
+            {(userInfo.visionStatement || userInfo.missionStatement) && (
+              <div className="max-w-5xl mx-auto mt-12 grid md:grid-cols-2 gap-6">
+                {/* Vision Statement */}
+                {userInfo.visionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="relative group"
+                  >
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-6 border border-cyan-100 shadow-lg">
+                      <h3 className="text-xl font-bold text-cyan-700 mb-3 flex items-center gap-2">
+                        <Mountain className="text-cyan-500" size={24} />
+                        Vision Statement
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Mission Statement */}
+                {userInfo.missionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="relative group"
+                  >
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
+                    <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg">
+                      <h3 className="text-xl font-bold text-emerald-700 mb-3 flex items-center gap-2">
+                        <TreePine className="text-emerald-500" size={24} />
+                        Mission Statement
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </section>
         )}
 
