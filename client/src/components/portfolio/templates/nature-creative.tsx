@@ -412,10 +412,10 @@ export default function NatureCreative({
                 {userInfo.name}
               </motion.h1>
 
-              {/* Title/Tagline */}
+              {/* Title */}
               {userInfo.title && (
                 <motion.p 
-                  className="text-2xl md:text-3xl text-gray-600 mb-6 font-light"
+                  className="text-2xl md:text-3xl text-gray-600 mb-3 font-light"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -424,16 +424,42 @@ export default function NatureCreative({
                 </motion.p>
               )}
 
+              {/* Tagline/Personal Motto */}
+              {userInfo.tagline && (
+                <motion.p 
+                  className="text-lg md:text-xl text-emerald-600 mb-6 italic font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  "{userInfo.tagline}"
+                </motion.p>
+              )}
+
               {/* Location */}
               {userInfo.location && (
                 <motion.div
-                  className="flex items-center justify-center gap-2 text-gray-500 mb-8"
+                  className="flex items-center justify-center gap-2 text-gray-500 mb-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
                 >
                   <MapPin className="text-rose-400" size={20} />
                   <span>{userInfo.location}</span>
+                </motion.div>
+              )}
+
+              {/* Looking For (Highlighted) */}
+              {userInfo.lookingFor && (
+                <motion.div
+                  className="mb-8 inline-block px-6 py-3 bg-gradient-to-r from-rose-100 to-pink-100 border-2 border-rose-300 rounded-full shadow-lg"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <p className="text-rose-700 font-semibold text-center">
+                    🌟 Looking for: {userInfo.lookingFor}
+                  </p>
                 </motion.div>
               )}
 
