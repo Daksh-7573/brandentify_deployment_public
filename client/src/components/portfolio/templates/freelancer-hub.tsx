@@ -1,42 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { 
-  Download, Palette, Heart, Music, Video, Film, 
-  Briefcase, GraduationCap, Calendar, MapPin, 
-  ChevronRight, Code, Globe,
-  Mail, Instagram, Twitter, Linkedin, Youtube, Camera, 
-  FileText, PenTool, Coffee, Star, Zap, Headphones,
-  Radio, Sparkles, Scissors, Pencil, Book, Gift, 
-  MessageCircle, Smile, Upload, X, ExternalLink,
-  MessageSquare, PlusCircle, Layers, Box, Check,
-  BookOpen, Clock, List, Lightbulb, ArrowRight, User, Award
+  Mail, Briefcase, GraduationCap, MapPin, 
+  ChevronRight, Globe, ExternalLink, Sparkles,
+  Palette, Code, Camera, Music, Star, Zap,
+  Heart, Users, Target, Award, Lightbulb
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Skill, Service } from "@shared/schema";
 import { UserExperience, UserEducation } from "@/types";
-import DirectImageBackground from "../DirectImageBackground";
 
-// Define Project interface to ensure all fields are recognized
 interface Project {
   id: number;
   userId: number;
@@ -83,6 +61,70 @@ interface FreelancerHubProps {
   currentUserId?: number;
 }
 
+// Parallax Background Component
+function ParallaxBackground() {
+  const { scrollY } = useScroll();
+  const layer1Y = useTransform(scrollY, [0, 2000], [0, -300]);
+  const layer2Y = useTransform(scrollY, [0, 2000], [0, -700]);
+  const layer3Y = useTransform(scrollY, [0, 2000], [0, -1200]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Layer 1: Colorful gradient background */}
+      <motion.div 
+        style={{ 
+          y: layer1Y,
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #feca57 100%)"
+        }}
+        className="absolute inset-0 opacity-20"
+      />
+      
+      {/* Layer 2: Large decorative shapes */}
+      <motion.div style={{ y: layer2Y }} className="absolute inset-0">
+        {/* Purple blob */}
+        <div className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-purple-400 opacity-30 blur-3xl" />
+        
+        {/* Pink blob */}
+        <div className="absolute top-[40%] right-20 w-[600px] h-[600px] rounded-full bg-pink-400 opacity-30 blur-3xl" />
+        
+        {/* Orange blob */}
+        <div className="absolute bottom-40 left-[30%] w-[550px] h-[550px] rounded-full bg-orange-400 opacity-30 blur-3xl" />
+        
+        {/* Cyan blob */}
+        <div className="absolute top-[60%] right-[10%] w-[500px] h-[500px] rounded-full bg-cyan-400 opacity-30 blur-3xl" />
+      </motion.div>
+      
+      {/* Layer 3: Floating elements */}
+      <motion.div style={{ y: layer3Y }} className="absolute inset-0">
+        {/* Paint splashes and creative elements */}
+        <motion.div 
+          className="absolute top-40 left-[15%] w-32 h-32 border-4 border-purple-400 rounded-full opacity-50"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        />
+        
+        <motion.div 
+          className="absolute top-[30%] right-[20%] w-24 h-24 border-4 border-pink-400 opacity-50"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        />
+        
+        <motion.div 
+          className="absolute bottom-[40%] left-[40%] w-40 h-40 border-4 border-orange-400 rounded-full opacity-50"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
+        
+        {/* Stars and sparkles */}
+        <Star className="absolute top-[25%] left-[25%] w-8 h-8 text-yellow-400 opacity-60" />
+        <Sparkles className="absolute top-[50%] right-[30%] w-10 h-10 text-cyan-400 opacity-60" />
+        <Zap className="absolute bottom-[30%] right-[15%] w-8 h-8 text-purple-400 opacity-60" />
+        <Heart className="absolute bottom-[50%] left-[20%] w-8 h-8 text-pink-400 opacity-60" />
+      </motion.div>
+    </div>
+  );
+}
+
 export default function FreelancerHub({ 
   userInfo, 
   userSkills, 
@@ -93,2759 +135,627 @@ export default function FreelancerHub({
   publicUrl,
   currentUserId
 }: FreelancerHubProps) {
-  // State for animations and effects
-  const [activeProject, setActiveProject] = useState<number | null>(null);
-  const [energyLevel, setEnergyLevel] = useState<number>(85);
-  const [isShowing, setIsShowing] = useState(false);
-  
-  // Let's Talk Modal state
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [contactPurpose, setContactPurpose] = useState<string>("");
-  const [contactMessage, setContactMessage] = useState<string>("");
-  
-  // Resume modal state
-  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
-  
-  // Project detail modal state
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  
-  // Mentorship dialog state
   const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
-  
-  // Scroll state for horizontal section
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  
-  // Sort skills by proficiency
+
+  // Sort data
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
-  
-  // Sort experiences by date (most recent first)
   const sortedExperiences = [...userExperiences].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
-  
-  // Sort education by date (most recent first)
   const sortedEducations = [...userEducations].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
-  
-  // Sort services (featured first, then alphabetically)
-  const sortedServices = [...userServices].sort((a, b) => {
-    // First sort by order (if available)
-    if (a.order !== b.order) {
-      return (a.order || 0) - (b.order || 0);
-    }
-    // Then sort alphabetically by title
-    return (a.title || '').localeCompare(b.title || '');
-  });
-  
-  // Sort projects by date (most recent first)
   const sortedProjects = [...userProjects].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
-  
-  // Group skills by category
-  const skillCategories = {
-    creative: sortedSkills.filter(s => 
-      s.name.toLowerCase().includes('design') || 
-      s.name.toLowerCase().includes('art') || 
-      s.name.toLowerCase().includes('creative') ||
-      s.name.toLowerCase().includes('photo') ||
-      s.name.toLowerCase().includes('video') ||
-      s.name.toLowerCase().includes('writing') ||
-      s.name.toLowerCase().includes('content')
-    ),
-    technical: sortedSkills.filter(s => 
-      s.name.toLowerCase().includes('coding') || 
-      s.name.toLowerCase().includes('programming') || 
-      s.name.toLowerCase().includes('development') ||
-      s.name.toLowerCase().includes('software') ||
-      s.name.toLowerCase().includes('web') ||
-      s.name.toLowerCase().includes('app')
-    ),
-    soft: sortedSkills.filter(s => 
-      s.name.toLowerCase().includes('communication') || 
-      s.name.toLowerCase().includes('leadership') || 
-      s.name.toLowerCase().includes('management') ||
-      s.name.toLowerCase().includes('organization') ||
-      s.name.toLowerCase().includes('strategy')
-    ),
-    tools: sortedSkills.filter(s => 
-      s.name.toLowerCase().includes('adobe') || 
-      s.name.toLowerCase().includes('figma') || 
-      s.name.toLowerCase().includes('sketch') ||
-      s.name.toLowerCase().includes('office') ||
-      s.name.toLowerCase().includes('canva') ||
-      s.name.toLowerCase().includes('studio') ||
-      s.name.toLowerCase().includes('premiere') ||
-      s.name.toLowerCase().includes('photoshop')
-    ),
-    other: sortedSkills.filter(s => 
-      !s.name.toLowerCase().includes('design') && 
-      !s.name.toLowerCase().includes('art') && 
-      !s.name.toLowerCase().includes('creative') &&
-      !s.name.toLowerCase().includes('photo') &&
-      !s.name.toLowerCase().includes('video') &&
-      !s.name.toLowerCase().includes('writing') &&
-      !s.name.toLowerCase().includes('content') &&
-      !s.name.toLowerCase().includes('coding') && 
-      !s.name.toLowerCase().includes('programming') && 
-      !s.name.toLowerCase().includes('development') &&
-      !s.name.toLowerCase().includes('software') &&
-      !s.name.toLowerCase().includes('web') &&
-      !s.name.toLowerCase().includes('app') &&
-      !s.name.toLowerCase().includes('communication') && 
-      !s.name.toLowerCase().includes('leadership') && 
-      !s.name.toLowerCase().includes('management') &&
-      !s.name.toLowerCase().includes('organization') &&
-      !s.name.toLowerCase().includes('strategy') &&
-      !s.name.toLowerCase().includes('adobe') && 
-      !s.name.toLowerCase().includes('figma') && 
-      !s.name.toLowerCase().includes('sketch') &&
-      !s.name.toLowerCase().includes('office') &&
-      !s.name.toLowerCase().includes('canva') &&
-      !s.name.toLowerCase().includes('studio') &&
-      !s.name.toLowerCase().includes('premiere') &&
-      !s.name.toLowerCase().includes('photoshop')
-    )
-  };
-  
-  // Format date function
-  const formatDate = (dateString: string | null, includeMonth = true) => {
+
+  const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Present';
-    
     const date = new Date(dateString);
-    if (includeMonth) {
-      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-    }
-    return date.getFullYear().toString();
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
   };
-  
-  // Function to get appropriate emoji for title
-  const getTitleEmoji = (title: string | null) => {
-    if (!title) return '✨';
-    
-    const lowercaseTitle = title.toLowerCase();
-    if (lowercaseTitle.includes('design')) return '🎨';
-    if (lowercaseTitle.includes('develop')) return '💻';
-    if (lowercaseTitle.includes('photo')) return '📸';
-    if (lowercaseTitle.includes('video')) return '🎬';
-    if (lowercaseTitle.includes('write') || lowercaseTitle.includes('content')) return '✍️';
-    if (lowercaseTitle.includes('market')) return '📣';
-    if (lowercaseTitle.includes('coach') || lowercaseTitle.includes('teach')) return '🧠';
-    if (lowercaseTitle.includes('speak') || lowercaseTitle.includes('host')) return '🎤';
-    if (lowercaseTitle.includes('social')) return '📱';
-    if (lowercaseTitle.includes('consult')) return '💡';
-    return '✨';
-  };
-  
-  // Function to get skill icon based on name
+
   const getSkillIcon = (skillName: string) => {
     const name = skillName.toLowerCase();
-    
     if (name.includes('design') || name.includes('art')) return <Palette className="h-4 w-4" />;
     if (name.includes('photo')) return <Camera className="h-4 w-4" />;
-    if (name.includes('video')) return <Film className="h-4 w-4" />;
-    if (name.includes('write') || name.includes('content')) return <PenTool className="h-4 w-4" />;
-    if (name.includes('music') || name.includes('audio')) return <Music className="h-4 w-4" />;
-    if (name.includes('strategy') || name.includes('planning')) return <Zap className="h-4 w-4" />;
-    if (name.includes('editing')) return <Scissors className="h-4 w-4" />;
-    if (name.includes('illustration')) return <Pencil className="h-4 w-4" />;
-    if (name.includes('social')) return <Heart className="h-4 w-4" />;
-    
+    if (name.includes('code') || name.includes('dev')) return <Code className="h-4 w-4" />;
+    if (name.includes('music')) return <Music className="h-4 w-4" />;
     return <Star className="h-4 w-4" />;
   };
-  
-  // Function to get appropriate gradient for category
-  const getCategoryGradient = (category: string) => {
-    switch (category?.toLowerCase()) {
-      case 'design':
-        return 'from-purple-500 to-pink-500';
-      case 'development':
-      case 'web development':
-        return 'from-blue-500 to-cyan-500';
-      case 'marketing':
-        return 'from-orange-400 to-pink-500';
-      case 'photography':
-        return 'from-indigo-500 to-purple-500';
-      case 'video':
-        return 'from-red-500 to-orange-500';
-      case 'music':
-        return 'from-green-400 to-blue-500';
-      case 'writing':
-        return 'from-yellow-400 to-orange-500';
-      default:
-        return 'from-rose-400 to-orange-300';
-    }
-  };
-  
-  // Function to handle project selection and modal display
-  const handleProjectClick = (project: Project) => {
-    console.log("Opening project modal with data:", project);
-    setSelectedProject(project);
-    setIsProjectModalOpen(true);
-  };
-  
-  // Function to handle Let's Talk button click
-  const handleLetsTalkClick = () => {
-    setIsContactModalOpen(true);
-  };
-  
-  // Function to handle scroll in horizontal sections
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const scrollAmount = 300; // adjust as needed
-      
-      if (direction === 'left') {
-        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      } else {
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-    }
-  };
-  
-  // Track scroll position for animations
-  useEffect(() => {
-    const handleScrollPosition = () => {
-      setScrollPosition(window.scrollY);
-    };
-    
-    window.addEventListener('scroll', handleScrollPosition);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScrollPosition);
-    };
-  }, []);
-  
-  // Load fonts and styles on mount
-  useEffect(() => {
-    // Add playful fonts
-    const poppinsFont = document.createElement('link');
-    poppinsFont.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap';
-    poppinsFont.rel = 'stylesheet';
-    
-    const fredokaFont = document.createElement('link');
-    fredokaFont.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap';
-    fredokaFont.rel = 'stylesheet';
-    
-    const rubikFont = document.createElement('link');
-    rubikFont.href = 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap';
-    rubikFont.rel = 'stylesheet';
-    
-    document.head.appendChild(poppinsFont);
-    document.head.appendChild(fredokaFont);
-    document.head.appendChild(rubikFont);
-    
-    // Add custom CSS
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Freelancer Hub Template - Playful Animations & Styles */
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-      }
-      
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
-      }
-      
-      @keyframes wiggle {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(3deg); }
-        75% { transform: rotate(-3deg); }
-        100% { transform: rotate(0deg); }
-      }
-      
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-      }
-      
-      @keyframes rainbow-border {
-        0% { border-color: #FF5757; }
-        20% { border-color: #FF914D; }
-        40% { border-color: #FFDE59; }
-        60% { border-color: #7ED957; }
-        80% { border-color: #4DB4FF; }
-        100% { border-color: #C74DFF; }
-      }
-      
-      @keyframes slide-in {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      
-      @keyframes confetti {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
-      @keyframes heartbeat {
-        0% { transform: scale(1); }
-        25% { transform: scale(1.1); }
-        40% { transform: scale(1); }
-        60% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-      }
-      
-      .freelancer-hub .profile-frame {
-        position: relative;
-        border-radius: 50%;
-        padding: 4px;
-        background: linear-gradient(45deg, #FF5757, #FF914D, #FFDE59, #7ED957, #4DB4FF, #C74DFF);
-        background-size: 300% 300%;
-        animation: confetti 5s ease infinite;
-      }
-      
-      .freelancer-hub .skill-tag {
-        transition: all 0.3s ease;
-      }
-      
-      .freelancer-hub .skill-tag:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      }
-      
-      .freelancer-hub .service-card {
-        transition: all 0.3s ease;
-        transform-style: preserve-3d;
-        perspective: 1000px;
-      }
-      
-      .freelancer-hub .service-card:hover {
-        transform: translateY(-10px) rotateX(5deg);
-      }
-      
-      .freelancer-hub .project-card {
-        transition: all 0.3s ease;
-        overflow: hidden;
-      }
-      
-      .freelancer-hub .project-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      }
-      
-      .freelancer-hub .project-card:hover .project-image {
-        transform: scale(1.05);
-      }
-      
-      .freelancer-hub .project-image {
-        transition: transform 0.5s ease;
-      }
-      
-      .freelancer-hub .milestone-node {
-        position: relative;
-      }
-      
-      .freelancer-hub .milestone-node::before {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: white;
-        top: 24px;
-        left: -38px;
-        border: 3px solid;
-        z-index: 1;
-      }
-      
-      .freelancer-hub .milestone-node::after {
-        content: '';
-        position: absolute;
-        width: 2px;
-        background: #e5e7eb;
-        top: 40px;
-        bottom: -20px;
-        left: -31px;
-      }
-      
-      .freelancer-hub .milestone-node:last-child::after {
-        display: none;
-      }
-      
-      .freelancer-hub .blob-button {
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 1;
-      }
-      
-      .freelancer-hub .blob-button:hover {
-        transform: scale(1.05);
-      }
-      
-      .freelancer-hub .blob-button:active {
-        transform: scale(0.95);
-      }
-      
-      .freelancer-hub .emoji-bullet {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        margin-right: 8px;
-        font-size: 14px;
-      }
-      
-      .freelancer-hub .sticker {
-        position: absolute;
-        transform: rotate(-15deg);
-        background: white;
-        border-radius: 6px;
-        padding: 5px 10px;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        color: #000;
-        z-index: 10;
-      }
-      
-      .freelancer-hub .mood-bar {
-        height: 8px;
-        border-radius: 4px;
-        overflow: hidden;
-        background: #e5e7eb;
-      }
-      
-      .freelancer-hub .mood-progress {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 0.5s ease;
-        background: linear-gradient(to right, #4ade80, #fbbf24);
-      }
-      
-      .freelancer-hub .highlight-text {
-        position: relative;
-        display: inline;
-      }
-      
-      .freelancer-hub .highlight-text::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 30%;
-        width: 100%;
-        background: rgba(253, 186, 116, 0.3);
-        z-index: -1;
-      }
-    `;
-    
-    document.head.appendChild(style);
-    
-    // Show content with delay for animations
-    setTimeout(() => {
-      setIsShowing(true);
-    }, 100);
-    
-    // Clean up
-    return () => {
-      document.head.removeChild(poppinsFont);
-      document.head.removeChild(fredokaFont);
-      document.head.removeChild(rubikFont);
-      document.head.removeChild(style);
-    };
-  }, []);
-  
-  // Determine if mood is good based on energy level
-  const moodMessage = energyLevel > 80 
-    ? "I'm feeling super creative today! ✨" 
-    : energyLevel > 60 
-      ? "Ready to collaborate! 🤝" 
-      : "Taking it easy today 😌";
-  
-  // Project Details Modal
-  const renderProjectDetailsModal = () => {
-    if (!selectedProject) return null;
-    
-    console.log("Rendering modal with project:", selectedProject);
-    console.log("Globe component availability:", typeof Globe === 'function' ? 'Available' : 'Not available');
-    
-    return (
-      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="sm:max-w-[700px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl max-h-[90vh] flex flex-col">
-          <DialogTitle className="sr-only">Project Details</DialogTitle>
-          {/* Floating decorative elements to match the template style */}
-          <motion.div 
-            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 15, 0]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          <motion.div 
-            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-20 blur-3xl z-0"
-            animate={{ 
-              scale: [1, 1.3, 1],
-              rotate: [0, -15, 0]
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          {/* Square Thumbnail - Fixed height using aspect ratio */}
-          <div className="relative w-full aspect-square overflow-hidden">
-            {/* Gradient background as fallback */}
-            <div 
-              className="absolute w-full h-full flex items-center justify-center"
-              style={{
-                background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            >
-              {/* Placeholder icon when no image */}
-              {!selectedProject.thumbnailUrl && (!selectedProject.mediaUrls || !selectedProject.mediaUrls.length) && (
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="rgba(255,255,255,0.8)" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  className="h-16 w-16"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-              )}
-            </div>
-            
-            {/* Project image using DirectImageBackground */}
-            {selectedProject.thumbnailUrl && (
-              <DirectImageBackground 
-                imageUrl={selectedProject.thumbnailUrl}
-                className="absolute inset-0 z-10"
-              />
-            )}
-            
-            {/* Try mediaUrls[0] as a fallback if thumbnailUrl is not available */}
-            {!selectedProject.thumbnailUrl && selectedProject.mediaUrls && 
-             Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
-              <DirectImageBackground 
-                imageUrl={selectedProject.mediaUrls[0]}
-                className="absolute inset-0 z-10"
-              />
-            )}
-            
-            {/* Dark overlay with gradient for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-20" />
-            
-            {/* Close button */}
-            <motion.button 
-              onClick={() => setIsProjectModalOpen(false)}
-              className="absolute top-4 right-4 bg-white/30 backdrop-blur-md p-2 rounded-full text-white hover:bg-white/50 transition-colors z-30 shadow-md"
-              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-              transition={{ duration: 0.3 }}
-            >
-              <X className="h-5 w-5" />
-            </motion.button>
-            
-            {/* Title area */}
-            <div className="absolute bottom-0 left-0 p-7 w-full z-30">
-              <motion.h2 
-                className="text-2xl md:text-3xl font-bold text-white mb-2" 
-                style={{ fontFamily: 'Fredoka, sans-serif' }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {selectedProject.title}
-              </motion.h2>
-              
-              {selectedProject.category && (
-                <motion.div 
-                  className="flex items-center"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <Badge className="bg-white/30 backdrop-blur-sm text-white border-none px-3 py-1">
-                    {selectedProject.category}
-                  </Badge>
-                </motion.div>
-              )}
-            </div>
-          </div>
-          
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              {/* Duration */}
-              {selectedProject.startDate && (
-                <motion.div 
-                  className="flex items-center text-violet-600 mb-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="bg-violet-100 p-2 rounded-full mr-3">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {formatDate(selectedProject.startDate, true)}
-                  </span>
-                </motion.div>
-              )}
-              
-              {/* Industry/Category */}
-              <div className="flex flex-wrap gap-4 mb-5">
-                {/* Industry Display - always show with fallback */}
-                <motion.div 
-                  className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#3b82f6" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    className="h-4 w-4 mr-2 text-blue-500"
-                  >
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                  </svg>
-                  <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {selectedProject.industry || "Personal Project"}
-                  </span>
-                </motion.div>
-                
-                {/* Category Display - always show with fallback */}
-                <motion.div 
-                  className="flex items-center bg-pink-50 px-3 py-1.5 rounded-full"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.15 }}
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#ec4899" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    className="h-4 w-4 mr-2 text-pink-500"
-                  >
-                    <circle cx="19" cy="5" r="3"></circle>
-                    <circle cx="5" cy="12" r="3"></circle>
-                    <circle cx="19" cy="19" r="3"></circle>
-                    <line x1="8" y1="10.3" x2="16" y2="6.7"></line>
-                    <line x1="8" y1="13.7" x2="16" y2="17.3"></line>
-                  </svg>
-                  <span className="text-sm font-medium text-pink-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {selectedProject.category || "Creative Work"}
-                  </span>
-                </motion.div>
-              </div>
-              
-              {/* Project URL - adding a default value if missing */}
-              <motion.div 
-                className="mb-5"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <div className="flex items-center bg-violet-50 px-3 py-2 rounded-lg">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#8b5cf6" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    className="h-4 w-4 mr-2 text-violet-500 flex-shrink-0"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                  </svg>
-                  <a 
-                    href={selectedProject.projectUrl || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-violet-700 hover:text-violet-900 hover:underline truncate"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    {selectedProject.projectUrl || "Project website unavailable"}
-                  </a>
-                </div>
-              </motion.div>
-              
-              {/* Description */}
-              {selectedProject.description && (
-                <motion.div 
-                  className="mb-6 bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
-                >
-                  <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    <span className="text-amber-500 mr-2">✨</span> About this project
-                  </h4>
-                  <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {selectedProject.description}
-                  </p>
-                </motion.div>
-              )}
-              
-              {/* Media Gallery - always display, with placeholder if empty */}
-              <motion.div 
-                className="mb-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-              >
-                <h4 className="text-sm font-bold mb-3 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <span className="text-pink-500 mr-2">🖼️</span> Project Gallery
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 ? (
-                    // Display actual media if available
-                    selectedProject.mediaUrls.map((url: string, index: number) => {
-                      // Skip the first image if it's being used as the header and there are multiple images
-                      if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
-                        return null;
-                      }
-                      
-                      return (
-                        <motion.div 
-                          key={index} 
-                          className="rounded-xl overflow-hidden h-32 relative shadow-md"
-                          whileHover={{ scale: 1.03 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {/* Gradient background as fallback */}
-                          <div 
-                            className="absolute inset-0"
-                            style={{
-                              background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
-                            }}
-                          />
-                          {/* Using DirectImageBackground for better image rendering */}
-                          <DirectImageBackground 
-                            imageUrl={url}
-                            className="absolute inset-0 z-10"
-                          />
-                        </motion.div>
-                      );
-                    })
-                  ) : (
-                    // Placeholder media items when no media is available
-                    Array(4).fill(0).map((_, index) => (
-                      <motion.div 
-                        key={index} 
-                        className="rounded-xl overflow-hidden h-32 relative shadow-md"
-                        whileHover={{ scale: 1.03 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {/* Gradient background placeholders */}
-                        <div 
-                          className="absolute inset-0 flex items-center justify-center"
-                          style={{
-                            background: `linear-gradient(135deg, ${getCategoryGradient(index === 0 ? 'design' : 'marketing')})`,
-                          }}
-                        >
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="32"
-                            height="32" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="rgba(255,255,255,0.8)" 
-                            strokeWidth="2" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round"
-                            className="h-8 w-8"
-                          >
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                          </svg>
-                        </div>
-                        <div className="absolute bottom-2 left-0 right-0 text-center text-white text-xs font-medium">
-                          No project images
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                </div>
-              </motion.div>
-              
-              {/* Actions */}
-              <div className="flex justify-end gap-3 mt-6">
-                {selectedProject.projectUrl && (
-                  <motion.a 
-                    href={selectedProject.projectUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Visit Project
-                    <ExternalLink className="h-4 w-4 ml-2" />
-                  </motion.a>
-                )}
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-  
-  // Let's Talk Contact Modal
-  const renderContactModal = () => {
-    return (
-      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-          {/* Floating decorative elements to match the template style */}
-          <motion.div 
-            className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-fuchsia-200 to-fuchsia-50 rounded-full opacity-20 blur-3xl z-0"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 15, 0]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          <motion.div 
-            className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-purple-200 to-purple-50 rounded-full opacity-20 blur-3xl z-0"
-            animate={{ 
-              scale: [1, 1.3, 1],
-              rotate: [0, -15, 0]
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          <div className="bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 p-7 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <DialogTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <span className="mr-2">✨</span> Let's Create Something Amazing!
-              </DialogTitle>
-              <p className="text-white/90" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                I'd love to hear about your project or opportunity.
-              </p>
-            </motion.div>
-          </div>
-          
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <motion.div 
-                className="mb-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  What are you looking for?
-                </label>
-                <Select value={contactPurpose} onValueChange={setContactPurpose}>
-                  <SelectTrigger className="w-full border-violet-200 focus:ring-violet-300">
-                    <SelectValue placeholder="Select a purpose" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="project">Project Collaboration</SelectItem>
-                    <SelectItem value="job">Job Opportunity</SelectItem>
-                    <SelectItem value="mentorship">Mentorship</SelectItem>
-                    <SelectItem value="networking">Professional Networking</SelectItem>
-                    <SelectItem value="other">Something Else</SelectItem>
-                  </SelectContent>
-                </Select>
-              </motion.div>
-              
-              <motion.div 
-                className="mb-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                <label className="block text-sm font-bold mb-2 text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Your Message
-                </label>
-                <Textarea 
-                  placeholder="Tell me a bit about what you have in mind..."
-                  className="resize-none h-32 border-violet-200 focus:ring-violet-300"
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                />
-              </motion.div>
-              
-              <motion.div 
-                className="flex justify-end gap-3 mt-8"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <DialogClose asChild>
-                  <Button 
-                    variant="outline" 
-                    className="border-violet-200 text-violet-700 hover:bg-violet-50"
-                  >
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <motion.button 
-                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-pink-500 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => {
-                    // In a real app, this would send an email or message
-                    window.open(`mailto:${userInfo.email || ''}?subject=Let's Talk: ${contactPurpose}&body=${contactMessage}`);
-                    setIsContactModalOpen(false);
-                  }}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Send Message
-                </motion.button>
-              </motion.div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  };
-  
-  return (
-    <div className="freelancer-hub bg-gradient-to-br from-fuchsia-50 via-amber-50 to-blue-50 min-h-screen pb-20">
-      {/* Mood Bar (just for fun) */}
-      <div className="sticky top-0 z-50 bg-white py-2 px-4 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center">
-          <span className="text-xs font-medium mr-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Creative Energy:</span>
-          <div className="mood-bar w-32">
-            <div className="mood-progress" style={{ width: `${energyLevel}%` }}></div>
-          </div>
-        </div>
-        <div className="text-xs font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          {moodMessage}
-        </div>
-      </div>
-      
-      {/* Hero Section */}
-      <section className="relative py-16 px-6 md:px-10 overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div 
-          className="absolute -top-10 -left-10 w-60 h-60 bg-gradient-to-br from-purple-200 to-purple-50 rounded-full opacity-30 blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 15, 0]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <motion.div 
-          className="absolute -bottom-20 -right-20 w-80 h-80 bg-gradient-to-tr from-amber-200 to-amber-50 rounded-full opacity-30 blur-3xl"
-          animate={{ 
-            scale: [1, 1.3, 1],
-            rotate: [0, -15, 0]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-16">
-            {/* Profile Picture with animated border */}
-            <motion.div 
-              className="flex-shrink-0 relative"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="profile-frame w-44 h-44 md:w-60 md:h-60">
-                <ProfileImage
-                  src={userInfo.photoURL}
-                  alt={userInfo.name}
-                  className="w-full h-full rounded-full object-cover"
-                />
-              </div>
-              
-              {/* Available badge sticker */}
-              <motion.div 
-                className="sticker -right-5 top-5"
-                initial={{ scale: 0, rotate: -15 }}
-                animate={{ scale: 1, rotate: -15 }}
-                transition={{ delay: 0.8, type: "spring", stiffness: 300, damping: 10 }}
-              >
-                <span className="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  Available for Work!
-                </span>
-              </motion.div>
-              
-              {/* Experience badge */}
-              <motion.div 
-                className="sticker -left-8 bottom-10"
-                initial={{ scale: 0, rotate: 15 }}
-                animate={{ scale: 1, rotate: 15 }}
-                transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
-              >
-                <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  {userExperiences.length}+ Years Exp.
-                </span>
-              </motion.div>
-            </motion.div>
-            
-            {/* Intro Content */}
-            <div className="flex-1 text-center md:text-left">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                {/* Name and Title */}
-                <h1 className="text-4xl md:text-6xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                  <span className="inline-block">
-                    <AnimatePresence>
-                      {isShowing && (
-                        <motion.span
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          {userInfo.name}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </span>
-                </h1>
-                
-                <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-pink-500 to-amber-500 mb-4" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                  {getTitleEmoji(userInfo.title)} {userInfo.title || "Creative Professional"}
-                </h2>
-                
-                {/* Location */}
-                {userInfo.location && (
-                  <motion.div 
-                    className="flex items-center justify-center md:justify-start gap-1 mb-4"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <MapPin className="h-4 w-4 text-pink-500" />
-                    <span className="text-gray-600 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {userInfo.location}
-                    </span>
-                  </motion.div>
-                )}
-                
-                {/* Industry/Domain Tags */}
-                <motion.div 
-                  className="flex flex-wrap gap-2 justify-center md:justify-start mb-6"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  {userInfo.industry && (
-                    <motion.div
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-400 text-white text-sm py-1.5 px-3">
-                        #{userInfo.industry}
-                      </Badge>
-                    </motion.div>
-                  )}
-                  {userInfo.domain && (
-                    <motion.div
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      transition={{ type: "spring", stiffness: 400 }}
-                    >
-                      <Badge className="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-sm py-1.5 px-3">
-                        #{userInfo.domain}
-                      </Badge>
-                    </motion.div>
-                  )}
-                  <motion.div
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    <Badge className="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-sm py-1.5 px-3">
-                      #Freelancer
-                    </Badge>
-                  </motion.div>
-                </motion.div>
-                
-                {/* Looking For */}
-                {userInfo.lookingFor && (
-                  <motion.div 
-                    className="bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white px-4 py-2 rounded-full inline-flex items-center mb-8 relative"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.5, type: "spring" }}
-                  >
-                    <span className="absolute opacity-10 text-4xl right-3 transform -translate-y-1/2 top-1/2 z-0">
-                      {userInfo.lookingFor.toLowerCase().includes("mentor") ? "🧠" : "🔍"}
-                    </span>
-                    <span className="text-lg mr-2 z-10">📢</span>
-                    <span className="font-medium z-10 relative" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {userInfo.lookingFor}
-                    </span>
-                  </motion.div>
-                )}
-                
-                {/* Spacer to replace removed social links */}
-                <div className="mb-6"></div>
-                
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-4 mt-2">
-                  {/* Connect Button */}
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7, type: "spring" }}
-                  >
-                    <Button 
-                      onClick={handleLetsTalkClick}
-                      className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                      style={{ fontFamily: 'Fredoka, sans-serif' }}
-                    >
-                      <span>Let's Connect</span>
-                      <motion.span
-                        initial={{ rotate: 0 }}
-                        animate={{ rotate: [0, 15, -15, 15, 0] }}
-                        transition={{ 
-                          duration: 0.5,
-                          delay: 1.2,
-                          repeat: 1,
-                          repeatType: "reverse"
-                        }}
-                        className="text-xl"
-                      >
-                        👋
-                      </motion.span>
-                    </Button>
-                  </motion.div>
-                  
-                  {/* Mentor Button */}
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, type: "spring" }}
-                  >
-                    <Button 
-                      onClick={() => setIsMentorshipDialogOpen(true)}
-                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                      style={{ fontFamily: 'Fredoka, sans-serif' }}
-                    >
-                      <span>Mentor</span>
-                      <motion.span
-                          initial={{ scale: 1 }}
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ 
-                            duration: 1,
-                            delay: 1.3,
-                            repeat: 1,
-                            repeatType: "reverse"
-                          }}
-                          className="text-xl"
-                        >
-                          🚀
-                        </motion.span>
-                      </Button>
-                  </motion.div>
-                  
-                  {/* Grab My Resume Button */}
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9, type: "spring" }}
-                  >
-                    <Button 
-                      className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                      style={{ fontFamily: 'Fredoka, sans-serif' }}
-                    >
-                      <span>Grab My Resume</span>
-                      <motion.span
-                        initial={{ y: 0 }}
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ 
-                          duration: 0.5,
-                          delay: 1.4,
-                          repeat: 1,
-                          repeatType: "reverse"
-                        }}
-                        className="text-xl"
-                      >
-                        📄
-                      </motion.span>
-                    </Button>
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* About Me Section */}
-      <section className="py-10 px-6 md:px-10">
-        <div className="max-w-4xl mx-auto">
-          <motion.div 
-            className="bg-white rounded-3xl p-8 shadow-xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-2xl font-bold mb-6 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              <span className="highlight-text">What I'm All About</span>
-            </h2>
-            
-            <motion.p 
-              className="text-lg leading-relaxed text-gray-700 mb-4"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isShowing ? 1 : 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              {userInfo.aboutMe || 
-                `I'm a passionate creative who loves to bring ideas to life through ${userInfo.domain || 'creative work'}. 
-                With a blend of imagination and technical skills, I help brands and individuals express their unique stories.
-                My approach focuses on collaboration, innovation, and delivering results that exceed expectations.`
-              }
-            </motion.p>
-            
-            {/* Fun elements */}
-            <div className="flex items-center justify-center mt-6">
-              <motion.div 
-                className="flex gap-3"
-                initial={{ scale: 0 }}
-                animate={{ scale: isShowing ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-              >
-                <span className="text-sm px-3 py-1 bg-pink-100 text-pink-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Creative
-                </span>
-                <span className="text-sm px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Reliable
-                </span>
-                <span className="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Innovative
-                </span>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* My Professional Brand Section */}
-      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
-        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
-        userInfo.uniqueValueProposition || 
-        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-        <section className="py-10 px-6 md:px-10">
-          <div className="max-w-4xl mx-auto">
-            <motion.h2 
-              className="text-3xl font-bold mb-8 text-center"
-              style={{ fontFamily: 'Fredoka, sans-serif' }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="highlight-text">My Professional Brand</span>
-            </motion.h2>
-            
-            <div className="space-y-6">
-              {/* Tagline */}
-              {userInfo.tagline && (
-                <motion.div 
-                  className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-3xl p-6 shadow-lg border-l-4 border-l-pink-400"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <h3 className="font-bold text-pink-700 mb-2 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Tagline
-                  </h3>
-                  <p className="text-gray-800 italic text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 relative overflow-hidden" style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <ParallaxBackground />
+      
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="relative px-6 py-20 md:py-28">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Left: Profile Info */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="relative inline-block mb-6">
+                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-purple-400 shadow-2xl">
+                    <ProfileImage src={userInfo.photoURL} alt={userInfo.name} />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                    Available
+                  </div>
+                </div>
+
+                <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  {userInfo.name}
+                </h1>
+
+                {userInfo.title && (
+                  <h2 className="text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4">
+                    {userInfo.title}
+                  </h2>
+                )}
+
+                {userInfo.tagline && (
+                  <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 italic">
                     "{userInfo.tagline}"
                   </p>
-                </motion.div>
-              )}
+                )}
 
-              {/* Vision & Mission */}
-              {(userInfo.visionStatement || userInfo.missionStatement) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {userInfo.visionStatement && (
-                    <motion.div 
-                      className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-3xl p-6 shadow-lg border-t-4 border-t-violet-400"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                    >
-                      <h3 className="font-bold text-violet-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                        <Lightbulb className="h-5 w-5 mr-2" />
-                        Vision
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {userInfo.visionStatement}
-                      </p>
-                    </motion.div>
+                <div className="flex flex-wrap gap-3 mb-6">
+                  {userInfo.location && (
+                    <Badge variant="outline" className="px-4 py-2 border-purple-400 text-purple-700 dark:text-purple-300">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {userInfo.location}
+                    </Badge>
                   )}
-                  {userInfo.missionStatement && (
-                    <motion.div 
-                      className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-6 shadow-lg border-t-4 border-t-blue-400"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                    >
-                      <h3 className="font-bold text-blue-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                        <Star className="h-5 w-5 mr-2" />
-                        Mission
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {userInfo.missionStatement}
-                      </p>
-                    </motion.div>
+                  {userInfo.industry && (
+                    <Badge variant="outline" className="px-4 py-2 border-pink-400 text-pink-700 dark:text-pink-300">
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      {userInfo.industry}
+                    </Badge>
+                  )}
+                  {userInfo.domain && (
+                    <Badge variant="outline" className="px-4 py-2 border-orange-400 text-orange-700 dark:text-orange-300">
+                      <Target className="h-4 w-4 mr-2" />
+                      {userInfo.domain}
+                    </Badge>
                   )}
                 </div>
-              )}
 
-              {/* Core Values */}
-              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                <motion.div 
-                  className="bg-white rounded-3xl p-6 shadow-lg border-l-4 border-l-rose-400"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <h3 className="font-bold text-rose-700 mb-4 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                    <Heart className="h-5 w-5 mr-2" />
-                    Core Values
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {userInfo.coreValues.map((value: string, index: number) => (
-                      <span 
-                        key={index}
-                        className="px-4 py-2 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full font-medium shadow-md"
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        {value}
-                      </span>
-                    ))}
+                {userInfo.email && (
+                  <div className="flex items-center gap-2 mb-8 text-gray-600 dark:text-gray-400">
+                    <Mail className="h-5 w-5" />
+                    <a href={`mailto:${userInfo.email}`} className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                      {userInfo.email}
+                    </a>
                   </div>
-                </motion.div>
-              )}
+                )}
 
-              {/* Unique Value Proposition */}
-              {userInfo.uniqueValueProposition && (
-                <motion.div 
-                  className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-6 shadow-lg border-l-4 border-l-amber-400"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <h3 className="font-bold text-amber-700 mb-3 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                    <Zap className="h-5 w-5 mr-2" />
-                    What Sets Me Apart
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {userInfo.uniqueValueProposition}
-                  </p>
-                </motion.div>
-              )}
-
-              {/* Audiences */}
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <motion.div 
-                  className="bg-white rounded-3xl p-6 shadow-lg border-l-4 border-l-teal-400"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                  <h3 className="font-bold text-teal-700 mb-4 flex items-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                    <User className="h-5 w-5 mr-2" />
-                    Who I Serve
-                  </h3>
-                  <div className="space-y-4">
-                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          Primary Audience
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience: string, index: number) => (
-                            <span 
-                              key={index}
-                              className="px-3 py-1.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-full text-sm font-medium shadow-md"
-                              style={{ fontFamily: 'Poppins, sans-serif' }}
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          Secondary Audience
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
-                            <span 
-                              key={index}
-                              className="px-3 py-1.5 bg-teal-100 text-teal-700 border border-teal-300 rounded-full text-sm font-medium"
-                              style={{ fontFamily: 'Poppins, sans-serif' }}
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-      
-      {/* Skills Section */}
-      <section className="py-10 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto">
-          <motion.h2 
-            className="text-3xl font-bold mb-8 text-center"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="highlight-text">What I'm Good At</span>
-          </motion.h2>
-          
-          <div className="space-y-8">
-            {/* Creative Skills */}
-            {skillCategories.creative.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Palette className="h-5 w-5 mr-2 text-pink-500" />
-                  Creative Skills
-                </h3>
-                
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.creative.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-pink-500 to-rose-400 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        {getSkillIcon(skill.name)}
-                        <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex items-center">
-                          {/* Badge for proficiency level text */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
-                            {skill.level || 'Intermediate'}
-                          </span>
-                          {/* Badge for proficiency percentage */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
-                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Technical Skills */}
-            {skillCategories.technical.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Code className="h-5 w-5 mr-2 text-violet-500" />
-                  Technical Skills
-                </h3>
-                
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.technical.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex items-center">
-                          {/* Badge for proficiency level text */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
-                            {skill.level || 'Intermediate'}
-                          </span>
-                          {/* Badge for proficiency percentage */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
-                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Soft Skills */}
-            {skillCategories.soft.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Heart className="h-5 w-5 mr-2 text-rose-500" />
-                  Soft Skills
-                </h3>
-                
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.soft.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-rose-400 to-red-400 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex items-center">
-                          {/* Badge for proficiency level text */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
-                            {skill.level || 'Intermediate'}
-                          </span>
-                          {/* Badge for proficiency percentage */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
-                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Tools */}
-            {skillCategories.tools.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold mb-4 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  <Briefcase className="h-5 w-5 mr-2 text-amber-500" />
-                  Tools & Software
-                </h3>
-                
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.tools.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-amber-400 to-orange-400 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex items-center">
-                          {/* Badge for proficiency level text */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
-                            {skill.level || 'Intermediate'}
-                          </span>
-                          {/* Badge for proficiency percentage */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
-                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Additional Skills - removed "Other Skills" label as requested */}
-            {skillCategories.other.length > 0 && (
-              <div>
-                <div className="flex flex-wrap gap-3">
-                  {skillCategories.other.map((skill, index) => (
-                    <motion.div
-                      key={skill.id}
-                      className="skill-tag bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-2 rounded-full shadow-md"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                      transition={{ duration: 0.3, delay: 0.1 * index }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <span className="font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {skill.name}
-                        </span>
-                        <div className="ml-2 flex items-center">
-                          {/* Badge for proficiency level text */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
-                            {skill.level || 'Intermediate'}
-                          </span>
-                          {/* Badge for proficiency percentage */}
-                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
-                            {skill.proficiency ? `${skill.proficiency}%` : '60%'}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Empty state for skills */}
-            {userSkills.length === 0 && (
-              <motion.div
-                className="bg-white rounded-3xl p-8 text-center shadow"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isShowing ? 1 : 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Sparkles className="h-12 w-12 text-amber-400 mx-auto mb-3" />
-                <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Your skills will appear here!
-                </p>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </section>
-      
-      {/* What I Offer Section */}
-      {userInfo.whatIOffer && (
-        <section className="py-16 px-6 md:px-10 relative overflow-hidden">
-          <motion.div 
-            className="absolute top-40 -left-20 w-60 h-60 bg-gradient-to-br from-violet-100 to-purple-50 rounded-full opacity-40 blur-3xl"
-            animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, 0]
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          />
-          
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                <span className="highlight-text">What I Offer</span>
-              </h2>
-              <div className="bg-white rounded-2xl shadow-lg p-8 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500"></div>
-                <p className="text-gray-700 leading-relaxed text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {userInfo.whatIOffer}
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
-
-      {/* Services Section */}
-      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div 
-          className="absolute top-60 -right-20 w-80 h-80 bg-gradient-to-br from-fuchsia-100 to-pink-50 rounded-full opacity-30 blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, -10, 0]
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              <span className="highlight-text">My Services</span>
-            </h2>
-            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Specialized offerings crafted with creativity and care
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedServices.length > 0 ? (
-              sortedServices.slice(0, 6).map((service, index) => (
-                <motion.div
-                  key={service.id}
-                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ 
-                    y: -15,
-                    rotateZ: index % 2 === 0 ? 2 : -2 
-                  }}
-                  style={{
-                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
-                                    index % 3 === 1 ? '#8b5cf6' : 
-                                    '#3b82f6'
-                  }}
-                >
-                  {/* Fun Background Pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                      <defs>
-                        <pattern id={`service-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                          {index % 3 === 0 ? (
-                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
-                          ) : index % 3 === 1 ? (
-                            <circle cx="20" cy="20" r="3" fill="#000" />
-                          ) : (
-                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
-                          )}
-                        </pattern>
-                      </defs>
-                      <rect width="100%" height="100%" fill={`url(#service-pattern-${index})`} />
-                    </svg>
-                  </div>
-                  
-                  <div className="p-8 relative">
-                    {/* Colorful Label */}
-                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
-                         style={{
-                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
-                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
-                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
-                           color: 'white',
-                           fontFamily: 'Poppins, sans-serif'
-                         }}>
-                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
-                    </div>
-                    
-                    {/* Service Icon with animation */}
-                    <motion.div
-                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-                      style={{
-                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
-                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
-                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
-                      }}
-                      animate={{ 
-                        rotate: [0, 5, 0, -5, 0],
-                      }}
-                      transition={{ 
-                        duration: 5,
-                        repeat: Infinity,
-                        repeatType: "loop",
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <div className="text-white text-2xl">
-                        {getSkillIcon(service.title)}
-                      </div>
-                    </motion.div>
-                    
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                      {service.title}
-                    </h3>
-                    
-                    <div className="h-24 overflow-hidden">
-                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {service.description}
-                      </p>
-                    </div>
-                    
-                    {/* Features List */}
-                    <ul className="mb-6 pl-1">
-                      {(service.features && Array.isArray(service.features) && service.features.length > 0 ? service.features : []).map((feature, i) => (
-                        <motion.li 
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.5 + (i * 0.1) }}
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
-                               style={{
-                                 background: index % 3 === 0 ? '#fce7f3' : 
-                                             index % 3 === 1 ? '#ede9fe' : 
-                                             '#dbeafe',
-                                 color: index % 3 === 0 ? '#ec4899' : 
-                                        index % 3 === 1 ? '#8b5cf6' : 
-                                        '#3b82f6'
-                               }}>
-                            ✓
-                          </div>
-                          {feature}
-                        </motion.li>
-                      ))}
-                    </ul>
-                    
-                    <div className="flex flex-col gap-3">
-                      {/* Pricing */}
-                      {((service.priceInr && Number(service.priceInr) > 0) || 
-                       (service.priceUsd && Number(service.priceUsd) > 0)) && (
-                        <div className="text-center py-2 font-bold text-lg"
-                             style={{
-                               background: index % 3 === 0 ? '#fce7f3' : 
-                                           index % 3 === 1 ? '#ede9fe' : 
-                                           '#dbeafe',
-                               color: index % 3 === 0 ? '#be185d' : 
-                                      index % 3 === 1 ? '#6d28d9' : 
-                                      '#1e40af',
-                               fontFamily: 'Poppins, sans-serif',
-                               borderRadius: '0.75rem'
-                             }}>
-                          {service.isHourly ? (
-                            `${service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}/hour`
-                          ) : (
-                            `${service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}`
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* CTA Button */}
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button 
-                          onClick={handleLetsTalkClick}
-                          className="w-full shadow-lg font-bold py-3"
-                          style={{
-                            background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
-                                      index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
-                                      'linear-gradient(135deg, #60a5fa, #3b82f6)',
-                            color: 'white',
-                            fontFamily: 'Fredoka, sans-serif'
-                          }}
-                        >
-                          Book Now
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              // Default services
-              [
-                {
-                  title: "Brand Design",
-                  description: "Colorful, personality-filled branding that makes your business stand out in a crowd.",
-                  price: "From $500",
-                  icon: <Palette className="h-6 w-6 text-white" />
-                },
-                {
-                  title: "Social Media",
-                  description: "Engaging content strategy and creation to build your audience and boost engagement.",
-                  price: "$300/month",
-                  icon: <Heart className="h-6 w-6 text-white" />
-                },
-                {
-                  title: "Creative Coaching",
-                  description: "One-on-one sessions to help you unleash your creativity and level up your skills.",
-                  price: "$100/hour",
-                  icon: <Sparkles className="h-6 w-6 text-white" />
-                }
-              ].map((service, index) => (
-                <motion.div
-                  key={index}
-                  className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ 
-                    y: -15,
-                    rotateZ: index % 2 === 0 ? 2 : -2 
-                  }}
-                  style={{
-                    borderTopColor: index % 3 === 0 ? '#ec4899' : 
-                                    index % 3 === 1 ? '#8b5cf6' : 
-                                    '#3b82f6'
-                  }}
-                >
-                  {/* Fun Background Pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                      <defs>
-                        <pattern id={`pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                          {index % 3 === 0 ? (
-                            <path d="M0,20 L40,20 M20,0 L20,40" stroke="#000" strokeWidth="1" />
-                          ) : index % 3 === 1 ? (
-                            <circle cx="20" cy="20" r="3" fill="#000" />
-                          ) : (
-                            <path d="M0,0 L40,40 M0,40 L40,0" stroke="#000" strokeWidth="1" />
-                          )}
-                        </pattern>
-                      </defs>
-                      <rect width="100%" height="100%" fill={`url(#pattern-${index})`} />
-                    </svg>
-                  </div>
-                  
-                  <div className="p-8 relative">
-                    {/* Colorful Label */}
-                    <div className="absolute -right-10 top-5 w-40 text-center transform rotate-45 text-xs font-bold py-1"
-                         style={{
-                           background: index % 3 === 0 ? 'linear-gradient(90deg, #ec4899, #f472b6)' : 
-                                       index % 3 === 1 ? 'linear-gradient(90deg, #8b5cf6, #a78bfa)' : 
-                                       'linear-gradient(90deg, #3b82f6, #60a5fa)',
-                           color: 'white',
-                           fontFamily: 'Poppins, sans-serif'
-                         }}>
-                      {index % 3 === 0 ? 'POPULAR!' : index % 3 === 1 ? 'BEST VALUE!' : 'FEATURED!'}
-                    </div>
-                    
-                    {/* Service Icon with animation */}
-                    <motion.div
-                      className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
-                      style={{
-                        background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
-                                  index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
-                                  'linear-gradient(135deg, #60a5fa, #3b82f6)',
-                      }}
-                      animate={{ 
-                        rotate: [0, 5, 0, -5, 0],
-                      }}
-                      transition={{ 
-                        duration: 5,
-                        repeat: Infinity,
-                        repeatType: "loop",
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <div className="text-white text-2xl">
-                        {service.icon}
-                      </div>
-                    </motion.div>
-                    
-                    <h3 className="text-2xl font-bold mb-3" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                      {service.title}
-                    </h3>
-                    
-                    <div className="h-24 overflow-hidden">
-                      <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {service.description}
-                      </p>
-                    </div>
-                    
-                    {/* Features List */}
-                    <ul className="mb-6 pl-1">
-                      {(service.features && Array.isArray(service.features) && service.features.length > 0 ? service.features : []).map((feature, i) => (
-                        <motion.li 
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-gray-700 mb-2"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.5 + (i * 0.1) }}
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          <div className="text-xs w-5 h-5 rounded-full flex items-center justify-center"
-                               style={{
-                                 background: index % 3 === 0 ? '#fce7f3' : 
-                                             index % 3 === 1 ? '#ede9fe' : 
-                                             '#dbeafe',
-                                 color: index % 3 === 0 ? '#ec4899' : 
-                                        index % 3 === 1 ? '#8b5cf6' : 
-                                        '#3b82f6'
-                               }}>
-                            ✓
-                          </div>
-                          {feature}
-                        </motion.li>
-                      ))}
-                    </ul>
-                    
-                    <div className="flex flex-col gap-3">
-                      {/* Pricing */}
-                      <div className="text-center py-2 font-bold text-lg"
-                           style={{
-                             background: index % 3 === 0 ? '#fce7f3' : 
-                                         index % 3 === 1 ? '#ede9fe' : 
-                                         '#dbeafe',
-                             color: index % 3 === 0 ? '#be185d' : 
-                                    index % 3 === 1 ? '#6d28d9' : 
-                                    '#1e40af',
-                             fontFamily: 'Poppins, sans-serif',
-                             borderRadius: '0.75rem'
-                           }}>
-                        {service.price}
-                      </div>
-                      
-                      {/* CTA Button */}
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button 
-                          onClick={handleLetsTalkClick}
-                          className="w-full shadow-lg font-bold py-3"
-                          style={{
-                            background: index % 3 === 0 ? 'linear-gradient(135deg, #f472b6, #ec4899)' : 
-                                      index % 3 === 1 ? 'linear-gradient(135deg, #a78bfa, #8b5cf6)' : 
-                                      'linear-gradient(135deg, #60a5fa, #3b82f6)',
-                            color: 'white',
-                            fontFamily: 'Fredoka, sans-serif'
-                          }}
-                        >
-                          Book Now
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-      
-      {/* Projects Section */}
-      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div 
-          className="absolute -top-40 right-40 w-80 h-80 bg-gradient-to-br from-purple-100 to-cyan-50 rounded-full opacity-20 blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            y: [0, -20, 0]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              <span className="highlight-text">My Creative Showcase</span>
-            </h2>
-            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Take a look at some of my recent work. Each project represents a unique challenge solved with creativity and expertise.
-            </p>
-          </motion.div>
-          
-          {sortedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sortedProjects.slice(0, 6).map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -10 }}
-                >
-                  <Card 
-                    className="project-card h-full overflow-hidden border-none shadow-xl rounded-xl cursor-pointer"
-                    onClick={() => handleProjectClick(project)}
+                <div className="flex flex-wrap gap-4">
+                  <Button 
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                    data-testid="button-connect-hero"
                   >
-                    {/* Square Project Image */}
-                    <div className="relative aspect-square overflow-hidden">
-                      {/* Gradient background as fallback */}
-                      <div 
-                        className="project-image absolute w-full h-full"
-                        style={{
-                          background: `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
-                        }}
-                      />
-                      
-                      {/* Using our new DirectImageBackground component for the thumbnail */}
-                      {project.thumbnailUrl && (
-                        <DirectImageBackground 
-                          imageUrl={project.thumbnailUrl}
-                          className="absolute inset-0 z-10"
-                          fallbackColor={`linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`}
-                          onLoad={() => console.log(`Project thumbnail loaded for project ${project.id}`)}
-                          onError={() => console.error(`Failed to load thumbnail for project ${project.id}: ${project.thumbnailUrl}`)}
-                        />
-                      )}
-                      
-                      {/* If no thumbnailUrl, try mediaUrls[0] with DirectImageBackground */}
-                      {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
-                        <DirectImageBackground 
-                          imageUrl={project.mediaUrls[0]}
-                          className="absolute inset-0 z-10"
-                          fallbackColor={`linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`}
-                          onLoad={() => console.log(`Project media image loaded for project ${project.id}`)}
-                          onError={() => console.error(`Failed to load media image for project ${project.id}: ${project.mediaUrls[0]}`)}
-                        />
-                      )}
-                      
-                      {/* Dark overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
-                        <div className="p-5 text-white">
-                          <h3 className="text-xl font-bold" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                            {project.title}
-                          </h3>
+                    <Mail className="h-5 w-5 mr-2" />
+                    Connect
+                  </Button>
+
+                  {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
+                    <MentorshipButton
+                      userId={currentUserId}
+                      mentorId={userInfo.id}
+                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                      buttonText="Request Mentorship"
+                      data-testid="button-mentor-hero"
+                    />
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Right: Key Info Cards */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="space-y-4"
+              >
+                {userInfo.uniqueValueProposition && (
+                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-purple-200 dark:border-purple-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="h-6 w-6 text-purple-500 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">What Makes Me Unique</h3>
+                          <p className="text-gray-600 dark:text-gray-300">{userInfo.uniqueValueProposition}</p>
                         </div>
                       </div>
-                      
-                      {/* Floating badge for date */}
-                      {project.startDate && (
-                        <motion.div 
-                          className="absolute top-3 right-3 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow-md"
-                          whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          {formatDate(project.startDate, true)}
-                        </motion.div>
-                      )}
-                    </div>
-                    
-                    <CardContent className="p-3">
-                      {/* Empty content - only title and date are shown as requested */}
                     </CardContent>
                   </Card>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            // Empty state for projects
-            <motion.div
-              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isShowing ? 1 : 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
-                <Camera className="h-10 w-10 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Projects Yet</h3>
-              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your amazing projects will be showcased here soon!
-              </p>
-              <motion.div
-                initial={{ y: 0 }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 1.5,
-                  repeatDelay: 1
-                }}
-                className="mt-6"
-              >
-                <span className="text-3xl">⬇️</span>
-              </motion.div>
-            </motion.div>
-          )}
-        </div>
-      </section>
-      
-      {/* Experience Timeline */}
-      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div 
-          className="absolute top-40 -left-20 w-60 h-60 bg-gradient-to-br from-indigo-100 to-blue-50 rounded-full opacity-30 blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 10, 0]
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              <span className="highlight-text">Career Journey</span>
-            </h2>
-            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              A timeline of my professional adventures and growth through the years
-            </p>
-          </motion.div>
-          
-          {sortedExperiences.length > 0 ? (
-            <div className="relative pl-10 md:pl-16 border-l-4 border-dashed border-violet-200">
-              {sortedExperiences.map((exp, index) => (
-                <motion.div 
-                  key={exp.id}
-                  className="milestone-node mb-16"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, x: isShowing ? 0 : -20 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ x: 5 }}
-                  style={{ borderColor: index % 6 === 0 ? '#ec4899' : 
-                                      index % 6 === 1 ? '#8b5cf6' : 
-                                      index % 6 === 2 ? '#3b82f6' : 
-                                      index % 6 === 3 ? '#10b981' : 
-                                      index % 6 === 4 ? '#f59e0b' :
-                                      '#ef4444' }}
-                >
-                  <div className="bg-white rounded-2xl p-7 shadow-xl relative overflow-hidden">
-                    {/* Colored corner accent */}
-                    <div 
-                      className="absolute top-0 right-0 w-20 h-20 -mr-10 -mt-10 rounded-full"
-                      style={{ 
-                        background: `linear-gradient(135deg, ${
-                          index % 6 === 0 ? '#ec4899, #db2777' : 
-                          index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
-                          index % 6 === 2 ? '#3b82f6, #2563eb' : 
-                          index % 6 === 3 ? '#10b981, #059669' : 
-                          index % 6 === 4 ? '#f59e0b, #d97706' :
-                          '#ef4444, #dc2626'
-                        })`,
-                        opacity: 0.15
-                      }}
-                    />
-                    
-                    <div className="flex flex-col md:flex-row justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                          {exp.title} 
-                          <motion.span 
-                            className="inline-block ml-2"
-                            animate={{ rotate: [0, 15, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
-                          >
-                            {index % 6 === 0 ? '🚀' : 
-                             index % 6 === 1 ? '✨' : 
-                             index % 6 === 2 ? '💡' : 
-                             index % 6 === 3 ? '🌟' : 
-                             index % 6 === 4 ? '🔥' : '🎯'}
-                          </motion.span>
-                        </h3>
-                        <p className="text-violet-600 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {exp.company}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center mt-2 md:mt-0 text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                        <Calendar className="h-4 w-4 mr-1 text-violet-500" />
-                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {formatDate(exp.startDate)} — {exp.endDate ? formatDate(exp.endDate) : 'Present'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {exp.location && (
-                      <div className="flex items-center text-gray-500 mb-4">
-                        <MapPin className="h-4 w-4 mr-1 text-pink-500" />
-                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {exp.location}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {exp.description && (
-                      <div className="bg-gray-50 rounded-xl p-4 mb-2">
-                        <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {exp.description}
-                        </p>
-                      </div>
-                    )}
-                    
-                    {/* Industry and Domain section */}
-                    <div className="flex flex-col gap-2 mt-3 mb-4">
-                      {exp.industry && (
-                        <div className="flex items-center text-gray-600">
-                          <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Industry: <span className="text-gray-800">{exp.industry}</span>
-                          </span>
-                        </div>
-                      )}
-                      
-                      {exp.domain && (
-                        <div className="flex items-center text-gray-600">
-                          <Layers className="h-4 w-4 mr-2 text-purple-500" />
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Domain: <span className="text-gray-800">{exp.domain}</span>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Key Responsibilities section */}
-                    {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
-                      <div className="bg-blue-50 rounded-xl p-4 mb-3">
-                        <h4 className="text-sm font-bold mb-2 text-blue-700" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                          Key Responsibilities
-                        </h4>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {exp.keyResponsibilities.map((responsibility, idx) => (
-                            <li key={idx} className="text-gray-700 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                              {responsibility}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
+                )}
 
-                  </div>
-                  
-                  {/* Timeline node decoration */}
-                  <div 
-                    className="absolute -left-[22px] top-7 w-8 h-8 rounded-full z-10 flex items-center justify-center"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${
-                        index % 6 === 0 ? '#ec4899, #db2777' : 
-                        index % 6 === 1 ? '#8b5cf6, #7c3aed' : 
-                        index % 6 === 2 ? '#3b82f6, #2563eb' : 
-                        index % 6 === 3 ? '#10b981, #059669' : 
-                        index % 6 === 4 ? '#f59e0b, #d97706' :
-                        '#ef4444, #dc2626'
-                      })`
-                    }}
-                  >
-                    <motion.div 
-                      className="w-4 h-4 bg-white rounded-full"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            // Empty state for experiences
-            <motion.div
-              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isShowing ? 1 : 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-violet-200 to-violet-100 rounded-full flex items-center justify-center">
-                <Briefcase className="h-10 w-10 text-violet-500" />
-              </div>
-              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Experience Added Yet</h3>
-              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your impressive career journey will be showcased here! 
-              </p>
-              <motion.div
-                initial={{ y: 0 }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 1.5,
-                  repeatDelay: 1
-                }}
-                className="mt-6"
-              >
-                <span className="text-3xl">⬇️</span>
-              </motion.div>
-            </motion.div>
-          )}
-        </div>
-      </section>
-      
-      {/* Education Section */}
-      <section className="py-16 px-6 md:px-10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div 
-          className="absolute -bottom-20 right-0 w-80 h-80 bg-gradient-to-br from-amber-100 to-orange-50 rounded-full opacity-30 blur-3xl"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, -5, 0]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              <span className="highlight-text">Academic Journey</span>
-            </h2>
-            <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              The foundation of knowledge that powers my creative process
-            </p>
-          </motion.div>
-          
-          {sortedEducations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {sortedEducations.map((edu, index) => (
-                <motion.div 
-                  key={edu.id}
-                  className="bg-white rounded-2xl p-6 shadow-xl overflow-hidden relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ y: -8, rotate: index % 2 === 0 ? 1 : -1 }}
-                >
-                  {/* Background pattern */}
-                  <div className="absolute inset-0 opacity-5">
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                      <pattern id={`edu-pattern-${index}`} x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                        {index % 3 === 0 ? (
-                          <circle cx="20" cy="20" r="3" fill="#000" />
-                        ) : index % 3 === 1 ? (
-                          <rect x="15" y="15" width="10" height="10" fill="#000" />
-                        ) : (
-                          <polygon points="20,10 10,30 30,30" fill="#000" />
-                        )}
-                      </pattern>
-                      <rect width="100%" height="100%" fill={`url(#edu-pattern-${index})`} />
-                    </svg>
-                  </div>
-                  
-                  {/* Floating graduation cap icon */}
-                  <motion.div 
-                    className="absolute -right-6 -top-6 w-20 h-20 rounded-full"
-                    animate={{ rotate: [0, 15, 0], y: [0, -5, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, repeatType: "reverse" }}
-                  >
-                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-300 rounded-full flex items-center justify-center shadow-lg">
-                      <GraduationCap className="h-8 w-8 text-white" />
-                    </div>
-                  </motion.div>
-                  
-                  <div className="relative z-10">
-                    <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                      {edu.degree}
-                    </h3>
-                    
-                    <div className="px-4 py-2 bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg inline-block mb-4">
-                      <p className="text-amber-700 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {edu.institution}
-                      </p>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-4 mb-3">
-                      <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                        <Calendar className="h-4 w-4 mr-1 text-amber-500" />
-                        <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {formatDate(edu.startDate, false)} — {edu.endDate ? formatDate(edu.endDate, false) : 'Present'}
-                        </span>
+                {userInfo.whatIOffer && (
+                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-pink-200 dark:border-pink-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3">
+                        <Award className="h-6 w-6 text-pink-500 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">What I Offer</h3>
+                          <p className="text-gray-600 dark:text-gray-300">{userInfo.whatIOffer}</p>
+                        </div>
                       </div>
-                      
-                      {edu.location && (
-                        <div className="flex items-center text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                          <MapPin className="h-4 w-4 mr-1 text-amber-500" />
-                          <span className="text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            {edu.location}
-                          </span>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {userInfo.lookingFor && (
+                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-orange-200 dark:border-orange-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3">
+                        <Target className="h-6 w-6 text-orange-500 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Looking For</h3>
+                          <p className="text-gray-600 dark:text-gray-300">{userInfo.lookingFor}</p>
                         </div>
-                      )}
-                    </div>
-                    
-                    {/* Industry and Field of Study section */}
-                    <div className="flex flex-col gap-2 mt-3 mb-4">
-                      {edu.industry && (
-                        <div className="flex items-center text-gray-600">
-                          <Briefcase className="h-4 w-4 mr-2 text-amber-500" />
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Industry: <span className="text-gray-800">{edu.industry}</span>
-                          </span>
-                        </div>
-                      )}
-                      
-                      {edu.fieldOfStudy && (
-                        <div className="flex items-center text-gray-600">
-                          <BookOpen className="h-4 w-4 mr-2 text-amber-500" />
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Field of Study: <span className="text-gray-800">{edu.fieldOfStudy}</span>
-                          </span>
-                        </div>
-                      )}
-                      
-                      {edu.domain && (
-                        <div className="flex items-center text-gray-600">
-                          <Layers className="h-4 w-4 mr-2 text-amber-500" />
-                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            Domain: <span className="text-gray-800">{edu.domain}</span>
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Skills Acquired section */}
-                    {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
-                      <div className="bg-amber-50 rounded-xl p-4 mb-3">
-                        <h4 className="text-sm font-bold mb-2 text-amber-700" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-                          Skills Acquired
-                        </h4>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Vision & Mission Section */}
+        {(userInfo.visionStatement || userInfo.missionStatement) && (
+          <section className="px-6 py-16">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-8">
+                {userInfo.visionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Card className="bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-800/30 border-none h-full">
+                      <CardContent className="p-8">
+                        <Lightbulb className="h-10 w-10 text-purple-600 dark:text-purple-400 mb-4" />
+                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Vision</h3>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.visionStatement}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+
+                {userInfo.missionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                  >
+                    <Card className="bg-gradient-to-br from-pink-100 to-pink-50 dark:from-pink-900/30 dark:to-pink-800/30 border-none h-full">
+                      <CardContent className="p-8">
+                        <Target className="h-10 w-10 text-pink-600 dark:text-pink-400 mb-4" />
+                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Mission</h3>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.missionStatement}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Audience Section */}
+        {(userInfo.primaryAudience?.length || userInfo.secondaryAudience?.length) && (
+          <section className="px-6 py-16 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  <Users className="inline h-8 w-8 mr-3 text-purple-600" />
+                  My Audience
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                    <Card className="bg-white dark:bg-gray-900 border-purple-200 dark:border-purple-800">
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Primary Audience</h3>
                         <div className="flex flex-wrap gap-2">
-                          {edu.skillsAcquired.map((skill, idx) => (
-                            <Badge key={idx} className="bg-amber-100 text-amber-700 border-none">
-                              {skill}
+                          {userInfo.primaryAudience.map((audience, index) => (
+                            <Badge key={index} className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                              {audience}
                             </Badge>
                           ))}
                         </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                    <Card className="bg-white dark:bg-gray-900 border-pink-200 dark:border-pink-800">
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-4 text-pink-600 dark:text-pink-400">Secondary Audience</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((audience, index) => (
+                            <Badge key={index} className="bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300">
+                              {audience}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </motion.div>
             </div>
-          ) : (
-            // Empty state for education
+          </section>
+        )}
+
+        {/* Skills Section */}
+        {sortedSkills.length > 0 && (
+          <section className="px-6 py-16">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                  <Star className="inline h-8 w-8 mr-3 text-orange-600" />
+                  Skills & Expertise
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sortedSkills.map((skill) => (
+                    <Card key={skill.id} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          {getSkillIcon(skill.name)}
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{skill.name}</h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${skill.proficiency || 0}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{skill.proficiency}%</span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{skill.level}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Projects Section */}
+        {sortedProjects.length > 0 && (
+          <section className="px-6 py-16 bg-gradient-to-r from-orange-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-orange-600 bg-clip-text text-transparent">
+                  <Briefcase className="inline h-8 w-8 mr-3 text-purple-600" />
+                  Featured Projects
+                </h2>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {sortedProjects.slice(0, 6).map((project) => (
+                    <motion.div
+                      key={project.id}
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card className="bg-white dark:bg-gray-900 overflow-hidden h-full hover:shadow-2xl transition-shadow duration-300">
+                        {project.thumbnailUrl && (
+                          <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-400 relative overflow-hidden">
+                            <img 
+                              src={project.thumbnailUrl} 
+                              alt={project.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <CardContent className="p-6">
+                          <h3 className="font-bold text-xl mb-2 text-gray-900 dark:text-white">{project.title}</h3>
+                          {project.description && (
+                            <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{project.description}</p>
+                          )}
+                          {project.category && (
+                            <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 mb-3">
+                              {project.category}
+                            </Badge>
+                          )}
+                          {project.projectUrl && (
+                            <Button variant="outline" size="sm" className="w-full" asChild>
+                              <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                View Project
+                              </a>
+                            </Button>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Experience Section */}
+        {sortedExperiences.length > 0 && (
+          <section className="px-6 py-16">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent">
+                  <Briefcase className="inline h-8 w-8 mr-3 text-cyan-600" />
+                  Work Experience
+                </h2>
+
+                <div className="space-y-8">
+                  {sortedExperiences.map((exp, index) => (
+                    <motion.div
+                      key={exp.id}
+                      initial={{ opacity: 0, x: -30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Card className="bg-white dark:bg-gray-900 border-l-4 border-purple-500">
+                        <CardContent className="p-6">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.title}</h3>
+                              <p className="text-lg text-purple-600 dark:text-purple-400">{exp.company}</p>
+                            </div>
+                            <Badge variant="outline" className="mt-2 md:mt-0 w-fit">
+                              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                            </Badge>
+                          </div>
+                          {exp.location && (
+                            <p className="text-gray-600 dark:text-gray-400 mb-2">
+                              <MapPin className="inline h-4 w-4 mr-1" />
+                              {exp.location}
+                            </p>
+                          )}
+                          {exp.description && (
+                            <p className="text-gray-700 dark:text-gray-300 mt-3">{exp.description}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Education Section */}
+        {sortedEducations.length > 0 && (
+          <section className="px-6 py-16 bg-gradient-to-r from-cyan-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                  <GraduationCap className="inline h-8 w-8 mr-3 text-purple-600" />
+                  Education
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {sortedEducations.map((edu, index) => (
+                    <motion.div
+                      key={edu.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Card className="bg-white dark:bg-gray-900 h-full">
+                        <CardContent className="p-6">
+                          <GraduationCap className="h-8 w-8 text-purple-500 mb-3" />
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{edu.degree}</h3>
+                          <p className="text-lg text-purple-600 dark:text-purple-400 mb-2">{edu.institution}</p>
+                          {edu.fieldOfStudy && (
+                            <p className="text-gray-600 dark:text-gray-400 mb-2">{edu.fieldOfStudy}</p>
+                          )}
+                          <Badge variant="outline" className="mt-2">
+                            {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Services Section */}
+        {userServices.length > 0 && (
+          <section className="px-6 py-16">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                  <Zap className="inline h-8 w-8 mr-3 text-orange-600" />
+                  Services I Offer
+                </h2>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {userServices.map((service, index) => (
+                    <motion.div
+                      key={service.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Card className="bg-gradient-to-br from-orange-50 to-pink-50 dark:from-orange-900/20 dark:to-pink-900/20 border-orange-200 dark:border-orange-800 h-full hover:shadow-xl transition-all duration-300">
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{service.title}</h3>
+                          {service.description && (
+                            <p className="text-gray-600 dark:text-gray-400 mb-4">{service.description}</p>
+                          )}
+                          {(service.priceUsd || service.priceInr) && (
+                            <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                              {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
+                              {service.isHourly && <span className="text-sm">/hr</span>}
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Core Values Section */}
+        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+          <section className="px-6 py-16 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  <Heart className="inline h-8 w-8 mr-3 text-purple-600" />
+                  Core Values
+                </h2>
+
+                <div className="flex flex-wrap justify-center gap-4">
+                  {userInfo.coreValues.map((value, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      <Badge className="px-6 py-3 text-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                        {value}
+                      </Badge>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
+        {/* Footer CTA Section */}
+        <section className="px-6 py-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
-              className="bg-white rounded-3xl p-10 text-center shadow-lg max-w-xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isShowing ? 1 : 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-200 to-amber-100 rounded-full flex items-center justify-center">
-                <GraduationCap className="h-10 w-10 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-bold mb-2" style={{ fontFamily: 'Fredoka, sans-serif' }}>No Education Added Yet</h3>
-              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Your academic achievements will shine here soon!
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Create Something Amazing Together</h2>
+              <p className="text-xl mb-8 text-purple-100">
+                Ready to bring your ideas to life? Get in touch and let's make it happen!
               </p>
-              <motion.div
-                initial={{ y: 0 }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 1.5,
-                  repeatDelay: 1
-                }}
-                className="mt-6"
-              >
-                <span className="text-3xl">⬇️</span>
-              </motion.div>
+
+              <div className="flex flex-wrap justify-center gap-4">
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="bg-white text-purple-600 hover:bg-purple-50 border-white"
+                  data-testid="button-connect-footer"
+                >
+                  <Mail className="h-5 w-5 mr-2" />
+                  Connect With Me
+                </Button>
+
+                {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
+                  <MentorshipButton
+                    userId={currentUserId}
+                    mentorId={userInfo.id}
+                    className="bg-orange-500 hover:bg-orange-600 text-white border-white"
+                    variant="outline"
+                    buttonText="Request Mentorship"
+                    data-testid="button-mentor-footer"
+                  />
+                )}
+
+                {publicUrl && (
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="bg-transparent text-white hover:bg-white/10 border-white"
+                    asChild
+                  >
+                    <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+                      <Globe className="h-5 w-5 mr-2" />
+                      Visit Portfolio
+                    </a>
+                  </Button>
+                )}
+              </div>
+
+              {userInfo.email && (
+                <p className="mt-8 text-purple-100">
+                  <Mail className="inline h-4 w-4 mr-2" />
+                  {userInfo.email}
+                </p>
+              )}
             </motion.div>
-          )}
-        </div>
-      </section>
-      
-      {/* CTA Section */}
-      <section className="py-16 px-6 md:px-10 bg-gradient-to-r from-violet-500 to-purple-600 text-white">
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            style={{ fontFamily: 'Fredoka, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            Ready to Collaborate?
-          </motion.h2>
-          
-          <motion.p 
-            className="text-lg mb-8 text-purple-100"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isShowing ? 1 : 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Let's create something amazing together!
-          </motion.p>
-          
-          <motion.div 
-            className="flex flex-col md:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 20 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
-                className="blob-button bg-white text-violet-600 hover:bg-gray-100 text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 w-full md:w-auto"
-                style={{ fontFamily: 'Fredoka, sans-serif' }}
-                onClick={handleLetsTalkClick}
-              >
-                <MessageCircle className="h-5 w-5" />
-                Let's Connect 💬
-              </Button>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
-                className="blob-button bg-purple-700 text-white hover:bg-purple-800 text-lg px-8 py-6 rounded-full shadow-lg flex items-center gap-2 w-full md:w-auto"
-                style={{ fontFamily: 'Fredoka, sans-serif' }}
-              >
-                <Download className="h-5 w-5" />
-                Grab My Resume 📄
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-      
-      {/* Footer */}
-      <footer className="pb-12 px-6 text-center">
-        <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          © {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier 💖
-        </p>
-        
-        {publicUrl && (
-          <p className="mt-2 text-sm text-gray-400" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Public URL: <a href={publicUrl} className="text-violet-500 hover:underline">{publicUrl}</a>
-          </p>
-        )}
-      </footer>
-      
-      {/* Floating Stickers */}
-      <motion.div 
-        className="sticker top-24 md:top-32 right-6 md:right-12 z-10"
-        initial={{ rotate: -15, scale: 0 }}
-        animate={{ rotate: -15, scale: isShowing ? 1 : 0 }}
-        transition={{ delay: 1, type: "spring", stiffness: 300, damping: 10 }}
-      >
-        <span className="text-sm font-semibold bg-red-100 text-red-800 px-3 py-1 rounded shadow flex items-center gap-1">
-          <Smile className="h-4 w-4" />
-          New!
-        </span>
-      </motion.div>
-      
-      {/* Floating action buttons for mobile */}
-      <motion.div 
-        className="fixed bottom-4 left-0 right-0 z-50 flex justify-center md:hidden"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ 
-          type: "spring",
-          bounce: 0.5,
-          duration: 0.8,
-          delay: 0.5
-        }}
-      >
-        <div className="flex gap-4 p-3 bg-white/70 backdrop-blur-md rounded-full shadow-xl">
-          {/* Let's Talk button */}
-          <motion.button 
-            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg"
-            onClick={handleLetsTalkClick}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <MessageCircle className="h-6 w-6" />
-            <motion.span 
-              className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full text-xs flex items-center justify-center text-violet-600 font-bold border-2 border-violet-400"
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1.2, 1] }}
-              transition={{ delay: 1.2, duration: 0.5 }}
-            >
-              💬
-            </motion.span>
-          </motion.button>
-          
-          {/* Resume button */}
-          <motion.button 
-            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-lg"
-            onClick={() => setIsResumeModalOpen(true)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <FileText className="h-6 w-6" />
-          </motion.button>
-          
-          {/* Social media button */}
-          <motion.button 
-            className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Linkedin className="h-6 w-6" />
-          </motion.button>
-        </div>
-      </motion.div>
-      
-      {/* Render Modals */}
-      {renderProjectDetailsModal()}
-      {renderContactModal()}
-      
+          </div>
+        </section>
+      </div>
+
       {/* Mentorship Dialog */}
-      <MentorshipDialog
-        isOpen={isMentorshipDialogOpen}
-        onOpenChange={setIsMentorshipDialogOpen}
-        userId={currentUserId}
-        mentorId={userInfo.id}
-      />
+      {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
+        <MentorshipDialog
+          isOpen={isMentorshipDialogOpen}
+          onOpenChange={setIsMentorshipDialogOpen}
+          userId={currentUserId}
+          mentorId={userInfo.id}
+        />
+      )}
     </div>
   );
 }
