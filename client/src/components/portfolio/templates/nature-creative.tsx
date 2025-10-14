@@ -527,12 +527,57 @@ export default function NatureCreative({
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-800">About Me</h2>
                   </div>
-                  <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap mb-6">
                     {userInfo.aboutMe}
                   </p>
                   
+                  {/* Industry & Domain */}
+                  {(userInfo.industry || userInfo.domain) && (
+                    <div className="mb-6 flex flex-wrap gap-3">
+                      {userInfo.industry && (
+                        <div className="px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full">
+                          <span className="text-sm text-emerald-700 font-medium">
+                            Industry: {userInfo.industry}
+                          </span>
+                        </div>
+                      )}
+                      {userInfo.domain && (
+                        <div className="px-4 py-2 bg-teal-50 border border-teal-200 rounded-full">
+                          <span className="text-sm text-teal-700 font-medium">
+                            Domain: {userInfo.domain}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Core Values */}
+                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <Sparkles className="text-emerald-500" size={20} />
+                        Core Values
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {userInfo.coreValues.map((value, idx) => (
+                          <Badge key={idx} className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200 px-3 py-1">
+                            {value}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Unique Value Proposition */}
+                  {userInfo.uniqueValueProposition && (
+                    <div className="mb-6 p-4 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-lg">
+                      <h3 className="text-sm font-semibold text-rose-700 mb-1">What Sets Me Apart</h3>
+                      <p className="text-gray-700">{userInfo.uniqueValueProposition}</p>
+                    </div>
+                  )}
+                  
                   {/* Contact Info */}
-                  <div className="mt-8 flex flex-wrap gap-4">
+                  <div className="mt-6 flex flex-wrap gap-4">
                     {userInfo.email && (
                       <motion.a
                         href={`mailto:${userInfo.email}`}
