@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Camera, Mail, Aperture, Focus, Film, Zap, Circle, X, ExternalLink, Calendar } from "lucide-react";
+import { Camera, Mail, Aperture, Focus, Film, Zap, Circle, X, ExternalLink, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
@@ -270,6 +270,7 @@ export default function PhotographerPortfolio({
   const [apertureOpen, setApertureOpen] = useState(false);
   const [shutterTrigger, setShutterTrigger] = useState(false);
   const [selectedProject, setSelectedProject] = useState<typeof userProjects[0] | null>(null);
+  const [lightboxImageIndex, setLightboxImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setApertureOpen(true), 500);
