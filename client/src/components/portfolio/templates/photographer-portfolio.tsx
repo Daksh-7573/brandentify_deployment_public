@@ -1238,7 +1238,7 @@ export default function PhotographerPortfolio({
                           <Film className="inline mr-3" size={28} />
                           Project Gallery
                         </h3>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                           {selectedProject.mediaUrls.map((url: string, idx: number) => (
                             <motion.div
                               key={idx}
@@ -1246,7 +1246,7 @@ export default function PhotographerPortfolio({
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: 1.0 + idx * 0.1, duration: 0.4 }}
                               whileHover={{ scale: 1.05 }}
-                              className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+                              className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
                               onClick={() => setLightboxImageIndex(idx)}
                               data-testid={`gallery-image-${idx}`}
                             >
