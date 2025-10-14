@@ -1,38 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
-import PortfolioCtaButtons from "@/components/portfolio/portfolio-cta-buttons";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { 
-  MapPin, 
-  Calendar, 
-  Building, 
-  GraduationCap, 
-  Briefcase, 
-  Award, 
-  ExternalLink, 
-  ChevronDown,
-  Search,
-  Download,
-  MessageCircle,
-  Play,
-  Pause,
-  Eye,
-  Globe,
-  Mail,
-  Users
+  MapPin, Calendar, Building, GraduationCap, Briefcase, Award, 
+  ExternalLink, BookOpen, Compass, Map, Star, Feather, Clock,
+  Target, Heart, Users, TrendingUp, Mail, Phone, Globe
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
-// TypeScript interface for component props
 interface TimelineStoryteller2Props {
   userInfo: {
     id?: number;
@@ -46,6 +25,7 @@ interface TimelineStoryteller2Props {
     lookingFor: string | null;
     whatIOffer: string | null;
     photoURL: string | null;
+    phoneNumber?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
@@ -62,53 +42,165 @@ interface TimelineStoryteller2Props {
   currentUserId?: number;
 }
 
-// Main Timeline Storyteller Component
-export default function TimelineStoryteller2({ 
-  userInfo, 
-  userSkills, 
-  userExperiences, 
+function FloatingStoryElement({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ 
+        opacity: [0.3, 0.6, 0.3],
+        y: [-10, 10, -10]
+      }}
+      transition={{
+        duration: 6,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function StorytellingParallaxBackground() {
+  const { scrollY } = useScroll();
+  
+  const layer1Y = useTransform(scrollY, [0, 2000], [0, -400]);
+  const layer2Y = useTransform(scrollY, [0, 2000], [0, -800]);
+  const layer3Y = useTransform(scrollY, [0, 2000], [0, -1200]);
+  
+  const compass1Rotate = useTransform(scrollY, [0, 2000], [0, 360]);
+  const compass2Rotate = useTransform(scrollY, [0, 2000], [0, -180]);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <motion.div 
+        style={{ y: layer1Y }}
+        className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100"
+      />
+      
+      <motion.div style={{ y: layer2Y }} className="absolute inset-0">
+        <div className="absolute top-32 right-[10%] w-[500px] h-[500px] bg-amber-300/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-48 left-[8%] w-[600px] h-[600px] bg-orange-300/35 rounded-full blur-3xl" />
+        <div className="absolute top-[55%] left-[45%] w-96 h-96 bg-yellow-300/30 rounded-full blur-3xl" />
+        
+        <motion.div style={{ rotate: compass1Rotate }} className="absolute top-48 left-[12%] w-32 h-32">
+          <Compass className="w-full h-full text-amber-600/60" strokeWidth={1.5} />
+        </motion.div>
+        <motion.div style={{ rotate: compass2Rotate }} className="absolute bottom-56 right-[18%] w-40 h-40">
+          <Compass className="w-full h-full text-orange-600/60" strokeWidth={1.5} />
+        </motion.div>
+        
+        <div className="absolute top-[25%] right-[25%] w-28 h-28">
+          <BookOpen className="w-full h-full text-amber-700/50" strokeWidth={1.5} />
+        </div>
+        <div className="absolute bottom-[35%] left-[20%] w-24 h-24">
+          <Map className="w-full h-full text-orange-700/50" strokeWidth={1.5} />
+        </div>
+      </motion.div>
+
+      <motion.div style={{ y: layer3Y }} className="absolute inset-0">
+        <FloatingStoryElement delay={0}>
+          <Star className="absolute top-[20%] right-[15%] w-6 h-6 text-amber-500/60 fill-amber-400/40" />
+        </FloatingStoryElement>
+        <FloatingStoryElement delay={1}>
+          <Star className="absolute top-[65%] left-[18%] w-5 h-5 text-orange-500/60 fill-orange-400/40" />
+        </FloatingStoryElement>
+        <FloatingStoryElement delay={2}>
+          <Star className="absolute bottom-[25%] right-[22%] w-4 h-4 text-yellow-500/60 fill-yellow-400/40" />
+        </FloatingStoryElement>
+        
+        <div className="absolute top-[45%] left-[8%] w-16 h-16 rotate-45">
+          <Feather className="w-full h-full text-amber-600/50" strokeWidth={1.5} />
+        </div>
+        
+        <div className="absolute top-[35%] right-[12%] w-3 h-48 bg-gradient-to-b from-amber-500/50 to-transparent rounded-full" />
+        <div className="absolute bottom-[30%] left-[15%] w-3 h-40 bg-gradient-to-b from-orange-500/50 to-transparent rounded-full" />
+        
+        <div className="absolute top-[28%] right-[8%] w-4 h-4 rounded-full bg-amber-600/60" />
+        <div className="absolute top-[72%] left-[25%] w-3 h-3 rounded-full bg-orange-600/60" />
+        <div className="absolute bottom-[15%] right-[30%] w-4 h-4 rounded-full bg-yellow-600/60" />
+      </motion.div>
+    </div>
+  );
+}
+
+function ProjectModal({ project, isOpen, onClose }: { project: Project | null; isOpen: boolean; onClose: () => void }) {
+  if (!project) return null;
+
+  const allImages = [
+    ...(project.projectImage ? [project.projectImage] : []),
+    ...(project.projectImages || [])
+  ];
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-amber-50 to-orange-50">
+        <DialogHeader>
+          <DialogTitle className="text-3xl font-bold text-amber-900">{project.title}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {allImages.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {allImages.map((url, idx) => (
+                <motion.img
+                  key={idx}
+                  src={url}
+                  alt={`${project.title} - ${idx + 1}`}
+                  className="w-full h-auto rounded-lg object-cover shadow-md border-2 border-amber-200"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                />
+              ))}
+            </div>
+          )}
+          
+          {project.description && (
+            <div className="prose prose-amber max-w-none">
+              <p className="text-gray-700 leading-relaxed">{project.description}</p>
+            </div>
+          )}
+          
+          <div className="flex flex-wrap gap-4 text-sm text-amber-800">
+            {project.startDate && (
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>{new Date(project.startDate).getFullYear()}</span>
+              </div>
+            )}
+            {project.projectUrl && (
+              <a 
+                href={project.projectUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-amber-600 transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>View Project</span>
+              </a>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function TimelineStoryteller2({
+  userInfo,
+  userSkills,
+  userExperiences,
   userProjects,
   userEducations = [],
   userServices = [],
   currentUserId
 }: TimelineStoryteller2Props) {
-  
-  // State management
-  const [scrollY, setScrollY] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [activeTimelineNode, setActiveTimelineNode] = useState<string | null>(null);
-  
-  // Refs for scroll animations
-  const heroRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
-  const servicesRef = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
 
-  // Handle scroll effects for parallax
-  useEffect(() => {
-    const handleScroll = () => {
-      const newScrollY = window.scrollY;
-      setScrollY(newScrollY);
-      
-      // Activate timeline nodes based on scroll position
-      const timelineNodes = document.querySelectorAll('.timeline-node');
-      timelineNodes.forEach((node, index) => {
-        const rect = node.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
-        
-        if (isVisible) {
-          setActiveTimelineNode(node.getAttribute('data-id') || '');
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Sort data for timeline
   const sortedExperiences = [...userExperiences].sort((a, b) => 
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
@@ -121,845 +213,553 @@ export default function TimelineStoryteller2({
     new Date(b.startDate || '').getTime() - new Date(a.startDate || '').getTime()
   );
 
-  const sortedSkills = [...userSkills].sort((a, b) => 
-    (b.proficiency || 0) - (a.proficiency || 0)
-  );
-
-  // Helper function to format dates
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return 'Present';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short'
-    });
-  };
-
-  // Create timeline data combining all entries
-  const timelineData = [
-    ...sortedExperiences.map(exp => ({
-      id: `exp-${exp.id}`,
-      type: 'experience',
-      date: exp.startDate,
-      title: exp.title,
-      subtitle: exp.company,
-      description: exp.description,
-      location: exp.location,
-      industry: exp.industry,
-      domain: exp.domain,
-      icon: Briefcase,
-      data: exp
-    })),
-    ...sortedEducations.map(edu => ({
-      id: `edu-${edu.id}`,
-      type: 'education',
-      date: edu.startDate,
-      title: edu.degree,
-      subtitle: edu.institution,
-      description: edu.fieldOfStudy,
-      location: edu.location,
-      industry: edu.industry,
-      domain: edu.domain,
-      icon: GraduationCap,
-      data: edu
-    })),
-    ...sortedProjects.map(proj => ({
-      id: `proj-${proj.id}`,
-      type: 'project',
-      date: proj.startDate,
-      title: proj.title,
-      subtitle: proj.category,
-      description: proj.description,
-      location: null,
-      industry: proj.industry,
-      domain: null,
-      icon: Award,
-      data: proj
-    }))
-  ].sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime());
-
-  // Skill level colors
-  const getSkillColor = (level: string) => {
-    switch (level.toLowerCase()) {
-      case 'beginner': return 'from-blue-400 to-blue-600';
-      case 'intermediate': return 'from-purple-400 to-purple-600';
-      case 'advanced': return 'from-pink-400 to-pink-600';
-      default: return 'from-indigo-400 to-indigo-600';
-    }
+  const openProjectModal = (project: Project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="timeline-storyteller bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 min-h-screen overflow-x-hidden">
-      
-      {/* Hero Section - All About Me */}
-      <section 
-        ref={heroRef}
-        className="relative min-h-screen flex items-center px-4 md:px-8 py-20"
-        style={{
-          transform: `translateY(${scrollY * 0.3}px)`
-        }}
+    <div className="relative min-h-screen bg-amber-50 text-gray-900 font-serif">
+      <StorytellingParallaxBackground />
+
+      <motion.section 
+        style={{ opacity: heroOpacity }}
+        className="relative min-h-screen flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-20"
       >
-        {/* Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div 
-            className="absolute top-0 left-0 w-full h-full opacity-20"
-            style={{
-              background: `radial-gradient(circle at 30% 70%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                           radial-gradient(circle at 70% 30%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)`
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-            
-            {/* Large Circular Profile Picture - Left Side */}
-            <div className="flex-shrink-0">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-xl opacity-30 animate-pulse scale-110" />
-                <div className="relative transition-shadow duration-500">
-                  <ProfileImage
-                    src={userInfo.photoURL || ""}
-                    alt={userInfo.name}
-                    className="w-48 h-48 lg:w-64 lg:h-64 border-4 border-white rounded-full shadow-2xl object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Profile Information - Right Side */}
-            <div className="flex-1 text-center lg:text-left space-y-6">
-              
-              {/* Looking For Badge */}
-              {userInfo.lookingFor && (
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full shadow-lg">
-                  <Search className="w-4 h-4" />
-                  <span className="font-medium">{userInfo.lookingFor}</span>
-                </div>
-              )}
-
-              {/* Name and Title */}
-              <div>
-                <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-3">
-                  I am: {userInfo.name}
-                </h1>
-                <h2 className="text-xl lg:text-2xl text-gray-700 font-medium mb-4">
-                  {userInfo.title}
-                </h2>
-              </div>
-
-              {/* Location, Industry, Domain */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-sm text-gray-600">
-                {userInfo.location && (
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    <span>{userInfo.location}</span>
-                  </div>
-                )}
-                {userInfo.industry && (
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                    {userInfo.industry}
-                  </Badge>
-                )}
-                {userInfo.domain && (
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                    {userInfo.domain}
-                  </Badge>
-                )}
-              </div>
-
-              {/* About Me - Parallax Text Card */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-shadow duration-500">
-                <h3 className="text-lg font-bold text-gray-800 mb-3">About Me</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {userInfo.aboutMe || "Add your professional story and what makes you unique in your field."}
-                </p>
-              </div>
-
-              {/* CTA Buttons */}
-              <PortfolioCtaButtons
-                variant="creative"
-                userEmail={userInfo.email}
-                userName={userInfo.name}
-                userId={userInfo.id}
-                className="flex flex-wrap gap-4 justify-center lg:justify-start"
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-5xl mx-auto space-y-8"
+        >
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="absolute -inset-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-2xl opacity-30"
+              />
+              <ProfileImage
+                src={userInfo.photoURL}
+                alt={userInfo.name}
+                className="w-48 h-48 rounded-full border-4 border-amber-300 shadow-2xl relative z-10"
               />
             </div>
           </div>
-        </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-8 h-8 text-gray-400" />
-        </div>
-      </section>
+          <div className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-amber-200/50 rounded-full"
+            >
+              <BookOpen className="w-5 h-5 text-amber-700" />
+              <span className="text-amber-800 font-medium">Chapter One</span>
+            </motion.div>
 
-      {/* My Professional Brand Section */}
-      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
-        (userInfo.coreValues && userInfo.coreValues.length > 0) || 
-        userInfo.uniqueValueProposition || 
-        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-        <section className="relative py-20 px-4 md:px-8 bg-white/40 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                My Professional Brand
-              </h2>
-              <p className="text-gray-600">
-                The values and vision that drive my work
-              </p>
-            </div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-700 via-orange-600 to-amber-700"
+            >
+              {userInfo.name}
+            </motion.h1>
 
-            <div className="space-y-6">
-              {/* Tagline */}
-              {userInfo.tagline && (
-                <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/50">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Award className="w-6 h-6 text-blue-600" />
-                    <h3 className="text-lg font-bold text-gray-800">Tagline</h3>
-                  </div>
-                  <p className="text-gray-800 italic text-xl leading-relaxed">
-                    "{userInfo.tagline}"
-                  </p>
-                </div>
-              )}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-2xl md:text-3xl text-amber-800 font-light"
+            >
+              {userInfo.title}
+            </motion.p>
 
-              {/* Vision & Mission Grid */}
-              {(userInfo.visionStatement || userInfo.missionStatement) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {userInfo.visionStatement && (
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Lightbulb className="w-6 h-6 text-purple-600" />
-                        <h3 className="text-lg font-bold text-gray-800">Vision</h3>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed">
-                        {userInfo.visionStatement}
-                      </p>
-                    </div>
-                  )}
-                  {userInfo.missionStatement && (
-                    <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Target className="w-6 h-6 text-blue-600" />
-                        <h3 className="text-lg font-bold text-gray-800">Mission</h3>
-                      </div>
-                      <p className="text-gray-700 leading-relaxed">
-                        {userInfo.missionStatement}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Core Values */}
-              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Star className="w-6 h-6 text-pink-600" />
-                    <h3 className="text-lg font-bold text-gray-800">Core Values</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {userInfo.coreValues.map((value: string, index: number) => (
-                      <Badge 
-                        key={index}
-                        className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 text-sm hover:shadow-lg transition-shadow"
-                      >
-                        {value}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Unique Value Proposition */}
-              {userInfo.uniqueValueProposition && (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 hover:shadow-xl transition-all duration-500">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Sparkles className="w-6 h-6 text-blue-600" />
-                    <h3 className="text-lg font-bold text-gray-800">What Sets Me Apart</h3>
-                  </div>
-                  <p className="text-gray-700 leading-relaxed">
-                    {userInfo.uniqueValueProposition}
-                  </p>
-                </div>
-              )}
-
-              {/* Audiences */}
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Users className="w-6 h-6 text-blue-600" />
-                    <h3 className="text-lg font-bold text-gray-800">Who I Serve</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-2">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              className="bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-2">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              variant="outline"
-                              className="bg-blue-50 text-blue-700 border-blue-200"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Interactive Timeline Story Path */}
-      <section className="relative py-20 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          
-          {/* Timeline Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              My Journey Story
-            </h2>
-            <p className="text-gray-600 text-lg">
-              Follow the timeline to explore my professional journey
-            </p>
+            {userInfo.tagline && (
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto italic"
+              >
+                "{userInfo.tagline}"
+              </motion.p>
+            )}
           </div>
 
-          {/* Central Timeline Spine */}
-          <div className="relative">
-            {/* Vertical Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-blue-400 via-purple-400 to-pink-400 h-full opacity-30" />
-            
-            {/* Animated Year Markers and Nodes */}
-            <div className="space-y-12">
-              {timelineData.map((item, index) => (
-                <div 
-                  key={item.id}
-                  className={`timeline-node relative flex items-center ${
-                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                  }`}
-                  data-id={item.id}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="flex flex-wrap justify-center gap-4 text-sm text-amber-800"
+          >
+            {userInfo.location && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
+                <MapPin className="w-4 h-4" />
+                <span>{userInfo.location}</span>
+              </div>
+            )}
+            {userInfo.industry && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
+                <Building className="w-4 h-4" />
+                <span>{userInfo.industry}</span>
+              </div>
+            )}
+            {userInfo.domain && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
+                <Target className="w-4 h-4" />
+                <span>{userInfo.domain}</span>
+              </div>
+            )}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="flex flex-wrap justify-center gap-4 pt-4"
+          >
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-6 rounded-full shadow-lg"
+              data-testid="button-connect"
+            >
+              <Mail className="w-5 h-5 mr-2" />
+              Connect
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-8 py-6 rounded-full"
+              data-testid="button-mentor"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Mentor Me
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.section>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-32">
+        {userInfo.aboutMe && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative"
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full">
+                <Feather className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">The Story Begins</h2>
+            </div>
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
+              <CardContent className="p-8">
+                <p className="text-lg text-gray-700 leading-relaxed">{userInfo.aboutMe}</p>
+              </CardContent>
+            </Card>
+          </motion.section>
+        )}
+
+        {userInfo.visionStatement && (
+          <motion.section
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">The Vision</h2>
+            </div>
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-xl">
+              <CardContent className="p-8">
+                <p className="text-lg text-gray-700 leading-relaxed italic">{userInfo.visionStatement}</p>
+              </CardContent>
+            </Card>
+          </motion.section>
+        )}
+
+        {userInfo.missionStatement && (
+          <motion.section
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full">
+                <TrendingUp className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">The Mission</h2>
+            </div>
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
+              <CardContent className="p-8">
+                <p className="text-lg text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+              </CardContent>
+            </Card>
+          </motion.section>
+        )}
+
+        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Core Values</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {userInfo.coreValues.map((value, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
                 >
-                  {/* Timeline Node Circle */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
-                    <div 
-                      className={`w-6 h-6 rounded-full transition-all duration-500 ${
-                        activeTimelineNode === item.id 
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-150 shadow-lg' 
-                          : 'bg-white border-4 border-gray-300'
-                      }`}
-                    />
-                  </div>
+                  <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
+                    <CardContent className="p-6 text-center">
+                      <div className="flex justify-center mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center">
+                          <Star className="w-6 h-6 text-white fill-white" />
+                        </div>
+                      </div>
+                      <p className="text-lg font-semibold text-amber-900">{value}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
-                  {/* Year Marker */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 z-20">
-                    <div className="bg-white px-3 py-1 rounded-full shadow-md border text-sm font-medium text-gray-700">
-                      {new Date(item.date || '').getFullYear()}
+        {sortedExperiences.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-12">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full">
+                <Briefcase className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Professional Journey</h2>
+            </div>
+            
+            <div className="relative">
+              <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 via-orange-400 to-amber-400" />
+              
+              <div className="space-y-16">
+                {sortedExperiences.map((exp, idx) => (
+                  <motion.div
+                    key={exp.id}
+                    initial={{ opacity: 0, x: idx % 2 === 0 ? -40 : 40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className={`relative flex items-center ${
+                      idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+                    } flex-col md:gap-16`}
+                  >
+                    <div className="flex-1 w-full md:w-auto" />
+                    
+                    <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full border-4 border-amber-50 z-10">
+                      <Clock className="w-8 h-8 text-white" />
                     </div>
-                  </div>
-
-                  {/* Content Card */}
-                  <div className={`w-5/12 ${index % 2 === 0 ? 'mr-auto pr-8' : 'ml-auto pl-8'}`}>
-                    <Card 
-                      className={`timeline-card transform transition-shadow duration-500 ${item.type === 'project' ? 'cursor-pointer hover:shadow-xl hover:ring-1 hover:ring-blue-200' : ''} ${
-                        activeTimelineNode === item.id ? 'shadow-xl ring-1 ring-blue-300' : 'shadow-md'
-                      }`}
-                      onClick={() => {
-                        if (item.type === 'project') {
-                          setSelectedProject(item.data as Project);
-                          setIsProjectModalOpen(true);
-                        }
-                      }}
-                    >
-                      <CardContent className="card-content p-6">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="p-2 rounded-lg bg-gradient-to-r from-blue-100 to-purple-100">
-                            <item.icon className="w-5 h-5 text-blue-600" />
-                          </div>
+                    
+                    <Card className="flex-1 w-full md:w-auto bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-xl hover:shadow-2xl transition-shadow ml-20 md:ml-0">
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <h3 className="font-bold text-gray-900 mb-1">{item.title}</h3>
-                            <p className="text-gray-600 text-sm font-medium">{item.subtitle}</p>
+                            <h3 className="text-2xl font-bold text-amber-900">{exp.title}</h3>
+                            <p className="text-lg text-amber-700 font-medium">{exp.company}</p>
                           </div>
+                          <Badge className="bg-amber-200 text-amber-900 hover:bg-amber-300">
+                            {exp.startDate && new Date(exp.startDate).getFullYear()}
+                          </Badge>
                         </div>
                         
-                        {item.description && (
-                          <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                            {item.description}
-                          </p>
+                        {exp.description && (
+                          <p className="text-gray-700 leading-relaxed">{exp.description}</p>
                         )}
                         
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          {item.location && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              <span>{item.location}</span>
-                            </div>
-                          )}
-                          {item.industry && (
-                            <Badge variant="outline" className="text-xs">
-                              {item.industry}
-                            </Badge>
-                          )}
+                        <div className="flex items-center gap-2 text-sm text-amber-600">
+                          <MapPin className="w-4 h-4" />
+                          <span>{exp.location || 'Remote'}</span>
                         </div>
                       </CardContent>
                     </Card>
-                  </div>
-                </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {sortedEducations.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-12">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full">
+                <GraduationCap className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Academic Path</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {sortedEducations.map((edu, idx) => (
+                <motion.div
+                  key={edu.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg hover:shadow-xl transition-shadow h-full">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-amber-900">{edu.degree}</h3>
+                          <p className="text-amber-700 font-medium">{edu.school}</p>
+                        </div>
+                        <GraduationCap className="w-8 h-8 text-orange-500" />
+                      </div>
+                      
+                      {edu.field && (
+                        <p className="text-gray-700">{edu.field}</p>
+                      )}
+                      
+                      <div className="flex items-center gap-2 text-sm text-amber-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {edu.startDate && new Date(edu.startDate).getFullYear()}
+                          {edu.endDate && ` - ${new Date(edu.endDate).getFullYear()}`}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
+          </motion.section>
+        )}
 
-      {/* Skills Section - Side Orbit Style */}
-      <section 
-        ref={skillsRef}
-        className="py-20 px-4 md:px-8 bg-white/50 backdrop-blur-sm"
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Skills & Expertise
-            </h2>
-            <p className="text-gray-600">
-              Circular progress rings showing my proficiency levels
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {sortedSkills.slice(0, 8).map((skill) => (
-              <div key={skill.id} className="text-center group">
-                <div className="relative w-24 h-24 mx-auto mb-4">
-                  {/* Background Circle */}
-                  <div className="absolute inset-0 rounded-full bg-gray-200"></div>
-                  
-                  {/* Progress Circle */}
-                  <div 
-                    className="absolute inset-0 rounded-full bg-gradient-to-r opacity-90 transition-colors duration-1000"
-                    style={{
-                      background: `conic-gradient(from 0deg, 
-                        ${skill.level === 'beginner' ? '#3B82F6' : skill.level === 'intermediate' ? '#8B5CF6' : '#EC4899'} 0deg,
-                        ${skill.level === 'beginner' ? '#3B82F6' : skill.level === 'intermediate' ? '#8B5CF6' : '#EC4899'} ${(skill.proficiency || 0) * 3.6}deg,
-                        transparent ${(skill.proficiency || 0) * 3.6}deg,
-                        transparent 360deg
-                      )`
-                    }}
-                  />
-                  
-                  {/* Inner Circle with Percentage */}
-                  <div className="absolute inset-2 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <span className="text-sm font-bold text-gray-800">
-                      {skill.proficiency || 0}%
-                    </span>
-                  </div>
-                </div>
-                
-                <h3 className="font-medium text-gray-900 mb-1">{skill.name}</h3>
-                <p className="text-xs text-gray-500 capitalize">{skill.level || 'Advanced'}</p>
+        {userSkills.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
+                <Award className="w-8 h-8 text-white" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section - Colorful Cards */}
-      {userServices.length > 0 && (
-        <section 
-          ref={servicesRef}
-          className="py-20 px-4 md:px-8 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50"
-        >
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Services I Offer
-              </h2>
-              <p className="text-gray-600">
-                Professional services with transparent pricing
-              </p>
+              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {userServices.map((service) => (
-                <Card 
-                  key={service.id} 
-                  className="service-card group transition-shadow duration-500 hover:shadow-lg border-0 bg-white/80 backdrop-blur-sm"
+            
+            <div className="flex flex-wrap gap-3">
+              {userSkills.map((skill) => (
+                <motion.div
+                  key={skill.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <CardContent className="card-content p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 mb-2">{service.title}</h3>
-                        <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
-                          {service.category}
-                        </Badge>
-                      </div>
-                      {service.isHourly && (
-                        <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                          Hourly
+                  <Badge className="px-4 py-2 text-base bg-gradient-to-r from-amber-200 to-orange-200 text-amber-900 hover:from-amber-300 hover:to-orange-300 border border-amber-300">
+                    {skill.name}
+                  </Badge>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {sortedProjects.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
+                <Map className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Notable Chapters</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedProjects.map((project, idx) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card 
+                    className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
+                    onClick={() => openProjectModal(project)}
+                  >
+                    <CardContent className="p-0">
+                      {project.projectImage && (
+                        <div className="relative h-48 overflow-hidden rounded-t-lg">
+                          <img 
+                            src={project.projectImage} 
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       )}
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {service.description}
-                    </p>
-
-                    {/* Pricing Toggle */}
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 mb-4">
-                      <div className="flex justify-between items-center">
-                        <div className="text-center">
-                          <div className="text-sm text-gray-600">INR</div>
-                          <div className="text-lg font-bold text-gray-900">₹{service.priceInr ? Number(service.priceInr) : 0}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm text-gray-600">USD</div>
-                          <div className="text-lg font-bold text-gray-900">${service.priceUsd ? Number(service.priceUsd) : 0}</div>
+                      
+                      <div className="p-6 space-y-3">
+                        <h3 className="text-xl font-bold text-amber-900 group-hover:text-orange-700 transition-colors">
+                          {project.title}
+                        </h3>
+                        
+                        {project.description && (
+                          <p className="text-gray-700 text-sm line-clamp-3">
+                            {project.description}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center gap-2 text-sm text-amber-600">
+                            <Calendar className="w-4 h-4" />
+                            <span>{project.startDate && new Date(project.startDate).getFullYear()}</span>
+                          </div>
+                          <ExternalLink className="w-5 h-5 text-amber-600 group-hover:text-orange-600 transition-colors" />
                         </div>
                       </div>
-                    </div>
-
-                    {/* Features */}
-                    {service.features && Array.isArray(service.features) && service.features.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Features:</h4>
-                        <ul className="space-y-1">
-                          {service.features.slice(0, 3).map((feature, idx) => (
-                            <li key={idx} className="text-xs text-gray-600 flex items-center gap-2">
-                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0" />
-                              {String(feature)}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* CTA Buttons */}
-                    <div className="flex gap-2">
-                      <Button className="cta-button flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 text-sm">
-                        Hire Me
-                      </Button>
-                      <Button variant="outline" className="text-sm">
-                        Details
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          </motion.section>
+        )}
 
-      {/* Sticky Call-to-Action Footer */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="flex gap-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-white/50 p-2">
-          <Button className="cta-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-full px-6">
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Let's Talk
-          </Button>
-          <Button variant="outline" className="rounded-full px-6">
-            <Download className="w-4 h-4 mr-2" />
-            Resume
-          </Button>
-          <Button variant="outline" className="rounded-full px-6">
-            <Users className="w-4 h-4 mr-2" />
-            Mentor
-          </Button>
-        </div>
+        {userServices && userServices.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-full">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Services Offered</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {userServices.map((service, idx) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
+                    <CardContent className="p-6 space-y-3">
+                      <h3 className="text-xl font-bold text-amber-900">{service.name}</h3>
+                      {service.description && (
+                        <p className="text-gray-700">{service.description}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {(userInfo.lookingFor || userInfo.whatIOffer) && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="pb-20"
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Let's Connect</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {userInfo.lookingFor && (
+                <Card className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg">
+                  <CardContent className="p-6 space-y-3">
+                    <h3 className="text-xl font-bold text-orange-900">Looking For</h3>
+                    <p className="text-gray-700">{userInfo.lookingFor}</p>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {userInfo.whatIOffer && (
+                <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg">
+                  <CardContent className="p-6 space-y-3">
+                    <h3 className="text-xl font-bold text-amber-900">What I Offer</h3>
+                    <p className="text-gray-700">{userInfo.whatIOffer}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4 pt-12">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-10 py-6 rounded-full shadow-xl"
+                data-testid="button-connect-footer"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Connect With Me
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-10 py-6 rounded-full"
+                data-testid="button-mentor-footer"
+              >
+                <Users className="w-5 h-5 mr-2" />
+                Request Mentorship
+              </Button>
+            </div>
+          </motion.section>
+        )}
       </div>
 
-      {/* Project Modal */}
-      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          {selectedProject && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">{selectedProject.title}</DialogTitle>
-                <DialogDescription className="text-gray-600">
-                  {selectedProject.category} • {formatDate(selectedProject.startDate)}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-6">
-                {selectedProject.thumbnailUrl && (
-                  <div className="aspect-video w-full overflow-hidden rounded-lg">
-                    <img 
-                      src={selectedProject.thumbnailUrl} 
-                      alt={selectedProject.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                
-                <div>
-                  <h3 className="font-bold text-lg mb-2">Description</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {selectedProject.description || 'No description available'}
-                  </p>
-                </div>
-                
-                {selectedProject.projectUrl && (
-                  <div className="flex gap-2">
-                    <Button asChild className="cta-button bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                      <a href={selectedProject.projectUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Project
-                      </a>
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Custom Animations */}
-      <style>{`
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-            scroll-behavior: auto !important;
-          }
-        }
-
-        /* Enhanced Timeline Hover Effects */
-        .timeline-node {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-        }
-        
-        .timeline-node:hover {
-          transform: scale(1.1);
-        }
-        
-        .timeline-node:hover::before {
-          content: '';
-          position: absolute;
-          top: -10px;
-          left: -10px;
-          right: -10px;
-          bottom: -10px;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
-          border-radius: 50%;
-          animation: pulse-glow 2s ease-in-out infinite;
-          z-index: -1;
-        }
-
-        @keyframes pulse-glow {
-          0%, 100% { 
-            opacity: 0.5;
-            transform: scale(1); 
-          }
-          50% { 
-            opacity: 0.8;
-            transform: scale(1.2); 
-          }
-        }
-
-        /* Card Hover Effects */
-        .timeline-card {
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-          transform-style: preserve-3d;
-        }
-
-        .timeline-card:hover {
-          transform: translateY(-8px) rotateX(2deg);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 
-                      0 0 20px rgba(59, 130, 246, 0.2);
-        }
-
-        .timeline-card:hover .card-content {
-          transform: translateZ(10px);
-        }
-
-        .card-content {
-          transition: transform 0.3s ease;
-        }
-
-        /* Project Thumbnail Effects */
-        .project-thumbnail {
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .project-thumbnail:hover {
-          transform: scale(1.05);
-        }
-
-        .project-thumbnail:hover .thumbnail-overlay {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .thumbnail-overlay {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-          color: white;
-          padding: 1rem;
-          opacity: 0;
-          transform: translateY(100%);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Skills Progress Ring Animation */
-        .skill-ring {
-          transition: all 0.3s ease;
-        }
-
-        .skill-ring:hover {
-          transform: rotate(5deg) scale(1.02);
-        }
-
-        .skill-ring:hover .progress-fill {
-          animation: progress-boost 0.6s ease-in-out;
-        }
-
-        @keyframes progress-boost {
-          0%, 100% { stroke-dasharray: var(--original-progress); }
-          50% { stroke-dasharray: calc(var(--original-progress) + 18); }
-        }
-
-        /* Service Card 3D Tilt */
-        .service-card {
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-          transform-style: preserve-3d;
-        }
-
-        .service-card:hover {
-          transform: rotateY(3deg) rotateX(-2deg) scale(1.02);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        /* CTA Button Effects */
-        .cta-button {
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .cta-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .cta-button::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-          transition: all 0.6s ease;
-          transform: translate(-50%, -50%);
-          border-radius: 50%;
-        }
-
-        .cta-button:hover::before {
-          width: 300px;
-          height: 300px;
-        }
-
-        /* Magnetic Hover Effect */
-        .magnetic-node {
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-
-        /* Tooltip Styles */
-        .timeline-tooltip {
-          position: absolute;
-          background: rgba(0, 0, 0, 0.9);
-          color: white;
-          padding: 8px 12px;
-          border-radius: 6px;
-          font-size: 0.875rem;
-          white-space: nowrap;
-          z-index: 50;
-          opacity: 0;
-          transform: translateY(10px);
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          pointer-events: none;
-        }
-
-        .timeline-tooltip.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out;
-        }
-        
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .timeline-node {
-          opacity: 0;
-          transform: translateY(20px);
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        .timeline-node:nth-child(odd) {
-          animation-delay: 0.1s;
-        }
-        
-        .timeline-node:nth-child(even) {
-          animation-delay: 0.2s;
-        }
-      `}</style>
+      <ProjectModal 
+        project={selectedProject} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
