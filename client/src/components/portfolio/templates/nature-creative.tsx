@@ -774,7 +774,7 @@ export default function NatureCreative({
                           </div>
                         )}
                         {exp.description && (
-                          <p className="text-gray-600 leading-relaxed mb-3">{exp.description}</p>
+                          <p className="text-gray-600 leading-relaxed mb-3">{String(exp.description)}</p>
                         )}
                         
                         {/* Key Responsibilities */}
@@ -833,7 +833,7 @@ export default function NatureCreative({
                       
                       {/* Field of Study */}
                       {edu.fieldOfStudy && (
-                        <p className="text-teal-600 text-sm mb-2">{edu.fieldOfStudy}</p>
+                        <p className="text-teal-600 text-sm mb-2">{String(edu.fieldOfStudy)}</p>
                       )}
                       
                       {/* Location, Industry, Domain */}
@@ -841,17 +841,17 @@ export default function NatureCreative({
                         {edu.location && (
                           <div className="flex items-center gap-1 text-gray-500 text-sm">
                             <MapPin size={12} className="text-rose-400" />
-                            <span className="text-xs">{edu.location}</span>
+                            <span className="text-xs">{String(edu.location)}</span>
                           </div>
                         )}
                         {edu.industry && (
                           <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
-                            {edu.industry}
+                            {String(edu.industry)}
                           </Badge>
                         )}
                         {edu.domain && (
                           <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
-                            {edu.domain}
+                            {String(edu.domain)}
                           </Badge>
                         )}
                       </div>
