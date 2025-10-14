@@ -49,7 +49,7 @@ function EnhancedParallaxBackground() {
   const birdY = useTransform(scrollY, [0, 2000], [0, -100]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {/* Layer 1: Animated Sky Gradient */}
       <motion.div 
         style={{ y: skyY }}
@@ -180,7 +180,7 @@ function FloatingNatureElements() {
   ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
       {elements.map((el) => {
         const Icon = el.type === 'leaf' ? Leaf : Flower2;
         const color = el.type === 'leaf' 
@@ -231,7 +231,7 @@ function SparkleParticles() {
   , []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-5">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
       {sparkles.map((sparkle) => (
         <motion.div
           key={sparkle.id}
@@ -330,7 +330,7 @@ export default function NatureCreative({
       <SparkleParticles />
 
       {/* Main Content Container */}
-      <div className="relative z-20">
+      <div className="relative z-10">
         
         {/* Hero Section */}
         <motion.section 
