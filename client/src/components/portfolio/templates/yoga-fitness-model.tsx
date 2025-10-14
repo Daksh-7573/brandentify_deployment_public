@@ -580,9 +580,9 @@ export default function YogaFitnessModel({
                           {edu.startDate} - {edu.endDate || 'Present'}
                         </p>
                       )}
-                      {edu.description && (
+                      {edu.fieldOfStudy && (
                         <p className="text-gray-700 mt-3 leading-relaxed">
-                          {edu.description}
+                          {edu.fieldOfStudy}
                         </p>
                       )}
                     </div>
@@ -626,10 +626,10 @@ export default function YogaFitnessModel({
                       {service.description}
                     </p>
                   )}
-                  {service.price && (
+                  {(service.priceUsd || service.priceInr) && (
                     <p className="text-lg font-semibold text-sage-700">
-                      ${service.price}
-                      {service.priceUnit && ` / ${service.priceUnit}`}
+                      {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
+                      {service.isHourly && ' / hour'}
                     </p>
                   )}
                 </motion.div>
