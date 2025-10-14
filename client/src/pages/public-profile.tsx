@@ -36,6 +36,14 @@ interface UserData {
   aboutMe?: string | null;
   whatIOffer?: string | null;
   jobLevel?: string | null;
+  tagline?: string | null;
+  visionStatement?: string | null;
+  missionStatement?: string | null;
+  coreValues?: string[] | null;
+  uniqueValueProposition?: string | null;
+  brandName?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
 }
 
 // Type for portfolio data

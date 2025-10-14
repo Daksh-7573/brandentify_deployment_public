@@ -40,6 +40,13 @@ interface UserData {
   randomProfileLink?: string | null;
   selectedPortfolioLayout?: string | null;
   visitingCardType?: string | null;
+  tagline?: string | null;
+  visionStatement?: string | null;
+  missionStatement?: string | null;
+  coreValues?: string[] | null;
+  uniqueValueProposition?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
 }
 
 // Type for portfolio data
