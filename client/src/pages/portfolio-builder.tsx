@@ -74,7 +74,6 @@ import {
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
-import { PortfolioDetailModal } from "@/components/portfolio/portfolio-detail-modal";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
@@ -107,7 +106,6 @@ export default function PortfolioBuilder() {
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
-  const [selectedPortfolioDetail, setSelectedPortfolioDetail] = useState<any>(null);
 
   // Define User type to match server-side schema
   type User = {
@@ -451,165 +449,77 @@ export default function PortfolioBuilder() {
       name: "The Corporate Executive", 
       description: `✔ Theme: High-End, Premium, & Polished
 ✔ Best For: Senior Executives, Investors, Industry Experts`,
-      theme: "#DAA520",
-      features: [
-        "Premium gold & dark theme design",
-        "Executive-level professional layout",
-        "Elegant typography and spacing",
-        "Perfect for C-suite & senior roles",
-        "Sophisticated project showcase",
-        "Premium brand positioning"
-      ]
+      theme: "#DAA520"
     },
     { 
       id: "scholar", 
       name: "The Scholar", 
       description: `✔ Theme: Clean, Modern, Knowledge-Centric
 ✔ Best For: Students, Fresh Graduates, Interns, Early-Career Professionals`,
-      theme: "#4F86C6",
-      features: [
-        "Academic-focused design",
-        "Education & certification highlights",
-        "Clean, readable layout",
-        "Entry-level friendly structure",
-        "Skills & learning showcase",
-        "Modern, approachable style"
-      ]
+      theme: "#4F86C6"
     },
     { 
       id: "timeline-storyteller-2", 
       name: "The Timeline Storyteller", 
       description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
 ✔ Best For: Storytellers & Professionals with Rich Career Histories`,
-      theme: "#6C63FF",
-      features: [
-        "Interactive career timeline",
-        "Visual journey narrative",
-        "Comprehensive experience display",
-        "Story-driven layout",
-        "Rich content organization",
-        "Engaging scroll animations"
-      ]
+      theme: "#6C63FF"
     },
     { 
       id: "visual-expert", 
       name: "The Visual Expert", 
       description: `✔ Theme: Image-First, Creative & Bold
 ✔ Best For: Designers, Photographers, Marketers`,
-      theme: "#F8C471",
-      features: [
-        "Image-first visual design",
-        "Bold creative layouts",
-        "Portfolio showcase focus",
-        "Visual storytelling",
-        "Creative industry optimized",
-        "Eye-catching presentations"
-      ]
+      theme: "#F8C471"
     },
     { 
       id: "dynamic-innovator", 
       name: "The Dynamic Innovator", 
       description: `✔ Theme: Futuristic & High-Tech
 ✔ Best For: AI Experts, Engineers, Startups`,
-      theme: "#0FF0FC",
-      features: [
-        "Futuristic tech design",
-        "High-tech animations",
-        "Innovation-focused layout",
-        "Tech industry branding",
-        "Modern UI components",
-        "Startup-ready presentation"
-      ]
+      theme: "#0FF0FC"
     },
     { 
       id: "freelancer-hub", 
       name: "The Freelancer Hub", 
       description: `✔ Theme: Colorful, Playful, Expressive
 ✔ Best For: Freelancers, Influencers, Coaches, Creators`,
-      theme: "#FF5757",
-      features: [
-        "Vibrant, colorful design",
-        "Personality-driven layout",
-        "Service showcase focused",
-        "Creator-friendly structure",
-        "Engaging visual elements",
-        "Personal brand emphasis"
-      ]
+      theme: "#FF5757"
     },
     { 
       id: "animated", 
       name: "The Animated", 
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
-      theme: "#00E5FF",
-      features: [
-        "Full-page animations",
-        "Motion-driven interactions",
-        "VFX & animation showcase",
-        "Interactive elements",
-        "Cutting-edge transitions",
-        "Show your motion skills"
-      ]
+      theme: "#00E5FF"
     },
     { 
       id: "designer-portfolio", 
       name: "The Designer Showcase", 
       description: `✔ Theme: Neo-Glass, Modern, Visually Rich
 ✔ Best For: Designers, Creative Professionals, Portfolio-First Careers`,
-      theme: "#A855F7",
-      features: [
-        "Neo-glass morphism design",
-        "Modern visual aesthetics",
-        "Portfolio-first layout",
-        "Creative project showcase",
-        "Stunning visual effects",
-        "Designer-optimized structure"
-      ]
+      theme: "#A855F7"
     },
     { 
       id: "photographer-portfolio", 
       name: "The Photographer Portfolio", 
       description: `✔ Theme: Creative, Animation-Rich, Photography-Focused with Camera Effects
 ✔ Best For: Photographers, Visual Artists, Videographers, Creative Image-Driven Professionals`,
-      theme: "#FFB84D",
-      features: [
-        "Camera-themed animations",
-        "Aperture & shutter effects",
-        "Dark moody photography aesthetic",
-        "Lens flare & bokeh elements",
-        "Film strip visual accents",
-        "Photography-centric showcase"
-      ]
+      theme: "#FFB84D"
     },
     { 
       id: "pastel-dreamscape", 
       name: "Pastel Dreamscape", 
       description: `✔ Theme: Animated, Pastel Colors, Unique Graphics & Layouts
 ✔ Best For: Creative Professionals, Designers, Artists, Modern Portfolio Seekers`,
-      theme: "#F4F5FF",
-      features: [
-        "Soft pastel color palette",
-        "Dreamy visual animations",
-        "Unique graphic elements",
-        "Creative artistic layout",
-        "Smooth transitions",
-        "Modern minimalist feel"
-      ]
+      theme: "#F4F5FF"
     },
     { 
       id: "zen-harmony", 
       name: "Zen Harmony", 
       description: `✔ Theme: Nature-Inspired, Calming Pastels, Smooth Animations & Graphics
 ✔ Best For: Yoga/Fitness Freelancers, Wellness Coaches, Mindfulness Instructors, Holistic Practitioners`,
-      theme: "#B8DFC6",
-      features: [
-        "Nature-inspired design",
-        "Calming color scheme",
-        "Wellness-focused layout",
-        "Peaceful animations",
-        "Holistic brand positioning",
-        "Mindfulness aesthetic"
-      ]
+      theme: "#B8DFC6"
     }
   ];
 
@@ -848,7 +758,7 @@ export default function PortfolioBuilder() {
                         ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
                         : "border border-white/10 bg-black/60"
                     }`}
-                    onClick={() => setSelectedPortfolioDetail(layout)}
+                    onClick={() => form.setValue("layout", layout.id as any)}
                   >
                     <div className="flex flex-col h-full">
                       <div className="pb-2">
@@ -1619,17 +1529,6 @@ export default function PortfolioBuilder() {
           )}
         </NeoGlassLayout>
       </div>
-
-      {/* Portfolio Detail Modal */}
-      <PortfolioDetailModal
-        isOpen={!!selectedPortfolioDetail}
-        onClose={() => setSelectedPortfolioDetail(null)}
-        portfolio={selectedPortfolioDetail}
-        onSelect={(id) => {
-          form.setValue("layout", id as any);
-          setSelectedPortfolioDetail(null);
-        }}
-      />
     </div>
   );
 }
