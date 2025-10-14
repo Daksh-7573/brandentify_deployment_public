@@ -1093,48 +1093,116 @@ export default function NatureCreative({
         </section>
       </div>
 
-      {/* Project Modal */}
+      {/* Project Detail Modal - Nature Theme */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+            className="fixed inset-0 bg-gradient-to-br from-emerald-900/80 via-teal-900/80 to-cyan-900/80 backdrop-blur-md z-50 flex items-center justify-center p-6"
             onClick={() => setSelectedProject(null)}
+            data-testid="project-modal-overlay"
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-auto"
+              initial={{ scale: 0.9, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 50 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="relative bg-gradient-to-br from-white/95 to-emerald-50/95 backdrop-blur-xl rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-auto border-2 border-emerald-200/50 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
+              data-testid="project-modal-content"
             >
+              {/* Close button with nature icon */}
+              <button
+                onClick={() => setSelectedProject(null)}
+                className="absolute top-4 right-4 z-10 p-3 bg-white/80 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110 group"
+                data-testid="button-close-modal"
+              >
+                <Leaf className="text-emerald-600 group-hover:rotate-180 transition-transform duration-300" size={24} />
+              </button>
+
+              {/* Project Image with Nature Overlay */}
               {selectedProject.thumbnailUrl && (
-                <img
-                  src={selectedProject.thumbnailUrl}
-                  alt={selectedProject.title}
-                  className="w-full h-64 object-cover rounded-t-3xl"
-                />
+                <div className="relative h-72 overflow-hidden rounded-t-3xl">
+                  <img
+                    src={selectedProject.thumbnailUrl}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/50 via-transparent to-transparent" />
+                  
+                  {/* Floating nature elements on image */}
+                  <motion.div
+                    className="absolute top-6 right-6"
+                    animate={{ y: [-5, 5, -5], rotate: [0, 10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    <Flower2 className="text-rose-300/60" size={40} />
+                  </motion.div>
+                  <motion.div
+                    className="absolute bottom-6 left-6"
+                    animate={{ y: [5, -5, 5], rotate: [0, -10, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    <Sparkles className="text-yellow-300/60" size={32} />
+                  </motion.div>
+                </div>
               )}
-              <div className="p-8">
-                <h3 className="text-3xl font-bold text-gray-800 mb-4">{selectedProject.title}</h3>
-                <p className="text-gray-600 mb-6 whitespace-pre-wrap">{selectedProject.description}</p>
-                {selectedProject.category && (
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-800 mb-2">Category</h4>
-                    <Badge className="bg-emerald-50 text-emerald-700">
-                      {selectedProject.category}
-                    </Badge>
+
+              {/* Content */}
+              <div className="p-8 md:p-12">
+                {/* Title with nature accent */}
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl">
+                    <Mountain className="text-emerald-600" size={32} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent mb-2">
+                      {selectedProject.title}
+                    </h3>
+                    {selectedProject.category && (
+                      <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {selectedProject.category}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="mb-8 p-6 bg-gradient-to-br from-white/60 to-emerald-50/60 rounded-2xl border border-emerald-100">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">
+                    {selectedProject.description}
+                  </p>
+                </div>
+
+                {/* Technologies/Tags */}
+                {selectedProject.tags && selectedProject.tags.length > 0 && (
+                  <div className="mb-8">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <Sparkles className="text-emerald-500" size={20} />
+                      Technologies Used
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.tags.map((tag, idx) => (
+                        <Badge key={idx} className="bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-700 border border-teal-200">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 )}
+
+                {/* Project Link Button */}
                 {selectedProject.projectUrl && (
                   <Button
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-white py-6 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                     onClick={() => window.open(selectedProject.projectUrl!, '_blank')}
+                    data-testid="button-view-project"
                   >
-                    <ExternalLink className="mr-2" size={20} />
-                    View Project
+                    <ExternalLink className="mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={20} />
+                    View Live Project
                   </Button>
                 )}
               </div>
