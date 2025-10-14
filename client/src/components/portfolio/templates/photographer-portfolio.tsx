@@ -277,9 +277,51 @@ export default function PhotographerPortfolio({
     return () => clearTimeout(timer);
   }, []);
 
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (lightboxImageIndex === null || !selectedProject?.mediaUrls) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const mediaUrls = selectedProject.mediaUrls as string[];
+      
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setLightboxImageIndex((prev) => 
+          prev === null ? 0 : (prev - 1 + mediaUrls.length) % mediaUrls.length
+        );
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setLightboxImageIndex((prev) => 
+          prev === null ? 0 : (prev + 1) % mediaUrls.length
+        );
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setLightboxImageIndex(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxImageIndex, selectedProject]);
+
   const triggerShutter = () => {
     setShutterTrigger(true);
     setTimeout(() => setShutterTrigger(false), 200);
+  };
+
+  const navigateLightbox = (direction: 'prev' | 'next') => {
+    if (!selectedProject?.mediaUrls || lightboxImageIndex === null) return;
+    
+    const mediaUrls = selectedProject.mediaUrls as string[];
+    if (direction === 'prev') {
+      setLightboxImageIndex((prev) => 
+        prev === null ? 0 : (prev - 1 + mediaUrls.length) % mediaUrls.length
+      );
+    } else {
+      setLightboxImageIndex((prev) => 
+        prev === null ? 0 : (prev + 1) % mediaUrls.length
+      );
+    }
   };
 
   return (
