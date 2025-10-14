@@ -277,6 +277,13 @@ export default function PhotographerPortfolio({
     return () => clearTimeout(timer);
   }, []);
 
+  // Reset lightbox when project modal closes
+  useEffect(() => {
+    if (!selectedProject) {
+      setLightboxImageIndex(null);
+    }
+  }, [selectedProject]);
+
   // Keyboard navigation for lightbox
   useEffect(() => {
     if (lightboxImageIndex === null || !selectedProject?.mediaUrls) return;
@@ -1240,6 +1247,8 @@ export default function PhotographerPortfolio({
                               transition={{ delay: 1.0 + idx * 0.1, duration: 0.4 }}
                               whileHover={{ scale: 1.05 }}
                               className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group"
+                              onClick={() => setLightboxImageIndex(idx)}
+                              data-testid={`gallery-image-${idx}`}
                             >
                               <img
                                 src={url}
@@ -1269,6 +1278,160 @@ export default function PhotographerPortfolio({
                   {[...Array(20)].map((_, i) => (
                     <div key={i} className="w-4 h-full rounded-sm" style={{ background: colors.warmAmber, opacity: 0.3 }} />
                   ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Lightbox */}
+      <Dialog 
+        open={lightboxImageIndex !== null} 
+        onOpenChange={(open) => !open && setLightboxImageIndex(null)}
+      >
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent overflow-hidden">
+          <AnimatePresence mode="wait">
+            {lightboxImageIndex !== null && selectedProject?.mediaUrls && (
+              <motion.div
+                key="lightbox"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative w-full h-full flex items-center justify-center"
+                style={{ background: 'rgba(0, 0, 0, 0.95)' }}
+              >
+                {/* Aperture Iris Effect */}
+                <motion.div
+                  className="absolute inset-0 z-10 pointer-events-none"
+                  initial={{ clipPath: 'circle(0% at 50% 50%)', opacity: 1 }}
+                  animate={{ clipPath: 'circle(100% at 50% 50%)', opacity: [1, 0.8, 0] }}
+                  transition={{ duration: 0.5, times: [0, 0.7, 1] }}
+                  style={{ background: colors.richBlack }}
+                />
+
+                {/* Close Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setLightboxImageIndex(null)}
+                  className="absolute top-4 right-4 z-30 rounded-full"
+                  style={{ 
+                    background: colors.filmGray, 
+                    color: colors.warmAmber 
+                  }}
+                  data-testid="lightbox-close"
+                >
+                  <X size={24} />
+                </Button>
+
+                {/* Navigation Buttons */}
+                {(selectedProject.mediaUrls as string[]).length > 1 && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => navigateLightbox('prev')}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 z-30 rounded-full w-12 h-12"
+                      style={{ 
+                        background: colors.filmGray, 
+                        color: colors.warmAmber 
+                      }}
+                      data-testid="lightbox-prev"
+                    >
+                      <ChevronLeft size={32} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => navigateLightbox('next')}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 z-30 rounded-full w-12 h-12"
+                      style={{ 
+                        background: colors.filmGray, 
+                        color: colors.warmAmber 
+                      }}
+                      data-testid="lightbox-next"
+                    >
+                      <ChevronRight size={32} />
+                    </Button>
+                  </>
+                )}
+
+                {/* Main Image */}
+                <motion.div
+                  key={lightboxImageIndex}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                  className="relative max-w-full max-h-[90vh] z-20"
+                >
+                  {/* Focus Frame Effect */}
+                  <motion.div
+                    className="absolute -inset-4 border-4 pointer-events-none z-10"
+                    style={{ borderColor: colors.cameraRed }}
+                    animate={{ 
+                      opacity: [0.8, 1, 0.8],
+                      scale: [1, 1.02, 1]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  
+                  <img
+                    src={(selectedProject.mediaUrls as string[])[lightboxImageIndex]}
+                    alt={`${selectedProject.title} - Image ${lightboxImageIndex + 1}`}
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                    style={{ boxShadow: `0 0 50px ${colors.warmAmber}40` }}
+                  />
+
+                  {/* Image Counter */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.3 }}
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full"
+                    style={{ 
+                      background: colors.filmGray,
+                      color: colors.warmAmber,
+                      fontSize: '14px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {lightboxImageIndex + 1} / {(selectedProject.mediaUrls as string[]).length}
+                  </motion.div>
+                </motion.div>
+
+                {/* Camera Viewfinder Corners */}
+                <div className="absolute inset-8 pointer-events-none z-20">
+                  <motion.div 
+                    className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2"
+                    style={{ borderColor: colors.warmAmber }}
+                    initial={{ opacity: 0, x: -20, y: -20 }}
+                    animate={{ opacity: 0.6, x: 0, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                  />
+                  <motion.div 
+                    className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2"
+                    style={{ borderColor: colors.warmAmber }}
+                    initial={{ opacity: 0, x: 20, y: -20 }}
+                    animate={{ opacity: 0.6, x: 0, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                  />
+                  <motion.div 
+                    className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2"
+                    style={{ borderColor: colors.warmAmber }}
+                    initial={{ opacity: 0, x: -20, y: 20 }}
+                    animate={{ opacity: 0.6, x: 0, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                  />
+                  <motion.div 
+                    className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2"
+                    style={{ borderColor: colors.warmAmber }}
+                    initial={{ opacity: 0, x: 20, y: 20 }}
+                    animate={{ opacity: 0.6, x: 0, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                  />
                 </div>
               </motion.div>
             )}
