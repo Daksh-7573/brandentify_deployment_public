@@ -1176,20 +1176,16 @@ export default function NatureCreative({
                   </p>
                 </div>
 
-                {/* Technologies/Tags */}
-                {selectedProject.tags && selectedProject.tags.length > 0 && (
+                {/* Industry */}
+                {selectedProject.industry && (
                   <div className="mb-8">
                     <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                       <Sparkles className="text-emerald-500" size={20} />
-                      Technologies Used
+                      Industry
                     </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProject.tags.map((tag, idx) => (
-                        <Badge key={idx} className="bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-700 border border-teal-200">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                    <Badge className="bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-700 border border-teal-200">
+                      {selectedProject.industry}
+                    </Badge>
                   </div>
                 )}
 
