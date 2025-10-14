@@ -455,8 +455,7 @@ export default function NatureCreative({
                 </Button>
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="border-2 border-emerald-400 text-emerald-600 hover:bg-emerald-50 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-gradient-to-r from-rose-300 to-pink-300 hover:from-rose-400 hover:to-pink-400 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
                   data-testid="button-mentor-me"
                 >
                   <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
