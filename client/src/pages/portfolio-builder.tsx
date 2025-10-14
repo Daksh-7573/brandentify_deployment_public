@@ -127,6 +127,9 @@ export default function PortfolioBuilder() {
     missionStatement: string | null;
     coreValues: string[] | null;
     uniqueValueProposition: string | null;
+    brandName: string | null;
+    primaryAudience: string[] | null;
+    secondaryAudience: string[] | null;
   };
   
   // Fetch user profile data with proper typing
@@ -1354,11 +1357,15 @@ export default function PortfolioBuilder() {
                     domain: userData?.domain || null,
                     lookingFor: userData?.lookingFor || null,
                     whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                    jobLevel: userData?.jobLevel || null,
                     tagline: userData?.tagline || null,
                     visionStatement: userData?.visionStatement || null,
                     missionStatement: userData?.missionStatement || null,
                     coreValues: userData?.coreValues || [],
-                    uniqueValueProposition: userData?.uniqueValueProposition || null
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    brandName: userData?.brandName || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
                   }}
                   userSkills={skills || []}
                   userExperiences={experiences || []}
