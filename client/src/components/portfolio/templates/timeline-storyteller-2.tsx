@@ -128,9 +128,10 @@ function StorytellingParallaxBackground() {
 function ProjectModal({ project, isOpen, onClose }: { project: Project | null; isOpen: boolean; onClose: () => void }) {
   if (!project) return null;
 
+  const mediaUrls = (project.mediaUrls as string[]) || [];
   const allImages = [
-    ...(project.projectImage ? [project.projectImage] : []),
-    ...(project.projectImages || [])
+    ...(project.thumbnailUrl ? [project.thumbnailUrl] : []),
+    ...mediaUrls
   ];
 
   return (
@@ -445,6 +446,82 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
+        {userInfo.uniqueValueProposition && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-500 rounded-full">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Unique Value</h2>
+            </div>
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
+              <CardContent className="p-8">
+                <p className="text-lg text-gray-700 leading-relaxed font-medium">{userInfo.uniqueValueProposition}</p>
+              </CardContent>
+            </Card>
+          </motion.section>
+        )}
+
+        {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
+          (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Target Audience</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-lg">
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
+                      <Target className="w-6 h-6" />
+                      Primary Audience
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {userInfo.primaryAudience.map((audience, idx) => (
+                        <Badge key={idx} className="bg-amber-200 text-amber-900 hover:bg-amber-300">
+                          {audience}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
+              {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-lg">
+                  <CardContent className="p-6 space-y-4">
+                    <h3 className="text-xl font-bold text-orange-900 flex items-center gap-2">
+                      <Users className="w-6 h-6" />
+                      Secondary Audience
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {userInfo.secondaryAudience.map((audience, idx) => (
+                        <Badge key={idx} className="bg-orange-200 text-orange-900 hover:bg-orange-300">
+                          {audience}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </motion.section>
+        )}
+
         {sortedExperiences.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -537,13 +614,13 @@ export default function TimelineStoryteller2({
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-amber-900">{edu.degree}</h3>
-                          <p className="text-amber-700 font-medium">{edu.school}</p>
+                          <p className="text-amber-700 font-medium">{edu.institution}</p>
                         </div>
                         <GraduationCap className="w-8 h-8 text-orange-500" />
                       </div>
                       
-                      {edu.field && (
-                        <p className="text-gray-700">{edu.field}</p>
+                      {edu.fieldOfStudy && (
+                        <p className="text-gray-700">{edu.fieldOfStudy}</p>
                       )}
                       
                       <div className="flex items-center gap-2 text-sm text-amber-600">
@@ -622,10 +699,10 @@ export default function TimelineStoryteller2({
                     onClick={() => openProjectModal(project)}
                   >
                     <CardContent className="p-0">
-                      {project.projectImage && (
+                      {project.thumbnailUrl && (
                         <div className="relative h-48 overflow-hidden rounded-t-lg">
                           <img 
-                            src={project.projectImage} 
+                            src={project.thumbnailUrl} 
                             alt={project.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
@@ -685,7 +762,7 @@ export default function TimelineStoryteller2({
                 >
                   <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
                     <CardContent className="p-6 space-y-3">
-                      <h3 className="text-xl font-bold text-amber-900">{service.name}</h3>
+                      <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
                       {service.description && (
                         <p className="text-gray-700">{service.description}</p>
                       )}
