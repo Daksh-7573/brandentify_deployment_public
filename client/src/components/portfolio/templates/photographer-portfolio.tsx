@@ -345,11 +345,32 @@ export default function PhotographerPortfolio({
                   {userInfo.title || 'Photographer'}
                 </p>
                 {userInfo.tagline && (
-                  <p className="text-lg opacity-80 italic">{userInfo.tagline}</p>
+                  <p className="text-lg opacity-80 italic mb-3">{userInfo.tagline}</p>
+                )}
+                
+                {/* Industry & Domain */}
+                {(userInfo.industry || userInfo.domain) && (
+                  <div className="flex items-center gap-3 mb-3 text-base opacity-80">
+                    {userInfo.industry && (
+                      <span className="px-3 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                        {userInfo.industry}
+                      </span>
+                    )}
+                    {userInfo.domain && (
+                      <span className="px-3 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                        {userInfo.domain}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Location */}
+                {userInfo.location && (
+                  <p className="text-base opacity-70 mb-3">📍 {userInfo.location}</p>
                 )}
               </motion.div>
 
-              {userInfo.visionStatement && (
+              {userInfo.uniqueValueProposition && (
                 <motion.div
                   className="border-l-4 pl-6 py-2 italic text-lg opacity-90"
                   style={{ borderColor: colors.warmAmber }}
@@ -357,7 +378,7 @@ export default function PhotographerPortfolio({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 1.4 }}
                 >
-                  "{userInfo.visionStatement}"
+                  "{userInfo.uniqueValueProposition}"
                 </motion.div>
               )}
 
@@ -382,6 +403,25 @@ export default function PhotographerPortfolio({
                       {value}
                     </Badge>
                   ))}
+                </motion.div>
+              )}
+
+              {/* I am looking for - Highlighted */}
+              {userInfo.lookingFor && (
+                <motion.div
+                  className="p-4 rounded-lg border-2"
+                  style={{ 
+                    borderColor: colors.warmAmber,
+                    background: `${colors.warmAmber}20`,
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.7 }}
+                >
+                  <p className="text-sm font-semibold mb-1" style={{ color: colors.warmAmber }}>
+                    I am looking for:
+                  </p>
+                  <p className="text-base">{userInfo.lookingFor}</p>
                 </motion.div>
               )}
 
@@ -459,6 +499,53 @@ export default function PhotographerPortfolio({
                   {userInfo.aboutMe}
                 </p>
               </div>
+
+              {/* Vision and Mission Statements side by side */}
+              {(userInfo.visionStatement || userInfo.missionStatement) && (
+                <div className="grid md:grid-cols-2 gap-6 mt-8">
+                  {userInfo.visionStatement && (
+                    <motion.div
+                      className="p-6 rounded-xl border-2"
+                      style={{ 
+                        borderColor: colors.warmAmber,
+                        background: colors.filmGray,
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      <h3 className="text-xl font-bold mb-3" style={{ color: colors.warmAmber }}>
+                        Vision Statement
+                      </h3>
+                      <p className="text-base leading-relaxed opacity-90">
+                        {userInfo.visionStatement}
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {userInfo.missionStatement && (
+                    <motion.div
+                      className="p-6 rounded-xl border-2"
+                      style={{ 
+                        borderColor: colors.warmAmber,
+                        background: colors.filmGray,
+                      }}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      <h3 className="text-xl font-bold mb-3" style={{ color: colors.warmAmber }}>
+                        Mission Statement
+                      </h3>
+                      <p className="text-base leading-relaxed opacity-90">
+                        {userInfo.missionStatement}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
+              )}
             </motion.div>
           </div>
         </section>
