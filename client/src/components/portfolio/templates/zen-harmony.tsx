@@ -40,7 +40,7 @@ interface ZenHarmonyProps {
 // Breathing Background Animation
 function BreathingBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       <motion.div
         className="absolute inset-0"
         style={{
@@ -71,7 +71,7 @@ function FloatingLotus() {
   ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {lotuses.map((lotus) => (
         <motion.div
           key={lotus.id}
@@ -118,7 +118,7 @@ function FloatingLeaves() {
   ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {leaves.map((leaf) => (
         <motion.div
           key={leaf.id}
