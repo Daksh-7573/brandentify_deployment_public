@@ -35,6 +35,19 @@ Preferred communication style: Simple, everyday language.
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.
 - **Content Management**: Pulses (professional posts), Projects Showcase, Nowboard (opportunity discovery), Career Goals (milestone tracking).
+- **Portfolio Templates**: Professional portfolio builder with 12+ templates including:
+  - Corporate Executive: Premium, high-end design for executives and industry experts
+  - Scholar: Clean, knowledge-centric for students and early-career professionals
+  - Timeline Storyteller: Interactive timeline with comprehensive career history
+  - Visual Expert: Image-first for designers, photographers, marketers
+  - Dynamic Innovator: Futuristic for AI experts, engineers, startups
+  - Freelancer Hub: Colorful, expressive for freelancers and creators
+  - Animated & Animated Odyssey: Motion-driven for motion designers and VFX artists
+  - Designer Showcase: Neo-glass, modern for creative professionals
+  - Photographer Portfolio: Animation-rich with camera effects
+  - Pastel Dreamscape: Animated with unique graphics for modern creatives
+  - Nature Creative: Nature-inspired with 5-layer parallax and full animations for eco-conscious professionals
+  - Fashion Runway: High-fashion editorial with 3-layer parallax for fashion models and brand ambassadors
 - **Gamification**: Brand Quests (AI-generated, impact-weighted, audience-driven, and goal-aligned), XP System, Badges, Progress Tracking.
 - **Content Moderation**: Democratic flagging and AI-powered auto-deletion.
 - **Deployment Strategy**: Docker for containerization, Kubernetes for orchestration (production), Nginx for load balancing, Redis for caching, PostgreSQL (Neon serverless) for database.
