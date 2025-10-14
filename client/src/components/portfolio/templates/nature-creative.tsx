@@ -769,7 +769,7 @@ export default function NatureCreative({
                             <Calendar size={14} />
                             <span>
                               {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                              {exp.endDate && ` - ${new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
+                              {exp.endDate ? ` - ${new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` : ''}
                             </span>
                           </div>
                         )}
@@ -830,11 +830,51 @@ export default function NatureCreative({
                     <div className="relative bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg">
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{edu.degree}</h3>
                       <p className="text-emerald-600 font-medium mb-2">{edu.institution}</p>
+                      
+                      {/* Field of Study */}
+                      {edu.fieldOfStudy && (
+                        <p className="text-teal-600 text-sm mb-2">{edu.fieldOfStudy}</p>
+                      )}
+                      
+                      {/* Location, Industry, Domain */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {edu.location && (
+                          <div className="flex items-center gap-1 text-gray-500 text-sm">
+                            <MapPin size={12} className="text-rose-400" />
+                            <span className="text-xs">{edu.location}</span>
+                          </div>
+                        )}
+                        {edu.industry && (
+                          <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
+                            {edu.industry}
+                          </Badge>
+                        )}
+                        {edu.domain && (
+                          <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
+                            {edu.domain}
+                          </Badge>
+                        )}
+                      </div>
+
                       {edu.startDate && (
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-gray-500 text-sm mb-3">
                           {new Date(edu.startDate).getFullYear()}
-                          {edu.endDate && ` - ${new Date(edu.endDate).getFullYear()}`}
+                          {edu.endDate ? ` - ${new Date(edu.endDate).getFullYear()}` : ''}
                         </p>
+                      )}
+
+                      {/* Skills Acquired */}
+                      {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-emerald-100">
+                          <h4 className="text-xs font-semibold text-gray-700 mb-2">Skills Acquired:</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {edu.skillsAcquired.map((skill: string, idx: number) => (
+                              <Badge key={idx} className="bg-cyan-50 text-cyan-700 text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </div>
                   </motion.div>
