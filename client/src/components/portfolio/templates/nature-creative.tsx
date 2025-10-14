@@ -982,7 +982,27 @@ export default function NatureCreative({
                         <Award className="text-emerald-300" size={32} />
                       </motion.div>
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
-                      <p className="text-gray-600">{service.description}</p>
+                      <p className="text-gray-600 mb-4">{service.description}</p>
+                      
+                      {/* Price Display */}
+                      {(service.priceInr || service.priceUsd) && (
+                        <div className="mt-4 pt-4 border-t border-emerald-100">
+                          <div className="flex flex-col gap-2">
+                            {service.priceInr && (
+                              <div className="text-emerald-700 font-bold text-lg">
+                                ₹{Number(service.priceInr).toLocaleString('en-IN')}
+                                {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
+                              </div>
+                            )}
+                            {service.priceUsd && (
+                              <div className="text-teal-700 font-semibold text-base">
+                                ${Number(service.priceUsd).toLocaleString('en-US')}
+                                {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -1026,8 +1046,7 @@ export default function NatureCreative({
                 </Button>
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
+                  className="bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
                   data-testid="button-mentor-me-footer"
                 >
                   <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
