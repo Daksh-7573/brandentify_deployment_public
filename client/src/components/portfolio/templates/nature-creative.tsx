@@ -743,6 +743,27 @@ export default function NatureCreative({
                       >
                         <h3 className="text-xl font-bold text-gray-800 mb-1">{exp.title}</h3>
                         <p className="text-emerald-600 font-medium mb-2">{exp.company}</p>
+                        
+                        {/* Location, Industry, Domain */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {exp.location && (
+                            <div className="flex items-center gap-1 text-gray-500 text-sm">
+                              <MapPin size={14} className="text-rose-400" />
+                              <span>{exp.location}</span>
+                            </div>
+                          )}
+                          {exp.industry && (
+                            <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
+                              {exp.industry}
+                            </Badge>
+                          )}
+                          {exp.domain && (
+                            <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
+                              {exp.domain}
+                            </Badge>
+                          )}
+                        </div>
+
                         {exp.startDate && (
                           <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
                             <Calendar size={14} />
@@ -753,7 +774,22 @@ export default function NatureCreative({
                           </div>
                         )}
                         {exp.description && (
-                          <p className="text-gray-600 leading-relaxed">{exp.description}</p>
+                          <p className="text-gray-600 leading-relaxed mb-3">{exp.description}</p>
+                        )}
+                        
+                        {/* Key Responsibilities */}
+                        {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-emerald-100">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Key Responsibilities:</h4>
+                            <ul className="space-y-1">
+                              {exp.keyResponsibilities.map((resp: string, idx: number) => (
+                                <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                                  <span className="text-emerald-500 mt-1">•</span>
+                                  <span>{resp}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
                       </motion.div>
                     </motion.div>
