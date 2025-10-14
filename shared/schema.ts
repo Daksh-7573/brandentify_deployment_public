@@ -363,7 +363,7 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "scholar",
   "designer-portfolio", // Designer portfolio template with glassmorphic design
   "photographer-portfolio", // Photographer portfolio template with magazine-quality aesthetic
-  "zen-harmony" // Zen Harmony portfolio template with calming wellness theme
+  "nature-creative" // Nature-themed creative portfolio for freelancers with parallax effects and animations
 ]);
 
 // Portfolio model
