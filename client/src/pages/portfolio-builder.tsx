@@ -45,7 +45,7 @@ import Scholar from "@/components/portfolio/templates/scholar";
 import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
 import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape";
-import ZenHarmony from "@/components/portfolio/templates/zen-harmony";
+import NatureCreative from "@/components/portfolio/templates/nature-creative";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,7 +81,7 @@ const portfolioFormSchema = z.object({
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
-    "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "zen-harmony"
+    "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -515,11 +515,11 @@ export default function PortfolioBuilder() {
       theme: "#F4F5FF"
     },
     { 
-      id: "zen-harmony", 
-      name: "Zen Harmony", 
-      description: `✔ Theme: Nature-Inspired, Calming Pastels, Smooth Animations & Graphics
-✔ Best For: Yoga/Fitness Freelancers, Wellness Coaches, Mindfulness Instructors, Holistic Practitioners`,
-      theme: "#B8DFC6"
+      id: "nature-creative", 
+      name: "Nature Creative", 
+      description: `✔ Theme: Nature-Inspired, Parallax Effects, Full Animations & Creative Graphics
+✔ Best For: Nature-Loving Freelancers, Creative Professionals, Outdoor Enthusiasts, Eco-Conscious Brands`,
+      theme: "#10b981"
     }
   ];
 
@@ -1339,8 +1339,8 @@ export default function PortfolioBuilder() {
               />
             )}
 
-            {form.watch("layout") === "zen-harmony" && (
-              <ZenHarmony
+            {form.watch("layout") === "nature-creative" && (
+              <NatureCreative
                 userInfo={{
                   id: userData?.id,
                   name: userData?.name || user?.name || '',
