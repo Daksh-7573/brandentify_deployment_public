@@ -13557,6 +13557,11 @@ export const storage = {
   updatePulse: (id: number, pulse: Partial<Pulse>) => dbStorage.updatePulse(id, pulse),
   deletePulse: (id: number) => dbStorage.deletePulse(id),
   
+  // Pulse Comment methods
+  getPulseCommentsByPulseId: (pulseId: number) => dbStorage.getPulseCommentsByPulseId(pulseId),
+  createPulseComment: (comment: InsertPulseComment) => dbStorage.createPulseComment(comment),
+  deletePulseComment: (id: number) => dbStorage.deletePulseComment(id),
+  
   // Search methods
   searchPulses: (query: string) => dbStorage.searchPulses(query),
   searchProfiles: (query: string) => dbStorage.searchProfiles(query),

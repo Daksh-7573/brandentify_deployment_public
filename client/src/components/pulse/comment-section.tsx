@@ -25,12 +25,12 @@ interface Comment {
 interface CommentSectionProps {
   pulseId: number;
   initialCommentCount?: number;
+  isExpanded?: boolean;
 }
 
-export function CommentSection({ pulseId, initialCommentCount = 0 }: CommentSectionProps) {
+export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = false }: CommentSectionProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [isExpanded, setIsExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
 
   // Fetch comments for this pulse
@@ -107,20 +107,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0 }: CommentSect
     createCommentMutation.mutate(commentText);
   };
 
-  const commentCount = comments.length || initialCommentCount;
-
   return (
     <div className="mt-4">
-      {/* Comment Toggle Button */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-105 rounded-md px-3 py-1.5 text-sm flex items-center gap-2 transition-all duration-200"
-        data-testid={`button-toggle-comments-${pulseId}`}
-      >
-        <MessageCircle className="h-4 w-4" />
-        <span>{commentCount} {commentCount === 1 ? 'comment' : 'comments'}</span>
-      </button>
-
       {/* Comment Section - Glass Design */}
       {isExpanded && (
         <div className="mt-4 space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">

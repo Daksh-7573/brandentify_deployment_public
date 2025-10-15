@@ -94,9 +94,10 @@ interface PulseWithUser {
 // Pulse Reactions Component
 interface PulseReactionsProps {
   pulse: PulseWithUser;
+  onCommentClick?: () => void;
 }
 
-function PulseReactions({ pulse }: PulseReactionsProps) {
+function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
@@ -375,7 +376,9 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       
       {/* Comments Button */}
       <button 
+        onClick={onCommentClick}
         className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
+        data-testid={`button-comments-${pulse.id}`}
       >
         <MessageSquare className="h-4 w-4" strokeWidth={2} />
         {formatCount(pulse.comments || 0)}
@@ -1019,6 +1022,9 @@ export default function IndustryPulsePage() {
   const [hasPremiumContent, setHasPremiumContent] = useState(false);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
+  // Comment toggle state
+  const [expandedCommentsPulseId, setExpandedCommentsPulseId] = useState<number | null>(null);
+  
   // Fetch all pulses
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: ["/api/pulses"],
@@ -1300,11 +1306,18 @@ export default function IndustryPulsePage() {
                             )}
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-2">
-                            <PulseReactions pulse={pulse} />
+                            <PulseReactions 
+                              pulse={pulse} 
+                              onCommentClick={() => {
+                                setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
+                              }}
+                            />
                           </div>
-                          <div className="px-4 pb-4">
-                            <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} />
-                          </div>
+                          {expandedCommentsPulseId === pulse.id && (
+                            <div className="px-4 pb-4">
+                              <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} isExpanded={true} />
+                            </div>
+                          )}
                         </NeoGlassSection>
                       ))}
                     </div>

@@ -1,0 +1,203 @@
+[HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:27 Fetching data from: /api/pulses/376/comments
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/376/comments?t=1760539900936 500 (Internal Server Error)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 API Error 500 for /api/pulses/376/comments
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:360
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 Query error for /api/pulses/376/comments: Error: 500: {"message":"Error fetching comments"}
+    at queryClient.ts:373:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 Fetching data from: /api/pulses/376/comments
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/pulses/376/comments?t=1760539902197 500 (Internal Server Error)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:515
+Promise.catch
+run @ @tanstack_react-query.js?v=d0fcfa22:498
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 API Error 500 for /api/pulses/376/comments
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:360
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:515
+Promise.catch
+run @ @tanstack_react-query.js?v=d0fcfa22:498
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 Query error for /api/pulses/376/comments: Error: 500: {"message":"Error fetching comments"}
+    at queryClient.ts:373:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=d0fcfa22:840
+run @ @tanstack_react-query.js?v=d0fcfa22:494
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:515
+Promise.catch
+run @ @tanstack_react-query.js?v=d0fcfa22:498
+start @ @tanstack_react-query.js?v=d0fcfa22:536
+fetch @ @tanstack_react-query.js?v=d0fcfa22:926
+executeFetch_fn @ @tanstack_react-query.js?v=d0fcfa22:2211
+setOptions @ @tanstack_react-query.js?v=d0fcfa22:1955
+(anonymous) @ @tanstack_react-query.js?v=d0fcfa22:3032
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=d0fcfa22:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=d0fcfa22:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=d0fcfa22:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=d0fcfa22:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=d0fcfa22:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=d0fcfa22:19416
+commitRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=d0fcfa22:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=d0fcfa22:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=d0fcfa22:18627Understand this error
+injected.js:27 Cached response for /api/notifications/2/count
+injected.js:27 Cached response for /api/messaging/unread/count?userId=2
+injected.js:27 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
