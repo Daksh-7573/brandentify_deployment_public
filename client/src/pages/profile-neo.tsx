@@ -77,8 +77,6 @@ export default function ProfileNeo() {
       setDialogKey(prev => prev + 1); // Force form remount when dialog opens
     }
   }, [showEditPersonalInfoDialog]);
-  const [showEditAboutDialog, setShowEditAboutDialog] = useState(false);
-  const [aboutMe, setAboutMe] = useState<string | null>(null);
   const [showLookingForDialog, setShowLookingForDialog] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string | null>(null);
   const [industryValue, setIndustryValue] = useState<string | null>(null);
@@ -210,37 +208,6 @@ export default function ProfileNeo() {
     queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier], exact: true });
   };
   
-  // Update about me mutation
-  const updateAboutMeMutation = useMutation({
-    mutationFn: async (newAbout: string) => {
-      const res = await apiRequest("PATCH", `/api/users/${userIdentifier}`, {
-        about: newAbout
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Professional overview updated",
-        description: "Your professional summary has been updated successfully."
-      });
-      setShowEditAboutDialog(false);
-      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
-        if (oldData) {
-          return { ...oldData, about: aboutMe };
-        }
-        return oldData;
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Update failed",
-        description: "Something went wrong while updating your about me.",
-        variant: "destructive"
-      });
-      console.error("Error updating about me:", error);
-    }
-  });
-  
   // Update looking for
   const updateLookingForMutation = useMutation({
     mutationFn: async (lookingFor: string | null) => {
@@ -307,7 +274,6 @@ export default function ProfileNeo() {
   // Effect to set initial values
   useEffect(() => {
     if (userData) {
-      setAboutMe(userData.about);
       setSelectedLookingFor(userData.lookingFor);
       setIndustryValue(userData.industry);
       setDomainValue(userData.domain);
@@ -342,10 +308,6 @@ export default function ProfileNeo() {
   const lookingForLabel = lookingForCategory?.label || "Not specified";
   const lookingForIcon = lookingForCategory?.icon || "";
   console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel, "Icon:", lookingForIcon);
-
-  const handleSubmitAboutMe = () => {
-    updateAboutMeMutation.mutate(aboutMe || "");
-  };
   
   const handleSubmitLookingFor = () => {
     updateLookingForMutation.mutate(selectedLookingFor);
@@ -514,16 +476,6 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* Elevator Pitch */}
-                      <div>
-                        <div className="mb-2">
-                          <h3 className="font-medium text-white">Elevator Pitch</h3>
-                        </div>
-                        <p className="text-white/80 text-sm">
-                          {userData?.aboutMe || "Add a professional summary to introduce yourself to other professionals."}
-                        </p>
-                      </div>
-                      
                       {/* Job Title and Location */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -724,50 +676,6 @@ export default function ProfileNeo() {
             </NeoGlassSection>
         </NeoGlassLayout>
       </div>
-      
-      {/* Edit Elevator Pitch Dialog */}
-      <Dialog open={showEditAboutDialog} onOpenChange={setShowEditAboutDialog}>
-        <DialogContent className="neo-glass-card border-0 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-white">Edit Elevator Pitch</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="about" className="text-white">Elevator Pitch</Label>
-              <p className="text-xs text-white/60">(30-second version of who you are and what you do) (max 75 words)</p>
-              <Textarea
-                id="about"
-                value={aboutMe || ""}
-                onChange={(e) => setAboutMe(e.target.value)}
-                placeholder="Write a short professional summary..."
-                className="bg-black/80 border-white/20 text-white resize-none h-32"
-              />
-              <p className="text-xs text-white/60">
-                Share your professional background, expertise, and what motivates you. 
-                This helps others understand your career focus.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              onClick={() => setShowEditAboutDialog(false)}
-              variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSubmitAboutMe}
-              className="bg-white text-black hover:bg-white/90"
-              disabled={updateAboutMeMutation.isPending}
-            >
-              {updateAboutMeMutation.isPending ? 
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 
-                "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       
       {/* Looking For Dialog */}
       <Dialog open={showLookingForDialog} onOpenChange={setShowLookingForDialog}>
