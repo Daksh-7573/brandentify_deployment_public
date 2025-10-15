@@ -27,7 +27,7 @@ export function SearchableUserSelect({ currentUserId, selectedUserId, onUserSele
 
   // Search users as user types
   const { data: searchResults = [] } = useQuery<User[]>({
-    queryKey: ["/api/users/search", searchQuery, currentUserId],
+    queryKey: [`/api/users/search?q=${encodeURIComponent(searchQuery)}&currentUserId=${currentUserId}`],
     enabled: searchQuery.trim().length > 0,
   });
 
