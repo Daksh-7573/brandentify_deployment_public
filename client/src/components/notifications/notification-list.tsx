@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
 import { formatDistanceToNow } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 // Define notification types based on schema
 interface Notification {
@@ -19,6 +20,8 @@ interface Notification {
   isRead: boolean;
   createdAt: string;
   data?: Record<string, any>;
+  metadata?: Record<string, any>; // JSON object with approval-related data
+  actionUrl?: string; // URL for approval actions
 }
 
 interface NotificationListProps {
@@ -35,6 +38,7 @@ export default function NotificationList({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const { toast } = useToast();
   
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -90,6 +94,112 @@ export default function NotificationList({
     }
   };
   
+  // Handle approve action for team member/client requests
+  const handleApprove = async (notification: Notification) => {
+    try {
+      let endpoint = '';
+      const isTeamMember = notification.category === 'team_member_request';
+      
+      if (isTeamMember && notification.metadata) {
+        const collaboratorId = notification.metadata.collaboratorId;
+        if (collaboratorId) {
+          endpoint = `/api/projects/collaborators/${collaboratorId}/approve`;
+        }
+      } else if (notification.category === 'client_request' && notification.metadata) {
+        const endorsementId = notification.metadata.endorsementId;
+        if (endorsementId) {
+          endpoint = `/api/projects/endorsements/${endorsementId}/approve`;
+        }
+      }
+      
+      if (!endpoint) {
+        toast({
+          title: "Error",
+          description: "Invalid request data",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const response = await apiRequest('POST', endpoint);
+      if (response.ok) {
+        toast({
+          title: "Approved",
+          description: isTeamMember ? "Team member request approved successfully" : "Client request approved successfully"
+        });
+        // Remove the notification after approval
+        await handleDelete(notification.id);
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to approve request",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error approving request:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while approving the request",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  // Handle decline action for team member/client requests
+  const handleDecline = async (notification: Notification) => {
+    try {
+      let endpoint = '';
+      const isTeamMember = notification.category === 'team_member_request';
+      
+      if (isTeamMember && notification.metadata) {
+        const collaboratorId = notification.metadata.collaboratorId;
+        if (collaboratorId) {
+          endpoint = `/api/projects/collaborators/${collaboratorId}/decline`;
+        }
+      } else if (notification.category === 'client_request' && notification.metadata) {
+        const endorsementId = notification.metadata.endorsementId;
+        if (endorsementId) {
+          endpoint = `/api/projects/endorsements/${endorsementId}/decline`;
+        }
+      }
+      
+      if (!endpoint) {
+        toast({
+          title: "Error",
+          description: "Invalid request data",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const response = await apiRequest('POST', endpoint);
+      if (response.ok) {
+        toast({
+          title: "Declined",
+          description: isTeamMember ? "Team member request declined" : "Client request declined"
+        });
+        // Remove the notification after declining
+        await handleDelete(notification.id);
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to decline request",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error declining request:', error);
+      toast({
+        title: "Error",
+        description: "An error occurred while declining the request",
+        variant: "destructive"
+      });
+    }
+  };
+  
   // Filter notifications based on active tab
   const filteredNotifications = activeTab === 'all' 
     ? notifications 
@@ -108,6 +218,40 @@ export default function NotificationList({
       default:
         return <Badge className="bg-spotify-glass-highlight text-spotify-white border border-spotify-glass-border">i</Badge>;
     }
+  };
+  
+  // Render action buttons based on notification category
+  const renderActionButtons = (notification: Notification) => {
+    const isApprovalRequest = notification.category === 'team_member_request' || notification.category === 'client_request';
+    
+    if (isApprovalRequest) {
+      return (
+        <div className="flex gap-2 mt-2">
+          <Button
+            variant="default"
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs"
+            onClick={() => handleApprove(notification)}
+            data-testid="button-approve-request"
+          >
+            <Check className="h-3 w-3 mr-1" />
+            Approve
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-red-500/50 text-red-400 hover:bg-red-500/20 h-7 text-xs"
+            onClick={() => handleDecline(notification)}
+            data-testid="button-decline-request"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Decline
+          </Button>
+        </div>
+      );
+    }
+    
+    return null;
   };
   
   return (
@@ -182,6 +326,7 @@ export default function NotificationList({
                       <p className="text-xs text-spotify-light-gray/70 mt-1">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
+                      {renderActionButtons(notification)}
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {!notification.isRead && (
@@ -256,6 +401,7 @@ export default function NotificationList({
                       <p className="text-xs text-spotify-light-gray/70 mt-1">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
+                      {renderActionButtons(notification)}
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <Button

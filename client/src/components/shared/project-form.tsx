@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Video, CalendarIcon } from 'lucide-react';
+import { Video, CalendarIcon, UserPlus, Building2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -81,6 +81,12 @@ export default function ProjectForm({
   const [mediaErrors, setMediaErrors] = useState<MediaErrors | null>(null);
   const [featuredImageIndex, setFeaturedImageIndex] = useState<number>(0);
   const [existingMedia, setExistingMedia] = useState<string[]>(existingProject?.mediaUrls || []);
+  
+  // Team & Client state
+  const [teamMemberUrl, setTeamMemberUrl] = useState<string>('');
+  const [clientUrl, setClientUrl] = useState<string>('');
+  const [isAddingTeamMember, setIsAddingTeamMember] = useState<boolean>(false);
+  const [isAddingClient, setIsAddingClient] = useState<boolean>(false);
   
   // Refs for file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -427,11 +433,87 @@ export default function ProjectForm({
     setExistingMedia(existingProject?.mediaUrls || []);
   }, [existingProject]);
   
+  // Handle adding team member by profile URL
+  const handleAddTeamMember = async () => {
+    if (!existingProject || !teamMemberUrl.trim()) return;
+    
+    setIsAddingTeamMember(true);
+    try {
+      const response = await apiRequest(
+        'POST',
+        `/api/projects/${existingProject.id}/team-members/request`,
+        { profileUrl: teamMemberUrl.trim() }
+      );
+      
+      if (response.ok) {
+        toast({
+          title: "Request sent",
+          description: "Team member request has been sent successfully",
+        });
+        setTeamMemberUrl('');
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to send team member request",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send team member request",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAddingTeamMember(false);
+    }
+  };
+  
+  // Handle adding client by profile URL
+  const handleAddClient = async () => {
+    if (!existingProject || !clientUrl.trim()) return;
+    
+    setIsAddingClient(true);
+    try {
+      const response = await apiRequest(
+        'POST',
+        `/api/projects/${existingProject.id}/clients/request`,
+        { profileUrl: clientUrl.trim() }
+      );
+      
+      if (response.ok) {
+        toast({
+          title: "Request sent",
+          description: "Client request has been sent successfully",
+        });
+        setClientUrl('');
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to send client request",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error adding client:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send client request",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAddingClient(false);
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className={cn(
-          "grid w-full grid-cols-2",
+          "grid w-full grid-cols-3",
           useDarkMode ? "bg-[rgba(30,30,30,0.7)] text-white border-white/10" : ""
         )}>
           <TabsTrigger 
@@ -445,6 +527,13 @@ export default function ProjectForm({
             className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
           >
             Media & Attachments
+          </TabsTrigger>
+          <TabsTrigger 
+            value="team"
+            className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+            disabled={!existingProject}
+          >
+            Team & Clients
           </TabsTrigger>
         </TabsList>
         
@@ -800,6 +889,94 @@ export default function ProjectForm({
                     </div>
                   )}
                 </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="team" className="space-y-6">
+              {/* Team Members Section */}
+              <div className={cn(
+                "p-6 rounded-lg border space-y-4",
+                useDarkMode ? "bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border-white/10" : "bg-gradient-to-br from-slate-50 to-gray-100/80 border-gray-200"
+              )}>
+                <div className="flex items-center gap-2">
+                  <UserPlus className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "text-blue-600")} />
+                  <h3 className={cn("text-lg font-semibold", useDarkMode ? "text-white" : "text-gray-900")}>
+                    Add Team Members
+                  </h3>
+                </div>
+                <p className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-gray-600")}>
+                  Enter the profile URL of the person you want to add as a team member. They will receive a notification to approve the request.
+                </p>
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="e.g., /portfolio/username or /u/username" 
+                    value={teamMemberUrl}
+                    onChange={(e) => setTeamMemberUrl(e.target.value)}
+                    className={cn(
+                      className,
+                      useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                    )}
+                    data-testid="input-team-member-url"
+                  />
+                  <Button 
+                    type="button"
+                    onClick={handleAddTeamMember}
+                    disabled={isAddingTeamMember || !teamMemberUrl.trim()}
+                    className={useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
+                    data-testid="button-add-team-member"
+                  >
+                    {isAddingTeamMember ? "Sending..." : "Send Request"}
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Clients Section */}
+              <div className={cn(
+                "p-6 rounded-lg border space-y-4",
+                useDarkMode ? "bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border-white/10" : "bg-gradient-to-br from-slate-50 to-gray-100/80 border-gray-200"
+              )}>
+                <div className="flex items-center gap-2">
+                  <Building2 className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "text-purple-600")} />
+                  <h3 className={cn("text-lg font-semibold", useDarkMode ? "text-white" : "text-gray-900")}>
+                    Add Clients
+                  </h3>
+                </div>
+                <p className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-gray-600")}>
+                  Enter the profile URL of the client you worked with on this project. They will receive a notification to approve their involvement.
+                </p>
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="e.g., /portfolio/username or /u/username" 
+                    value={clientUrl}
+                    onChange={(e) => setClientUrl(e.target.value)}
+                    className={cn(
+                      className,
+                      useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                    )}
+                    data-testid="input-client-url"
+                  />
+                  <Button 
+                    type="button"
+                    onClick={handleAddClient}
+                    disabled={isAddingClient || !clientUrl.trim()}
+                    className={useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
+                    data-testid="button-add-client"
+                  >
+                    {isAddingClient ? "Sending..." : "Send Request"}
+                  </Button>
+                </div>
+              </div>
+              
+              <div className={cn(
+                "p-4 rounded-md text-sm",
+                useDarkMode ? "bg-[rgba(30,30,30,0.7)] border border-white/10 text-gray-300" : "bg-blue-50 text-blue-900"
+              )}>
+                <p className="font-medium mb-1">How it works:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Enter a user's profile URL to send them a request</li>
+                  <li>They'll receive a notification with approve/cancel options</li>
+                  <li>Once approved, they'll appear on your project as a team member or client</li>
+                </ul>
               </div>
             </TabsContent>
             
