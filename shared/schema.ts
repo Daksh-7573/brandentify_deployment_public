@@ -5,6 +5,9 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
+// Re-export notifications table for database
+export { notifications, insertNotificationSchema };
+
 // User model  
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),

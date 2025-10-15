@@ -16,8 +16,8 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isDemoMode } = useAuth();
   
-  // Get the user ID for queries
-  const userId = isDemoMode ? 1 : user?.uid;
+  // Get the user ID for queries - use numeric ID from user object
+  const userId = isDemoMode ? 1 : (user?.id || user?.uid);
   
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
