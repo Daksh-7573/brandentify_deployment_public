@@ -112,8 +112,6 @@ export default function PulseDetail() {
   const insightfulCount = reactions.filter(r => r.reactionType === "insightful").length;
   const misinformedCount = reactions.filter(r => r.reactionType === "misinformed").length;
 
-  const shareUrl = window.location.href;
-
   if (isPulseLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
@@ -327,9 +325,9 @@ export default function PulseDetail() {
             <div>
               <h3 className="text-sm font-medium text-gray-400 mb-3">Share on social media</h3>
               <SocialShareButtons 
-                url={shareUrl}
-                title={pulse.title}
-                description={pulse.content || "Check out this pulse on Brandentifier"}
+                pulseId={pulse.id}
+                pulseContent={pulse.content || pulse.title}
+                pulseAuthor={pulse.user?.name}
               />
             </div>
 
