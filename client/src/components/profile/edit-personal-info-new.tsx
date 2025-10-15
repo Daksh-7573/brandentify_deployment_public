@@ -41,7 +41,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
-  const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   // Convert database value to display value for lookingFor
   const convertDbToDisplayValue = (dbValue: string) => {
     return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
@@ -73,7 +72,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
-    setAboutMe(userData.aboutMe || "");
     setLookingFor(userData.lookingFor || "");
     
     // Sync branding fields
@@ -241,31 +239,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </div>
           </div>
         )}
-
-        {/* Elevator Pitch */}
-        <div className="space-y-2">
-          <label htmlFor="aboutMe" className="text-sm font-medium text-white flex items-center gap-2">
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-            </svg>
-            Elevator Pitch
-          </label>
-          <p className="text-xs text-white/60 -mt-1">(30-second version of who you are and what you do) (max 75 words)</p>
-          <textarea
-            id="aboutMe"
-            value={aboutMe}
-            onChange={(e) => setAboutMe(e.target.value)}
-            placeholder="Write a brief introduction about yourself"
-            rows={4}
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
-          />
-        </div>
 
         {/* Looking For */}
         <div className="space-y-2">
@@ -633,7 +606,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
-                aboutMe: aboutMe.trim() || null,
                 lookingFor: lookingFor.trim() || null,
                 // New branding fields
                 tagline: tagline.trim() || null,
@@ -686,8 +658,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               // Create the updated user data object for immediate cache update
               const updatedUserData = {
                 ...userData,
-                ...updateData,
-                aboutMe: aboutMe.trim() || null
+                ...updateData
               };
 
               console.log("[BUTTON] Updating cache immediately with:", updatedUserData);
