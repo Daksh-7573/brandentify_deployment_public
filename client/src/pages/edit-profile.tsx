@@ -27,9 +27,10 @@ export default function EditProfilePage() {
   const [completionPercentage, setCompletionPercentage] = useState(0);
   
   // Fetch user data with optimized caching
+  const userId = user?.uid || user?.id;
   const { data: userData, isLoading: isLoadingUserData } = useQuery({
-    queryKey: ['/api/users', user?.uid || user?.id],
-    enabled: !!(user?.uid || user?.id) && isAuthenticated,
+    queryKey: [`/api/users/${userId}`],
+    enabled: !!userId && isAuthenticated,
     staleTime: 1000 * 60 * 10, // 10 minutes
     refetchOnMount: false,
     refetchOnWindowFocus: false,
