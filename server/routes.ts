@@ -3989,6 +3989,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const commentsWithUserData = await Promise.all(
         comments.map(async (comment) => {
           const user = await storage.getUser(comment.userId);
+          console.log(`[GET /pulses/${pulseId}/comments] User ${comment.userId}:`, user ? { name: user.name, photoURL: user.photoURL } : 'NOT FOUND');
           return {
             ...comment,
             user: user ? {
@@ -3999,7 +4000,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
-      console.log(`[GET /pulses/${pulseId}/comments] Found ${comments.length} comments`);
+      console.log(`[GET /pulses/${pulseId}/comments] Found ${comments.length} comments with user data:`, JSON.stringify(commentsWithUserData, null, 2));
       res.json(commentsWithUserData);
     } catch (error) {
       console.error(`[GET /pulses/:pulseId/comments] Error:`, error);
