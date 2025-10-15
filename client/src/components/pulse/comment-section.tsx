@@ -63,7 +63,9 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   // Auto-scroll to latest comment when comments change
   useEffect(() => {
     if (isExpanded && comments.length > 0) {
-      commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      setTimeout(() => {
+        commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 100);
     }
   }, [comments, isExpanded]);
 
