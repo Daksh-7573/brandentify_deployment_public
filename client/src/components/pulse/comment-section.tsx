@@ -103,6 +103,17 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     createCommentMutation.mutate(commentText);
   };
 
+  const formatCommentDate = (dateValue: Date | string | undefined) => {
+    try {
+      if (!dateValue) return "just now";
+      const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+      if (isNaN(date.getTime())) return "just now";
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch {
+      return "just now";
+    }
+  };
+
   return (
     <div className="mt-4">
       {/* Comment Section - Glass Design */}
@@ -142,7 +153,7 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                             {comment.user?.name || "Anonymous"}
                           </p>
                           <p className="text-xs text-white/50">
-                            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                            {formatCommentDate(comment.createdAt)}
                           </p>
                         </div>
                         {user?.id === comment.userId && (
