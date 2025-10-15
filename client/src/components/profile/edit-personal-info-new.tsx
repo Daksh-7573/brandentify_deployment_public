@@ -706,6 +706,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
               const updateData = {
                 name: name.trim(),
                 title: jobTitle.trim() || null,
+                company: company.trim() || null,
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
