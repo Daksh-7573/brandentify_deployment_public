@@ -17,6 +17,7 @@ interface YogaFitnessModelProps {
     name: string;
     email: string | null;
     title: string | null;
+    company: string | null;
     aboutMe: string | null;
     location: string | null;
     industry: string | null;
@@ -335,7 +336,7 @@ export default function YogaFitnessModel({
                 transition={{ delay: 0.6 }}
                 className="text-3xl md:text-4xl text-purple-200 font-light"
               >
-                {userInfo.title}
+                {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
               </motion.p>
             )}
 

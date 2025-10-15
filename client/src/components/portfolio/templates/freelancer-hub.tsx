@@ -36,6 +36,7 @@ interface FreelancerHubProps {
     id?: number;
     name: string;
     title: string | null;
+    company: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
@@ -194,7 +195,7 @@ export default function FreelancerHub({
 
                 {userInfo.title && (
                   <h2 className="text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4">
-                    {userInfo.title}
+                    {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
                   </h2>
                 )}
 

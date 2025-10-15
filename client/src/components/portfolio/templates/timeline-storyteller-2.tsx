@@ -18,6 +18,7 @@ interface TimelineStoryteller2Props {
     name: string;
     email: string;
     title: string;
+    company: string | null;
     aboutMe: string | null;
     location: string | null;
     industry: string | null;
@@ -275,7 +276,7 @@ export default function TimelineStoryteller2({
               transition={{ delay: 0.5 }}
               className="text-2xl md:text-3xl text-amber-800 font-light"
             >
-              {userInfo.title}
+              {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
             </motion.p>
 
             {userInfo.tagline && (
