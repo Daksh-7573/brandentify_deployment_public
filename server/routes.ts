@@ -3989,7 +3989,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const commentsWithUserData = await Promise.all(
         comments.map(async (comment) => {
           const user = await storage.getUser(comment.userId);
-          console.log(`[GET /pulses/${pulseId}/comments] User ${comment.userId}:`, user ? { name: user.name, photoURL: user.photoURL } : 'NOT FOUND');
           return {
             ...comment,
             user: user ? {

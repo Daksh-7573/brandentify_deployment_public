@@ -3066,7 +3066,14 @@ export class MemStorage implements IStorage {
   async getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]> {
     try {
       const result = await pool.query(`
-        SELECT * FROM pulse_comments 
+        SELECT 
+          id,
+          pulse_id as "pulseId",
+          user_id as "userId",
+          content,
+          likes,
+          created_at as "createdAt"
+        FROM pulse_comments 
         WHERE pulse_id = $1 
         ORDER BY created_at ASC
       `, [pulseId]);
@@ -12530,7 +12537,14 @@ export class DatabaseStorage implements IStorage {
   async getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]> {
     try {
       const result = await pool.query(`
-        SELECT * FROM pulse_comments 
+        SELECT 
+          id,
+          pulse_id as "pulseId",
+          user_id as "userId",
+          content,
+          likes,
+          created_at as "createdAt"
+        FROM pulse_comments 
         WHERE pulse_id = $1 
         ORDER BY created_at ASC
       `, [pulseId]);
