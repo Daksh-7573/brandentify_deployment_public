@@ -1,0 +1,691 @@
+[PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: Object
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data Object
+injected.js:27 Skills component - user object: Object
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: Object
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: Object
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: Object
+injected.js:27 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+injected.js:27 Edit Profile Information button clicked!
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [DIALOG STATE] showEditPersonalInfoDialog changed to: true
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ injected.js:27
+(anonymous) @ chunk-V325OYNL.js?v=e423a333:326
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=e423a333:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=e423a333:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=e423a333:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=e423a333:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=e423a333:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=e423a333:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=e423a333:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=e423a333:19416
+commitRoot @ chunk-RPCDYKBN.js?v=e423a333:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=e423a333:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=e423a333:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:18627Understand this error
+injected.js:27 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ injected.js:27
+(anonymous) @ chunk-V325OYNL.js?v=e423a333:340
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=e423a333:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=e423a333:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=e423a333:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=e423a333:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=e423a333:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=e423a333:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=e423a333:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=e423a333:19416
+commitRoot @ chunk-RPCDYKBN.js?v=e423a333:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=e423a333:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=e423a333:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:18627Understand this warning
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [BUTTON] Save button clicked! SyntheticBaseEvent {_reactName: 'onClick', _targetInst: null, type: 'click', nativeEvent: PointerEvent, target: button.neo-glass-button.flex.items-center.gap-2.py-2.5.px-6.text-white.bg-gradient-to-r.from-blue-5…, …}
+injected.js:27 [BUTTON] Starting direct save operation
+injected.js:27 [SAVE DEBUG] Current field values:
+injected.js:27   - tagline: Empowering businesses with intelligent AI solutions that think, learn, and evolve to drive limitless growth.
+injected.js:27   - visionStatement: Our vision is to revolutionize the technology landscape by creating AI systems that enhance human intelligence, drive innovation, and empower businesses globally to achieve sustainable growth through automation, data-driven insights, and adaptive learning — shaping a smarter, more connected future.
+injected.js:27   - missionStatement: I am a Student Product Manager with a baOur mission is to design and deliver transformative AI technologies that solve real-world business challenges, enhance decision-making, and optimize operations. We aim to make artificial intelligence accessible, ethical, and impactful — enabling every organization to unlock its full potential through innovation.ckgrou
+injected.js:27   - coreValues: (3) ['Innovation', 'Integrity', 'Growth']
+injected.js:27   - uniqueValueProposition: We deliver intelligent, adaptive AI solutions tailored to each business — transforming operations, driving growth, and enabling smarter, faster decisions through innovation, automation, and data-driven strategy.
+injected.js:27   - primaryAudience: (2) ['Investors', 'venture capital']
+injected.js:27   - secondaryAudience: (2) ['Educational institutions', 'research organizations']
+injected.js:27 [SAVE DEBUG] Prepared updateData: {
+  "name": "Nishant Chopra",
+  "title": "Founder",
+  "location": "Gandhinagar, Gujarat, India",
+  "industry": "Technology",
+  "domain": "AI/Machine Learning",
+  "aboutMe": "I’m the founder of an AI-driven technology company focused on building intelligent solutions that simplify complex business challenges. We leverage machine learning, automation, and data-driven insights to help companies scale faster, make smarter decisions, and stay competitive in a rapidly evolving digital world. Our mission is to bridge the gap between human potential and AI innovation — creating technology that doesn’t just work, but thinks, learns, and evolves with you.",
+  "lookingFor": "mentorship",
+  "tagline": "Empowering businesses with intelligent AI solutions that think, learn, and evolve to drive limitless growth.",
+  "visionStatement": "Our vision is to revolutionize the technology landscape by creating AI systems that enhance human intelligence, drive innovation, and empower businesses globally to achieve sustainable growth through automation, data-driven insights, and adaptive learning — shaping a smarter, more connected future.",
+  "missionStatement": "I am a Student Product Manager with a baOur mission is to design and deliver transformative AI technologies that solve real-world business challenges, enhance decision-making, and optimize operations. We aim to make artificial intelligence accessible, ethical, and impactful — enabling every organization to unlock its full potential through innovation.ckgrou",
+  "coreValues": [
+    "Innovation",
+    "Integrity",
+    "Growth"
+  ],
+  "uniqueValueProposition": "We deliver intelligent, adaptive AI solutions tailored to each business — transforming operations, driving growth, and enabling smarter, faster decisions through innovation, automation, and data-driven strategy.",
+  "primaryAudience": [
+    "Investors",
+    "venture capital"
+  ],
+  "secondaryAudience": [
+    "Educational institutions",
+    "research organizations"
+  ]
+}
+injected.js:27 [BUTTON] Job title: Founder
+injected.js:27 [BUTTON] Raw lookingFor state value: mentorship
+injected.js:27 [BUTTON] lookingFor type: string
+injected.js:27 [BUTTON] Valid lookingFor values: (8) ['job_opportunities', 'mentorship', 'networking', 'collaboration', 'investment', 'learning', 'career_advice', 'business_partnerships']
+injected.js:27 [BUTTON] Is lookingFor valid? true
+injected.js:27 [BUTTON] Using valid lookingFor value: mentorship
+injected.js:27 [BUTTON] Final validated data: {name: 'Nishant Chopra', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', domain: 'AI/Machine Learning', …}
+injected.js:27 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+injected.js:27 [API CLIENT DEBUG] URL: /api/users/2
+injected.js:27 [API CLIENT DEBUG] Method: PUT
+injected.js:27 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"name":"Nishant Chopra","title":"Founder","locati…cational institutions","research organizations"]}', credentials: 'include'}
+injected.js:27 [API CLIENT DEBUG] Data keys: (14) ['name', 'title', 'location', 'industry', 'domain', 'aboutMe', 'lookingFor', 'tagline', 'visionStatement', 'missionStatement', 'coreValues', 'uniqueValueProposition', 'primaryAudience', 'secondaryAudience']
+injected.js:27 [API CLIENT DEBUG] About to send fetch request...
+injected.js:27 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+injected.js:27 [API CLIENT DEBUG] Status: 200
+injected.js:27 [API CLIENT DEBUG] Status text: OK
+injected.js:27 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', cache-control: 'no-cache, no-store, must-revalidate', …}
+injected.js:27 [BUTTON] Response status: 200
+injected.js:27 [BUTTON] API response: Response {type: 'basic', url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2', redirected: false, status: 200, ok: true, …}
+injected.js:27 [BUTTON] Updating cache immediately with: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [BUTTON] Cache updated immediately, now invalidating for fresh data
+injected.js:27 Fetching data from: /api/users
+injected.js:27 useProfileServices hook - fetching data for: 2
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: null
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 useProfileServices hook - received data: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1760518536618}
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:777
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:777
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Final enriched projects: (4) [{…}, {…}, {…}, {…}]
+injected.js:27 Fetching data from: /api/users
+injected.js:27 Cached response for /api/messaging/unread/count?userId=2
+injected.js:27 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:27 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+(anonymous) @ @tanstack_react-query.js?v=e423a333:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=e423a333:515
+Promise.catch
+run @ @tanstack_react-query.js?v=e423a333:498
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:777
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+(anonymous) @ @tanstack_react-query.js?v=e423a333:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=e423a333:515
+Promise.catch
+run @ @tanstack_react-query.js?v=e423a333:498
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:777
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 [HEADER PERFORMANCE] Fetching user data for ID: 2
+injected.js:27 Fetching data from: /api/users
+injected.js:27 useProfileServices hook - fetching data for: 2
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 Cached response for /api/users/2
+injected.js:27 [HEADER PERFORMANCE] User data loaded: SUCCESS
+injected.js:27 useProfileServices hook - received data: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1760518538873}
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:782
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:782
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+injected.js:27 Final enriched projects: (4) [{…}, {…}, {…}, {…}]
+injected.js:27 Fetching data from: /api/users
+injected.js:27 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+(anonymous) @ @tanstack_react-query.js?v=e423a333:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=e423a333:515
+Promise.catch
+run @ @tanstack_react-query.js?v=e423a333:498
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:782
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+(anonymous) @ injected.js:27
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=e423a333:840
+run @ @tanstack_react-query.js?v=e423a333:494
+(anonymous) @ @tanstack_react-query.js?v=e423a333:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=e423a333:515
+Promise.catch
+run @ @tanstack_react-query.js?v=e423a333:498
+start @ @tanstack_react-query.js?v=e423a333:536
+fetch @ @tanstack_react-query.js?v=e423a333:926
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1726
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1725
+batch @ @tanstack_react-query.js?v=e423a333:583
+refetchQueries @ @tanstack_react-query.js?v=e423a333:1724
+(anonymous) @ @tanstack_react-query.js?v=e423a333:1716
+batch @ @tanstack_react-query.js?v=e423a333:583
+invalidateQueries @ @tanstack_react-query.js?v=e423a333:1705
+onClick @ edit-personal-info-new.tsx:782
+await in onClick
+callCallback2 @ chunk-RPCDYKBN.js?v=e423a333:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=e423a333:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=e423a333:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=e423a333:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=e423a333:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=e423a333:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=e423a333:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=e423a333:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=e423a333:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=e423a333:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=e423a333:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=e423a333:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=e423a333:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=e423a333:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=e423a333:5449Understand this error
+injected.js:27 [BUTTON] Calling parent onSave callback
+injected.js:27 [DEBUG] onSave called from profile dialog
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 [EDIT FORM] Syncing form state with userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', name: 'Nishant Chopra', email: 'nishant.brodos@gmail.com', phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
