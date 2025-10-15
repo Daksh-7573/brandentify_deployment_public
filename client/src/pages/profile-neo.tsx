@@ -528,7 +528,11 @@ export default function ProfileNeo() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <h4 className="font-medium mb-2 text-white">Job Title</h4>
-                          <p className="text-sm text-white/80">{userData?.title || 'Not specified'}</p>
+                          <p className="text-sm text-white/80">
+                            {userData?.title && userData?.company 
+                              ? `${userData.title} at ${userData.company}`
+                              : userData?.title || 'Not specified'}
+                          </p>
                         </div>
                         <div>
                           <h4 className="font-medium mb-2 text-white">Location</h4>
