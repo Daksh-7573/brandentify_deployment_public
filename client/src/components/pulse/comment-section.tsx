@@ -42,13 +42,10 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   // Create comment mutation
   const createCommentMutation = useMutation({
     mutationFn: async (content: string) => {
-      return apiRequest(`/api/pulse-comments`, {
-        method: "POST",
-        body: JSON.stringify({
-          pulseId,
-          userId: user?.id,
-          content,
-        }),
+      return apiRequest("POST", `/api/pulse-comments`, {
+        pulseId,
+        userId: user?.id,
+        content,
       });
     },
     onSuccess: () => {
@@ -72,9 +69,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   // Delete comment mutation
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: number) => {
-      return apiRequest(`/api/pulse-comments/${commentId}`, {
-        method: "DELETE",
-        body: JSON.stringify({ userId: user?.id }),
+      return apiRequest("DELETE", `/api/pulse-comments/${commentId}`, {
+        userId: user?.id,
       });
     },
     onSuccess: () => {
