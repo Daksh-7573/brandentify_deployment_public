@@ -3738,6 +3738,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Error fetching pulses' });
     }
   });
+
+  // GET /api/pulses/:id - Get a single pulse by ID
+  apiRouter.get("/pulses/:id", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.id);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: 'Invalid pulse ID' });
+      }
+
+      const pulse = await storage.getPulseById(pulseId);
+      
+      if (!pulse) {
+        return res.status(404).json({ message: 'Pulse not found' });
+      }
+
+      // Get user data for the pulse
+      const user = await storage.getUser(pulse.userId);
+      const pulseWithUserData = {
+        ...pulse,
+        user: user ? {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          photoURL: user.photoURL,
+          title: user.title,
+          company: user.company,
+          brandName: user.brandName
+        } : undefined
+      };
+
+      console.log(`[GET /pulses/${pulseId}] Found pulse by user ${user?.name}`);
+      res.json(pulseWithUserData);
+    } catch (error) {
+      console.error('[GET /pulses/:id] Error fetching pulse:', error);
+      res.status(500).json({ message: 'Error fetching pulse' });
+    }
+  });
   
   // POST /api/pulses/upload-media - Upload media files for pulses
   apiRouter.post("/pulses/upload-media", async (req: Request, res: Response) => {

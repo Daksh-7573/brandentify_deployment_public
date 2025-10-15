@@ -63,6 +63,7 @@ function SimpleTestApp() {
 // Critical components (loaded first for fast perceived performance)
 const Landing = lazy(() => import("@/pages/landing"));
 const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
+const PulseDetail = lazy(() => import("@/pages/pulse-detail"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 const AuthCallbackPage = lazy(() => import("@/pages/auth-callback"));
@@ -187,6 +188,7 @@ function Router() {
       <Route path="/industry-pulse" component={() => (
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       )} />
+      <Route path="/pulse/:id" component={PulseDetail} />
       <Route path="/create-pulse" component={() => (
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
       )} />
