@@ -9119,7 +9119,7 @@ export class DatabaseStorage implements IStorage {
     // First validate the data by removing any fields that don't match the schema
     const validKeys = [
       'id', 'username', 'email', 'password', 'phoneNumber', 'name', 'brandName',
-      'photoURL', 'title', 'aboutMe', 'location', 'industry', 'domain', 
+      'photoURL', 'title', 'company', 'aboutMe', 'location', 'industry', 'domain', 
       'lookingFor', 'whatIOffer', 'visitingCardType', 'profileCompleted',
       'emailVerified', 'emailVerificationToken', 'emailVerificationExpires',
       'createdAt',
