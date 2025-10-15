@@ -1641,7 +1641,7 @@ export class MemStorage implements IStorage {
       // Using explicit column names instead of SELECT * to ensure proper mapping
       const query = `
         SELECT id, username, email, password, phone_number as "phoneNumber", 
-        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -1698,7 +1698,7 @@ export class MemStorage implements IStorage {
       // Using explicit column names instead of SELECT * to ensure proper mapping
       const query = `
         SELECT id, username, email, password, phone_number as "phoneNumber", 
-        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -1729,7 +1729,7 @@ export class MemStorage implements IStorage {
       // Using explicit column names instead of SELECT * to ensure proper mapping
       const query = `
         SELECT id, username, email, password, phone_number as "phoneNumber", 
-        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -1783,7 +1783,7 @@ export class MemStorage implements IStorage {
     try {
       const query = `
         SELECT id, username, email, password, phone_number as "phoneNumber", 
-        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
         location, industry, domain, looking_for as "lookingFor", 
         brand_name as "brandName",
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
@@ -8901,7 +8901,7 @@ export class DatabaseStorage implements IStorage {
         const query = `
           SELECT 
             id, username, email, password, phone_number as "phoneNumber", 
-            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", 
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -8948,7 +8948,7 @@ export class DatabaseStorage implements IStorage {
         const result = await pool.query(`
           SELECT 
             id, username, email, password, phone_number as "phoneNumber", 
-            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -8989,7 +8989,7 @@ export class DatabaseStorage implements IStorage {
         const result = await pool.query(`
           SELECT 
             id, username, email, password, phone_number as "phoneNumber", 
-            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
@@ -9032,7 +9032,7 @@ export class DatabaseStorage implements IStorage {
         const result = await pool.query(`
           SELECT 
             id, username, email, password, phone_number as "phoneNumber", 
-            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             brand_name as "brandName",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
@@ -9073,7 +9073,7 @@ export class DatabaseStorage implements IStorage {
         const result = await pool.query(`
           SELECT 
             id, username, email, password, phone_number as "phoneNumber", 
-            name, photo_url as "photoURL", title, about_me as "aboutMe", 
+            name, photo_url as "photoURL", title, company, about_me as "aboutMe", 
             location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer",
             visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
             email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
