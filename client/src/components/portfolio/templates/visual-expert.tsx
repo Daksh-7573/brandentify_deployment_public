@@ -160,71 +160,14 @@ export default function VisualExpert({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      {/* Hero Section - Bold Typography */}
-      <section className="relative py-20 md:py-32 px-6 md:px-12 border-b border-gray-200">
+      {/* Hero Section - Bold Typography with Photo */}
+      <section className="relative py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
         <div className="max-w-7xl mx-auto">
-          <div className="space-y-8">
-            {/* Large Bold Name */}
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-none">
-              {userInfo.name}
-            </h1>
-
-            {/* Title and Location */}
-            <div className="flex flex-col md:flex-row md:items-center gap-4 text-sm md:text-base text-gray-600 uppercase tracking-wider">
-              <span className="font-medium">{displayTitle}</span>
-              {userInfo.location && (
-                <>
-                  <span className="hidden md:block">•</span>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>{userInfo.location}</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Tagline/About */}
-            {(userInfo.tagline || userInfo.aboutMe) && (
-              <div className="max-w-2xl">
-                <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                  {userInfo.tagline || userInfo.aboutMe}
-                </p>
-              </div>
-            )}
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 pt-6">
-              <Button
-                size="lg"
-                className="bg-black text-white hover:bg-gray-800 px-8 py-6 text-base font-medium uppercase tracking-wide"
-                data-testid="button-connect"
-              >
-                <Mail className="w-5 h-5 mr-2" />
-                Connect
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-6 text-base font-medium uppercase tracking-wide"
-                data-testid="button-mentor"
-              >
-                <Star className="w-5 h-5 mr-2" />
-                Mentor
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section - Editorial Style */}
-      {(userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition) && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">About</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+            {/* Left: Profile Photo */}
+            <div className="md:col-span-4">
               {userInfo.photoURL && (
-                <div className="aspect-[4/5] overflow-hidden bg-gray-100">
+                <div className="aspect-square w-full max-w-md mx-auto overflow-hidden bg-gray-100">
                   <img
                     src={userInfo.photoURL}
                     alt={userInfo.name}
@@ -232,42 +175,100 @@ export default function VisualExpert({
                   />
                 </div>
               )}
+            </div>
 
-              <div className="space-y-8">
-                {userInfo.visionStatement && (
-                  <div>
-                    <h3 className="text-xl font-bold uppercase tracking-wide mb-3">Vision</h3>
-                    <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
-                  </div>
-                )}
+            {/* Right: Info */}
+            <div className="md:col-span-8 space-y-6">
+              {/* Large Bold Name */}
+              <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase leading-none">
+                {userInfo.name}
+              </h1>
 
-                {userInfo.missionStatement && (
-                  <div>
-                    <h3 className="text-xl font-bold uppercase tracking-wide mb-3">Mission</h3>
-                    <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
-                  </div>
-                )}
-
-                {userInfo.uniqueValueProposition && (
-                  <div>
-                    <h3 className="text-xl font-bold uppercase tracking-wide mb-3">Value Proposition</h3>
-                    <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
-                  </div>
-                )}
-
-                {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                  <div>
-                    <h3 className="text-xl font-bold uppercase tracking-wide mb-3">Core Values</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.coreValues.map((value, idx) => (
-                        <Badge key={idx} variant="outline" className="border-black text-black px-3 py-1">
-                          {value}
-                        </Badge>
-                      ))}
-                    </div>
+              {/* Title and Location */}
+              <div className="flex flex-col gap-3 text-sm md:text-base text-gray-600 uppercase tracking-wider">
+                <span className="font-medium text-lg">{displayTitle}</span>
+                {userInfo.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>{userInfo.location}</span>
                   </div>
                 )}
               </div>
+
+              {/* Tagline/About */}
+              {(userInfo.tagline || userInfo.aboutMe) && (
+                <div className="max-w-2xl">
+                  <p className="text-base md:text-lg text-gray-700 leading-relaxed">
+                    {userInfo.tagline || userInfo.aboutMe}
+                  </p>
+                </div>
+              )}
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap gap-3 pt-4">
+                <Button
+                  size="lg"
+                  className="bg-black text-white hover:bg-gray-800 px-8 py-4 text-sm font-medium uppercase tracking-wide"
+                  data-testid="button-connect"
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Connect
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-sm font-medium uppercase tracking-wide"
+                  data-testid="button-mentor"
+                >
+                  <Star className="w-4 h-4 mr-2" />
+                  Mentor
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section - Editorial Style */}
+      {(userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">About</h2>
+
+            <div className="space-y-6 max-w-4xl">
+              {userInfo.visionStatement && (
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Vision</h3>
+                  <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                </div>
+              )}
+
+              {userInfo.missionStatement && (
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Mission</h3>
+                  <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                </div>
+              )}
+
+              {userInfo.uniqueValueProposition && (
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Value Proposition</h3>
+                  <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
+                </div>
+              )}
+
+              {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-3">Core Values</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {userInfo.coreValues.map((value, idx) => (
+                      <Badge key={idx} variant="outline" className="border-black text-black px-3 py-1 text-sm">
+                        {value}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -275,9 +276,9 @@ export default function VisualExpert({
 
       {/* Experience Section - Grid Layout */}
       {sortedExperiences.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">Experience</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Experience</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {sortedExperiences.map((exp) => (
@@ -311,9 +312,9 @@ export default function VisualExpert({
 
       {/* Projects Section - Collections Style */}
       {sortedProjects.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">Projects</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Projects</h2>
 
             <div className="space-y-16">
               {sortedProjects.map((project, idx) => (
@@ -379,9 +380,9 @@ export default function VisualExpert({
 
       {/* Skills Section */}
       {sortedSkills.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">Skills</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Skills</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {sortedSkills.map((skill) => (
@@ -402,9 +403,9 @@ export default function VisualExpert({
 
       {/* Education Section */}
       {sortedEducations.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">Education</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Education</h2>
 
             <div className="space-y-8">
               {sortedEducations.map((edu) => (
@@ -431,9 +432,9 @@ export default function VisualExpert({
 
       {/* Services Section */}
       {userServices && userServices.length > 0 && (
-        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase tracking-tight mb-12">Services</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Services</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {userServices.map((service) => (
@@ -452,32 +453,32 @@ export default function VisualExpert({
       )}
 
       {/* Final CTA Section */}
-      <section className="py-20 md:py-32 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto text-center space-y-8">
-          <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter">
+      <section className="py-16 md:py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto text-center space-y-6">
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
             Let's Connect
           </h2>
 
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
             {userInfo.lookingFor || userInfo.whatIOffer || "Ready to collaborate and create something amazing together"}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4 pt-6">
+          <div className="flex flex-wrap justify-center gap-3 pt-4">
             <Button
               size="lg"
-              className="bg-black text-white hover:bg-gray-800 px-12 py-7 text-base font-medium uppercase tracking-wide"
+              className="bg-black text-white hover:bg-gray-800 px-10 py-5 text-sm font-medium uppercase tracking-wide"
               data-testid="button-connect-footer"
             >
-              <Mail className="w-5 h-5 mr-2" />
+              <Mail className="w-4 h-4 mr-2" />
               Connect With Me
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-black text-black hover:bg-black hover:text-white px-12 py-7 text-base font-medium uppercase tracking-wide"
+              className="border-2 border-black text-black hover:bg-black hover:text-white px-10 py-5 text-sm font-medium uppercase tracking-wide"
               data-testid="button-mentor-footer"
             >
-              <Star className="w-5 h-5 mr-2" />
+              <Star className="w-4 h-4 mr-2" />
               Request Mentorship
             </Button>
           </div>
