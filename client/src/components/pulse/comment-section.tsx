@@ -137,12 +137,12 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                   data-testid={`comment-${comment.id}`}
                 >
                   <div className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-8 w-8 border border-white/20">
                       {comment.user?.photoURL ? (
                         <AvatarImage src={comment.user.photoURL} alt={comment.user.name} />
                       ) : (
-                        <AvatarFallback className="bg-white/10 text-white">
-                          {comment.user?.name?.[0] || "U"}
+                        <AvatarFallback className="bg-gradient-to-br from-purple-500/80 to-pink-500/80 text-white font-semibold">
+                          {comment.user?.name?.[0]?.toUpperCase() || "U"}
                         </AvatarFallback>
                       )}
                     </Avatar>
@@ -178,12 +178,12 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
           {user && (
             <div className="pt-3 border-t border-white/10">
               <div className="flex gap-3">
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-8 w-8 border border-white/20">
                   {user.photoURL ? (
                     <AvatarImage src={user.photoURL} alt={user.name || "You"} />
                   ) : (
-                    <AvatarFallback className="bg-white/10 text-white">
-                      {user.name?.[0] || "U"}
+                    <AvatarFallback className="bg-gradient-to-br from-purple-500/80 to-pink-500/80 text-white font-semibold">
+                      {user.name?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   )}
                 </Avatar>
