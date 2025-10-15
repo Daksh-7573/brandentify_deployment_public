@@ -3,8 +3,9 @@ import express, { type Express, Request, Response, NextFunction } from "express"
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { pool } from "./db";
+import { pool, db } from "./db";
 import { z } from "zod";
+import { eq, or } from "drizzle-orm";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { getCachedUserData, setCachedUserData } from "./middleware/user-cache";
 import crypto from "crypto";
@@ -104,7 +105,10 @@ import {
   InsertPulseShare,
   InsertNewsSource,
   InsertNewsArticle,
-  InsertNewsUserPreference
+  InsertNewsUserPreference,
+  users,
+  projects,
+  pulses
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -8799,6 +8803,204 @@ ${extractedText.substring(0, 5000)}
         success: false,
         error: error.message
       });
+    }
+  });
+
+  // Object Storage Routes - from blueprint:javascript_object_storage
+  const { ObjectStorageService, ObjectNotFoundError } = await import('./objectStorage');
+  const { ObjectPermission } = await import('./objectAcl');
+
+  // Auth middleware for object storage
+  const objectStorageAuth = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const sessionToken = req.cookies?.authToken || req.cookies?.['next-auth.session-token'];
+      
+      if (!sessionToken) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-super-secret-jwt-key-2024';
+      const decoded = jwt.verify(sessionToken, JWT_SECRET) as any;
+      
+      // Find user by firebase UID or email
+      const user = await db
+        .select()
+        .from(users)
+        .where(or(
+          eq(users.firebaseUid, decoded.firebaseUid || ''),
+          eq(users.email, decoded.email || '')
+        ))
+        .limit(1);
+
+      if (user.length === 0) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      (req as any).user = { 
+        id: user[0].id.toString(),
+        firebaseUid: user[0].firebaseUid,
+        email: user[0].email 
+      };
+      next();
+    } catch (error) {
+      console.error('Object storage auth error:', error);
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  };
+
+  // Get upload URL for object entity
+  app.post('/api/objects/upload', objectStorageAuth, async (req: Request, res: Response) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error('Error getting upload URL:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Serve private objects (with ACL check)
+  app.get('/objects/:objectPath(*)', objectStorageAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      const objectStorageService = new ObjectStorageService();
+      
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      const canAccess = await objectStorageService.canAccessObjectEntity({
+        objectFile,
+        userId: userId,
+        requestedPermission: ObjectPermission.READ,
+      });
+
+      if (!canAccess) {
+        return res.sendStatus(401);
+      }
+
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error('Error accessing object:', error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  // Update pulse images with object storage ACL
+  app.put('/api/pulses/:id/images', objectStorageAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      const pulseId = parseInt(req.params.id);
+      const { imageUrls } = req.body;
+
+      if (!imageUrls || !Array.isArray(imageUrls)) {
+        return res.status(400).json({ error: 'imageUrls array is required' });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const normalizedPaths: string[] = [];
+
+      for (const imageUrl of imageUrls) {
+        const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+          imageUrl,
+          {
+            owner: userId,
+            visibility: "public",
+          }
+        );
+        normalizedPaths.push(objectPath);
+      }
+
+      // Update pulse with normalized paths
+      const [updatedPulse] = await db
+        .update(pulses)
+        .set({ imageUrls: JSON.stringify(normalizedPaths) })
+        .where(eq(pulses.id, pulseId))
+        .returning();
+
+      res.json({ success: true, pulse: updatedPulse });
+    } catch (error) {
+      console.error('Error updating pulse images:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Update project images with object storage ACL
+  app.put('/api/projects/:id/images', objectStorageAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      const projectId = parseInt(req.params.id);
+      const { imageUrls } = req.body;
+
+      if (!imageUrls || !Array.isArray(imageUrls)) {
+        return res.status(400).json({ error: 'imageUrls array is required' });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const normalizedPaths: string[] = [];
+
+      for (const imageUrl of imageUrls) {
+        const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+          imageUrl,
+          {
+            owner: userId,
+            visibility: "public",
+          }
+        );
+        normalizedPaths.push(objectPath);
+      }
+
+      // Update project with normalized paths
+      const [updatedProject] = await db
+        .update(projects)
+        .set({ images: normalizedPaths })
+        .where(eq(projects.id, projectId))
+        .returning();
+
+      res.json({ success: true, project: updatedProject });
+    } catch (error) {
+      console.error('Error updating project images:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Update user profile picture with object storage ACL
+  app.put('/api/users/:id/profile-picture', objectStorageAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      const targetUserId = req.params.id;
+      const { profilePictureUrl } = req.body;
+
+      // Verify user is updating their own profile
+      if (userId !== targetUserId) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      if (!profilePictureUrl) {
+        return res.status(400).json({ error: 'profilePictureUrl is required' });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        profilePictureUrl,
+        {
+          owner: userId,
+          visibility: "public",
+        }
+      );
+
+      // Update user with normalized path
+      const [updatedUser] = await db
+        .update(users)
+        .set({ profilePictureUrl: objectPath })
+        .where(eq(users.id, parseInt(userId)))
+        .returning();
+
+      res.json({ success: true, profilePictureUrl: objectPath });
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 

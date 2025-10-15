@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
+    "@google-cloud/storage": "^7.17.2",
     "@hookform/resolvers": "^3.9.1",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -58,6 +59,10 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react-helmet": "^6.1.11",
     "@types/xml2js": "^0.4.14",
+    "@uppy/aws-s3": "^5.0.1",
+    "@uppy/core": "^5.1.0",
+    "@uppy/dashboard": "^5.0.2",
+    "@uppy/react": "^5.1.0",
     "@vitejs/plugin-react": "^4.7.0",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.0",
