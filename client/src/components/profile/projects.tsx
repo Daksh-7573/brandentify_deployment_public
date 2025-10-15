@@ -18,8 +18,10 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
-  Image
+  Image,
+  Maximize2
 } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -2280,150 +2282,121 @@ export default function Projects() {
               <TabsContent value="details" className="space-y-6 mt-4">
                 {/* Project Media Showcase */}
                 <div className="space-y-4">
-                  {currentProject.mediaUrls && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {Array.isArray(currentProject.mediaUrls) ? (
-                        currentProject.mediaUrls.slice(0, 6).map((url, index) => (
-                          <div key={index} className="relative group">
-                            <img 
-                              src={url} 
-                              alt={`Project Image ${index + 1}`} 
-                              className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
-                                ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
-                              `}
-                              onClick={() => openLightbox(
-                                Array.isArray(currentProject.mediaUrls) 
-                                  ? currentProject.mediaUrls as string[] 
-                                  : [], 
-                                index
-                              )}
-                            />
-                            <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleSetAsThumbnail(url);
-                                }}
-                                className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
-                                  ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
-                                `}
-                                aria-label="Set as thumbnail"
-                                title="Set as thumbnail"
-                              >
-                                <Image className="h-3 w-3" />
-                              </button>
-                            </div>
-                            {currentProject.thumbnailUrl === url && (
-                              <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
-                                Thumbnail
-                              </div>
-                            )}
-                          </div>
-                        ))
-                      ) : typeof currentProject.mediaUrls === 'string' ? (
-                        // Handle string case (assume it's a JSON string or single URL)
-                        <>
-                          {currentProject.mediaUrls.startsWith('[') ? (
-                            // It's a JSON string array, parse it
-                            JSON.parse(currentProject.mediaUrls).slice(0, 6).map((url: string, index: number) => (
-                              <div key={index} className="relative group">
-                                <img 
-                                  src={url} 
-                                  alt={`Project Image ${index + 1}`} 
-                                  className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
-                                    ${currentProject.thumbnailUrl === url ? 'ring-2 ring-primary ring-offset-1' : ''}
-                                  `}
-                                  onClick={() => openLightbox(JSON.parse(currentProject.mediaUrls as string), index)}
-                                />
-                                <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleSetAsThumbnail(url);
-                                    }}
-                                    className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
-                                      ${currentProject.thumbnailUrl === url ? 'opacity-100' : ''}
-                                    `}
-                                    aria-label="Set as thumbnail"
-                                    title="Set as thumbnail"
+                  {currentProject.mediaUrls && (() => {
+                    // Helper function to normalize media URLs into string array
+                    const normalizeMediaUrls = (mediaUrls: string | string[] | null): string[] => {
+                      if (!mediaUrls) return [];
+                      
+                      if (Array.isArray(mediaUrls)) {
+                        return mediaUrls.filter(url => url && url.trim() !== '');
+                      }
+                      
+                      if (typeof mediaUrls === 'string') {
+                        // Check if it's a JSON array string
+                        if (mediaUrls.trim().startsWith('[')) {
+                          try {
+                            const parsed = JSON.parse(mediaUrls);
+                            if (Array.isArray(parsed)) {
+                              return parsed.filter(url => url && url.trim() !== '');
+                            }
+                          } catch (e) {
+                            // If JSON parse fails, treat as single URL
+                            return mediaUrls.trim() ? [mediaUrls] : [];
+                          }
+                        }
+                        // Single URL string
+                        return mediaUrls.trim() ? [mediaUrls] : [];
+                      }
+                      
+                      return [];
+                    };
+
+                    const mediaImages = normalizeMediaUrls(currentProject.mediaUrls);
+                    if (mediaImages.length === 0) return null;
+
+                    return (
+                      <div className="space-y-2">
+                        <div className="text-sm font-medium flex items-center gap-2">
+                          <Image className="h-4 w-4 text-muted-foreground" />
+                          <span>Image Gallery ({mediaImages.length})</span>
+                        </div>
+                        <Carousel className="w-full">
+                          <CarouselContent>
+                            {mediaImages.map((url, index) => (
+                              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                                <div className="p-1 group">
+                                  <div 
+                                    className="overflow-hidden rounded-lg relative cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
                                   >
-                                    <Image className="h-3 w-3" />
-                                  </button>
-                                </div>
-                                {currentProject.thumbnailUrl === url && (
-                                  <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
-                                    Thumbnail
+                                    <div className="w-full h-72 md:h-60 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+                                      <img 
+                                        src={url} 
+                                        alt={`Media ${index + 1}`} 
+                                        className="w-full h-full object-cover"
+                                        onClick={() => openLightbox(mediaImages, index)}
+                                      />
+                                    </div>
+                                    
+                                    {/* Hover overlay with actions */}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openLightbox(mediaImages, index);
+                                          }}
+                                          className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+                                          title="View fullscreen"
+                                        >
+                                          <Maximize2 className="h-4 w-4 text-gray-800" />
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSetAsThumbnail(url);
+                                          }}
+                                          className={`p-2 rounded-full transition-colors ${
+                                            currentProject.thumbnailUrl === url 
+                                              ? 'bg-primary text-white' 
+                                              : 'bg-white/90 hover:bg-white text-gray-800'
+                                          }`}
+                                          title="Set as thumbnail"
+                                        >
+                                          <Image className="h-4 w-4" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Thumbnail badge */}
+                                    {currentProject.thumbnailUrl === url && (
+                                      <div className="absolute top-2 left-2 bg-primary/90 text-white text-xs px-2 py-1 rounded-md shadow-md">
+                                        Thumbnail
+                                      </div>
+                                    )}
+                                    
+                                    {/* Image counter */}
+                                    {mediaImages.length > 1 && (
+                                      <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs py-1 px-2 rounded-full">
+                                        {index + 1}/{mediaImages.length}
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            // It's a single URL
-                            <div className="relative group col-span-2">
-                              <img 
-                                src={currentProject.mediaUrls} 
-                                alt="Project Image" 
-                                className={`aspect-square w-full object-cover rounded-md border cursor-pointer hover:opacity-95
-                                  ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'ring-2 ring-primary ring-offset-1' : ''}
-                                `}
-                                onClick={() => openLightbox([currentProject.mediaUrls as string], 0)}
-                              />
-                              <div className="absolute top-1 right-1 hidden group-hover:flex gap-1">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSetAsThumbnail(currentProject.mediaUrls as string);
-                                  }}
-                                  className={`bg-primary text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity
-                                    ${currentProject.thumbnailUrl === currentProject.mediaUrls ? 'opacity-100' : ''}
-                                  `}
-                                  aria-label="Set as thumbnail"
-                                  title="Set as thumbnail"
-                                >
-                                  <Image className="h-3 w-3" />
-                                </button>
-                              </div>
-                              {currentProject.thumbnailUrl === currentProject.mediaUrls && (
-                                <div className="absolute bottom-1 left-1 bg-primary/80 text-white text-xs px-2 py-0.5 rounded-sm">
-                                  Thumbnail
                                 </div>
-                              )}
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                          {mediaImages.length > 1 && (
+                            <div className="flex flex-col items-center justify-center mt-4 gap-2">
+                              <div className="flex items-center gap-2">
+                                <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
+                                <CarouselNext className="relative -translate-y-0 -right-0 ml-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
+                              </div>
                             </div>
                           )}
-                        </>
-                      ) : null}
-                      
-                      {/* View All button if more than 6 images */}
-                      {Array.isArray(currentProject.mediaUrls) && currentProject.mediaUrls.length > 6 && (
-                        <button
-                          type="button"
-                          onClick={() => openLightbox(currentProject.mediaUrls as string[], 0)}
-                          className="aspect-square w-full flex items-center justify-center bg-muted rounded-md border hover:bg-muted/80"
-                        >
-                          <span className="text-sm font-medium">
-                            View All ({currentProject.mediaUrls.length})
-                          </span>
-                        </button>
-                      )}
-                      
-                      {typeof currentProject.mediaUrls === 'string' && 
-                        currentProject.mediaUrls.startsWith('[') && 
-                        JSON.parse(currentProject.mediaUrls).length > 6 && (
-                        <button
-                          type="button"
-                          onClick={() => openLightbox(JSON.parse(currentProject.mediaUrls as string), 0)}
-                          className="aspect-square w-full flex items-center justify-center bg-muted rounded-md border hover:bg-muted/80"
-                        >
-                          <span className="text-sm font-medium">
-                            View All ({JSON.parse(currentProject.mediaUrls).length})
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                  )}
+                        </Carousel>
+                      </div>
+                    );
+                  })()}
                 </div>
                 
                 {/* Project Details */}
@@ -2700,7 +2673,6 @@ export default function Projects() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      )}
     </div>
   );
 }
