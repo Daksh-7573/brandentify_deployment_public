@@ -8313,15 +8313,41 @@ export class DatabaseStorage implements IStorage {
   // Pulse operations for DatabaseStorage
   async getPulses(): Promise<Pulse[]> {
     try {
-      console.log('[db.getPulses] Fetching all pulses');
+      console.log('[db.getPulses] Fetching all pulses with time-decay ranking');
       
-      const result = await db.select()
-        .from(pulses)
-        .where(eq(pulses.isPublished, true))
-        .orderBy(desc(pulses.reachScore), desc(pulses.createdAt));
+      // Apply time decay to reach_score for fresh feed
+      // Formula: reach_score * decay_factor
+      // - < 24h: 1.0x (full score)
+      // - 24-48h: 0.5x 
+      // - 48h-7d: 0.2x
+      // - > 7d: 0.05x
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", type, category, title, content, 
+          industry, domain, media_type as "mediaType", 
+          media_urls as "mediaUrls", media_local_storage_keys as "mediaLocalStorageKeys",
+          poll_options as "pollOptions", project_id as "projectId",
+          likes, insightful_count as "insightfulCount", 
+          misinformed_count as "misinformedCount", share_count as "shareCount",
+          comments, is_published as "isPublished", expires_at as "expiresAt",
+          created_at as "createdAt", updated_at as "updatedAt",
+          flag_count as "flagCount", reach_score as "reachScore",
+          week_number as "weekNumber", year,
+          (reach_score * 
+            CASE 
+              WHEN EXTRACT(EPOCH FROM (NOW() - created_at)) / 3600 < 24 THEN 1.0
+              WHEN EXTRACT(EPOCH FROM (NOW() - created_at)) / 3600 < 48 THEN 0.5
+              WHEN EXTRACT(EPOCH FROM (NOW() - created_at)) / 3600 < 168 THEN 0.2
+              ELSE 0.05
+            END
+          ) as time_weighted_score
+        FROM pulses
+        WHERE is_published = true
+        ORDER BY time_weighted_score DESC, created_at DESC
+      `);
       
-      console.log(`[db.getPulses] Found ${result.length} pulses`);
-      return result;
+      console.log(`[db.getPulses] Found ${result.rows.length} pulses with time-decay ranking`);
+      return result.rows;
     } catch (error) {
       console.error('[db.getPulses] Error fetching pulses:', error);
       throw error;
@@ -8379,12 +8405,20 @@ export class DatabaseStorage implements IStorage {
           p.likes, p.insightful_count as "insightfulCount", 
           p.misinformed_count as "misinformedCount", p.share_count as "shareCount",
           p.comments, p.is_published as "isPublished", p.expires_at as "expiresAt",
-          p.created_at as "createdAt", p.updated_at as "updatedAt",
-          u.name, u.photo_url as "photoURL", u.title as "userTitle"
+          p.created_at as "createdAt", p.updated_at as "updatedAt", p.reach_score as "reachScore",
+          u.name, u.photo_url as "photoURL", u.title as "userTitle",
+          (p.reach_score * 
+            CASE 
+              WHEN EXTRACT(EPOCH FROM (NOW() - p.created_at)) / 3600 < 24 THEN 1.0
+              WHEN EXTRACT(EPOCH FROM (NOW() - p.created_at)) / 3600 < 48 THEN 0.5
+              WHEN EXTRACT(EPOCH FROM (NOW() - p.created_at)) / 3600 < 168 THEN 0.2
+              ELSE 0.05
+            END
+          ) as time_weighted_score
         FROM pulses p
         LEFT JOIN users u ON p.user_id = u.id
         WHERE ${whereConditions.join(' AND ')}
-        ORDER BY p.created_at DESC
+        ORDER BY time_weighted_score DESC, p.created_at DESC
         LIMIT $${paramIndex}
       `;
       
