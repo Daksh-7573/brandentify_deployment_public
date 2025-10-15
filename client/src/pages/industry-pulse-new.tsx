@@ -216,19 +216,29 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
   
   // Handle reaction button click
   const handleReaction = (reactionType: "insightful" | "misinformed") => {
+    console.log('[REACTION DEBUG] handleReaction called', { reactionType, userId });
+    console.log('[REACTION DEBUG] userReactionsData:', userReactionsData);
+    console.log('[REACTION DEBUG] quotaData:', quotaData);
+    
     const userReaction = userReactionsData?.find(
       (reaction: any) => reaction.userId === userId && reaction.reactionType === reactionType
     );
     
+    console.log('[REACTION DEBUG] userReaction:', userReaction);
+    
     if (userReaction) {
       // Remove existing reaction
+      console.log('[REACTION DEBUG] Removing existing reaction:', userReaction.id);
       deleteReactionMutation.mutate(userReaction.id);
     } else {
       // Check quota and add new reaction
       const quota = quotaData?.[reactionType];
       const hasRemainingQuota = quota?.remaining > 0;
       
+      console.log('[REACTION DEBUG] Quota check:', { quota, hasRemainingQuota });
+      
       if (!hasRemainingQuota && quota) {
+        console.log('[REACTION DEBUG] Quota exceeded - showing toast');
         toast({
           title: "Daily limit reached",
           description: `You've used all your ${reactionType} reactions for today (${quota?.max})`,
@@ -236,6 +246,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         return;
       }
       
+      console.log('[REACTION DEBUG] Triggering mutation with reactionType:', reactionType);
       reactionMutation.mutate(reactionType);
     }
   };
