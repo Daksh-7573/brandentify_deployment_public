@@ -6931,6 +6931,13 @@ ${extractedText.substring(0, 5000)}
         `, [pulseId]);
       }
       
+      // Recalculate reach_score: (comments × 3) + insightful - misinformed
+      await pool.query(`
+        UPDATE pulses 
+        SET reach_score = (comments * 3) + insightful_count - misinformed_count
+        WHERE id = $1
+      `, [pulseId]);
+      
       // Update or create quota record
       if (quotaResult.rows.length > 0) {
         // Update quota using conditional SQL
@@ -7047,6 +7054,13 @@ ${extractedText.substring(0, 5000)}
           WHERE id = $1
         `, [pulse_id]);
       }
+      
+      // Recalculate reach_score: (comments × 3) + insightful - misinformed
+      await pool.query(`
+        UPDATE pulses 
+        SET reach_score = (comments * 3) + insightful_count - misinformed_count
+        WHERE id = $1
+      `, [pulse_id]);
       
       // Restore quota - decrease the used count using conditional SQL
       const today = new Date().toISOString().split('T')[0];
