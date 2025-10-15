@@ -7788,6 +7788,23 @@ export class MemStorage implements IStorage {
       id
     );
     
+    // Create notification for quest completion
+    try {
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: quest.userId,
+        type: 'success',
+        category: 'quest_completed',
+        title: 'Quest Completed! 🎉',
+        message: `You've completed "${questDefinition.title}" and earned ${xpEarned} XP!`,
+        isRead: false
+      });
+      console.log(`[completeUserQuest] Notification created for user ${quest.userId}`);
+    } catch (error) {
+      console.error('[completeUserQuest] Failed to create notification:', error);
+      // Don't fail quest completion if notification fails
+    }
+    
     return completedQuest;
   }
 

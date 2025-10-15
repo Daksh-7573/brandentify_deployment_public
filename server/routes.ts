@@ -3947,6 +3947,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } : undefined
       };
       
+      // Create notification for pulse owner (if not commenting on own pulse)
+      try {
+        const pulse = await storage.getPulse(newComment.pulseId);
+        
+        if (pulse && pulse.userId !== newComment.userId) {
+          const { createNotification } = await import('./services/notification-service');
+          const commenterName = user?.name || 'Someone';
+          const pulseTitle = pulse.title || pulse.content;
+          
+          await createNotification({
+            userId: pulse.userId,
+            type: 'info',
+            category: 'pulse_comment',
+            title: 'New Comment',
+            message: `${commenterName} commented on your pulse: "${pulseTitle.substring(0, 30)}${pulseTitle.length > 30 ? '...' : ''}"`,
+            isRead: false
+          });
+          
+          console.log(`[POST /pulse-comments] Notification created for pulse owner ${pulse.userId}`);
+        }
+      } catch (notifError) {
+        console.error('[POST /pulse-comments] Failed to create notification:', notifError);
+        // Don't fail the comment if notification fails
+      }
+      
       res.status(201).json(commentWithUser);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -6811,6 +6836,39 @@ ${extractedText.substring(0, 5000)}
       };
       
       console.log(`[POST /pulse-reactions] Updated quota:`, quotaData);
+      
+      // Create notification for pulse owner (if not reacting to own pulse)
+      try {
+        const pulseResult = await pool.query(`
+          SELECT user_id, title, content FROM pulses WHERE id = $1
+        `, [pulseId]);
+        
+        if (pulseResult.rows.length > 0) {
+          const pulseOwner = pulseResult.rows[0];
+          
+          // Only notify if someone else reacted (not self-reaction)
+          if (pulseOwner.user_id !== userId) {
+            const { createNotification } = await import('./services/notification-service');
+            const userResult = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
+            const reactorName = userResult.rows[0]?.name || 'Someone';
+            const pulseTitle = pulseResult.rows[0].title || pulseResult.rows[0].content;
+            
+            await createNotification({
+              userId: pulseOwner.user_id,
+              type: 'info',
+              category: 'pulse_reaction',
+              title: 'New Reaction',
+              message: `${reactorName} reacted to your pulse: "${pulseTitle.substring(0, 30)}${pulseTitle.length > 30 ? '...' : ''}"`,
+              isRead: false
+            });
+            
+            console.log(`[POST /pulse-reactions] Notification created for pulse owner ${pulseOwner.user_id}`);
+          }
+        }
+      } catch (notifError) {
+        console.error('[POST /pulse-reactions] Failed to create notification:', notifError);
+        // Don't fail the reaction if notification fails
+      }
       
       res.status(201).json({ 
         reaction: result.rows[0],
