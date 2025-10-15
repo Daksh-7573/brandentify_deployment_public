@@ -31,6 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Security**: AI prompt injection protection and content moderation
 - **Core AI Features**: Musk AI Assistant for career guidance, Resume Analysis (PDF processing), Career Insights, Hashtag Suggestions, Predictive Career Modeling, Cross-User Intelligence, Emotional Intelligence, and Cohort-Based Recommendations.
 - **AI Personalization**: Dynamic Persona Switching (Career Mentor, Strategist, Executive Coach), Proactive Suggestion Engine, Learning Pattern Recognition, and Conversation Memory with context-aware responses.
+- **Musk Auto-Pulse System**: Automated news pulse generation (3x daily at 9 AM, 2 PM, 7 PM + event-driven triggers). Focuses on industry updates and professional news. Uses intelligent link matching to add reference sources (McKinsey, TechCrunch, LinkedIn) only when highly relevant to content. Context based on user industries, domains, locations, and trending hashtags.
 
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.

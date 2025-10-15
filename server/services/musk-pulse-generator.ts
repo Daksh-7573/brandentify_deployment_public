@@ -12,114 +12,88 @@ import { storage } from "../storage";
 
 /**
  * Generate contextually relevant publication URLs based on pulse content
+ * Only returns links when they are truly relevant to the content
  */
 function generateContextualLinks(pulseContent: string, industry?: string): Array<{title: string, url: string, source: string}> {
   const content = pulseContent.toLowerCase();
   const industryLower = industry?.toLowerCase() || '';
   
   // Analyze content for key topics and generate appropriate URLs
+  // Only add links when they are highly relevant to the pulse content
   const links: Array<{title: string, url: string, source: string}> = [];
   
-  // Leadership and management topics
-  if (content.includes('leadership') || content.includes('management') || content.includes('team') || content.includes('strategy')) {
+  // Technology and AI topics - specific match required
+  if ((content.includes('artificial intelligence') || content.includes(' ai ') || content.includes('machine learning')) && 
+      (content.includes('trend') || content.includes('innovation') || content.includes('technology'))) {
     links.push({
-      title: "Leadership Strategies for Modern Workplaces",
-      url: "https://hbr.org/2024/03/the-future-of-leadership-development",
-      source: "Harvard Business Review"
-    });
-  }
-  
-  // Technology and innovation topics
-  if (content.includes('technology') || content.includes('ai') || content.includes('digital') || content.includes('innovation')) {
-    links.push({
-      title: "Digital Transformation in the Modern Era",
+      title: "Technology Trends and AI Innovation",
       url: "https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-top-trends-in-tech",
       source: "McKinsey & Company"
     });
   }
   
-  // Career development topics
-  if (content.includes('career') || content.includes('skill') || content.includes('development') || content.includes('growth')) {
+  // Remote work and future of work - specific match required
+  if ((content.includes('remote work') || content.includes('hybrid work') || content.includes('future of work')) &&
+      (content.includes('trend') || content.includes('study') || content.includes('research'))) {
     links.push({
-      title: "Career Development in the Digital Age",
-      url: "https://hbr.org/2022/12/whats-holding-back-your-career-development",
-      source: "Harvard Business Review"
-    });
-  }
-  
-  // Remote work and hybrid topics
-  if (content.includes('remote') || content.includes('hybrid') || content.includes('work from home') || content.includes('flexible')) {
-    links.push({
-      title: "The Future of Remote and Hybrid Work",
-      url: "https://www.mckinsey.com/featured-insights/future-of-work/the-future-of-work-in-america",
+      title: "The Future of Work Research",
+      url: "https://www.mckinsey.com/featured-insights/future-of-work",
       source: "McKinsey & Company"
     });
   }
   
-  // Marketing and branding topics
-  if (content.includes('marketing') || content.includes('brand') || content.includes('social media') || content.includes('advertising')) {
+  // Healthcare industry - specific match required
+  if (industryLower.includes('healthcare') && 
+      (content.includes('innovation') || content.includes('digital health') || content.includes('healthcare trend'))) {
     links.push({
-      title: "Marketing Trends and Brand Strategy",
-      url: "https://www.linkedin.com/business/marketing/blog/marketing-strategy/marketing-trends",
-      source: "LinkedIn Marketing"
-    });
-  }
-  
-  // Healthcare industry specific
-  if (industryLower.includes('healthcare') || industryLower.includes('medical') || content.includes('health')) {
-    links.push({
-      title: "Healthcare Innovation and Digital Health",
-      url: "https://www.mckinsey.com/industries/healthcare/our-insights/healthcare-trends-to-watch-in-2024",
+      title: "Healthcare Innovation Insights",
+      url: "https://www.mckinsey.com/industries/healthcare",
       source: "McKinsey & Company"
     });
   }
   
-  // Finance industry specific
-  if (industryLower.includes('finance') || industryLower.includes('banking') || content.includes('financial')) {
+  // Finance industry - specific match required
+  if (industryLower.includes('finance') && 
+      (content.includes('fintech') || content.includes('banking') || content.includes('financial services'))) {
     links.push({
-      title: "Financial Services Digital Transformation",
-      url: "https://www.mckinsey.com/industries/financial-services/our-insights/banking-matters",
+      title: "Financial Services Insights",
+      url: "https://www.mckinsey.com/industries/financial-services",
       source: "McKinsey & Company"
     });
   }
   
-  // Technology industry specific
-  if (industryLower.includes('technology') || industryLower.includes('software') || industryLower.includes('tech')) {
+  // Technology startups - specific match required
+  if ((industryLower.includes('technology') || industryLower.includes('tech') || industryLower.includes('startup')) &&
+      (content.includes('startup') || content.includes('venture') || content.includes('funding'))) {
     links.push({
-      title: "Technology Industry Trends and Insights",
+      title: "Technology and Startup News",
       url: "https://techcrunch.com/category/startups/",
       source: "TechCrunch"
     });
   }
   
-  // Manufacturing industry specific
-  if (industryLower.includes('manufacturing') || industryLower.includes('industrial') || content.includes('production')) {
+  // Manufacturing and Industry 4.0 - specific match required
+  if ((industryLower.includes('manufacturing') || content.includes('manufacturing')) &&
+      (content.includes('automation') || content.includes('industry 4.0') || content.includes('digital transformation'))) {
     links.push({
-      title: "Manufacturing Innovation and Industry 4.0",
-      url: "https://www.mckinsey.com/industries/advanced-electronics/our-insights/manufacturing-trends",
+      title: "Manufacturing and Industry 4.0",
+      url: "https://www.mckinsey.com/industries/advanced-electronics",
       source: "McKinsey & Company"
     });
   }
   
-  // If no specific matches, use general business insights
-  if (links.length === 0) {
+  // Marketing and digital marketing - specific match required
+  if ((content.includes('digital marketing') || content.includes('marketing strategy') || content.includes('social media marketing')) &&
+      (content.includes('trend') || content.includes('strategy') || content.includes('campaign'))) {
     links.push({
-      title: "Business Strategy and Market Insights",
-      url: "https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond",
-      source: "Harvard Business Review"
+      title: "Digital Marketing Trends",
+      url: "https://www.linkedin.com/business/marketing/blog",
+      source: "LinkedIn Marketing"
     });
   }
   
-  // Always add a secondary relevant link
-  if (links.length === 1) {
-    links.push({
-      title: "Professional Development Resources",
-      url: "https://www.linkedin.com/business/talent/blog",
-      source: "LinkedIn Talent Blog"
-    });
-  }
-  
-  return links.slice(0, 2); // Return maximum 2 links
+  // Only return links if they are truly relevant - no fallback, no forced minimum
+  return links.slice(0, 2); // Maximum 2 links when relevant
 }
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -269,16 +243,13 @@ export class MuskPulseGenerator {
   }
 
   /**
-   * Get simplified active user context with enhanced data
+   * Get simplified active user context for news and updates
    */
   private async getActiveUserContext(): Promise<{ 
     industries: string[]; 
     domains: string[]; 
     locations: string[]; 
-    popularGoals: string[];
-    targetRoles: string[];
     trendingHashtags: string[];
-    skillGaps: string[];
   }> {
     try {
       const users = await this.getUserContext();
@@ -288,11 +259,7 @@ export class MuskPulseGenerator {
       const domains = Array.from(new Set(users.map(u => u.domain).filter((val): val is string => Boolean(val))));
       const locations = Array.from(new Set(users.map(u => u.location).filter((val): val is string => Boolean(val))));
       
-      // Goal and hashtag aggregation
-      const allGoals = users.flatMap(u => u.goals || []);
-      const popularGoals = Array.from(new Set(allGoals.map(g => g.title))).slice(0, 5);
-      const targetRoles = Array.from(new Set(allGoals.map(g => g.targetRole).filter((val): val is string => Boolean(val)))).slice(0, 5);
-      
+      // Hashtag aggregation for trending topics
       const allHashtags = users.flatMap(u => u.followedHashtags || []);
       const hashtagFrequency = allHashtags.reduce((acc, tag) => {
         acc[tag] = (acc[tag] || 0) + 1;
@@ -303,32 +270,19 @@ export class MuskPulseGenerator {
         .slice(0, 8)
         .map(([tag]) => tag);
       
-      // Skill gap analysis
-      const allRequiredSkills = allGoals.flatMap(g => g.requiredSkills || []);
-      const allCurrentSkills = allGoals.flatMap(g => g.currentSkills || []);
-      const skillGaps = allRequiredSkills.filter(skill => 
-        !allCurrentSkills.includes(skill)
-      ).slice(0, 5);
-      
       return {
         industries: industries.slice(0, 5),
         domains: domains.slice(0, 5),
         locations: locations.slice(0, 3),
-        popularGoals,
-        targetRoles,
-        trendingHashtags,
-        skillGaps
+        trendingHashtags
       };
     } catch (error) {
-      console.error('[MuskPulseGenerator] Error getting enhanced active user context:', error);
+      console.error('[MuskPulseGenerator] Error getting active user context:', error);
       return { 
         industries: [], 
         domains: [], 
         locations: [], 
-        popularGoals: [],
-        targetRoles: [],
-        trendingHashtags: [],
-        skillGaps: []
+        trendingHashtags: []
       };
     }
   }
@@ -371,17 +325,14 @@ export class MuskPulseGenerator {
       industries: string[]; 
       domains: string[]; 
       locations: string[]; 
-      popularGoals: string[];
-      targetRoles: string[];
       trendingHashtags: string[];
-      skillGaps: string[];
     }
   ): Promise<{ title: string; content: string; industry?: string; hashtags: string[]; referenceLinks: Array<{title: string; url: string; source: string}> }> {
     
     const timePrompts = {
-      morning: "Generate morning career insights and industry updates",
-      afternoon: "Create midday professional development and market analysis content", 
-      evening: "Provide evening networking opportunities and skill development insights"
+      morning: "Generate morning industry news and market updates",
+      afternoon: "Create midday professional updates and industry insights", 
+      evening: "Provide evening industry news and market trends"
     };
 
     const contextInfo = `
@@ -389,59 +340,35 @@ Platform user insights:
 - Industries: ${userContext.industries.join(', ')}
 - Specialties: ${userContext.domains.join(', ')}
 - Locations: ${userContext.locations.join(', ')}
-- Popular Career Goals: ${userContext.popularGoals.join(', ')}
-- Target Roles: ${userContext.targetRoles.join(', ')}
 - Trending Hashtags: ${userContext.trendingHashtags.map(tag => `#${tag}`).join(', ')}
-- Common Skill Gaps: ${userContext.skillGaps.join(', ')}
     `;
 
     const prompt = `
 You are Musk, an expert AI career assistant for Brandentifier, a professional networking platform.
 
-Generate a ${options.timeOfDay} news pulse that provides highly personalized career insights with reference links.
+Generate a ${options.timeOfDay} news pulse focused on industry updates and professional news.
 
 ${contextInfo}
 
 Requirements:
-- Create brief summaries (2-3 sentences max) instead of long content
-- MUST include 2-3 credible reference links for "Read More" functionality
-- Focus on actionable career advice that addresses current user goals and skill gaps
-- Address trending hashtags and popular career objectives mentioned above
-- Target content towards the specified roles and industries users are pursuing
+- Create brief news summaries (2-3 sentences max)
+- Focus on industry updates, market trends, and professional news
+- Address trending hashtags and topics mentioned above
 - Be professional yet engaging with a personal touch
 - Include 2-3 relevant hashtags from the trending list when applicable
-- Prioritize advice that helps users bridge their skill gaps and achieve their career goals
-- Encourage use of Brandentifier features for portfolio building, networking, and skill development
-- Use real, credible sources like Harvard Business Review, McKinsey, Forbes, TechCrunch, MIT Technology Review, etc.
+- Encourage use of Brandentifier features for portfolio building and networking
+- DO NOT include reference links in your response - they will be added automatically when relevant
 
 ${timePrompts[options.timeOfDay]}
 
-PERSONALIZATION FOCUS: Tailor content to help users progress towards their target roles by addressing their skill gaps and leveraging trending topics they're following.
-
-CRITICAL: NEVER generate fake URLs or made-up article links. Only use these verified working direct article URLs:
-- https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond (Harvard Business Review - Work Trends 2025)
-- https://hbr.org/2022/12/whats-holding-back-your-career-development (Harvard Business Review - Career Development)
-- https://hbr.org/podcast/2025/04/navigating-the-hybrid-work-dilemma (Harvard Business Review - Hybrid Work)
-- https://www.mckinsey.com/featured-insights/future-of-work (McKinsey Future of Work)
-- https://www.forbes.com/sites/forbescoachescouncil/ (Forbes Coaches Council)
-- https://techcrunch.com/category/startups/ (TechCrunch Startups)
-- https://www.linkedin.com/business/talent/blog (LinkedIn Talent Blog)
-
-DO NOT create URLs like "/article", "/articles/", "/story/" or any other fake paths. Use ONLY the URLs listed above.
+FOCUS: Provide timely industry news and professional updates relevant to the platform users' industries and trending topics.
 
 Respond with JSON format:
 {
-  "title": "Engaging title (max 80 chars)",
-  "content": "Brief summary (2-3 sentences max) with key insights",
+  "title": "Engaging news title (max 80 chars)",
+  "content": "Brief news summary (2-3 sentences max) with key insights",
   "industry": "Primary industry focus (if applicable)", 
-  "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
-  "referenceLinks": [
-    {
-      "title": "Relevant resource title that matches the content topic",
-      "url": "https://example.com/relevant-article",
-      "source": "Publication Name"
-    }
-  ]
+  "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
 }
     `;
 
@@ -455,31 +382,29 @@ Respond with JSON format:
 
       const generated = JSON.parse(response.choices[0].message.content || '{}');
       
-      // Generate contextual links based on the actual pulse content and industry
-      const pulseContent = generated.content || "Stay focused on your professional growth journey.";
+      // Generate contextual links ONLY if truly relevant to the pulse content
+      const pulseContent = generated.content || "Stay updated with the latest industry news.";
       const pulseIndustry = generated.industry || userContext.industries[0];
       const contextualLinks = generateContextualLinks(pulseContent, pulseIndustry);
 
       return {
-        title: generated.title || `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Career Insights`,
+        title: generated.title || `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Industry Update`,
         content: pulseContent,
         industry: generated.industry,
         hashtags: generated.hashtags || [],
-        referenceLinks: contextualLinks
+        referenceLinks: contextualLinks // Will be empty array if no relevant links
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating content:', error);
       
-      // Fallback content with contextual links
-      const fallbackContent = `Today is a great day to focus on your career development. Consider updating your Brandentifier portfolio or connecting with professionals in your industry.`;
-      const fallbackIndustry = userContext.industries[0] || 'General';
-      const contextualFallbackLinks = generateContextualLinks(fallbackContent, fallbackIndustry);
+      // Fallback content without links
+      const fallbackContent = `Stay updated with the latest industry news. Connect with professionals and share insights on Brandentifier.`;
 
       return {
         title: `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Professional Update`,
         content: fallbackContent,
-        hashtags: ['#CareerGrowth', '#ProfessionalDevelopment'],
-        referenceLinks: contextualFallbackLinks
+        hashtags: ['#IndustryNews', '#ProfessionalNetworking'],
+        referenceLinks: [] // No links for fallback
       };
     }
   }
@@ -564,10 +489,10 @@ Respond with JSON format:
     content: { title: string; content: string; industry?: string; hashtags: string[]; referenceLinks?: Array<{title: string; url: string; source: string}> }
   ): Promise<void> {
     
-    // Create enhanced content with reference links
+    // Only add reference links if they exist and are relevant
     const enhancedContent = content.referenceLinks && content.referenceLinks.length > 0 
       ? `${content.content}\n\n📚 Read More:\n${content.referenceLinks.map(link => `• ${link.title} - ${link.source}\n  ${link.url}`).join('\n')}`
-      : content.content;
+      : content.content; // No links section if no relevant links
 
     const pulseData: InsertPulse = {
       userId: MuskPulseGenerator.MUSK_USER_ID,
