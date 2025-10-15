@@ -893,6 +893,8 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
   const [_, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [projectDetails, setProjectDetails] = useState<any>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -934,46 +936,246 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
     fetchProjectDetails();
   }, [pulse.projectId]);
 
-  return (
-    <div className="mt-4 space-y-2">
-      <div className="text-sm font-medium flex items-center gap-2">
-        <FileCode className="h-4 w-4 text-muted-foreground" />
-        <span>Project Update</span>
-      </div>
+  // Helper function to normalize media URLs
+  const normalizeMediaUrls = (mediaUrls: string | string[] | null): string[] => {
+    if (!mediaUrls) return [];
+    
+    if (Array.isArray(mediaUrls)) {
+      return mediaUrls.filter(url => url && url.trim() !== '');
+    }
+    
+    if (typeof mediaUrls === 'string') {
+      // Check if it's a JSON array string
+      if (mediaUrls.trim().startsWith('[')) {
+        try {
+          const parsed = JSON.parse(mediaUrls);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(url => url && url.trim() !== '');
+          }
+        } catch (e) {
+          // If JSON parse fails, treat as single URL
+          return mediaUrls.trim() ? [mediaUrls] : [];
+        }
+      }
+      // Single URL string
+      return mediaUrls.trim() ? [mediaUrls] : [];
+    }
+    
+    return [];
+  };
+
+  // Lightbox navigation functions
+  const openLightbox = (index: number) => {
+    setCurrentImageIndex(index);
+    setIsLightboxOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  const nextImage = (images: string[]) => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = (images: string[]) => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  // Get normalized images
+  const projectImages = projectDetails ? normalizeMediaUrls(projectDetails.mediaUrls) : [];
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
       
-      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
-        {isLoading ? (
-          <div className="h-24 space-y-3 animate-pulse">
-            <div className="h-5 w-2/3 bg-muted rounded"></div>
-            <div className="h-4 w-full bg-muted rounded"></div>
-            <div className="h-8 w-32 bg-muted rounded mt-4"></div>
-          </div>
-        ) : projectDetails ? (
-          <div className="space-y-2">
-            <h3 className="font-medium">{projectDetails.title}</h3>
-            {projectDetails.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2">{projectDetails.description}</p>
-            )}
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="hover:bg-green-50 hover:border-green-200 border-muted"
-                onClick={() => onViewProject ? onViewProject(projectDetails) : setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
-                data-testid="button-view-project"
-              >
-                View Project
-              </Button>
+      switch (e.key) {
+        case 'ArrowRight':
+          nextImage(projectImages);
+          break;
+        case 'ArrowLeft':
+          prevImage(projectImages);
+          break;
+        case 'Escape':
+          closeLightbox();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, projectImages]);
+
+  return (
+    <>
+      <div className="mt-4 space-y-2">
+        <div className="text-sm font-medium flex items-center gap-2">
+          <FileCode className="h-4 w-4 text-muted-foreground" />
+          <span>Project Update</span>
+        </div>
+        
+        <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
+          {isLoading ? (
+            <div className="h-24 space-y-3 animate-pulse">
+              <div className="h-5 w-2/3 bg-muted rounded"></div>
+              <div className="h-4 w-full bg-muted rounded"></div>
+              <div className="h-8 w-32 bg-muted rounded mt-4"></div>
             </div>
-          </div>
-        ) : (
-          <div className="h-24 flex flex-col items-center justify-center">
-            <FileCode className="h-8 w-8 text-gray-300 mb-2" />
-            <span className="text-sm text-muted-foreground">Project not found</span>
-          </div>
-        )}
+          ) : projectDetails ? (
+            <div className="space-y-3">
+              <h3 className="font-medium">{projectDetails.title}</h3>
+              {projectDetails.description && (
+                <p className="text-sm text-muted-foreground line-clamp-2">{projectDetails.description}</p>
+              )}
+              
+              {/* Project Images Carousel */}
+              {projectImages.length > 0 && (
+                <div className="mt-3">
+                  <Carousel className="w-full" 
+                    setApi={(api) => {
+                      api?.on("select", () => {
+                        const selectedIndex = api.selectedScrollSnap();
+                        setCurrentImageIndex(selectedIndex);
+                      });
+                    }}>
+                    <CarouselContent>
+                      {projectImages.map((url, index) => (
+                        <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                          <div className="p-1 group">
+                            <div 
+                              className="overflow-hidden rounded-lg relative cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
+                              onClick={() => openLightbox(index)}
+                            >
+                              <div className="w-full h-48 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+                                <img 
+                                  src={url} 
+                                  alt={`Project media ${index + 1}`} 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    console.error(`Failed to load project image: ${url}`);
+                                    e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                                  }}
+                                />
+                                <div className="absolute inset-0 bg-black opacity-0 hover:opacity-20 transition-opacity duration-300 flex items-center justify-center">
+                                  <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                </div>
+                              </div>
+                              {projectImages.length > 1 && (
+                                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs py-1 px-2 rounded-full">
+                                  {index + 1}/{projectImages.length}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {projectImages.length > 1 && (
+                      <div className="flex flex-col items-center justify-center mt-3 gap-2">
+                        <div className="flex items-center gap-2">
+                          <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
+                          <CarouselNext className="relative -translate-y-0 -right-0 ml-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
+                        </div>
+                        <div className="flex gap-1 mt-1">
+                          {projectImages.map((_, idx) => (
+                            <div 
+                              key={idx} 
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                idx === currentImageIndex ? 'w-4 bg-primary shadow-sm' : 'w-1.5 bg-gray-300/70'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </Carousel>
+                </div>
+              )}
+              
+              <div className="flex gap-2 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="hover:bg-green-50 hover:border-green-200 border-muted"
+                  onClick={() => onViewProject ? onViewProject(projectDetails) : setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
+                  data-testid="button-view-project"
+                >
+                  View Project
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="h-24 flex flex-col items-center justify-center">
+              <FileCode className="h-8 w-8 text-gray-300 mb-2" />
+              <span className="text-sm text-muted-foreground">Project not found</span>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Lightbox for project images */}
+      {isLightboxOpen && projectImages.length > 0 && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <div 
+            className="relative max-w-screen-xl max-h-screen w-full h-full flex flex-col items-center justify-center p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+              onClick={closeLightbox}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            <div className="absolute top-4 left-4 text-white">
+              {currentImageIndex + 1} / {projectImages.length}
+            </div>
+            
+            <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+              <img 
+                src={projectImages[currentImageIndex]} 
+                alt={`Fullscreen ${currentImageIndex + 1}`}
+                className="max-h-full max-w-full object-contain"
+                onError={(e) => {
+                  console.error(`Failed to load lightbox image: ${projectImages[currentImageIndex]}`);
+                  e.currentTarget.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+                }}
+              />
+            </div>
+            
+            {projectImages.length > 1 && (
+              <>
+                <button 
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+                  onClick={() => prevImage(projectImages)}
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </button>
+                
+                <button 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+                  onClick={() => nextImage(projectImages)}
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
