@@ -1023,7 +1023,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
           <span>Project Update</span>
         </div>
         
-        <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
+        <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
           {isLoading ? (
             <div className="h-24 space-y-3 animate-pulse">
               <div className="h-5 w-2/3 bg-muted rounded"></div>
@@ -1105,7 +1105,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="hover:bg-green-50 hover:border-green-200 border-muted"
+                  className="backdrop-blur-sm bg-white/10 hover:bg-white/20 border-white/20 hover:border-white/30 transition-all duration-300"
                   onClick={() => onViewProject ? onViewProject(projectDetails) : setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
                   data-testid="button-view-project"
                 >
