@@ -84,13 +84,16 @@ PLATFORM: ${context.platform || 'Any'}
 Create a quest that:
 1. References a SPECIFIC trend from above (mention the actual topic)
 2. Gives EXACT specs (e.g., "80-second reel", "3 data points", "150-word post")
-3. Explains WHY this matters RIGHT NOW based on the trend
-4. Provides a Musk-style tip with actionable steps
+3. Includes 2-3 CONCRETE EXAMPLES of what to share (e.g., "share a recent project challenge you solved" OR "explain a common industry misconception" OR "describe a tool or framework you use daily")
+4. Explains WHY this matters RIGHT NOW based on the trend
+5. Provides a Musk-style tip with actionable steps
+
+IMPORTANT: The description must include specific content ideas, not vague phrases like "share an observation" or "post insights". Give clear examples of WHAT to create.
 
 Format your response EXACTLY as:
 TITLE: [Catchy title]
-DESCRIPTION: [Specific action with trend reference and exact specs]
-TIP: [Musk-style guidance]
+DESCRIPTION: [Specific action with trend reference, exact specs, AND 2-3 concrete content examples]
+TIP: [Musk-style guidance with actionable steps]
 CONTEXT: [Why this trend matters now]
 `.trim();
   }
@@ -104,18 +107,21 @@ CONTEXT: [Why this trend matters now]
 When giving quest directions:
 - Always reference SPECIFIC trends or news
 - Give EXACT specifications (numbers, formats, time limits)
+- Include CONCRETE EXAMPLES of what to share (not vague terms like "insights" or "observations")
 - Explain the strategic "why" behind actions
 - Be direct and actionable
 
 Examples of good directions:
-✅ "Create 60-second reel about AI regulation changes (reference the EU AI Act trends) with 3 key takeaways"
-✅ "Write 150-word LinkedIn post on remote work policy shifts citing the return-to-office data from this week"
+✅ "Write 200-word post about AI regulation changes: share a recent client challenge you faced OR explain how the EU AI Act impacts your workflow OR describe a compliance tool you're implementing"
+✅ "Create 60-second reel on remote work shifts: show your actual home office setup OR walk through your productivity routine OR demonstrate a tool that saves you 2+ hours daily"
+✅ "Post 150-word update about your latest project: highlight one unexpected challenge you overcame OR share a metric that improved 25%+ OR explain a framework you developed"
 
-Examples of bad directions:
+Examples of bad directions (too vague):
 ❌ "Create content about your industry"
 ❌ "Share insights on your platform"
+❌ "Post an observation, lesson, or insight" (too generic - needs specific examples)
 
-Be specific. Be trend-aware. Be Musk.`;
+Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
   }
 
   /**
@@ -164,16 +170,73 @@ Be specific. Be trend-aware. Be Musk.`;
 
   /**
    * Fallback generic narrative when trends unavailable
+   * Provides specific content examples instead of vague instructions
    */
   private generateGenericNarrative(context: QuestContext): DynamicQuestNarrative {
     const industry = context.industry || 'your industry';
+    const domain = context.domain || 'your field';
+    
+    // Get content-specific examples based on quest type
+    const contentExamples = this.getContentExamples(context.questType, industry, domain);
     
     return {
-      title: `${context.questType.replace(/_/g, ' ')} Quest`,
-      description: `Complete a ${context.deliverableFormat || 'professional task'} relevant to ${industry}${context.domain ? ` focusing on ${context.domain}` : ''}.`,
-      muskTip: `Focus on quality over quantity. Make it specific to ${industry} to stand out.`,
-      trendContext: 'Industry-relevant content creation',
+      title: contentExamples.title,
+      description: contentExamples.description,
+      muskTip: contentExamples.tip,
+      trendContext: `Build your ${industry} thought leadership`,
       usedTrends: []
+    };
+  }
+
+  /**
+   * Generate specific content examples based on quest type and industry
+   */
+  private getContentExamples(questType: string, industry: string, domain: string): {
+    title: string;
+    description: string;
+    tip: string;
+  } {
+    // Content creation quest examples
+    if (questType === 'content_creation' || questType === 'pulse_creation') {
+      return {
+        title: 'Share Your Professional Story',
+        description: `Write a 150-300 word post about ${industry}. Choose one: (1) Share a recent project challenge and how you solved it, (2) Explain a common ${domain} misconception and the reality, (3) Describe a tool, framework, or method you use daily that others might benefit from, (4) Highlight a lesson learned from a failure or setback in your career.`,
+        tip: `Don't just share generic insights—tell a specific story. Example: Instead of "Communication is important", write "Last month, a project almost failed because I assumed everyone understood the brief. Here's what I changed..." Real stories resonate 10x more than abstract advice.`
+      };
+    }
+
+    // Portfolio/project quest examples
+    if (questType === 'portfolio_building' || questType === 'portfolio') {
+      return {
+        title: 'Showcase Your Best Work',
+        description: `Add a ${industry} project to your portfolio. Include: (1) The specific problem or goal, (2) Your approach and key decisions, (3) Measurable results (e.g., "reduced costs by 30%" or "completed 2 weeks early"), (4) Visuals showing before/after or process.`,
+        tip: `Recruiters spend 10 seconds on portfolios. Lead with the result, not the process. Put your biggest number or achievement in the first line, then explain how you got there.`
+      };
+    }
+
+    // Networking quest examples
+    if (questType === 'networking') {
+      return {
+        title: 'Build Strategic Connections',
+        description: `Connect with 3 ${industry} professionals. Focus on: (1) People working in roles you aspire to, (2) Professionals at companies you're interested in, (3) Peers in ${domain} who share similar challenges. Personalize each request—mention a specific post or project of theirs.`,
+        tip: `Generic connection requests get ignored 80% of the time. Reference something specific: "I saw your post about ${domain} automation—we're tackling similar challenges at my company." Personalization = response rate.`
+      };
+    }
+
+    // Visibility/profile quest examples  
+    if (questType === 'visibility' || questType === 'profile_update') {
+      return {
+        title: 'Optimize Your Professional Presence',
+        description: `Update your profile to highlight ${industry} expertise. Add: (1) A headline that states your specific value (not just job title), (2) 3-5 quantified achievements with numbers, (3) Skills that match ${domain} job postings, (4) A summary that explains your unique approach or methodology.`,
+        tip: `Profiles with specific metrics get 5x more recruiter views. Replace "Experienced in project management" with "Led 15+ projects, delivering $2M in cost savings across ${industry} clients."`
+      };
+    }
+
+    // Default fallback
+    return {
+      title: 'Advance Your Career',
+      description: `Complete a ${industry} professional development task. Choose what fits your goals: (1) Update your profile with quantified achievements, (2) Share a specific lesson from recent work, (3) Connect with professionals in your target role, (4) Document a project with measurable results.`,
+      tip: `Career growth comes from specific, visible actions. Pick one task, do it well, and make it public. Consistency beats perfection.`
     };
   }
 
