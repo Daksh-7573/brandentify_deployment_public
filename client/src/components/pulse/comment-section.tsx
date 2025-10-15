@@ -39,6 +39,12 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     enabled: isExpanded,
   });
 
+  // Debug: Log comment data
+  console.log(`[CommentSection] Comments for pulse ${pulseId}:`, comments);
+  if (comments.length > 0) {
+    console.log(`[CommentSection] First comment user data:`, comments[0].user);
+  }
+
   // Create comment mutation
   const createCommentMutation = useMutation({
     mutationFn: async (content: string) => {
