@@ -479,33 +479,33 @@ function PollVoting({ pulse }: PollVotingProps) {
   
   return (
     <div className="mt-4 space-y-3">
-      <div className="text-sm font-semibold flex items-center gap-2 text-white/90">
-        <BarChart className="h-4 w-4 text-cyan-400" />
+      <div className="text-sm font-semibold flex items-center gap-2 text-white">
+        <BarChart className="h-4 w-4 text-white/70" />
         <span>Poll</span>
       </div>
       
-      <div className="rounded-xl p-5 bg-white/[0.08] backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="rounded-xl p-5 bg-[rgba(40,40,40,0.5)] backdrop-blur-[10px] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
         {pulse.pollOptions.map((option, index) => (
           <div key={index} className="space-y-2 mb-4 last:mb-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3 flex-1">
                 <button
                   type="button"
-                  className={`flex-1 h-11 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium backdrop-blur-md border flex items-center justify-between ${
+                  className={`flex-1 h-11 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium backdrop-blur-[10px] border flex items-center justify-between ${
                     userVote === index 
-                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 border-cyan-400/50 text-white shadow-lg shadow-cyan-500/20' 
-                      : 'bg-white/[0.05] border-white/20 text-white/80 hover:bg-white/[0.1] hover:border-white/30 hover:shadow-md'
+                      ? 'bg-white/20 border-white/30 text-white shadow-lg' 
+                      : 'bg-white/10 border-white/10 text-white/80 hover:bg-white/15 hover:border-white/20 hover:shadow-md'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
                 >
                   <span className="flex items-center gap-2">
-                    {userVote === index && <Check className="h-4 w-4 text-cyan-400" />}
+                    {userVote === index && <Check className="h-4 w-4 text-white" />}
                     {option}
                   </span>
                   
                   {userVote !== null && (
-                    <span className="text-xs font-semibold text-cyan-400">
+                    <span className="text-xs font-semibold text-white">
                       {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
                     </span>
                   )}
@@ -515,9 +515,9 @@ function PollVoting({ pulse }: PollVotingProps) {
             
             {userVote !== null && (
               <>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                <div className="h-2 bg-[rgba(18,18,18,0.7)] rounded-full overflow-hidden backdrop-blur-[10px] border border-white/5">
                   <div 
-                    className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-500 ease-in-out shadow-lg"
+                    className="h-full bg-white/30 transition-all duration-500 ease-in-out"
                     style={{ 
                       width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
                     }} 
@@ -535,14 +535,14 @@ function PollVoting({ pulse }: PollVotingProps) {
         
         {isLoading && (
           <div className="flex justify-center py-3">
-            <Loader2 className="h-5 w-5 animate-spin text-cyan-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-white/70" />
           </div>
         )}
         
         {userVote !== null && (
           <div className="text-xs text-white/50 pt-3 border-t border-white/10 mt-2 flex items-center justify-between">
             <span>Total votes: {totalVotes}</span>
-            <span className="text-cyan-400/70">Thank you for voting!</span>
+            <span className="text-white/60">Thank you for voting!</span>
           </div>
         )}
       </div>
