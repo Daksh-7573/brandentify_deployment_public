@@ -316,12 +316,12 @@ export default function YogaFitnessModel({
               transition={{ delay: 0.4 }}
               className="inline-flex items-center gap-3 px-6 py-3 rounded-full backdrop-blur-sm border"
               style={{ 
-                background: 'linear-gradient(to right, rgba(127, 168, 163, 0.3), rgba(229, 180, 164, 0.3))',
-                borderColor: 'rgba(127, 168, 163, 0.3)'
+                background: 'linear-gradient(to right, rgba(127, 168, 163, 0.35), rgba(229, 180, 164, 0.35))',
+                borderColor: 'rgba(254, 254, 254, 0.4)'
               }}
             >
-              <Circle className="w-3 h-3 animate-pulse" style={{ color: '#88B5B0', fill: '#88B5B0' }} />
-              <span className="font-medium" style={{ color: '#E5B4A4' }}>Namaste</span>
+              <Circle className="w-3 h-3 animate-pulse" style={{ color: '#FEFEFE', fill: '#FEFEFE' }} />
+              <span className="font-medium" style={{ color: '#FEFEFE' }}>Namaste</span>
             </motion.div>
 
             <motion.h1
@@ -340,7 +340,7 @@ export default function YogaFitnessModel({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
                 className="text-3xl md:text-4xl font-light"
-                style={{ color: '#D4A59A' }}
+                style={{ color: '#FEFEFE' }}
               >
                 {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
               </motion.p>
@@ -352,7 +352,7 @@ export default function YogaFitnessModel({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 className="text-xl md:text-2xl max-w-3xl mx-auto italic"
-                style={{ color: '#E5B4A4' }}
+                style={{ color: 'rgba(254, 254, 254, 0.9)' }}
               >
                 "{userInfo.tagline}"
               </motion.p>
@@ -363,22 +363,34 @@ export default function YogaFitnessModel({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-4 text-sm text-purple-200"
+            className="flex flex-wrap justify-center gap-4 text-sm"
           >
             {userInfo.location && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(229, 180, 164, 0.3)',
+                color: '#FEFEFE'
+              }}>
                 <MapPin className="w-4 h-4" />
                 <span>{userInfo.location}</span>
               </div>
             )}
             {userInfo.industry && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(229, 180, 164, 0.3)',
+                color: '#FEFEFE'
+              }}>
                 <Building className="w-4 h-4" />
                 <span>{userInfo.industry}</span>
               </div>
             )}
             {userInfo.domain && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderColor: 'rgba(229, 180, 164, 0.3)',
+                color: '#FEFEFE'
+              }}>
                 <Heart className="w-4 h-4" />
                 <span>{userInfo.domain}</span>
               </div>
@@ -433,11 +445,11 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #D4A59A)' }}>
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#E5B4A4' }}>My Journey</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>My Journey</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(229, 180, 164, 0.2)' }}>
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(229, 180, 164, 0.3)' }}>
               <CardContent className="p-8">
-                <p className="text-lg leading-relaxed" style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{userInfo.aboutMe}</p>
+                <p className="text-lg leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.aboutMe}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -454,11 +466,11 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #7FA8A3, #88B5B0)' }}>
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#88B5B0' }}>Vision</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Vision</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(127, 168, 163, 0.2)' }}>
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
               <CardContent className="p-8">
-                <p className="text-lg leading-relaxed italic" style={{ color: 'rgba(136, 181, 176, 0.9)' }}>{userInfo.visionStatement}</p>
+                <p className="text-lg leading-relaxed italic" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.visionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -475,11 +487,11 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #F5A54A, #E89B3C)' }}>
                 <Star className="w-8 h-8 text-white fill-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#F5A54A' }}>Mission</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Mission</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(245, 165, 74, 0.2)' }}>
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(245, 165, 74, 0.3)' }}>
               <CardContent className="p-8">
-                <p className="text-lg leading-relaxed" style={{ color: 'rgba(245, 165, 74, 0.9)' }}>{userInfo.missionStatement}</p>
+                <p className="text-lg leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.missionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -496,7 +508,7 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E89B3C, #D4A59A)' }}>
                 <Briefcase className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#E89B3C' }}>Experience</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Experience</h2>
             </div>
             
             <div className="space-y-6">
@@ -508,23 +520,23 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-xl hover:shadow-2xl transition-shadow" style={{ borderColor: 'rgba(232, 155, 60, 0.2)' }}>
+                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-xl hover:shadow-2xl transition-shadow" style={{ borderColor: 'rgba(232, 155, 60, 0.3)' }}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold" style={{ color: '#E89B3C' }}>{exp.title}</h3>
-                          <p className="text-lg font-medium" style={{ color: '#D4A59A' }}>{exp.company}</p>
+                          <h3 className="text-2xl font-bold" style={{ color: '#FEFEFE' }}>{exp.title}</h3>
+                          <p className="text-lg font-medium" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>{exp.company}</p>
                         </div>
-                        <Badge style={{ background: 'rgba(232, 155, 60, 0.3)', color: '#E89B3C', borderColor: 'rgba(232, 155, 60, 0.3)' }}>
+                        <Badge style={{ background: 'rgba(232, 155, 60, 0.35)', color: '#FEFEFE', borderColor: 'rgba(232, 155, 60, 0.4)' }}>
                           {exp.startDate && new Date(exp.startDate).getFullYear()}
                         </Badge>
                       </div>
                       
                       {exp.description && (
-                        <p className="leading-relaxed" style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{exp.description}</p>
+                        <p className="leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{exp.description}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm" style={{ color: '#D4A59A' }}>
+                      <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
                         <MapPin className="w-4 h-4" />
                         <span>{exp.location || 'Remote'}</span>
                       </div>
@@ -547,7 +559,7 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #1A453F, #7FA8A3)' }}>
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#7FA8A3' }}>Education</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Education</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -559,21 +571,21 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.2)' }}>
+                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold" style={{ color: '#88B5B0' }}>{edu.degree}</h3>
-                          <p className="font-medium" style={{ color: '#7FA8A3' }}>{edu.institution}</p>
+                          <h3 className="text-xl font-bold" style={{ color: '#FEFEFE' }}>{edu.degree}</h3>
+                          <p className="font-medium" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>{edu.institution}</p>
                         </div>
-                        <GraduationCap className="w-8 h-8" style={{ color: '#7FA8A3' }} />
+                        <GraduationCap className="w-8 h-8" style={{ color: 'rgba(254, 254, 254, 0.85)' }} />
                       </div>
                       
                       {edu.fieldOfStudy && (
-                        <p style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{edu.fieldOfStudy}</p>
+                        <p style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{edu.fieldOfStudy}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm" style={{ color: '#88B5B0' }}>
+                      <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
                         <Calendar className="w-4 h-4" />
                         <span>
                           {edu.startDate && new Date(edu.startDate).getFullYear()}
@@ -599,7 +611,7 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #F5A54A)' }}>
                 <Award className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#E5B4A4' }}>Skills</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Skills</h2>
             </div>
             
             <div className="flex flex-wrap gap-3">
@@ -613,9 +625,9 @@ export default function YogaFitnessModel({
                   transition={{ duration: 0.2 }}
                 >
                   <Badge className="px-5 py-2 text-base backdrop-blur-sm border" style={{
-                    background: 'linear-gradient(to right, rgba(229, 180, 164, 0.3), rgba(245, 165, 74, 0.3))',
-                    color: '#E5B4A4',
-                    borderColor: 'rgba(229, 180, 164, 0.2)'
+                    background: 'linear-gradient(to right, rgba(229, 180, 164, 0.35), rgba(245, 165, 74, 0.35))',
+                    color: '#FEFEFE',
+                    borderColor: 'rgba(254, 254, 254, 0.3)'
                   }}>
                     {skill.name}
                   </Badge>
@@ -636,7 +648,7 @@ export default function YogaFitnessModel({
               <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #88B5B0, #1A453F)' }}>
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#88B5B0' }}>Projects</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Projects</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -650,7 +662,7 @@ export default function YogaFitnessModel({
                 >
                   <Card 
                     className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
-                    style={{ borderColor: 'rgba(136, 181, 176, 0.2)' }}
+                    style={{ borderColor: 'rgba(136, 181, 176, 0.3)' }}
                     onClick={() => openProjectModal(project)}
                   >
                     <CardContent className="p-0">
@@ -666,22 +678,22 @@ export default function YogaFitnessModel({
                       )}
                       
                       <div className="p-6 space-y-3">
-                        <h3 className="text-xl font-bold transition-colors" style={{ color: '#88B5B0' }}>
+                        <h3 className="text-xl font-bold transition-colors" style={{ color: '#FEFEFE' }}>
                           {project.title}
                         </h3>
                         
                         {project.description && (
-                          <p className="text-purple-100 text-sm line-clamp-3">
+                          <p className="text-sm line-clamp-3" style={{ color: 'rgba(254, 254, 254, 0.9)' }}>
                             {project.description}
                           </p>
                         )}
                         
                         <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-2 text-sm text-cyan-200">
+                          <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
                             <Calendar className="w-4 h-4" />
                             <span>{project.startDate && new Date(project.startDate).getFullYear()}</span>
                           </div>
-                          <ExternalLink className="w-5 h-5 text-cyan-300 group-hover:text-cyan-200 transition-colors" />
+                          <ExternalLink className="w-5 h-5 transition-colors" style={{ color: 'rgba(254, 254, 254, 0.85)' }} />
                         </div>
                       </div>
                     </CardContent>
@@ -700,10 +712,10 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-cyan-500 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #7FA8A3, #F5A54A)' }}>
                 <Heart className="w-8 h-8 text-white fill-white" />
               </div>
-              <h2 className="text-4xl font-bold text-green-100">Services</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Services</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -715,11 +727,11 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 border-green-300/20 shadow-lg hover:shadow-xl transition-shadow h-full">
+                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
                     <CardContent className="p-6 space-y-3">
-                      <h3 className="text-xl font-bold text-green-100">{service.title}</h3>
+                      <h3 className="text-xl font-bold" style={{ color: '#FEFEFE' }}>{service.title}</h3>
                       {service.description && (
-                        <p className="text-purple-100">{service.description}</p>
+                        <p style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{service.description}</p>
                       )}
                     </CardContent>
                   </Card>
@@ -737,14 +749,18 @@ export default function YogaFitnessModel({
           transition={{ duration: 0.6 }}
           className="text-center py-20"
         >
-          <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-orange-200 mb-8">
+          <h2 className="text-5xl font-bold text-transparent bg-clip-text mb-8" style={{ backgroundImage: 'linear-gradient(to right, #E5B4A4, #F5A54A, #88B5B0)' }}>
             Let's Connect
           </h2>
           
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-12 py-7 rounded-full shadow-2xl shadow-purple-500/40"
+              className="text-white font-semibold px-12 py-7 rounded-full shadow-2xl"
+              style={{
+                background: 'linear-gradient(to right, #F5A54A, #E89B3C)',
+                boxShadow: '0 25px 50px -12px rgba(245, 165, 74, 0.4)'
+              }}
               data-testid="button-connect-footer"
             >
               <Mail className="w-6 h-6 mr-2" />
@@ -753,7 +769,11 @@ export default function YogaFitnessModel({
             <Button 
               size="lg"
               variant="outline"
-              className="border-2 border-purple-300 text-purple-100 hover:bg-purple-500/20 font-semibold px-12 py-7 rounded-full backdrop-blur-sm"
+              className="border-2 font-semibold px-12 py-7 rounded-full backdrop-blur-sm"
+              style={{
+                borderColor: '#7FA8A3',
+                color: '#FEFEFE'
+              }}
               data-testid="button-mentor-footer"
             >
               <Users className="w-6 h-6 mr-2" />
