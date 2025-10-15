@@ -1149,6 +1149,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search users by name/username (for share functionality)
+  apiRouter.get("/users/search", async (req: Request, res: Response) => {
+    try {
+      const query = req.query.q as string || "";
+      const currentUserId = req.query.currentUserId ? parseInt(req.query.currentUserId as string) : null;
+      
+      if (!query || query.trim().length === 0) {
+        return res.json([]);
+      }
+      
+      console.log(`[GET /users/search] Searching users with query: "${query}"`);
+      
+      // Search users by name or username (case-insensitive)
+      const result = await pool.query(
+        `SELECT 
+          id, 
+          name, 
+          username,
+          photo_url as "photoURL", 
+          title,
+          company,
+          brand_name as "brandName"
+        FROM users 
+        WHERE (LOWER(name) LIKE LOWER($1) OR LOWER(username) LIKE LOWER($1))
+        ${currentUserId ? 'AND id != $2' : ''}
+        ORDER BY 
+          CASE 
+            WHEN LOWER(name) = LOWER($1) THEN 1
+            WHEN LOWER(name) LIKE LOWER($1 || '%') THEN 2
+            ELSE 3
+          END,
+          name
+        LIMIT 10`,
+        currentUserId ? [`%${query}%`, currentUserId] : [`%${query}%`]
+      );
+      
+      console.log(`[GET /users/search] Found ${result.rows.length} users matching "${query}"`);
+      
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Error searching users:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Get user by random profile link endpoint for public profiles
   apiRouter.get("/r/:randomLink", async (req: Request, res: Response) => {
     try {
