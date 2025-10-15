@@ -33,18 +33,31 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
 
-  // Fetch comments for this pulse
-  const { data: comments = [], isLoading } = useQuery<Comment[]>({
+  // Clear all caches on mount
+  useEffect(() => {
+    if (isExpanded) {
+      const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
+      localStorage.removeItem(cacheKey);
+      // Also invalidate React Query cache and refetch
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+      console.log(`[CommentSection] Cleared all caches for pulse ${pulseId}`);
+    }
+  }, [pulseId, isExpanded]);
+
+  // Fetch comments for this pulse - force fresh data
+  const { data: comments = [], isLoading, refetch } = useQuery<Comment[]>({
     queryKey: [`/api/pulses/${pulseId}/comments`],
     enabled: isExpanded,
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  // Clear localStorage cache for comments on mount to get fresh data
+  // Force refetch when expanded
   useEffect(() => {
-    const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
-    localStorage.removeItem(cacheKey);
-    console.log(`[CommentSection] Cleared cache for ${cacheKey}`);
-  }, [pulseId]);
+    if (isExpanded) {
+      refetch();
+    }
+  }, [isExpanded, refetch]);
 
   // Debug: Log comment data
   console.log(`[CommentSection] Comments for pulse ${pulseId}:`, comments);
