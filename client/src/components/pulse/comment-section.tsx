@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { user } = useAuth();
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
+  const commentsEndRef = useRef<HTMLDivElement>(null);
 
   // Clear all caches on mount
   useEffect(() => {
@@ -58,6 +59,13 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       refetch();
     }
   }, [isExpanded, refetch]);
+
+  // Auto-scroll to latest comment when comments change
+  useEffect(() => {
+    if (isExpanded && comments.length > 0) {
+      commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [comments, isExpanded]);
 
   // Debug: Log comment data
   console.log(`[CommentSection] Comments for pulse ${pulseId}:`, comments);
@@ -197,6 +205,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                   </div>
                 </div>
               ))}
+              {/* Scroll anchor for auto-scroll to latest comment */}
+              <div ref={commentsEndRef} />
             </div>
           )}
 
