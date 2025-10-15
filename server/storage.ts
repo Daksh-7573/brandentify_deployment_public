@@ -12526,6 +12526,81 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Pulse Comment operations
+  async getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]> {
+    try {
+      const result = await pool.query(`
+        SELECT * FROM pulse_comments 
+        WHERE pulse_id = $1 
+        ORDER BY created_at ASC
+      `, [pulseId]);
+      
+      return result.rows as PulseComment[];
+    } catch (error) {
+      console.error('[db.getPulseCommentsByPulseId] Error:', error);
+      throw error;
+    }
+  }
+  
+  async createPulseComment(insertComment: InsertPulseComment): Promise<PulseComment> {
+    try {
+      // Insert the comment
+      const result = await pool.query(`
+        INSERT INTO pulse_comments (pulse_id, user_id, content, likes, created_at)
+        VALUES ($1, $2, $3, 0, NOW())
+        RETURNING *
+      `, [insertComment.pulseId, insertComment.userId, insertComment.content]);
+      
+      const comment = result.rows[0] as PulseComment;
+      
+      // Update the comment count on the pulse
+      await pool.query(`
+        UPDATE pulses 
+        SET comments = COALESCE(comments, 0) + 1 
+        WHERE id = $1
+      `, [insertComment.pulseId]);
+      
+      return comment;
+    } catch (error) {
+      console.error('[db.createPulseComment] Error:', error);
+      throw error;
+    }
+  }
+  
+  async deletePulseComment(id: number): Promise<boolean> {
+    try {
+      // Get the comment first to know the pulse_id
+      const commentResult = await pool.query(`
+        SELECT pulse_id FROM pulse_comments WHERE id = $1
+      `, [id]);
+      
+      if (commentResult.rows.length === 0) return false;
+      
+      const pulseId = commentResult.rows[0].pulse_id;
+      
+      // Delete the comment
+      const deleteResult = await pool.query(`
+        DELETE FROM pulse_comments WHERE id = $1
+      `, [id]);
+      
+      if (deleteResult.rowCount && deleteResult.rowCount > 0) {
+        // Decrease the comment count on the pulse
+        await pool.query(`
+          UPDATE pulses 
+          SET comments = GREATEST(COALESCE(comments, 0) - 1, 0)
+          WHERE id = $1
+        `, [pulseId]);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[db.deletePulseComment] Error:', error);
+      throw error;
+    }
+  }
+
   async followUser(followerId: number, followeeId: number): Promise<any> {
     try {
       const result = await pool.query(`
