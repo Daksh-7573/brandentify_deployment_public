@@ -59,6 +59,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { SearchableUserSelect } from "@/components/share/searchable-user-select";
+import { SocialShareButtons } from "@/components/share/social-share-buttons";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -100,7 +102,6 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
   
   // State for the share dialog
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const [shareMessage, setShareMessage] = useState("");
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
   // Get user reaction quota
@@ -188,13 +189,12 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         pulseId: pulse.id,
         senderId: userId,
         recipientId: shareRecipientId,
-        message: shareMessage
+        message: "" // Empty message as we removed the message input
       });
       return await res.json();
     },
     onSuccess: () => {
       setIsShareDialogOpen(false);
-      setShareMessage("");
       setShareRecipientId(null);
       
       // Invalidate queries to refresh share data
@@ -336,51 +336,37 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <DialogHeader>
             <DialogTitle className="text-white">Share this pulse</DialogTitle>
             <DialogDescription className="text-gray-300">
-              Share this pulse with another user in your network.
+              Share with someone in your network or on social media
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="recipient" className="text-gray-300">Recipient</Label>
-              <select 
-                id="recipient" 
-                className="w-full rounded-md border border-input bg-gray-800/80 text-white p-2 focus:ring-1 focus:ring-white/20 outline-none"
-                value={shareRecipientId || ""}
-                onChange={(e) => setShareRecipientId(Number(e.target.value) || null)}
-              >
-                <option value="">Select a user</option>
-                <option value="1">Demo User</option>
-                {userId !== 1 && <option value="1">Senior Professional</option>}
-                {userId !== 2 && user && <option value="2">{user.name || user.username}</option>}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="message" className="text-gray-300">Message (optional)</Label>
-              <Input
-                id="message"
-                placeholder="Add a message..."
-                value={shareMessage}
-                onChange={(e) => setShareMessage(e.target.value)}
-                className="bg-gray-800/80 text-white border-gray-700/50 focus:ring-white/10 focus:border-white/20 placeholder:text-gray-400"
+          <div className="space-y-6 py-4">
+            {/* Internal Share Section */}
+            <div className="space-y-3">
+              <Label className="text-gray-300">Share with user</Label>
+              <SearchableUserSelect
+                currentUserId={userId}
+                selectedUserId={shareRecipientId}
+                onUserSelect={setShareRecipientId}
               />
+              {shareRecipientId && (
+                <Button
+                  onClick={handleShareSubmit}
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-white/80 to-white/90 text-black font-medium hover:from-white/90 hover:to-white hover:scale-105 transition-all duration-200"
+                >
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Send to User
+                </Button>
+              )}
             </div>
+
+            {/* Social Share Section */}
+            <SocialShareButtons
+              pulseId={pulse.id}
+              pulseContent={pulse.content || pulse.title}
+              pulseAuthor={pulse.userName || "a user"}
+            />
           </div>
-          <DialogFooter>
-            <button 
-              onClick={() => setIsShareDialogOpen(false)}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200"
-            >
-              Cancel
-            </button>
-            <button 
-              onClick={handleShareSubmit} 
-              disabled={isLoading}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200"
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Share
-            </button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
       
