@@ -13514,7 +13514,12 @@ export const storage = {
   
   // Pulse methods
   getPulses: () => dbStorage.getPulses(),
+  getPulseById: (id: number) => dbStorage.getPulseById(id),
+  getPulsesByUserId: (userId: number) => dbStorage.getPulsesByUserId(userId),
+  getPulsesPaginated: (limit: number, cursor?: string, filters?: any) => dbStorage.getPulsesPaginated(limit, cursor, filters),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
+  updatePulse: (id: number, pulse: Partial<Pulse>) => dbStorage.updatePulse(id, pulse),
+  deletePulse: (id: number) => dbStorage.deletePulse(id),
   
   // Search methods
   searchPulses: (query: string) => dbStorage.searchPulses(query),
