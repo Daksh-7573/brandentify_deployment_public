@@ -50,6 +50,7 @@ import {
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
 import PulseMenu from "@/components/industry-pulse/pulse-menu";
+import { CommentSection } from "@/components/pulse/comment-section";
 import {
   Tooltip,
   TooltipContent,
@@ -1298,8 +1299,11 @@ export default function IndustryPulsePage() {
                               />
                             )}
                           </div>
-                          <div className="flex justify-between pt-0 px-4 pb-4">
+                          <div className="flex justify-between pt-0 px-4 pb-2">
                             <PulseReactions pulse={pulse} />
+                          </div>
+                          <div className="px-4 pb-4">
+                            <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} />
                           </div>
                         </NeoGlassSection>
                       ))}
