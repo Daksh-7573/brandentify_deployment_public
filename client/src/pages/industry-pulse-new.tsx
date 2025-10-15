@@ -1202,7 +1202,13 @@ export default function IndustryPulsePage() {
                             </div>
                           </div>
                           <div className="px-4 py-2">
-                            <h3 className="text-xl font-semibold mb-3 text-white">{pulse.title}</h3>
+                            <h3 
+                              className="text-xl font-semibold mb-3 text-white hover:text-blue-400 cursor-pointer transition-colors"
+                              onClick={() => setLocation(`/pulse/${pulse.id}`)}
+                              data-testid={`pulse-title-${pulse.id}`}
+                            >
+                              {pulse.title}
+                            </h3>
                             {/* Render content with clickable reference links */}
                             {(() => {
                               if (!pulse.content) return null;
