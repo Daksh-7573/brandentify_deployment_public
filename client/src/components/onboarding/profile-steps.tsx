@@ -138,6 +138,7 @@ type FormData = {
   name: string;
   photoURL: string | null;
   title: string;
+  company: string;
   location: string;
   industry: string;
   domain: string;
@@ -307,6 +308,7 @@ export default function ProfileSteps({
     name: '',
     photoURL: null,
     title: '',
+    company: '',
     location: '',
     industry: '',
     domain: '',
@@ -731,6 +733,7 @@ export default function ProfileSteps({
           name: safeUserData.name || '',
           photoURL: safeUserData.photoURL || null,
           title: safeUserData.title || '',
+          company: safeUserData.company || '',
           location: safeUserData.location || '',
           industry: safeUserData.industry?.split(': ')[0] || '',
           domain: safeUserData.industry?.includes(': ') ? safeUserData.industry.split(': ')[1] : '',
@@ -1382,6 +1385,21 @@ export default function ProfileSteps({
             value={formData.title}
             onChange={(value) => setFormData(prev => ({ ...prev, title: value }))}
           />
+        </div>
+        
+        {/* Company Name */}
+        <div className="space-y-2">
+          <Label htmlFor="company">Company Name</Label>
+          <Input
+            id="company"
+            name="company"
+            placeholder="e.g., Delcaper"
+            value={formData.company}
+            onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+          />
+          <p className="text-xs text-muted-foreground">
+            Displays as: {formData.title || "Your Title"}{formData.company ? ` at ${formData.company}` : ""}
+          </p>
         </div>
         
         {/* Location */}

@@ -54,6 +54,7 @@ export default function EditProfilePage() {
     name: string | null;
     photoURL: string | null;
     title: string | null;
+    company: string | null;
     aboutMe: string | null;
     location: string | null;
     industry: string | null;
@@ -209,7 +210,7 @@ export default function EditProfilePage() {
       // Extract all form values regardless of active tab to ensure complete data
       const collectFormValues = () => {
         // Common form fields
-        const commonFields = ['name', 'title', 'location', 'industry', 'domain', 'lookingFor', 'aboutMe', 'whatIOffer', 'email', 'phoneNumber'];
+        const commonFields = ['name', 'title', 'company', 'location', 'industry', 'domain', 'lookingFor', 'aboutMe', 'whatIOffer', 'email', 'phoneNumber'];
         
         commonFields.forEach(fieldName => {
           const element = document.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"], select[name="${fieldName}"]`);

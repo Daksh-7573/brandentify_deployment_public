@@ -23,6 +23,7 @@ export const users = pgTable("users", {
   profileUrl: text("profile_url"), // Portfolio or LinkedIn URL
   randomProfileLink: text("random_profile_link").unique(), // Unique random link for profile access
   title: text("title"), // Job title
+  company: text("company"), // Company name
   aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   industry: text("industry"), // User's industry
