@@ -92,6 +92,11 @@ export async function apiRequest(
   
   // Try to save successful GET response to cache
   const trySaveToCache = async (response: Response): Promise<void> => {
+    // NEVER cache comment endpoints - they need to always be fresh
+    if (url.includes('/comments')) {
+      return;
+    }
+    
     if (method === 'GET' && response.ok) {
       try {
         const cacheKey = `api_cache_${url}`;
@@ -298,9 +303,14 @@ export const getQueryFn: <T>(options: {
       const isProfileEndpoint = url.includes('/api/users') || 
                                 url.includes('/enhanced-user') || 
                                 url.includes('/what-i-offer');
+      
+      // Comments should NEVER be cached - always fresh
+      const isCommentEndpoint = url.includes('/comments');
                                 
       const cacheBusterTimestamp = (isProfileEndpoint || isSkillsEndpoint)
         ? Math.floor(Date.now() / 300000) // Only changes once per 5 minutes for profile/skills endpoints
+        : isCommentEndpoint 
+        ? Date.now() + Math.random() // Force unique timestamp for comments
         : Date.now(); // Regular timestamp for other endpoints
         
       const cacheBuster = url.includes('?') 
