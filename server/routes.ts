@@ -3719,9 +3719,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const collaborator = await storage.createProjectCollaborator(collaboratorData);
       
-      // Create notification for the target user
-      const project = await storage.getProjectById(projectId);
-      const projectOwner = await storage.getUser(project?.userId || 0);
+      // Create notification for the target user (project already fetched above)
+      const projectOwner = await storage.getUser(project.userId);
       
       const { createNotification } = await import('./services/notification-service');
       await createNotification({
@@ -3813,9 +3812,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const endorsement = await storage.createProjectEndorsement(endorsementData);
       
-      // Create notification for the target user
-      const project = await storage.getProjectById(projectId);
-      const projectOwner = await storage.getUser(project?.userId || 0);
+      // Create notification for the target user (project already fetched above)
+      const projectOwner = await storage.getUser(project.userId);
       
       const { createNotification } = await import('./services/notification-service');
       await createNotification({
