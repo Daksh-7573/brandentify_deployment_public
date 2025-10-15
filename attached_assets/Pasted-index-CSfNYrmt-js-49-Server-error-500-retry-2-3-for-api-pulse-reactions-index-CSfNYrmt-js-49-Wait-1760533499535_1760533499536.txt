@@ -1,0 +1,413 @@
+index-CSfNYrmt.js:49 Server error 500, retry 2/3 for: /api/pulse-reactions
+index-CSfNYrmt.js:49 Waiting 600ms before retry 2...
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 Server error 500, retry 3/3 for: /api/pulse-reactions
+index-CSfNYrmt.js:49 Waiting 1200ms before retry 3...
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 API Error 500 from https://brandentifier.replit.app/api/pulse-reactions: {"message":"Internal server error","error":"insert or update on table \"pulse_reactions\" violates foreign key constraint \"pulse_reactions_user_id_users_id_fk\""}
+pO @ index-CSfNYrmt.js:49
+await in pO
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 Server error 500, retry 1/3 for: /api/pulse-reactions
+index-CSfNYrmt.js:49 Waiting 300ms before retry 1...
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 Server error 500, retry 2/3 for: /api/pulse-reactions
+index-CSfNYrmt.js:49 Waiting 600ms before retry 2...
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 Server error 500, retry 3/3 for: /api/pulse-reactions
+index-CSfNYrmt.js:49 Waiting 1200ms before retry 3...
+index-CSfNYrmt.js:49  POST https://brandentifier.replit.app/api/pulse-reactions 500 (Internal Server Error)
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:49 API request failed: POST /api/pulse-reactions - Status: 500
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this warning
+index-CSfNYrmt.js:49 API Error 500 from https://brandentifier.replit.app/api/pulse-reactions: {"message":"Internal server error","error":"insert or update on table \"pulse_reactions\" violates foreign key constraint \"pulse_reactions_user_id_users_id_fk\""}
+pO @ index-CSfNYrmt.js:49
+await in pO
+ot @ index-CSfNYrmt.js:49
+await in ot
+mutationFn @ industry-pulse-new-DAp_QExr.js:6
+fn @ index-CSfNYrmt.js:49
+v @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.then
+(anonymous) @ index-CSfNYrmt.js:49
+Promise.catch
+v @ index-CSfNYrmt.js:49
+start @ index-CSfNYrmt.js:49
+execute @ index-CSfNYrmt.js:49
+await in execute
+mutate @ index-CSfNYrmt.js:49
+(anonymous) @ index-CSfNYrmt.js:49
+x @ industry-pulse-new-DAp_QExr.js:6
+onClick @ industry-pulse-new-DAp_QExr.js:6
+CO.test.n.<computed> @ index-CSfNYrmt.js:49
+pR @ index-CSfNYrmt.js:38
+gR @ index-CSfNYrmt.js:38
+vR @ index-CSfNYrmt.js:38
+yx @ index-CSfNYrmt.js:38
+__ @ index-CSfNYrmt.js:38
+(anonymous) @ index-CSfNYrmt.js:38
+av @ index-CSfNYrmt.js:41
+Gb @ index-CSfNYrmt.js:38
+Sh @ index-CSfNYrmt.js:38
+Dg @ index-CSfNYrmt.js:38
+IR @ index-CSfNYrmt.js:38Understand this error
+index-CSfNYrmt.js:1817 [HEADER PERFORMANCE] isLoading: false
+index-CSfNYrmt.js:1817 [HEADER PERFORMANCE] userData ready: true
+index-CSfNYrmt.js:1817 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-CSfNYrmt.js:1817 [HEADER PERFORMANCE] userId: 9
+index-CSfNYrmt.js:1844 NowboardMenu rendering for item: 4 currentUser: 9 itemUser: 9

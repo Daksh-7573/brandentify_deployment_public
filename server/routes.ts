@@ -6686,8 +6686,24 @@ ${extractedText.substring(0, 5000)}
       const { userId, pulseId, reactionType } = req.body;
       
       if (!userId || !pulseId || !reactionType) {
+        console.log(`[POST /pulse-reactions] Missing fields - userId:${userId}, pulseId:${pulseId}, reactionType:${reactionType}`);
         return res.status(400).json({ message: "Missing required fields" });
       }
+      
+      console.log(`[POST /pulse-reactions] Validating userId:${userId} exists in database`);
+      
+      // Verify user exists
+      const userCheck = await pool.query(`SELECT id FROM users WHERE id = $1`, [userId]);
+      if (userCheck.rows.length === 0) {
+        console.error(`[POST /pulse-reactions] User ${userId} does not exist in database!`);
+        return res.status(400).json({ 
+          message: "Invalid user ID",
+          error: `User ID ${userId} not found` 
+        });
+      }
+      
+      console.log(`[POST /pulse-reactions] User ${userId} verified, proceeding with reaction`);
+      
       
       // Check quota first
       const today = new Date().toISOString().split('T')[0];
