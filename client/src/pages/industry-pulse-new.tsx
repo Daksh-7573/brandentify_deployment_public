@@ -324,8 +324,8 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         </Tooltip>
       </TooltipProvider>
       
-      {/* Share Button - Hidden for Musk-created pulses (userId === 3) */}
-      {pulse.userId !== 3 && (
+      {/* Share Button - HIDDEN TEMPORARILY (Will implement later) */}
+      {false && (
         <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
           <DialogTrigger asChild>
             <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
