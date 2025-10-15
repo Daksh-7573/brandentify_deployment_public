@@ -15,6 +15,7 @@ import { apiRequest } from '@/lib/queryClient';
 const profileInfoSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   jobTitle: z.string().optional(),
+  company: z.string().optional(),
   aboutMe: z.string().optional(),
   location: z.string().optional(),
   industry: z.string().optional(),
@@ -39,6 +40,7 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
     defaultValues: {
       name: userData.name || '',
       jobTitle: userData.title || '',
+      company: userData.company || '',
       aboutMe: userData.aboutMe || '',
       location: userData.location || '',
       industry: userData.industry || '',
@@ -57,6 +59,7 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
       const updatePayload = {
         name: data.name,
         title: data.jobTitle || null,
+        company: data.company || null,
         aboutMe: data.aboutMe || null,
         location: data.location || null,
         industry: data.industry || null,
@@ -141,6 +144,25 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
                       <Input
                         {...field}
                         placeholder="e.g., Senior Software Engineer"
+                        className="bg-white/50"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Company Name */}
+              <FormField
+                control={form.control}
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="e.g., Google, Microsoft, Freelance"
                         className="bg-white/50"
                       />
                     </FormControl>
