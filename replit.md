@@ -62,6 +62,7 @@ Preferred communication style: Simple, everyday language.
 - **Intelligent Hashtag Generator**: A 6-layer system for context-aware, audience-targeted hashtag suggestions based on user, audience, goal, platform, content, and geographic context.
 - **Automated Quest Generation**: Robust three-layer failsafe system for daily quest auto-assignment via cron job, boot-time trigger, and hourly backup.
 - **Trend Intelligence System (Fully Operational)**: Real-time market trend ingestion with pluggable adapter architecture (RSS feeds, internal analytics), 1-hour hot cache with 24-hour fallback, industry/domain-specific trend tracking, AI-powered dynamic quest narrative generation using Musk AI, hourly refresh scheduler with automated cleanup, and full integration with quest personalization service. Complete end-to-end flow: trend ingestion → caching → dynamic quest generation → quest assignment.
+- **Fresh Feed Ranking System**: Time-decay algorithm ensures constant fresh content rotation in Industry Pulse feed. Formula: `reach_score × time_decay_factor` where decay multipliers are: <24h (1.0x), 24-48h (0.5x), 48h-7d (0.2x), >7d (0.05x). Older high-engagement posts automatically make way for newer content, preventing stale feed cycles.
 
 ## External Dependencies
 ### Core Infrastructure
