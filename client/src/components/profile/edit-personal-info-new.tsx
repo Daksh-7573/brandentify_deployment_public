@@ -296,13 +296,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Tagline / Personal Motto
           </label>
-          <p className="text-xs text-white/60 -mt-1">(e.g., "Empowering ideas through innovation") (max 15 words)</p>
+          <p className="text-xs text-white/60 -mt-1">(e.g., "Empowering ideas through innovation") (max 80 characters)</p>
           <input
             id="tagline"
             type="text"
             value={tagline}
             onChange={(e) => setTagline(e.target.value)}
             placeholder="Enter your personal motto"
+            maxLength={80}
             className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
             style={{ 
               backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -312,6 +313,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             }}
             data-testid="input-tagline"
           />
+          <p className="text-xs text-white/40 -mt-1 text-right">{tagline.length}/80 characters</p>
         </div>
 
         {/* Vision Statement */}
@@ -323,13 +325,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Vision Statement
           </label>
-          <p className="text-xs text-white/60 -mt-1">(Where you want to go long-term) (max 40 words)</p>
+          <p className="text-xs text-white/60 -mt-1">(Where you want to go long-term) (max 200 characters)</p>
           <textarea
             id="visionStatement"
             value={visionStatement}
             onChange={(e) => setVisionStatement(e.target.value)}
             placeholder="Describe your long-term vision"
             rows={3}
+            maxLength={200}
             className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
             style={{ 
               backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -339,6 +342,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             }}
             data-testid="textarea-vision-statement"
           />
+          <p className="text-xs text-white/40 -mt-1 text-right">{visionStatement.length}/200 characters</p>
         </div>
 
         {/* Mission Statement */}
@@ -349,13 +353,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Mission Statement
           </label>
-          <p className="text-xs text-white/60 -mt-1">(What you stand for, how you create impact) (max 50 words)</p>
+          <p className="text-xs text-white/60 -mt-1">(What you stand for, how you create impact) (max 220 characters)</p>
           <textarea
             id="missionStatement"
             value={missionStatement}
             onChange={(e) => setMissionStatement(e.target.value)}
             placeholder="Describe your mission and how you create impact"
             rows={3}
+            maxLength={220}
             className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
             style={{ 
               backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -365,6 +370,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             }}
             data-testid="textarea-mission-statement"
           />
+          <p className="text-xs text-white/40 -mt-1 text-right">{missionStatement.length}/220 characters</p>
         </div>
 
         {/* Core Values */}
@@ -430,13 +436,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             </svg>
             Unique Value Proposition (UVP)
           </label>
-          <p className="text-xs text-white/60 -mt-1">(What sets you apart from others in your space) (max 25 words)</p>
+          <p className="text-xs text-white/60 -mt-1">(What sets you apart from others in your space) (max 150 characters)</p>
           <textarea
             id="uniqueValueProposition"
             value={uniqueValueProposition}
             onChange={(e) => setUniqueValueProposition(e.target.value)}
             placeholder="What makes you unique?"
             rows={2}
+            maxLength={150}
             className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
             style={{ 
               backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -446,6 +453,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             }}
             data-testid="textarea-unique-value-proposition"
           />
+          <p className="text-xs text-white/40 -mt-1 text-right">{uniqueValueProposition.length}/150 characters</p>
         </div>
 
         {/* Primary Audience */}

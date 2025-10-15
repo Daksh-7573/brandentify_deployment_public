@@ -45,11 +45,11 @@ export const users = pgTable("users", {
   geoVisibleNearby: boolean("geo_visible_nearby").default(true), // Whether user is visible in Smart Radar
   geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   // Personal branding fields
-  tagline: text("tagline"), // Personal motto (max 15 words)
-  visionStatement: text("vision_statement"), // Long-term vision (max 40 words)
-  missionStatement: text("mission_statement"), // What user stands for (max 50 words)
+  tagline: text("tagline"), // Personal motto (max 80 characters)
+  visionStatement: text("vision_statement"), // Long-term vision (max 200 characters)
+  missionStatement: text("mission_statement"), // What user stands for (max 220 characters)
   coreValues: text("core_values").array(), // 3-5 keywords (max 5 items)
-  uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 25 words)
+  uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
   primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
   secondaryAudience: text("secondary_audience").array(), // Secondary audience (max 5 items)
   createdAt: timestamp("created_at").defaultNow(),
@@ -241,20 +241,20 @@ export const insertUserSchema = createInsertSchema(users)
   .omit({ id: true, createdAt: true, emailVerified: true, emailVerificationToken: true, emailVerificationExpires: true })
   .extend({
     tagline: z.string().nullable().optional().refine(
-      (val) => !val || countWords(val) <= 15,
-      { message: "Tagline must be 15 words or less" }
+      (val) => !val || val.length <= 80,
+      { message: "Tagline must be 80 characters or less" }
     ),
     visionStatement: z.string().nullable().optional().refine(
-      (val) => !val || countWords(val) <= 40,
-      { message: "Vision Statement must be 40 words or less" }
+      (val) => !val || val.length <= 200,
+      { message: "Vision Statement must be 200 characters or less" }
     ),
     missionStatement: z.string().nullable().optional().refine(
-      (val) => !val || countWords(val) <= 50,
-      { message: "Mission Statement must be 50 words or less" }
+      (val) => !val || val.length <= 220,
+      { message: "Mission Statement must be 220 characters or less" }
     ),
     uniqueValueProposition: z.string().nullable().optional().refine(
-      (val) => !val || countWords(val) <= 25,
-      { message: "Unique Value Proposition must be 25 words or less" }
+      (val) => !val || val.length <= 150,
+      { message: "Unique Value Proposition must be 150 characters or less" }
     ),
     coreValues: z.array(z.string()).max(5, { message: "Maximum 5 core values allowed" }).nullable().optional(),
     primaryAudience: z.array(z.string()).max(5, { message: "Maximum 5 primary audience items allowed" }).nullable().optional(),
