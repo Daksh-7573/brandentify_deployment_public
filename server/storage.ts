@@ -8318,7 +8318,7 @@ export class DatabaseStorage implements IStorage {
       const result = await db.select()
         .from(pulses)
         .where(eq(pulses.isPublished, true))
-        .orderBy(desc(pulses.createdAt));
+        .orderBy(desc(pulses.reachScore), desc(pulses.createdAt));
       
       console.log(`[db.getPulses] Found ${result.length} pulses`);
       return result;
