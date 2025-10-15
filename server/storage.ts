@@ -2967,7 +2967,20 @@ export class MemStorage implements IStorage {
   }
   
   async getPulseById(id: number): Promise<Pulse | undefined> {
-    return this.pulses.get(id);
+    try {
+      const result = await pool.query(`
+        SELECT * FROM pulses WHERE id = $1 LIMIT 1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0] as Pulse;
+    } catch (error) {
+      console.error('[db.getPulseById] Error:', error);
+      throw error;
+    }
   }
   
   async createPulse(insertPulse: InsertPulse): Promise<Pulse> {
