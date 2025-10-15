@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,13 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     queryKey: [`/api/pulses/${pulseId}/comments`],
     enabled: isExpanded,
   });
+
+  // Clear localStorage cache for comments on mount to get fresh data
+  useEffect(() => {
+    const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
+    localStorage.removeItem(cacheKey);
+    console.log(`[CommentSection] Cleared cache for ${cacheKey}`);
+  }, [pulseId]);
 
   // Debug: Log comment data
   console.log(`[CommentSection] Comments for pulse ${pulseId}:`, comments);
