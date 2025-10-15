@@ -22,7 +22,8 @@ Preferred communication style: Simple, everyday language.
 - **Database**: PostgreSQL with connection pooling
 - **ORM**: Drizzle for type-safe operations
 - **Authentication**: JWT-based with bcrypt
-- **File Upload**: Express-fileupload with local storage
+- **File Upload**: Replit App Storage with Uppy (GCS-backed, CDN-delivered)
+- **Object Storage**: Public visibility with owner-based ACL policies for user content
 
 ### AI Infrastructure
 - **Primary Provider**: Local AI using Ollama (Llama 3.2:3b models)
@@ -68,7 +69,7 @@ Preferred communication style: Simple, everyday language.
 ### Core Infrastructure
 - **Database**: PostgreSQL (Neon serverless)
 - **Caching**: Redis
-- **File Storage**: Local filesystem
+- **File Storage**: Replit App Storage (GCS-backed with CDN delivery)
 
 ### AI Services
 - **Primary**: Ollama
