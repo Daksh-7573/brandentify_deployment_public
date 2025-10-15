@@ -55,7 +55,7 @@ interface VisualExpertProps {
 function ProjectModal({ project, isOpen, onClose }: { project: Project | null; isOpen: boolean; onClose: () => void }) {
   if (!project) return null;
 
-  const mediaUrls = project.mediaUrl ? JSON.parse(project.mediaUrl) : [];
+  const mediaUrls = project.mediaUrls ? (typeof project.mediaUrls === 'string' ? JSON.parse(project.mediaUrls) : project.mediaUrls) : [];
   const allImages = [
     ...(project.thumbnailUrl ? [project.thumbnailUrl] : []),
     ...mediaUrls
@@ -144,8 +144,8 @@ export default function VisualExpert({
 
   const sortedSkills = [...userSkills].sort((a, b) => {
     const proficiencyOrder = { 'expert': 3, 'advanced': 2, 'intermediate': 1, 'beginner': 0 };
-    const aLevel = proficiencyOrder[a.proficiencyLevel?.toLowerCase() as keyof typeof proficiencyOrder] ?? -1;
-    const bLevel = proficiencyOrder[b.proficiencyLevel?.toLowerCase() as keyof typeof proficiencyOrder] ?? -1;
+    const aLevel = proficiencyOrder[a.level?.toLowerCase() as keyof typeof proficiencyOrder] ?? -1;
+    const bLevel = proficiencyOrder[b.level?.toLowerCase() as keyof typeof proficiencyOrder] ?? -1;
     return bLevel - aLevel;
   });
 
@@ -284,17 +284,9 @@ export default function VisualExpert({
                 <Card key={exp.id} className="border-0 shadow-none group cursor-pointer">
                   <CardContent className="p-0">
                     <div className="aspect-square bg-gray-100 mb-4 overflow-hidden">
-                      {exp.companyLogoUrl ? (
-                        <img
-                          src={exp.companyLogoUrl}
-                          alt={exp.company || 'Company'}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Briefcase className="w-16 h-16 text-gray-300" />
-                        </div>
-                      )}
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Briefcase className="w-16 h-16 text-gray-300" />
+                      </div>
                     </div>
 
                     <div className="space-y-2">
@@ -366,7 +358,7 @@ export default function VisualExpert({
                           />
                         </div>
                       )}
-                      {project.mediaUrl && JSON.parse(project.mediaUrl).slice(0, 3).map((url: string, i: number) => (
+                      {project.mediaUrls && (typeof project.mediaUrls === 'string' ? JSON.parse(project.mediaUrls) : project.mediaUrls).slice(0, 3).map((url: string, i: number) => (
                         <div key={i} className="aspect-square overflow-hidden bg-gray-100">
                           <img
                             src={url}
@@ -396,10 +388,10 @@ export default function VisualExpert({
                 <div key={skill.id} className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Award className="w-5 h-5" />
-                    <h3 className="font-bold uppercase tracking-wide">{skill.skillName}</h3>
+                    <h3 className="font-bold uppercase tracking-wide">{skill.name}</h3>
                   </div>
-                  {skill.proficiencyLevel && (
-                    <p className="text-sm text-gray-500 uppercase tracking-wider">{skill.proficiencyLevel}</p>
+                  {skill.level && (
+                    <p className="text-sm text-gray-500 uppercase tracking-wider">{skill.level}</p>
                   )}
                 </div>
               ))}
@@ -428,9 +420,6 @@ export default function VisualExpert({
                       <p className="text-sm text-gray-500 mt-2">
                         {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                       </p>
-                      {edu.description && (
-                        <p className="text-gray-700 mt-3 leading-relaxed">{edu.description}</p>
-                      )}
                     </div>
                   </div>
                 </div>
