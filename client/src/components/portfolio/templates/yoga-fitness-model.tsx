@@ -91,38 +91,32 @@ function LotusDecoration({ delay = 0 }: { delay?: number }) {
   );
 }
 
-// Traditional Yoga Parallax Background - Warm Natural Palette
+// Earthy Parallax Background - Reference Website Inspired
 function YogaParallaxBackground() {
   const { scrollY } = useScroll();
   
-  // Three dramatic parallax layers
-  const layer1Y = useTransform(scrollY, [0, 2000], [0, -500]);
-  const layer2Y = useTransform(scrollY, [0, 2000], [0, -1000]);
-  const layer3Y = useTransform(scrollY, [0, 2000], [0, -1500]);
+  // Three subtle parallax layers with earthy tones
+  const layer1Y = useTransform(scrollY, [0, 2000], [0, -300]);
+  const layer2Y = useTransform(scrollY, [0, 2000], [0, -600]);
+  const layer3Y = useTransform(scrollY, [0, 2000], [0, -900]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Layer 1: Warm natural gradient background - slowest */}
+      {/* Layer 1: Cream base - slowest */}
       <motion.div 
         style={{ 
           y: layer1Y,
-          background: "linear-gradient(to bottom, #E5B4A4 0%, #D4A59A 15%, #C9A196 30%, #7FA8A3 50%, #88B5B0 65%, #F5A54A 80%, #E89B3C 90%, #1A453F 100%)"
+          background: "linear-gradient(to bottom, #F5F1EC 0%, #F0EBE6 30%, #EBE4DC 60%, #E8DFD5 100%)"
         }}
         className="absolute inset-0"
       />
       
-      {/* Layer 2: Natural orbs and symbols - medium speed */}
+      {/* Layer 2: Subtle beige/green accents - medium speed */}
       <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        {/* Natural gradient orbs matching the image palette */}
-        <div className="absolute top-20 right-[15%] w-[500px] h-[500px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(229, 180, 164, 0.4)' }} />
-        <div className="absolute top-[30%] left-[10%] w-[600px] h-[600px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(127, 168, 163, 0.35)' }} />
-        <div className="absolute top-[50%] right-[20%] w-[550px] h-[550px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(245, 165, 74, 0.4)' }} />
-        <div className="absolute bottom-32 left-[15%] w-[580px] h-[580px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(26, 69, 63, 0.38)' }} />
-        
-        {/* Chakra Symbols - Natural color palette */}
-        <ChakraSymbol color="border-[#E5B4A4]" top="top-32" left="left-[12%]" delay={0} />
-        <ChakraSymbol color="border-[#88B5B0]" top="top-[25%]" left="right-[18%]" delay={0.5} />
-        <ChakraSymbol color="border-[#7FA8A3]" top="top-[45%]" left="left-[15%]" delay={1} />
+        {/* Soft gradient orbs for depth */}
+        <div className="absolute top-32 right-[20%] w-[400px] h-[400px] rounded-full blur-3xl opacity-30" style={{ backgroundColor: '#D4C5B0' }} />
+        <div className="absolute top-[40%] left-[15%] w-[500px] h-[500px] rounded-full blur-3xl opacity-25" style={{ backgroundColor: '#2D5F4F' }} />
+        <div className="absolute bottom-40 right-[25%] w-[450px] h-[450px] rounded-full blur-3xl opacity-30" style={{ backgroundColor: '#C9B5A0' }} />
         <ChakraSymbol color="border-[#F5A54A]" top="top-[60%]" left="right-[12%]" delay={1.5} />
         <ChakraSymbol color="border-[#E89B3C]" top="bottom-[35%]" left="left-[20%]" delay={2} />
         <ChakraSymbol color="border-[#1A453F]" top="bottom-[20%]" left="right-[15%]" delay={2.5} />
@@ -192,9 +186,9 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-purple-900/95 via-pink-800/95 to-orange-700/95 text-white">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" style={{ backgroundColor: '#F5F1EC' }}>
         <DialogHeader>
-          <DialogTitle className="text-3xl font-bold text-white">{project.title}</DialogTitle>
+          <DialogTitle className="text-3xl font-light" style={{ color: '#2D5F4F' }}>{project.title}</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           {allImages.length > 0 && (
@@ -204,7 +198,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
                   key={idx}
                   src={url}
                   alt={`${project.title} - ${idx + 1}`}
-                  className="w-full h-auto rounded-lg object-cover shadow-md border-2 border-purple-300/30"
+                  className="w-full h-auto rounded-2xl object-cover shadow-lg"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
@@ -214,12 +208,12 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           )}
           
           {project.description && (
-            <div className="prose prose-invert max-w-none">
-              <p className="text-gray-100 leading-relaxed">{project.description}</p>
+            <div className="prose max-w-none">
+              <p className="leading-relaxed" style={{ color: '#6B7F75' }}>{project.description}</p>
             </div>
           )}
           
-          <div className="flex flex-wrap gap-4 text-sm text-purple-200">
+          <div className="flex flex-wrap gap-4 text-sm" style={{ color: '#6B7F75' }}>
             {project.startDate && (
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -231,7 +225,8 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
                 href={project.projectUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-purple-100 transition-colors"
+                className="flex items-center gap-2 transition-colors"
+                style={{ color: '#2D5F4F' }}
               >
                 <ExternalLink className="h-4 w-4" />
                 <span>View Project</span>
@@ -276,159 +271,101 @@ export default function YogaFitnessModel({
   };
 
   return (
-    <div className="relative min-h-screen text-white font-sans" style={{ backgroundColor: '#1A453F' }}>
+    <div className="relative min-h-screen font-sans" style={{ backgroundColor: '#F5F1EC' }}>
       <YogaParallaxBackground />
 
-      {/* Hero Section */}
+      {/* Hero Section - Reference Website Inspired */}
       <motion.section 
         style={{ opacity: heroOpacity }}
-        className="relative min-h-screen flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-20"
+        className="relative min-h-[85vh] flex items-center px-6 md:px-12 lg:px-20 py-16"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-5xl mx-auto space-y-10"
-        >
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <motion.div
-                initial={{ scale: 0, rotate: 0 }}
-                animate={{ scale: 1, rotate: 360 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="absolute -inset-6 rounded-full"
-                style={{
-                  background: "conic-gradient(from 0deg, #E5B4A4, #7FA8A3, #F5A54A, #88B5B0, #E89B3C, #D4A59A, #1A453F, #E5B4A4)"
-                }}
-              />
-              <ProfileImage
-                src={userInfo.photoURL}
-                alt={userInfo.name}
-                className="w-52 h-52 rounded-full border-4 border-white shadow-2xl relative z-10"
-              />
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
+          >
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tight" style={{ color: '#2D5F4F' }}>
+                {userInfo.tagline || `Your harmony starts here`}
+              </h1>
+              <p className="text-xl md:text-2xl font-light" style={{ color: '#6B7F75' }}>
+                {userInfo.name}
+                {userInfo.title && (
+                  <>
+                    {' - '}
+                    <span>{userInfo.title}</span>
+                    {userInfo.company && <span> at {userInfo.company}</span>}
+                  </>
+                )}
+              </p>
             </div>
-          </div>
-
-          <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full backdrop-blur-sm border"
-              style={{ 
-                background: 'linear-gradient(to right, rgba(127, 168, 163, 0.35), rgba(229, 180, 164, 0.35))',
-                borderColor: 'rgba(254, 254, 254, 0.4)'
-              }}
-            >
-              <Circle className="w-3 h-3 animate-pulse" style={{ color: '#FEFEFE', fill: '#FEFEFE' }} />
-              <span className="font-medium" style={{ color: '#FEFEFE' }}>Namaste</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(to right, #E5B4A4, #F5A54A, #88B5B0)' }}
-            >
-              {userInfo.name}
-            </motion.h1>
-
-            {userInfo.title && (
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-3xl md:text-4xl font-light"
-                style={{ color: '#FEFEFE' }}
+            
+            <div className="flex gap-4">
+              <Button 
+                size="lg"
+                className="rounded-full font-medium px-8 py-6 text-white border-none"
+                style={{ backgroundColor: '#2D5F4F' }}
+                data-testid="button-main-cta"
               >
-                {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
-              </motion.p>
-            )}
-
-            {userInfo.tagline && (
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="text-xl md:text-2xl max-w-3xl mx-auto italic"
-                style={{ color: 'rgba(254, 254, 254, 0.9)' }}
-              >
-                "{userInfo.tagline}"
-              </motion.p>
-            )}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-4 text-sm"
-          >
-            {userInfo.location && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                borderColor: 'rgba(229, 180, 164, 0.3)',
-                color: '#FEFEFE'
-              }}>
-                <MapPin className="w-4 h-4" />
-                <span>{userInfo.location}</span>
-              </div>
-            )}
-            {userInfo.industry && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                borderColor: 'rgba(229, 180, 164, 0.3)',
-                color: '#FEFEFE'
-              }}>
-                <Building className="w-4 h-4" />
-                <span>{userInfo.industry}</span>
-              </div>
-            )}
-            {userInfo.domain && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border" style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                borderColor: 'rgba(229, 180, 164, 0.3)',
-                color: '#FEFEFE'
-              }}>
-                <Heart className="w-4 h-4" />
-                <span>{userInfo.domain}</span>
-              </div>
-            )}
+                Get Started
+              </Button>
+            </div>
           </motion.div>
 
+          {/* Right Image */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="flex flex-wrap justify-center gap-4 pt-6"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative h-[500px] lg:h-[600px]"
           >
-            <Button 
-              size="lg"
-              className="text-white font-semibold px-10 py-6 rounded-full shadow-xl"
-              style={{
-                background: 'linear-gradient(to right, #F5A54A, #E89B3C)',
-                boxShadow: '0 20px 25px -5px rgba(245, 165, 74, 0.3)'
-              }}
-              data-testid="button-connect"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Connect
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-2 font-semibold px-10 py-6 rounded-full backdrop-blur-sm"
-              style={{
-                borderColor: '#7FA8A3',
-                color: '#E5B4A4'
-              }}
-              data-testid="button-mentor"
-            >
-              <Users className="w-5 h-5 mr-2" />
-              Request Mentorship
-            </Button>
+            <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl">
+              {userInfo.photoURL ? (
+                <img 
+                  src={userInfo.photoURL} 
+                  alt={userInfo.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full" style={{ backgroundColor: '#D4C5B0' }} />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            </div>
           </motion.div>
+        </div>
+
+        {/* Stats Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto"
+        >
+          <div className="text-center p-6 rounded-2xl" style={{ backgroundColor: 'rgba(212, 197, 176, 0.3)' }}>
+            <p className="text-4xl font-light mb-2" style={{ color: '#2D5F4F' }}>
+              {sortedExperiences.length || 0}+
+            </p>
+            <p className="text-sm uppercase tracking-wide" style={{ color: '#6B7F75' }}>Experience</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl" style={{ backgroundColor: 'rgba(212, 197, 176, 0.3)' }}>
+            <p className="text-4xl font-light mb-2" style={{ color: '#2D5F4F' }}>
+              {sortedProjects.length || 0}+
+            </p>
+            <p className="text-sm uppercase tracking-wide" style={{ color: '#6B7F75' }}>Projects</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl" style={{ backgroundColor: 'rgba(212, 197, 176, 0.3)' }}>
+            <p className="text-4xl font-light mb-2" style={{ color: '#2D5F4F' }}>
+              {userSkills.length || 0}+
+            </p>
+            <p className="text-sm uppercase tracking-wide" style={{ color: '#6B7F75' }}>Skills</p>
+          </div>
+          <div className="text-center p-6 rounded-2xl" style={{ backgroundColor: 'rgba(212, 197, 176, 0.3)' }}>
+            <p className="text-4xl font-light mb-2" style={{ color: '#2D5F4F' }}>93%</p>
+            <p className="text-sm uppercase tracking-wide" style={{ color: '#6B7F75' }}>Success Rate</p>
+          </div>
         </motion.div>
       </motion.section>
 
@@ -441,15 +378,10 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #D4A59A)' }}>
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>My Journey</h2>
-            </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(229, 180, 164, 0.3)' }}>
-              <CardContent className="p-8">
-                <p className="text-lg leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.aboutMe}</p>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>About Me</h2>
+            <Card className="border-0 shadow-lg" style={{ backgroundColor: '#D4C5B0', borderRadius: '24px' }}>
+              <CardContent className="p-8 md:p-12">
+                <p className="text-lg leading-relaxed" style={{ color: '#2D5F4F' }}>{userInfo.aboutMe}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -457,20 +389,15 @@ export default function YogaFitnessModel({
 
         {userInfo.visionStatement && (
           <motion.section
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #7FA8A3, #88B5B0)' }}>
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Vision</h2>
-            </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
-              <CardContent className="p-8">
-                <p className="text-lg leading-relaxed italic" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.visionStatement}</p>
+            <Card className="border-0 shadow-lg" style={{ backgroundColor: '#C9B5A0', borderRadius: '24px' }}>
+              <CardContent className="p-8 md:p-12">
+                <h3 className="text-2xl font-light mb-4" style={{ color: '#2D5F4F' }}>Vision</h3>
+                <p className="text-lg leading-relaxed italic" style={{ color: '#2D5F4F' }}>{userInfo.visionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -478,20 +405,15 @@ export default function YogaFitnessModel({
 
         {userInfo.missionStatement && (
           <motion.section
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #F5A54A, #E89B3C)' }}>
-                <Star className="w-8 h-8 text-white fill-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Mission</h2>
-            </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(245, 165, 74, 0.3)' }}>
-              <CardContent className="p-8">
-                <p className="text-lg leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.95)' }}>{userInfo.missionStatement}</p>
+            <Card className="border-0 shadow-lg" style={{ backgroundColor: '#B9967E', borderRadius: '24px' }}>
+              <CardContent className="p-8 md:p-12">
+                <h3 className="text-2xl font-light mb-4" style={{ color: '#2D5F4F' }}>Mission</h3>
+                <p className="text-lg leading-relaxed" style={{ color: '#2D5F4F' }}>{userInfo.missionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -504,41 +426,44 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E89B3C, #D4A59A)' }}>
-                <Briefcase className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Experience</h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>Experience</h2>
             
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {sortedExperiences.map((exp, idx) => (
                 <motion.div
                   key={exp.id}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -40 : 40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-xl hover:shadow-2xl transition-shadow" style={{ borderColor: 'rgba(232, 155, 60, 0.3)' }}>
-                    <CardContent className="p-6 space-y-4">
+                  <Card className="border-0 shadow-lg h-full hover:shadow-xl transition-shadow" style={{ backgroundColor: '#D4C5B0', borderRadius: '20px' }}>
+                    <CardContent className="p-6 space-y-3">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold" style={{ color: '#FEFEFE' }}>{exp.title}</h3>
-                          <p className="text-lg font-medium" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>{exp.company}</p>
+                          <h3 className="text-xl font-semibold mb-1" style={{ color: '#2D5F4F' }}>{exp.title}</h3>
+                          <p className="text-base font-medium" style={{ color: '#6B7F75' }}>{exp.company}</p>
                         </div>
-                        <Badge style={{ background: 'rgba(232, 155, 60, 0.35)', color: '#FEFEFE', borderColor: 'rgba(232, 155, 60, 0.4)' }}>
-                          {exp.startDate && new Date(exp.startDate).getFullYear()}
-                        </Badge>
+                        <Briefcase className="w-5 h-5" style={{ color: '#2D5F4F' }} />
                       </div>
                       
                       {exp.description && (
-                        <p className="leading-relaxed" style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{exp.description}</p>
+                        <p className="text-sm leading-relaxed" style={{ color: '#6B7F75' }}>{exp.description}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
-                        <MapPin className="w-4 h-4" />
-                        <span>{exp.location || 'Remote'}</span>
+                      <div className="flex items-center gap-4 text-sm pt-2" style={{ color: '#6B7F75' }}>
+                        {exp.location && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            <span>{exp.location}</span>
+                          </div>
+                        )}
+                        {exp.startDate && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(exp.startDate).getFullYear()}</span>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -555,12 +480,7 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #1A453F, #7FA8A3)' }}>
-                <GraduationCap className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Education</h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>Education</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {sortedEducations.map((edu, idx) => (
@@ -571,21 +491,21 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
-                    <CardContent className="p-6 space-y-4">
+                  <Card className="border-0 shadow-lg h-full hover:shadow-xl transition-shadow" style={{ backgroundColor: '#C9B5A0', borderRadius: '20px' }}>
+                    <CardContent className="p-6 space-y-3">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold" style={{ color: '#FEFEFE' }}>{edu.degree}</h3>
-                          <p className="font-medium" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>{edu.institution}</p>
+                          <h3 className="text-xl font-semibold mb-1" style={{ color: '#2D5F4F' }}>{edu.degree}</h3>
+                          <p className="text-base font-medium" style={{ color: '#6B7F75' }}>{edu.institution}</p>
                         </div>
-                        <GraduationCap className="w-8 h-8" style={{ color: 'rgba(254, 254, 254, 0.85)' }} />
+                        <GraduationCap className="w-5 h-5" style={{ color: '#2D5F4F' }} />
                       </div>
                       
                       {edu.fieldOfStudy && (
-                        <p style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{edu.fieldOfStudy}</p>
+                        <p className="text-sm" style={{ color: '#6B7F75' }}>{edu.fieldOfStudy}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
+                      <div className="flex items-center gap-2 text-sm pt-2" style={{ color: '#6B7F75' }}>
                         <Calendar className="w-4 h-4" />
                         <span>
                           {edu.startDate && new Date(edu.startDate).getFullYear()}
@@ -607,14 +527,9 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #F5A54A)' }}>
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Skills</h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>Skills</h2>
             
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               {userSkills.map((skill) => (
                 <motion.div
                   key={skill.id}
@@ -624,10 +539,10 @@ export default function YogaFitnessModel({
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Badge className="px-5 py-2 text-base backdrop-blur-sm border" style={{
-                    background: 'linear-gradient(to right, rgba(229, 180, 164, 0.35), rgba(245, 165, 74, 0.35))',
-                    color: '#FEFEFE',
-                    borderColor: 'rgba(254, 254, 254, 0.3)'
+                  <Badge className="px-6 py-3 text-base border-0 shadow-md" style={{
+                    backgroundColor: '#D4C5B0',
+                    color: '#2D5F4F',
+                    borderRadius: '20px'
                   }}>
                     {skill.name}
                   </Badge>
@@ -644,12 +559,7 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #88B5B0, #1A453F)' }}>
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Projects</h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>Projects</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedProjects.map((project, idx) => (
@@ -661,41 +571,42 @@ export default function YogaFitnessModel({
                   transition={{ delay: idx * 0.1 }}
                 >
                   <Card 
-                    className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
-                    style={{ borderColor: 'rgba(136, 181, 176, 0.3)' }}
+                    className="border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full overflow-hidden"
+                    style={{ borderRadius: '20px' }}
                     onClick={() => openProjectModal(project)}
                   >
                     <CardContent className="p-0">
                       {project.thumbnailUrl && (
-                        <div className="relative h-48 overflow-hidden rounded-t-lg">
+                        <div className="relative h-56 overflow-hidden">
                           <img 
                             src={project.thumbnailUrl} 
                             alt={project.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to top, rgba(26, 69, 63, 0.6), transparent)' }} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <h3 className="text-xl font-semibold text-white mb-1">
+                              {project.title}
+                            </h3>
+                            {project.startDate && (
+                              <p className="text-sm text-white/80">{new Date(project.startDate).getFullYear()}</p>
+                            )}
+                          </div>
                         </div>
                       )}
                       
-                      <div className="p-6 space-y-3">
-                        <h3 className="text-xl font-bold transition-colors" style={{ color: '#FEFEFE' }}>
-                          {project.title}
-                        </h3>
-                        
-                        {project.description && (
-                          <p className="text-sm line-clamp-3" style={{ color: 'rgba(254, 254, 254, 0.9)' }}>
-                            {project.description}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-2 text-sm" style={{ color: 'rgba(254, 254, 254, 0.85)' }}>
-                            <Calendar className="w-4 h-4" />
-                            <span>{project.startDate && new Date(project.startDate).getFullYear()}</span>
-                          </div>
-                          <ExternalLink className="w-5 h-5 transition-colors" style={{ color: 'rgba(254, 254, 254, 0.85)' }} />
+                      {!project.thumbnailUrl && (
+                        <div className="p-6" style={{ backgroundColor: '#B9967E' }}>
+                          <h3 className="text-xl font-semibold mb-2" style={{ color: '#2D5F4F' }}>
+                            {project.title}
+                          </h3>
+                          {project.description && (
+                            <p className="text-sm line-clamp-3" style={{ color: '#6B7F75' }}>
+                              {project.description}
+                            </p>
+                          )}
                         </div>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -711,28 +622,28 @@ export default function YogaFitnessModel({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #7FA8A3, #F5A54A)' }}>
-                <Heart className="w-8 h-8 text-white fill-white" />
-              </div>
-              <h2 className="text-4xl font-bold" style={{ color: '#FEFEFE' }}>Services</h2>
-            </div>
+            <h2 className="text-4xl md:text-5xl font-light mb-12 text-center" style={{ color: '#2D5F4F' }}>Services</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {userServices.map((service, idx) => (
                 <motion.div
                   key={service.id}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }}>
-                    <CardContent className="p-6 space-y-3">
-                      <h3 className="text-xl font-bold" style={{ color: '#FEFEFE' }}>{service.title}</h3>
-                      {service.description && (
-                        <p style={{ color: 'rgba(254, 254, 254, 0.9)' }}>{service.description}</p>
-                      )}
+                  <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ backgroundColor: '#B9967E', borderRadius: '20px' }}>
+                    <CardContent className="p-8 space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Heart className="w-6 h-6 mt-1" style={{ color: '#2D5F4F' }} />
+                        <div className="flex-1">
+                          <h3 className="text-xl font-semibold mb-2" style={{ color: '#2D5F4F' }}>{service.title}</h3>
+                          {service.description && (
+                            <p className="leading-relaxed" style={{ color: '#6B7F75' }}>{service.description}</p>
+                          )}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -749,34 +660,34 @@ export default function YogaFitnessModel({
           transition={{ duration: 0.6 }}
           className="text-center py-20"
         >
-          <h2 className="text-5xl font-bold text-transparent bg-clip-text mb-8" style={{ backgroundImage: 'linear-gradient(to right, #E5B4A4, #F5A54A, #88B5B0)' }}>
+          <h2 className="text-4xl md:text-5xl font-light mb-12" style={{ color: '#2D5F4F' }}>
             Let's Connect
           </h2>
           
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               size="lg"
-              className="text-white font-semibold px-12 py-7 rounded-full shadow-2xl"
+              className="text-white font-medium px-12 py-6 rounded-full shadow-lg border-0"
               style={{
-                background: 'linear-gradient(to right, #F5A54A, #E89B3C)',
-                boxShadow: '0 25px 50px -12px rgba(245, 165, 74, 0.4)'
+                backgroundColor: '#2D5F4F'
               }}
               data-testid="button-connect-footer"
             >
-              <Mail className="w-6 h-6 mr-2" />
+              <Mail className="w-5 h-5 mr-2" />
               Connect With Me
             </Button>
             <Button 
               size="lg"
               variant="outline"
-              className="border-2 font-semibold px-12 py-7 rounded-full backdrop-blur-sm"
+              className="border-2 font-medium px-12 py-6 rounded-full"
               style={{
-                borderColor: '#7FA8A3',
-                color: '#FEFEFE'
+                borderColor: '#2D5F4F',
+                color: '#2D5F4F',
+                backgroundColor: 'transparent'
               }}
               data-testid="button-mentor-footer"
             >
-              <Users className="w-6 h-6 mr-2" />
+              <Users className="w-5 h-5 mr-2" />
               Request Mentorship
             </Button>
           </div>
