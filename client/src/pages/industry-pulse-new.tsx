@@ -479,70 +479,66 @@ function PollVoting({ pulse }: PollVotingProps) {
   
   return (
     <div className="mt-4 space-y-3">
-      <div className="text-sm font-semibold flex items-center gap-2 text-white/90">
-        <BarChart className="h-4 w-4 text-cyan-400" />
-        <span>Poll</span>
+      <div className="text-sm font-medium flex items-center gap-2 text-white">
+        <BarChart className="h-4 w-4 text-blue-400" />
+        <span>Poll Options</span>
       </div>
       
-      <div className="rounded-xl p-5 bg-white/[0.08] backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
         {pulse.pollOptions.map((option, index) => (
-          <div key={index} className="space-y-2 mb-4 last:mb-0">
+          <div key={index} className="space-y-1 mb-3 last:mb-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3 flex-1">
+              <div className="flex items-center space-x-2">
                 <button
                   type="button"
-                  className={`flex-1 h-11 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium backdrop-blur-md border flex items-center justify-between ${
+                  className={`h-8 px-3 py-1 rounded-md transition-all duration-300 text-sm font-medium backdrop-blur-sm border flex items-center ${
                     userVote === index 
-                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 border-cyan-400/50 text-white shadow-lg shadow-cyan-500/20' 
-                      : 'bg-white/[0.05] border-white/20 text-white/80 hover:bg-white/[0.1] hover:border-white/30 hover:shadow-md'
+                      ? 'bg-white/20 border-white/40 text-white shadow-md' 
+                      : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/15 hover:border-white/30'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
                 >
-                  <span className="flex items-center gap-2">
-                    {userVote === index && <Check className="h-4 w-4 text-cyan-400" />}
-                    {option}
-                  </span>
-                  
-                  {userVote !== null && (
-                    <span className="text-xs font-semibold text-cyan-400">
-                      {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
-                    </span>
-                  )}
+                  {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
+                  {option}
                 </button>
+                
+                {userVote !== null && (
+                  <span className="text-xs text-white/70">
+                    {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
+              
+              {userVote !== null && (
+                <span className="text-xs font-medium text-white/90">
+                  {totalVotes > 0 ? Math.round((voteCounts[index] || 0) / totalVotes * 100) : 0}%
+                </span>
+              )}
             </div>
             
             {userVote !== null && (
-              <>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
-                  <div 
-                    className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-500 ease-in-out shadow-lg"
-                    style={{ 
-                      width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
-                    }} 
-                  />
-                </div>
-                <div className="flex justify-between items-center px-1">
-                  <span className="text-xs text-white/50">
-                    {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-500 ease-in-out"
+                  style={{ 
+                    width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
+                  }} 
+                />
+              </div>
             )}
           </div>
         ))}
         
         {isLoading && (
-          <div className="flex justify-center py-3">
-            <Loader2 className="h-5 w-5 animate-spin text-cyan-400" />
+          <div className="flex justify-center py-2">
+            <Loader2 className="h-4 w-4 animate-spin text-white/70" />
           </div>
         )}
         
         {userVote !== null && (
-          <div className="text-xs text-white/50 pt-3 border-t border-white/10 mt-2 flex items-center justify-between">
-            <span>Total votes: {totalVotes}</span>
-            <span className="text-cyan-400/70">Thank you for voting!</span>
+          <div className="text-xs text-right text-white/60 pt-2 border-t border-white/20 mt-2">
+            Total votes: {totalVotes}
           </div>
         )}
       </div>
