@@ -3650,6 +3650,355 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Team Member & Client Approval Workflow Endpoints
+  
+  // Add team member by profile URL - sends approval request
+  apiRouter.post("/projects/:projectId/team-members/request", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const { profileUrl } = req.body;
+      const requestingUserId = req.user?.id; // From auth middleware
+      
+      if (!requestingUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      if (!profileUrl) {
+        return res.status(400).json({ message: "Profile URL is required" });
+      }
+      
+      // Verify project exists and user owns it
+      const project = await storage.getProjectById(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      if (project.userId !== requestingUserId) {
+        return res.status(403).json({ message: "You can only add team members to your own projects" });
+      }
+      
+      // Extract username from profile URL (e.g., /portfolio/username or /u/username)
+      const urlParts = profileUrl.split('/');
+      const username = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+      
+      // Find user by username
+      let targetUser = await storage.getUserByUsername(username);
+      
+      // If not found by username, try to find by randomProfileLink
+      if (!targetUser) {
+        const allUsers = await storage.getUsers();
+        targetUser = allUsers.find((u: any) => u.randomProfileLink === profileUrl);
+      }
+      
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found with this profile URL" });
+      }
+      
+      // Check if already a collaborator
+      const existingCollaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
+      const isAlreadyCollaborator = existingCollaborators?.some(c => c.userId === targetUser.id);
+      
+      if (isAlreadyCollaborator) {
+        return res.status(400).json({ message: "User is already a team member" });
+      }
+      
+      // Create pending collaborator
+      const collaboratorData = {
+        projectId,
+        name: targetUser.name || "Team Member",
+        email: targetUser.email,
+        role: "Collaborator",
+        profileLink: profileUrl,
+        userId: targetUser.id,
+        inviteStatus: "Pending"
+      };
+      
+      const collaborator = await storage.createProjectCollaborator(collaboratorData);
+      
+      // Create notification for the target user
+      const project = await storage.getProjectById(projectId);
+      const projectOwner = await storage.getUser(project?.userId || 0);
+      
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: targetUser.id,
+        type: 'info' as const,
+        category: 'team_member_request' as const,
+        title: 'Team Member Request',
+        message: `${projectOwner?.name || 'Someone'} wants to add you as a team member to "${project?.title || 'a project'}"`,
+        metadata: JSON.stringify({ collaboratorId: collaborator.id, projectId }),
+        actionUrl: `/api/projects/collaborators/${collaborator.id}`,
+        isRead: false
+      });
+      
+      res.status(201).json({ 
+        message: "Team member request sent",
+        collaborator 
+      });
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Add client by profile URL - sends approval request
+  apiRouter.post("/projects/:projectId/clients/request", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const { profileUrl } = req.body;
+      const requestingUserId = req.user?.id; // From auth middleware
+      
+      if (!requestingUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ message: "Invalid project ID" });
+      }
+      
+      if (!profileUrl) {
+        return res.status(400).json({ message: "Profile URL is required" });
+      }
+      
+      // Verify project exists and user owns it
+      const project = await storage.getProjectById(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      if (project.userId !== requestingUserId) {
+        return res.status(403).json({ message: "You can only add clients to your own projects" });
+      }
+      
+      // Extract username from profile URL
+      const urlParts = profileUrl.split('/');
+      const username = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+      
+      // Find user by username
+      let targetUser = await storage.getUserByUsername(username);
+      
+      // If not found by username, try to find by randomProfileLink
+      if (!targetUser) {
+        const allUsers = await storage.getUsers();
+        targetUser = allUsers.find((u: any) => u.randomProfileLink === profileUrl);
+      }
+      
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found with this profile URL" });
+      }
+      
+      // Check if already a client
+      const existingEndorsements = await storage.getProjectEndorsementsByProjectId(projectId);
+      const isAlreadyClient = existingEndorsements?.some(e => e.userId === targetUser.id);
+      
+      if (isAlreadyClient) {
+        return res.status(400).json({ message: "User is already a client" });
+      }
+      
+      // Create pending client endorsement
+      const endorsementData = {
+        projectId,
+        clientName: targetUser.name || "Client",
+        clientEmail: targetUser.email,
+        clientTitle: targetUser.title,
+        clientCompany: targetUser.company,
+        profileLink: profileUrl,
+        userId: targetUser.id,
+        approvalStatus: "Pending"
+      };
+      
+      const endorsement = await storage.createProjectEndorsement(endorsementData);
+      
+      // Create notification for the target user
+      const project = await storage.getProjectById(projectId);
+      const projectOwner = await storage.getUser(project?.userId || 0);
+      
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: targetUser.id,
+        type: 'info' as const,
+        category: 'client_request' as const,
+        title: 'Client Request',
+        message: `${projectOwner?.name || 'Someone'} wants to add you as a client to "${project?.title || 'a project'}"`,
+        metadata: JSON.stringify({ endorsementId: endorsement.id, projectId }),
+        actionUrl: `/api/projects/endorsements/${endorsement.id}`,
+        isRead: false
+      });
+      
+      res.status(201).json({ 
+        message: "Client request sent",
+        endorsement 
+      });
+    } catch (error) {
+      console.error("Error adding client:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Approve team member request
+  apiRouter.post("/projects/collaborators/:id/approve", async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      const approvingUserId = req.user?.id; // From auth middleware
+      
+      if (!approvingUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID" });
+      }
+      
+      const collaborator = await storage.getProjectCollaboratorById(collaboratorId);
+      
+      if (!collaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+      
+      // Only the invited user can approve their own request
+      if (collaborator.userId !== approvingUserId) {
+        return res.status(403).json({ message: "You can only approve your own team member requests" });
+      }
+      
+      // Update status to Accepted
+      const updated = await storage.updateProjectCollaborator(collaboratorId, {
+        inviteStatus: "Accepted"
+      });
+      
+      res.json({ 
+        message: "Team member request approved",
+        collaborator: updated 
+      });
+    } catch (error) {
+      console.error("Error approving team member:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Decline team member request
+  apiRouter.post("/projects/collaborators/:id/decline", async (req: Request, res: Response) => {
+    try {
+      const collaboratorId = parseInt(req.params.id);
+      const decliningUserId = req.user?.id; // From auth middleware
+      
+      if (!decliningUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(collaboratorId)) {
+        return res.status(400).json({ message: "Invalid collaborator ID" });
+      }
+      
+      const collaborator = await storage.getProjectCollaboratorById(collaboratorId);
+      
+      if (!collaborator) {
+        return res.status(404).json({ message: "Collaborator not found" });
+      }
+      
+      // Only the invited user can decline their own request
+      if (collaborator.userId !== decliningUserId) {
+        return res.status(403).json({ message: "You can only decline your own team member requests" });
+      }
+      
+      // Update status to Declined and optionally delete
+      await storage.updateProjectCollaborator(collaboratorId, {
+        inviteStatus: "Declined"
+      });
+      
+      // Optionally delete the declined request after a delay
+      // await storage.deleteProjectCollaborator(collaboratorId);
+      
+      res.json({ message: "Team member request declined" });
+    } catch (error) {
+      console.error("Error declining team member:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Approve client request
+  apiRouter.post("/projects/endorsements/:id/approve", async (req: Request, res: Response) => {
+    try {
+      const endorsementId = parseInt(req.params.id);
+      const approvingUserId = req.user?.id; // From auth middleware
+      
+      if (!approvingUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(endorsementId)) {
+        return res.status(400).json({ message: "Invalid endorsement ID" });
+      }
+      
+      const endorsement = await storage.getProjectEndorsementById(endorsementId);
+      
+      if (!endorsement) {
+        return res.status(404).json({ message: "Endorsement not found" });
+      }
+      
+      // Only the invited user can approve their own request
+      if (endorsement.userId !== approvingUserId) {
+        return res.status(403).json({ message: "You can only approve your own client requests" });
+      }
+      
+      // Update status to Approved
+      const updated = await storage.updateProjectEndorsement(endorsementId, {
+        approvalStatus: "Approved"
+      });
+      
+      res.json({ 
+        message: "Client request approved",
+        endorsement: updated 
+      });
+    } catch (error) {
+      console.error("Error approving client:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Decline client request
+  apiRouter.post("/projects/endorsements/:id/decline", async (req: Request, res: Response) => {
+    try {
+      const endorsementId = parseInt(req.params.id);
+      const decliningUserId = req.user?.id; // From auth middleware
+      
+      if (!decliningUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      if (isNaN(endorsementId)) {
+        return res.status(400).json({ message: "Invalid endorsement ID" });
+      }
+      
+      const endorsement = await storage.getProjectEndorsementById(endorsementId);
+      
+      if (!endorsement) {
+        return res.status(404).json({ message: "Endorsement not found" });
+      }
+      
+      // Only the invited user can decline their own request
+      if (endorsement.userId !== decliningUserId) {
+        return res.status(403).json({ message: "You can only decline your own client requests" });
+      }
+      
+      // Update status to Declined and optionally delete
+      await storage.updateProjectEndorsement(endorsementId, {
+        approvalStatus: "Declined"
+      });
+      
+      // Optionally delete the declined request after a delay
+      // await storage.deleteProjectEndorsement(endorsementId);
+      
+      res.json({ message: "Client request declined" });
+    } catch (error) {
+      console.error("Error declining client:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Chat Message routes
   apiRouter.get("/users/:userId/chat-messages", async (req: Request, res: Response) => {
     try {

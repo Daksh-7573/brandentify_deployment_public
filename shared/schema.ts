@@ -227,6 +227,9 @@ export const projectEndorsements = pgTable("project_endorsements", {
   clientCompany: text("client_company"),
   message: text("message"),
   rating: integer("rating"), // e.g., 1-5 stars
+  profileLink: text("profile_link"), // Brandentifier profile link for connecting users
+  userId: integer("user_id").references(() => users.id), // If the client is on the platform
+  approvalStatus: text("approval_status").default("Pending"), // Pending, Approved, Declined
   isVerified: boolean("is_verified").default(false), // Whether the endorsement has been verified by the client
   verificationToken: text("verification_token"),
   verificationExpires: timestamp("verification_expires"),
@@ -287,6 +290,7 @@ export const insertProjectCollaboratorSchema = createInsertSchema(projectCollabo
 export const insertProjectEndorsementSchema = createInsertSchema(projectEndorsements).omit({ 
   id: true, 
   createdAt: true, 
+  approvalStatus: true,
   isVerified: true, 
   verificationToken: true, 
   verificationExpires: true 

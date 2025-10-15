@@ -16,7 +16,9 @@ export type NotificationCategory =
   | 'pulse_reaction'        // When someone reacts to a pulse
   | 'pulse_comment'         // When someone comments on a pulse
   | 'achievement'           // Achievement unlocked
-  | 'api_error';            // API errors
+  | 'api_error'             // API errors
+  | 'team_member_request'   // When added as a team member to a project
+  | 'client_request';       // When added as a client to a project
 
 // Notification table schema
 export const notifications = pgTable('notifications', {
@@ -33,13 +35,17 @@ export const notifications = pgTable('notifications', {
       'pulse_reaction', 
       'pulse_comment', 
       'achievement',
-      'api_error'
+      'api_error',
+      'team_member_request',
+      'client_request'
     ] 
   }).notNull(),
   title: text('title').notNull(),
   message: text('message').notNull(),
   link: text('link'),
   isRead: boolean('is_read').notNull().default(false),
+  metadata: text('metadata'), // JSON string for storing action-specific data (projectId, collaboratorId, endorsementId, etc.)
+  actionUrl: text('action_url'), // URL for approve/cancel actions
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
