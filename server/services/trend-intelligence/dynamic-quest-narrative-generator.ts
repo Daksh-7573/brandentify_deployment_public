@@ -82,13 +82,17 @@ DELIVERABLE: ${context.deliverableFormat || 'Professional content'}
 PLATFORM: ${context.platform || 'Any'}
 
 Create a quest that:
-1. References a SPECIFIC trend from above (mention the actual topic)
-2. Gives EXACT specs (e.g., "80-second reel", "3 data points", "150-word post")
-3. Includes 2-3 CONCRETE EXAMPLES of what to share (e.g., "share a recent project challenge you solved" OR "explain a common industry misconception" OR "describe a tool or framework you use daily")
-4. Explains WHY this matters RIGHT NOW based on the trend
-5. Provides a Musk-style tip with actionable steps
+1. Specifies the POST TYPE first: "Create a Media post (with 1-3 images)" OR "Create a Poll with 3-4 options" OR "Add a Project post with visuals"
+2. References a SPECIFIC trend from above (mention the actual topic)
+3. Gives EXACT specs (e.g., "150-300 words", "3 data points", "5 images")
+4. Includes 2-3 CONCRETE EXAMPLES of what to share (e.g., "share a recent project challenge you solved" OR "explain a common industry misconception" OR "describe a tool or framework you use daily")
+5. Explains WHY this matters RIGHT NOW based on the trend
+6. Provides a Musk-style tip with actionable steps
 
-IMPORTANT: The description must include specific content ideas, not vague phrases like "share an observation" or "post insights". Give clear examples of WHAT to create.
+IMPORTANT: 
+- Always specify post type (Media/Poll/Project) in the description
+- Include specific content ideas, not vague phrases like "share an observation" or "post insights"
+- Give clear examples of WHAT to create and WHAT visuals to include
 
 Format your response EXACTLY as:
 TITLE: [Catchy title]
@@ -112,14 +116,14 @@ When giving quest directions:
 - Be direct and actionable
 
 Examples of good directions:
-✅ "Write 200-word post about AI regulation changes: share a recent client challenge you faced OR explain how the EU AI Act impacts your workflow OR describe a compliance tool you're implementing"
-✅ "Create 60-second reel on remote work shifts: show your actual home office setup OR walk through your productivity routine OR demonstrate a tool that saves you 2+ hours daily"
-✅ "Post 150-word update about your latest project: highlight one unexpected challenge you overcame OR share a metric that improved 25%+ OR explain a framework you developed"
+✅ "Create a Media post (200 words + 2-3 images) about AI regulation changes: share a recent client challenge you faced OR explain how the EU AI Act impacts your workflow OR describe a compliance tool you're implementing. Include screenshots, diagrams, or team photos."
+✅ "Create a Poll asking: 'Remote work professionals: What's your biggest productivity challenge?' Options: (1) Communication gaps (2) Time management (3) Work-life balance (4) Tech issues. Then create a follow-up Media post sharing your own solution with 1-2 images."
+✅ "Add a Project post showcasing your latest work: Include 5 images showing before/after, process, and results. Write 150-200 words highlighting one unexpected challenge you overcame, a metric that improved 25%+, and the framework you developed."
 
 Examples of bad directions (too vague):
-❌ "Create content about your industry"
-❌ "Share insights on your platform"
-❌ "Post an observation, lesson, or insight" (too generic - needs specific examples)
+❌ "Create content about your industry" (no post type, no specifics)
+❌ "Share insights on your platform" (no post type, vague)
+❌ "Post an observation, lesson, or insight" (too generic - needs post type and specific examples)
 
 Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
   }
@@ -200,8 +204,8 @@ Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
     if (questType === 'content_creation' || questType === 'pulse_creation') {
       return {
         title: 'Share Your Professional Story',
-        description: `Write a 150-300 word post about ${industry}. Choose one: (1) Share a recent project challenge and how you solved it, (2) Explain a common ${domain} misconception and the reality, (3) Describe a tool, framework, or method you use daily that others might benefit from, (4) Highlight a lesson learned from a failure or setback in your career.`,
-        tip: `Don't just share generic insights—tell a specific story. Example: Instead of "Communication is important", write "Last month, a project almost failed because I assumed everyone understood the brief. Here's what I changed..." Real stories resonate 10x more than abstract advice.`
+        description: `Create a Media post (150-300 words with 1-3 images) about ${industry}. Choose one: (1) Share a recent project challenge and how you solved it - add before/after images if possible, (2) Explain a common ${domain} misconception and the reality - create an infographic or comparison image, (3) Describe a tool, framework, or method you use daily - include a screenshot or diagram, (4) Highlight a lesson learned from a failure or setback - add relevant workplace photos. Alternative: Create a Poll asking "${domain} professionals: What's your biggest challenge this quarter?" with 3-4 relevant options.`,
+        tip: `Don't just share generic insights—tell a specific story with visuals. Example: Instead of "Communication is important", write "Last month, a project almost failed because I assumed everyone understood the brief. Here's what I changed..." and add a photo of your team meeting or workflow diagram. Posts with images get 3x more engagement.`
       };
     }
 
@@ -209,8 +213,8 @@ Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
     if (questType === 'portfolio_building' || questType === 'portfolio') {
       return {
         title: 'Showcase Your Best Work',
-        description: `Add a ${industry} project to your portfolio. Include: (1) The specific problem or goal, (2) Your approach and key decisions, (3) Measurable results (e.g., "reduced costs by 30%" or "completed 2 weeks early"), (4) Visuals showing before/after or process.`,
-        tip: `Recruiters spend 10 seconds on portfolios. Lead with the result, not the process. Put your biggest number or achievement in the first line, then explain how you got there.`
+        description: `Create a Project post showcasing your ${industry} work. Include: (1) The specific problem or goal, (2) Your approach and key decisions, (3) Measurable results (e.g., "reduced costs by 30%" or "completed 2 weeks early"), (4) 3-5 images showing before/after, process, or final deliverables. Add project details: client/company, your role, duration, and tech/tools used.`,
+        tip: `Recruiters spend 10 seconds on portfolios. Lead with the result, not the process. Put your biggest number or achievement in the first line, then explain how you got there. Always include visuals—screenshots, mockups, or photos make projects 5x more memorable.`
       };
     }
 
@@ -218,8 +222,8 @@ Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
     if (questType === 'networking') {
       return {
         title: 'Build Strategic Connections',
-        description: `Connect with 3 ${industry} professionals. Focus on: (1) People working in roles you aspire to, (2) Professionals at companies you're interested in, (3) Peers in ${domain} who share similar challenges. Personalize each request—mention a specific post or project of theirs.`,
-        tip: `Generic connection requests get ignored 80% of the time. Reference something specific: "I saw your post about ${domain} automation—we're tackling similar challenges at my company." Personalization = response rate.`
+        description: `Connect with 3 ${industry} professionals and create a Media post sharing your networking goal. Focus on: (1) People working in roles you aspire to, (2) Professionals at companies you're interested in, (3) Peers in ${domain} who share similar challenges. Personalize each request—mention a specific post or project of theirs. Then create a 100-150 word post: "Expanding my ${domain} network—looking to connect with professionals working on [specific challenge/topic]" with 1-2 images from industry events or your workspace.`,
+        tip: `Generic connection requests get ignored 80% of the time. Reference something specific: "I saw your post about ${domain} automation—we're tackling similar challenges at my company." Personalization = response rate. Public posts about your networking goals attract 2x more quality connections.`
       };
     }
 
@@ -227,16 +231,16 @@ Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
     if (questType === 'visibility' || questType === 'profile_update') {
       return {
         title: 'Optimize Your Professional Presence',
-        description: `Update your profile to highlight ${industry} expertise. Add: (1) A headline that states your specific value (not just job title), (2) 3-5 quantified achievements with numbers, (3) Skills that match ${domain} job postings, (4) A summary that explains your unique approach or methodology.`,
-        tip: `Profiles with specific metrics get 5x more recruiter views. Replace "Experienced in project management" with "Led 15+ projects, delivering $2M in cost savings across ${industry} clients."`
+        description: `Update your profile to highlight ${industry} expertise, then announce it! Profile updates: (1) A headline that states your specific value (not just job title), (2) 3-5 quantified achievements with numbers, (3) Skills that match ${domain} job postings, (4) A summary that explains your unique approach. Then create a Media post announcing: "Just updated my profile with my latest ${industry} achievements—[share 1-2 key wins]" with a professional photo or screenshot of your updated profile.`,
+        tip: `Profiles with specific metrics get 5x more recruiter views. Replace "Experienced in project management" with "Led 15+ projects, delivering $2M in cost savings across ${industry} clients." Announce updates publicly—it reminds your network of your value and attracts new opportunities.`
       };
     }
 
     // Default fallback
     return {
       title: 'Advance Your Career',
-      description: `Complete a ${industry} professional development task. Choose what fits your goals: (1) Update your profile with quantified achievements, (2) Share a specific lesson from recent work, (3) Connect with professionals in your target role, (4) Document a project with measurable results.`,
-      tip: `Career growth comes from specific, visible actions. Pick one task, do it well, and make it public. Consistency beats perfection.`
+      description: `Complete a ${industry} professional development task. Choose what fits your goals: (1) Create a Media post (150-250 words + images) sharing a recent win or lesson, (2) Add a Project post documenting your best work with results, (3) Create a Poll asking "${domain} professionals: What's your top priority this quarter?" or (4) Update your profile and announce it with a Media post highlighting key achievements.`,
+      tip: `Career growth comes from specific, visible actions. Pick one task, do it well, and make it public. Posts with visuals get 3x more engagement. Consistency beats perfection.`
     };
   }
 
