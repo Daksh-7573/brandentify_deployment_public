@@ -110,6 +110,9 @@ interface Endorsement {
   rating: number | null;
   isVerified: boolean | null;
   projectId: number;
+  userId: number | null;
+  profileLink: string | null;
+  approvalStatus: string | null;
 }
 
 export default function Projects() {
@@ -2070,9 +2073,9 @@ export default function Projects() {
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium">Team Members</h3>
                       
-                      {collaborators.length > 0 ? (
+                      {collaborators.filter(c => c.inviteStatus === 'Accepted').length > 0 ? (
                         <div className="space-y-2">
-                          {collaborators.map((collaborator) => (
+                          {collaborators.filter(c => c.inviteStatus === 'Accepted').map((collaborator) => (
                             <div key={collaborator.id} className="flex items-center justify-between p-3 border rounded-lg">
                               <div>
                                 <p className="font-medium">{collaborator.name}</p>
@@ -2139,9 +2142,9 @@ export default function Projects() {
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium">Client Endorsements</h3>
                       
-                      {endorsements.length > 0 ? (
+                      {endorsements.filter(e => e.approvalStatus === 'Approved').length > 0 ? (
                         <div className="space-y-2">
-                          {endorsements.map((endorsement) => (
+                          {endorsements.filter(e => e.approvalStatus === 'Approved').map((endorsement) => (
                             <div key={endorsement.id} className="p-3 border rounded-lg">
                               <div className="flex items-center justify-between">
                                 <div>
@@ -2421,9 +2424,9 @@ export default function Projects() {
               </TabsContent>
               
               <TabsContent value="team" className="space-y-6 mt-4">
-                {collaborators.length > 0 ? (
+                {collaborators.filter(c => c.inviteStatus === 'Accepted').length > 0 ? (
                   <div className="space-y-4">
-                    {collaborators.map((collaborator) => (
+                    {collaborators.filter(c => c.inviteStatus === 'Accepted').map((collaborator) => (
                       <div key={collaborator.id} className="p-4 border rounded-lg">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                           <div>
@@ -2498,9 +2501,9 @@ export default function Projects() {
               </TabsContent>
               
               <TabsContent value="endorsements" className="space-y-6 mt-4">
-                {endorsements.length > 0 ? (
+                {endorsements.filter(e => e.approvalStatus === 'Approved').length > 0 ? (
                   <div className="space-y-4">
-                    {endorsements.map((endorsement) => (
+                    {endorsements.filter(e => e.approvalStatus === 'Approved').map((endorsement) => (
                       <div key={endorsement.id} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
