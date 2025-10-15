@@ -374,15 +374,17 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
       </Dialog>
       )}
       
-      {/* Comments Button */}
-      <button 
-        onClick={onCommentClick}
-        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
-        data-testid={`button-comments-${pulse.id}`}
-      >
-        <MessageSquare className="h-4 w-4" strokeWidth={2} />
-        {formatCount(pulse.comments || 0)}
-      </button>
+      {/* Comments Button - Hidden for Musk AI pulses */}
+      {pulse.userId !== 3 && (
+        <button 
+          onClick={onCommentClick}
+          className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
+          data-testid={`button-comments-${pulse.id}`}
+        >
+          <MessageSquare className="h-4 w-4" strokeWidth={2} />
+          {formatCount(pulse.comments || 0)}
+        </button>
+      )}
     </div>
   );
 }
@@ -1313,7 +1315,8 @@ export default function IndustryPulsePage() {
                               }}
                             />
                           </div>
-                          {expandedCommentsPulseId === pulse.id && (
+                          {/* Comment Section - Hidden for Musk AI pulses */}
+                          {expandedCommentsPulseId === pulse.id && pulse.userId !== 3 && (
                             <div className="px-4 pb-4">
                               <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} isExpanded={true} />
                             </div>
