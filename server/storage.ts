@@ -3064,54 +3064,77 @@ export class MemStorage implements IStorage {
   
   // Pulse Comment operations
   async getPulseCommentsByPulseId(pulseId: number): Promise<PulseComment[]> {
-    return Array.from(this.pulseComments.values())
-      .filter(comment => comment.pulseId === pulseId)
-      .sort((a, b) => {
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeA - timeB; // Sort oldest first
-      });
+    try {
+      const result = await pool.query(`
+        SELECT * FROM pulse_comments 
+        WHERE pulse_id = $1 
+        ORDER BY created_at ASC
+      `, [pulseId]);
+      
+      return result.rows as PulseComment[];
+    } catch (error) {
+      console.error('[db.getPulseCommentsByPulseId] Error:', error);
+      throw error;
+    }
   }
   
   async createPulseComment(insertComment: InsertPulseComment): Promise<PulseComment> {
-    const id = this.currentPulseCommentId++;
-    const createdAt = new Date();
-    
-    const comment: PulseComment = {
-      ...insertComment,
-      id,
-      createdAt,
-      likes: 0
-    };
-    
-    this.pulseComments.set(id, comment);
-    
-    // Update the comment count on the pulse
-    const pulse = this.pulses.get(insertComment.pulseId);
-    if (pulse) {
-      this.pulses.set(pulse.id, {
-        ...pulse,
-        comments: (pulse.comments || 0) + 1
-      });
+    try {
+      // Insert the comment
+      const result = await pool.query(`
+        INSERT INTO pulse_comments (pulse_id, user_id, content, likes, created_at)
+        VALUES ($1, $2, $3, 0, NOW())
+        RETURNING *
+      `, [insertComment.pulseId, insertComment.userId, insertComment.content]);
+      
+      const comment = result.rows[0] as PulseComment;
+      
+      // Update the comment count on the pulse
+      await pool.query(`
+        UPDATE pulses 
+        SET comments = COALESCE(comments, 0) + 1 
+        WHERE id = $1
+      `, [insertComment.pulseId]);
+      
+      return comment;
+    } catch (error) {
+      console.error('[db.createPulseComment] Error:', error);
+      throw error;
     }
-    
-    return comment;
   }
   
   async deletePulseComment(id: number): Promise<boolean> {
-    const comment = this.pulseComments.get(id);
-    if (!comment) return false;
-    
-    // Decrease the comment count on the pulse
-    const pulse = this.pulses.get(comment.pulseId);
-    if (pulse && pulse.comments && pulse.comments > 0) {
-      this.pulses.set(pulse.id, {
-        ...pulse,
-        comments: pulse.comments - 1
-      });
+    try {
+      // Get the comment first to know the pulse_id
+      const commentResult = await pool.query(`
+        SELECT pulse_id FROM pulse_comments WHERE id = $1
+      `, [id]);
+      
+      if (commentResult.rows.length === 0) return false;
+      
+      const pulseId = commentResult.rows[0].pulse_id;
+      
+      // Delete the comment
+      const deleteResult = await pool.query(`
+        DELETE FROM pulse_comments WHERE id = $1
+      `, [id]);
+      
+      if (deleteResult.rowCount && deleteResult.rowCount > 0) {
+        // Decrease the comment count on the pulse
+        await pool.query(`
+          UPDATE pulses 
+          SET comments = GREATEST(COALESCE(comments, 0) - 1, 0)
+          WHERE id = $1
+        `, [pulseId]);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[db.deletePulseComment] Error:', error);
+      throw error;
     }
-    
-    return this.pulseComments.delete(id);
   }
   
   // Poll Vote operations
