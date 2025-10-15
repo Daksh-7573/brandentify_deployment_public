@@ -628,6 +628,7 @@ export const pulses = pgTable("pulses", {
   misinformedCount: integer("misinformed_count").default(0), // Count of misinformed reactions
   shareCount: integer("share_count").default(0), // Count of shares
   comments: integer("comments").default(0),
+  reachScore: integer("reach_score").default(0), // Calculated score for feed ranking: (comments × 3) + insightful - misinformed
   isPublished: boolean("is_published").default(true),
   expiresAt: timestamp("expires_at"), // When the pulse expires (for highlight category)
   createdAt: timestamp("created_at").defaultNow(),
