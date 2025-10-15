@@ -4020,6 +4020,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[POST /pulse-comments] Created new comment with ID: ${newComment.id}`);
       
+      // Recalculate reach_score: (comments × 3) + insightful - misinformed
+      await pool.query(`
+        UPDATE pulses 
+        SET reach_score = (comments * 3) + insightful_count - misinformed_count
+        WHERE id = $1
+      `, [newComment.pulseId]);
+      
       // Get the user data to return with the response
       const user = await storage.getUser(newComment.userId);
       const commentWithUser = {
@@ -4082,14 +4089,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[DELETE /pulse-comments/${commentId}] User ${userId} attempting to delete comment`);
       
-      // Get the comment to check ownership
-      const comments = await storage.getPulseCommentsByPulseId(0); // This won't work, need to get comment by ID
-      // For now, we'll trust the client sends correct userId
+      // Get comment to find pulse_id for reach_score update
+      const commentResult = await pool.query(`
+        SELECT pulse_id FROM pulse_comments WHERE id = $1
+      `, [commentId]);
+      
+      const pulseId = commentResult.rows[0]?.pulse_id;
       
       const deleted = await storage.deletePulseComment(commentId);
       
       if (deleted) {
         console.log(`[DELETE /pulse-comments/${commentId}] Comment deleted successfully`);
+        
+        // Recalculate reach_score after comment deletion
+        if (pulseId) {
+          await pool.query(`
+            UPDATE pulses 
+            SET reach_score = (comments * 3) + insightful_count - misinformed_count
+            WHERE id = $1
+          `, [pulseId]);
+        }
+        
         res.json({ message: 'Comment deleted successfully' });
       } else {
         res.status(404).json({ message: 'Comment not found' });
