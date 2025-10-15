@@ -37,6 +37,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
   // Form state
   const [name, setName] = useState(userData.name || "");
   const [jobTitle, setJobTitle] = useState(userData.title || "");
+  const [company, setCompany] = useState(userData.company || "");
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
@@ -68,6 +69,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
     console.log('[EDIT FORM] Syncing form state with userData:', userData);
     setName(userData.name || "");
     setJobTitle(userData.title || "");
+    setCompany(userData.company || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
@@ -104,6 +106,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
       const updateData = {
         name: name.trim(),
         title: jobTitle.trim() || null,
+        company: company.trim() || null,
         location: location.trim() || null,
         industry: industry || null,
         domain: domain || null,
@@ -216,6 +219,22 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, userId
             value={jobTitle}
             onChange={(e) => setJobTitle(e.target.value)}
             placeholder="Enter your job title"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
+          />
+        </div>
+
+        {/* Company Name */}
+        <div className="space-y-2">
+          <label htmlFor="company" className="text-sm font-medium text-white flex items-center gap-2">
+            <Building className="h-4 w-4" />
+            Company Name
+          </label>
+          <input
+            id="company"
+            type="text"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            placeholder="Enter your company name"
             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
           />
         </div>

@@ -943,6 +943,7 @@ export default function ProfileNeo() {
                 email: userData.email || '',
                 phoneNumber: userData.phoneNumber || '',
                 title: userData.title || '',
+                company: userData.company || '',
                 location: userData.location || '',
                 industry: userData.industry || '',
                 domain: userData.domain || '',
