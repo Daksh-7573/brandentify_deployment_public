@@ -8498,6 +8498,31 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Get user by ID (for edit profile and other user data fetches)
+  app.get('/api/users/:id', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Remove password before sending
+      const { password, ...userWithoutPassword } = user;
+      
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error(`[GET /api/users/${req.params.id}] Error:`, error);
+      res.status(500).json({ message: 'Error fetching user' });
+    }
+  });
+
   // Check user posting restrictions
   app.get('/api/user/:userId/restrictions', async (req: Request, res: Response) => {
     try {
