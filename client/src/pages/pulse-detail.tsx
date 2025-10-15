@@ -183,16 +183,19 @@ export default function PulseDetail() {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsShareDialogOpen(true)}
-              className="border-purple-500/30 hover:bg-purple-500/10"
-              data-testid="button-share-pulse"
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
+            {/* Hide share button for Musk-created pulses (userId === 3) */}
+            {pulse.userId !== 3 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsShareDialogOpen(true)}
+                className="border-purple-500/30 hover:bg-purple-500/10"
+                data-testid="button-share-pulse"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            )}
           </div>
 
           {/* Industry & Domain Tags */}

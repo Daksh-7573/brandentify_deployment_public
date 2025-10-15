@@ -324,14 +324,15 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         </Tooltip>
       </TooltipProvider>
       
-      {/* Share Button */}
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogTrigger asChild>
-          <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
-            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} strokeWidth={2} />
-            {formatCount(pulse.shareCount || 0)}
-          </button>
-        </DialogTrigger>
+      {/* Share Button - Hidden for Musk-created pulses (userId === 3) */}
+      {pulse.userId !== 3 && (
+        <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
+              <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} strokeWidth={2} />
+              {formatCount(pulse.shareCount || 0)}
+            </button>
+          </DialogTrigger>
         <DialogContent className="max-w-md bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
           <DialogHeader>
             <DialogTitle className="text-white">Share this pulse</DialogTitle>
@@ -369,6 +370,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           </div>
         </DialogContent>
       </Dialog>
+      )}
       
       {/* Comments Button */}
       <button 
