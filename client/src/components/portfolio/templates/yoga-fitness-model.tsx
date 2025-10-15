@@ -91,7 +91,7 @@ function LotusDecoration({ delay = 0 }: { delay?: number }) {
   );
 }
 
-// Traditional Yoga Parallax Background
+// Traditional Yoga Parallax Background - Warm Natural Palette
 function YogaParallaxBackground() {
   const { scrollY } = useScroll();
   
@@ -102,37 +102,37 @@ function YogaParallaxBackground() {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Layer 1: 7-Chakra rainbow gradient background - slowest */}
+      {/* Layer 1: Warm natural gradient background - slowest */}
       <motion.div 
         style={{ 
           y: layer1Y,
-          background: "linear-gradient(to bottom, #6B21A8 0%, #4C1D95 14%, #3730A3 28%, #0891B2 42%, #059669 56%, #CA8A04 70%, #EA580C 84%, #DC2626 100%)"
+          background: "linear-gradient(to bottom, #E5B4A4 0%, #D4A59A 15%, #C9A196 30%, #7FA8A3 50%, #88B5B0 65%, #F5A54A 80%, #E89B3C 90%, #1A453F 100%)"
         }}
         className="absolute inset-0"
       />
       
-      {/* Layer 2: Chakra symbols and orbs - medium speed */}
+      {/* Layer 2: Natural orbs and symbols - medium speed */}
       <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        {/* Chakra gradient orbs */}
-        <div className="absolute top-20 right-[15%] w-[500px] h-[500px] bg-purple-500/40 rounded-full blur-3xl" />
-        <div className="absolute top-[30%] left-[10%] w-[600px] h-[600px] bg-cyan-400/35 rounded-full blur-3xl" />
-        <div className="absolute top-[50%] right-[20%] w-[550px] h-[550px] bg-green-400/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-32 left-[15%] w-[580px] h-[580px] bg-orange-500/38 rounded-full blur-3xl" />
+        {/* Natural gradient orbs matching the image palette */}
+        <div className="absolute top-20 right-[15%] w-[500px] h-[500px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(229, 180, 164, 0.4)' }} />
+        <div className="absolute top-[30%] left-[10%] w-[600px] h-[600px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(127, 168, 163, 0.35)' }} />
+        <div className="absolute top-[50%] right-[20%] w-[550px] h-[550px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(245, 165, 74, 0.4)' }} />
+        <div className="absolute bottom-32 left-[15%] w-[580px] h-[580px] rounded-full blur-3xl" style={{ backgroundColor: 'rgba(26, 69, 63, 0.38)' }} />
         
-        {/* Chakra Symbols - 7 chakras */}
-        <ChakraSymbol color="border-purple-400" top="top-32" left="left-[12%]" delay={0} />
-        <ChakraSymbol color="border-indigo-400" top="top-[25%]" left="right-[18%]" delay={0.5} />
-        <ChakraSymbol color="border-cyan-400" top="top-[45%]" left="left-[15%]" delay={1} />
-        <ChakraSymbol color="border-green-400" top="top-[60%]" left="right-[12%]" delay={1.5} />
-        <ChakraSymbol color="border-yellow-400" top="bottom-[35%]" left="left-[20%]" delay={2} />
-        <ChakraSymbol color="border-orange-400" top="bottom-[20%]" left="right-[15%]" delay={2.5} />
-        <ChakraSymbol color="border-red-400" top="bottom-[10%]" left="left-[18%]" delay={3} />
+        {/* Chakra Symbols - Natural color palette */}
+        <ChakraSymbol color="border-[#E5B4A4]" top="top-32" left="left-[12%]" delay={0} />
+        <ChakraSymbol color="border-[#88B5B0]" top="top-[25%]" left="right-[18%]" delay={0.5} />
+        <ChakraSymbol color="border-[#7FA8A3]" top="top-[45%]" left="left-[15%]" delay={1} />
+        <ChakraSymbol color="border-[#F5A54A]" top="top-[60%]" left="right-[12%]" delay={1.5} />
+        <ChakraSymbol color="border-[#E89B3C]" top="bottom-[35%]" left="left-[20%]" delay={2} />
+        <ChakraSymbol color="border-[#1A453F]" top="bottom-[20%]" left="right-[15%]" delay={2.5} />
+        <ChakraSymbol color="border-[#D4A59A]" top="bottom-[10%]" left="left-[18%]" delay={3} />
         
-        {/* Lotus flowers */}
-        <div className="absolute top-[35%] right-[25%] w-32 h-32 text-pink-300/50">
+        {/* Lotus flowers with natural tones */}
+        <div className="absolute top-[35%] right-[25%] w-32 h-32" style={{ color: 'rgba(229, 180, 164, 0.5)' }}>
           <LotusDecoration delay={0} />
         </div>
-        <div className="absolute bottom-[40%] left-[22%] w-28 h-28 text-purple-300/50">
+        <div className="absolute bottom-[40%] left-[22%] w-28 h-28" style={{ color: 'rgba(127, 168, 163, 0.5)' }}>
           <LotusDecoration delay={1} />
         </div>
       </motion.div>
@@ -145,31 +145,31 @@ function YogaParallaxBackground() {
           transition={{ duration: 4, repeat: Infinity }}
           className="absolute top-[20%] left-[8%]"
         >
-          <Star className="w-8 h-8 text-yellow-300/60 fill-yellow-300/40" />
+          <Star className="w-8 h-8 fill-[#F5A54A]/40" style={{ color: 'rgba(245, 165, 74, 0.6)' }} />
         </motion.div>
         <motion.div
           animate={{ y: [20, -20, 20], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 5, repeat: Infinity, delay: 1 }}
           className="absolute top-[65%] right-[10%]"
         >
-          <Sparkles className="w-10 h-10 text-cyan-300/60" />
+          <Sparkles className="w-10 h-10" style={{ color: 'rgba(136, 181, 176, 0.6)' }} />
         </motion.div>
         <motion.div
           animate={{ y: [-15, 15, -15], opacity: [0.5, 0.8, 0.5] }}
           transition={{ duration: 4.5, repeat: Infinity, delay: 0.5 }}
           className="absolute bottom-[25%] left-[12%]"
         >
-          <Heart className="w-9 h-9 text-pink-300/60 fill-pink-300/40" />
+          <Heart className="w-9 h-9 fill-[#E5B4A4]/40" style={{ color: 'rgba(229, 180, 164, 0.6)' }} />
         </motion.div>
         
-        {/* Energy flow lines */}
-        <div className="absolute top-[30%] right-[8%] w-1 h-56 bg-gradient-to-b from-purple-400/50 via-pink-400/50 to-transparent" />
-        <div className="absolute bottom-[25%] left-[10%] w-1 h-48 bg-gradient-to-t from-orange-400/50 via-yellow-400/50 to-transparent" />
+        {/* Energy flow lines with natural colors */}
+        <div className="absolute top-[30%] right-[8%] w-1 h-56 bg-gradient-to-b from-[#7FA8A3]/50 via-[#88B5B0]/50 to-transparent" />
+        <div className="absolute bottom-[25%] left-[10%] w-1 h-48 bg-gradient-to-t from-[#F5A54A]/50 via-[#E89B3C]/50 to-transparent" />
         
-        {/* Mandala circles */}
+        {/* Mandala circles with sage teal */}
         <div className="absolute top-[40%] left-[5%] w-20 h-20">
-          <div className="w-full h-full rounded-full border-2 border-cyan-400/40 animate-spin" style={{ animationDuration: "20s" }}>
-            <div className="absolute inset-3 rounded-full border border-cyan-400/30" />
+          <div className="w-full h-full rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(127, 168, 163, 0.4)', animationDuration: "20s" }}>
+            <div className="absolute inset-3 rounded-full border" style={{ borderColor: 'rgba(127, 168, 163, 0.3)' }} />
           </div>
         </div>
       </motion.div>
@@ -276,7 +276,7 @@ export default function YogaFitnessModel({
   };
 
   return (
-    <div className="relative min-h-screen bg-purple-950 text-white font-sans">
+    <div className="relative min-h-screen text-white font-sans" style={{ backgroundColor: '#1A453F' }}>
       <YogaParallaxBackground />
 
       {/* Hero Section */}
@@ -298,7 +298,7 @@ export default function YogaFitnessModel({
                 transition={{ duration: 1, delay: 0.2 }}
                 className="absolute -inset-6 rounded-full"
                 style={{
-                  background: "conic-gradient(from 0deg, violet, indigo, cyan, green, yellow, orange, red, violet)"
+                  background: "conic-gradient(from 0deg, #E5B4A4, #7FA8A3, #F5A54A, #88B5B0, #E89B3C, #D4A59A, #1A453F, #E5B4A4)"
                 }}
               />
               <ProfileImage
@@ -314,17 +314,22 @@ export default function YogaFitnessModel({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full backdrop-blur-sm border border-purple-300/20"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full backdrop-blur-sm border"
+              style={{ 
+                background: 'linear-gradient(to right, rgba(127, 168, 163, 0.3), rgba(229, 180, 164, 0.3))',
+                borderColor: 'rgba(127, 168, 163, 0.3)'
+              }}
             >
-              <Circle className="w-3 h-3 text-purple-300 fill-purple-300 animate-pulse" />
-              <span className="text-purple-100 font-medium">Namaste</span>
+              <Circle className="w-3 h-3 animate-pulse" style={{ color: '#88B5B0', fill: '#88B5B0' }} />
+              <span className="font-medium" style={{ color: '#E5B4A4' }}>Namaste</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-orange-200"
+              className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text"
+              style={{ backgroundImage: 'linear-gradient(to right, #E5B4A4, #F5A54A, #88B5B0)' }}
             >
               {userInfo.name}
             </motion.h1>
@@ -334,7 +339,8 @@ export default function YogaFitnessModel({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="text-3xl md:text-4xl text-purple-200 font-light"
+                className="text-3xl md:text-4xl font-light"
+                style={{ color: '#D4A59A' }}
               >
                 {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
               </motion.p>
@@ -345,7 +351,8 @@ export default function YogaFitnessModel({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="text-xl md:text-2xl text-purple-100 max-w-3xl mx-auto italic"
+                className="text-xl md:text-2xl max-w-3xl mx-auto italic"
+                style={{ color: '#E5B4A4' }}
               >
                 "{userInfo.tagline}"
               </motion.p>
@@ -386,7 +393,11 @@ export default function YogaFitnessModel({
           >
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-10 py-6 rounded-full shadow-xl shadow-purple-500/30"
+              className="text-white font-semibold px-10 py-6 rounded-full shadow-xl"
+              style={{
+                background: 'linear-gradient(to right, #F5A54A, #E89B3C)',
+                boxShadow: '0 20px 25px -5px rgba(245, 165, 74, 0.3)'
+              }}
               data-testid="button-connect"
             >
               <Mail className="w-5 h-5 mr-2" />
@@ -395,7 +406,11 @@ export default function YogaFitnessModel({
             <Button 
               size="lg"
               variant="outline"
-              className="border-2 border-purple-300 text-purple-100 hover:bg-purple-500/20 font-semibold px-10 py-6 rounded-full backdrop-blur-sm"
+              className="border-2 font-semibold px-10 py-6 rounded-full backdrop-blur-sm"
+              style={{
+                borderColor: '#7FA8A3',
+                color: '#E5B4A4'
+              }}
               data-testid="button-mentor"
             >
               <Users className="w-5 h-5 mr-2" />
@@ -415,14 +430,14 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #D4A59A)' }}>
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-purple-100">My Journey</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#E5B4A4' }}>My Journey</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 border-purple-300/20 shadow-2xl">
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(229, 180, 164, 0.2)' }}>
               <CardContent className="p-8">
-                <p className="text-lg text-purple-50 leading-relaxed">{userInfo.aboutMe}</p>
+                <p className="text-lg leading-relaxed" style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{userInfo.aboutMe}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -436,14 +451,14 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-400 to-green-400 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #7FA8A3, #88B5B0)' }}>
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-cyan-100">Vision</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#88B5B0' }}>Vision</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 border-cyan-300/20 shadow-2xl">
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(127, 168, 163, 0.2)' }}>
               <CardContent className="p-8">
-                <p className="text-lg text-cyan-50 leading-relaxed italic">{userInfo.visionStatement}</p>
+                <p className="text-lg leading-relaxed italic" style={{ color: 'rgba(136, 181, 176, 0.9)' }}>{userInfo.visionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -457,14 +472,14 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-yellow-400 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #F5A54A, #E89B3C)' }}>
                 <Star className="w-8 h-8 text-white fill-white" />
               </div>
-              <h2 className="text-4xl font-bold text-green-100">Mission</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#F5A54A' }}>Mission</h2>
             </div>
-            <Card className="bg-white/10 backdrop-blur-md border-2 border-green-300/20 shadow-2xl">
+            <Card className="bg-white/10 backdrop-blur-md border-2 shadow-2xl" style={{ borderColor: 'rgba(245, 165, 74, 0.2)' }}>
               <CardContent className="p-8">
-                <p className="text-lg text-green-50 leading-relaxed">{userInfo.missionStatement}</p>
+                <p className="text-lg leading-relaxed" style={{ color: 'rgba(245, 165, 74, 0.9)' }}>{userInfo.missionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
@@ -478,10 +493,10 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E89B3C, #D4A59A)' }}>
                 <Briefcase className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-yellow-100">Experience</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#E89B3C' }}>Experience</h2>
             </div>
             
             <div className="space-y-6">
@@ -493,23 +508,23 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 border-yellow-300/20 shadow-xl hover:shadow-2xl transition-shadow">
+                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-xl hover:shadow-2xl transition-shadow" style={{ borderColor: 'rgba(232, 155, 60, 0.2)' }}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-yellow-100">{exp.title}</h3>
-                          <p className="text-lg text-yellow-200 font-medium">{exp.company}</p>
+                          <h3 className="text-2xl font-bold" style={{ color: '#E89B3C' }}>{exp.title}</h3>
+                          <p className="text-lg font-medium" style={{ color: '#D4A59A' }}>{exp.company}</p>
                         </div>
-                        <Badge className="bg-yellow-500/30 text-yellow-100 border-yellow-300/30">
+                        <Badge style={{ background: 'rgba(232, 155, 60, 0.3)', color: '#E89B3C', borderColor: 'rgba(232, 155, 60, 0.3)' }}>
                           {exp.startDate && new Date(exp.startDate).getFullYear()}
                         </Badge>
                       </div>
                       
                       {exp.description && (
-                        <p className="text-purple-100 leading-relaxed">{exp.description}</p>
+                        <p className="leading-relaxed" style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{exp.description}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm text-yellow-200">
+                      <div className="flex items-center gap-2 text-sm" style={{ color: '#D4A59A' }}>
                         <MapPin className="w-4 h-4" />
                         <span>{exp.location || 'Remote'}</span>
                       </div>
@@ -529,10 +544,10 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-red-400 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #1A453F, #7FA8A3)' }}>
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-orange-100">Education</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#7FA8A3' }}>Education</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -544,21 +559,21 @@ export default function YogaFitnessModel({
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                 >
-                  <Card className="bg-white/10 backdrop-blur-md border-2 border-orange-300/20 shadow-lg hover:shadow-xl transition-shadow h-full">
+                  <Card className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-shadow h-full" style={{ borderColor: 'rgba(127, 168, 163, 0.2)' }}>
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-orange-100">{edu.degree}</h3>
-                          <p className="text-orange-200 font-medium">{edu.institution}</p>
+                          <h3 className="text-xl font-bold" style={{ color: '#88B5B0' }}>{edu.degree}</h3>
+                          <p className="font-medium" style={{ color: '#7FA8A3' }}>{edu.institution}</p>
                         </div>
-                        <GraduationCap className="w-8 h-8 text-orange-400" />
+                        <GraduationCap className="w-8 h-8" style={{ color: '#7FA8A3' }} />
                       </div>
                       
                       {edu.fieldOfStudy && (
-                        <p className="text-purple-100">{edu.fieldOfStudy}</p>
+                        <p style={{ color: 'rgba(229, 180, 164, 0.9)' }}>{edu.fieldOfStudy}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm text-orange-200">
+                      <div className="flex items-center gap-2 text-sm" style={{ color: '#88B5B0' }}>
                         <Calendar className="w-4 h-4" />
                         <span>
                           {edu.startDate && new Date(edu.startDate).getFullYear()}
@@ -581,10 +596,10 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #E5B4A4, #F5A54A)' }}>
                 <Award className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-pink-100">Skills</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#E5B4A4' }}>Skills</h2>
             </div>
             
             <div className="flex flex-wrap gap-3">
@@ -597,7 +612,11 @@ export default function YogaFitnessModel({
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Badge className="px-5 py-2 text-base bg-gradient-to-r from-pink-500/30 to-purple-500/30 text-pink-100 hover:from-pink-500/40 hover:to-purple-500/40 border border-pink-300/20 backdrop-blur-sm">
+                  <Badge className="px-5 py-2 text-base backdrop-blur-sm border" style={{
+                    background: 'linear-gradient(to right, rgba(229, 180, 164, 0.3), rgba(245, 165, 74, 0.3))',
+                    color: '#E5B4A4',
+                    borderColor: 'rgba(229, 180, 164, 0.2)'
+                  }}>
                     {skill.name}
                   </Badge>
                 </motion.div>
@@ -614,10 +633,10 @@ export default function YogaFitnessModel({
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-full" style={{ background: 'linear-gradient(to bottom right, #88B5B0, #1A453F)' }}>
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-cyan-100">Projects</h2>
+              <h2 className="text-4xl font-bold" style={{ color: '#88B5B0' }}>Projects</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -630,7 +649,8 @@ export default function YogaFitnessModel({
                   transition={{ delay: idx * 0.1 }}
                 >
                   <Card 
-                    className="bg-white/10 backdrop-blur-md border-2 border-cyan-300/20 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
+                    className="bg-white/10 backdrop-blur-md border-2 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
+                    style={{ borderColor: 'rgba(136, 181, 176, 0.2)' }}
                     onClick={() => openProjectModal(project)}
                   >
                     <CardContent className="p-0">
@@ -641,12 +661,12 @@ export default function YogaFitnessModel({
                             alt={project.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(to top, rgba(26, 69, 63, 0.6), transparent)' }} />
                         </div>
                       )}
                       
                       <div className="p-6 space-y-3">
-                        <h3 className="text-xl font-bold text-cyan-100 group-hover:text-cyan-200 transition-colors">
+                        <h3 className="text-xl font-bold transition-colors" style={{ color: '#88B5B0' }}>
                           {project.title}
                         </h3>
                         
