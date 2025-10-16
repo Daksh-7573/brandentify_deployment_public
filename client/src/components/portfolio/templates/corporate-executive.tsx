@@ -12,7 +12,8 @@ import {
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
-  ExternalLink, Play, Image, Info, Link, Eye, Tag
+  ExternalLink, Play, Image, Info, Link, Eye, Tag, Lightbulb, Heart,
+  Sparkles, Users
 } from "lucide-react";
 
 // Extended Project interface with mediaUrls property
