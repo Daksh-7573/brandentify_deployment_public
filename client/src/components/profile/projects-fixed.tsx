@@ -35,6 +35,7 @@ const ProjectsFixed = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
@@ -217,6 +218,62 @@ const ProjectsFixed = () => {
     }
   });
 
+  // Update mutation for editing existing projects
+  const updateProjectMutation = useMutation({
+    mutationFn: async ({ id, projectData }: { id: number; projectData: any }) => {
+      console.log(`Updating project ${id} with data:`, projectData);
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        
+        let errorMessage = "Failed to update your project. Please try again.";
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (e) {
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "Your project showcase has been updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
+      setIsAddModalOpen(false);
+      setEditingProjectId(null); // Clear editing state
+      projectForm.reset();
+      setTeamMembers([]);
+      setUploadedImages([]);
+      setCurrentTeamMember({ role: '', linkedin: '' });
+    },
+    onError: (error: any) => {
+      console.error('Error updating project:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update your project. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const deleteProjectMutation = useMutation({
     mutationFn: async (projectId: number) => {
       const response = await fetch(`/api/projects/${projectId}`, {
@@ -339,12 +396,19 @@ const ProjectsFixed = () => {
       console.log('Team members:', teamMembers);
       console.log('Uploaded images:', uploadedImages);
 
-      // Submit the project data to backend
-      const createdProject = await createProjectMutation.mutateAsync(projectData);
+      // Submit the project data to backend - use update if editing, create if new
+      let savedProject;
+      if (editingProjectId) {
+        console.log(`Updating existing project ${editingProjectId}`);
+        savedProject = await updateProjectMutation.mutateAsync({ id: editingProjectId, projectData });
+      } else {
+        console.log('Creating new project');
+        savedProject = await createProjectMutation.mutateAsync(projectData);
+      }
       
-      // If project was created successfully and we have team members or client info, save them separately
-      if (createdProject && createdProject.id) {
-        const projectId = createdProject.id;
+      // If project was saved successfully and we have team members or client info, save them separately
+      if (savedProject && (savedProject.id || editingProjectId)) {
+        const projectId = savedProject.id || editingProjectId;
         
         // Save team members to project_collaborators table
         if (teamMembers.length > 0) {
@@ -507,10 +571,20 @@ const ProjectsFixed = () => {
       )}
 
       {/* Add Project Modal */}
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+      <Dialog open={isAddModalOpen} onOpenChange={(open) => {
+        setIsAddModalOpen(open);
+        if (!open) {
+          setEditingProjectId(null); // Clear editing state when closing
+          projectForm.reset();
+          setTeamMembers([]);
+          setUploadedImages([]);
+        }
+      }}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
+            <DialogTitle className="text-white text-xl font-semibold">
+              {editingProjectId ? 'Edit Showcase' : 'Add Showcase'}
+            </DialogTitle>
           </DialogHeader>
           
           <div className="max-h-[70vh] overflow-y-auto pr-2" style={{
@@ -961,6 +1035,9 @@ const ProjectsFixed = () => {
                       setIsViewModalOpen(false);
                       // Wait for view modal to close, then open edit modal
                       setTimeout(() => {
+                        // Set editing mode with project ID
+                        setEditingProjectId(selectedProject.id);
+                        
                         // Pre-fill the form with existing project data
                         projectForm.reset({
                           title: selectedProject.title,
