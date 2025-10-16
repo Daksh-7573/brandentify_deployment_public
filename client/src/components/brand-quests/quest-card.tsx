@@ -330,7 +330,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType}</span>
               </div>
             )}
-            {(questDefinition as any)?.platformConstraints && (
+            {/* Only show Platform for social quests (not career quests) */}
+            {(questDefinition as any)?.platformConstraints && questDefinition.type !== 'pulse_creation' && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">📱 Platform:</span>
                 <span>{(questDefinition as any).platformConstraints}</span>
