@@ -4,6 +4,7 @@ export interface UserData {
   username: string;
   name: string | null;
   brandName?: string | null;
+  randomProfileLink?: string | null;
   email: string;
   photoURL: string | null;
   title: string | null;

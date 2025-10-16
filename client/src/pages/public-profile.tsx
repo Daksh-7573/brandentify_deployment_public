@@ -42,6 +42,7 @@ interface UserData {
   coreValues?: string[] | null;
   uniqueValueProposition?: string | null;
   brandName?: string | null;
+  randomProfileLink?: string | null;
   primaryAudience?: string[] | null;
   secondaryAudience?: string[] | null;
 }

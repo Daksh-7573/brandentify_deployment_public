@@ -143,6 +143,7 @@ interface NearbyUser {
   id: number;
   name: string | null;
   username: string;
+  randomProfileLink?: string | null;
   photoURL: string | null;
   title: string | null;
   company: string | null;
