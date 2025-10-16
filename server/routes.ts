@@ -3658,10 +3658,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add team member by profile URL - sends approval request
   apiRouter.post("/projects/:projectId/team-members/request", async (req: Request, res: Response) => {
     try {
+      console.log('[TEAM MEMBER REQUEST] Route hit:', { projectId: req.params.projectId, body: req.body, session: (req.session as any)?.userId, user: req.user?.id });
       const projectId = parseInt(req.params.projectId);
       const { profileUrl } = req.body;
       const requestingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
+      console.log('[TEAM MEMBER REQUEST] Auth check:', { requestingUserId });
       if (!requestingUserId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -3721,12 +3723,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const collaborator = await storage.createProjectCollaborator(collaboratorData);
+      console.log('[TEAM MEMBER REQUEST] Collaborator created:', collaborator);
       
       // Create notification for the target user (project already fetched above)
       const projectOwner = await storage.getUser(project.userId);
+      console.log('[TEAM MEMBER REQUEST] Creating notification for userId:', targetUser.id);
       
       const { createNotification } = await import('./services/notification-service');
-      await createNotification({
+      const notification = await createNotification({
         userId: targetUser.id,
         type: 'info' as const,
         category: 'team_member_request' as const,
@@ -3736,6 +3740,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actionUrl: `/api/projects/collaborators/${collaborator.id}`,
         isRead: false
       });
+      console.log('[TEAM MEMBER REQUEST] Notification created:', notification);
       
       res.status(201).json({ 
         message: "Team member request sent",
@@ -3750,10 +3755,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add client by profile URL - sends approval request
   apiRouter.post("/projects/:projectId/clients/request", async (req: Request, res: Response) => {
     try {
+      console.log('[CLIENT REQUEST] Route hit:', { projectId: req.params.projectId, body: req.body, session: (req.session as any)?.userId, user: req.user?.id });
       const projectId = parseInt(req.params.projectId);
       const { profileUrl } = req.body;
       const requestingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
+      console.log('[CLIENT REQUEST] Auth check:', { requestingUserId });
       if (!requestingUserId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -3814,12 +3821,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const endorsement = await storage.createProjectEndorsement(endorsementData);
+      console.log('[CLIENT REQUEST] Endorsement created:', endorsement);
       
       // Create notification for the target user (project already fetched above)
       const projectOwner = await storage.getUser(project.userId);
+      console.log('[CLIENT REQUEST] Creating notification for userId:', targetUser.id);
       
       const { createNotification } = await import('./services/notification-service');
-      await createNotification({
+      const notification = await createNotification({
         userId: targetUser.id,
         type: 'info' as const,
         category: 'client_request' as const,
@@ -3829,6 +3838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actionUrl: `/api/projects/endorsements/${endorsement.id}`,
         isRead: false
       });
+      console.log('[CLIENT REQUEST] Notification created:', notification);
       
       res.status(201).json({ 
         message: "Client request sent",
