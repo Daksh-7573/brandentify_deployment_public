@@ -65,9 +65,8 @@ interface MediaErrors {
 
 interface TeamMember {
   id: number;
-  name: string;
   role: string;
-  linkedin: string;
+  brandentifier: string;
 }
 
 export default function ProjectForm({ 
@@ -92,7 +91,7 @@ export default function ProjectForm({
   
   // Team & Client state
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [currentTeamMember, setCurrentTeamMember] = useState({ name: '', role: '', linkedin: '' });
+  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', brandentifier: '' });
   const [teamMemberUrl, setTeamMemberUrl] = useState<string>('');
   const [clientUrl, setClientUrl] = useState<string>('');
   const [isAddingTeamMember, setIsAddingTeamMember] = useState<boolean>(false);
@@ -383,9 +382,9 @@ export default function ProjectForm({
                 },
                 body: JSON.stringify({
                   projectId: projectData.id,
-                  name: member.name || 'Collaborator',
+                  name: member.role || 'Team Member',
                   role: member.role || '',
-                  profileLink: member.linkedin || null,
+                  profileLink: member.brandentifier || null,
                 }),
               });
             } catch (error) {
@@ -423,7 +422,7 @@ export default function ProjectForm({
       setMediaErrors(null);
       setFeaturedImageIndex(0);
       setTeamMembers([]);
-      setCurrentTeamMember({ name: '', role: '', linkedin: '' });
+      setCurrentTeamMember({ role: '', brandentifier: '' });
       
       // Reset all file input elements
       if (videoInputRef.current) {
@@ -487,9 +486,9 @@ export default function ProjectForm({
   
   // Team member management functions
   const addTeamMember = () => {
-    if (teamMembers.length < 5 && (currentTeamMember.name || currentTeamMember.role || currentTeamMember.linkedin)) {
+    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.brandentifier)) {
       setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
-      setCurrentTeamMember({ name: '', role: '', linkedin: '' });
+      setCurrentTeamMember({ role: '', brandentifier: '' });
     }
   };
 
@@ -513,9 +512,8 @@ export default function ProjectForm({
             // Map API collaborators to local TeamMember format
             const mappedMembers = collaborators.map((collab: any) => ({
               id: collab.id,
-              name: collab.name || '',
               role: collab.role || '',
-              linkedin: collab.profileLink || '',
+              brandentifier: collab.profileLink || '',
             }));
             setTeamMembers(mappedMembers);
           }
@@ -611,20 +609,26 @@ export default function ProjectForm({
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className={cn(
-          "grid w-full grid-cols-3",
+          "grid w-full grid-cols-4",
           useDarkMode ? "bg-[rgba(30,30,30,0.7)] text-white border-white/10" : ""
         )}>
           <TabsTrigger 
             value="details" 
             className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
           >
-            Project Details
+            Details
           </TabsTrigger>
           <TabsTrigger 
-            value="media"
+            value="images"
             className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
           >
-            Media & Attachments
+            Images
+          </TabsTrigger>
+          <TabsTrigger 
+            value="videos"
+            className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+          >
+            Videos
           </TabsTrigger>
           <TabsTrigger 
             value="team"
@@ -771,7 +775,7 @@ export default function ProjectForm({
               </div>
             </TabsContent>
             
-            <TabsContent value="media" className="space-y-6">
+            <TabsContent value="images" className="space-y-6">
               {/* Project Images Section */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -937,7 +941,9 @@ export default function ProjectForm({
                   )}
                 </div>
               </div>
-              
+            </TabsContent>
+            
+            <TabsContent value="videos" className="space-y-6">
               {/* Project Video Section */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -1017,16 +1023,11 @@ export default function ProjectForm({
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
                         <div className={cn("font-medium", useDarkMode ? "text-white/90" : "text-gray-900")}>
-                          {member.name || 'Team Member'}
+                          {member.role || 'Team Member'}
                         </div>
-                        {member.role && (
-                          <div className={cn("text-sm", useDarkMode ? "text-white/60" : "text-gray-500")}>
-                            {member.role}
-                          </div>
-                        )}
-                        {member.linkedin && (
+                        {member.brandentifier && (
                           <div className={cn("text-sm break-all", useDarkMode ? "text-white/70" : "text-gray-600")}>
-                            {member.linkedin}
+                            {member.brandentifier}
                           </div>
                         )}
                       </div>
@@ -1052,18 +1053,6 @@ export default function ProjectForm({
                   )}>
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Name</label>
-                        <Input
-                          value={currentTeamMember.name}
-                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, name: e.target.value})}
-                          placeholder="e.g., John Doe"
-                          className={cn(
-                            className,
-                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                          )}
-                        />
-                      </div>
-                      <div className="space-y-2">
                         <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Role</label>
                         <Input
                           value={currentTeamMember.role}
@@ -1076,11 +1065,11 @@ export default function ProjectForm({
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>LinkedIn/Portfolio</label>
+                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Brandentifier Profile</label>
                         <Input
-                          value={currentTeamMember.linkedin}
-                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, linkedin: e.target.value})}
-                          placeholder="https://linkedin.com/in/username"
+                          value={currentTeamMember.brandentifier}
+                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, brandentifier: e.target.value})}
+                          placeholder="https://brandentifier.replit.app/profile/username"
                           className={cn(
                             className,
                             useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
@@ -1092,7 +1081,7 @@ export default function ProjectForm({
                     <Button 
                       type="button"
                       onClick={addTeamMember}
-                      disabled={!currentTeamMember.name && !currentTeamMember.role && !currentTeamMember.linkedin}
+                      disabled={!currentTeamMember.role && !currentTeamMember.brandentifier}
                       className={cn(
                         "w-full text-sm flex items-center justify-center gap-2",
                         useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90 disabled:opacity-50 disabled:cursor-not-allowed" : "disabled:opacity-50 disabled:cursor-not-allowed"
