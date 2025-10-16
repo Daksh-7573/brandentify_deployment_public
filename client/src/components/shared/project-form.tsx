@@ -949,46 +949,89 @@ export default function ProjectForm({
                 <div className="flex items-center gap-2">
                   <Building2 className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "text-purple-600")} />
                   <h3 className={cn("text-lg font-semibold", useDarkMode ? "text-white" : "text-gray-900")}>
-                    Add Clients
+                    Client Information
                   </h3>
                 </div>
-                <p className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-gray-600")}>
-                  Enter the profile URL of the client you worked with on this project. They will receive a notification to approve their involvement.
-                </p>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="e.g., /portfolio/username or /u/username" 
-                    value={clientUrl}
-                    onChange={(e) => setClientUrl(e.target.value)}
-                    className={cn(
-                      className,
-                      useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                    )}
-                    data-testid="input-client-url"
-                  />
-                  <Button 
-                    type="button"
-                    onClick={handleAddClient}
-                    disabled={isAddingClient || !clientUrl.trim()}
-                    className={useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
-                    data-testid="button-add-client"
-                  >
-                    {isAddingClient ? "Sending..." : "Send Request"}
-                  </Button>
+                
+                <div className="space-y-4">
+                  {/* Client Name */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Name*</Label>
+                    <Input
+                      placeholder="John Smith"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+
+                  {/* Client Email */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Email</Label>
+                    <Input
+                      type="email"
+                      placeholder="client@company.com"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+
+                  {/* Client Title */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Title</Label>
+                    <Input
+                      placeholder="CEO, Product Manager, etc."
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+
+                  {/* Client Company */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Company*</Label>
+                    <Input
+                      placeholder="Company Name"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+
+                  {/* Client Message/Testimonial */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Testimonial</Label>
+                    <Textarea
+                      placeholder="What did your client say about this project?"
+                      className={cn(
+                        "min-h-[100px]",
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+
+                  {/* Client Profile Link */}
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Profile Link</Label>
+                    <Input
+                      placeholder="https://brandentifier.replit.app/profile/username"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                    <p className={cn("text-xs", useDarkMode ? "text-white/60" : "text-gray-500")}>
+                      Add Brandentifier profile link of your client
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className={cn(
-                "p-4 rounded-md text-sm",
-                useDarkMode ? "bg-[rgba(30,30,30,0.7)] border border-white/10 text-gray-300" : "bg-blue-50 text-blue-900"
-              )}>
-                <p className="font-medium mb-1">How it works:</p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Enter a user's profile URL to send them a request</li>
-                  <li>They'll receive a notification with approve/cancel options</li>
-                  <li>Once approved, they'll appear on your project as a team member or client</li>
-                </ul>
-              </div>
             </TabsContent>
             
             <div className="flex justify-end gap-2">
