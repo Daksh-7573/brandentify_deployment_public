@@ -442,10 +442,12 @@ const ProjectsFixed = () => {
               },
               body: JSON.stringify({
                 projectId: projectId,
-                endorserName: values.clientName || 'Client',
-                endorserTitle: values.clientTitle || '',
-                endorserCompany: values.clientCompany,
-                endorsementText: values.clientMessage || '',
+                clientName: values.clientName || 'Client',
+                clientEmail: values.clientEmail || null,
+                clientTitle: values.clientTitle || '',
+                clientCompany: values.clientCompany,
+                message: values.clientMessage || '',
+                profileLink: values.clientProfileLink || null,
               }),
             });
           } catch (error) {
@@ -870,10 +872,62 @@ const ProjectsFixed = () => {
                         Client Information
                       </label>
                       
-                      {/* Client Link */}
+                      {/* Client Name */}
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Name*</label>
+                        <input
+                          {...form.register("clientName")}
+                          placeholder="John Smith"
+                          className="neo-glass-input"
+                        />
+                      </div>
+
+                      {/* Client Email */}
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Email</label>
+                        <input
+                          {...form.register("clientEmail")}
+                          type="email"
+                          placeholder="client@company.com"
+                          className="neo-glass-input"
+                        />
+                      </div>
+
+                      {/* Client Title */}
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Title</label>
+                        <input
+                          {...form.register("clientTitle")}
+                          placeholder="CEO, Product Manager, etc."
+                          className="neo-glass-input"
+                        />
+                      </div>
+
+                      {/* Client Company */}
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Company*</label>
+                        <input
+                          {...form.register("clientCompany")}
+                          placeholder="Company Name"
+                          className="neo-glass-input"
+                        />
+                      </div>
+
+                      {/* Client Message/Testimonial */}
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Testimonial</label>
+                        <textarea
+                          {...form.register("clientMessage")}
+                          placeholder="What did your client say about this project?"
+                          className="neo-glass-input min-h-[100px]"
+                        />
+                      </div>
+
+                      {/* Client Profile Link */}
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Profile Link</label>
                         <input
+                          {...form.register("clientProfileLink")}
                           placeholder="https://brandentifier.replit.app/profile/username"
                           className="neo-glass-input"
                         />
