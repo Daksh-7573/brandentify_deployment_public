@@ -609,7 +609,7 @@ export default function ProjectForm({
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className={cn(
-          "grid w-full grid-cols-4",
+          "grid w-full grid-cols-3",
           useDarkMode ? "bg-[rgba(30,30,30,0.7)] text-white border-white/10" : ""
         )}>
           <TabsTrigger 
@@ -619,16 +619,10 @@ export default function ProjectForm({
             Details
           </TabsTrigger>
           <TabsTrigger 
-            value="images"
+            value="media"
             className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
           >
-            Images
-          </TabsTrigger>
-          <TabsTrigger 
-            value="videos"
-            className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
-          >
-            Videos
+            Media
           </TabsTrigger>
           <TabsTrigger 
             value="team"
@@ -775,225 +769,247 @@ export default function ProjectForm({
               </div>
             </TabsContent>
             
-            <TabsContent value="images" className="space-y-6">
-              {/* Project Images Section */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Images</Label>
-                  <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Max 10 images</div>
-                </div>
-                
-                {/* Information about thumbnails */}
-                <div className={cn(
-                  "p-3 rounded-md text-sm space-y-1",
-                  useDarkMode ? "bg-[rgba(30,30,30,0.7)] border border-white/10" : "bg-muted/50"
+            <TabsContent value="media" className="space-y-6">
+              <Tabs defaultValue="images" className="w-full">
+                <TabsList className={cn(
+                  "grid w-full grid-cols-2",
+                  useDarkMode ? "bg-[rgba(30,30,30,0.7)] text-white border-white/10" : ""
                 )}>
-                  <p className={cn("font-medium", useDarkMode ? "text-white" : "")}>About Thumbnails:</p>
-                  <p className={useDarkMode ? "text-gray-300" : "text-muted-foreground"}>
-                    Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
-                  </p>
-                </div>
+                  <TabsTrigger 
+                    value="images"
+                    className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+                  >
+                    Images
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="videos"
+                    className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+                  >
+                    Videos
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="images" className="space-y-6 mt-6">
+                  {/* Project Images Section */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Images</Label>
+                      <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Max 10 images</div>
+                    </div>
+                    
+                    {/* Information about thumbnails */}
+                    <div className={cn(
+                      "p-3 rounded-md text-sm space-y-1",
+                      useDarkMode ? "bg-[rgba(30,30,30,0.7)] border border-white/10" : "bg-muted/50"
+                    )}>
+                      <p className={cn("font-medium", useDarkMode ? "text-white" : "")}>About Thumbnails:</p>
+                      <p className={useDarkMode ? "text-gray-300" : "text-muted-foreground"}>
+                        Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
+                      </p>
+                    </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <Input
-                      ref={multipleImagesInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImagesSelected}
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
-                      )}
-                    />
-                    {mediaErrors?.images && (
-                      <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.images}</p>
-                    )}
-                  </div>
-                  
-                  {/* Selected images preview */}
-                  {projectImages.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>New Images</div>
-                        {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
-                          <div className={cn(
-                            "ml-2 text-xs px-2 py-0.5 rounded-full",
-                            useDarkMode ? "bg-[#1DB954]/20 text-[#1DB954]" : "bg-primary/10 text-primary"
-                          )}>
-                            Thumbnail selected from new images
-                          </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          ref={multipleImagesInputRef}
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImagesSelected}
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
+                          )}
+                        />
+                        {mediaErrors?.images && (
+                          <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.images}</p>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {projectImages.map((file, index) => (
-                          <div key={`new-${index}`} className="relative group">
-                            <div className={cn(
-                              "border rounded-md overflow-hidden aspect-square",
-                              featuredImageIndex === index 
-                                ? useDarkMode ? "ring-2 ring-[#1DB954] border-[#1DB954]/40" : "ring-2 ring-primary" 
-                                : useDarkMode ? "border-white/20" : "",
-                            )}>
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt={`Preview ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                              <Button
-                                type="button"
-                                variant={useDarkMode ? "outline" : "destructive"}
-                                size="icon"
-                                className={cn(
-                                  "h-8 w-8",
-                                  useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""
-                                )}
-                                onClick={() => removeProjectImage(index)}
-                                title="Remove image"
-                              >
-                                ✕
-                              </Button>
-                              <Button
-                                type="button"
-                                variant={featuredImageIndex === index ? "default" : "secondary"}
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => handleSelectFeaturedImage(index)}
-                                title="Set as thumbnail"
-                              >
-                                ★
-                              </Button>
-                            </div>
-                            {featuredImageIndex === index && (
-                              <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
-                                ★
+                      
+                      {/* Selected images preview */}
+                      {projectImages.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center">
+                            <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>New Images</div>
+                            {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
+                              <div className={cn(
+                                "ml-2 text-xs px-2 py-0.5 rounded-full",
+                                useDarkMode ? "bg-[#1DB954]/20 text-[#1DB954]" : "bg-primary/10 text-primary"
+                              )}>
+                                Thumbnail selected from new images
                               </div>
                             )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Existing images preview */}
-                  {existingMedia.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="text-sm font-medium">Existing Media</div>
-                        {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
-                          <div className="ml-2 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
-                            Thumbnail selected from existing images
-                          </div>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {existingMedia.map((url, index) => {
-                          // Calculate the effective index for existing images by adding 1000
-                          // This ensures existing media indices don't conflict with new uploads
-                          const existingMediaIndex = index + 1000;
-                          const isExistingFeatured = featuredImageIndex === existingMediaIndex;
-                          
-                          return (
-                            <div key={`existing-${index}`} className="relative group">
-                              {url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ? (
-                                <div className="border rounded-md overflow-hidden aspect-square flex items-center justify-center bg-muted">
-                                  <Video className="h-8 w-8 opacity-50" />
-                                </div>
-                              ) : (
-                                <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-primary' : ''}`}>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {projectImages.map((file, index) => (
+                              <div key={`new-${index}`} className="relative group">
+                                <div className={cn(
+                                  "border rounded-md overflow-hidden aspect-square",
+                                  featuredImageIndex === index 
+                                    ? useDarkMode ? "ring-2 ring-[#1DB954] border-[#1DB954]/40" : "ring-2 ring-primary" 
+                                    : useDarkMode ? "border-white/20" : "",
+                                )}>
                                   <img
-                                    src={url}
-                                    alt={`Media ${index + 1}`}
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Preview ${index + 1}`}
                                     className="w-full h-full object-cover"
                                   />
                                 </div>
-                              )}
-                              
-                              {/* Only show controls for images (not videos) */}
-                              {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
-                                <>
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                    <Button
-                                      type="button"
-                                      variant={isExistingFeatured ? "default" : "secondary"}
-                                      size="icon"
-                                      className="h-8 w-8"
-                                      onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
-                                      title="Set as thumbnail"
-                                    >
-                                      ★
-                                    </Button>
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                                  <Button
+                                    type="button"
+                                    variant={useDarkMode ? "outline" : "destructive"}
+                                    size="icon"
+                                    className={cn(
+                                      "h-8 w-8",
+                                      useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""
+                                    )}
+                                    onClick={() => removeProjectImage(index)}
+                                    title="Remove image"
+                                  >
+                                    ✕
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={featuredImageIndex === index ? "default" : "secondary"}
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => handleSelectFeaturedImage(index)}
+                                    title="Set as thumbnail"
+                                  >
+                                    ★
+                                  </Button>
+                                </div>
+                                {featuredImageIndex === index && (
+                                  <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
+                                    ★
                                   </div>
-                                  {isExistingFeatured && (
-                                    <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
-                                      ★
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Existing images preview */}
+                      {existingMedia.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center">
+                            <div className="text-sm font-medium">Existing Media</div>
+                            {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
+                              <div className="ml-2 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                                Thumbnail selected from existing images
+                              </div>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {existingMedia.map((url, index) => {
+                              // Calculate the effective index for existing images by adding 1000
+                              // This ensures existing media indices don't conflict with new uploads
+                              const existingMediaIndex = index + 1000;
+                              const isExistingFeatured = featuredImageIndex === existingMediaIndex;
+                              
+                              return (
+                                <div key={`existing-${index}`} className="relative group">
+                                  {url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.mov') ? (
+                                    <div className="border rounded-md overflow-hidden aspect-square flex items-center justify-center bg-muted">
+                                      <Video className="h-8 w-8 opacity-50" />
+                                    </div>
+                                  ) : (
+                                    <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-primary' : ''}`}>
+                                      <img
+                                        src={url}
+                                        alt={`Media ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                      />
                                     </div>
                                   )}
-                                </>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="videos" className="space-y-6">
-              {/* Project Video Section */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Video</Label>
-                  <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Optional (~2.5 min max)</div>
-                </div>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <Input
-                      ref={videoInputRef}
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoSelected}
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
+                                  
+                                  {/* Only show controls for images (not videos) */}
+                                  {!url.endsWith('.mp4') && !url.endsWith('.webm') && !url.endsWith('.mov') && (
+                                    <>
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                        <Button
+                                          type="button"
+                                          variant={isExistingFeatured ? "default" : "secondary"}
+                                          size="icon"
+                                          className="h-8 w-8"
+                                          onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
+                                          title="Set as thumbnail"
+                                        >
+                                          ★
+                                        </Button>
+                                      </div>
+                                      {isExistingFeatured && (
+                                        <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full p-1" title="Current thumbnail">
+                                          ★
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       )}
-                    />
-                    {mediaErrors?.video && (
-                      <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.video}</p>
-                    )}
-                  </div>
-                  
-                  {/* Selected video preview */}
-                  {projectVideo && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>Selected Video:</div>
-                        <Button
-                          type="button"
-                          variant={useDarkMode ? "outline" : "destructive"}
-                          size="sm"
-                          onClick={removeProjectVideo}
-                          className={useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                      <div className={cn(
-                        "border rounded-md p-2 flex items-center gap-2",
-                        useDarkMode ? "bg-[rgba(30,30,30,0.7)] border-white/10 text-white" : "bg-muted"
-                      )}>
-                        <Video className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "")} />
-                        <span className="text-sm truncate">{projectVideo.name}</span>
-                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="videos" className="space-y-6 mt-6">
+                  {/* Project Video Section */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Video</Label>
+                      <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Optional (~2.5 min max)</div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          ref={videoInputRef}
+                          type="file"
+                          accept="video/*"
+                          onChange={handleVideoSelected}
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
+                          )}
+                        />
+                        {mediaErrors?.video && (
+                          <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.video}</p>
+                        )}
+                      </div>
+                      
+                      {/* Selected video preview */}
+                      {projectVideo && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>Selected Video:</div>
+                            <Button
+                              type="button"
+                              variant={useDarkMode ? "outline" : "destructive"}
+                              size="sm"
+                              onClick={removeProjectVideo}
+                              className={useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                          <div className={cn(
+                            "border rounded-md p-2 flex items-center gap-2",
+                            useDarkMode ? "bg-[rgba(30,30,30,0.7)] border-white/10 text-white" : "bg-muted"
+                          )}>
+                            <Video className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "")} />
+                            <span className="text-sm truncate">{projectVideo.name}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </TabsContent>
             
             <TabsContent value="team" className="space-y-6">
