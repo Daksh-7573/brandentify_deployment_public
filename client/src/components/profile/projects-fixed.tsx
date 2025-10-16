@@ -447,7 +447,7 @@ const ProjectsFixed = () => {
         }
         
         // Save client information to project_endorsements table
-        if (values.clientCompany) {
+        if (values.clientProfileLink) {
           try {
             await fetch(`/api/project-endorsements`, {
               method: 'POST',
@@ -456,12 +456,7 @@ const ProjectsFixed = () => {
               },
               body: JSON.stringify({
                 projectId: projectId,
-                clientName: values.clientName || 'Client',
-                clientEmail: values.clientEmail || null,
-                clientTitle: values.clientTitle || '',
-                clientCompany: values.clientCompany,
-                message: values.clientMessage || '',
-                profileLink: values.clientProfileLink || null,
+                profileLink: values.clientProfileLink,
               }),
             });
           } catch (error) {
@@ -953,65 +948,13 @@ const ProjectsFixed = () => {
 
                 <TabsContent value="endorsements" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Client Information */}
+                    {/* Client Profile Link */}
                     <div className="space-y-4">
                       <label className="text-white font-medium text-sm flex items-center gap-2">
                         <Users className="h-4 w-4" />
                         Client Information
                       </label>
                       
-                      {/* Client Name */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Name*</label>
-                        <input
-                          {...projectForm.register("clientName")}
-                          placeholder="John Smith"
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Email */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Email</label>
-                        <input
-                          {...projectForm.register("clientEmail")}
-                          type="email"
-                          placeholder="client@company.com"
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Title */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Title</label>
-                        <input
-                          {...projectForm.register("clientTitle")}
-                          placeholder="CEO, Product Manager, etc."
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Company */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Company*</label>
-                        <input
-                          {...projectForm.register("clientCompany")}
-                          placeholder="Company Name"
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Message/Testimonial */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Testimonial</label>
-                        <textarea
-                          {...projectForm.register("clientMessage")}
-                          placeholder="What did your client say about this project?"
-                          className="neo-glass-input min-h-[100px]"
-                        />
-                      </div>
-
-                      {/* Client Profile Link */}
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Profile Link</label>
                         <input
@@ -1022,7 +965,6 @@ const ProjectsFixed = () => {
                         <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
                       </div>
                     </div>
-
                   </div>
                 </TabsContent>
               </Tabs>
@@ -1125,12 +1067,15 @@ const ProjectsFixed = () => {
                     <div>
                       {(selectedProject as any).endorsements.map((client: any, index: number) => (
                         <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10 mb-3">
-                          <p className="text-white font-medium">{client.clientName}</p>
-                          {client.clientTitle && client.clientCompany && (
-                            <p className="text-white/80 text-sm">{client.clientTitle} at {client.clientCompany}</p>
-                          )}
-                          {client.message && (
-                            <p className="text-gray-300 text-sm mt-2">"{client.message}"</p>
+                          {client.profileLink && (
+                            <a 
+                              href={client.profileLink} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                            >
+                              View Client Profile
+                            </a>
                           )}
                         </div>
                       ))}
@@ -1192,8 +1137,8 @@ const ProjectsFixed = () => {
                         });
                         
                         // Load existing team members if available
-                        if (selectedProject.collaborators && selectedProject.collaborators.length > 0) {
-                          const existingTeamMembers = selectedProject.collaborators.map((collab: any) => ({
+                        if ((selectedProject as any).collaborators && (selectedProject as any).collaborators.length > 0) {
+                          const existingTeamMembers = (selectedProject as any).collaborators.map((collab: any) => ({
                             id: collab.id,
                             role: collab.role || collab.name,
                             linkedin: collab.profileLink || ''
@@ -1205,9 +1150,9 @@ const ProjectsFixed = () => {
                         
                         // Load existing media/images if available
                         if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls)) {
-                          setUploadedImages(selectedProject.mediaUrls);
+                          setExistingMedia(selectedProject.mediaUrls);
                         } else {
-                          setProjectImages([]);
+                          setExistingMedia([]);
                         }
                         
                         setIsAddModalOpen(true);

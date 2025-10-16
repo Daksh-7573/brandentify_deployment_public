@@ -31,6 +31,7 @@ export const projectSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
   projectUrl: z.string().nullable(),
   mediaUrls: z.array(z.string()).nullable(),
+  clientProfileLink: z.string().nullable(),
 });
 
 export type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -99,10 +100,11 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null, // Industry field - may need special handling
+      industry: existingProject?.industry || '', // Industry field is required
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
+      clientProfileLink: null,
     },
   });
   
@@ -121,10 +123,11 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null, // Make sure industry value is properly passed
+      industry: existingProject?.industry || '', // Industry field is required
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
+      clientProfileLink: null,
     });
     
     // Log the industry value after form reset
@@ -954,71 +957,11 @@ export default function ProjectForm({
                 </div>
                 
                 <div className="space-y-4">
-                  {/* Client Name */}
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Name*</Label>
-                    <Input
-                      placeholder="John Smith"
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-
-                  {/* Client Email */}
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Email</Label>
-                    <Input
-                      type="email"
-                      placeholder="client@company.com"
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-
-                  {/* Client Title */}
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Title</Label>
-                    <Input
-                      placeholder="CEO, Product Manager, etc."
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-
-                  {/* Client Company */}
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Company*</Label>
-                    <Input
-                      placeholder="Company Name"
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-
-                  {/* Client Message/Testimonial */}
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Client Testimonial</Label>
-                    <Textarea
-                      placeholder="What did your client say about this project?"
-                      className={cn(
-                        "min-h-[100px]",
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-
                   {/* Client Profile Link */}
                   <div className="space-y-2">
                     <Label className={useDarkMode ? "text-white/80" : ""}>Client Profile Link</Label>
                     <Input
+                      {...projectForm.register("clientProfileLink")}
                       placeholder="https://brandentifier.replit.app/profile/username"
                       className={cn(
                         className,

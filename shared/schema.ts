@@ -221,7 +221,7 @@ export const projectCollaborators = pgTable("project_collaborators", {
 export const projectEndorsements = pgTable("project_endorsements", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id").references(() => projects.id).notNull(),
-  clientName: text("client_name").notNull(),
+  clientName: text("client_name").default("Client"), // Default name for client
   clientEmail: text("client_email"),
   clientTitle: text("client_title"), // Job title of the client
   clientCompany: text("client_company"),
