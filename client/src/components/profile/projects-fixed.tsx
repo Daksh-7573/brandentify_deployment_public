@@ -222,6 +222,12 @@ const ProjectsFixed = () => {
       const response = await fetch(`/api/projects/${projectId}`, {
         method: 'DELETE',
       });
+      
+      // Handle 404 as success since the project doesn't exist anyway
+      if (response.status === 404) {
+        return { message: 'Project already deleted or does not exist' };
+      }
+      
       if (!response.ok) throw new Error('Failed to delete project');
       return response.json();
     },
@@ -256,7 +262,8 @@ const ProjectsFixed = () => {
     },
     onError: (error: any, projectId, context) => {
       console.error('Error deleting project:', error);
-      // Rollback to previous state if deletion fails
+      // Don't rollback for 404 - the project is gone either way
+      // For other errors, rollback to previous state
       if (context?.previousProjects) {
         queryClient.setQueryData(['/api/users', userIdentifier, 'projects'], context.previousProjects);
       }
