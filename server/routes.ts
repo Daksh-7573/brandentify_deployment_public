@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { pool, db } from "./db";
 import { z } from "zod";
 import { eq, or } from "drizzle-orm";
-import { cacheMiddleware } from "./middleware/cache-middleware";
+import { cacheMiddleware, clearCache } from "./middleware/cache-middleware";
 import { getCachedUserData, setCachedUserData } from "./middleware/user-cache";
 import crypto from "crypto";
 import path from "path";
@@ -3384,6 +3384,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!success) {
         return res.status(500).json({ message: "Failed to delete project" });
       }
+      
+      // Clear the projects cache for this user to ensure fresh data on next request
+      clearCache(`/users/${existingProject.userId}/projects`);
       
       res.status(200).json({ message: "Project deleted successfully" });
     } catch (error) {
