@@ -3574,6 +3574,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const endorsementData = insertProjectEndorsementSchema.parse(req.body);
       const endorsement = await storage.createProjectEndorsement(endorsementData);
       console.log(`[POST /project-endorsements] Created endorsement with ID: ${endorsement.id}`);
+      
+      // Send notification if the endorsement has a userId (registered user)
+      if (endorsement.userId) {
+        try {
+          const project = await storage.getProject(endorsement.projectId);
+          const projectOwner = await storage.getUser(project.userId);
+          
+          const { createNotification } = await import('./services/notification-service');
+          await createNotification({
+            userId: endorsement.userId,
+            type: 'info' as const,
+            category: 'project_tag' as const,
+            title: 'Tagged in Project',
+            message: `${projectOwner?.name || 'Someone'} has tagged you as a client in "${project?.title || 'a project'}"`,
+            actionUrl: `/projects/${endorsement.projectId}`,
+            isRead: false
+          });
+          
+          console.log(`[POST /project-endorsements] Notification sent to user ${endorsement.userId}`);
+        } catch (notificationError) {
+          console.error('[POST /project-endorsements] Error sending notification:', notificationError);
+          // Don't fail the request if notification fails
+        }
+      }
+      
       res.status(201).json(endorsement);
     } catch (error) {
       if (error instanceof z.ZodError) {
