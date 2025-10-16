@@ -63,6 +63,12 @@ interface MediaErrors {
   video?: string;
 }
 
+interface TeamMember {
+  id: number;
+  role: string;
+  linkedin: string;
+}
+
 export default function ProjectForm({ 
   onSuccess, 
   onCancel, 
@@ -84,6 +90,8 @@ export default function ProjectForm({
   const [existingMedia, setExistingMedia] = useState<string[]>(existingProject?.mediaUrls || []);
   
   // Team & Client state
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
   const [teamMemberUrl, setTeamMemberUrl] = useState<string>('');
   const [clientUrl, setClientUrl] = useState<string>('');
   const [isAddingTeamMember, setIsAddingTeamMember] = useState<boolean>(false);
