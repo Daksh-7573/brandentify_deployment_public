@@ -2288,9 +2288,15 @@ export class MemStorage implements IStorage {
   }
   
   async deleteProject(id: number): Promise<boolean> {
-    // When deleting a project, we should also delete all related collaborators and endorsements
+    // First, set projectId to NULL for all pulses associated with this project
+    // This allows the project to be deleted while keeping the pulses intact
+    this.pulses.forEach((pulse) => {
+      if (pulse.projectId === id) {
+        pulse.projectId = null;
+      }
+    });
     
-    // First, delete all collaborators
+    // Then, delete all collaborators
     const collaborators = await this.getProjectCollaboratorsByProjectId(id);
     for (const collaborator of collaborators) {
       await this.deleteProjectCollaborator(collaborator.id);
@@ -9788,6 +9794,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProject(id: number): Promise<boolean> {
+    // First, set projectId to NULL for all pulses associated with this project
+    // This allows the project to be deleted while keeping the pulses intact
+    await db
+      .update(pulses)
+      .set({ projectId: null })
+      .where(eq(pulses.projectId, id));
+    
+    // Now delete the project
     const result = await db.delete(projects).where(eq(projects.id, id));
     return result.rowCount > 0;
   }
