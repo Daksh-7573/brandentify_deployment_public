@@ -225,18 +225,41 @@ const ProjectsFixed = () => {
       if (!response.ok) throw new Error('Failed to delete project');
       return response.json();
     },
+    onMutate: async (projectId: number) => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
+      
+      // Snapshot the previous value
+      const previousProjects = queryClient.getQueryData(['/api/users', userIdentifier, 'projects']);
+      
+      // Optimistically update to remove the project immediately
+      queryClient.setQueryData(['/api/users', userIdentifier, 'projects'], (old: any) => {
+        if (!Array.isArray(old)) return old;
+        return old.filter((project: Project) => project.id !== projectId);
+      });
+      
+      // Close the modal immediately
+      setIsViewModalOpen(false);
+      setSelectedProject(null);
+      
+      // Return context with the previous projects for rollback
+      return { previousProjects };
+    },
     onSuccess: () => {
+      // Invalidate to refetch and ensure consistency
       queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
-      setIsViewModalOpen(false); // Close the modal
-      setSelectedProject(null);
       toast({
         title: "Success!",
         description: "Project deleted successfully.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: any, projectId, context) => {
       console.error('Error deleting project:', error);
+      // Rollback to previous state if deletion fails
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['/api/users', userIdentifier, 'projects'], context.previousProjects);
+      }
       toast({
         title: "Error",
         description: "Failed to delete project. Please try again.",
