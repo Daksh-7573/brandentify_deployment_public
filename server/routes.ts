@@ -3455,6 +3455,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const collaboratorData = insertProjectCollaboratorSchema.parse(req.body);
       const collaborator = await storage.createProjectCollaborator(collaboratorData);
       console.log(`[POST /project-collaborators] Created collaborator with ID: ${collaborator.id}`);
+      
+      // Send notification if the collaborator has a userId (registered user)
+      if (collaborator.userId) {
+        try {
+          const project = await storage.getProject(collaborator.projectId);
+          const projectOwner = await storage.getUser(project.userId);
+          
+          const { createNotification } = await import('./services/notification-service');
+          await createNotification({
+            userId: collaborator.userId,
+            type: 'info' as const,
+            category: 'project_tag' as const,
+            title: 'Tagged in Project',
+            message: `${projectOwner?.name || 'Someone'} has tagged you as a team member in "${project?.title || 'a project'}"`,
+            actionUrl: `/projects/${collaborator.projectId}`,
+            isRead: false
+          });
+          
+          console.log(`[POST /project-collaborators] Notification sent to user ${collaborator.userId}`);
+        } catch (notificationError) {
+          console.error('[POST /project-collaborators] Error sending notification:', notificationError);
+          // Don't fail the request if notification fails
+        }
+      }
+      
       res.status(201).json(collaborator);
     } catch (error) {
       if (error instanceof z.ZodError) {
