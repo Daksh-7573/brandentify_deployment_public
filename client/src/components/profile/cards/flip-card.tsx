@@ -11,8 +11,8 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode
   
-  // Format profile link using username for consistent URL structure
-  const profileLink = `brandentifier.com/@${userData.username}`;
+  // Format profile link using randomProfileLink for permanent URL
+  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
   
   // Toggle flip animation
   const toggleFlip = () => {
