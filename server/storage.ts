@@ -12867,7 +12867,8 @@ export class DatabaseStorage implements IStorage {
     const createdQuests: UserQuest[] = [];
     
     for (const questDef of selectedQuests) {
-      const quest = await this.createUserQuest({
+      // Prepare quest data
+      const questData: any = {
         userId,
         questDefinitionId: questDef.id,
         status: "active",
@@ -12875,7 +12876,16 @@ export class DatabaseStorage implements IStorage {
         weekNumber: currentWeek,
         year: currentYear,
         assignedDate: currentDate
-      });
+      };
+
+      // Add best time to post for pulse_creation quests
+      if (questDef.type === 'pulse_creation') {
+        questData.recommendedPostTime = '08:00-10:00 UTC';
+        questData.recommendationSource = 'heuristic';
+        questData.confidenceScore = 90;
+      }
+
+      const quest = await this.createUserQuest(questData);
       
       createdQuests.push(quest);
     }
