@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Video, CalendarIcon, UserPlus, Building2, Plus } from 'lucide-react';
+import { Video, CalendarIcon, UserPlus, Building2, Plus, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -921,47 +921,108 @@ export default function ProjectForm({
                 "p-6 rounded-lg border space-y-4",
                 useDarkMode ? "bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border-white/10" : "bg-gradient-to-br from-slate-50 to-gray-100/80 border-gray-200"
               )}>
-                <div className="flex items-center gap-2">
-                  <UserPlus className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "text-blue-600")} />
-                  <h3 className={cn("text-lg font-semibold", useDarkMode ? "text-white" : "text-gray-900")}>
-                    Add Team Members
-                  </h3>
-                </div>
-                <p className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-gray-600")}>
-                  Add team members with their role and profile link.
-                </p>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>Role</Label>
-                    <Input
-                      placeholder="e.g., Designer, Developer, Manager"
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <UserPlus className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "text-blue-600")} />
+                    <h3 className={cn("text-lg font-semibold", useDarkMode ? "text-white" : "text-gray-900")}>
+                      Team Members
+                    </h3>
                   </div>
-                  <div className="space-y-2">
-                    <Label className={useDarkMode ? "text-white/80" : ""}>LinkedIn/Portfolio</Label>
-                    <Input
-                      placeholder="https://linkedin.com/in/username"
-                      className={cn(
-                        className,
-                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                      )}
-                    />
-                  </div>
-                  <Button 
-                    type="button"
-                    className={cn(
-                      "w-full",
-                      useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""
-                    )}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Team Member
-                  </Button>
+                  <span className={cn("text-xs", useDarkMode ? "text-white/60" : "text-gray-500")}>
+                    {teamMembers.length} / 5 members
+                  </span>
                 </div>
+                
+                {/* Added Team Members List */}
+                {teamMembers.map((member) => (
+                  <div key={member.id} className={cn(
+                    "space-y-3 p-4 rounded-lg border",
+                    useDarkMode ? "bg-white/10 backdrop-blur-sm border-white/20" : "bg-white/50 border-gray-200"
+                  )}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 space-y-2">
+                        <div className={cn("font-medium", useDarkMode ? "text-white/90" : "text-gray-900")}>
+                          {member.role || 'Team Member'}
+                        </div>
+                        {member.linkedin && (
+                          <div className={cn("text-sm break-all", useDarkMode ? "text-white/70" : "text-gray-600")}>
+                            {member.linkedin}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeTeamMember(member.id)}
+                        className={cn(
+                          "p-1 rounded-full transition-colors",
+                          useDarkMode ? "text-red-400 hover:text-red-300 hover:bg-red-500/20" : "text-red-600 hover:text-red-700 hover:bg-red-100"
+                        )}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Add New Team Member Form */}
+                {teamMembers.length < 5 && (
+                  <div className={cn(
+                    "space-y-4 p-4 rounded-lg border",
+                    useDarkMode ? "bg-white/5 backdrop-blur-sm border-white/10" : "bg-gray-50 border-gray-200"
+                  )}>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Role</label>
+                        <Input
+                          value={currentTeamMember.role}
+                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, role: e.target.value})}
+                          placeholder="e.g., Designer, Developer, Manager"
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>LinkedIn/Portfolio</label>
+                        <Input
+                          value={currentTeamMember.linkedin}
+                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, linkedin: e.target.value})}
+                          placeholder="https://linkedin.com/in/username"
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      type="button"
+                      onClick={addTeamMember}
+                      disabled={!currentTeamMember.role && !currentTeamMember.linkedin}
+                      className={cn(
+                        "w-full text-sm flex items-center justify-center gap-2",
+                        useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90 disabled:opacity-50 disabled:cursor-not-allowed" : "disabled:opacity-50 disabled:cursor-not-allowed"
+                      )}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Team Member
+                    </Button>
+                  </div>
+                )}
+
+                {/* Maximum Reached Message */}
+                {teamMembers.length >= 5 && (
+                  <div className={cn(
+                    "p-3 rounded-lg border text-center",
+                    useDarkMode ? "bg-white/5 backdrop-blur-sm border-white/10" : "bg-gray-50 border-gray-200"
+                  )}>
+                    <p className={cn("text-sm", useDarkMode ? "text-white/60" : "text-gray-500")}>
+                      Maximum of 5 team members reached
+                    </p>
+                  </div>
+                )}
               </div>
               
               {/* Clients Section */}
