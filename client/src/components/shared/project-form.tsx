@@ -65,6 +65,7 @@ interface MediaErrors {
 
 interface TeamMember {
   id: number;
+  name: string;
   role: string;
   linkedin: string;
 }
@@ -91,7 +92,7 @@ export default function ProjectForm({
   
   // Team & Client state
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
+  const [currentTeamMember, setCurrentTeamMember] = useState({ name: '', role: '', linkedin: '' });
   const [teamMemberUrl, setTeamMemberUrl] = useState<string>('');
   const [clientUrl, setClientUrl] = useState<string>('');
   const [isAddingTeamMember, setIsAddingTeamMember] = useState<boolean>(false);
@@ -369,6 +370,49 @@ export default function ProjectForm({
         });
       }
       
+      // Save team members and client info separately after project is saved
+      if (projectData && projectData.id) {
+        // Save team members to project_collaborators table
+        if (teamMembers.length > 0) {
+          for (const member of teamMembers) {
+            try {
+              await fetch(`/api/project-collaborators`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  projectId: projectData.id,
+                  name: member.name || 'Collaborator',
+                  role: member.role || '',
+                  profileLink: member.linkedin || null,
+                }),
+              });
+            } catch (error) {
+              console.error('Error saving team member:', error);
+            }
+          }
+        }
+        
+        // Save client information to project_endorsements table
+        if (values.clientProfileLink) {
+          try {
+            await fetch(`/api/project-endorsements`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                projectId: projectData.id,
+                profileLink: values.clientProfileLink,
+              }),
+            });
+          } catch (error) {
+            console.error('Error saving client information:', error);
+          }
+        }
+      }
+      
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/projects`] });
       
@@ -378,6 +422,8 @@ export default function ProjectForm({
       setProjectVideo(null);
       setMediaErrors(null);
       setFeaturedImageIndex(0);
+      setTeamMembers([]);
+      setCurrentTeamMember({ name: '', role: '', linkedin: '' });
       
       // Reset all file input elements
       if (videoInputRef.current) {
@@ -441,9 +487,9 @@ export default function ProjectForm({
   
   // Team member management functions
   const addTeamMember = () => {
-    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
+    if (teamMembers.length < 5 && (currentTeamMember.name || currentTeamMember.role || currentTeamMember.linkedin)) {
       setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
-      setCurrentTeamMember({ role: '', linkedin: '' });
+      setCurrentTeamMember({ name: '', role: '', linkedin: '' });
     }
   };
 
@@ -454,6 +500,35 @@ export default function ProjectForm({
   // Update existing media when project changes
   useEffect(() => {
     setExistingMedia(existingProject?.mediaUrls || []);
+  }, [existingProject]);
+  
+  // Load team members when editing existing project
+  useEffect(() => {
+    const loadTeamMembers = async () => {
+      if (existingProject?.id) {
+        try {
+          const response = await fetch(`/api/projects/${existingProject.id}/collaborators`);
+          if (response.ok) {
+            const collaborators = await response.json();
+            // Map API collaborators to local TeamMember format
+            const mappedMembers = collaborators.map((collab: any) => ({
+              id: collab.id,
+              name: collab.name || '',
+              role: collab.role || '',
+              linkedin: collab.profileLink || '',
+            }));
+            setTeamMembers(mappedMembers);
+          }
+        } catch (error) {
+          console.error('Error loading team members:', error);
+        }
+      } else {
+        // Clear team members when no project is being edited
+        setTeamMembers([]);
+      }
+    };
+    
+    loadTeamMembers();
   }, [existingProject]);
   
   // Handle adding team member by profile URL
@@ -942,8 +1017,13 @@ export default function ProjectForm({
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
                         <div className={cn("font-medium", useDarkMode ? "text-white/90" : "text-gray-900")}>
-                          {member.role || 'Team Member'}
+                          {member.name || 'Team Member'}
                         </div>
+                        {member.role && (
+                          <div className={cn("text-sm", useDarkMode ? "text-white/60" : "text-gray-500")}>
+                            {member.role}
+                          </div>
+                        )}
                         {member.linkedin && (
                           <div className={cn("text-sm break-all", useDarkMode ? "text-white/70" : "text-gray-600")}>
                             {member.linkedin}
@@ -971,6 +1051,18 @@ export default function ProjectForm({
                     useDarkMode ? "bg-white/5 backdrop-blur-sm border-white/10" : "bg-gray-50 border-gray-200"
                   )}>
                     <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Name</label>
+                        <Input
+                          value={currentTeamMember.name}
+                          onChange={(e) => setCurrentTeamMember({...currentTeamMember, name: e.target.value})}
+                          placeholder="e.g., John Doe"
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
+                        />
+                      </div>
                       <div className="space-y-2">
                         <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Role</label>
                         <Input
@@ -1000,7 +1092,7 @@ export default function ProjectForm({
                     <Button 
                       type="button"
                       onClick={addTeamMember}
-                      disabled={!currentTeamMember.role && !currentTeamMember.linkedin}
+                      disabled={!currentTeamMember.name && !currentTeamMember.role && !currentTeamMember.linkedin}
                       className={cn(
                         "w-full text-sm flex items-center justify-center gap-2",
                         useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90 disabled:opacity-50 disabled:cursor-not-allowed" : "disabled:opacity-50 disabled:cursor-not-allowed"
