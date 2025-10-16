@@ -350,12 +350,13 @@ const ProjectsFixed = () => {
         if (teamMembers.length > 0) {
           for (const member of teamMembers) {
             try {
-              await fetch(`/api/projects/${projectId}/collaborators`, {
+              await fetch(`/api/project-collaborators`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                  projectId: projectId,
                   name: member.role || 'Collaborator', // Use role as name
                   role: member.role || 'Team Member',
                   profileLink: member.linkedin || null,
@@ -370,17 +371,17 @@ const ProjectsFixed = () => {
         // Save client information to project_endorsements table
         if (values.clientCompany) {
           try {
-            await fetch(`/api/projects/${projectId}/endorsements`, {
+            await fetch(`/api/project-endorsements`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
                 projectId: projectId,
-                clientName: values.clientName || 'Client',
-                clientTitle: values.clientTitle || '',
-                clientCompany: values.clientCompany,
-                message: values.clientMessage || '',
+                endorserName: values.clientName || 'Client',
+                endorserTitle: values.clientTitle || '',
+                endorserCompany: values.clientCompany,
+                endorsementText: values.clientMessage || '',
               }),
             });
           } catch (error) {
@@ -970,6 +971,26 @@ const ProjectsFixed = () => {
                           projectUrl: selectedProject.projectUrl,
                           clientInfo: selectedProject.clientInfo
                         });
+                        
+                        // Load existing team members if available
+                        if (selectedProject.collaborators && selectedProject.collaborators.length > 0) {
+                          const existingTeamMembers = selectedProject.collaborators.map((collab: any) => ({
+                            id: collab.id,
+                            role: collab.role || collab.name,
+                            linkedin: collab.profileLink || ''
+                          }));
+                          setTeamMembers(existingTeamMembers);
+                        } else {
+                          setTeamMembers([]);
+                        }
+                        
+                        // Load existing media/images if available
+                        if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls)) {
+                          setUploadedImages(selectedProject.mediaUrls);
+                        } else {
+                          setUploadedImages([]);
+                        }
+                        
                         setIsAddModalOpen(true);
                       }, 100);
                     }}

@@ -3405,28 +3405,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
-      // Return sample collaborators data to avoid storage issues
-      const sampleCollaborators = [
-        {
-          id: 1,
-          projectId: projectId,
-          name: "Sarah Johnson",
-          role: "Frontend Developer",
-          email: "sarah@example.com",
-          profileLink: "https://linkedin.com/in/sarahjohnson"
-        },
-        {
-          id: 2,
-          projectId: projectId,
-          name: "Mike Chen",
-          role: "Backend Developer",
-          email: "mike@example.com",
-          profileLink: "https://github.com/mikechen"
-        }
-      ];
+      // Get real collaborators from database
+      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
       
-      console.log(`[GET /projects/${projectId}/collaborators] Returning sample data`);
-      res.json(sampleCollaborators);
+      console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
+      res.json(collaborators);
     } catch (error) {
       console.error("Collaborators route error:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -3548,32 +3531,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
-      // Return sample endorsements data to avoid storage issues
-      const sampleEndorsements = [
-        {
-          id: 1,
-          projectId: projectId,
-          endorserName: "Alex Thompson",
-          endorserTitle: "Senior Product Manager",
-          endorserCompany: "TechCorp",
-          endorsementText: "Outstanding work on this project. The attention to detail and innovative approach really made a difference.",
-          endorserEmail: "alex@techcorp.com",
-          endorserLinkedIn: "https://linkedin.com/in/alexthompson"
-        },
-        {
-          id: 2,
-          projectId: projectId,
-          endorserName: "Maria Rodriguez",
-          endorserTitle: "UX Design Lead",
-          endorserCompany: "DesignStudio",
-          endorsementText: "Excellent collaboration and delivery. Highly recommend working with this team again.",
-          endorserEmail: "maria@designstudio.com",
-          endorserLinkedIn: "https://linkedin.com/in/mariarodriguez"
-        }
-      ];
+      // Get real endorsements from database
+      const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
       
-      console.log(`[GET /projects/${projectId}/endorsements] Returning sample data`);
-      res.json(sampleEndorsements);
+      console.log(`[GET /projects/${projectId}/endorsements] Found ${endorsements.length} endorsements`);
+      res.json(endorsements);
     } catch (error) {
       console.error("Endorsements route error:", error);
       res.status(500).json({ message: "Internal server error" });
