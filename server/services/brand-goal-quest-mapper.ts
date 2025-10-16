@@ -9,6 +9,7 @@ export class BrandGoalQuestMapper {
   
   /**
    * Maps each Brand Goal ID to the quest types it supports
+   * NOW INCLUDES: social_quest and social_post types for external platform engagement
    */
   private static readonly GOAL_TO_QUEST_TYPES: Record<string, string[]> = {
     
@@ -17,7 +18,9 @@ export class BrandGoalQuestMapper {
       'visibility',
       'pulse_creation',
       'networking',
-      'engagement'
+      'engagement',
+      'social_quest', // External platform posting
+      'social_post'   // Social media content
     ],
     
     'visibility_2': [ // Increase brand recognition among target audience
@@ -25,14 +28,18 @@ export class BrandGoalQuestMapper {
       'profile_update',
       'pulse_creation',
       'networking',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'visibility_3': [ // Establish consistent online presence across platforms
       'pulse_creation',
       'visibility',
       'profile_update',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'visibility_4': [ // Appear in search results for name/expertise
@@ -40,14 +47,18 @@ export class BrandGoalQuestMapper {
       'visibility',
       'pulse_creation',
       'resume',
-      'portfolio'
+      'portfolio',
+      'social_quest',
+      'social_post'
     ],
     
     'visibility_5': [ // Grow follower base with engaged audience
       'visibility',
       'networking',
       'pulse_creation',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     // PROFESSIONAL & CAREER GROWTH GOALS
@@ -57,7 +68,9 @@ export class BrandGoalQuestMapper {
       'resume',
       'learning',
       'visibility',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'professional_2': [ // Attract new business opportunities
@@ -66,7 +79,9 @@ export class BrandGoalQuestMapper {
       'visibility',
       'pulse_creation',
       'profile_update',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'professional_3': [ // Get featured on podcasts/collaborations
@@ -74,7 +89,9 @@ export class BrandGoalQuestMapper {
       'visibility',
       'pulse_creation',
       'portfolio',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     // ENGAGEMENT & COMMUNITY GOALS
@@ -82,7 +99,9 @@ export class BrandGoalQuestMapper {
       'engagement',
       'networking',
       'pulse_creation',
-      'visibility'
+      'visibility',
+      'social_quest',
+      'social_post'
     ],
     
     // MONETIZATION & IMPACT GOALS
@@ -91,7 +110,9 @@ export class BrandGoalQuestMapper {
       'visibility',
       'pulse_creation',
       'networking',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'monetization_2': [ // Convert followers into leads/customers
@@ -99,14 +120,18 @@ export class BrandGoalQuestMapper {
       'pulse_creation',
       'portfolio',
       'profile_update',
-      'engagement'
+      'engagement',
+      'social_quest',
+      'social_post'
     ],
     
     'monetization_3': [ // Launch own product/service
       'portfolio',
       'pulse_creation',
       'profile_update',
-      'visibility'
+      'visibility',
+      'social_quest',
+      'social_post'
     ]
   };
 

@@ -77,7 +77,7 @@ export class SmartQuestAllocator {
 
       // Get available quest pool (career + social) - STRICT Brand Goal filtering
       const availableCareerQuests = await this.getAvailableCareerQuests(userId, profileStatus.focusArea, userGoals);
-      const availableSocialQuests = await this.getAvailableSocialQuests(userId);
+      const availableSocialQuests = await this.getAvailableSocialQuests(userId, userGoals); // NOW with brand goal filtering
       
       console.log(`[SmartQuestAllocator] Available: ${availableCareerQuests.length} career, ${availableSocialQuests.length} social`);
 
@@ -395,8 +395,9 @@ export class SmartQuestAllocator {
 
   /**
    * Get available social quests (not yet assigned today)
+   * STRICTLY filtered by Brand Goals - only shows social quests aligned with user's goals
    */
-  private async getAvailableSocialQuests(userId: number): Promise<any[]> {
+  private async getAvailableSocialQuests(userId: number, userGoals: string[] = []): Promise<any[]> {
     const todayDateString = new Date().toISOString().split('T')[0];
     
     // Get today's assigned quest IDs
@@ -410,20 +411,33 @@ export class SmartQuestAllocator {
     
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
-    // Get social quests not assigned today (ACTIVE ONLY)
+    // Get quest types allowed by Brand Goals (STRICT FILTERING)
+    const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
+    
+    // Check if social quests are allowed by brand goals
+    const socialQuestTypes = ['social_quest', 'social_post'];
+    const allowedSocialTypes = socialQuestTypes.filter(type => brandGoalAllowedTypes.includes(type));
+    
+    // If no social quest types are allowed by brand goals, return empty
+    if (allowedSocialTypes.length === 0 && userGoals.length > 0) {
+      console.log('[SmartQuestAllocator] ❌ No social quest types allowed by Brand Goals');
+      return [];
+    }
+    
+    // Get social quests not assigned today (ACTIVE ONLY, filtered by allowed types)
     const socialQuestsQuery = assignedIds.length > 0
       ? db.select()
           .from(questDefinitions)
           .where(and(
             eq(questDefinitions.isActive, true), // Only active quests
-            eq(questDefinitions.type, 'social_quest'),
+            inArray(questDefinitions.type, allowedSocialTypes as any),
             notInArray(questDefinitions.id, assignedIds)
           ))
       : db.select()
           .from(questDefinitions)
           .where(and(
             eq(questDefinitions.isActive, true), // Only active quests
-            eq(questDefinitions.type, 'social_quest')
+            inArray(questDefinitions.type, allowedSocialTypes as any)
           ));
     
     return await socialQuestsQuery;
