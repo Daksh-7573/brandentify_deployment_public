@@ -1173,6 +1173,10 @@ export const questDefinitions = pgTable("quest_definitions", {
   quantityType: text("quantity_type"), // What we're counting: "hashtags", "words", "slides", "connections", etc.
   platformConstraints: text("platform_constraints"), // Specific platform requirements: "vertical format", "16:9 ratio", etc.
   guidanceSnippet: text("guidance_snippet"), // Specific action guidance: "Use canva.com", "Record on phone", etc.
+  // Best time to post information
+  bestTimeToPost: text("best_time_to_post"), // e.g., "01:30 - 03:30 PM GMT+5:30"
+  bestTimeUtc: text("best_time_utc"), // UTC equivalent e.g., "08:00-10:00 UTC"
+  timeConfidence: integer("time_confidence"), // Confidence percentage (0-100)
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
