@@ -612,8 +612,7 @@ const ProjectsFixed = () => {
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full mb-6 dark-tabs-list">
                   <TabsTrigger value="details" className="flex-1 dark-tabs-trigger">Details</TabsTrigger>
-                  <TabsTrigger value="images" className="flex-1 dark-tabs-trigger">Images</TabsTrigger>
-                  <TabsTrigger value="videos" className="flex-1 dark-tabs-trigger">Videos</TabsTrigger>
+                  <TabsTrigger value="media" className="flex-1 dark-tabs-trigger">Media</TabsTrigger>
                   <TabsTrigger value="team" className="flex-1 dark-tabs-trigger">Team</TabsTrigger>
                   <TabsTrigger value="endorsements" className="flex-1 dark-tabs-trigger">Client</TabsTrigger>
                 </TabsList>
@@ -690,184 +689,193 @@ const ProjectsFixed = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="images" className="space-y-6 pt-6">
-                  <div className="space-y-6">
-                    {/* Project Images Section */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <label className="text-white font-medium text-sm">Project Images</label>
-                        <div className="text-white/60 text-xs">Max 10 images</div>
-                      </div>
-                      
-                      {/* Information about thumbnails */}
-                      <div className="p-3 rounded-md text-sm space-y-1 bg-white/5 backdrop-blur-sm border border-white/10">
-                        <p className="font-medium text-white">About Thumbnails:</p>
-                        <p className="text-white/70">
-                          Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
-                        </p>
-                      </div>
+                <TabsContent value="media" className="space-y-6 pt-6">
+                  <Tabs defaultValue="images" className="w-full">
+                    <TabsList className="w-full mb-6 dark-tabs-list">
+                      <TabsTrigger value="images" className="flex-1 dark-tabs-trigger">Images</TabsTrigger>
+                      <TabsTrigger value="videos" className="flex-1 dark-tabs-trigger">Videos</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="images" className="space-y-6 mt-0">
+                      <div className="space-y-6">
+                        {/* Project Images Section */}
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <label className="text-white font-medium text-sm">Project Images</label>
+                            <div className="text-white/60 text-xs">Max 10 images</div>
+                          </div>
+                          
+                          {/* Information about thumbnails */}
+                          <div className="p-3 rounded-md text-sm space-y-1 bg-white/5 backdrop-blur-sm border border-white/10">
+                            <p className="font-medium text-white">About Thumbnails:</p>
+                            <p className="text-white/70">
+                              Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
+                            </p>
+                          </div>
 
-                      <div className="grid grid-cols-1 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <input
-                            ref={multipleImagesInputRef}
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleImagesSelected}
-                            className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
-                          />
-                          {mediaErrors?.images && (
-                            <p className="text-sm text-red-400">{mediaErrors.images}</p>
-                          )}
-                        </div>
-                        
-                        {/* Selected images preview */}
-                        {projectImages.length > 0 && (
-                          <div className="space-y-3">
-                            <div className="flex items-center">
-                              <div className="text-sm font-medium text-white">New Images</div>
-                              {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
-                                <div className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#1DB954]/20 text-[#1DB954]">
-                                  Thumbnail selected from new images
-                                </div>
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="flex flex-col gap-2">
+                              <input
+                                ref={multipleImagesInputRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImagesSelected}
+                                className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
+                              />
+                              {mediaErrors?.images && (
+                                <p className="text-sm text-red-400">{mediaErrors.images}</p>
                               )}
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              {projectImages.map((file, index) => (
-                                <div key={`new-${index}`} className="relative group">
-                                  <div className={`border rounded-md overflow-hidden aspect-square ${featuredImageIndex === index ? 'ring-2 ring-[#1DB954] border-[#1DB954]/40' : 'border-white/20'}`}>
-                                    <img
-                                      src={URL.createObjectURL(file)}
-                                      alt={`Preview ${index + 1}`}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                                    <button
-                                      type="button"
-                                      className="h-8 w-8 bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded flex items-center justify-center"
-                                      onClick={() => removeProjectImage(index)}
-                                      title="Remove image"
-                                    >
-                                      ✕
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className={`h-8 w-8 rounded flex items-center justify-center ${featuredImageIndex === index ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
-                                      onClick={() => handleSelectFeaturedImage(index)}
-                                      title="Set as thumbnail"
-                                    >
-                                      ★
-                                    </button>
-                                  </div>
-                                  {featuredImageIndex === index && (
-                                    <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
-                                      ★
+                            
+                            {/* Selected images preview */}
+                            {projectImages.length > 0 && (
+                              <div className="space-y-3">
+                                <div className="flex items-center">
+                                  <div className="text-sm font-medium text-white">New Images</div>
+                                  {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
+                                    <div className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#1DB954]/20 text-[#1DB954]">
+                                      Thumbnail selected from new images
                                     </div>
                                   )}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Existing images preview */}
-                        {existingMedia.length > 0 && (
-                          <div className="space-y-3">
-                            <div className="flex items-center">
-                              <div className="text-sm font-medium text-white">Existing Media</div>
-                              {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
-                                <div className="ml-2 bg-[#1DB954]/20 text-[#1DB954] text-xs px-2 py-0.5 rounded-full">
-                                  Thumbnail selected from existing images
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                  {projectImages.map((file, index) => (
+                                    <div key={`new-${index}`} className="relative group">
+                                      <div className={`border rounded-md overflow-hidden aspect-square ${featuredImageIndex === index ? 'ring-2 ring-[#1DB954] border-[#1DB954]/40' : 'border-white/20'}`}>
+                                        <img
+                                          src={URL.createObjectURL(file)}
+                                          alt={`Preview ${index + 1}`}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </div>
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                                        <button
+                                          type="button"
+                                          className="h-8 w-8 bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded flex items-center justify-center"
+                                          onClick={() => removeProjectImage(index)}
+                                          title="Remove image"
+                                        >
+                                          ✕
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className={`h-8 w-8 rounded flex items-center justify-center ${featuredImageIndex === index ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
+                                          onClick={() => handleSelectFeaturedImage(index)}
+                                          title="Set as thumbnail"
+                                        >
+                                          ★
+                                        </button>
+                                      </div>
+                                      {featuredImageIndex === index && (
+                                        <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
+                                          ★
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
+                              </div>
+                            )}
+                            
+                            {/* Existing images preview */}
+                            {existingMedia.length > 0 && (
+                              <div className="space-y-3">
+                                <div className="flex items-center">
+                                  <div className="text-sm font-medium text-white">Existing Media</div>
+                                  {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
+                                    <div className="ml-2 bg-[#1DB954]/20 text-[#1DB954] text-xs px-2 py-0.5 rounded-full">
+                                      Thumbnail selected from existing images
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                  {existingMedia.map((url, index) => {
+                                    const existingMediaIndex = index + 1000;
+                                    const isExistingFeatured = featuredImageIndex === existingMediaIndex;
+                                    
+                                    return (
+                                      <div key={`existing-${index}`} className="relative group">
+                                        <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-[#1DB954]' : 'border-white/20'}`}>
+                                          <img
+                                            src={url}
+                                            alt={`Media ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                          <button
+                                            type="button"
+                                            className={`h-8 w-8 rounded flex items-center justify-center ${isExistingFeatured ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
+                                            onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
+                                            title="Set as thumbnail"
+                                          >
+                                            ★
+                                          </button>
+                                        </div>
+                                        {isExistingFeatured && (
+                                          <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
+                                            ★
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="videos" className="space-y-6 mt-0">
+                      <div className="space-y-6">
+                        {/* Project Video Section */}
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <label className="text-white font-medium text-sm">Project Video</label>
+                            <div className="text-white/60 text-xs">Optional (~2.5 min max)</div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            <div className="flex flex-col gap-2">
+                              <input
+                                ref={videoInputRef}
+                                type="file"
+                                accept="video/*"
+                                onChange={handleVideoSelected}
+                                className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
+                              />
+                              {mediaErrors?.video && (
+                                <p className="text-sm text-red-400">{mediaErrors.video}</p>
                               )}
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              {existingMedia.map((url, index) => {
-                                const existingMediaIndex = index + 1000;
-                                const isExistingFeatured = featuredImageIndex === existingMediaIndex;
-                                
-                                return (
-                                  <div key={`existing-${index}`} className="relative group">
-                                    <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-[#1DB954]' : 'border-white/20'}`}>
-                                      <img
-                                        src={url}
-                                        alt={`Media ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                      <button
-                                        type="button"
-                                        className={`h-8 w-8 rounded flex items-center justify-center ${isExistingFeatured ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
-                                        onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
-                                        title="Set as thumbnail"
-                                      >
-                                        ★
-                                      </button>
-                                    </div>
-                                    {isExistingFeatured && (
-                                      <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
-                                        ★
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
+                            
+                            {/* Selected video preview */}
+                            {projectVideo && (
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                  <div className="text-sm font-medium text-white">Selected Video:</div>
+                                  <button
+                                    type="button"
+                                    onClick={removeProjectVideo}
+                                    className="px-3 py-1 text-sm bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                                <div className="border rounded-md p-2 flex items-center gap-2 bg-white/5 backdrop-blur-sm border-white/10 text-white">
+                                  <Upload className="h-5 w-5 text-[#1DB954]" />
+                                  <span className="text-sm truncate">{projectVideo.name}</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="videos" className="space-y-6 pt-6">
-                  <div className="space-y-6">
-                    {/* Project Video Section */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <label className="text-white font-medium text-sm">Project Video</label>
-                        <div className="text-white/60 text-xs">Optional (~2.5 min max)</div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 gap-4">
-                        <div className="flex flex-col gap-2">
-                          <input
-                            ref={videoInputRef}
-                            type="file"
-                            accept="video/*"
-                            onChange={handleVideoSelected}
-                            className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
-                          />
-                          {mediaErrors?.video && (
-                            <p className="text-sm text-red-400">{mediaErrors.video}</p>
-                          )}
                         </div>
-                        
-                        {/* Selected video preview */}
-                        {projectVideo && (
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <div className="text-sm font-medium text-white">Selected Video:</div>
-                              <button
-                                type="button"
-                                onClick={removeProjectVideo}
-                                className="px-3 py-1 text-sm bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div className="border rounded-md p-2 flex items-center gap-2 bg-white/5 backdrop-blur-sm border-white/10 text-white">
-                              <Upload className="h-5 w-5 text-[#1DB954]" />
-                              <span className="text-sm truncate">{projectVideo.name}</span>
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  </div>
+                    </TabsContent>
+                  </Tabs>
                 </TabsContent>
 
                 <TabsContent value="team" className="space-y-6 pt-6">
