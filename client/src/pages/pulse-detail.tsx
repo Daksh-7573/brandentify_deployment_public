@@ -304,7 +304,7 @@ export default function PulseDetail() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <Link href={`/profile/${pulse.user.brandName || pulse.user.username}`}>
+                <Link href={pulse.user.randomProfileLink ? `/r/${pulse.user.randomProfileLink}` : `/profile/${pulse.user.username}`}>
                   <Button variant="link" className="text-purple-400 hover:text-purple-300 p-0 h-auto">
                     {pulse.user.name}
                   </Button>
