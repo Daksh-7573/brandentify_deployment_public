@@ -29,7 +29,7 @@ interface Project {
 interface TeamMember {
   id: number;
   role: string;
-  linkedin: string;
+  brandentifier: string;
 }
 
 const ProjectsFixed = () => {
@@ -39,7 +39,7 @@ const ProjectsFixed = () => {
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
+  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', brandentifier: '' });
   
   // Media state management
   const [projectImages, setProjectImages] = useState<File[]>([]);
@@ -205,7 +205,7 @@ const ProjectsFixed = () => {
       projectForm.reset();
       setTeamMembers([]);
       setProjectImages([]);
-      setCurrentTeamMember({ role: '', linkedin: '' });
+      setCurrentTeamMember({ role: '', brandentifier: '' });
     },
     onError: (error: any) => {
       console.error('Error creating project:', error);
@@ -271,7 +271,7 @@ const ProjectsFixed = () => {
       projectForm.reset();
       setTeamMembers([]);
       setProjectImages([]);
-      setCurrentTeamMember({ role: '', linkedin: '' });
+      setCurrentTeamMember({ role: '', brandentifier: '' });
     },
     onError: (error: any) => {
       console.error('Error updating project:', error);
@@ -342,9 +342,9 @@ const ProjectsFixed = () => {
   });
 
   const addTeamMember = () => {
-    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
+    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.brandentifier)) {
       setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
-      setCurrentTeamMember({ role: '', linkedin: '' });
+      setCurrentTeamMember({ role: '', brandentifier: '' });
     }
   };
 
@@ -437,7 +437,7 @@ const ProjectsFixed = () => {
                   projectId: projectId,
                   name: member.role || 'Collaborator', // Use role as name
                   role: member.role || 'Team Member',
-                  profileLink: member.linkedin || null,
+                  profileLink: member.brandentifier || null,
                 }),
               });
             } catch (error) {
@@ -612,7 +612,8 @@ const ProjectsFixed = () => {
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full mb-6 dark-tabs-list">
                   <TabsTrigger value="details" className="flex-1 dark-tabs-trigger">Details</TabsTrigger>
-                  <TabsTrigger value="media" className="flex-1 dark-tabs-trigger">Media</TabsTrigger>
+                  <TabsTrigger value="images" className="flex-1 dark-tabs-trigger">Images</TabsTrigger>
+                  <TabsTrigger value="videos" className="flex-1 dark-tabs-trigger">Videos</TabsTrigger>
                   <TabsTrigger value="team" className="flex-1 dark-tabs-trigger">Team</TabsTrigger>
                   <TabsTrigger value="endorsements" className="flex-1 dark-tabs-trigger">Client</TabsTrigger>
                 </TabsList>
@@ -689,7 +690,7 @@ const ProjectsFixed = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="media" className="space-y-6 pt-6">
+                <TabsContent value="images" className="space-y-6 pt-6">
                   <div className="space-y-6">
                     {/* Project Images Section */}
                     <div className="space-y-4">
@@ -819,7 +820,11 @@ const ProjectsFixed = () => {
                         )}
                       </div>
                     </div>
-                    
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="videos" className="space-y-6 pt-6">
+                  <div className="space-y-6">
                     {/* Project Video Section */}
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
@@ -885,8 +890,8 @@ const ProjectsFixed = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex-1 space-y-2">
                               <div className="text-white/90 font-medium">{member.role || 'Team Member'}</div>
-                              {member.linkedin && (
-                                <div className="text-white/70 text-sm break-all">{member.linkedin}</div>
+                              {member.brandentifier && (
+                                <div className="text-white/70 text-sm break-all">{member.brandentifier}</div>
                               )}
                             </div>
                             <button
@@ -914,11 +919,11 @@ const ProjectsFixed = () => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-white/80 text-sm">LinkedIn/Portfolio</label>
+                              <label className="text-white/80 text-sm">Brandentifier Profile</label>
                               <input
-                                value={currentTeamMember.linkedin}
-                                onChange={(e) => setCurrentTeamMember({...currentTeamMember, linkedin: e.target.value})}
-                                placeholder="https://linkedin.com/in/username"
+                                value={currentTeamMember.brandentifier}
+                                onChange={(e) => setCurrentTeamMember({...currentTeamMember, brandentifier: e.target.value})}
+                                placeholder="https://brandentifier.replit.app/profile/username"
                                 className="neo-glass-input"
                               />
                             </div>
@@ -927,7 +932,7 @@ const ProjectsFixed = () => {
                           <button
                             type="button"
                             onClick={addTeamMember}
-                            disabled={!currentTeamMember.role && !currentTeamMember.linkedin}
+                            disabled={!currentTeamMember.role && !currentTeamMember.brandentifier}
                             className="w-full p-3 neo-glass-button disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm flex items-center justify-center gap-2"
                           >
                             <Plus className="h-4 w-4" />
@@ -1141,7 +1146,7 @@ const ProjectsFixed = () => {
                           const existingTeamMembers = (selectedProject as any).collaborators.map((collab: any) => ({
                             id: collab.id,
                             role: collab.role || collab.name,
-                            linkedin: collab.profileLink || ''
+                            brandentifier: collab.profileLink || ''
                           }));
                           setTeamMembers(existingTeamMembers);
                         } else {
