@@ -439,6 +439,18 @@ export default function ProjectForm({
     }
   };
   
+  // Team member management functions
+  const addTeamMember = () => {
+    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
+      setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
+      setCurrentTeamMember({ role: '', linkedin: '' });
+    }
+  };
+
+  const removeTeamMember = (id: number) => {
+    setTeamMembers(teamMembers.filter(member => member.id !== id));
+  };
+  
   // Update existing media when project changes
   useEffect(() => {
     setExistingMedia(existingProject?.mediaUrls || []);
