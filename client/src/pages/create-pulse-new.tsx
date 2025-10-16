@@ -1229,21 +1229,38 @@ export default function CreatePulsePage() {
                             
                             {teamMembers.map((member, index) => (
                               <div key={index} className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
-                                <div className="flex items-center gap-2">
-                                  <div className="flex-1 space-y-2">
-                                    <Label className="text-white">Team Member {index + 1}</Label>
-                                    <Input
-                                      placeholder="https://brandentifier.replit.app/r/abc123xyz789"
-                                      value={member}
-                                      onChange={(e) => updateTeamMember(index, e.target.value)}
-                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                                    />
+                                <div className="flex items-start gap-2">
+                                  <div className="flex-1 space-y-4">
+                                    <div className="space-y-2">
+                                      <Label className="text-white">Role</Label>
+                                      <Input
+                                        placeholder="e.g., Lead Developer, Designer, Project Manager"
+                                        value={member.split('|||')[0] || ''}
+                                        onChange={(e) => {
+                                          const parts = member.split('|||');
+                                          updateTeamMember(index, `${e.target.value}|||${parts[1] || ''}`);
+                                        }}
+                                        className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label className="text-white">Brandentifier Profile</Label>
+                                      <Input
+                                        placeholder="https://brandentifier.replit.app/profile/username"
+                                        value={member.split('|||')[1] || ''}
+                                        onChange={(e) => {
+                                          const parts = member.split('|||');
+                                          updateTeamMember(index, `${parts[0] || ''}|||${e.target.value}`);
+                                        }}
+                                        className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                      />
+                                    </div>
                                   </div>
                                   {teamMembers.length > 1 && (
                                     <button
                                       type="button"
                                       onClick={() => removeTeamMember(index)}
-                                      className="neo-glass-button neo-glass-icon-button mt-6"
+                                      className="neo-glass-button neo-glass-icon-button mt-1"
                                     >
                                       <X className="h-4 w-4" />
                                     </button>
