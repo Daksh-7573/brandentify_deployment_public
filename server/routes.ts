@@ -6092,6 +6092,15 @@ ${extractedText.substring(0, 5000)}
         console.log(`[POST /portfolios] User already has a portfolio, updating instead of creating`);
         // Update the existing portfolio instead of creating a new one
         const updatedPortfolio = await storage.updatePortfolio(existingPortfolio.id, req.body);
+        
+        // Update user's selectedPortfolioLayout to persist the choice
+        if (updatedPortfolio?.layout) {
+          await storage.updateUser(req.body.userId, { 
+            selectedPortfolioLayout: updatedPortfolio.layout 
+          });
+          console.log(`[POST /portfolios] Updated user's selectedPortfolioLayout to: ${updatedPortfolio.layout}`);
+        }
+        
         return res.status(200).json(updatedPortfolio);
       }
       
@@ -6099,6 +6108,15 @@ ${extractedText.substring(0, 5000)}
       const portfolioData = insertPortfolioSchema.parse(req.body);
       const portfolio = await storage.createPortfolio(portfolioData);
       console.log(`[POST /portfolios] Created portfolio with ID: ${portfolio.id}`);
+      
+      // Update user's selectedPortfolioLayout to persist the choice
+      if (portfolio.layout) {
+        await storage.updateUser(req.body.userId, { 
+          selectedPortfolioLayout: portfolio.layout 
+        });
+        console.log(`[POST /portfolios] Updated user's selectedPortfolioLayout to: ${portfolio.layout}`);
+      }
+      
       res.status(201).json(portfolio);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -6134,6 +6152,15 @@ ${extractedText.substring(0, 5000)}
       }
       
       console.log(`[PUT /portfolios/:id] Successfully updated portfolio:`, portfolio);
+      
+      // Update user's selectedPortfolioLayout to persist the choice
+      if (portfolio.layout && portfolio.userId) {
+        await storage.updateUser(portfolio.userId, { 
+          selectedPortfolioLayout: portfolio.layout 
+        });
+        console.log(`[PUT /portfolios/:id] Updated user's selectedPortfolioLayout to: ${portfolio.layout}`);
+      }
+      
       res.json(portfolio);
     } catch (error) {
       console.error("Error updating portfolio:", error);
