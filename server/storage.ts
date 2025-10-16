@@ -9214,7 +9214,7 @@ export class DatabaseStorage implements IStorage {
     const validKeys = [
       'id', 'username', 'email', 'password', 'phoneNumber', 'name', 'brandName',
       'photoURL', 'title', 'company', 'aboutMe', 'location', 'industry', 'domain', 
-      'lookingFor', 'whatIOffer', 'visitingCardType', 'profileCompleted',
+      'lookingFor', 'whatIOffer', 'visitingCardType', 'selectedPortfolioLayout', 'profileCompleted',
       'emailVerified', 'emailVerificationToken', 'emailVerificationExpires',
       'createdAt',
       // New branding fields
@@ -9302,6 +9302,9 @@ export class DatabaseStorage implements IStorage {
             break;
           case 'visitingCardType':
             updateData.visitingCardType = value;
+            break;
+          case 'selectedPortfolioLayout':
+            updateData.selectedPortfolioLayout = value;
             break;
           case 'profileCompleted':
             updateData.profileCompleted = value;
