@@ -13,6 +13,7 @@ interface BrandOfTheDayWithUser extends BrandOfTheDayType {
     name: string | null;
     photoURL: string | null;
     title: string | null;
+    randomProfileLink: string | null;
   };
 }
 
@@ -61,7 +62,8 @@ export default function BrandOfTheDay() {
               userData: {
                 name: userData.name,
                 photoURL: userData.photoURL,
-                title: userData.title
+                title: userData.title,
+                randomProfileLink: userData.randomProfileLink
               }
             });
           } else {
@@ -75,7 +77,8 @@ export default function BrandOfTheDay() {
                 userData: {
                   name: userData.name,
                   photoURL: userData.photoURL || "/images/default-avatar.png", // Default avatar if none exists
-                  title: userData.title
+                  title: userData.title,
+                  randomProfileLink: userData.randomProfileLink
                 }
               });
             }
@@ -163,7 +166,7 @@ export default function BrandOfTheDay() {
             </div>
             <div className="mt-3">
               {/* View Profile Button */}
-              <a href={`/profile/${brandWithUser.userId}`} target="_blank" rel="noopener noreferrer">
+              <a href={brandWithUser.userData?.randomProfileLink ? `/r/${brandWithUser.userData.randomProfileLink}` : `/profile/${brandWithUser.userId}`} target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="default" 
                   size="sm"
