@@ -876,7 +876,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Name*</label>
                         <input
-                          {...form.register("clientName")}
+                          {...projectForm.register("clientName")}
                           placeholder="John Smith"
                           className="neo-glass-input"
                         />
@@ -886,7 +886,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Email</label>
                         <input
-                          {...form.register("clientEmail")}
+                          {...projectForm.register("clientEmail")}
                           type="email"
                           placeholder="client@company.com"
                           className="neo-glass-input"
@@ -897,7 +897,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Title</label>
                         <input
-                          {...form.register("clientTitle")}
+                          {...projectForm.register("clientTitle")}
                           placeholder="CEO, Product Manager, etc."
                           className="neo-glass-input"
                         />
@@ -907,7 +907,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Company*</label>
                         <input
-                          {...form.register("clientCompany")}
+                          {...projectForm.register("clientCompany")}
                           placeholder="Company Name"
                           className="neo-glass-input"
                         />
@@ -917,7 +917,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Testimonial</label>
                         <textarea
-                          {...form.register("clientMessage")}
+                          {...projectForm.register("clientMessage")}
                           placeholder="What did your client say about this project?"
                           className="neo-glass-input min-h-[100px]"
                         />
@@ -927,7 +927,7 @@ const ProjectsFixed = () => {
                       <div className="space-y-2">
                         <label className="text-white/80 text-sm">Client Profile Link</label>
                         <input
-                          {...form.register("clientProfileLink")}
+                          {...projectForm.register("clientProfileLink")}
                           placeholder="https://brandentifier.replit.app/profile/username"
                           className="neo-glass-input"
                         />
