@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
-import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
+import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2, Pencil } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -954,6 +954,30 @@ const ProjectsFixed = () => {
                       Visit Project
                     </a>
                   )}
+
+                  <button
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      // Wait for view modal to close, then open edit modal
+                      setTimeout(() => {
+                        // Pre-fill the form with existing project data
+                        projectForm.reset({
+                          title: selectedProject.title,
+                          description: selectedProject.description,
+                          category: selectedProject.category,
+                          industry: selectedProject.industry,
+                          startDate: selectedProject.startDate,
+                          projectUrl: selectedProject.projectUrl,
+                          clientInfo: selectedProject.clientInfo
+                        });
+                        setIsAddModalOpen(true);
+                      }, 100);
+                    }}
+                    className="px-4 py-2 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl flex items-center gap-2"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </button>
 
                   <button
                     onClick={() => setIsViewModalOpen(false)}
