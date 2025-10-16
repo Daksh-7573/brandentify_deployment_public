@@ -8,6 +8,9 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { IndustryCombobox } from '@/components/ui/industry-combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { INDUSTRY_DOMAINS } from '@shared/constants';
 
 interface Project {
   id: number;
@@ -40,6 +43,8 @@ const ProjectsFixed = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', brandentifier: '' });
+  const [selectedIndustry, setSelectedIndustry] = useState<string>('');
+  const [selectedDomain, setSelectedDomain] = useState<string>('');
   
   // Media state management
   const [projectImages, setProjectImages] = useState<File[]>([]);
@@ -206,6 +211,8 @@ const ProjectsFixed = () => {
       setTeamMembers([]);
       setProjectImages([]);
       setCurrentTeamMember({ role: '', brandentifier: '' });
+      setSelectedIndustry('');
+      setSelectedDomain('');
     },
     onError: (error: any) => {
       console.error('Error creating project:', error);
@@ -272,6 +279,8 @@ const ProjectsFixed = () => {
       setTeamMembers([]);
       setProjectImages([]);
       setCurrentTeamMember({ role: '', brandentifier: '' });
+      setSelectedIndustry('');
+      setSelectedDomain('');
     },
     onError: (error: any) => {
       console.error('Error updating project:', error);
@@ -352,6 +361,18 @@ const ProjectsFixed = () => {
     setTeamMembers(teamMembers.filter(member => member.id !== id));
   };
 
+  const handleIndustryChange = (value: string) => {
+    setSelectedIndustry(value);
+    setSelectedDomain('');
+    projectForm.setValue('industry', value);
+    projectForm.setValue('domain', '');
+  };
+
+  const handleDomainChange = (value: string) => {
+    setSelectedDomain(value);
+    projectForm.setValue('domain', value);
+  };
+
   // Media handlers from Industry Pulse
   const handleImagesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -394,12 +415,15 @@ const ProjectsFixed = () => {
       console.log('Using user for project creation:', { user, userIdentifier });
       
       // Prepare the project data matching the database schema
+      const fullIndustry = selectedIndustry && selectedDomain 
+        ? `${selectedIndustry}: ${selectedDomain}` 
+        : selectedIndustry || '';
+      
       const projectData = {
         userId: parseInt(userIdentifier), // Convert to number for backend validation
         title: values.title || '',
         description: values.description || '',
-        category: values.category || '',
-        industry: values.industry || '',
+        industry: fullIndustry,
         projectUrl: values.projectUrl || '',
         thumbnailUrl: null, // TODO: Implement proper file upload with FormData
         mediaUrls: [], // TODO: Implement proper file upload with FormData
@@ -592,6 +616,8 @@ const ProjectsFixed = () => {
           setProjectVideo(null);
           setFeaturedImageIndex(0);
           setExistingMedia([]);
+          setSelectedIndustry('');
+          setSelectedDomain('');
           setMediaErrors({});
           if (multipleImagesInputRef.current) multipleImagesInputRef.current.value = '';
           if (videoInputRef.current) videoInputRef.current.value = '';
@@ -640,51 +666,48 @@ const ProjectsFixed = () => {
                       />
                     </div>
 
-                    {/* Category and Industry Row */}
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {/* Category */}
-                      <div className="space-y-2">
-                        <label className="text-white font-medium text-sm">Category</label>
-                        <input
-                          {...projectForm.register('category')}
-                          placeholder="e.g., Web Development"
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Industry */}
-                      <div className="space-y-2">
-                        <label className="text-white font-medium text-sm">Industry</label>
-                        <IndustryCombobox
-                          value={projectForm.watch('industry') || ''}
-                          onChange={(value) => projectForm.setValue('industry', value)}
-                          triggerClassName="neo-glass-input"
-                          contentClassName="bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                        />
-                      </div>
+                    {/* Industry Row */}
+                    <div className="space-y-2">
+                      <label className="text-white font-medium text-sm">Industry</label>
+                      <IndustryCombobox
+                        value={selectedIndustry || ''}
+                        onChange={handleIndustryChange}
+                        triggerClassName="neo-glass-input"
+                        contentClassName="bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                        useDarkMode={true}
+                      />
                     </div>
 
-                    {/* Start Date and Project URL Row */}
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {/* Start Date */}
+                    {/* Domain (only shown if industry has domains) */}
+                    {selectedIndustry && INDUSTRY_DOMAINS[selectedIndustry] && (
                       <div className="space-y-2">
-                        <label className="text-white font-medium text-sm">Start Date</label>
-                        <input
-                          type="date"
-                          {...projectForm.register('startDate')}
-                          className="neo-glass-input"
-                        />
+                        <label className="text-white font-medium text-sm">Domain (Specialized Area)</label>
+                        <Select 
+                          value={selectedDomain} 
+                          onValueChange={handleDomainChange}
+                        >
+                          <SelectTrigger className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                            <SelectValue placeholder="Select a domain" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                            {INDUSTRY_DOMAINS[selectedIndustry].map((domain) => (
+                              <SelectItem key={domain} value={domain} className="text-white hover:bg-white/10">
+                                {domain}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
+                    )}
 
-                      {/* Project URL */}
-                      <div className="space-y-2">
-                        <label className="text-white font-medium text-sm">Project URL</label>
-                        <input
-                          {...projectForm.register('projectUrl')}
-                          placeholder="https://example.com"
-                          className="neo-glass-input"
-                        />
-                      </div>
+                    {/* Project URL */}
+                    <div className="space-y-2">
+                      <label className="text-white font-medium text-sm">Project URL</label>
+                      <input
+                        {...projectForm.register('projectUrl')}
+                        placeholder="https://example.com"
+                        className="neo-glass-input"
+                      />
                     </div>
                   </div>
                 </TabsContent>
@@ -1138,13 +1161,26 @@ const ProjectsFixed = () => {
                         // Set editing mode with project ID
                         setEditingProjectId(selectedProject.id);
                         
+                        // Parse industry to extract industry and domain
+                        let industryPart = '';
+                        let domainPart = '';
+                        if (selectedProject.industry && selectedProject.industry.includes(': ')) {
+                          const parts = selectedProject.industry.split(': ');
+                          industryPart = parts[0];
+                          domainPart = parts[1];
+                        } else {
+                          industryPart = selectedProject.industry || '';
+                        }
+                        
+                        setSelectedIndustry(industryPart);
+                        setSelectedDomain(domainPart);
+                        
                         // Pre-fill the form with existing project data
                         projectForm.reset({
                           title: selectedProject.title,
                           description: selectedProject.description,
-                          category: selectedProject.category,
-                          industry: selectedProject.industry,
-                          startDate: selectedProject.startDate,
+                          industry: industryPart,
+                          domain: domainPart,
                           projectUrl: selectedProject.projectUrl,
                           clientInfo: selectedProject.clientInfo
                         });
