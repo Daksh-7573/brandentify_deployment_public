@@ -428,27 +428,19 @@ Target audience: ${userContext.length} professionals in ${industry}
 
 Requirements:
 - Create brief summaries (2-3 sentences max) instead of long content
-- Include credible reference links for "Read More" functionality
 - Explains the career implications of this event
 - Provides actionable advice for professionals in ${industry}
 - Suggests relevant skills to develop
 - Encourages use of Brandentifier features (portfolio updates, networking)
 - Includes 2-3 relevant hashtags
-- Provide authentic source links to reputable publications
+- DO NOT include reference links in your response - they will be added automatically when relevant
 
 Respond with JSON format:
 {
   "title": "Engaging title about the event (max 80 chars)",
   "content": "Brief summary (2-3 sentences max) with key insights",
   "industry": "${industry}",
-  "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
-  "referenceLinks": [
-    {
-      "title": "Source article title",
-      "url": "https://credible-source.com/article",
-      "source": "Publication name"
-    }
-  ]
+  "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
 }
     `;
 
@@ -462,12 +454,16 @@ Respond with JSON format:
 
       const generated = JSON.parse(response.choices[0].message.content || '{}');
       
+      // Generate contextual links ONLY if truly relevant to the pulse content (same as scheduled pulses)
+      const pulseContent = generated.content || `Important developments in ${industry}. Stay informed and adapt your career strategy accordingly.`;
+      const contextualLinks = generateContextualLinks(pulseContent, industry);
+      
       return {
         title: generated.title || `${industry} Industry Update`,
-        content: generated.content || `Important developments in ${industry}. Stay informed and adapt your career strategy accordingly.`,
+        content: pulseContent,
         industry: industry,
         hashtags: generated.hashtags || [`#${industry}`, '#IndustryNews'],
-        referenceLinks: generated.referenceLinks || []
+        referenceLinks: contextualLinks // Will be empty array if no relevant links
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating event content:', error);
@@ -477,7 +473,7 @@ Respond with JSON format:
         content: `Important developments in ${industry}. Consider how these changes might impact your career path and what new skills might be valuable.`,
         industry: industry,
         hashtags: [`#${industry}`, '#CareerStrategy'],
-        referenceLinks: []
+        referenceLinks: [] // No links for fallback
       };
     }
   }
