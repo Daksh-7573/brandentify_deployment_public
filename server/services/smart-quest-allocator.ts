@@ -414,14 +414,25 @@ export class SmartQuestAllocator {
     // Get quest types allowed by Brand Goals (STRICT FILTERING)
     const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
     
-    // Check if social quests are allowed by brand goals
+    // Define all social quest types
     const socialQuestTypes = ['social_quest', 'social_post'];
-    const allowedSocialTypes = socialQuestTypes.filter(type => brandGoalAllowedTypes.includes(type));
     
-    // If no social quest types are allowed by brand goals, return empty
-    if (allowedSocialTypes.length === 0 && userGoals.length > 0) {
-      console.log('[SmartQuestAllocator] ❌ No social quest types allowed by Brand Goals');
-      return [];
+    // Determine which social quest types to use
+    let allowedSocialTypes: string[];
+    
+    if (userGoals.length === 0) {
+      // Fallback: If user has NO brand goals selected, allow all social quest types
+      console.log('[SmartQuestAllocator] ⚠️ No brand goals selected - allowing all social quests as fallback');
+      allowedSocialTypes = socialQuestTypes;
+    } else {
+      // Filter social quest types by brand goals
+      allowedSocialTypes = socialQuestTypes.filter(type => brandGoalAllowedTypes.includes(type));
+      
+      // If user has selected brand goals but none allow social quests, return empty
+      if (allowedSocialTypes.length === 0) {
+        console.log('[SmartQuestAllocator] ❌ No social quest types allowed by Brand Goals');
+        return [];
+      }
     }
     
     // Get social quests not assigned today (ACTIVE ONLY, filtered by allowed types)
