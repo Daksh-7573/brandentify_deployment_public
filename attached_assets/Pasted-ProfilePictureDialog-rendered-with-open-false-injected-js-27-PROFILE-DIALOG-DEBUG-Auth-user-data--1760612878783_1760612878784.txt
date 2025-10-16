@@ -1,0 +1,176 @@
+ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: Object
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 Cached response for /api/notifications/2/count
+injected.js:27 Cached response for /api/messaging/unread/count?userId=2
+injected.js:27 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: null
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
+injected.js:27 Opening project details for: {id: 44, userId: 2, title: 'World Life', description: 'World Life', startDate: '2025-10-16', …}
+injected.js:27 Making API calls to /api/projects/44/collaborators and /api/projects/44/endorsements
+injected.js:27 Collaborators response status: 200 OK
+injected.js:27 Endorsements response status: 200 OK
+injected.js:27 Fresh project collaborators: (2) [{…}, {…}]
+injected.js:27 Fresh project endorsements: (2) [{…}, {…}]
+injected.js:27 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ injected.js:27
+(anonymous) @ chunk-ADFPNHZT.js?v=4d13e2f4:340
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=4d13e2f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=4d13e2f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=4d13e2f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=4d13e2f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=4d13e2f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=4d13e2f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=4d13e2f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=4d13e2f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=4d13e2f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=4d13e2f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=4d13e2f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=4d13e2f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=4d13e2f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=4d13e2f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=4d13e2f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=4d13e2f4:197
+flushWork @ chunk-RPCDYKBN.js?v=4d13e2f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=4d13e2f4:384Understand this warning
+injected.js:204  DELETE https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/44 500 (Internal Server Error)
+apply @ injected.js:204
+mutationFn @ projects-fixed.tsx:222
+fn @ @tanstack_react-query.js?v=4d13e2f4:1189
+run @ @tanstack_react-query.js?v=4d13e2f4:494
+start @ @tanstack_react-query.js?v=4d13e2f4:536
+execute @ @tanstack_react-query.js?v=4d13e2f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=4d13e2f4:2630
+(anonymous) @ @tanstack_react-query.js?v=4d13e2f4:3295
+onClick @ projects-fixed.tsx:963
+callCallback2 @ chunk-RPCDYKBN.js?v=4d13e2f4:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=4d13e2f4:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=4d13e2f4:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=4d13e2f4:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=4d13e2f4:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=4d13e2f4:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=4d13e2f4:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=4d13e2f4:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=4d13e2f4:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=4d13e2f4:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=4d13e2f4:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=4d13e2f4:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=4d13e2f4:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5449Understand this error
+injected.js:204  DELETE https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/44 500 (Internal Server Error)
+apply @ injected.js:204
+mutationFn @ projects-fixed.tsx:222
+fn @ @tanstack_react-query.js?v=4d13e2f4:1189
+run @ @tanstack_react-query.js?v=4d13e2f4:494
+(anonymous) @ @tanstack_react-query.js?v=4d13e2f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=4d13e2f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=4d13e2f4:498
+start @ @tanstack_react-query.js?v=4d13e2f4:536
+execute @ @tanstack_react-query.js?v=4d13e2f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=4d13e2f4:2630
+(anonymous) @ @tanstack_react-query.js?v=4d13e2f4:3295
+onClick @ projects-fixed.tsx:963
+callCallback2 @ chunk-RPCDYKBN.js?v=4d13e2f4:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=4d13e2f4:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=4d13e2f4:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=4d13e2f4:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=4d13e2f4:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=4d13e2f4:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=4d13e2f4:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=4d13e2f4:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=4d13e2f4:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=4d13e2f4:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=4d13e2f4:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=4d13e2f4:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=4d13e2f4:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5449Understand this error
+injected.js:27 Error deleting project: Error: Failed to delete project
+    at Object.mutationFn (projects-fixed.tsx:225:31)
+(anonymous) @ injected.js:27
+onError @ projects-fixed.tsx:258
+execute @ @tanstack_react-query.js?v=4d13e2f4:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=4d13e2f4:2630
+(anonymous) @ @tanstack_react-query.js?v=4d13e2f4:3295
+onClick @ projects-fixed.tsx:963
+callCallback2 @ chunk-RPCDYKBN.js?v=4d13e2f4:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=4d13e2f4:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=4d13e2f4:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=4d13e2f4:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=4d13e2f4:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=4d13e2f4:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=4d13e2f4:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=4d13e2f4:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=4d13e2f4:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=4d13e2f4:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=4d13e2f4:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=4d13e2f4:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=4d13e2f4:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=4d13e2f4:5449Understand this error
+injected.js:27 [USER ID DEBUG] User object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [USER ID DEBUG] Selected userIdentifier: 2
+injected.js:27 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…zivylKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD//2Q==', …}
+injected.js:27 Profile page render - userIdentifier: 2
+injected.js:27 Profile page render - isUserDataLoading: false
+injected.js:27 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:27 Profile page render - userDataError: null
+injected.js:27 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+injected.js:27 [PROFILE PICTURE DEBUG] userIdentifier: 2
+injected.js:27 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:27 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+injected.js:27 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+injected.js:27 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'Founder', location: 'Gandhinagar, Gujarat, India', industry: 'Technology', …}
+injected.js:27 Profile completion percentage: 60
+injected.js:27 [PROFILE NEO DEBUG] userData?.lookingFor: mentorship
+injected.js:27 [PROFILE NEO DEBUG] Found category: {value: 'mentorship', label: 'Mentorship', icon: '🎯'}
+injected.js:27 [PROFILE NEO DEBUG] Final label: Mentorship Icon: 🎯
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 useProfileServices hook - services found directly: 3
+injected.js:27 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+injected.js:27 Skills component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 Skills component - Using userIdentifier: 2
+injected.js:27 WorkExperience component - user object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 WorkExperience component - Using userIdentifier: 2
+injected.js:27 ProfilePictureDialog rendered with open: false
+injected.js:27 [PROFILE DIALOG DEBUG] Auth user data: {id: 2, uid: undefined, email: 'nishant.brodos@gmail.com'}
+injected.js:27 [PROFILE DIALOG DEBUG] Using actualUserId: 2
