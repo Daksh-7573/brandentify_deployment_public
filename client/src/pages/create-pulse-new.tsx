@@ -41,7 +41,13 @@ export default function CreatePulsePage() {
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [mediaUrlInput, setMediaUrlInput] = useState("");
-  const [teamMembers, setTeamMembers] = useState<string[]>([""]);
+  interface TeamMember {
+    id: number;
+    role: string;
+    brandentifier: string;
+  }
+  
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [clientProfile, setClientProfile] = useState("");
   const videoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +77,7 @@ export default function CreatePulsePage() {
       setMediaUrlInput("");
       setSelectedProject(null);
       setActiveProjectTab('details');
-      setTeamMembers([""]);
+      setTeamMembers([]);
       setClientProfile("");
       
       // Invalidate pulse cache so user sees their new post
@@ -300,20 +306,22 @@ export default function CreatePulsePage() {
   
   // Team member management functions
   const addTeamMember = () => {
-    setTeamMembers([...teamMembers, ""]);
+    const newMember: TeamMember = {
+      id: Date.now(),
+      role: '',
+      brandentifier: ''
+    };
+    setTeamMembers([...teamMembers, newMember]);
   };
   
-  const removeTeamMember = (index: number) => {
-    if (teamMembers.length > 1) {
-      const newTeamMembers = teamMembers.filter((_, i) => i !== index);
-      setTeamMembers(newTeamMembers);
-    }
+  const removeTeamMember = (id: number) => {
+    setTeamMembers(teamMembers.filter(member => member.id !== id));
   };
   
-  const updateTeamMember = (index: number, value: string) => {
-    const newTeamMembers = [...teamMembers];
-    newTeamMembers[index] = value;
-    setTeamMembers(newTeamMembers);
+  const updateTeamMember = (id: number, field: 'role' | 'brandentifier', value: string) => {
+    setTeamMembers(teamMembers.map(member => 
+      member.id === id ? { ...member, [field]: value } : member
+    ));
   };
   
   // Handle media upload (images and videos)
@@ -1227,19 +1235,16 @@ export default function CreatePulsePage() {
                               <p className="text-xs text-gray-400">Add team members who worked on this project</p>
                             </div>
                             
-                            {teamMembers.map((member, index) => (
-                              <div key={index} className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
+                            {teamMembers.map((member) => (
+                              <div key={member.id} className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
                                 <div className="flex items-start gap-2">
                                   <div className="flex-1 space-y-4">
                                     <div className="space-y-2">
                                       <Label className="text-white">Role</Label>
                                       <Input
                                         placeholder="e.g., Lead Developer, Designer, Project Manager"
-                                        value={member.split('|||')[0] || ''}
-                                        onChange={(e) => {
-                                          const parts = member.split('|||');
-                                          updateTeamMember(index, `${e.target.value}|||${parts[1] || ''}`);
-                                        }}
+                                        value={member.role}
+                                        onChange={(e) => updateTeamMember(member.id, 'role', e.target.value)}
                                         className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                                       />
                                     </div>
@@ -1247,24 +1252,19 @@ export default function CreatePulsePage() {
                                       <Label className="text-white">Brandentifier Profile</Label>
                                       <Input
                                         placeholder="https://brandentifier.replit.app/profile/username"
-                                        value={member.split('|||')[1] || ''}
-                                        onChange={(e) => {
-                                          const parts = member.split('|||');
-                                          updateTeamMember(index, `${parts[0] || ''}|||${e.target.value}`);
-                                        }}
+                                        value={member.brandentifier}
+                                        onChange={(e) => updateTeamMember(member.id, 'brandentifier', e.target.value)}
                                         className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                                       />
                                     </div>
                                   </div>
-                                  {teamMembers.length > 1 && (
-                                    <button
-                                      type="button"
-                                      onClick={() => removeTeamMember(index)}
-                                      className="neo-glass-button neo-glass-icon-button mt-1"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </button>
-                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTeamMember(member.id)}
+                                    className="neo-glass-button neo-glass-icon-button mt-1"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
                                 </div>
                               </div>
                             ))}
