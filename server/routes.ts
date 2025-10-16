@@ -3459,8 +3459,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send notification if the collaborator has a userId (registered user)
       if (collaborator.userId) {
         try {
-          const project = await storage.getProject(collaborator.projectId);
-          const projectOwner = await storage.getUser(project.userId);
+          const project = await storage.getProjectById(collaborator.projectId);
+          const projectOwner = project ? await storage.getUser(project.userId) : null;
           
           const { createNotification } = await import('./services/notification-service');
           await createNotification({
@@ -3578,8 +3578,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send notification if the endorsement has a userId (registered user)
       if (endorsement.userId) {
         try {
-          const project = await storage.getProject(endorsement.projectId);
-          const projectOwner = await storage.getUser(project.userId);
+          const project = await storage.getProjectById(endorsement.projectId);
+          const projectOwner = project ? await storage.getUser(project.userId) : null;
           
           const { createNotification } = await import('./services/notification-service');
           await createNotification({

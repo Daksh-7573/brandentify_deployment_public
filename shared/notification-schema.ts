@@ -18,7 +18,8 @@ export type NotificationCategory =
   | 'achievement'           // Achievement unlocked
   | 'api_error'             // API errors
   | 'team_member_request'   // When added as a team member to a project
-  | 'client_request';       // When added as a client to a project
+  | 'client_request'        // When added as a client to a project
+  | 'project_tag';          // When tagged in a project (team member or client)
 
 // Notification table schema
 export const notifications = pgTable('notifications', {
@@ -37,7 +38,8 @@ export const notifications = pgTable('notifications', {
       'achievement',
       'api_error',
       'team_member_request',
-      'client_request'
+      'client_request',
+      'project_tag'
     ] 
   }).notNull(),
   title: text('title').notNull(),
