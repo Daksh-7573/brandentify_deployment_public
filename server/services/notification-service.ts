@@ -39,16 +39,11 @@ export async function getUserNotifications(
   onlyUnread: boolean = false,
   limit: number = 50
 ): Promise<Notification[]> {
-  const query = db
-    .select()
-    .from(notifications)
-    .where(eq(notifications.userId, userId))
-    .orderBy(desc(notifications.createdAt))
-    .limit(limit);
+  let results: Notification[];
   
   if (onlyUnread) {
     // Get unread notifications
-    return await db
+    results = await db
       .select()
       .from(notifications)
       .where(and(
@@ -57,9 +52,24 @@ export async function getUserNotifications(
       ))
       .orderBy(desc(notifications.createdAt))
       .limit(limit);
+  } else {
+    results = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(limit);
   }
   
-  return await query;
+  // Parse metadata JSON strings into objects
+  return results.map(notification => ({
+    ...notification,
+    metadata: notification.metadata 
+      ? (typeof notification.metadata === 'string' 
+          ? JSON.parse(notification.metadata) 
+          : notification.metadata)
+      : undefined
+  }));
 }
 
 /**
