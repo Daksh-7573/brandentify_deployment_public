@@ -3660,7 +3660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const projectId = parseInt(req.params.projectId);
       const { profileUrl } = req.body;
-      const requestingUserId = req.user?.id; // From auth middleware
+      const requestingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!requestingUserId) {
         return res.status(401).json({ message: "Authentication required" });
@@ -3752,7 +3752,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const projectId = parseInt(req.params.projectId);
       const { profileUrl } = req.body;
-      const requestingUserId = req.user?.id; // From auth middleware
+      const requestingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!requestingUserId) {
         return res.status(401).json({ message: "Authentication required" });
@@ -3844,7 +3844,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/projects/collaborators/:id/approve", async (req: Request, res: Response) => {
     try {
       const collaboratorId = parseInt(req.params.id);
-      const approvingUserId = req.user?.id; // From auth middleware
+      const approvingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!approvingUserId) {
         return res.status(401).json({ message: "Authentication required" });
@@ -3884,7 +3884,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/projects/collaborators/:id/decline", async (req: Request, res: Response) => {
     try {
       const collaboratorId = parseInt(req.params.id);
-      const decliningUserId = req.user?.id; // From auth middleware
+      const decliningUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!decliningUserId) {
         return res.status(401).json({ message: "Authentication required" });
@@ -3924,7 +3924,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/projects/endorsements/:id/approve", async (req: Request, res: Response) => {
     try {
       const endorsementId = parseInt(req.params.id);
-      const approvingUserId = req.user?.id; // From auth middleware
+      const approvingUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!approvingUserId) {
         return res.status(401).json({ message: "Authentication required" });
@@ -3964,7 +3964,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/projects/endorsements/:id/decline", async (req: Request, res: Response) => {
     try {
       const endorsementId = parseInt(req.params.id);
-      const decliningUserId = req.user?.id; // From auth middleware
+      const decliningUserId = (req.session as any)?.userId || req.user?.id; // From session or auth middleware
       
       if (!decliningUserId) {
         return res.status(401).json({ message: "Authentication required" });
