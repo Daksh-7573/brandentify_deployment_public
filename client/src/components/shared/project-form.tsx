@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Video, CalendarIcon, UserPlus, Building2 } from 'lucide-react';
+import { Video, CalendarIcon, UserPlus, Building2, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -905,27 +905,38 @@ export default function ProjectForm({
                   </h3>
                 </div>
                 <p className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-gray-600")}>
-                  Enter the profile URL of the person you want to add as a team member. They will receive a notification to approve the request.
+                  Add team members with their role and profile link.
                 </p>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="e.g., /portfolio/username or /u/username" 
-                    value={teamMemberUrl}
-                    onChange={(e) => setTeamMemberUrl(e.target.value)}
-                    className={cn(
-                      className,
-                      useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
-                    )}
-                    data-testid="input-team-member-url"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>Role</Label>
+                    <Input
+                      placeholder="e.g., Designer, Developer, Manager"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={useDarkMode ? "text-white/80" : ""}>LinkedIn/Portfolio</Label>
+                    <Input
+                      placeholder="https://linkedin.com/in/username"
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                      )}
+                    />
+                  </div>
                   <Button 
                     type="button"
-                    onClick={handleAddTeamMember}
-                    disabled={isAddingTeamMember || !teamMemberUrl.trim()}
-                    className={useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
-                    data-testid="button-add-team-member"
+                    className={cn(
+                      "w-full",
+                      useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""
+                    )}
                   >
-                    {isAddingTeamMember ? "Sending..." : "Send Request"}
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Team Member
                   </Button>
                 </div>
               </div>

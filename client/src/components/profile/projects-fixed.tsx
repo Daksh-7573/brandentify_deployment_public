@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
-import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2, Pencil } from 'lucide-react';
+import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2, Pencil, Building2 } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
+import { IndustryCombobox } from '@/components/ui/industry-combobox';
 
 interface Project {
   id: number;
@@ -604,80 +605,72 @@ const ProjectsFixed = () => {
                 
                 <TabsContent value="details" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Project Title */}
+                    {/* Title */}
                     <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        Project Title
-                      </label>
+                      <label className="text-white font-medium text-sm">Title</label>
                       <input
                         {...projectForm.register('title')}
-                        placeholder="Enter project title..."
+                        placeholder="Project title"
                         className="neo-glass-input"
                       />
                     </div>
 
                     {/* Description */}
                     <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        Description
-                      </label>
+                      <label className="text-white font-medium text-sm">Description</label>
                       <textarea
                         {...projectForm.register('description')}
-                        placeholder="Describe your project..."
-                        rows={4}
+                        placeholder="Describe your project"
+                        rows={5}
                         className="neo-glass-input resize-none"
                       />
                     </div>
 
-                    {/* Category */}
-                    <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        Category
-                      </label>
-                      <select
-                        {...projectForm.register('category')}
-                        className="neo-glass-input h-12 px-4 py-3"
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                          backgroundPosition: 'right 1rem center',
-                          backgroundRepeat: 'no-repeat',
-                          backgroundSize: '1.5em 1.5em',
-                          paddingRight: '3rem',
-                          paddingLeft: '1rem',
-                          appearance: 'none',
-                          lineHeight: '1.5'
-                        }}
-                      >
-                        <option value="" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Select category...</option>
-                        <option value="web" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Web Development</option>
-                        <option value="mobile" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Mobile App</option>
-                        <option value="design" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Design</option>
-                        <option value="other" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Other</option>
-                      </select>
+                    {/* Category and Industry Row */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Category */}
+                      <div className="space-y-2">
+                        <label className="text-white font-medium text-sm">Category</label>
+                        <input
+                          {...projectForm.register('category')}
+                          placeholder="e.g., Web Development"
+                          className="neo-glass-input"
+                        />
+                      </div>
+
+                      {/* Industry */}
+                      <div className="space-y-2">
+                        <label className="text-white font-medium text-sm">Industry</label>
+                        <IndustryCombobox
+                          value={projectForm.watch('industry') || ''}
+                          onChange={(value) => projectForm.setValue('industry', value)}
+                          triggerClassName="neo-glass-input"
+                          contentClassName="bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                        />
+                      </div>
                     </div>
 
-                    {/* Industry */}
-                    <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        Industry
-                      </label>
-                      <input
-                        {...projectForm.register('industry')}
-                        placeholder="Enter industry..."
-                        className="neo-glass-input"
-                      />
-                    </div>
+                    {/* Start Date and Project URL Row */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Start Date */}
+                      <div className="space-y-2">
+                        <label className="text-white font-medium text-sm">Start Date</label>
+                        <input
+                          type="date"
+                          {...projectForm.register('startDate')}
+                          className="neo-glass-input"
+                        />
+                      </div>
 
-                    {/* Project URL */}
-                    <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        Project URL
-                      </label>
-                      <input
-                        {...projectForm.register('projectUrl')}
-                        placeholder="https://example.com"
-                        className="neo-glass-input"
-                      />
+                      {/* Project URL */}
+                      <div className="space-y-2">
+                        <label className="text-white font-medium text-sm">Project URL</label>
+                        <input
+                          {...projectForm.register('projectUrl')}
+                          placeholder="https://example.com"
+                          className="neo-glass-input"
+                        />
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -865,76 +858,28 @@ const ProjectsFixed = () => {
 
                 <TabsContent value="endorsements" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Client Information */}
-                    <div className="space-y-4">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Client Information
-                      </label>
-                      
-                      {/* Client Name */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Name*</label>
-                        <input
-                          {...projectForm.register("clientName")}
-                          placeholder="John Smith"
-                          className="neo-glass-input"
-                        />
+                    {/* Add Client Section */}
+                    <div className="p-6 rounded-lg border border-white/10 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-[#1DB954]" />
+                        <h3 className="text-lg font-semibold text-white">Add Client</h3>
                       </div>
-
-                      {/* Client Email */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Email</label>
+                      <p className="text-sm text-gray-300">
+                        Enter the profile URL of the client you worked with on this project.
+                      </p>
+                      <div className="flex gap-2">
                         <input
-                          {...projectForm.register("clientEmail")}
-                          type="email"
-                          placeholder="client@company.com"
-                          className="neo-glass-input"
+                          placeholder="e.g., /portfolio/username or /u/username"
+                          className="neo-glass-input flex-1"
                         />
-                      </div>
-
-                      {/* Client Title */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Title</label>
-                        <input
-                          {...projectForm.register("clientTitle")}
-                          placeholder="CEO, Product Manager, etc."
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Company */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Company*</label>
-                        <input
-                          {...projectForm.register("clientCompany")}
-                          placeholder="Company Name"
-                          className="neo-glass-input"
-                        />
-                      </div>
-
-                      {/* Client Message/Testimonial */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Testimonial</label>
-                        <textarea
-                          {...projectForm.register("clientMessage")}
-                          placeholder="What did your client say about this project?"
-                          className="neo-glass-input min-h-[100px]"
-                        />
-                      </div>
-
-                      {/* Client Profile Link */}
-                      <div className="space-y-2">
-                        <label className="text-white/80 text-sm">Client Profile Link</label>
-                        <input
-                          {...projectForm.register("clientProfileLink")}
-                          placeholder="https://brandentifier.replit.app/profile/username"
-                          className="neo-glass-input"
-                        />
-                        <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
+                        <button
+                          type="button"
+                          className="px-4 py-2 bg-[#1DB954] text-black font-medium rounded-md hover:bg-[#1DB954]/90 transition-colors"
+                        >
+                          Add Client
+                        </button>
                       </div>
                     </div>
-
                   </div>
                 </TabsContent>
               </Tabs>
