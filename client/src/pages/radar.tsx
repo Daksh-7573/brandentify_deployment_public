@@ -807,7 +807,7 @@ const Radar = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <Button variant="outline" asChild 
                       className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105">
-                      <Link to={`/profile/${selectedUser.username}`}>
+                      <Link to={selectedUser.randomProfileLink ? `/r/${selectedUser.randomProfileLink}` : `/profile/${selectedUser.username}`}>
                         <UserCheck className="mr-2 h-4 w-4" />
                         View Profile
                       </Link>
