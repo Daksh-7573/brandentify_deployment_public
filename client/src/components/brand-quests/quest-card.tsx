@@ -316,7 +316,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         </p>
         
         {/* Deliverable Specifications - New specific quest metadata */}
-        {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType || (questDefinition as any)?.bestTimeToPost) && (
+        {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType) && (
           <div className="ml-7 mt-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 space-y-1.5">
             {(questDefinition as any)?.deliverableFormat && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
@@ -327,33 +327,19 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             {(questDefinition as any)?.quantityValue && (questDefinition as any)?.quantityType && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">🎯 Requirement:</span>
-                <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType} {(questDefinition as any).quantityType === 'words' ? 'minimum' : ''}</span>
+                <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType}</span>
+              </div>
+            )}
+            {(questDefinition as any)?.platformConstraints && (
+              <div className="flex items-start gap-2 text-xs text-blue-200">
+                <span className="font-semibold">📱 Platform:</span>
+                <span>{(questDefinition as any).platformConstraints}</span>
               </div>
             )}
             {(questDefinition as any)?.guidanceSnippet && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">💡 How:</span>
                 <span>{(questDefinition as any).guidanceSnippet}</span>
-              </div>
-            )}
-            {(questDefinition as any)?.bestTimeToPost && (
-              <div className="flex flex-col gap-1">
-                <div className="flex items-start gap-2 text-xs text-emerald-300">
-                  <span className="font-semibold">⏰ Best time to post:</span>
-                  <div className="flex flex-col">
-                    <span>{(questDefinition as any).bestTimeToPost}</span>
-                    {(questDefinition as any)?.timeConfidence && (
-                      <span className="text-blue-200/60 text-[10px] mt-0.5">
-                        ({(questDefinition as any).timeConfidence}% confidence)
-                      </span>
-                    )}
-                    {(questDefinition as any)?.bestTimeUtc && (
-                      <span className="text-blue-200/50 text-[10px] mt-0.5">
-                        UTC: {(questDefinition as any).bestTimeUtc}
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
           </div>

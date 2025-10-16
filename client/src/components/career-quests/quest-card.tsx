@@ -152,50 +152,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         <CardDescription className="ml-7 mt-1">
           {questDefinition.description}
         </CardDescription>
-        
-        {/* Deliverable Specifications - New specific quest metadata */}
-        {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType || (questDefinition as any)?.bestTimeToPost) && (
-          <div className="ml-7 mt-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-lg p-3 space-y-1.5">
-            {(questDefinition as any)?.deliverableFormat && (
-              <div className="flex items-start gap-2 text-xs text-blue-700 dark:text-blue-300">
-                <span className="font-semibold">📋 Deliverable:</span>
-                <span>{(questDefinition as any).deliverableFormat}</span>
-              </div>
-            )}
-            {(questDefinition as any)?.quantityValue && (questDefinition as any)?.quantityType && (
-              <div className="flex items-start gap-2 text-xs text-blue-700 dark:text-blue-300">
-                <span className="font-semibold">🎯 Requirement:</span>
-                <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType} {(questDefinition as any).quantityType === 'words' ? 'minimum' : ''}</span>
-              </div>
-            )}
-            {(questDefinition as any)?.guidanceSnippet && (
-              <div className="flex items-start gap-2 text-xs text-blue-700 dark:text-blue-300">
-                <span className="font-semibold">💡 How:</span>
-                <span>{(questDefinition as any).guidanceSnippet}</span>
-              </div>
-            )}
-            {(questDefinition as any)?.bestTimeToPost && (
-              <div className="flex flex-col gap-1">
-                <div className="flex items-start gap-2 text-xs text-emerald-600 dark:text-emerald-400">
-                  <span className="font-semibold">⏰ Best time to post:</span>
-                  <div className="flex flex-col">
-                    <span>{(questDefinition as any).bestTimeToPost}</span>
-                    {(questDefinition as any)?.timeConfidence && (
-                      <span className="text-blue-600/60 dark:text-blue-400/60 text-[10px] mt-0.5">
-                        ({(questDefinition as any).timeConfidence}% confidence)
-                      </span>
-                    )}
-                    {(questDefinition as any)?.bestTimeUtc && (
-                      <span className="text-blue-600/50 dark:text-blue-400/50 text-[10px] mt-0.5">
-                        UTC: {(questDefinition as any).bestTimeUtc}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
