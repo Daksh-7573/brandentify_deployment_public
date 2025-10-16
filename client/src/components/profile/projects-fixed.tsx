@@ -40,9 +40,17 @@ const ProjectsFixed = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  
+  // Media state management
+  const [projectImages, setProjectImages] = useState<File[]>([]);
+  const [projectVideo, setProjectVideo] = useState<File | null>(null);
+  const [featuredImageIndex, setFeaturedImageIndex] = useState<number>(0);
+  const [existingMedia, setExistingMedia] = useState<string[]>([]);
+  const [mediaErrors, setMediaErrors] = useState<{ images?: string; video?: string }>({});
+  
   const projectForm = useForm();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const multipleImagesInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -196,7 +204,7 @@ const ProjectsFixed = () => {
       // Reset form and clear data
       projectForm.reset();
       setTeamMembers([]);
-      setUploadedImages([]);
+      setProjectImages([]);
       setCurrentTeamMember({ role: '', linkedin: '' });
     },
     onError: (error: any) => {
@@ -262,7 +270,7 @@ const ProjectsFixed = () => {
       setEditingProjectId(null); // Clear editing state
       projectForm.reset();
       setTeamMembers([]);
-      setUploadedImages([]);
+      setProjectImages([]);
       setCurrentTeamMember({ role: '', linkedin: '' });
     },
     onError: (error: any) => {
@@ -344,35 +352,40 @@ const ProjectsFixed = () => {
     setTeamMembers(teamMembers.filter(member => member.id !== id));
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newImages = Array.from(files).filter(file => {
-        // Validate file type
-        if (!file.type.startsWith('image/')) return false;
-        // Validate file size (5MB max)
-        if (file.size > 5 * 1024 * 1024) return false;
-        return true;
-      });
-
-      // Limit to 10 images total
-      const totalImages = uploadedImages.length + newImages.length;
-      const imagesToAdd = totalImages > 10 ? newImages.slice(0, 10 - uploadedImages.length) : newImages;
-      
-      // Convert files to data URLs for immediate display
-      imagesToAdd.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target?.result as string;
-          setUploadedImages(prev => [...prev, dataUrl]);
-        };
-        reader.readAsDataURL(file);
-      });
+  // Media handlers from Industry Pulse
+  const handleImagesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const filesArray = Array.from(event.target.files);
+      setProjectImages(prev => [...prev, ...filesArray]);
+      setMediaErrors(prev => ({ ...prev, images: undefined }));
     }
   };
 
-  const removeImage = (index: number) => {
-    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  const handleVideoSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setProjectVideo(event.target.files[0]);
+      setMediaErrors(prev => ({ ...prev, video: undefined }));
+    }
+  };
+
+  const removeProjectImage = (index: number) => {
+    setProjectImages(prev => prev.filter((_, i) => i !== index));
+    if (featuredImageIndex === index) {
+      setFeaturedImageIndex(0);
+    } else if (featuredImageIndex > index) {
+      setFeaturedImageIndex(featuredImageIndex - 1);
+    }
+  };
+
+  const removeProjectVideo = () => {
+    setProjectVideo(null);
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+  };
+
+  const handleSelectFeaturedImage = (index: number) => {
+    setFeaturedImageIndex(index);
   };
 
   const onProjectSubmit = async (values: any) => {
@@ -388,14 +401,14 @@ const ProjectsFixed = () => {
         category: values.category || '',
         industry: values.industry || '',
         projectUrl: values.projectUrl || '',
-        thumbnailUrl: uploadedImages.length > 0 ? uploadedImages[0] : null, // Use first image as thumbnail
-        mediaUrls: uploadedImages, // Include all uploaded images
+        thumbnailUrl: null, // TODO: Implement proper file upload with FormData
+        mediaUrls: [], // TODO: Implement proper file upload with FormData
         // Team members and client info will be saved separately to their respective tables
       };
 
       console.log('Submitting project data:', projectData);
       console.log('Team members:', teamMembers);
-      console.log('Uploaded images:', uploadedImages);
+      console.log('Project images:', projectImages);
 
       // Submit the project data to backend - use update if editing, create if new
       let savedProject;
@@ -580,7 +593,13 @@ const ProjectsFixed = () => {
           setEditingProjectId(null); // Clear editing state when closing
           projectForm.reset();
           setTeamMembers([]);
-          setUploadedImages([]);
+          setProjectImages([]);
+          setProjectVideo(null);
+          setFeaturedImageIndex(0);
+          setExistingMedia([]);
+          setMediaErrors({});
+          if (multipleImagesInputRef.current) multipleImagesInputRef.current.value = '';
+          if (videoInputRef.current) videoInputRef.current.value = '';
         }
       }}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
@@ -677,100 +696,176 @@ const ProjectsFixed = () => {
 
                 <TabsContent value="media" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Project Images Upload */}
+                    {/* Project Images Section */}
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <label className="text-white font-medium text-sm flex items-center gap-2">
-                          <Upload className="h-4 w-4" />
-                          Project Images
-                        </label>
-                        <span className="text-white/60 text-xs">
-                          {uploadedImages.length} / 10 images
-                        </span>
+                      <div className="flex justify-between items-center">
+                        <label className="text-white font-medium text-sm">Project Images</label>
+                        <div className="text-white/60 text-xs">Max 10 images</div>
                       </div>
                       
-                      {/* Upload Area */}
-                      {uploadedImages.length < 10 && (
-                        <div className="border-2 border-dashed border-white/30 rounded-lg p-6 bg-white/5 backdrop-blur-sm hover:border-white/50 transition-colors">
+                      {/* Information about thumbnails */}
+                      <div className="p-3 rounded-md text-sm space-y-1 bg-white/5 backdrop-blur-sm border border-white/10">
+                        <p className="font-medium text-white">About Thumbnails:</p>
+                        <p className="text-white/70">
+                          Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="flex flex-col gap-2">
                           <input
-                            ref={fileInputRef}
+                            ref={multipleImagesInputRef}
                             type="file"
                             accept="image/*"
                             multiple
-                            className="hidden"
-                            onChange={handleImageUpload}
+                            onChange={handleImagesSelected}
+                            className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
                           />
-                          <div 
-                            onClick={() => fileInputRef.current?.click()}
-                            className="cursor-pointer block text-center"
-                          >
-                            <Upload className="h-8 w-8 text-white/50 mx-auto mb-2" />
-                            <p className="text-white/70 text-sm">Click to upload images or drag & drop</p>
-                            <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB each • Max 10 images</p>
-                          </div>
+                          {mediaErrors?.images && (
+                            <p className="text-sm text-red-400">{mediaErrors.images}</p>
+                          )}
                         </div>
-                      )}
-
-                      {/* Uploaded Images Grid */}
-                      {uploadedImages.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                          {uploadedImages.map((image, index) => (
-                            <div key={index} className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 relative group overflow-hidden">
-                              <img 
-                                src={image} 
-                                alt={`Project image ${index + 1}`} 
-                                className="w-full h-full object-cover" 
-                              />
-                              <button 
-                                type="button"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  removeImage(index);
-                                }}
-                                className="absolute top-2 right-2 p-1 bg-red-500/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
-                              >
-                                <X className="h-3 w-3 text-white" />
-                              </button>
-                              {index === 0 && (
-                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-blue-500/80 backdrop-blur-sm rounded-full text-xs text-white">
-                                  Thumbnail
+                        
+                        {/* Selected images preview */}
+                        {projectImages.length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center">
+                              <div className="text-sm font-medium text-white">New Images</div>
+                              {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
+                                <div className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#1DB954]/20 text-[#1DB954]">
+                                  Thumbnail selected from new images
                                 </div>
                               )}
                             </div>
-                          ))}
-                          
-                          {/* Add More Images Button */}
-                          {uploadedImages.length < 10 && (
-                            <div 
-                              onClick={() => fileInputRef.current?.click()}
-                              className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group hover:bg-white/10 transition-colors cursor-pointer"
-                            >
-                              <div className="text-center">
-                                <Plus className="h-6 w-6 text-white/40 mx-auto mb-1" />
-                                <p className="text-white/40 text-xs">Add More</p>
-                              </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              {projectImages.map((file, index) => (
+                                <div key={`new-${index}`} className="relative group">
+                                  <div className={`border rounded-md overflow-hidden aspect-square ${featuredImageIndex === index ? 'ring-2 ring-[#1DB954] border-[#1DB954]/40' : 'border-white/20'}`}>
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt={`Preview ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
+                                    <button
+                                      type="button"
+                                      className="h-8 w-8 bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded flex items-center justify-center"
+                                      onClick={() => removeProjectImage(index)}
+                                      title="Remove image"
+                                    >
+                                      ✕
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className={`h-8 w-8 rounded flex items-center justify-center ${featuredImageIndex === index ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
+                                      onClick={() => handleSelectFeaturedImage(index)}
+                                      title="Set as thumbnail"
+                                    >
+                                      ★
+                                    </button>
+                                  </div>
+                                  {featuredImageIndex === index && (
+                                    <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
+                                      ★
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Image Counter and Info */}
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-white/60">
-                          {uploadedImages.length === 0 ? 'No images uploaded' : `${uploadedImages.length} image(s) uploaded`}
-                        </span>
-                        {uploadedImages.length > 0 && (
-                          <span className="text-white/40">First image will be used as thumbnail</span>
+                          </div>
+                        )}
+                        
+                        {/* Existing images preview */}
+                        {existingMedia.length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center">
+                              <div className="text-sm font-medium text-white">Existing Media</div>
+                              {existingMedia.length > 0 && featuredImageIndex >= 1000 && (
+                                <div className="ml-2 bg-[#1DB954]/20 text-[#1DB954] text-xs px-2 py-0.5 rounded-full">
+                                  Thumbnail selected from existing images
+                                </div>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              {existingMedia.map((url, index) => {
+                                const existingMediaIndex = index + 1000;
+                                const isExistingFeatured = featuredImageIndex === existingMediaIndex;
+                                
+                                return (
+                                  <div key={`existing-${index}`} className="relative group">
+                                    <div className={`border rounded-md overflow-hidden aspect-square ${isExistingFeatured ? 'ring-2 ring-[#1DB954]' : 'border-white/20'}`}>
+                                      <img
+                                        src={url}
+                                        alt={`Media ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                      <button
+                                        type="button"
+                                        className={`h-8 w-8 rounded flex items-center justify-center ${isExistingFeatured ? 'bg-[#1DB954] text-black' : 'bg-white/20 text-white'}`}
+                                        onClick={() => handleSelectFeaturedImage(existingMediaIndex)}
+                                        title="Set as thumbnail"
+                                      >
+                                        ★
+                                      </button>
+                                    </div>
+                                    {isExistingFeatured && (
+                                      <div className="absolute top-1 right-1 bg-[#1DB954] text-black rounded-full p-1" title="Current thumbnail">
+                                        ★
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         )}
                       </div>
-
-                      {/* Maximum Reached Message */}
-                      {uploadedImages.length >= 10 && (
-                        <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 text-center">
-                          <p className="text-white/60 text-sm">Maximum of 10 images reached</p>
+                    </div>
+                    
+                    {/* Project Video Section */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <label className="text-white font-medium text-sm">Project Video</label>
+                        <div className="text-white/60 text-xs">Optional (~2.5 min max)</div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="flex flex-col gap-2">
+                          <input
+                            ref={videoInputRef}
+                            type="file"
+                            accept="video/*"
+                            onChange={handleVideoSelected}
+                            className="neo-glass-input file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90"
+                          />
+                          {mediaErrors?.video && (
+                            <p className="text-sm text-red-400">{mediaErrors.video}</p>
+                          )}
                         </div>
-                      )}
+                        
+                        {/* Selected video preview */}
+                        {projectVideo && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <div className="text-sm font-medium text-white">Selected Video:</div>
+                              <button
+                                type="button"
+                                onClick={removeProjectVideo}
+                                className="px-3 py-1 text-sm bg-black/60 border border-white/20 text-white hover:bg-red-900/80 rounded"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="border rounded-md p-2 flex items-center gap-2 bg-white/5 backdrop-blur-sm border-white/10 text-white">
+                              <Upload className="h-5 w-5 text-[#1DB954]" />
+                              <span className="text-sm truncate">{projectVideo.name}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -1112,7 +1207,7 @@ const ProjectsFixed = () => {
                         if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls)) {
                           setUploadedImages(selectedProject.mediaUrls);
                         } else {
-                          setUploadedImages([]);
+                          setProjectImages([]);
                         }
                         
                         setIsAddModalOpen(true);
