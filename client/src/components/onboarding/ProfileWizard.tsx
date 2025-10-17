@@ -127,28 +127,20 @@ export function ProfileWizard({
       const values = form.getValues();
       
       // Update user profile
-      await apiRequest({
-        url: `/api/users/${userId}`,
-        method: 'PATCH',
-        data: {
-          name: values.name,
-          title: values.title,
-          location: values.location,
-          industry: values.industry,
-          domain: values.domain,
-          aboutMe: values.aboutMe,
-          whatIOffer: values.whatIOffer,
-        }
+      await apiRequest('PATCH', `/api/users/${userId}`, {
+        name: values.name,
+        title: values.title,
+        location: values.location,
+        industry: values.industry,
+        domain: values.domain,
+        aboutMe: values.aboutMe,
+        whatIOffer: values.whatIOffer,
       });
 
       // If in onboarding mode, mark profile as at least 50% complete
       if (mode === 'onboarding') {
-        await apiRequest({
-          url: `/api/users/${userId}/onboarding`,
-          method: 'PATCH',
-          data: {
-            onboardingStep: 'profile'
-          }
+        await apiRequest('PATCH', `/api/users/${userId}/onboarding`, {
+          onboardingStep: 'profile'
         });
       }
 
