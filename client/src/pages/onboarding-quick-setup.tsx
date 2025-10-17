@@ -65,8 +65,8 @@ export default function OnboardingQuickSetup({
       {/* Glass UI overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl">
+      <div className="relative z-10 w-full h-full flex items-center justify-center p-4 overflow-y-auto py-8">
+        <div className="w-full max-w-2xl my-auto">
           <NeoGlassSection className="p-8 sm:p-12">
             {/* Header */}
             <div className="text-center mb-8">
@@ -223,7 +223,7 @@ export default function OnboardingQuickSetup({
 
             {/* Time Indicator */}
             <div className="text-center mt-6 text-white/50 text-sm">
-              Step 2 of 4 · ~2 minutes
+              Step 2 of 5 · ~2 minutes
             </div>
           </NeoGlassSection>
         </div>

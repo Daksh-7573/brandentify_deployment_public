@@ -74,7 +74,7 @@ export default function OnboardingTier3({
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
       <div className="relative z-10 w-full h-full flex items-center justify-center p-4 overflow-y-auto py-8">
-        <div className="w-full max-w-3xl my-8">
+        <div className="w-full max-w-3xl my-auto">
           <NeoGlassSection className="p-8 sm:p-12">
             {/* Header */}
             <div className="text-center mb-8">

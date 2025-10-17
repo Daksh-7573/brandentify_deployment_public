@@ -221,7 +221,7 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
 
             {/* Time Indicator */}
             <div className="text-center mt-6 text-white/50 text-sm">
-              Step 1 of 3 · Less than 3 minutes to start
+              Step 1 of 5 · Less than 3 minutes to start
             </div>
           </NeoGlassSection>
         </div>
