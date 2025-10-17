@@ -10,6 +10,7 @@ import ProjectsFixed from "@/components/profile/projects-fixed";
 import Services from "@/components/profile/services-fixed";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
+import { ProfileWizard } from "@/components/onboarding/ProfileWizard";
 import MuskButton from "@/components/musk/musk-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, AlertCircle } from "lucide-react";
@@ -838,84 +839,33 @@ export default function ProfileNeo() {
         </DialogContent>
       </Dialog>
       
-      {/* Edit Personal Info Dialog */}
-      <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
-          {isUserDataLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            </div>
-          ) : userData ? (
-            <EditPersonalInfoNew
-              key={`edit-personal-info-${userData.id}-${dialogKey}`}
-              userData={{
-                id: userData.id || 0,
-                username: userData.username || '',
-                name: userData.name || '',
-                email: userData.email || '',
-                phoneNumber: userData.phoneNumber || '',
-                title: userData.title || '',
-                company: userData.company || '',
-                location: userData.location || '',
-                industry: userData.industry || '',
-                domain: userData.domain || '',
-                aboutMe: userData.aboutMe || '',
-                lookingFor: userData.lookingFor || '',
-                photoURL: userData.photoURL || '',
-                tagline: userData.tagline || '',
-                visionStatement: userData.visionStatement || '',
-                missionStatement: userData.missionStatement || '',
-                coreValues: userData.coreValues || [],
-                uniqueValueProposition: userData.uniqueValueProposition || '',
-                primaryAudience: userData.primaryAudience || [],
-                secondaryAudience: userData.secondaryAudience || []
-              }}
-              userIdentifier={userIdentifier}
-              onCancel={() => setShowEditPersonalInfoDialog(false)}
-              onSave={async () => {
-                console.log("[DEBUG] onSave called from profile dialog");
-                // The actual save happens inside EditPersonalInfoNew component
-                // We'll close the dialog after save completes successfully
-                await new Promise(resolve => setTimeout(resolve, 100)); // Small delay to ensure save completes
-                setShowEditPersonalInfoDialog(false);
-              }}
-            />
-          ) : (
-            <div className="p-8 text-white text-center space-y-4">
-              <AlertCircle className="h-12 w-12 mx-auto text-red-400" />
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Unable to load user data</h3>
-                {userDataError ? (
-                  <div className="text-sm text-gray-300 space-y-2">
-                    <p>Error: {userDataError.message}</p>
-                    <div className="text-xs text-gray-400 bg-gray-800/50 p-3 rounded">
-                      <p><strong>Debug Info:</strong></p>
-                      <p>User ID: {userIdentifier || 'Not available'}</p>
-                      <p>Auth User ID: {user?.id || 'N/A'}</p>
-                      <p>Auth Username: {user?.username || 'N/A'}</p>
-                      <p>Auth UID: {user?.uid || 'N/A'}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-300">Please try again or contact support if the issue persists.</p>
-                )}
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  console.log('[RETRY] Manually retrying user data fetch');
-                  // Force refetch by invalidating the query
-                  queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
-                }}
-                className="mx-auto"
-                data-testid="button-retry-user-data"
-              >
-                Try Again
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Edit Personal Info Dialog - Using ProfileWizard */}
+      {userData && (
+        <ProfileWizard
+          isOpen={showEditPersonalInfoDialog}
+          mode="edit"
+          userId={userData.id}
+          initialData={{
+            name: userData.name || '',
+            title: userData.title || '',
+            location: userData.location || '',
+            industry: userData.industry || '',
+            domain: userData.domain || '',
+            aboutMe: userData.aboutMe || '',
+            whatIOffer: userData.whatIOffer || ''
+          }}
+          onComplete={() => {
+            setShowEditPersonalInfoDialog(false);
+            // Refresh user data after edit
+            queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+            toast({
+              title: "Profile Updated",
+              description: "Your profile has been updated successfully.",
+            });
+          }}
+          onClose={() => setShowEditPersonalInfoDialog(false)}
+        />
+      )}
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
         userId={userIdentifier}
