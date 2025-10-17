@@ -119,7 +119,7 @@ export default function OnboardingTier3({
                           value={skill.name}
                           onChange={(e) => updateSkill(index, 'name', e.target.value)}
                           placeholder="e.g., Project Management, Python, UI/UX Design"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                           data-testid={`input-skill-name-${index}`}
                         />
                       </div>
@@ -129,7 +129,7 @@ export default function OnboardingTier3({
                           onValueChange={(value) => updateSkill(index, 'level', value)}
                         >
                           <SelectTrigger 
-                            className="bg-white/10 border-white/20 text-white hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`select-skill-level-${index}`}
                           >
                             <SelectValue />
@@ -176,7 +176,7 @@ export default function OnboardingTier3({
                   value={whatIOffer}
                   onChange={(e) => setWhatIOffer(e.target.value)}
                   placeholder="Describe the services, expertise, or value you provide to clients or employers..."
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40 min-h-32 resize-y"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none min-h-32 resize-y"
                   maxLength={500}
                   data-testid="textarea-services"
                 />

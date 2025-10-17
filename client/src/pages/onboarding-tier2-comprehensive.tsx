@@ -126,7 +126,7 @@ export default function OnboardingTier2Comprehensive({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter your full name"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-name"
                     />
                   </div>
@@ -138,7 +138,7 @@ export default function OnboardingTier2Comprehensive({
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
                       placeholder="Your company name"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-company"
                     />
                   </div>
@@ -150,7 +150,7 @@ export default function OnboardingTier2Comprehensive({
                       value={location}
                       onChange={setLocation}
                       placeholder="Your location (e.g. San Francisco, CA)"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                     />
                   </div>
 
@@ -159,7 +159,7 @@ export default function OnboardingTier2Comprehensive({
                     <Label className="text-white font-medium">I Am Looking For</Label>
                     <Select value={lookingFor} onValueChange={setLookingFor}>
                       <SelectTrigger
-                        className="bg-white/10 border-white/20 text-white hover:bg-white/15 focus:border-white/40"
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                         data-testid="select-looking-for"
                       >
                         <SelectValue placeholder="Select what you're looking for" />
@@ -199,7 +199,7 @@ export default function OnboardingTier2Comprehensive({
                       onChange={(e) => setTagline(e.target.value)}
                       placeholder="Enter your personal motto"
                       maxLength={80}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-tagline"
                     />
                     <p className="text-white/40 text-xs text-right">{tagline.length}/80</p>
@@ -217,7 +217,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="Describe your long-term vision"
                       maxLength={200}
                       rows={3}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40 resize-none"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
                       data-testid="textarea-vision"
                     />
                     <p className="text-white/40 text-xs text-right">{visionStatement.length}/200</p>
@@ -235,7 +235,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="Describe your mission and impact"
                       maxLength={220}
                       rows={3}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40 resize-none"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
                       data-testid="textarea-mission"
                     />
                     <p className="text-white/40 text-xs text-right">{missionStatement.length}/220</p>
@@ -261,7 +261,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type a value and press Enter"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-core-values"
                     />
                     {coreValues.length > 0 && (
@@ -296,7 +296,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="What makes you unique?"
                       maxLength={150}
                       rows={2}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40 resize-none"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
                       data-testid="textarea-uvp"
                     />
                     <p className="text-white/40 text-xs text-right">{uniqueValueProposition.length}/150</p>
@@ -322,7 +322,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type an audience and press Enter"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-primary-audience"
                     />
                     {primaryAudience.length > 0 && (
@@ -365,7 +365,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type an audience and press Enter"
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="input-secondary-audience"
                     />
                     {secondaryAudience.length > 0 && (

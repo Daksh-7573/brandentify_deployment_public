@@ -156,14 +156,14 @@ export default function OnboardingTier4({
                           value={project.title}
                           onChange={(e) => updateProject(index, 'title', e.target.value)}
                           placeholder="Project title"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                           data-testid={`input-project-title-${index}`}
                         />
                         <Textarea
                           value={project.description}
                           onChange={(e) => updateProject(index, 'description', e.target.value)}
                           placeholder="Brief description of the project..."
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40 min-h-20"
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none min-h-20"
                           data-testid={`textarea-project-description-${index}`}
                         />
                       </div>
@@ -211,14 +211,14 @@ export default function OnboardingTier4({
                             value={work.title}
                             onChange={(e) => updateWorkExperience(index, 'title', e.target.value)}
                             placeholder="Job title"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-work-title-${index}`}
                           />
                           <Input
                             value={work.company}
                             onChange={(e) => updateWorkExperience(index, 'company', e.target.value)}
                             placeholder="Company"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-work-company-${index}`}
                           />
                         </div>
@@ -228,7 +228,7 @@ export default function OnboardingTier4({
                             value={work.startDate}
                             onChange={(e) => updateWorkExperience(index, 'startDate', e.target.value)}
                             placeholder="Start date"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-work-start-${index}`}
                           />
                           <Input
@@ -236,7 +236,7 @@ export default function OnboardingTier4({
                             value={work.endDate}
                             onChange={(e) => updateWorkExperience(index, 'endDate', e.target.value)}
                             placeholder="End date (or leave blank)"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-work-end-${index}`}
                           />
                         </div>
@@ -285,14 +285,14 @@ export default function OnboardingTier4({
                             value={edu.degree}
                             onChange={(e) => updateEducation(index, 'degree', e.target.value)}
                             placeholder="Degree/Certification"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-edu-degree-${index}`}
                           />
                           <Input
                             value={edu.institution}
                             onChange={(e) => updateEducation(index, 'institution', e.target.value)}
                             placeholder="Institution"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-edu-institution-${index}`}
                           />
                         </div>
@@ -302,7 +302,7 @@ export default function OnboardingTier4({
                             value={edu.startDate}
                             onChange={(e) => updateEducation(index, 'startDate', e.target.value)}
                             placeholder="Start date"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-edu-start-${index}`}
                           />
                           <Input
@@ -310,7 +310,7 @@ export default function OnboardingTier4({
                             value={edu.endDate}
                             onChange={(e) => updateEducation(index, 'endDate', e.target.value)}
                             placeholder="End date (or leave blank)"
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`input-edu-end-${index}`}
                           />
                         </div>

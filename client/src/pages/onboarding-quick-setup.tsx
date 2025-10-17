@@ -95,7 +95,7 @@ export default function OnboardingQuickSetup({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Product Manager, Software Engineer"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                   data-testid="input-role"
                 />
                 <p className="text-white/50 text-xs">
@@ -110,7 +110,7 @@ export default function OnboardingQuickSetup({
                 </Label>
                 <Select value={industry} onValueChange={setIndustry}>
                   <SelectTrigger 
-                    className="bg-white/10 border-white/20 text-white hover:bg-white/15 focus:border-white/40"
+                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                     data-testid="select-industry"
                   >
                     <SelectValue placeholder="Select your industry" />
@@ -140,7 +140,7 @@ export default function OnboardingQuickSetup({
                   </Label>
                   <Select value={domain} onValueChange={setDomain}>
                     <SelectTrigger 
-                      className="bg-white/10 border-white/20 text-white hover:bg-white/15 focus:border-white/40"
+                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="select-domain"
                     >
                       <SelectValue placeholder="Select your specialization" />
