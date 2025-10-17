@@ -214,22 +214,14 @@ export default function AuthPage() {
       // Only redirect if we're specifically on the auth page
       const currentPath = window.location.pathname;
       if (currentPath === '/auth') {
-        console.log("✅ User authenticated on auth page, checking onboarding status");
-        // Check if user needs onboarding
-        if (user && !user.onboardingComplete) {
-          console.log("→ New user detected, redirecting to onboarding");
-          setTimeout(() => {
-            setLocation('/onboarding');
-          }, 100);
-        } else {
-          console.log("→ Returning user, redirecting to dashboard");
-          setTimeout(() => {
-            setLocation('/dashboard');
-          }, 100);
-        }
+        console.log("✅ User authenticated on auth page, redirecting to dashboard");
+        // Use setTimeout to avoid any timing issues
+        setTimeout(() => {
+          setLocation('/dashboard');
+        }, 100);
       }
     }
-  }, [isAuthenticated, isLoading, user, setLocation]);
+  }, [isAuthenticated, isLoading, setLocation]);
 
   return (
     <div 
@@ -307,7 +299,7 @@ export default function AuthPage() {
             Welcome to Brandentifier
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-gray-300 px-2">
-            {errorConfig ? 'Please try signing in again' : 'Unlock personalized Brand Quests to build your professional presence'}
+            {errorConfig ? 'Please try signing in again' : 'Sign in to accelerate your professional growth with AI-powered career guidance'}
           </p>
           
         </div>
@@ -317,7 +309,7 @@ export default function AuthPage() {
           <NeoGlassSection>
             <div className="space-y-4 md:space-y-6">
               <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <TabsList className="hidden grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
+                <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
                   <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
                     <Mail className="h-3 w-3 md:h-4 md:w-4" />
                     <span>Email</span>
@@ -334,8 +326,8 @@ export default function AuthPage() {
                     {/* Clean Google Authentication Only */}
                     <div className="space-y-6">
                       <div className="text-center space-y-3">
-                        <h3 className="text-xl font-semibold text-white">Get Started with Google</h3>
-                        <p className="text-gray-300">Complete your profile and unlock your first personalized quest</p>
+                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
+                        <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
                       <FastGoogleAuth />
@@ -345,7 +337,7 @@ export default function AuthPage() {
                           <span className="w-full border-t border-white/20" />
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">or for testing</span>
+                          <span className="bg-black/50 px-2 text-gray-300">or</span>
                         </div>
                       </div>
                       

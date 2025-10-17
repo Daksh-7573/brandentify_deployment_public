@@ -55,9 +55,6 @@ export const users = pgTable("users", {
   uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
   primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
   secondaryAudience: text("secondary_audience").array(), // Secondary audience (max 5 items)
-  // Onboarding flow fields
-  onboardingComplete: boolean("onboarding_complete").default(false), // Whether user completed onboarding
-  onboardingStep: text("onboarding_step"), // Current step: 'welcome' | 'profile' | 'complete'
   createdAt: timestamp("created_at").defaultNow(),
 });
 

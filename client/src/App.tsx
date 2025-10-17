@@ -67,7 +67,6 @@ const PulseDetail = lazy(() => import("@/pages/pulse-detail"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 const AuthCallbackPage = lazy(() => import("@/pages/auth-callback"));
-const OnboardingFlow = lazy(() => import("@/pages/onboarding-flow"));
 
 // Secondary components (loaded after first paint)
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -197,9 +196,6 @@ function Router() {
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
       <Route path="/auth" component={AuthPage} />
-      <Route path="/onboarding" component={() => (
-        <ProtectedRoute path="/onboarding" component={OnboardingFlow} />
-      )} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;

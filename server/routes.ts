@@ -61,7 +61,6 @@ import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { createBrandGoalsRoutes } from "./routes-brand-goals";
-import { createOnboardingRoutes } from "./routes-onboarding";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
@@ -7931,10 +7930,6 @@ ${extractedText.substring(0, 5000)}
   // Brand Goals routes - MUST be before Quest Progress Middleware to prevent body consumption
   apiRouter.use(createBrandGoalsRoutes(storage));
   console.log("Brand Goals routes loaded");
-  
-  // Onboarding routes
-  apiRouter.use(createOnboardingRoutes(storage));
-  console.log("Onboarding routes loaded");
   
   // Setup Quest Progress Tracking Middleware
   setupQuestProgressMiddleware(apiRouter, storage);
