@@ -140,13 +140,7 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          className={`bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none ${className}`}
-          style={{ 
-            backgroundColor: 'rgba(18,18,18,0.95) !important', 
-            color: 'white !important',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.2) !important'
-          }}
+          className={`bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 w-full h-12 px-3 pr-10 rounded-md focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none ${className}`}
         />
         
         {/* Clear button */}

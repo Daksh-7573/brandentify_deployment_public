@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
 import { INDUSTRIES, INDUSTRY_DOMAINS } from '@shared/constants';
 import { LOOKING_FOR_OPTIONS } from "@/lib/constants";
 import LocationAutocomplete from "@/components/ui/location-autocomplete";
+import { AuthContext } from "@/context/simple-auth-context";
 
 interface OnboardingTier2ComprehensiveProps {
   onComplete: (data: {
@@ -38,11 +39,20 @@ export default function OnboardingTier2Comprehensive({
   onComplete,
   onBack
 }: OnboardingTier2ComprehensiveProps) {
-  // Profile fields
+  const { user } = useContext(AuthContext);
+  
+  // Profile fields - auto-fetch name from Google
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
   const [lookingFor, setLookingFor] = useState("");
+
+  // Auto-fetch name from Google authentication
+  useEffect(() => {
+    if (user?.name && !name) {
+      setName(user.name);
+    }
+  }, [user]);
 
   // Branding fields
   const [tagline, setTagline] = useState("");
