@@ -96,12 +96,13 @@ export default function OnboardingQuickSetup({
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Product Manager, Software Engineer"
                   style={{
-                    backgroundColor: 'rgba(18, 18, 18, 0.95)',
-                    backdropFilter: 'blur(12px)',
-                    color: 'white',
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                  }}
-                  className="backdrop-blur-md shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important',
+                    backdropFilter: 'blur(12px) !important',
+                    color: 'white !important',
+                    borderColor: 'rgba(255, 255, 255, 0.2) !important',
+                    border: '1px solid rgba(255, 255, 255, 0.2) !important'
+                  } as React.CSSProperties}
+                  className="shadow-md"
                   data-testid="input-role"
                 />
                 <p className="text-white/50 text-xs">
