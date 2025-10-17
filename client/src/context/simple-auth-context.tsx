@@ -8,6 +8,7 @@ type AuthUser = {
   name: string;
   photoURL?: string;
   uid?: string; // Add Firebase UID for profile queries
+  profileCompleted?: number; // Profile completion percentage (0-100)
 };
 
 // Simple auth context type
