@@ -48,6 +48,15 @@ const protectedEndpoints: Record<string, EndpointProtection> = {
       email: ValidationSchemas.email.optional(),
       phoneNumber: ValidationSchemas.phoneNumber.optional(),
       photoURL: z.string().min(1).max(50000).optional(), // CRITICAL FIX: Add photoURL field for profile picture persistence (supports base64)
+      title: z.string().min(1).max(200).optional(), // Onboarding: Job title
+      industry: z.string().min(1).max(100).optional(), // Onboarding: Industry
+      domain: z.string().min(1).max(100).optional(), // Onboarding: Domain/specialization
+      profileCompleted: z.number().min(0).max(100).optional(), // Onboarding: Profile completion percentage
+      company: z.string().min(1).max(200).optional(), // Company name
+      location: z.string().min(1).max(200).optional(), // Location
+      aboutMe: z.string().max(5000).optional(), // About me text
+      tagline: z.string().max(200).optional(), // Personal tagline
+      lookingFor: z.string().max(500).optional(), // What user is looking for
     }),
     validateBody: true,
     auditLog: true,
