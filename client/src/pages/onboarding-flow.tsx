@@ -3,16 +3,23 @@ import { useLocation } from "wouter";
 import { AuthContext } from "@/context/simple-auth-context";
 import OnboardingWelcome from "./onboarding-welcome";
 import OnboardingQuickSetup from "./onboarding-quick-setup";
+import OnboardingTier2 from "./onboarding-tier2";
+import OnboardingTier3 from "./onboarding-tier3";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-type OnboardingStep = 'welcome' | 'quick-setup';
+type OnboardingStep = 'welcome' | 'quick-setup' | 'tier2' | 'tier3';
 
 interface OnboardingData {
   goalId?: string;
   title?: string;
   industry?: string;
   domain?: string;
+  skills?: Array<{ name: string; level: string }>;
+  whatIOffer?: string;
+  projects?: Array<{ title: string; description: string }>;
+  workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
+  educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
 }
 
 export default function OnboardingFlow() {
@@ -67,16 +74,9 @@ export default function OnboardingFlow() {
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       await queryClient.invalidateQueries({ queryKey: ['/api/brand-goals', userId] });
 
-      // 4. Success toast
-      toast({
-        title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
-      });
-
-      // 5. Redirect to Brand Quest page
-      setTimeout(() => {
-        setLocation('/brand-quests');
-      }, 500);
+      // 4. Save to local state and move to Tier 2
+      setOnboardingData(prev => ({ ...prev, ...data }));
+      setCurrentStep('tier2');
 
     } catch (error) {
       console.error('[Onboarding] Error saving data:', error);
@@ -90,8 +90,168 @@ export default function OnboardingFlow() {
     }
   };
 
+  const handleTier2Complete = async (data: { skills: Array<{ name: string; level: string }>, whatIOffer?: string }) => {
+    if (!userId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // 1. Save skills
+      if (data.skills && data.skills.length > 0) {
+        for (const skill of data.skills) {
+          await apiRequest('POST', '/api/skills', {
+            userId,
+            name: skill.name,
+            level: skill.level,
+            proficiency: skill.level === 'Expert' ? 90 : skill.level === 'Advanced' ? 75 : skill.level === 'Intermediate' ? 50 : 25
+          });
+        }
+      }
+
+      // 2. Update user profile (Tier 2: Skills + Services)
+      const updateData: any = {
+        profileCompleted: 70 // Tier 2 gives 70% completion
+      };
+      if (data.whatIOffer) {
+        updateData.whatIOffer = data.whatIOffer;
+      }
+      await apiRequest('PATCH', `/api/users/${userId}`, updateData);
+
+      // 3. Invalidate queries
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/skills', userId] });
+
+      // 4. Save to local state and move to Tier 3
+      setOnboardingData(prev => ({ ...prev, ...data }));
+      setCurrentStep('tier3');
+
+    } catch (error) {
+      console.error('[Onboarding] Error saving Tier 2 data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your skills. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTier2Skip = async () => {
+    if (!userId) return;
+    setCurrentStep('tier3');
+  };
+
+  const handleTier3Complete = async (data: {
+    projects?: Array<{ title: string; description: string }>;
+    workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
+    educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
+  }) => {
+    if (!userId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      let profileCompletion = 70; // Start from Tier 2 completion
+
+      // 1. Save projects
+      if (data.projects && data.projects.length > 0) {
+        for (const project of data.projects) {
+          await apiRequest('POST', '/api/projects', {
+            userId,
+            title: project.title,
+            description: project.description
+          });
+        }
+        profileCompletion += 7;
+      }
+
+      // 2. Save work experiences
+      if (data.workExperiences && data.workExperiences.length > 0) {
+        for (const work of data.workExperiences) {
+          await apiRequest('POST', '/api/work-experiences', {
+            userId,
+            title: work.title,
+            company: work.company,
+            startDate: work.startDate,
+            endDate: work.endDate || null
+          });
+        }
+        profileCompletion += 7;
+      }
+
+      // 3. Save education
+      if (data.educations && data.educations.length > 0) {
+        for (const edu of data.educations) {
+          await apiRequest('POST', '/api/educations', {
+            userId,
+            degree: edu.degree,
+            institution: edu.institution,
+            startDate: edu.startDate,
+            endDate: edu.endDate || null
+          });
+        }
+        profileCompletion += 6;
+      }
+
+      // 4. Update user profile (Tier 3: max 90% completion)
+      await apiRequest('PATCH', `/api/users/${userId}`, {
+        profileCompleted: Math.min(profileCompletion, 90)
+      });
+
+      // 5. Invalidate queries
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+
+      // 6. Success toast
+      toast({
+        title: "Profile setup complete!",
+        description: "✨ Your AI coach has created personalized quests for you!",
+      });
+
+      // 7. Redirect to Brand Quest page
+      setTimeout(() => {
+        setLocation('/brand-quests');
+      }, 500);
+
+    } catch (error) {
+      console.error('[Onboarding] Error saving Tier 3 data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your profile. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTier3Skip = async () => {
+    if (!userId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      toast({
+        title: "Profile setup complete!",
+        description: "✨ Your AI coach has created personalized quests for you!",
+      });
+
+      setTimeout(() => {
+        setLocation('/brand-quests');
+      }, 500);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleBack = () => {
-    setCurrentStep('welcome');
+    if (currentStep === 'quick-setup') {
+      setCurrentStep('welcome');
+    } else if (currentStep === 'tier2') {
+      setCurrentStep('quick-setup');
+    } else if (currentStep === 'tier3') {
+      setCurrentStep('tier2');
+    }
   };
 
   if (isSubmitting) {
@@ -120,6 +280,22 @@ export default function OnboardingFlow() {
           selectedGoal={onboardingData.goalId}
           onComplete={handleQuickSetupComplete}
           onBack={handleBack}
+        />
+      )}
+
+      {currentStep === 'tier2' && (
+        <OnboardingTier2
+          onComplete={handleTier2Complete}
+          onBack={handleBack}
+          onSkip={handleTier2Skip}
+        />
+      )}
+
+      {currentStep === 'tier3' && (
+        <OnboardingTier3
+          onComplete={handleTier3Complete}
+          onBack={handleBack}
+          onSkip={handleTier3Skip}
         />
       )}
     </>

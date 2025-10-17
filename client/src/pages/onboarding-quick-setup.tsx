@@ -214,13 +214,13 @@ export default function OnboardingQuickSetup({
                 }`}
                 data-testid="button-continue-setup"
               >
-                See My Quests →
+                Continue →
               </Button>
             </div>
 
             {/* Time Indicator */}
             <div className="text-center mt-6 text-white/50 text-sm">
-              Step 2 of 3 · You're almost there!
+              Step 2 of 4 · ~2 minutes
             </div>
           </NeoGlassSection>
         </div>
