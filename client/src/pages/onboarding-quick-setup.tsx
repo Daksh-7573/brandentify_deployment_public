@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { NeoGlassSection } from "@/components/ui/neo-glass/index";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { 
   Select,
   SelectContent,
@@ -90,10 +90,13 @@ export default function OnboardingQuickSetup({
                 <Label htmlFor="title" className="text-white font-medium">
                   Your Role <span className="text-red-400">*</span>
                 </Label>
-                <JobTitleCombobox
+                <Input
+                  id="title"
                   value={title}
-                  onChange={setTitle}
+                  onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Product Manager, Software Engineer"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 hover:bg-white/15 focus:border-white/40"
+                  data-testid="input-role"
                 />
                 <p className="text-white/50 text-xs">
                   What's your current or target job title?
