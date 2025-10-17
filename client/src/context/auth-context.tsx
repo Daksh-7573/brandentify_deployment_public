@@ -14,6 +14,8 @@ type AuthUser = {
   photoURL: string | null;
   title?: string;
   location?: string;
+  onboardingComplete?: boolean;
+  onboardingStep?: string;
 };
 
 // Define our auth context type
