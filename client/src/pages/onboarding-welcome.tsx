@@ -113,43 +113,86 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                 Choose one goal to help us create your first personalized quests
               </p>
 
-              <div className="space-y-4 max-w-3xl mx-auto">
-                {Object.entries(BRAND_GOALS).map(([key, category]) => (
-                  <div key={key} className="space-y-2">
-                    <div className="text-white/90 font-medium text-sm px-2 flex items-center gap-2">
-                      <span>{category.title}</span>
-                      <span className="text-white/50 text-xs">• {category.description}</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {category.goals.map((goal) => {
-                        const isSelected = selectedGoal === goal.id;
-                        return (
-                          <button
-                            key={goal.id}
-                            onClick={() => setSelectedGoal(goal.id)}
-                            className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${
-                              isSelected 
-                                ? 'bg-white/20 border-white/40 shadow-lg' 
-                                : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                            }`}
-                            data-testid={`goal-${goal.id}`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className={`mt-0.5 flex-shrink-0 ${
-                                isSelected ? 'opacity-100' : 'opacity-0'
-                              } transition-opacity`}>
-                                <Check className="h-5 w-5 text-green-400" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                {/* Left Column - First 3 categories */}
+                <div className="space-y-4">
+                  {Object.entries(BRAND_GOALS).slice(0, 3).map(([key, category]) => (
+                    <div key={key} className="space-y-2">
+                      <div className="text-white/90 font-medium text-sm px-2 flex items-center gap-2">
+                        <span>{category.title}</span>
+                        <span className="text-white/50 text-xs">• {category.description}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {category.goals.map((goal) => {
+                          const isSelected = selectedGoal === goal.id;
+                          return (
+                            <button
+                              key={goal.id}
+                              onClick={() => setSelectedGoal(goal.id)}
+                              className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${
+                                isSelected 
+                                  ? 'bg-white/20 border-white/40 shadow-lg' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                              }`}
+                              data-testid={`goal-${goal.id}`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`mt-0.5 flex-shrink-0 ${
+                                  isSelected ? 'opacity-100' : 'opacity-0'
+                                } transition-opacity`}>
+                                  <Check className="h-5 w-5 text-green-400" />
+                                </div>
+                                <span className="text-white/90 text-sm leading-relaxed">
+                                  {goal.text}
+                                </span>
                               </div>
-                              <span className="text-white/90 text-sm leading-relaxed">
-                                {goal.text}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                {/* Right Column - Monetization & Impact */}
+                <div className="space-y-4">
+                  {Object.entries(BRAND_GOALS).slice(3, 4).map(([key, category]) => (
+                    <div key={key} className="space-y-2">
+                      <div className="text-white/90 font-medium text-sm px-2 flex items-center gap-2">
+                        <span>{category.title}</span>
+                        <span className="text-white/50 text-xs">• {category.description}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {category.goals.map((goal) => {
+                          const isSelected = selectedGoal === goal.id;
+                          return (
+                            <button
+                              key={goal.id}
+                              onClick={() => setSelectedGoal(goal.id)}
+                              className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${
+                                isSelected 
+                                  ? 'bg-white/20 border-white/40 shadow-lg' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                              }`}
+                              data-testid={`goal-${goal.id}`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`mt-0.5 flex-shrink-0 ${
+                                  isSelected ? 'opacity-100' : 'opacity-0'
+                                } transition-opacity`}>
+                                  <Check className="h-5 w-5 text-green-400" />
+                                </div>
+                                <span className="text-white/90 text-sm leading-relaxed">
+                                  {goal.text}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
