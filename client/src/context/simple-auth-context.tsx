@@ -103,8 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
           } else {
             console.log('AuthProvider: No server session found, status:', response.status);
-            // Clear any stale sessionStorage
-            sessionStorage.removeItem('brandentifier_user');
+            // Don't clear sessionStorage - let it be checked as fallback
           }
         } catch (error) {
           console.error('AuthProvider: Error checking server session:', error);
