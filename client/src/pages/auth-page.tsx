@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Mail, Phone, Check, Sparkles, Target, Users, AlertTriangle, Clock, RefreshCw, Shield, WifiOff, UserX } from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
@@ -24,6 +26,7 @@ export default function AuthPage() {
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [simulateNewUser, setSimulateNewUser] = useState(false);
   
   // Extract error from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
@@ -341,7 +344,25 @@ export default function AuthPage() {
                         </div>
                       </div>
                       
-                      <FastQuickAuth />
+                      <div className="space-y-3">
+                        <FastQuickAuth simulateNewUser={simulateNewUser} />
+                        
+                        <div className="flex items-center justify-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                          <Switch
+                            id="simulate-new-user"
+                            checked={simulateNewUser}
+                            onCheckedChange={setSimulateNewUser}
+                            data-testid="toggle-simulate-new-user"
+                          />
+                          <Label 
+                            htmlFor="simulate-new-user" 
+                            className="text-white/90 text-sm cursor-pointer flex items-center gap-2"
+                          >
+                            <span>Simulate New User</span>
+                            <span className="text-white/50 text-xs">(Test Onboarding)</span>
+                          </Label>
+                        </div>
+                      </div>
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
