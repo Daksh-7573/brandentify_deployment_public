@@ -36,6 +36,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.
+- **Onboarding Flow**: Smooth Google-only authentication → WelcomeModal (1 primary brand goal selection) → ProfileWizard (4-step wizard: Essentials, Brand Voice, Experience, Showcase) → QuestUnlockModal (celebration). Features persistent state management with resume capability, reusable ProfileWizard component for both onboarding and profile editing.
 - **Content Management**: Pulses (professional posts), Projects Showcase, Nowboard (opportunity discovery), Career Goals (milestone tracking).
 - **Portfolio Templates**: Professional portfolio builder with 12+ templates including:
   - Corporate Executive: Premium, high-end design for executives and industry experts
