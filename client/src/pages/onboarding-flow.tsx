@@ -26,6 +26,30 @@ export default function OnboardingFlow() {
     }
   }, [user, isLoading, setLocation]);
 
+  // Fetch current onboarding status on mount
+  useEffect(() => {
+    const fetchOnboardingStatus = async () => {
+      if (user?.id) {
+        try {
+          const response = await fetch(`/api/users/${user.id}/onboarding`);
+          const data = await response.json();
+          
+          // Resume from saved step
+          if (data.onboardingStep === 'profile') {
+            setCurrentStep('profile');
+          } else if (data.onboardingComplete) {
+            setCurrentStep('complete');
+            setLocation('/dashboard');
+          }
+        } catch (error) {
+          console.error('Error fetching onboarding status:', error);
+        }
+      }
+    };
+
+    fetchOnboardingStatus();
+  }, [user?.id, setLocation]);
+
   // Save brand goal and move to profile wizard
   const handleGoalSelected = async (goalId: string) => {
     try {
@@ -37,9 +61,9 @@ export default function OnboardingFlow() {
         selectedGoals: [goalId]
       });
 
-      // Update onboarding step
+      // Update onboarding step to profile (not welcome!)
       await apiRequest('PATCH', `/api/users/${user?.id}/onboarding`, {
-        onboardingStep: 'welcome'
+        onboardingStep: 'profile'
       });
 
       setCurrentStep('profile');
