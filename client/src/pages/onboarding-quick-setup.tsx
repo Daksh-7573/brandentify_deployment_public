@@ -95,7 +95,13 @@ export default function OnboardingQuickSetup({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Product Manager, Software Engineer"
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  style={{
+                    backgroundColor: 'rgba(18, 18, 18, 0.95)',
+                    backdropFilter: 'blur(12px)',
+                    color: 'white',
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                  }}
+                  className="backdrop-blur-md shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                   data-testid="input-role"
                 />
                 <p className="text-white/50 text-xs">
