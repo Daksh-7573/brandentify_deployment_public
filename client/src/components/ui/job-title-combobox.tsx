@@ -131,37 +131,37 @@ export function JobTitleCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-full justify-between", 
+            "w-full justify-between bg-white/10 border-white/20 text-white hover:bg-white/15 focus:border-white/40", 
             className, 
             error && "border-destructive"
           )}
           disabled={disabled}
         >
-          {value ? value : <span className="text-muted-foreground">{placeholder}</span>}
+          {value ? value : <span className="text-white/60">{placeholder}</span>}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className="w-[300px] p-0 bg-gray-900/95 border-white/20 backdrop-blur-xl">
         <Command shouldFilter={false}>
           <CommandInput 
             placeholder="Search job title..." 
             onValueChange={setSearchValue}
             value={searchValue}
-            className="h-9"
+            className="h-9 text-white placeholder:text-white/50"
           />
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-sm text-muted-foreground">Loading suggestions...</span>
+              <Loader2 className="h-5 w-5 animate-spin text-white/60" />
+              <span className="ml-2 text-sm text-white/60">Loading suggestions...</span>
             </div>
           ) : filteredTitles.length === 0 && (
-            <CommandEmpty>
+            <CommandEmpty className="text-white/60">
               {searchValue && searchValue.trim().length >= 2 ? (
                 <div>
                   <p>No job title found.</p>
                   <Button
                     variant="ghost"
-                    className="mt-2 w-full justify-start text-left"
+                    className="mt-2 w-full justify-start text-left text-white hover:bg-white/10"
                     onClick={() => {
                       onChange(searchValue);
                       setOpen(false);
@@ -179,7 +179,7 @@ export function JobTitleCombobox({
             {filteredTitles.map((title) => (
               <div 
                 key={title}
-                className="flex items-center w-full cursor-pointer py-2 px-3 rounded-md hover:bg-accent hover:text-accent-foreground active:bg-primary/20 transition-colors"
+                className="flex items-center w-full cursor-pointer py-2 px-3 rounded-md text-white hover:bg-white/10 focus:bg-white/20 transition-colors"
                 onClick={() => {
                   onChange(title);
                   setOpen(false);
@@ -187,7 +187,7 @@ export function JobTitleCombobox({
               >
                 <Check
                   className={cn(
-                    "mr-2 h-4 w-4 shrink-0",
+                    "mr-2 h-4 w-4 shrink-0 text-green-400",
                     value === title ? "opacity-100" : "opacity-0"
                   )}
                 />
