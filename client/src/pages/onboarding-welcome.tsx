@@ -120,9 +120,9 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                     const category = BRAND_GOALS[key as keyof typeof BRAND_GOALS];
                     return (
                       <div key={key} className="space-y-2">
-                        <div className="text-white/90 font-medium text-sm px-2 flex items-center gap-2">
-                          <span>{category.title}</span>
-                          <span className="text-white/50 text-xs">• {category.description}</span>
+                        <div className="text-white/90 font-medium text-sm px-2">
+                          <div className="whitespace-nowrap">{category.title}</div>
+                          <div className="text-white/50 text-xs mt-1">{category.description}</div>
                         </div>
                         <div className="space-y-2">
                           {category.goals.map((goal) => {
@@ -163,9 +163,9 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                     const category = BRAND_GOALS[key as keyof typeof BRAND_GOALS];
                     return (
                       <div key={key} className="space-y-2">
-                        <div className="text-white/90 font-medium text-sm px-2 flex items-center gap-2">
-                          <span>{category.title}</span>
-                          <span className="text-white/50 text-xs">• {category.description}</span>
+                        <div className="text-white/90 font-medium text-sm px-2">
+                          <div className="whitespace-nowrap">{category.title}</div>
+                          <div className="text-white/50 text-xs mt-1">{category.description}</div>
                         </div>
                         <div className="space-y-2">
                           {category.goals.map((goal) => {
