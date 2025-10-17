@@ -24,7 +24,7 @@ export default function OnboardingFlow() {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const userName = user?.name || user?.displayName || 'Professional';
+  const userName = user?.name || 'Professional';
   const userId = user?.id;
 
   const handleGoalSelected = (goalId: string) => {
@@ -49,26 +49,18 @@ export default function OnboardingFlow() {
 
       // 1. Save brand goal
       if (completeData.goalId) {
-        await apiRequest({
-          url: '/api/brand-goals',
-          method: 'POST',
-          data: {
-            userId,
-            selectedGoals: [completeData.goalId]
-          }
+        await apiRequest('POST', '/api/brand-goals', {
+          userId,
+          selectedGoals: [completeData.goalId]
         });
       }
 
       // 2. Update user profile (Tier 1: Role + Industry)
-      await apiRequest({
-        url: `/api/users/${userId}`,
-        method: 'PATCH',
-        data: {
-          title: completeData.title,
-          industry: completeData.industry,
-          domain: completeData.domain,
-          profileCompleted: 40 // Tier 1 gives 40% completion
-        }
+      await apiRequest('PATCH', `/api/users/${userId}`, {
+        title: completeData.title,
+        industry: completeData.industry,
+        domain: completeData.domain,
+        profileCompleted: 40 // Tier 1 gives 40% completion
       });
 
       // 3. Invalidate all relevant queries
