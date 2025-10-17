@@ -22,19 +22,30 @@ export default function AuthSuccessPage() {
           
           signIn(user);
           
-          const isExistingUser = user.profileCompleted > 20;
+          const isNewUser = !user.profileCompleted || user.profileCompleted < 20;
+          const hasBasicProfile = user.profileCompleted >= 40;
           
           toast({
-            title: isExistingUser ? 'Welcome back!' : 'Welcome to Brandentifier!',
+            title: isNewUser ? 'Welcome to Brandentifier!' : 'Welcome back!',
             description: `Signed in as ${user.name}`
           });
 
-          console.log(`User ${isExistingUser ? 'signed in' : 'account created'} successfully`);
+          console.log(`User ${isNewUser ? 'account created' : 'signed in'} successfully`);
 
-          // Navigate to intended page
-          const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+          // Navigate based on user state
+          const returnUrl = sessionStorage.getItem('auth_return_url');
           sessionStorage.removeItem('auth_return_url');
-          navigate(returnUrl);
+          
+          if (returnUrl) {
+            // If there's a return URL, go there
+            navigate(returnUrl);
+          } else if (isNewUser) {
+            // New users go to onboarding
+            navigate('/onboarding');
+          } else {
+            // Existing users go to Brand Quests (hero feature)
+            navigate('/brand-quests');
+          }
         } else {
           throw new Error('No user data found');
         }

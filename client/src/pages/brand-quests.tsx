@@ -5,6 +5,7 @@ import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 import { BrandGoalsSelector } from '@/components/brand-quests/brand-goals-selector';
+import { ProfileCompletionWidget } from '@/components/brand-quests/profile-completion-widget';
 // Removed HashtagSuggestions and NowboardSuggestions as they're now integrated into quests
 // BrandQuestDemo import removed per request
 import { useToast } from '@/hooks/use-toast';
@@ -118,8 +119,9 @@ export default function BrandQuestsPage() {
                     <QuestPanel userId={userId} />
                   </div>
                   
-                  {/* Sidebar - Badges */}
-                  <div className="order-1 lg:order-2">
+                  {/* Sidebar - Profile Widget + Badges */}
+                  <div className="order-1 lg:order-2 space-y-4">
+                    <ProfileCompletionWidget userId={userId} />
                     <BadgeDisplay userId={userId} />
                   </div>
                 </div>

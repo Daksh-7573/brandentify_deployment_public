@@ -183,6 +183,25 @@ export default function Header() {
             
             {/* Main Navigation */}
             <div className="hidden md:flex space-x-6">
+              {/* HERO: Brand Quests - Primary Feature */}
+              <Button
+                variant="ghost"
+                size="sm" 
+                className={`flex items-center gap-2 font-semibold px-4 py-2 h-auto relative ${
+                  isActive('/brand-quests') || isActive('/career-quests')
+                    ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 neo-glass-nav-item active shadow-lg border border-white/20' 
+                    : 'text-white/90 hover:text-white hover:bg-white/10 neo-glass-nav-item'
+                }`}
+                onClick={() => setLocation('/brand-quests')}
+              >
+                <Trophy className="h-5 w-5" />
+                <span>Brand Quests</span>
+                {/* AI-Powered badge */}
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  AI
+                </span>
+              </Button>
+              
               <Button
                 variant="ghost"
                 size="sm"
@@ -211,8 +230,6 @@ export default function Header() {
                 <span>Discover & Connect</span>
               </Button>
               
-
-              
               <Button
                 variant="ghost"
                 size="sm" 
@@ -225,21 +242,6 @@ export default function Header() {
               >
                 <MapPin className="h-4 w-4" />
                 <span>Smart Radar</span>
-              </Button>
-              
-
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/brand-quests') || isActive('/career-quests')
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/brand-quests')}
-              >
-                <Trophy className="h-4 w-4" />
-                <span>Brand Quests</span>
               </Button>
               
               <Button
@@ -382,6 +384,27 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="md:hidden neo-glass-card border-0 shadow-2xl">
           <div className="px-4 pt-3 pb-4 space-y-2">
+            {/* HERO: Brand Quests First */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start py-2.5 text-sm font-semibold rounded-md relative ${
+                isActive('/brand-quests') || isActive('/career-quests')
+                  ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-purple-600/30 border border-white/20' 
+                  : 'text-white/90 hover:bg-white/10 hover:text-white'
+              }`}
+              onClick={() => {
+                setLocation('/brand-quests');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <Trophy className="h-5 w-5 mr-3 ml-0.5" />
+              <span>Brand Quests</span>
+              <span className="ml-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                AI
+              </span>
+            </Button>
+            
             <Button
               variant="ghost"
               size="sm"
