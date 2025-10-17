@@ -3,11 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+interface FastQuickAuthProps {
+  simulateNewUser?: boolean;
+}
+
 /**
  * Optimized Quick Authentication for Testing
  * Minimal overhead for fastest possible authentication
  */
-export function FastQuickAuth() {
+export function FastQuickAuth({ simulateNewUser = false }: FastQuickAuthProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -40,13 +44,42 @@ export function FastQuickAuth() {
       const data = await response.json();
       
       if (data.success) {
-        console.log('✅ Quick auth success - instant redirect');
+        console.log('✅ Quick auth success');
         
-        // Ultra-fast storage and redirect
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
-        
-        // Instant redirect without delays
-        window.location.replace('/industry-pulse');
+        // If simulating new user, reset profile to trigger onboarding
+        if (simulateNewUser && data.user?.id) {
+          console.log('🔄 Simulating new user - resetting profile...');
+          
+          try {
+            // Reset profile to simulate new user
+            await fetch(`/api/users/${data.user.id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                profileCompleted: 0,
+                title: null,
+                industry: null,
+                domain: null
+              })
+            });
+            
+            // Update the user object in session storage with reset profile
+            const resetUser = { ...data.user, profileCompleted: 0 };
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(resetUser));
+            
+            console.log('✅ Profile reset - redirecting to onboarding');
+            window.location.replace('/onboarding');
+          } catch (resetError) {
+            console.error('❌ Profile reset failed:', resetError);
+            // Continue with normal login even if reset fails
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+            window.location.replace('/industry-pulse');
+          }
+        } else {
+          // Normal login flow
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+          window.location.replace('/industry-pulse');
+        }
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
@@ -69,11 +102,12 @@ export function FastQuickAuth() {
       onClick={handleQuickAuth}
       disabled={isLoading}
       className="w-full bg-green-600 hover:bg-green-700 text-white"
+      data-testid="button-quick-test-login"
     >
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
-        'Quick Test Login'
+        simulateNewUser ? 'Quick Test (New User)' : 'Quick Test Login'
       )}
     </Button>
   );
