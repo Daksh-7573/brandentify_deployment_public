@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useContext } from "react";
 import { useLocation } from "wouter";
+import { AuthContext } from "@/context/simple-auth-context";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { X, ChevronRight, Trophy, Sparkles } from "lucide-react";
@@ -13,14 +14,10 @@ interface ProfileCompletionWidgetProps {
 export function ProfileCompletionWidget({ userId, className = "" }: ProfileCompletionWidgetProps) {
   const [_, setLocation] = useLocation();
   const [isDismissed, setIsDismissed] = useState(false);
+  const { user } = useContext(AuthContext);
 
-  // Fetch user profile data
-  const { data: userData } = useQuery({
-    queryKey: ['/api/users', userId],
-    enabled: !!userId,
-  });
-
-  const profileCompletion = userData?.profileCompleted || 0;
+  // Get profile completion from user context
+  const profileCompletion = user?.profileCompleted || 0;
 
   // Don't show if dismissed or profile is complete
   if (isDismissed || profileCompletion >= 80) {
