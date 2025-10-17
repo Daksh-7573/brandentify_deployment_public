@@ -211,70 +211,35 @@
       return replitPatterns.some(pattern => hostname.includes(pattern));
     }
 
-    if ('serviceWorker' in navigator && isReplitDomain()) {
-      console.log('[SW EMERGENCY FIX v4] Detected Replit domain:', window.location.hostname);
-      console.log('[SW EMERGENCY FIX v4] Unregistering all service workers to prevent redirect loops');
+    // SERVICE WORKER TEMPORARILY DISABLED TO CLEAR CACHE ISSUES
+    if ('serviceWorker' in navigator) {
+      console.log('[SW DISABLED] Unregistering all service workers to clear cache');
       
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         const unregisterPromises = registrations.map(function(registration) {
-          console.log('[SW EMERGENCY FIX v4] Unregistering SW:', registration.scope);
+          console.log('[SW DISABLED] Unregistering SW:', registration.scope);
           return registration.unregister().catch(function(error) {
-            console.warn('[SW EMERGENCY FIX v4] Failed to unregister SW:', error);
+            console.warn('[SW DISABLED] Failed to unregister SW:', error);
           });
         });
         
         return Promise.all(unregisterPromises);
       }).then(function() {
-        // Clear ALL caches after unregistering service workers
+        // Clear ALL caches
         return caches.keys().then(function(cacheNames) {
           const deletePromises = cacheNames.map(function(cacheName) {
-            console.log('[SW EMERGENCY FIX v4] Deleting cache:', cacheName);
+            console.log('[SW DISABLED] Deleting cache:', cacheName);
             return caches.delete(cacheName).catch(function(error) {
-              console.warn('[SW EMERGENCY FIX v4] Failed to delete cache:', cacheName, error);
+              console.warn('[SW DISABLED] Failed to delete cache:', cacheName, error);
             });
           });
           return Promise.all(deletePromises);
         });
       }).then(function() {
-        console.log('[SW EMERGENCY FIX v4] ✅ All service workers and caches cleared successfully');
+        console.log('[SW DISABLED] ✅ All service workers and caches cleared - fresh content will load');
       }).catch(function(error) {
-        console.error('[SW EMERGENCY FIX v4] Error during cleanup:', error);
+        console.error('[SW DISABLED] Error during cleanup:', error);
       });
-    } else {
-      // Progressive Service Worker Registration (development only for now)
-      // Register immediately for maximum caching benefit
-      navigator.serviceWorker.register('/sw.js')
-        .then(function(registration) {
-          console.log('[SW] Service Worker v4 registered:', registration.scope);
-          console.log('[PERF] Service Worker registered in', (performance.now() - window.__performance_start).toFixed(2), 'ms');
-          
-          // Check for updates immediately
-          registration.update();
-          
-          // Listen for new service worker
-          registration.addEventListener('updatefound', function() {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              console.log('[SW] New service worker installing...');
-              newWorker.addEventListener('statechange', function() {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('[SW] New service worker available! Refresh to update.');
-                }
-              });
-            }
-          });
-        })
-        .catch(function(error) {
-          console.log('[SW] Registration failed:', error);
-          // Fallback registration
-          navigator.serviceWorker.register('./sw.js')
-            .then(function(registration) {
-              console.log('[SW] Registration successful (fallback):', registration.scope);
-            })
-            .catch(function(fallbackError) {
-              console.log('[SW] Fallback registration also failed:', fallbackError);
-            });
-        });
     }
     
     // Enhanced performance monitoring and reporting
