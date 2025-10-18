@@ -6,10 +6,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { NeoGlassSection } from "@/components/ui/neo-glass/index";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { X, Plus, Briefcase, GraduationCap, FolderKanban } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OnboardingTier4Props {
   onComplete: (data: {
-    projects?: Array<{ title: string; description: string }>;
+    projects?: Array<{
+      title: string;
+      description: string;
+      category: string;
+      industry?: string;
+      startDate: string;
+      projectUrl: string;
+      teamMembers?: string[];
+      clientProfiles?: string[];
+    }>;
     workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
     educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
   }) => void;
@@ -22,21 +32,76 @@ export default function OnboardingTier4({
   onBack,
   onSkip
 }: OnboardingTier4Props) {
-  const [projects, setProjects] = useState<Array<{ title: string; description: string }>>([]);
+  const [projects, setProjects] = useState<Array<{
+    title: string;
+    description: string;
+    category: string;
+    industry: string;
+    startDate: string;
+    projectUrl: string;
+    teamMembers: string[];
+    clientProfiles: string[];
+  }>>([]);
   const [workExperiences, setWorkExperiences] = useState<Array<{ title: string; company: string; startDate: string; endDate?: string }>>([]);
   const [educations, setEducations] = useState<Array<{ degree: string; institution: string; startDate: string; endDate?: string }>>([]);
 
+  const [currentProjectTab, setCurrentProjectTab] = useState("details");
+  const [currentProjectIndex, setCurrentProjectIndex] = useState<number | null>(null);
+
   const addProject = () => {
-    setProjects([...projects, { title: "", description: "" }]);
+    const newProject = {
+      title: "",
+      description: "",
+      category: "",
+      industry: "",
+      startDate: "",
+      projectUrl: "",
+      teamMembers: [],
+      clientProfiles: []
+    };
+    setProjects([...projects, newProject]);
+    setCurrentProjectIndex(projects.length);
+    setCurrentProjectTab("details");
   };
 
   const removeProject = (index: number) => {
     setProjects(projects.filter((_, i) => i !== index));
+    if (currentProjectIndex === index) {
+      setCurrentProjectIndex(null);
+    }
   };
 
-  const updateProject = (index: number, field: 'title' | 'description', value: string) => {
+  const updateProject = (index: number, field: keyof typeof projects[0], value: any) => {
     const newProjects = [...projects];
-    newProjects[index][field] = value;
+    newProjects[index] = { ...newProjects[index], [field]: value };
+    setProjects(newProjects);
+  };
+
+  const addTeamMember = (projectIndex: number, profileLink: string) => {
+    if (profileLink.trim()) {
+      const newProjects = [...projects];
+      newProjects[projectIndex].teamMembers.push(profileLink);
+      setProjects(newProjects);
+    }
+  };
+
+  const removeTeamMember = (projectIndex: number, memberIndex: number) => {
+    const newProjects = [...projects];
+    newProjects[projectIndex].teamMembers = newProjects[projectIndex].teamMembers.filter((_, i) => i !== memberIndex);
+    setProjects(newProjects);
+  };
+
+  const addClientProfile = (projectIndex: number, profileLink: string) => {
+    if (profileLink.trim()) {
+      const newProjects = [...projects];
+      newProjects[projectIndex].clientProfiles.push(profileLink);
+      setProjects(newProjects);
+    }
+  };
+
+  const removeClientProfile = (projectIndex: number, clientIndex: number) => {
+    const newProjects = [...projects];
+    newProjects[projectIndex].clientProfiles = newProjects[projectIndex].clientProfiles.filter((_, i) => i !== clientIndex);
     setProjects(newProjects);
   };
 
@@ -69,7 +134,23 @@ export default function OnboardingTier4({
   };
 
   const handleContinue = () => {
-    const validProjects = projects.filter(p => p.title.trim() && p.description.trim());
+    const validProjects = projects.filter(p => 
+      p.title.trim() && 
+      p.description.trim() && 
+      p.category.trim() && 
+      p.startDate.trim() && 
+      p.projectUrl.trim()
+    ).map(p => ({
+      title: p.title,
+      description: p.description,
+      category: p.category,
+      industry: p.industry || undefined,
+      startDate: p.startDate,
+      projectUrl: p.projectUrl,
+      teamMembers: p.teamMembers.length > 0 ? p.teamMembers : undefined,
+      clientProfiles: p.clientProfiles.length > 0 ? p.clientProfiles : undefined
+    }));
+    
     const validWorkExperiences = workExperiences.filter(w => w.title.trim() && w.company.trim() && w.startDate.trim());
     const validEducations = educations.filter(e => e.degree.trim() && e.institution.trim() && e.startDate.trim());
 
@@ -139,33 +220,225 @@ export default function OnboardingTier4({
                 {projects.length > 0 && (
                   <div className="space-y-4">
                     {projects.map((project, index) => (
-                      <div key={index} className="bg-white/5 rounded-lg p-4 space-y-3 border border-white/10">
-                        <div className="flex justify-between items-start">
-                          <Label className="text-white/80 text-sm">Project {index + 1}</Label>
+                      <div key={index} className="bg-black/30 rounded-lg p-5 border border-white/20">
+                        <div className="flex justify-between items-center mb-4">
+                          <Label className="text-white text-base font-semibold">Project {index + 1}</Label>
                           <Button
                             onClick={() => removeProject(index)}
                             variant="ghost"
                             size="sm"
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2 -mt-1"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2"
                             data-testid={`button-remove-project-${index}`}
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                        <Input
-                          value={project.title}
-                          onChange={(e) => updateProject(index, 'title', e.target.value)}
-                          placeholder="Project title"
-                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                          data-testid={`input-project-title-${index}`}
-                        />
-                        <Textarea
-                          value={project.description}
-                          onChange={(e) => updateProject(index, 'description', e.target.value)}
-                          placeholder="Brief description of the project..."
-                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none min-h-20"
-                          data-testid={`textarea-project-description-${index}`}
-                        />
+
+                        <Tabs 
+                          value={currentProjectIndex === index ? currentProjectTab : "details"} 
+                          onValueChange={(value) => {
+                            setCurrentProjectIndex(index);
+                            setCurrentProjectTab(value);
+                          }}
+                        >
+                          <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
+                            <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20 text-xs">Details</TabsTrigger>
+                            <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20 text-xs">Media</TabsTrigger>
+                            <TabsTrigger value="team" className="flex-1 text-white data-[state=active]:bg-white/20 text-xs">Team</TabsTrigger>
+                            <TabsTrigger value="clients" className="flex-1 text-white data-[state=active]:bg-white/20 text-xs">Clients</TabsTrigger>
+                          </TabsList>
+
+                          <TabsContent value="details" className="space-y-4 pt-4">
+                            <div>
+                              <Label className="text-white text-sm mb-1.5 block">Project Title*</Label>
+                              <Input
+                                value={project.title}
+                                onChange={(e) => updateProject(index, 'title', e.target.value)}
+                                placeholder="Enter project title..."
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                data-testid={`input-project-title-${index}`}
+                              />
+                            </div>
+                            
+                            <div>
+                              <Label className="text-white text-sm mb-1.5 block">Project Description*</Label>
+                              <Textarea
+                                value={project.description}
+                                onChange={(e) => updateProject(index, 'description', e.target.value)}
+                                placeholder="Describe your project, its objectives, and outcome..."
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 resize-none"
+                                rows={3}
+                                data-testid={`textarea-project-description-${index}`}
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-white text-sm mb-1.5 block">Category*</Label>
+                                <Input
+                                  value={project.category}
+                                  onChange={(e) => updateProject(index, 'category', e.target.value)}
+                                  placeholder="e.g. Web Development"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                  data-testid={`input-project-category-${index}`}
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label className="text-white text-sm mb-1.5 block">Industry</Label>
+                                <Input
+                                  value={project.industry}
+                                  onChange={(e) => updateProject(index, 'industry', e.target.value)}
+                                  placeholder="e.g. Technology"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                  data-testid={`input-project-industry-${index}`}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-white text-sm mb-1.5 block">Project Date*</Label>
+                                <Input
+                                  type="date"
+                                  value={project.startDate}
+                                  onChange={(e) => updateProject(index, 'startDate', e.target.value)}
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                  data-testid={`input-project-date-${index}`}
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label className="text-white text-sm mb-1.5 block">Project URL*</Label>
+                                <Input
+                                  type="url"
+                                  value={project.projectUrl}
+                                  onChange={(e) => updateProject(index, 'projectUrl', e.target.value)}
+                                  placeholder="https://example.com"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                  data-testid={`input-project-url-${index}`}
+                                />
+                              </div>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="media" className="space-y-4 pt-4">
+                            <div className="text-center py-8 text-white/60">
+                              <p className="text-sm">Media upload will be available after completing onboarding.</p>
+                              <p className="text-xs mt-2">You can add images and videos to your projects from your profile.</p>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="team" className="space-y-4 pt-4">
+                            <div>
+                              <Label className="text-white text-sm mb-2 block">Team Members</Label>
+                              <p className="text-white/60 text-xs mb-3">Add Brandentifier profile links of team members</p>
+                              
+                              {project.teamMembers.map((member, memberIndex) => (
+                                <div key={memberIndex} className="flex gap-2 mb-2">
+                                  <Input
+                                    value={member}
+                                    readOnly
+                                    className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 flex-1"
+                                  />
+                                  <Button
+                                    onClick={() => removeTeamMember(index, memberIndex)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                              
+                              <div className="flex gap-2">
+                                <Input
+                                  placeholder="https://brandentifier.replit.app/profile/username"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 flex-1"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      const input = e.currentTarget;
+                                      addTeamMember(index, input.value);
+                                      input.value = '';
+                                    }
+                                  }}
+                                  data-testid={`input-team-member-${index}`}
+                                />
+                                <Button
+                                  onClick={(e) => {
+                                    const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                                    if (input) {
+                                      addTeamMember(index, input.value);
+                                      input.value = '';
+                                    }
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-blue-400 hover:text-blue-300 hover:bg-white/10"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="clients" className="space-y-4 pt-4">
+                            <div>
+                              <Label className="text-white text-sm mb-2 block">Client Profiles</Label>
+                              <p className="text-white/60 text-xs mb-3">Add Brandentifier profile links of clients</p>
+                              
+                              {project.clientProfiles.map((client, clientIndex) => (
+                                <div key={clientIndex} className="flex gap-2 mb-2">
+                                  <Input
+                                    value={client}
+                                    readOnly
+                                    className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 flex-1"
+                                  />
+                                  <Button
+                                    onClick={() => removeClientProfile(index, clientIndex)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                              
+                              <div className="flex gap-2">
+                                <Input
+                                  placeholder="https://brandentifier.replit.app/profile/username"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 flex-1"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      const input = e.currentTarget;
+                                      addClientProfile(index, input.value);
+                                      input.value = '';
+                                    }
+                                  }}
+                                  data-testid={`input-client-profile-${index}`}
+                                />
+                                <Button
+                                  onClick={(e) => {
+                                    const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                                    if (input) {
+                                      addClientProfile(index, input.value);
+                                      input.value = '';
+                                    }
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-blue-400 hover:text-blue-300 hover:bg-white/10"
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
                       </div>
                     ))}
                   </div>
