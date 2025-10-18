@@ -119,8 +119,9 @@ export default function BrandQuestsPage() {
                     <QuestPanel userId={userId} />
                   </div>
                   
-                  {/* Sidebar - Badges */}
-                  <div className="order-1 lg:order-2">
+                  {/* Sidebar - Portfolio Completion & Badges */}
+                  <div className="order-1 lg:order-2 space-y-4">
+                    <ProfileCompletionWidget userId={userId} />
                     <BadgeDisplay userId={userId} />
                   </div>
                 </div>
