@@ -119,7 +119,7 @@ export default function OnboardingTier3({
                           value={skill.name}
                           onChange={(e) => updateSkill(index, 'name', e.target.value)}
                           placeholder="e.g., Project Management, Python, UI/UX Design"
-                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                           data-testid={`input-skill-name-${index}`}
                         />
                       </div>
@@ -176,7 +176,7 @@ export default function OnboardingTier3({
                   value={whatIOffer}
                   onChange={(e) => setWhatIOffer(e.target.value)}
                   placeholder="Describe the services, expertise, or value you provide to clients or employers..."
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none min-h-32 resize-y"
+                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-32 resize-y"
                   maxLength={500}
                   data-testid="textarea-services"
                 />

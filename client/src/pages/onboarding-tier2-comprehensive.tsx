@@ -136,7 +136,7 @@ export default function OnboardingTier2Comprehensive({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter your full name"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-name"
                     />
                   </div>
@@ -148,7 +148,7 @@ export default function OnboardingTier2Comprehensive({
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
                       placeholder="Your company name"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-company"
                     />
                   </div>
@@ -160,7 +160,7 @@ export default function OnboardingTier2Comprehensive({
                       value={location}
                       onChange={setLocation}
                       placeholder="Your location (e.g. San Francisco, CA)"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                     />
                   </div>
 
@@ -209,7 +209,7 @@ export default function OnboardingTier2Comprehensive({
                       onChange={(e) => setTagline(e.target.value)}
                       placeholder="Enter your personal motto"
                       maxLength={80}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-tagline"
                     />
                     <p className="text-white/40 text-xs text-right">{tagline.length}/80</p>
@@ -227,7 +227,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="Describe your long-term vision"
                       maxLength={200}
                       rows={3}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 resize-none"
                       data-testid="textarea-vision"
                     />
                     <p className="text-white/40 text-xs text-right">{visionStatement.length}/200</p>
@@ -245,7 +245,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="Describe your mission and impact"
                       maxLength={220}
                       rows={3}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 resize-none"
                       data-testid="textarea-mission"
                     />
                     <p className="text-white/40 text-xs text-right">{missionStatement.length}/220</p>
@@ -271,7 +271,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type a value and press Enter"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-core-values"
                     />
                     {coreValues.length > 0 && (
@@ -306,7 +306,7 @@ export default function OnboardingTier2Comprehensive({
                       placeholder="What makes you unique?"
                       maxLength={150}
                       rows={2}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 resize-none"
                       data-testid="textarea-uvp"
                     />
                     <p className="text-white/40 text-xs text-right">{uniqueValueProposition.length}/150</p>
@@ -332,7 +332,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type an audience and press Enter"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-primary-audience"
                     />
                     {primaryAudience.length > 0 && (
@@ -375,7 +375,7 @@ export default function OnboardingTier2Comprehensive({
                         }
                       }}
                       placeholder="Type an audience and press Enter"
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 placeholder:text-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                       data-testid="input-secondary-audience"
                     />
                     {secondaryAudience.length > 0 && (
