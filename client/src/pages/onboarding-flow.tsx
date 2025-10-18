@@ -182,13 +182,22 @@ export default function OnboardingFlow() {
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       await queryClient.invalidateQueries({ queryKey: ['/api/skills', userId] });
 
-      // 4. Success toast
+      // 4. Trigger instant quest assignment
+      console.log('[Onboarding] Triggering instant quest assignment for user', userId);
+      try {
+        const questResponse = await apiRequest('POST', `/api/assign-initial-quests/${userId}`, {});
+        console.log('[Onboarding] Quest assignment result:', questResponse);
+      } catch (questError) {
+        console.error('[Onboarding] Quest assignment failed (non-blocking):', questError);
+      }
+
+      // 5. Success toast
       toast({
         title: "Profile setup complete!",
         description: "✨ Your AI coach has created personalized quests for you!",
       });
 
-      // 5. Redirect to Brand Quest page
+      // 6. Redirect to Brand Quest page
       setTimeout(() => {
         setLocation('/brand-quests');
       }, 500);
@@ -211,6 +220,15 @@ export default function OnboardingFlow() {
     setIsSubmitting(true);
 
     try {
+      // Trigger instant quest assignment
+      console.log('[Onboarding] Triggering instant quest assignment (skip) for user', userId);
+      try {
+        const questResponse = await apiRequest('POST', `/api/assign-initial-quests/${userId}`, {});
+        console.log('[Onboarding] Quest assignment result:', questResponse);
+      } catch (questError) {
+        console.error('[Onboarding] Quest assignment failed (non-blocking):', questError);
+      }
+
       toast({
         title: "Profile setup complete!",
         description: "✨ Your AI coach has created personalized quests for you!",
