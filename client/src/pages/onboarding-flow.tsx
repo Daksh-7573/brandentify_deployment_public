@@ -3,13 +3,12 @@ import { useLocation } from "wouter";
 import { AuthContext } from "@/context/simple-auth-context";
 import OnboardingWelcome from "./onboarding-welcome";
 import OnboardingQuickSetup from "./onboarding-quick-setup";
-import OnboardingTier2Comprehensive from "./onboarding-tier2-comprehensive";
 import OnboardingTier3 from "./onboarding-tier3";
 import OnboardingTier4 from "./onboarding-tier4";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-type OnboardingStep = 'welcome' | 'quick-setup' | 'tier2-comprehensive' | 'tier3' | 'tier4';
+type OnboardingStep = 'welcome' | 'quick-setup' | 'tier3' | 'tier4';
 
 interface OnboardingData {
   goalId?: string;
@@ -17,23 +16,20 @@ interface OnboardingData {
   title?: string;
   industry?: string;
   domain?: string;
-  // Tier 2: Profile + Branding
-  name?: string;
-  company?: string;
-  location?: string;
-  lookingFor?: string;
-  tagline?: string;
-  visionStatement?: string;
-  missionStatement?: string;
-  coreValues?: string[];
-  uniqueValueProposition?: string;
-  primaryAudience?: string[];
-  secondaryAudience?: string[];
   // Tier 3: Skills + Services
   skills?: Array<{ name: string; level: string }>;
   whatIOffer?: string;
   // Tier 4: Projects + Career + Academic
-  projects?: Array<{ title: string; description: string }>;
+  projects?: Array<{
+    title: string;
+    description: string;
+    category: string;
+    industry?: string;
+    startDate: string;
+    projectUrl: string;
+    teamMembers?: string[];
+    clientProfiles?: string[];
+  }>;
   workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
   educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
 }
@@ -83,69 +79,19 @@ export default function OnboardingFlow() {
         title: completeData.title,
         industry: completeData.industry,
         domain: completeData.domain,
-        profileCompleted: 40 // Tier 1 gives 40% completion
+        profileCompleted: 50 // Tier 1 gives 50% completion (was 40%)
       });
 
       // 3. Invalidate all relevant queries
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       await queryClient.invalidateQueries({ queryKey: ['/api/brand-goals', userId] });
 
-      // 4. Save to local state and move to Tier 2 Comprehensive
-      setOnboardingData(prev => ({ ...prev, ...data }));
-      setCurrentStep('tier2-comprehensive');
-
-    } catch (error) {
-      console.error('[Onboarding] Error saving data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your profile. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleTier2ComprehensiveComplete = async (data: {
-    name?: string;
-    company?: string;
-    location?: string;
-    lookingFor?: string;
-    tagline?: string;
-    visionStatement?: string;
-    missionStatement?: string;
-    coreValues?: string[];
-    uniqueValueProposition?: string;
-    primaryAudience?: string[];
-    secondaryAudience?: string[];
-  }) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "User not authenticated. Please try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      // Update user profile with all Tier 2 comprehensive data
-      await apiRequest('PATCH', `/api/users/${userId}`, {
-        ...data,
-        profileCompleted: 60 // Tier 2 Comprehensive gives 60% completion
-      });
-
-      // Invalidate queries
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-
-      // Save to local state and move to Tier 3
+      // 4. Save to local state and move directly to Tier 3
       setOnboardingData(prev => ({ ...prev, ...data }));
       setCurrentStep('tier3');
 
     } catch (error) {
-      console.error('[Onboarding] Error saving Tier 2 Comprehensive data:', error);
+      console.error('[Onboarding] Error saving data:', error);
       toast({
         title: "Error",
         description: "Failed to save your profile. Please try again.",
@@ -176,7 +122,7 @@ export default function OnboardingFlow() {
 
       // 2. Update user profile (Tier 3: Skills + Services)
       const updateData: any = {
-        profileCompleted: 75 // Tier 3 gives 75% completion
+        profileCompleted: 70 // Tier 3 gives 70% completion (was 75%)
       };
       if (data.whatIOffer) {
         updateData.whatIOffer = data.whatIOffer;
@@ -209,7 +155,16 @@ export default function OnboardingFlow() {
   };
 
   const handleTier4Complete = async (data: {
-    projects?: Array<{ title: string; description: string }>;
+    projects?: Array<{
+      title: string;
+      description: string;
+      category: string;
+      industry?: string;
+      startDate: string;
+      projectUrl: string;
+      teamMembers?: string[];
+      clientProfiles?: string[];
+    }>;
     workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
     educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
   }) => {
@@ -218,7 +173,7 @@ export default function OnboardingFlow() {
     setIsSubmitting(true);
 
     try {
-      let profileCompletion = 75; // Start from Tier 3 completion
+      let profileCompletion = 70; // Start from Tier 3 completion
 
       // 1. Save projects
       if (data.projects && data.projects.length > 0) {
@@ -313,10 +268,8 @@ export default function OnboardingFlow() {
   const handleBack = () => {
     if (currentStep === 'quick-setup') {
       setCurrentStep('welcome');
-    } else if (currentStep === 'tier2-comprehensive') {
-      setCurrentStep('quick-setup');
     } else if (currentStep === 'tier3') {
-      setCurrentStep('tier2-comprehensive');
+      setCurrentStep('quick-setup');
     } else if (currentStep === 'tier4') {
       setCurrentStep('tier3');
     }
@@ -347,13 +300,6 @@ export default function OnboardingFlow() {
           userName={userName}
           selectedGoal={onboardingData.goalId}
           onComplete={handleQuickSetupComplete}
-          onBack={handleBack}
-        />
-      )}
-
-      {currentStep === 'tier2-comprehensive' && (
-        <OnboardingTier2Comprehensive
-          onComplete={handleTier2ComprehensiveComplete}
           onBack={handleBack}
         />
       )}
