@@ -15,7 +15,17 @@ import {
 } from "@/components/ui/select";
 
 interface OnboardingTier3Props {
-  onComplete: (data: { skills: Array<{ name: string; level: string }>, whatIOffer?: string }) => void;
+  onComplete: (data: { 
+    skills: Array<{ name: string; level: string }>, 
+    services?: Array<{
+      title: string;
+      description?: string;
+      priceUsd?: number | null;
+      priceInr?: number | null;
+      isHourly?: boolean;
+      isActive?: boolean;
+    }>
+  }) => void;
   onBack: () => void;
   onSkip: () => void;
 }
@@ -30,7 +40,16 @@ export default function OnboardingTier3({
   const [skills, setSkills] = useState<Array<{ name: string; level: string }>>([
     { name: "", level: "Intermediate" }
   ]);
-  const [whatIOffer, setWhatIOffer] = useState("");
+  const [services, setServices] = useState<Array<{
+    title: string;
+    description: string;
+    currency: 'USD' | 'INR';
+    price: string;
+    isHourly: boolean;
+    isActive: boolean;
+  }>>([
+    { title: "", description: "", currency: "USD", price: "", isHourly: false, isActive: true }
+  ]);
 
   const addSkill = () => {
     if (skills.length < 10) {
@@ -50,11 +69,41 @@ export default function OnboardingTier3({
     setSkills(newSkills);
   };
 
+  const addService = () => {
+    if (services.length < 3) {
+      setServices([...services, { title: "", description: "", currency: "USD", price: "", isHourly: false, isActive: true }]);
+    }
+  };
+
+  const removeService = (index: number) => {
+    if (services.length > 1) {
+      setServices(services.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateService = (index: number, field: keyof typeof services[0], value: any) => {
+    const newServices = [...services];
+    newServices[index] = { ...newServices[index], [field]: value };
+    setServices(newServices);
+  };
+
   const handleContinue = () => {
     const validSkills = skills.filter(s => s.name.trim());
+    const validServices = services.filter(s => s.title.trim()).map(s => {
+      const priceNum = s.price ? parseFloat(s.price) : null;
+      return {
+        title: s.title,
+        description: s.description || undefined,
+        priceUsd: s.currency === 'USD' ? priceNum : null,
+        priceInr: s.currency === 'INR' ? priceNum : null,
+        isHourly: s.isHourly,
+        isActive: s.isActive
+      };
+    });
+    
     onComplete({ 
       skills: validSkills,
-      whatIOffer: whatIOffer.trim() || undefined
+      services: validServices.length > 0 ? validServices : undefined
     });
   };
 
@@ -167,21 +216,136 @@ export default function OnboardingTier3({
               </div>
 
               {/* Services Section */}
-              <div className="space-y-2">
-                <Label htmlFor="whatIOffer" className="text-white font-medium">
-                  Services <span className="text-white/60 text-sm font-normal">(Optional)</span>
-                </Label>
-                <Textarea
-                  id="whatIOffer"
-                  value={whatIOffer}
-                  onChange={(e) => setWhatIOffer(e.target.value)}
-                  placeholder="Describe the services, expertise, or value you provide to clients or employers..."
-                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-32 resize-y"
-                  maxLength={500}
-                  data-testid="textarea-services"
-                />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-white font-medium text-lg">
+                    Services <span className="text-white/60 text-sm font-normal">(Optional - Add up to 3)</span>
+                  </Label>
+                  <Button
+                    onClick={addService}
+                    disabled={services.length >= 3}
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-400 hover:text-blue-300 hover:bg-white/10"
+                    data-testid="button-add-service"
+                  >
+                    <Plus className="h-4 w-4 mr-1" /> Add Service
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {services.map((service, index) => (
+                    <div key={index} className="border border-white/20 rounded-lg p-4 bg-black/20 space-y-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white/70 text-sm">Service {index + 1}</span>
+                        {services.length > 1 && (
+                          <Button
+                            onClick={() => removeService(index)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-2 h-7"
+                            data-testid={`button-remove-service-${index}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Service Title */}
+                      <div>
+                        <Label className="text-white text-sm mb-1.5 block">Service Title*</Label>
+                        <Input
+                          value={service.title}
+                          onChange={(e) => updateService(index, 'title', e.target.value)}
+                          placeholder="e.g., Web Design, Business Consulting"
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                          data-testid={`input-service-title-${index}`}
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <Label className="text-white text-sm mb-1.5 block">Description</Label>
+                        <Textarea
+                          value={service.description}
+                          onChange={(e) => updateService(index, 'description', e.target.value)}
+                          placeholder="Brief description of this service..."
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 resize-none"
+                          rows={2}
+                          data-testid={`textarea-service-description-${index}`}
+                        />
+                      </div>
+
+                      {/* Pricing Details */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-white text-sm mb-1.5 block">Currency</Label>
+                          <Select 
+                            value={service.currency} 
+                            onValueChange={(value: 'USD' | 'INR') => updateService(index, 'currency', value)}
+                          >
+                            <SelectTrigger 
+                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-10"
+                              data-testid={`select-service-currency-${index}`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-gray-900/95 border-white/20 backdrop-blur-xl">
+                              <SelectItem value="USD" className="text-white hover:bg-white/10 focus:bg-white/20 cursor-pointer">
+                                USD ($)
+                              </SelectItem>
+                              <SelectItem value="INR" className="text-white hover:bg-white/10 focus:bg-white/20 cursor-pointer">
+                                INR (₹)
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-white text-sm mb-1.5 block">Price</Label>
+                          <Input
+                            type="text"
+                            value={service.price}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^[0-9]*\.?[0-9]*$/.test(value)) {
+                                updateService(index, 'price', value);
+                              }
+                            }}
+                            placeholder="0.00"
+                            className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                            data-testid={`input-service-price-${index}`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Toggles */}
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <div className="flex items-center justify-between bg-black/30 border border-white/20 rounded px-3 py-2">
+                          <Label className="text-white text-xs">Hourly Rate</Label>
+                          <Input
+                            type="checkbox"
+                            checked={service.isHourly}
+                            onChange={(e) => updateService(index, 'isHourly', e.target.checked)}
+                            className="w-4 h-4 accent-blue-500"
+                            data-testid={`checkbox-service-hourly-${index}`}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between bg-black/30 border border-white/20 rounded px-3 py-2">
+                          <Label className="text-white text-xs">Active</Label>
+                          <Input
+                            type="checkbox"
+                            checked={service.isActive}
+                            onChange={(e) => updateService(index, 'isActive', e.target.checked)}
+                            className="w-4 h-4 accent-green-500"
+                            data-testid={`checkbox-service-active-${index}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 <p className="text-white/50 text-xs">
-                  {whatIOffer.length}/500 characters · Describe your services and what you bring to the table
+                  Add professional services you offer to potential clients or employers
                 </p>
               </div>
 
