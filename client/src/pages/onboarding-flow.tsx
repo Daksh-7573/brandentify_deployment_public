@@ -194,12 +194,12 @@ export default function OnboardingFlow() {
       // 5. Success toast
       toast({
         title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
+        description: "✨ Let's preview your professional portfolio!",
       });
 
-      // 6. Redirect to Brand Quest page
+      // 6. Redirect to Portfolio Preview page
       setTimeout(() => {
-        setLocation('/brand-quests');
+        setLocation('/portfolio-preview');
       }, 500);
 
     } catch (error) {
@@ -231,11 +231,11 @@ export default function OnboardingFlow() {
 
       toast({
         title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
+        description: "✨ Let's preview your professional portfolio!",
       });
 
       setTimeout(() => {
-        setLocation('/brand-quests');
+        setLocation('/portfolio-preview');
       }, 500);
     } finally {
       setIsSubmitting(false);

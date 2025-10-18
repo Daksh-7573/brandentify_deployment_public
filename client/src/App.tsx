@@ -121,6 +121,8 @@ const CareerCapsulePage = lazy(() => import("@/pages/career-capsule"));
 const QuantumCardPage = lazy(() => import("@/pages/quantum-card"));
 const OnboardingPage = lazy(() => import("@/pages/onboarding"));
 const OnboardingFlowPage = lazy(() => import("@/pages/onboarding-flow"));
+const PortfolioPreviewInterstitial = lazy(() => import("@/pages/portfolio-preview-interstitial"));
+const GuidedPortfolioCompletion = lazy(() => import("@/pages/guided-portfolio-completion"));
 const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
 const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
 const ManageServicesPage = lazy(() => import("@/pages/manage-services"));
@@ -435,6 +437,12 @@ function Router() {
       </Route>
       <Route path="/onboarding">
         <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
+      </Route>
+      <Route path="/portfolio-preview">
+        <ProtectedRoute path="/portfolio-preview" component={PortfolioPreviewInterstitial} />
+      </Route>
+      <Route path="/guided-portfolio">
+        <ProtectedRoute path="/guided-portfolio" component={GuidedPortfolioCompletion} />
       </Route>
       <Route path="/onboarding-old">
         <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
