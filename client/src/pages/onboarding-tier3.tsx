@@ -416,7 +416,7 @@ export default function OnboardingTier3({
 
             {/* Time Indicator */}
             <div className="text-center mt-6 text-white/50 text-sm">
-              Step 3 of 4 · ~5 minutes
+              Step 4 of 5 · ~5 minutes
             </div>
           </NeoGlassSection>
         </div>
