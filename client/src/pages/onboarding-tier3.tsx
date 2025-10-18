@@ -404,19 +404,19 @@ export default function OnboardingTier3({
                   size="lg"
                   className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
                     hasValidSkill
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105' 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105' 
                       : 'bg-white/10 text-white/40 cursor-not-allowed'
                   }`}
-                  data-testid="button-continue-tier2"
+                  data-testid="button-complete-tier3"
                 >
-                  Continue →
+                  Complete Setup →
                 </Button>
               </div>
             </div>
 
             {/* Time Indicator */}
             <div className="text-center mt-6 text-white/50 text-sm">
-              Step 4 of 5 · ~5 minutes
+              Step 4 of 4 · Final step! ~5 minutes
             </div>
           </NeoGlassSection>
         </div>

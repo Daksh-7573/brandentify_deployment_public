@@ -5,11 +5,10 @@ import OnboardingWelcome from "./onboarding-welcome";
 import OnboardingQuickSetup from "./onboarding-quick-setup";
 import OnboardingTier2Comprehensive from "./onboarding-tier2-comprehensive";
 import OnboardingTier3 from "./onboarding-tier3";
-import OnboardingTier4 from "./onboarding-tier4";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-type OnboardingStep = 'welcome' | 'quick-setup' | 'tier2-comprehensive' | 'tier3' | 'tier4';
+type OnboardingStep = 'welcome' | 'quick-setup' | 'tier2-comprehensive' | 'tier3';
 
 interface OnboardingData {
   goalId?: string;
@@ -29,13 +28,9 @@ interface OnboardingData {
   uniqueValueProposition?: string;
   primaryAudience?: string[];
   secondaryAudience?: string[];
-  // Tier 3: Skills + Services
+  // Tier 3: Skills + Services (Final Step)
   skills?: Array<{ name: string; level: string }>;
   whatIOffer?: string;
-  // Tier 4: Projects + Career + Academic
-  projects?: Array<{ title: string; description: string }>;
-  workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
-  educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
 }
 
 export default function OnboardingFlow() {
@@ -174,9 +169,9 @@ export default function OnboardingFlow() {
         }
       }
 
-      // 2. Update user profile (Tier 3: Skills + Services)
+      // 2. Update user profile (Tier 3: Final Step - 95% completion)
       const updateData: any = {
-        profileCompleted: 75 // Tier 3 gives 75% completion
+        profileCompleted: 95 // Tier 3 is now the final step
       };
       if (data.whatIOffer) {
         updateData.whatIOffer = data.whatIOffer;
@@ -187,9 +182,16 @@ export default function OnboardingFlow() {
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
       await queryClient.invalidateQueries({ queryKey: ['/api/skills', userId] });
 
-      // 4. Save to local state and move to Tier 4
-      setOnboardingData(prev => ({ ...prev, ...data }));
-      setCurrentStep('tier4');
+      // 4. Success toast
+      toast({
+        title: "Profile setup complete!",
+        description: "✨ Your AI coach has created personalized quests for you!",
+      });
+
+      // 5. Redirect to Brand Quest page
+      setTimeout(() => {
+        setLocation('/brand-quests');
+      }, 500);
 
     } catch (error) {
       console.error('[Onboarding] Error saving Tier 3 data:', error);
@@ -205,94 +207,6 @@ export default function OnboardingFlow() {
 
   const handleTier3Skip = async () => {
     if (!userId) return;
-    setCurrentStep('tier4');
-  };
-
-  const handleTier4Complete = async (data: {
-    projects?: Array<{ title: string; description: string }>;
-    workExperiences?: Array<{ title: string; company: string; startDate: string; endDate?: string }>;
-    educations?: Array<{ degree: string; institution: string; startDate: string; endDate?: string }>;
-  }) => {
-    if (!userId) return;
-
-    setIsSubmitting(true);
-
-    try {
-      let profileCompletion = 75; // Start from Tier 3 completion
-
-      // 1. Save projects
-      if (data.projects && data.projects.length > 0) {
-        for (const project of data.projects) {
-          await apiRequest('POST', '/api/projects', {
-            userId,
-            title: project.title,
-            description: project.description
-          });
-        }
-        profileCompletion += 7;
-      }
-
-      // 2. Save work experiences
-      if (data.workExperiences && data.workExperiences.length > 0) {
-        for (const work of data.workExperiences) {
-          await apiRequest('POST', '/api/work-experiences', {
-            userId,
-            title: work.title,
-            company: work.company,
-            startDate: work.startDate,
-            endDate: work.endDate || null
-          });
-        }
-        profileCompletion += 7;
-      }
-
-      // 3. Save education
-      if (data.educations && data.educations.length > 0) {
-        for (const edu of data.educations) {
-          await apiRequest('POST', '/api/educations', {
-            userId,
-            degree: edu.degree,
-            institution: edu.institution,
-            startDate: edu.startDate,
-            endDate: edu.endDate || null
-          });
-        }
-        profileCompletion += 6;
-      }
-
-      // 4. Update user profile (Tier 4: max 95% completion)
-      await apiRequest('PATCH', `/api/users/${userId}`, {
-        profileCompleted: Math.min(profileCompletion, 95)
-      });
-
-      // 5. Invalidate queries
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-
-      // 6. Success toast
-      toast({
-        title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
-      });
-
-      // 7. Redirect to Brand Quest page
-      setTimeout(() => {
-        setLocation('/brand-quests');
-      }, 500);
-
-    } catch (error) {
-      console.error('[Onboarding] Error saving Tier 4 data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your profile. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleTier4Skip = async () => {
-    if (!userId) return;
 
     setIsSubmitting(true);
 
@@ -309,6 +223,7 @@ export default function OnboardingFlow() {
       setIsSubmitting(false);
     }
   };
+
 
   const handleBack = () => {
     if (currentStep === 'quick-setup') {
@@ -317,8 +232,6 @@ export default function OnboardingFlow() {
       setCurrentStep('quick-setup');
     } else if (currentStep === 'tier3') {
       setCurrentStep('tier2-comprehensive');
-    } else if (currentStep === 'tier4') {
-      setCurrentStep('tier3');
     }
   };
 
@@ -363,14 +276,6 @@ export default function OnboardingFlow() {
           onComplete={handleTier3Complete}
           onBack={handleBack}
           onSkip={handleTier3Skip}
-        />
-      )}
-
-      {currentStep === 'tier4' && (
-        <OnboardingTier4
-          onComplete={handleTier4Complete}
-          onBack={handleBack}
-          onSkip={handleTier4Skip}
         />
       )}
     </>
