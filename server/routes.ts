@@ -9210,6 +9210,109 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Instant Quest Assignment for Single User (Post-Onboarding)
+  app.post('/api/assign-initial-quests/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      console.log(`[Instant Quest Assignment] Starting quest generation for user ${userId}`);
+      
+      // Import required services
+      const { smartQuestAllocator } = await import('./services/smart-quest-allocator');
+      const { recommendationService } = await import('./services/recommendation-service');
+      const { intelligentHashtagGenerator } = await import('./services/intelligent-hashtag-generator');
+      
+      // Get user data
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      // Check if user already has quests assigned today
+      const todayDateString = new Date().toISOString().split('T')[0];
+      const existingTodayQuests = await db
+        .select()
+        .from(userQuests)
+        .where(and(
+          eq(userQuests.userId, userId),
+          eq(userQuests.assignedDate, todayDateString)
+        ));
+      
+      if (existingTodayQuests.length > 0) {
+        console.log(`[Instant Quest Assignment] User ${userId} already has ${existingTodayQuests.length} quests assigned today`);
+        return res.json({
+          success: true,
+          message: 'Quests already assigned',
+          questCount: existingTodayQuests.length,
+          quests: existingTodayQuests
+        });
+      }
+      
+      // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
+      const allocation = await smartQuestAllocator.allocateDailyQuests(userId);
+      
+      console.log(`[Instant Quest Assignment] Smart Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social)`);
+      
+      // Assign quests based on smart allocation
+      const assignedQuests: any[] = [];
+      const currentWeek = Math.ceil(((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000 + new Date(new Date().getFullYear(), 0, 1).getDay() + 1) / 7);
+      const currentYear = new Date().getFullYear();
+
+      for (const selectedQuest of allocation.selectedQuests) {
+        const [quest] = await db
+          .insert(userQuests)
+          .values({
+            userId,
+            questDefinitionId: selectedQuest.questDefinitionId,
+            status: 'active',
+            progress: 0,
+            assignedAt: new Date(),
+            assignedDate: todayDateString,
+            weekNumber: currentWeek,
+            year: currentYear
+          })
+          .returning();
+        
+        assignedQuests.push({
+          ...quest,
+          category: selectedQuest.category,
+          questType: selectedQuest.questType
+        });
+      }
+
+      console.log(`[Instant Quest Assignment] ✅ Assigned ${assignedQuests.length} quests for user ${userId} (${user.name})`);
+      
+      res.json({
+        success: true,
+        message: 'Initial quests assigned successfully',
+        questCount: assignedQuests.length,
+        allocation: {
+          totalQuests: allocation.totalQuests,
+          careerQuests: allocation.careerQuests,
+          socialQuests: allocation.socialQuests,
+          strategy: allocation.allocationStrategy
+        }
+      });
+    } catch (error) {
+      console.error('[Instant Quest Assignment] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error assigning initial quests',
+        error: error.message
+      });
+    }
+  });
+
   // Object Storage Routes - from blueprint:javascript_object_storage
   const { ObjectStorageService, ObjectNotFoundError } = await import('./objectStorage');
   const { ObjectPermission } = await import('./objectAcl');
