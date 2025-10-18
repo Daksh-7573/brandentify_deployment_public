@@ -3,9 +3,8 @@ import { useLocation } from "wouter";
 import { AuthContext } from "@/context/simple-auth-context";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { X, ChevronRight, Trophy, Sparkles, Briefcase, GraduationCap, FolderOpen } from "lucide-react";
+import { X, ChevronRight, Trophy, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 interface ProfileCompletionWidgetProps {
   userId: number;
@@ -17,101 +16,46 @@ export function ProfileCompletionWidget({ userId, className = "" }: ProfileCompl
   const [isDismissed, setIsDismissed] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const userIdentifier = userId?.toString() || user?.id?.toString() || user?.username || user?.uid || '';
+  // Get profile completion from user context
+  const profileCompletion = user?.profileCompleted || 0;
 
-  // Fetch actual portfolio data
-  const { data: userData } = useQuery({
-    queryKey: ['/api/users', userIdentifier],
-    enabled: !!userIdentifier,
-  });
-
-  const { data: experiences = [] } = useQuery({
-    queryKey: ['/api/work-experiences', userIdentifier],
-    enabled: !!userIdentifier,
-  });
-
-  const { data: educations = [] } = useQuery({
-    queryKey: ['/api/educations', userIdentifier],
-    enabled: !!userIdentifier,
-  });
-
-  const { data: projects = [] } = useQuery({
-    queryKey: ['/api/projects', userIdentifier],
-    enabled: !!userIdentifier,
-  });
-
-  const { data: skills = [] } = useQuery({
-    queryKey: ['/api/skills', userIdentifier],
-    enabled: !!userIdentifier,
-  });
-
-  // Calculate HONEST portfolio quality
-  const calculatePortfolioQuality = () => {
-    let score = 0;
-    
-    // Basic info (max 50%)
-    if (userData?.name) score += 8;
-    if (userData?.photoURL) score += 8;
-    if (userData?.title) score += 8;
-    if (userData?.location) score += 8;
-    if (userData?.industry) score += 8;
-    if (userData?.lookingFor) score += 5;
-    if (userData?.tagline) score += 5;
-    
-    // Portfolio sections (max 50%)
-    if (experiences.length > 0) score += 15;
-    if (educations.length > 0) score += 12;
-    if (projects.length > 0) score += 15;
-    if (skills.length >= 3) score += 8;
-    
-    return Math.min(score, 100);
-  };
-
-  const portfolioQuality = calculatePortfolioQuality();
-
-  // Don't show if dismissed or portfolio is very strong
-  if (isDismissed || portfolioQuality >= 85) {
+  // Don't show if dismissed or profile is complete
+  if (isDismissed || profileCompletion >= 80) {
     return null;
   }
 
-  // Determine what's missing and what to prioritize
-  const getMissingSection = () => {
-    if (experiences.length === 0) {
+  // Determine tier status
+  const tier1Complete = profileCompletion >= 40; // Role + Industry
+  const tier2Complete = profileCompletion >= 70; // Skills + Services
+  const tier3Complete = profileCompletion >= 90; // Projects + Career + Academic
+
+  // Determine next action
+  const getNextAction = () => {
+    if (!tier1Complete) {
       return {
-        section: "Work Experience",
-        icon: Briefcase,
-        action: "Add Work Experience",
-        benefit: "Unlock professional quest",
-        route: "/guided-portfolio"
+        tier: "Tier 1",
+        action: "Add Role & Industry",
+        benefit: "Unlock role-specific quests",
+        route: "/onboarding"
       };
-    } else if (projects.length === 0) {
+    } else if (!tier2Complete) {
       return {
-        section: "Projects",
-        icon: FolderOpen,
-        action: "Add a Project",
-        benefit: "Showcase your skills",
-        route: "/guided-portfolio"
-      };
-    } else if (educations.length === 0) {
-      return {
-        section: "Education",
-        icon: GraduationCap,
-        action: "Add Education",
-        benefit: "Complete your background",
-        route: "/guided-portfolio"
+        tier: "Tier 2",
+        action: "Add Skills & Services",
+        benefit: "Unlock skill-building quests",
+        route: "/profile"
       };
     } else {
       return {
-        section: "Portfolio",
-        icon: Sparkles,
-        action: "Enhance Portfolio",
-        benefit: "Unlock advanced quests",
+        tier: "Tier 3",
+        action: "Complete Profile",
+        benefit: "Unlock advanced career quests",
         route: "/profile"
       };
     }
   };
 
-  const nextAction = getMissingSection();
+  const nextAction = getNextAction();
 
   return (
     <div className={`neo-glass-panel border border-white/10 rounded-lg p-4 ${className}`}>
@@ -132,49 +76,38 @@ export function ProfileCompletionWidget({ userId, className = "" }: ProfileCompl
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-white/70 text-sm">Portfolio Quality</span>
-          <span className={`font-medium ${
-            portfolioQuality >= 70 ? 'text-green-400' : 
-            portfolioQuality >= 40 ? 'text-yellow-400' : 
-            'text-red-400'
-          }`}>
-            {portfolioQuality}%
-          </span>
+          <span className="text-white/70 text-sm">Profile Completion</span>
+          <span className="text-white font-medium">{profileCompletion}%</span>
         </div>
-        <Progress value={portfolioQuality} className="h-2" />
-        <p className="text-white/50 text-xs mt-1">
-          {portfolioQuality < 50 && "⚠️ Portfolio needs content"}
-          {portfolioQuality >= 50 && portfolioQuality < 70 && "Getting better!"}
-          {portfolioQuality >= 70 && "Looking strong!"}
-        </p>
+        <Progress value={profileCompletion} className="h-2" />
       </div>
 
-      {/* What's Missing */}
+      {/* Tier Status */}
       <div className="space-y-1.5 mb-4">
         <div className="flex items-center gap-2 text-sm">
-          <div className={`w-2 h-2 rounded-full ${experiences.length > 0 ? 'bg-green-400' : 'bg-red-400'}`} />
-          <span className={experiences.length > 0 ? 'text-white/90' : 'text-white/50'}>
-            Work Experience {experiences.length > 0 && '✓'}
+          <div className={`w-2 h-2 rounded-full ${tier1Complete ? 'bg-green-400' : 'bg-white/20'}`} />
+          <span className={tier1Complete ? 'text-white/90' : 'text-white/50'}>
+            Tier 1: Role & Industry {tier1Complete && '✓'}
           </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <div className={`w-2 h-2 rounded-full ${projects.length > 0 ? 'bg-green-400' : 'bg-red-400'}`} />
-          <span className={projects.length > 0 ? 'text-white/90' : 'text-white/50'}>
-            Projects {projects.length > 0 && '✓'}
+          <div className={`w-2 h-2 rounded-full ${tier2Complete ? 'bg-green-400' : 'bg-white/20'}`} />
+          <span className={tier2Complete ? 'text-white/90' : 'text-white/50'}>
+            Tier 2: Skills & Services {tier2Complete && '✓'}
           </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <div className={`w-2 h-2 rounded-full ${educations.length > 0 ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className={educations.length > 0 ? 'text-white/90' : 'text-white/50'}>
-            Education {educations.length > 0 ? '✓' : '(Optional)'}
+          <div className={`w-2 h-2 rounded-full ${tier3Complete ? 'bg-green-400' : 'bg-white/20'}`} />
+          <span className={tier3Complete ? 'text-white/90' : 'text-white/50'}>
+            Tier 3: Full Profile {tier3Complete && '✓'}
           </span>
         </div>
       </div>
 
       {/* Next Action CTA */}
-      <div className="bg-purple-500/10 border border-purple-400/30 rounded-lg p-3 mb-3">
+      <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-3 mb-3">
         <div className="flex items-start gap-2 mb-2">
-          <nextAction.icon className="h-4 w-4 text-purple-400 mt-0.5" />
+          <Trophy className="h-4 w-4 text-blue-400 mt-0.5" />
           <div className="flex-1">
             <div className="text-white/90 font-medium text-sm">{nextAction.action}</div>
             <div className="text-white/60 text-xs mt-0.5">{nextAction.benefit}</div>
