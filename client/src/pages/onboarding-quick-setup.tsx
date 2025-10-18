@@ -95,14 +95,7 @@ export default function OnboardingQuickSetup({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Product Manager, Software Engineer"
-                  style={{
-                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important',
-                    backdropFilter: 'blur(12px) !important',
-                    color: 'white !important',
-                    borderColor: 'rgba(255, 255, 255, 0.2) !important',
-                    border: '1px solid rgba(255, 255, 255, 0.2) !important'
-                  } as React.CSSProperties}
-                  className="shadow-md"
+                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                   data-testid="input-role"
                 />
                 <p className="text-white/50 text-xs">
