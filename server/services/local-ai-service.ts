@@ -39,8 +39,8 @@ export class LocalAIService {
       temperature: parseFloat(process.env.AI_TEMPERATURE || '0.7')
     };
     
-    // Allow fallback to OpenAI if local models fail - enable by default for better reliability
-    this.fallbackToOpenAI = process.env.AI_FALLBACK_OPENAI !== 'false';
+    // Disable fallback to OpenAI - keep costs at $0.00
+    this.fallbackToOpenAI = process.env.AI_FALLBACK_OPENAI === 'true'; // Only enable if explicitly set
     
     console.log(`[Local AI] Initialized with provider: ${this.config.provider}, model: ${this.config.model}`);
   }
