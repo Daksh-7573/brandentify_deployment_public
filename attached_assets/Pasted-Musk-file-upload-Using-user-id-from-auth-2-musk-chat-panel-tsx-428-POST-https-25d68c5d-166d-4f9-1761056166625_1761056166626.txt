@@ -1,0 +1,71 @@
+Musk file upload: Using user.id from auth: 2
+musk-chat-panel.tsx:428  POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/musk/resume-upload 400 (Bad Request)
+(anonymous) @ musk-chat-panel.tsx:428
+handleFileUpload @ musk-chat-panel.tsx:399
+callCallback2 @ chunk-RPCDYKBN.js?v=9227ebad:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=9227ebad:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=9227ebad:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=9227ebad:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=9227ebad:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=9227ebad:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=9227ebad:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=9227ebad:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=9227ebad:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=9227ebad:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=9227ebad:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=9227ebad:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=9227ebad:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=9227ebad:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=9227ebad:5449Understand this error
+injected.js:27 Error processing resume: Error: HTTP error 400: Bad Request
+    at xhr.onload (musk-chat-panel.tsx:420:20)
+(anonymous) @ injected.js:27
+handleFileUpload @ musk-chat-panel.tsx:507
+await in handleFileUpload
+callCallback2 @ chunk-RPCDYKBN.js?v=9227ebad:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=9227ebad:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=9227ebad:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=9227ebad:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=9227ebad:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=9227ebad:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=9227ebad:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=9227ebad:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=9227ebad:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=9227ebad:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=9227ebad:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=9227ebad:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=9227ebad:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=9227ebad:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=9227ebad:5449Understand this error
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4

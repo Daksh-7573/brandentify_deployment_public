@@ -696,9 +696,15 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       const fs = await import('fs');
       
       if (fileExt === 'pdf') {
+        console.log(`Resume file object keys: ${Object.keys(resumeFile)}`);
+        console.log(`tempFilePath: ${resumeFile.tempFilePath}`);
+        console.log(`data exists: ${!!resumeFile.data}`);
+        
         const pdfBuffer = resumeFile.tempFilePath 
           ? fs.readFileSync(resumeFile.tempFilePath)
           : resumeFile.data;
+        
+        console.log(`PDF buffer type: ${typeof pdfBuffer}, length: ${pdfBuffer?.length}`);
         
         resumeText = await extractTextFromPdf(pdfBuffer);
         console.log(`Extracted ${resumeText.length} characters from PDF`);
