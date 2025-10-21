@@ -12,9 +12,11 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Target, TrendingUp, Presentation, Sparkles } from 'lucide-react';
+import { FileText, Target, TrendingUp, Presentation, Sparkles, Award } from 'lucide-react';
 import ResumeScorer from '@/components/career-intelligence/resume-scorer';
 import JobMatcher from '@/components/career-intelligence/job-matcher';
+import SkillBenchmark from '@/components/career-intelligence/skill-benchmark';
+import PitchDeckAnalyzer from '@/components/career-intelligence/pitch-deck-analyzer';
 
 export default function CareerTools() {
   return (
@@ -47,14 +49,14 @@ export default function CareerTools() {
               <span className="hidden md:inline">Job Matcher</span>
               <span className="md:hidden">Jobs</span>
             </TabsTrigger>
-            <TabsTrigger value="skills" disabled className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              <span className="hidden md:inline">Skills (Soon)</span>
+            <TabsTrigger value="skills" className="flex items-center gap-2" data-testid="tab-skills">
+              <Award className="h-4 w-4" />
+              <span className="hidden md:inline">Skill Benchmark</span>
               <span className="md:hidden">Skills</span>
             </TabsTrigger>
-            <TabsTrigger value="pitch" disabled className="flex items-center gap-2">
+            <TabsTrigger value="pitch" className="flex items-center gap-2" data-testid="tab-pitch">
               <Presentation className="h-4 w-4" />
-              <span className="hidden md:inline">Pitch (Soon)</span>
+              <span className="hidden md:inline">Pitch Analyzer</span>
               <span className="md:hidden">Pitch</span>
             </TabsTrigger>
           </TabsList>
@@ -68,29 +70,11 @@ export default function CareerTools() {
           </TabsContent>
 
           <TabsContent value="skills">
-            <ComingSoonCard 
-              title="Skill Benchmark Engine"
-              description="See how your skills stack up against the market. Get brutal gaps + learning roadmaps."
-              features={[
-                "Real salary data by skill level",
-                "Market demand trends",
-                "Learning time estimates",
-                "Certification recommendations"
-              ]}
-            />
+            <SkillBenchmark />
           </TabsContent>
 
           <TabsContent value="pitch">
-            <ComingSoonCard 
-              title="Pitch Deck Analyzer"
-              description="Upload your startup pitch deck. Get investor-level feedback on story, financials, and market fit."
-              features={[
-                "Investor perspective analysis",
-                "Financial projection validation",
-                "Market size reality check",
-                "Storytelling score"
-              ]}
-            />
+            <PitchDeckAnalyzer />
           </TabsContent>
         </Tabs>
 
