@@ -65,7 +65,7 @@ export class ResumeScorerService {
     const aiAnalysis = await this.generateAIAnalysis(resumeText, targetRole);
     
     // Parse AI response into structured data
-    const parsed = this.parseAIAnalysis(aiAnalysis, resumeText);
+    const parsed = this.parseAIAnalysis(aiAnalysis.fullAnalysis, resumeText);
     
     // Calculate scores
     const scoreBreakdown = this.calculateScores(parsed);
