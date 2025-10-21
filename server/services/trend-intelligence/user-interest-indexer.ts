@@ -164,11 +164,18 @@ export class UserInterestIndexer {
 
     const userData = user[0];
 
-    // Get brand goals
+    // Get brand goals (both pre-defined and custom)
     const goals = await db.select().from(brandGoals).where(eq(brandGoals.userId, userId));
-    const brandGoalsList = goals.length > 0 && goals[0].selectedGoals 
-      ? goals[0].selectedGoals 
-      : [];
+    
+    let brandGoalsList: string[] = [];
+    if (goals.length > 0) {
+      // Combine pre-defined goals (already strings) and custom goals
+      const preDefinedGoals = goals[0].selectedGoals || [];
+      const customGoals = goals[0].customGoals || [];
+      brandGoalsList = [...preDefinedGoals, ...customGoals];
+      
+      console.log(`[UserInterestIndexer] User ${userId} has ${brandGoalsList.length} total goals (${preDefinedGoals.length} pre-defined + ${customGoals.length} custom)`);
+    }
 
     // Get followed hashtags
     const followedHashtags = await db

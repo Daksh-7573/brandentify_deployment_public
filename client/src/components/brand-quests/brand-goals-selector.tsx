@@ -98,11 +98,7 @@ export function BrandGoalsSelector() {
       };
       console.log('[BrandGoalsSelector] Saving with payload:', payload);
       
-      return apiRequest({
-        url: '/api/brand-goals',
-        method: 'POST',
-        data: payload
-      });
+      return apiRequest('POST', '/api/brand-goals', payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/brand-goals', userId] });
