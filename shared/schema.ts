@@ -1997,6 +1997,147 @@ export const insertJobMatchSchema = createInsertSchema(jobMatches).omit({
 export type JobMatch = typeof jobMatches.$inferSelect;
 export type InsertJobMatch = z.infer<typeof insertJobMatchSchema>;
 
+// ============================================
+// PHASE 2: SKILL BENCHMARK ENGINE
+// ============================================
+
+// Skill Benchmarks - Compare user skills against market data
+export const skillBenchmarks = pgTable("skill_benchmarks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  skillName: text("skill_name").notNull(),
+  userProficiency: integer("user_proficiency").notNull(), // 0-100
+  marketAverage: integer("market_average").notNull(), // 0-100
+  percentileRank: integer("percentile_rank"), // Where user ranks (0-100)
+  marketDemand: text("market_demand"), // high, medium, low
+  averageSalary: text("average_salary"), // Salary range for this skill
+  salaryByLevel: jsonb("salary_by_level"), // { junior: "$X", mid: "$Y", senior: "$Z" }
+  topCompaniesHiring: text("top_companies_hiring").array().default(sql`'{}'`),
+  learningPath: jsonb("learning_path"), // Recommended courses/certs
+  timeToImprove: text("time_to_improve"), // e.g., "3-6 months"
+  relatedSkills: text("related_skills").array().default(sql`'{}'`),
+  industryTrends: jsonb("industry_trends"), // Growth/decline data
+  certificationRecommendations: jsonb("certification_recommendations"),
+  analysis: text("analysis"), // AI-generated insights
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertSkillBenchmarkSchema = createInsertSchema(skillBenchmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type SkillBenchmark = typeof skillBenchmarks.$inferSelect;
+export type InsertSkillBenchmark = z.infer<typeof insertSkillBenchmarkSchema>;
+
+// ============================================
+// PHASE 2: PITCH DECK ANALYZER
+// ============================================
+
+// Pitch Deck Analyses - AI analysis of startup pitch decks
+export const pitchDeckAnalyses = pgTable("pitch_deck_analyses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  deckName: text("deck_name").notNull(),
+  deckUrl: text("deck_url"), // URL to uploaded deck in object storage
+  overallScore: integer("overall_score").notNull(), // 0-100
+  storyScore: integer("story_score").notNull(), // 0-25
+  marketScore: integer("market_score").notNull(), // 0-25
+  financialsScore: integer("financials_score").notNull(), // 0-25
+  teamScore: integer("team_score").notNull(), // 0-25
+  // Detailed analysis
+  problemStatementAnalysis: jsonb("problem_statement_analysis"),
+  solutionAnalysis: jsonb("solution_analysis"),
+  marketSizeAnalysis: jsonb("market_size_analysis"),
+  businessModelAnalysis: jsonb("business_model_analysis"),
+  competitiveAnalysis: jsonb("competitive_analysis"),
+  tractionAnalysis: jsonb("traction_analysis"),
+  financialProjectionsAnalysis: jsonb("financial_projections_analysis"),
+  teamAnalysis: jsonb("team_analysis"),
+  askAnalysis: jsonb("ask_analysis"),
+  // Investor perspective
+  investorFeedback: text("investor_feedback"), // Full AI analysis
+  criticalIssues: jsonb("critical_issues").default('[]'),
+  strengthsHighlighted: jsonb("strengths_highlighted").default('[]'),
+  fundingProbability: integer("funding_probability"), // 0-100
+  suggestedValuation: text("suggested_valuation"),
+  recommendedChanges: jsonb("recommended_changes").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertPitchDeckAnalysisSchema = createInsertSchema(pitchDeckAnalyses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type PitchDeckAnalysis = typeof pitchDeckAnalyses.$inferSelect;
+export type InsertPitchDeckAnalysis = z.infer<typeof insertPitchDeckAnalysisSchema>;
+
+// ============================================
+// PHASE 2: MARKET INTELLIGENCE
+// ============================================
+
+// Market Intelligence - Scraped job posting data for real market insights
+export const marketIntelligence = pgTable("market_intelligence", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  company: text("company").notNull(),
+  location: text("location"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryCurrency: text("salary_currency").default("USD"),
+  experienceLevel: text("experience_level"), // entry, mid, senior, lead, executive
+  requiredSkills: text("required_skills").array().default(sql`'{}'`),
+  preferredSkills: text("preferred_skills").array().default(sql`'{}'`),
+  industry: text("industry"),
+  employmentType: text("employment_type"), // full-time, contract, etc
+  remotePolicy: text("remote_policy"), // remote, hybrid, onsite
+  benefits: text("benefits").array().default(sql`'{}'`),
+  jobDescription: text("job_description"),
+  companySize: text("company_size"),
+  fundingStage: text("funding_stage"),
+  sourceUrl: text("source_url"),
+  sourceBoard: text("source_board"), // linkedin, indeed, etc
+  postedDate: timestamp("posted_date"),
+  scrapedAt: timestamp("scraped_at").defaultNow(),
+  isActive: boolean("is_active").default(true)
+});
+
+export const insertMarketIntelligenceSchema = createInsertSchema(marketIntelligence).omit({
+  id: true,
+  scrapedAt: true
+});
+
+export type MarketIntelligence = typeof marketIntelligence.$inferSelect;
+export type InsertMarketIntelligence = z.infer<typeof insertMarketIntelligenceSchema>;
+
+// Skill Demand Trends - Track skill demand over time
+export const skillDemandTrends = pgTable("skill_demand_trends", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  weekStart: timestamp("week_start").notNull(),
+  jobPostingsCount: integer("job_postings_count").default(0),
+  averageSalary: integer("average_salary"),
+  salaryGrowth: decimal("salary_growth", { precision: 5, scale: 2 }), // % growth
+  topIndustries: text("top_industries").array().default(sql`'{}'`),
+  topCompanies: text("top_companies").array().default(sql`'{}'`),
+  remotePercentage: integer("remote_percentage"), // % of remote jobs
+  growthTrend: text("growth_trend"), // rising, stable, declining
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertSkillDemandTrendSchema = createInsertSchema(skillDemandTrends).omit({
+  id: true,
+  createdAt: true
+});
+
+export type SkillDemandTrend = typeof skillDemandTrends.$inferSelect;
+export type InsertSkillDemandTrend = z.infer<typeof insertSkillDemandTrendSchema>;
+
 // Market Skills - Industry skill demand data
 export const marketSkills = pgTable("market_skills", {
   id: serial("id").primaryKey(),
@@ -2023,64 +2164,6 @@ export const insertMarketSkillSchema = createInsertSchema(marketSkills).omit({
 
 export type MarketSkill = typeof marketSkills.$inferSelect;
 export type InsertMarketSkill = z.infer<typeof insertMarketSkillSchema>;
-
-// Skill Benchmarks - User skill vs market comparison
-export const skillBenchmarks = pgTable("skill_benchmarks", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  skillId: integer("skill_id").references(() => skills.id), // Reference to user's skill
-  marketSkillId: integer("market_skill_id").references(() => marketSkills.id),
-  userProficiency: integer("user_proficiency"), // User's self-rated 0-100
-  marketPercentile: integer("market_percentile"), // Where they rank vs peers
-  gapToTop10: integer("gap_to_top10"), // Points to reach top 10%
-  gapToTop25: integer("gap_to_top25"), // Points to reach top 25%
-  salaryImpact: integer("salary_impact"), // Potential salary increase if improved
-  learningRoadmap: jsonb("learning_roadmap"), // AI-generated learning path
-  timeToImprove: text("time_to_improve"), // Estimated time (e.g., "30 days", "3 months")
-  recommendedResources: jsonb("recommended_resources"), // Courses, books, projects
-  priority: text("priority"), // 'critical', 'important', 'optional'
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-
-export const insertSkillBenchmarkSchema = createInsertSchema(skillBenchmarks).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-export type SkillBenchmark = typeof skillBenchmarks.$inferSelect;
-export type InsertSkillBenchmark = z.infer<typeof insertSkillBenchmarkSchema>;
-
-// Pitch Deck Analyses - Slide-by-slide scoring with investor perspective
-export const pitchDeckAnalyses = pgTable("pitch_deck_analyses", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  deckUrl: text("deck_url"), // URL to deck in object storage
-  deckName: text("deck_name"),
-  fundingStage: text("funding_stage"), // 'pre-seed', 'seed', 'series-a', 'series-b'
-  overallScore: integer("overall_score"), // 0-100
-  slideCount: integer("slide_count"),
-  slideScores: jsonb("slide_scores"), // Array of {slideNumber, score, feedback}
-  redFlags: jsonb("red_flags"), // Critical issues that kill investor interest
-  strengths: jsonb("strengths"), // What's working well
-  improvements: jsonb("improvements"), // Slide-by-slide rewrites
-  competitiveBenchmark: jsonb("competitive_benchmark"), // How it compares to successful decks
-  fundraisingOdds: integer("fundraising_odds"), // 0-100% probability of success
-  estimatedValuation: text("estimated_valuation"), // Based on deck quality
-  analysis: text("analysis"), // Full AI analysis
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-
-export const insertPitchDeckAnalysisSchema = createInsertSchema(pitchDeckAnalyses).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-export type PitchDeckAnalysis = typeof pitchDeckAnalyses.$inferSelect;
-export type InsertPitchDeckAnalysis = z.infer<typeof insertPitchDeckAnalysisSchema>;
 
 // Job Market Data - Scraped job postings for market intelligence
 export const jobMarketData = pgTable("job_market_data", {
