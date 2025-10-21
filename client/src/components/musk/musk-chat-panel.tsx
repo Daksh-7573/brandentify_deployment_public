@@ -437,7 +437,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       // The result includes the analysis message directly
       const analyzeResult = {
-        analysis: uploadResult.message
+        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
       };
       
       // Use personalized questions or fallback to file-type specific responses
