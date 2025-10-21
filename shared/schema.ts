@@ -1884,7 +1884,8 @@ export type InsertPlatformActivityInsight = z.infer<typeof insertPlatformActivit
 export const brandGoals = pgTable("brand_goals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull().unique(),
-  selectedGoals: text("selected_goals").array().notNull().default(sql`'{}'`), // Array of selected goal IDs (max 3)
+  selectedGoals: text("selected_goals").array().notNull().default(sql`'{}'`), // Array of selected pre-defined goal IDs (max 3 total combined)
+  customGoals: text("custom_goals").array().default(sql`'{}'`), // Array of user-written custom goals (max 200 chars each)
   updatedAt: timestamp("updated_at").defaultNow()
 });
 

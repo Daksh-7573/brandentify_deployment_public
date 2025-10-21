@@ -768,7 +768,7 @@ export interface IStorage {
   
   // Brand Goals operations
   getBrandGoalsByUserId(userId: number): Promise<BrandGoal | undefined>;
-  saveBrandGoals(userId: number, selectedGoals: string[]): Promise<BrandGoal>;
+  saveBrandGoals(userId: number, selectedGoals: string[], customGoals?: string[]): Promise<BrandGoal>;
 }
 
 // In-memory implementation of the storage
@@ -13402,18 +13402,19 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async saveBrandGoals(userId: number, selectedGoals: string[]): Promise<BrandGoal> {
+  async saveBrandGoals(userId: number, selectedGoals: string[], customGoals: string[] = []): Promise<BrandGoal> {
     try {
-      // Use upsert (insert or update) to save the goals
+      // Use upsert (insert or update) to save both pre-defined and custom goals
       const result = await pool.query(`
-        INSERT INTO brand_goals (user_id, selected_goals, updated_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP)
+        INSERT INTO brand_goals (user_id, selected_goals, custom_goals, updated_at)
+        VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
         ON CONFLICT (user_id) 
         DO UPDATE SET 
           selected_goals = EXCLUDED.selected_goals,
+          custom_goals = EXCLUDED.custom_goals,
           updated_at = CURRENT_TIMESTAMP
         RETURNING *
-      `, [userId, selectedGoals]);
+      `, [userId, selectedGoals, customGoals]);
 
       return result.rows[0];
     } catch (error) {
@@ -13779,5 +13780,5 @@ export const storage = {
   
   // Brand Goals methods
   getBrandGoalsByUserId: (userId: number) => dbStorage.getBrandGoalsByUserId(userId),
-  saveBrandGoals: (userId: number, selectedGoals: string[]) => dbStorage.saveBrandGoals(userId, selectedGoals)
+  saveBrandGoals: (userId: number, selectedGoals: string[], customGoals?: string[]) => dbStorage.saveBrandGoals(userId, selectedGoals, customGoals)
 } as IStorage;

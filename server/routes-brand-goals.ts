@@ -22,10 +22,11 @@ export function createBrandGoalsRoutes(storage: IStorage) {
           id: brandGoals.id,
           userId: brandGoals.userId,
           selectedGoals: brandGoals.selected_goals || [],
+          customGoals: brandGoals.custom_goals || [],
           updatedAt: brandGoals.updatedAt
         });
       } else {
-        res.json({ selectedGoals: [] });
+        res.json({ selectedGoals: [], customGoals: [] });
       }
     } catch (error) {
       console.error("Error fetching brand goals:", error);
@@ -36,16 +37,42 @@ export function createBrandGoalsRoutes(storage: IStorage) {
   // Save brand goals for a user  
   router.post("/brand-goals", express.json(), async (req: Request, res: Response) => {
     try {
-      console.log('[POST /api/brand-goals] Headers:', req.headers);
-      console.log('[POST /api/brand-goals] Content-Type:', req.get('content-type'));
       console.log('[POST /api/brand-goals] Request body:', JSON.stringify(req.body));
-      console.log('[POST /api/brand-goals] Body keys:', Object.keys(req.body || {}));
       
       const validatedData = insertBrandGoalSchema.parse(req.body);
       
+      // Validate total goals (selectedGoals + customGoals) <= 3
+      const selectedCount = validatedData.selectedGoals?.length || 0;
+      const customCount = validatedData.customGoals?.length || 0;
+      const totalGoals = selectedCount + customCount;
+      
+      if (totalGoals > 3) {
+        return res.status(400).json({ 
+          error: 'Maximum 3 total goals allowed (pre-defined + custom combined)' 
+        });
+      }
+      
+      // Validate custom goals
+      if (validatedData.customGoals && validatedData.customGoals.length > 0) {
+        for (const goal of validatedData.customGoals) {
+          const trimmed = goal.trim();
+          
+          if (!trimmed) {
+            return res.status(400).json({ error: 'Custom goals cannot be empty' });
+          }
+          
+          if (trimmed.length > 200) {
+            return res.status(400).json({ 
+              error: 'Each custom goal must be under 200 characters' 
+            });
+          }
+        }
+      }
+      
       const savedGoals = await storage.saveBrandGoals(
         validatedData.userId,
-        validatedData.selectedGoals
+        validatedData.selectedGoals,
+        validatedData.customGoals || []
       );
       
       // Transform snake_case to camelCase for frontend
@@ -53,6 +80,7 @@ export function createBrandGoalsRoutes(storage: IStorage) {
         id: savedGoals.id,
         userId: savedGoals.userId,
         selectedGoals: savedGoals.selected_goals || [],
+        customGoals: savedGoals.custom_goals || [],
         updatedAt: savedGoals.updatedAt
       });
     } catch (error: any) {
