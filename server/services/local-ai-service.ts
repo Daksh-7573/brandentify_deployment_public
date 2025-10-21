@@ -39,8 +39,9 @@ export class LocalAIService {
       temperature: parseFloat(process.env.AI_TEMPERATURE || '0.7')
     };
     
-    // Disable fallback to OpenAI - keep costs at $0.00
-    this.fallbackToOpenAI = process.env.AI_FALLBACK_OPENAI === 'true'; // Only enable if explicitly set
+    // Enable fallback to OpenAI for reliability when Ollama fails
+    // Note: This only triggers if Ollama is down - keeps costs minimal
+    this.fallbackToOpenAI = process.env.AI_FALLBACK_OPENAI !== 'false';
     
     console.log(`[Local AI] Initialized with provider: ${this.config.provider}, model: ${this.config.model}`);
   }
