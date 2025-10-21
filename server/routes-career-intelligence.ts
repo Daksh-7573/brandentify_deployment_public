@@ -11,6 +11,9 @@
 import express from 'express';
 import { resumeScorerService } from './services/career-intelligence/resume-scorer';
 import { jobMatcherService } from './services/career-intelligence/job-matcher';
+import { upload, extractTextFromFile } from './services/resume-parser-service';
+import { extractTextFromPdf } from './utils/pdf-extractor';
+import fs from 'fs';
 
 export const registerCareerIntelligenceRoutes = (app: express.Express) => {
   
@@ -19,7 +22,100 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
   // ============================================
   
   /**
-   * Analyze resume and get brutal feedback
+   * Analyze resume from file upload
+   * POST /api/career-tools/upload-resume
+   */
+  app.post('/api/career-tools/upload-resume', upload.single('resume'), async (req, res) => {
+    try {
+      const { userId, targetRole } = req.body;
+      const file = req.file;
+      
+      if (!file || !userId) {
+        return res.status(400).json({ 
+          error: 'Resume file and user ID are required' 
+        });
+      }
+      
+      console.log(`[API] Extracting text from uploaded resume: ${file.originalname}`);
+      
+      // Extract text from uploaded file
+      let resumeText: string;
+      try {
+        if (file.mimetype === 'application/pdf') {
+          const fileBuffer = fs.readFileSync(file.path);
+          resumeText = await extractTextFromPdf(fileBuffer);
+          
+          // If PDF extraction returned empty, provide helpful message
+          if (!resumeText || resumeText.trim().length === 0) {
+            return res.status(400).json({
+              error: 'Could not extract text from PDF. Please try copying and pasting your resume text instead.',
+              suggestion: 'For best results, open your PDF and copy-paste the text directly.'
+            });
+          }
+        } else {
+          resumeText = await extractTextFromFile(file.path, file.mimetype);
+        }
+      } catch (extractError: any) {
+        console.error('[API] Text extraction error:', extractError);
+        
+        // Clean up uploaded file
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        
+        return res.status(400).json({
+          error: 'Could not extract text from file. Please try a different file or paste your resume text.',
+          details: extractError.message
+        });
+      }
+      
+      // Clean up uploaded file after extraction
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      
+      if (!resumeText || resumeText.trim().length < 100) {
+        return res.status(400).json({
+          error: 'Extracted text is too short. Please ensure your resume has sufficient content.',
+          extractedLength: resumeText?.length || 0
+        });
+      }
+      
+      console.log(`[API] Successfully extracted ${resumeText.length} characters from ${file.originalname}`);
+      
+      // Analyze the extracted resume text
+      const result = await resumeScorerService.analyzeResume(
+        resumeText,
+        parseInt(userId),
+        targetRole
+      );
+      
+      res.json({
+        success: true,
+        resumeScoreId: result.resumeScoreId,
+        score: result.result.scoreBreakdown,
+        criticalIssues: result.result.criticalIssues,
+        importantIssues: result.result.importantIssues,
+        optionalIssues: result.result.optionalIssues,
+        analysis: result.result.analysis,
+        extractedText: resumeText.substring(0, 500) + '...' // Preview of extracted text
+      });
+    } catch (error: any) {
+      console.error('[API] Resume upload analysis error:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ 
+        error: error.message || 'Failed to analyze uploaded resume' 
+      });
+    }
+  });
+  
+  /**
+   * Analyze resume and get brutal feedback (text-based)
    * POST /api/career-tools/analyze-resume
    */
   app.post('/api/career-tools/analyze-resume', async (req, res) => {

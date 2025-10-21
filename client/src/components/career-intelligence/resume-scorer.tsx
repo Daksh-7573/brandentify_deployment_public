@@ -66,15 +66,41 @@ export default function ResumeScorer() {
   const [resumeText, setResumeText] = useState('');
   const [targetRole, setTargetRole] = useState('');
   const [currentResumeScoreId, setCurrentResumeScoreId] = useState<number | null>(null);
+  const [uploadMode, setUploadMode] = useState<'paste' | 'upload'>('paste');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const analyzeResumeMutation = useMutation({
-    mutationFn: async (data: { resumeText: string; targetRole?: string }) => {
-      const response = await apiRequest('POST', '/api/career-tools/analyze-resume', {
-        resumeText: data.resumeText,
-        userId: user?.id,
-        targetRole: data.targetRole || undefined
-      });
-      return response.json();
+    mutationFn: async (data: { resumeText?: string; file?: File; targetRole?: string }) => {
+      if (data.file) {
+        // Upload file
+        const formData = new FormData();
+        formData.append('resume', data.file);
+        formData.append('userId', String(user?.id));
+        if (data.targetRole) {
+          formData.append('targetRole', data.targetRole);
+        }
+        
+        const response = await fetch('/api/career-tools/upload-resume', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Upload failed');
+        }
+        
+        return response.json();
+      } else {
+        // Paste text
+        const response = await apiRequest('POST', '/api/career-tools/analyze-resume', {
+          resumeText: data.resumeText,
+          userId: user?.id,
+          targetRole: data.targetRole || undefined
+        });
+        return response.json();
+      }
     },
     onSuccess: (data: ResumeAnalysisResult) => {
       setCurrentResumeScoreId(data.resumeScoreId);
@@ -101,8 +127,39 @@ export default function ResumeScorer() {
   });
 
   const handleAnalyze = () => {
-    if (!resumeText.trim()) return;
-    analyzeResumeMutation.mutate({ resumeText, targetRole });
+    if (uploadMode === 'paste') {
+      if (!resumeText.trim()) return;
+      analyzeResumeMutation.mutate({ resumeText, targetRole });
+    } else {
+      if (!selectedFile) return;
+      analyzeResumeMutation.mutate({ file: selectedFile, targetRole });
+    }
+  };
+  
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+  
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+  
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf') || file.name.endsWith('.docx'))) {
+      setSelectedFile(file);
+    }
   };
 
   const handleApplyFix = (fixId: number) => {
@@ -155,22 +212,117 @@ export default function ResumeScorer() {
               data-testid="input-target-role"
             />
           </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">
-              Paste Your Resume
-            </label>
-            <Textarea
-              placeholder="Paste your resume text here... (or upload PDF via Musk AI)"
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              rows={10}
-              className="font-mono text-sm"
-              data-testid="textarea-resume"
-            />
+          
+          {/* Mode Toggle */}
+          <div className="flex gap-2 border border-border rounded-lg p-1">
+            <button
+              onClick={() => setUploadMode('paste')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                uploadMode === 'paste'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted'
+              }`}
+              data-testid="button-paste-mode"
+            >
+              Paste Text
+            </button>
+            <button
+              onClick={() => setUploadMode('upload')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                uploadMode === 'upload'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-muted'
+              }`}
+              data-testid="button-upload-mode"
+            >
+              Upload File
+            </button>
           </div>
+          
+          {/* Paste Mode */}
+          {uploadMode === 'paste' && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Paste Your Resume
+              </label>
+              <Textarea
+                placeholder="Paste your resume text here..."
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                rows={10}
+                className="font-mono text-sm"
+                data-testid="textarea-resume"
+              />
+            </div>
+          )}
+          
+          {/* Upload Mode */}
+          {uploadMode === 'upload' && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Upload Resume (PDF or DOCX)
+              </label>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                  isDragging
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                {selectedFile ? (
+                  <div className="space-y-2">
+                    <FileText className="h-12 w-12 mx-auto text-primary" />
+                    <p className="font-medium">{selectedFile.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024).toFixed(1)} KB
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedFile(null)}
+                      data-testid="button-remove-file"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <FileText className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="font-medium">Drop your resume here</p>
+                    <p className="text-sm text-muted-foreground">
+                      or click to browse
+                    </p>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      id="resume-upload"
+                      data-testid="input-file-upload"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => document.getElementById('resume-upload')?.click()}
+                      data-testid="button-browse-file"
+                    >
+                      Browse Files
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
           <Button
             onClick={handleAnalyze}
-            disabled={!resumeText.trim() || analyzeResumeMutation.isPending}
+            disabled={
+              (uploadMode === 'paste' && !resumeText.trim()) ||
+              (uploadMode === 'upload' && !selectedFile) ||
+              analyzeResumeMutation.isPending
+            }
             className="w-full"
             data-testid="button-analyze"
           >
