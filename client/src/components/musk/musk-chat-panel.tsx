@@ -689,7 +689,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                       color: 'white'
                     }}
                     dangerouslySetInnerHTML={{ 
-                      __html: message.content
+                      __html: (message.content || '')
                         // Headers
                         .replace(/^### (.*$)/gm, '<h3>$1</h3>')
                         .replace(/^## (.*$)/gm, '<h2>$1</h2>')
