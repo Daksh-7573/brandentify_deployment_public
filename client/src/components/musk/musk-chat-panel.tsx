@@ -351,6 +351,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     if (user?.uid) {
       userId = user.uid; // This is the Firebase UID (string)
       console.log("Musk file upload: Using Firebase UID from auth:", userId);
+    } else if (user?.id) {
+      userId = user.id; // Simple auth numeric ID
+      console.log("Musk file upload: Using user.id from auth:", userId);
     } else if (context?.userId) {
       userId = context.userId;
       console.log("Musk file upload: Using userId from context:", userId, "type:", typeof userId);
