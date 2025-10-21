@@ -1,8 +1,6 @@
 /**
  * Utility for PDF text extraction with pdf-parse library
  */
-// @ts-ignore - pdf-parse is a CommonJS module
-const pdf = require('pdf-parse');
 
 /**
  * Extract text from a PDF file using pdf-parse library
@@ -19,6 +17,9 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
     }
     
     console.log(`PDF buffer size: ${pdfBuffer.length} bytes`);
+    
+    // Dynamically import pdf-parse (CommonJS module)
+    const pdf = (await import('pdf-parse')).default;
     
     // Use pdf-parse to extract text
     const data = await pdf(pdfBuffer);
