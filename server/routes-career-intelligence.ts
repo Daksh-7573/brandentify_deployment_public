@@ -325,5 +325,360 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
     }
   });
   
-  console.log('✅ Career Intelligence routes loaded');
+  // ============================================
+  // PHASE 2: SKILL BENCHMARK ENGINE
+  // ============================================
+  
+  /**
+   * Benchmark user skill against market data
+   * POST /api/career-tools/benchmark-skill
+   */
+  app.post('/api/career-tools/benchmark-skill', async (req, res) => {
+    try {
+      const { userId, skillName, userProficiency, industry, yearsOfExperience } = req.body;
+      
+      if (!userId || !skillName || userProficiency === undefined) {
+        return res.status(400).json({ 
+          error: 'User ID, skill name, and proficiency are required' 
+        });
+      }
+      
+      console.log(`[API] Benchmarking skill: ${skillName} for user ${userId}`);
+      
+      // Generate AI-powered benchmark analysis
+      const { generateSkillBenchmark } = await import('./services/career-intelligence/skill-benchmark.js');
+      const analysis = await generateSkillBenchmark({
+        userId: parseInt(userId),
+        skillName,
+        userProficiency: parseInt(userProficiency),
+        industry,
+        yearsOfExperience: yearsOfExperience ? parseInt(yearsOfExperience) : undefined
+      });
+      
+      // Store in database
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `INSERT INTO skill_benchmarks_new 
+           (user_id, skill_name, user_proficiency, market_average, percentile_rank, 
+            market_demand, average_salary, salary_by_level, top_companies_hiring,
+            learning_path, time_to_improve, related_skills, industry_trends,
+            certification_recommendations, analysis)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+           RETURNING id`,
+          [
+            parseInt(userId),
+            skillName,
+            parseInt(userProficiency),
+            analysis.marketAverage,
+            analysis.percentileRank,
+            analysis.marketDemand,
+            analysis.averageSalary,
+            JSON.stringify(analysis.salaryByLevel),
+            analysis.topCompaniesHiring,
+            JSON.stringify(analysis.learningPath),
+            analysis.timeToImprove,
+            analysis.relatedSkills,
+            JSON.stringify(analysis.industryTrends),
+            JSON.stringify(analysis.certificationRecommendations),
+            analysis.analysis
+          ]
+        );
+        
+        const benchmarkId = result.rows[0].id;
+        
+        res.json({
+          success: true,
+          benchmarkId,
+          analysis
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Skill benchmark error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to benchmark skill' 
+      });
+    }
+  });
+  
+  /**
+   * Get skill benchmark by ID
+   * GET /api/career-tools/skill-benchmark/:id
+   */
+  app.get('/api/career-tools/skill-benchmark/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `SELECT * FROM skill_benchmarks_new WHERE id = $1`,
+          [parseInt(id)]
+        );
+        
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Benchmark not found' });
+        }
+        
+        res.json({
+          success: true,
+          benchmark: result.rows[0]
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Get skill benchmark error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to get skill benchmark' 
+      });
+    }
+  });
+  
+  /**
+   * Get user's skill benchmarks
+   * GET /api/career-tools/user/:userId/skill-benchmarks
+   */
+  app.get('/api/career-tools/user/:userId/skill-benchmarks', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `SELECT * FROM skill_benchmarks_new 
+           WHERE user_id = $1 
+           ORDER BY created_at DESC`,
+          [parseInt(userId)]
+        );
+        
+        res.json({
+          success: true,
+          benchmarks: result.rows
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Get user benchmarks error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to get user benchmarks' 
+      });
+    }
+  });
+  
+  // ============================================
+  // PHASE 2: PITCH DECK ANALYZER
+  // ============================================
+  
+  /**
+   * Upload and analyze pitch deck
+   * POST /api/career-tools/upload-pitch-deck
+   */
+  app.post('/api/career-tools/upload-pitch-deck', upload.single('deck'), async (req, res) => {
+    try {
+      const { userId, deckName, fundingStage, targetRaise } = req.body;
+      const file = req.file;
+      
+      if (!file || !userId || !deckName) {
+        return res.status(400).json({ 
+          error: 'Deck file, user ID, and deck name are required' 
+        });
+      }
+      
+      console.log(`[API] Analyzing pitch deck: ${deckName} for user ${userId}`);
+      
+      // Extract text from deck
+      let deckText: string;
+      try {
+        if (file.mimetype === 'application/pdf') {
+          const { extractTextFromPdf } = await import('./utils/pdf-extractor');
+          const fileBuffer = fs.readFileSync(file.path);
+          deckText = await extractTextFromPdf(fileBuffer);
+        } else {
+          const { extractTextFromFile } = await import('./services/resume-parser-service');
+          deckText = await extractTextFromFile(file.path, file.mimetype);
+        }
+      } catch (extractError: any) {
+        console.error('[API] Deck text extraction error:', extractError);
+        
+        // Clean up uploaded file
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        
+        return res.status(400).json({
+          error: 'Could not extract text from deck file',
+          details: extractError.message
+        });
+      }
+      
+      // Clean up uploaded file
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      
+      if (!deckText || deckText.trim().length < 200) {
+        return res.status(400).json({
+          error: 'Deck content is too short for meaningful analysis'
+        });
+      }
+      
+      // Analyze pitch deck with AI
+      const { analyzePitchDeck } = await import('./services/career-intelligence/pitch-deck-analyzer.js');
+      const analysis = await analyzePitchDeck({
+        userId: parseInt(userId),
+        deckName,
+        deckText,
+        fundingStage,
+        targetRaise
+      });
+      
+      // Store in database
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `INSERT INTO pitch_deck_analyses 
+           (user_id, deck_name, overall_score, story_score, market_score, 
+            financials_score, team_score, problem_statement_analysis, 
+            solution_analysis, market_size_analysis, business_model_analysis,
+            competitive_analysis, traction_analysis, financial_projections_analysis,
+            team_analysis, ask_analysis, investor_feedback, critical_issues,
+            strengths_highlighted, funding_probability, suggested_valuation,
+            recommended_changes)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+           RETURNING id`,
+          [
+            parseInt(userId),
+            deckName,
+            analysis.overallScore,
+            analysis.storyScore,
+            analysis.marketScore,
+            analysis.financialsScore,
+            analysis.teamScore,
+            JSON.stringify(analysis.problemStatementAnalysis),
+            JSON.stringify(analysis.solutionAnalysis),
+            JSON.stringify(analysis.marketSizeAnalysis),
+            JSON.stringify(analysis.businessModelAnalysis),
+            JSON.stringify(analysis.competitiveAnalysis),
+            JSON.stringify(analysis.tractionAnalysis),
+            JSON.stringify(analysis.financialProjectionsAnalysis),
+            JSON.stringify(analysis.teamAnalysis),
+            JSON.stringify(analysis.askAnalysis),
+            analysis.investorFeedback,
+            JSON.stringify(analysis.criticalIssues),
+            JSON.stringify(analysis.strengthsHighlighted),
+            analysis.fundingProbability,
+            analysis.suggestedValuation,
+            JSON.stringify(analysis.recommendedChanges)
+          ]
+        );
+        
+        const analysisId = result.rows[0].id;
+        
+        res.json({
+          success: true,
+          analysisId,
+          analysis
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Pitch deck analysis error:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ 
+        error: error.message || 'Failed to analyze pitch deck' 
+      });
+    }
+  });
+  
+  /**
+   * Get pitch deck analysis by ID
+   * GET /api/career-tools/pitch-deck/:id
+   */
+  app.get('/api/career-tools/pitch-deck/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `SELECT * FROM pitch_deck_analyses WHERE id = $1`,
+          [parseInt(id)]
+        );
+        
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Pitch deck analysis not found' });
+        }
+        
+        res.json({
+          success: true,
+          analysis: result.rows[0]
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Get pitch deck analysis error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to get pitch deck analysis' 
+      });
+    }
+  });
+  
+  /**
+   * Get user's pitch deck analyses
+   * GET /api/career-tools/user/:userId/pitch-decks
+   */
+  app.get('/api/career-tools/user/:userId/pitch-decks', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      const { pool } = await import('./db');
+      const client = await pool.connect();
+      
+      try {
+        const result = await client.query(
+          `SELECT id, deck_name, overall_score, funding_probability, 
+                  created_at, suggested_valuation
+           FROM pitch_deck_analyses 
+           WHERE user_id = $1 
+           ORDER BY created_at DESC`,
+          [parseInt(userId)]
+        );
+        
+        res.json({
+          success: true,
+          analyses: result.rows
+        });
+      } finally {
+        client.release();
+      }
+    } catch (error: any) {
+      console.error('[API] Get user pitch decks error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to get user pitch decks' 
+      });
+    }
+  });
+  
+  console.log('✅ Career Intelligence routes loaded (Phase 1 + Phase 2)');
 };
