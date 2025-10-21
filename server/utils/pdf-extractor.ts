@@ -19,7 +19,11 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
     console.log(`PDF buffer size: ${pdfBuffer.length} bytes`);
     
     // Dynamically import pdf-parse (CommonJS module)
-    const pdf = (await import('pdf-parse')).default;
+    // pdf-parse exports differently in CommonJS, so we need to handle both cases
+    const pdfParseModule = await import('pdf-parse');
+    const pdf = pdfParseModule.default || pdfParseModule;
+    
+    console.log(`pdf-parse import type: ${typeof pdf}`);
     
     // Use pdf-parse to extract text
     const data = await pdf(pdfBuffer);
