@@ -320,7 +320,7 @@ export function BrandGoalsSelector() {
             maxLength={200}
             disabled={totalSelected >= 3}
             data-testid="input-custom-goal"
-            className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+            className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
           />
           <Button
             onClick={handleAddCustomGoal}
@@ -353,7 +353,7 @@ export function BrandGoalsSelector() {
                       value={editingText}
                       onChange={(e) => setEditingText(e.target.value)}
                       maxLength={200}
-                      className="flex-1 bg-white/5 border-white/10 text-white"
+                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                       data-testid={`input-edit-custom-goal-${index}`}
                     />
                     <Button
