@@ -106,8 +106,13 @@ export class ResumeScorerService {
   }> {
     const prompt = this.buildAnalysisPrompt(resumeText, targetRole);
     
+    console.log(`[ResumeScorer] Resume text length: ${resumeText.length} characters`);
+    console.log(`[ResumeScorer] Resume text preview: ${resumeText.substring(0, 200)}...`);
+    console.log(`[ResumeScorer] Prompt length: ${prompt.length} characters`);
+    
     try {
       const response = await localAI.generateNewsContent(prompt);
+      console.log(`[ResumeScorer] AI response preview: ${response.substring(0, 300)}...`);
       return {
         fullAnalysis: response
       };
