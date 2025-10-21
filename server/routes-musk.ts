@@ -715,6 +715,8 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     
     // Call Resume Scorer Service for real analysis
     console.log(`Analyzing resume for user ${userId}...`);
+    console.log(`[ROUTE DEBUG] Resume text length BEFORE analyzer: ${resumeText.length}`);
+    console.log(`[ROUTE DEBUG] Resume text preview: "${resumeText.substring(0, 200)}..."`);
     const analysisResult = await resumeScorerService.analyzeResume(
       resumeText,
       userId,
