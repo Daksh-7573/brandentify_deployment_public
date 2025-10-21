@@ -26,13 +26,13 @@ Preferred communication style: Simple, everyday language.
 - **Object Storage**: Public visibility with owner-based ACL policies for user content
 
 ### AI Infrastructure
-- **Primary Provider**: Local AI using Ollama (Llama 3.2:3b models)
+- **Primary Provider**: Local AI using Ollama (Llama 3.2:3b models) - **100% FREE**
 - **Fallback**: Optional OpenAI integration for critical operations
 - **Caching**: Redis-based response caching
 - **Security**: AI prompt injection protection and content moderation
 - **Core AI Features**: Musk AI Assistant for career guidance, Resume Analysis (PDF processing), Career Insights, Hashtag Suggestions, Predictive Career Modeling, Cross-User Intelligence, Emotional Intelligence, and Cohort-Based Recommendations.
 - **AI Personalization**: Dynamic Persona Switching (Career Mentor, Strategist, Executive Coach), Proactive Suggestion Engine, Learning Pattern Recognition, and Conversation Memory with context-aware responses.
-- **Musk Auto-Pulse System**: Automated news pulse generation (3x daily at 9 AM, 2 PM, 7 PM + event-driven triggers). Focuses on industry updates and professional news. Uses intelligent link matching to add reference sources (McKinsey, TechCrunch, LinkedIn) only when highly relevant to content. Both scheduled and event-driven pulses use verified contextual link generation (no AI-generated URLs) to ensure accurate, relevant reference links. Context based on user industries, domains, locations, and trending hashtags.
+- **Personalized Musk Pulse System**: Automated **per-user** personalized news pulse generation (3x daily at 9 AM, 2 PM, 7 PM). Each user receives unique, tailored content based on their industry, domain, career goals, location, and interests. Uses **FREE local Ollama (Llama 3.2:3b)** instead of paid OpenAI = **$0.00 cost per pulse**. Pulses are stored with `target_user_id` for true personalization. Intelligent link matching adds reference sources only when highly relevant. Context-aware based on user profile data: industry, domain, career goals, location, trending hashtags, and skills.
 
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.

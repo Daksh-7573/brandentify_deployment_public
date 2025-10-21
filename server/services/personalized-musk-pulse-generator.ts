@@ -3,14 +3,16 @@
  * 
  * Generates user-specific news pulses based on individual industry, domain, goals, and interests.
  * Each user receives their own personalized content tailored to their career needs.
+ * 
+ * Uses FREE local Ollama (Llama 3.2:3b) for $0.00 cost per pulse
  */
 
-import OpenAI from "openai";
 import { pool } from "../db";
 import { InsertPulse } from "@shared/schema";
 import { storage } from "../storage";
+import { LocalAIService } from "./local-ai-service";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const localAI = new LocalAIService();
 
 interface UserProfile {
   id: number;
@@ -205,7 +207,7 @@ export class PersonalizedMuskPulseGenerator {
   }
 
   /**
-   * Generate personalized content using OpenAI
+   * Generate personalized content using FREE local Ollama
    */
   private async generatePersonalizedContent(
     user: UserProfile,
@@ -238,7 +240,7 @@ ${timePrompts[timeOfDay]}
 
 IMPORTANT: Make this feel like a personal message to ${user.name}, not generic news.
 
-Respond with JSON format:
+Respond ONLY with valid JSON format (no markdown, no extra text):
 {
   "title": "Personalized title addressing ${user.name} (max 80 chars)",
   "content": "Personalized brief update (2-3 sentences max)",
@@ -247,14 +249,18 @@ Respond with JSON format:
     `;
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7
-      });
-
-      const generated = JSON.parse(response.choices[0].message.content || '{}');
+      // Use FREE local Ollama instead of paid OpenAI
+      const response = await localAI.generateNewsContent(prompt);
+      
+      // Parse JSON from response (handle potential markdown code blocks)
+      let jsonStr = response.trim();
+      if (jsonStr.includes('```json')) {
+        jsonStr = jsonStr.split('```json')[1].split('```')[0].trim();
+      } else if (jsonStr.includes('```')) {
+        jsonStr = jsonStr.split('```')[1].split('```')[0].trim();
+      }
+      
+      const generated = JSON.parse(jsonStr);
       
       return {
         title: generated.title || `${user.name}'s ${timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)} Update`,

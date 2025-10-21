@@ -86,6 +86,13 @@ export class LocalAIService {
   }
 
   /**
+   * Generate news content for personalized Musk Pulses (FREE with Ollama)
+   */
+  async generateNewsContent(prompt: string): Promise<string> {
+    return this.generateCompletion(prompt, 'news-pulse-generation');
+  }
+
+  /**
    * Generate general AI completion
    */
   private async generateCompletion(prompt: string, taskType: string): Promise<string> {
