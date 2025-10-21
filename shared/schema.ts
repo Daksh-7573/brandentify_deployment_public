@@ -1896,3 +1896,220 @@ export const insertBrandGoalSchema = createInsertSchema(brandGoals).omit({
 
 export type BrandGoal = typeof brandGoals.$inferSelect;
 export type InsertBrandGoal = z.infer<typeof insertBrandGoalSchema>;
+
+// ============================================
+// CAREER INTELLIGENCE SUITE
+// ============================================
+
+// Resume Scores - AI-powered resume analysis with brutal feedback
+export const resumeScores = pgTable("resume_scores", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  resumeUrl: text("resume_url"), // URL to original resume in object storage
+  resumeText: text("resume_text").notNull(), // Extracted text from resume
+  overallScore: integer("overall_score").notNull(), // 0-100
+  atsCompatibility: integer("ats_compatibility"), // 0-25
+  impactMetrics: integer("impact_metrics"), // 0-25
+  keywordScore: integer("keyword_score"), // 0-20
+  structureScore: integer("structure_score"), // 0-15
+  clarityScore: integer("clarity_score"), // 0-15
+  criticalIssuesCount: integer("critical_issues_count").default(0),
+  importantIssuesCount: integer("important_issues_count").default(0),
+  optionalIssuesCount: integer("optional_issues_count").default(0),
+  analysis: text("analysis"), // Full AI analysis text
+  optimizedResumeText: text("optimized_resume_text"), // Resume with all fixes applied
+  optimizedResumeUrl: text("optimized_resume_url"), // URL to optimized resume PDF
+  targetRole: text("target_role"), // Optional: role this was scored for
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertResumeScoreSchema = createInsertSchema(resumeScores).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type ResumeScore = typeof resumeScores.$inferSelect;
+export type InsertResumeScore = z.infer<typeof insertResumeScoreSchema>;
+
+// Resume Fixes - Individual fix suggestions ranked by impact
+export const resumeFixes = pgTable("resume_fixes", {
+  id: serial("id").primaryKey(),
+  resumeScoreId: integer("resume_score_id").references(() => resumeScores.id).notNull(),
+  priority: text("priority").notNull(), // 'critical', 'important', 'optional'
+  category: text("category").notNull(), // 'metrics', 'verbs', 'keywords', 'structure', 'formatting'
+  lineNumber: integer("line_number"), // Line number in original resume
+  currentText: text("current_text").notNull(),
+  suggestedText: text("suggested_text").notNull(),
+  reasoning: text("reasoning").notNull(), // Why this fix matters
+  expectedImpact: text("expected_impact"), // e.g., "+40% callbacks"
+  timeToFix: text("time_to_fix"), // e.g., "5 minutes"
+  impactScore: integer("impact_score").default(0), // 0-100 for ranking
+  isApplied: boolean("is_applied").default(false), // Whether user clicked "Apply Fix"
+  appliedAt: timestamp("applied_at"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertResumeFixSchema = createInsertSchema(resumeFixes).omit({
+  id: true,
+  createdAt: true
+});
+
+export type ResumeFix = typeof resumeFixes.$inferSelect;
+export type InsertResumeFix = z.infer<typeof insertResumeFixSchema>;
+
+// Job Matches - JD analysis with gap analysis
+export const jobMatches = pgTable("job_matches", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  jobTitle: text("job_title").notNull(),
+  companyName: text("company_name"),
+  jobDescription: text("job_description").notNull(),
+  jobUrl: text("job_url"),
+  matchScore: integer("match_score").notNull(), // 0-100
+  hardRequirementsMatched: integer("hard_requirements_matched"),
+  hardRequirementsTotal: integer("hard_requirements_total"),
+  preferredRequirementsMatched: integer("preferred_requirements_matched"),
+  preferredRequirementsTotal: integer("preferred_requirements_total"),
+  requiredSkills: text("required_skills").array(), // Skills from JD
+  matchedSkills: text("matched_skills").array(), // User's matching skills
+  missingSkills: text("missing_skills").array(), // Skills user lacks
+  experienceMatch: boolean("experience_match"), // Does experience level match?
+  educationMatch: boolean("education_match"), // Does education match?
+  gapAnalysis: jsonb("gap_analysis"), // Structured gap analysis with priorities
+  resumeRewrites: jsonb("resume_rewrites"), // Tailored resume suggestions
+  applicationStrategy: text("application_strategy"), // How to approach this job
+  interviewProbability: integer("interview_probability"), // 0-100% chance
+  salaryEstimate: text("salary_estimate"), // Estimated salary range
+  appliedAt: timestamp("applied_at"), // When user applied
+  resultStatus: text("result_status"), // 'saved', 'applied', 'interview', 'offer', 'rejected'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertJobMatchSchema = createInsertSchema(jobMatches).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type JobMatch = typeof jobMatches.$inferSelect;
+export type InsertJobMatch = z.infer<typeof insertJobMatchSchema>;
+
+// Market Skills - Industry skill demand data
+export const marketSkills = pgTable("market_skills", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  industry: text("industry").notNull(),
+  location: text("location"), // City or region
+  demandScore: integer("demand_score"), // 0-100 based on job posting frequency
+  avgSalaryMin: integer("avg_salary_min"),
+  avgSalaryMax: integer("avg_salary_max"),
+  jobPostingCount: integer("job_posting_count"), // How many jobs require this
+  growthRate: decimal("growth_rate"), // YoY growth percentage
+  top10PercentileSalary: integer("top10_percentile_salary"), // Top earners with this skill
+  proficiencyDistribution: jsonb("proficiency_distribution"), // How users rank (0-25%, 25-50%, etc)
+  relatedSkills: text("related_skills").array(), // Often seen together
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertMarketSkillSchema = createInsertSchema(marketSkills).omit({
+  id: true,
+  createdAt: true,
+  lastUpdated: true
+});
+
+export type MarketSkill = typeof marketSkills.$inferSelect;
+export type InsertMarketSkill = z.infer<typeof insertMarketSkillSchema>;
+
+// Skill Benchmarks - User skill vs market comparison
+export const skillBenchmarks = pgTable("skill_benchmarks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  skillId: integer("skill_id").references(() => skills.id), // Reference to user's skill
+  marketSkillId: integer("market_skill_id").references(() => marketSkills.id),
+  userProficiency: integer("user_proficiency"), // User's self-rated 0-100
+  marketPercentile: integer("market_percentile"), // Where they rank vs peers
+  gapToTop10: integer("gap_to_top10"), // Points to reach top 10%
+  gapToTop25: integer("gap_to_top25"), // Points to reach top 25%
+  salaryImpact: integer("salary_impact"), // Potential salary increase if improved
+  learningRoadmap: jsonb("learning_roadmap"), // AI-generated learning path
+  timeToImprove: text("time_to_improve"), // Estimated time (e.g., "30 days", "3 months")
+  recommendedResources: jsonb("recommended_resources"), // Courses, books, projects
+  priority: text("priority"), // 'critical', 'important', 'optional'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertSkillBenchmarkSchema = createInsertSchema(skillBenchmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type SkillBenchmark = typeof skillBenchmarks.$inferSelect;
+export type InsertSkillBenchmark = z.infer<typeof insertSkillBenchmarkSchema>;
+
+// Pitch Deck Analyses - Slide-by-slide scoring with investor perspective
+export const pitchDeckAnalyses = pgTable("pitch_deck_analyses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  deckUrl: text("deck_url"), // URL to deck in object storage
+  deckName: text("deck_name"),
+  fundingStage: text("funding_stage"), // 'pre-seed', 'seed', 'series-a', 'series-b'
+  overallScore: integer("overall_score"), // 0-100
+  slideCount: integer("slide_count"),
+  slideScores: jsonb("slide_scores"), // Array of {slideNumber, score, feedback}
+  redFlags: jsonb("red_flags"), // Critical issues that kill investor interest
+  strengths: jsonb("strengths"), // What's working well
+  improvements: jsonb("improvements"), // Slide-by-slide rewrites
+  competitiveBenchmark: jsonb("competitive_benchmark"), // How it compares to successful decks
+  fundraisingOdds: integer("fundraising_odds"), // 0-100% probability of success
+  estimatedValuation: text("estimated_valuation"), // Based on deck quality
+  analysis: text("analysis"), // Full AI analysis
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertPitchDeckAnalysisSchema = createInsertSchema(pitchDeckAnalyses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type PitchDeckAnalysis = typeof pitchDeckAnalyses.$inferSelect;
+export type InsertPitchDeckAnalysis = z.infer<typeof insertPitchDeckAnalysisSchema>;
+
+// Job Market Data - Scraped job postings for market intelligence
+export const jobMarketData = pgTable("job_market_data", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  companyName: text("company_name"),
+  industry: text("industry"),
+  location: text("location"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryCurrency: text("salary_currency").default("USD"),
+  requiredSkills: text("required_skills").array(),
+  preferredSkills: text("preferred_skills").array(),
+  requiredExperienceYears: integer("required_experience_years"),
+  experienceLevel: text("experience_level"), // 'entry', 'mid', 'senior', 'lead', 'executive'
+  educationRequired: text("education_required"),
+  jobType: text("job_type"), // 'full-time', 'part-time', 'contract', 'remote'
+  benefits: text("benefits").array(),
+  source: text("source"), // 'linkedin', 'indeed', 'glassdoor', 'manual'
+  sourceUrl: text("source_url"),
+  scrapedAt: timestamp("scraped_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertJobMarketDataSchema = createInsertSchema(jobMarketData).omit({
+  id: true,
+  scrapedAt: true,
+  createdAt: true
+});
+
+export type JobMarketData = typeof jobMarketData.$inferSelect;
+export type InsertJobMarketData = z.infer<typeof insertJobMarketDataSchema>;

@@ -45,6 +45,7 @@ import resumeRoutes from "./routes-resume";
 import userProfileRoutes from "./routes-user-profile";
 import { registerMuskAIRoutes } from "./routes-musk-ai";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
+import { registerCareerIntelligenceRoutes } from "./routes-career-intelligence";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
 import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
@@ -8334,6 +8335,9 @@ ${extractedText.substring(0, 5000)}
   
   // Register Musk Memory & Emotional Intelligence routes
   registerMuskMemoryRoutes(app);
+  
+  // Register Career Intelligence Suite routes (Resume Scorer, Job Matcher)
+  registerCareerIntelligenceRoutes(app);
   registerTrendGraphRoutes(app);
   console.log("Trend Graph routes loaded");
   
