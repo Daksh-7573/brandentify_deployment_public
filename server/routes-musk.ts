@@ -1176,6 +1176,8 @@ IMPORTANT RULES:
 6. If conversation is about resume/job search, suggest next steps in that journey
 7. If conversation is about skills, suggest specific skill development paths
 8. If conversation is general, suggest high-impact career topics for their profile
+9. NEVER suggest "Analyze my resume" or "Evaluate my pitch deck" - there are dedicated upload buttons for these
+10. Focus on conversation topics, career advice, and actionable insights
 
 Format your response as exactly 4 questions, one per line, without numbering or bullets. Just the questions.`;
 
@@ -1204,7 +1206,15 @@ Format your response as exactly 4 questions, one per line, without numbering or 
         const questions = generatedText
           .split('\n')
           .map((q: string) => q.trim())
-          .filter((q: string) => q.length > 0 && q.includes('?'))
+          .filter((q: string) => {
+            if (!q.length || !q.includes('?')) return false;
+            const lowerQ = q.toLowerCase();
+            // Filter out resume and pitch deck upload suggestions (redundant with upload buttons)
+            if (lowerQ.includes('analyze') && (lowerQ.includes('resume') || lowerQ.includes('cv'))) return false;
+            if (lowerQ.includes('evaluate') && (lowerQ.includes('pitch') || lowerQ.includes('deck'))) return false;
+            if (lowerQ.includes('upload') && (lowerQ.includes('resume') || lowerQ.includes('pitch'))) return false;
+            return true;
+          })
           .slice(0, 4);
         
         if (questions.length >= 3) {
