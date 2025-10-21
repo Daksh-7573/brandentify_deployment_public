@@ -37,6 +37,13 @@ Preferred communication style: Simple, everyday language.
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.
 - **Content Management**: Pulses (professional posts), Projects Showcase, Nowboard (opportunity discovery), Career Goals (milestone tracking).
+- **Career Intelligence Suite (Phase 1 - LIVE)**: AI-powered career tools providing brutal, actionable advice:
+  - **Resume Scorer**: Analyzes resumes with 0-100 score breakdown (ATS compatibility, impact metrics, keywords, structure, clarity). Generates ranked fixes by impact with one-click application. Real-time score updates.
+  - **Job Description Matcher**: Parses job descriptions, calculates match score (0-100%), identifies matched/missing skills, generates gap analysis (critical/important/optional) with time estimates and fix strategies, provides application recommendations and salary estimates.
+  - Database schema: `resume_scores`, `resume_fixes`, `job_matches` tables with proper indexes.
+  - API endpoints: `/api/career-tools/*` for analysis, fix application, and match retrieval.
+  - Protected route: `/career-tools` with tabbed interface for all tools.
+  - Phase 2 (Coming): Skill Benchmark Engine, Pitch Deck Analyzer, Market Intelligence integration.
 - **Portfolio Templates**: Professional portfolio builder with 12+ templates including:
   - Corporate Executive: Premium, high-end design for executives and industry experts
   - Scholar: Clean, knowledge-centric for students and early-career professionals
