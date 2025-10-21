@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { storage } from './storage';
-import { extractTextFromPDF } from './utils/pdf-extractor';
+import { extractTextFromPdf } from './utils/pdf-extractor';
 import { ResumeScorerService } from './services/career-intelligence/resume-scorer';
 
 const resumeScorerService = new ResumeScorerService();
@@ -73,7 +73,7 @@ export const handleResumeUploadFixed = async (req: Request, res: Response) => {
     let resumeText = '';
     try {
       if (fileExt === 'pdf') {
-        resumeText = await extractTextFromPDF(resumeFile.tempFilePath || resumeFile.data);
+        resumeText = await extractTextFromPdf(resumeFile.data);
         console.log(`Extracted ${resumeText.length} characters from PDF`);
       } else if (fileExt === 'txt') {
         resumeText = resumeFile.data.toString('utf-8');
