@@ -14,16 +14,29 @@ export const handleResumeUploadFixed = async (req: Request, res: Response) => {
     
     let userId = 0;
     
-    // Handle Firebase UID lookup
-    if (rawUserId && typeof rawUserId === 'string') {
-      try {
-        const user = await storage.getUserByUsername(rawUserId);
-        if (user) {
-          userId = user.id;
-          console.log(`Resume upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+    // Handle both numeric IDs and Firebase UIDs
+    if (rawUserId) {
+      // If it's already a number, use it directly
+      if (typeof rawUserId === 'number') {
+        userId = rawUserId;
+        console.log(`Resume upload: Using numeric userId directly: ${userId}`);
+      }
+      // If it's a numeric string (e.g., "2"), convert it
+      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
+        userId = parseInt(rawUserId, 10);
+        console.log(`Resume upload: Converted numeric string "${rawUserId}" to number: ${userId}`);
+      }
+      // Only do username lookup for non-numeric strings (Firebase UIDs)
+      else if (typeof rawUserId === 'string') {
+        try {
+          const user = await storage.getUserByUsername(rawUserId);
+          if (user) {
+            userId = user.id;
+            console.log(`Resume upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+          }
+        } catch (userLookupError) {
+          console.error(`Resume upload: Error looking up user:`, userLookupError);
         }
-      } catch (userLookupError) {
-        console.error(`Resume upload: Error looking up user:`, userLookupError);
       }
     }
     
