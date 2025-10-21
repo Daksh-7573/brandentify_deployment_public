@@ -829,7 +829,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               placeholder="Type your message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-12 text-sm sm:text-base"
               disabled={isTyping || isUploading}
             />
           </div>
