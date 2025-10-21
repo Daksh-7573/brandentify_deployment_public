@@ -1092,3 +1092,222 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
     return generatePitchDeckFallbackResponse();
   }
 }
+
+/**
+ * Generate AI-powered contextual suggestions based on conversation history and user profile
+ */
+export const handleGenerateContextualSuggestions = async (req: Request, res: Response) => {
+  try {
+    const { userId: rawUserId, conversationHistory, profileData } = req.body;
+    
+    console.log('[Contextual Suggestions] Generating AI-powered suggestions');
+    
+    // Handle both Firebase UIDs and numeric user IDs
+    let numericUserId = 0;
+    
+    if (rawUserId) {
+      if (typeof rawUserId === 'number') {
+        numericUserId = rawUserId;
+      } else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
+        numericUserId = parseInt(rawUserId, 10);
+      } else if (typeof rawUserId === 'string') {
+        try {
+          const user = await storage.getUserByUsername(rawUserId);
+          if (user) {
+            numericUserId = user.id;
+          }
+        } catch (error) {
+          console.error(`Error looking up numeric ID:`, error);
+        }
+      }
+    }
+    
+    const userId = numericUserId;
+    
+    // Fetch user data for context
+    let userData: any = profileData;
+    if (!userData && userId) {
+      try {
+        const user = await storage.getUserById(userId);
+        if (user) {
+          userData = {
+            title: user.title,
+            industry: user.industry,
+            lookingFor: user.lookingFor,
+            domain: user.domain,
+            location: user.location
+          };
+        }
+      } catch (error) {
+        console.error('[Contextual Suggestions] Error fetching user data:', error);
+      }
+    }
+    
+    // Build context for AI
+    const conversationContext = conversationHistory && conversationHistory.length > 0
+      ? conversationHistory.slice(-6).map((msg: any) => 
+          `${msg.sender === 'user' ? 'User' : 'Musk'}: ${msg.content}`
+        ).join('\n')
+      : 'No conversation yet - this is the start of the chat.';
+    
+    const userProfile = userData ? `
+User Profile:
+- Role: ${userData.title || 'Not specified'}
+- Industry: ${userData.industry || 'Not specified'}
+- Looking For: ${userData.lookingFor || 'Career growth'}
+- Domain: ${userData.domain || 'Not specified'}
+- Location: ${userData.location || 'Not specified'}
+` : 'No profile data available';
+    
+    // Create AI prompt for generating contextual suggestions
+    const prompt = `You are Musk, an AI career assistant. Based on the conversation context and user profile, generate 4 highly relevant, contextual follow-up questions that would help the user in their career journey.
+
+${userProfile}
+
+Recent Conversation:
+${conversationContext}
+
+IMPORTANT RULES:
+1. Questions should be SPECIFIC to the conversation topic if there's an ongoing discussion
+2. Questions should be ACTIONABLE and drive the conversation forward
+3. Include profile-aware questions (referencing their industry, role, or goals when relevant)
+4. Keep questions concise (under 15 words each)
+5. Make questions feel natural and conversational
+6. If conversation is about resume/job search, suggest next steps in that journey
+7. If conversation is about skills, suggest specific skill development paths
+8. If conversation is general, suggest high-impact career topics for their profile
+
+Format your response as exactly 4 questions, one per line, without numbering or bullets. Just the questions.`;
+
+    try {
+      // Use Ollama for free local AI generation
+      const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3.2:3b',
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: 0.8,
+            top_p: 0.9,
+            top_k: 40,
+          }
+        })
+      });
+      
+      if (ollamaResponse.ok) {
+        const ollamaData = await ollamaResponse.json();
+        const generatedText = ollamaData.response || '';
+        
+        // Parse the questions from the response
+        const questions = generatedText
+          .split('\n')
+          .map((q: string) => q.trim())
+          .filter((q: string) => q.length > 0 && q.includes('?'))
+          .slice(0, 4);
+        
+        if (questions.length >= 3) {
+          console.log('[Contextual Suggestions] Successfully generated AI suggestions:', questions.length);
+          return res.json({ 
+            suggestions: questions,
+            source: 'ai-ollama'
+          });
+        }
+      }
+    } catch (ollamaError) {
+      console.log('[Contextual Suggestions] Ollama not available, trying fallback');
+    }
+    
+    // Fallback to profile-aware static questions if AI fails
+    console.log('[Contextual Suggestions] Using fallback suggestions');
+    const fallbackQuestions = generateFallbackSuggestions(userData, conversationHistory);
+    
+    return res.json({ 
+      suggestions: fallbackQuestions,
+      source: 'fallback'
+    });
+    
+  } catch (error) {
+    console.error('[Contextual Suggestions] Error:', error);
+    
+    // Return basic fallback questions
+    return res.json({ 
+      suggestions: [
+        'What skills should I focus on developing next?',
+        'How can I stand out in my industry?',
+        'What career opportunities should I explore?',
+        'How can I improve my professional brand?'
+      ],
+      source: 'error-fallback'
+    });
+  }
+};
+
+/**
+ * Generate smart fallback suggestions based on profile and conversation
+ */
+function generateFallbackSuggestions(userData: any, conversationHistory: any[]): string[] {
+  const suggestions: string[] = [];
+  
+  // Check if conversation is about specific topics
+  const recentMessages = conversationHistory?.slice(-4).map(m => m.content?.toLowerCase() || '') || [];
+  const conversationText = recentMessages.join(' ');
+  
+  const hasResumeContext = conversationText.includes('resume') || conversationText.includes('cv');
+  const hasJobContext = conversationText.includes('job') || conversationText.includes('interview') || conversationText.includes('position');
+  const hasSkillContext = conversationText.includes('skill') || conversationText.includes('learn') || conversationText.includes('develop');
+  const hasNetworkContext = conversationText.includes('network') || conversationText.includes('connect') || conversationText.includes('linkedin');
+  
+  // Generate contextual questions based on conversation
+  if (hasResumeContext) {
+    suggestions.push('What are the key things recruiters look for in my field?');
+    suggestions.push('How can I quantify my achievements more effectively?');
+    suggestions.push('Should I tailor my resume for each application?');
+    suggestions.push('What ATS optimization tips should I know?');
+  } else if (hasJobContext) {
+    suggestions.push('What salary range should I target for my next role?');
+    suggestions.push('How do I negotiate the best offer?');
+    suggestions.push('What questions should I ask in my next interview?');
+    suggestions.push('How can I stand out from other candidates?');
+  } else if (hasSkillContext) {
+    suggestions.push('Which certifications would boost my career the most?');
+    suggestions.push('How do I demonstrate new skills in my portfolio?');
+    suggestions.push(`What's the fastest way to learn in-demand skills?`);
+    suggestions.push('Should I specialize or stay generalist?');
+  } else if (hasNetworkContext) {
+    suggestions.push('How can I build authentic professional relationships?');
+    suggestions.push('What content should I share to build thought leadership?');
+    suggestions.push('How do I approach industry leaders for mentorship?');
+    suggestions.push('What networking events are worth my time?');
+  } else {
+    // Use profile-based questions if no clear context
+    const lookingFor = userData?.lookingFor?.toLowerCase() || '';
+    const industry = userData?.industry?.toLowerCase() || '';
+    
+    if (lookingFor.includes('job')) {
+      suggestions.push(`Which companies are hiring in ${industry || 'my field'} right now?`);
+      suggestions.push('How should I tailor my resume for my target role?');
+      suggestions.push('What interview prep strategies work best?');
+      suggestions.push('How can I stand out in applicant tracking systems?');
+    } else if (lookingFor.includes('mentor')) {
+      suggestions.push('What skills should I focus on developing next?');
+      suggestions.push('How can I transition to a leadership role?');
+      suggestions.push('What career path options fit my background?');
+      suggestions.push('How do I prepare for my next performance review?');
+    } else if (lookingFor.includes('network')) {
+      suggestions.push(`How can I become more visible in ${industry || 'my industry'}?`);
+      suggestions.push('What kind of posts build thought leadership?');
+      suggestions.push('How do I connect with industry leaders authentically?');
+      suggestions.push('Should I focus on quality or quantity in networking?');
+    } else {
+      // Generic high-value questions
+      suggestions.push('What skills are most in-demand in my industry?');
+      suggestions.push('How can I accelerate my career growth?');
+      suggestions.push('What opportunities should I be exploring?');
+      suggestions.push('How can I build a stronger professional brand?');
+    }
+  }
+  
+  return suggestions.slice(0, 4);
+}

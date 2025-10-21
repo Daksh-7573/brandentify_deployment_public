@@ -126,11 +126,56 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         console.error("Failed to load question engagement history:", error);
       }
       
-      // Generate fresh set of questions
+      // Generate AI-powered contextual suggestions
+      generateContextualSuggestions();
+    }
+  }, [userData]);
+  
+  // Generate AI-powered contextual suggestions
+  const generateContextualSuggestions = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await fetch('/api/musk/contextual-suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          conversationHistory: messages,
+          profileData: userData ? {
+            title: userData.title,
+            industry: userData.industry,
+            lookingFor: userData.lookingFor,
+            domain: userData.domain,
+            location: userData.location
+          } : null
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const aiQuestions: SuggestedQuestion[] = data.suggestions.map((text: string, idx: number) => ({
+          id: `ai-${Date.now()}-${idx}`,
+          text,
+          category: 'career',
+          relevanceScore: 1.0,
+          isNew: true
+        }));
+        
+        setSuggestedQuestions(aiQuestions);
+        console.log('[Musk Chat] Generated AI suggestions from:', data.source);
+      } else {
+        // Fallback to static questions if API fails
+        const questions = getSuggestedQuestions(userData, engagementHistory);
+        setSuggestedQuestions(questions);
+      }
+    } catch (error) {
+      console.error('[Musk Chat] Error generating suggestions:', error);
+      // Fallback to static questions
       const questions = getSuggestedQuestions(userData, engagementHistory);
       setSuggestedQuestions(questions);
     }
-  }, [userData]);
+  };
   
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -262,9 +307,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           console.error("Failed to save question engagement history:", error);
         }
         
-        // Generate new questions for next time
-        const freshQuestions = getSuggestedQuestions(userData, newHistory);
-        setSuggestedQuestions(freshQuestions);
+        // Generate new AI-powered contextual questions based on the conversation
+        generateContextualSuggestions();
       }
     } catch (error) {
       console.error('Error getting Musk response:', error);
@@ -493,9 +537,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           console.error("Failed to save question engagement history:", error);
         }
         
-        // Generate new questions for next time
-        const freshQuestions = getSuggestedQuestions(userData, newHistory);
-        setSuggestedQuestions(freshQuestions);
+        // Generate new AI-powered contextual questions based on the conversation
+        generateContextualSuggestions();
       }
       
       toast({
