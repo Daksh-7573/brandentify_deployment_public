@@ -316,7 +316,7 @@ export function BrandGoalsSelector() {
                 handleAddCustomGoal();
               }
             }}
-            placeholder="e.g., Transition from developer to tech lead role by Q3"
+            placeholder="e.g., Build thought leadership in AI by publishing weekly insights"
             maxLength={200}
             disabled={totalSelected >= 3}
             data-testid="input-custom-goal"
