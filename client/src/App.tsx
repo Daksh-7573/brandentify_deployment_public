@@ -673,8 +673,7 @@ function App() {
       <AuthProvider>
         <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
-          {/* GlobalMuskButton - Hidden temporarily, will implement later */}
-          {/* <GlobalMuskButton /> */}
+          <GlobalMuskButton />
           {/* DomainHelper removed - Firebase disabled */}
           <DomainAuthHelper />
           <Toaster />
