@@ -18,6 +18,26 @@ import { db } from '../db';
 import { users, questDefinitions, userQuests, brandGoals } from '@shared/schema';
 import { eq, and, inArray, ne, notInArray } from 'drizzle-orm';
 
+// Map pre-defined goal IDs to their text labels
+const GOAL_ID_TO_TEXT: Record<string, string> = {
+  // Visibility & Awareness
+  'visibility_1': 'Improve visibility on social media networks',
+  'visibility_2': 'Increase brand recognition among my target audience',
+  'visibility_3': 'Establish a consistent online presence across platforms',
+  'visibility_4': 'Appear in search results when people look for my name or expertise',
+  'visibility_5': 'Grow my follower base with an engaged audience',
+  // Professional & Career Growth
+  'professional_1': 'Position myself as an authority in my niche',
+  'professional_2': 'Attract new business opportunities',
+  'professional_3': 'Get featured on podcasts or collaborations',
+  // Engagement & Community
+  'engagement_1': 'Build a loyal community around my brand',
+  // Monetization & Impact
+  'monetization_1': 'Attract sponsorships and brand collaborations',
+  'monetization_2': 'Convert followers into leads or customers',
+  'monetization_3': 'Launch my own product or service under my name'
+};
+
 export interface QuestAllocationResult {
   totalQuests: number;
   careerQuests: number;
@@ -308,6 +328,10 @@ export class SmartQuestAllocator {
   /**
    * Get user's brand goals
    */
+  /**
+   * Get user's brand goals (both pre-defined and custom)
+   * Returns: Array of goal text strings
+   */
   private async getUserBrandGoals(userId: number): Promise<string[]> {
     const [userGoals] = await db
       .select()
@@ -315,7 +339,23 @@ export class SmartQuestAllocator {
       .where(eq(brandGoals.userId, userId))
       .limit(1);
     
-    return userGoals?.selectedGoals || [];
+    if (!userGoals) {
+      return [];
+    }
+
+    // Convert pre-defined goal IDs to text
+    const preDefinedGoalTexts = (userGoals.selectedGoals || []).map(
+      goalId => GOAL_ID_TO_TEXT[goalId] || goalId
+    );
+
+    // Combine pre-defined (converted to text) + custom goals
+    const customGoalTexts = userGoals.customGoals || [];
+    
+    const allGoals = [...preDefinedGoalTexts, ...customGoalTexts];
+    
+    console.log(`[SmartQuestAllocator.getUserBrandGoals] User ${userId} has ${allGoals.length} total goals (${preDefinedGoalTexts.length} pre-defined + ${customGoalTexts.length} custom)`);
+    
+    return allGoals;
   }
 
   /**
