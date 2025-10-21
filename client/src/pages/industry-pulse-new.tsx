@@ -367,7 +367,7 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
             <SocialShareButtons
               pulseId={pulse.id}
               pulseContent={pulse.content || pulse.title}
-              pulseAuthor={pulse.userName || "a user"}
+              pulseAuthor={pulse.user?.name || "a user"}
             />
           </div>
         </DialogContent>
