@@ -18,11 +18,12 @@ export async function extractTextFromPdf(pdfBuffer: Buffer): Promise<string> {
     
     console.log(`PDF buffer size: ${pdfBuffer.length} bytes`);
     
-    // Dynamically import pdf-parse - it exports PDFParse as a named export
+    // Dynamically import pdf-parse - it exports PDFParse as a named export (class)
     const { PDFParse } = await import('pdf-parse');
     
-    // Use pdf-parse to extract text
-    const data = await PDFParse(pdfBuffer);
+    // Use pdf-parse to extract text (instantiate class with 'new')
+    const parser = new PDFParse();
+    const data = await parser.parse(pdfBuffer);
     
     console.log(`[PDF EXTRACTOR] Extracted text length: ${data.text.length} characters`);
     console.log(`[PDF EXTRACTOR] Number of pages: ${data.numpages}`);
