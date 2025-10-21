@@ -1,0 +1,188 @@
+Fetching data from: /api/pulses/29/reactions
+injected.js:27 Fetching data from: /api/pulses/28/reactions
+injected.js:27 Fetching data from: /api/pulses/27/reactions
+injected.js:27 Fetching data from: /api/pulses/26/reactions
+injected.js:27 Fetching data from: /api/pulses/25/reactions
+injected.js:27 Fetching data from: /api/pulses/24/reactions
+injected.js:27 Fetching data from: /api/pulses/23/reactions
+injected.js:27 Fetching data from: /api/pulses/22/reactions
+injected.js:27 Fetching data from: /api/pulses/21/reactions
+injected.js:27 Fetching data from: /api/pulses/20/reactions
+injected.js:27 Fetching data from: /api/pulses/19/reactions
+injected.js:27 Fetching data from: /api/pulses/18/reactions
+injected.js:27 Fetching data from: /api/pulses/17/reactions
+injected.js:27 Fetching data from: /api/pulses/16/reactions
+injected.js:27 Fetching data from: /api/pulses/15/reactions
+injected.js:27 Fetching data from: /api/pulses/14/reactions
+injected.js:27 Fetching data from: /api/pulses/13/reactions
+injected.js:27 Fetching data from: /api/pulses/12/reactions
+injected.js:27 Fetching data from: /api/pulses/11/reactions
+injected.js:27 Fetching data from: /api/pulses/10/reactions
+injected.js:27 Fetching data from: /api/pulses/9/reactions
+injected.js:27 Fetching data from: /api/pulses/7/reactions
+injected.js:27 Fetching data from: /api/poll-votes/user/1/pulse/4
+injected.js:27 Fetching data from: /api/pulses/4/poll-votes
+injected.js:27 Fetching data from: /api/pulses/4/reactions
+injected.js:27 Fetching data from: /api/poll-votes/user/1/pulse/3
+injected.js:27 Fetching data from: /api/pulses/3/poll-votes
+injected.js:27 Fetching data from: /api/pulses/3/reactions
+injected.js:27 Fetching data from: /api/pulses/201/reactions
+injected.js:27 Fetching data from: /api/pulses/33/reactions
+injected.js:27 Fetching data from: /api/pulses/375/reactions
+injected.js:27 Fetching data from: /api/pulses/373/reactions
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/217?t=1761054685215:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/217
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/musk/resume-upload:1  Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+injected.js:27 Error processing resume: Error: HTTP error 400: Bad Request
+    at xhr.onload (musk-chat-panel.tsx:420:20)
+(anonymous) @ injected.js:27Understand this error
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:27 [HEADER PERFORMANCE] isLoading: false
+injected.js:27 [HEADER PERFORMANCE] userData ready: true
+injected.js:27 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:27 [HEADER PERFORMANCE] userId: 2
+injected.js:27 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:27 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:27 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:27 Request timeout for: /api/pulses/52/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/51/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/50/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/49/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/48/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/47/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/46/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/45/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/44/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/43/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/42/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/poll-votes/user/1/pulse/41
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/41/poll-votes
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/41/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/poll-votes/user/1/pulse/40
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/40/poll-votes
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/40/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/39/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/38/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/37/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/36/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/35/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/34/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/32/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/31/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/30/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/29/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/28/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/27/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/26/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/25/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/24/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/23/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/22/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/21/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/20/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/19/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/18/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/17/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/16/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/15/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/14/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/13/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/12/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/11/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/10/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/9/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/7/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/poll-votes/user/1/pulse/4
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/4/poll-votes
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/4/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/poll-votes/user/1/pulse/3
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/3/poll-votes
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/3/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/201/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/33/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/375/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Request timeout for: /api/pulses/373/reactions
+(anonymous) @ injected.js:27Understand this warning
+injected.js:27 Cached response for /api/messaging/unread/count?userId=2
+injected.js:27 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
