@@ -624,19 +624,16 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         >
           <div className="flex items-center gap-3">
             <div 
-              className="h-10 w-10 rounded-full flex items-center justify-center relative"
+              className="h-10 w-10 rounded-full flex items-center justify-center relative overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, #3B82F6, #6366F1)',
+                background: 'transparent',
                 boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
               }}
             >
-              <span className="text-white font-bold text-sm">M</span>
-              <div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(4px)'
-                }}
+              <img 
+                src={new URL('@assets/Contact Candour_1761062906599.gif', import.meta.url).href} 
+                alt="Musk AI" 
+                className="h-full w-full object-cover rounded-full"
               />
             </div>
             <div>
