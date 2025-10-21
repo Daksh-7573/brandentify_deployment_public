@@ -692,14 +692,25 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     // Extract text from PDF/DOCX
     let resumeText = '';
     try {
+      // express-fileupload with useTempFiles stores file in tempFilePath, not data
+      const fs = await import('fs');
+      
       if (fileExt === 'pdf') {
-        resumeText = await extractTextFromPdf(resumeFile.data);
+        const pdfBuffer = resumeFile.tempFilePath 
+          ? fs.readFileSync(resumeFile.tempFilePath)
+          : resumeFile.data;
+        
+        resumeText = await extractTextFromPdf(pdfBuffer);
         console.log(`Extracted ${resumeText.length} characters from PDF`);
       } else if (fileExt === 'txt') {
-        resumeText = resumeFile.data.toString('utf-8');
+        resumeText = resumeFile.data 
+          ? resumeFile.data.toString('utf-8')
+          : fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
       } else {
         // For DOC/DOCX, try basic extraction
-        resumeText = resumeFile.data.toString('utf-8');
+        resumeText = resumeFile.data 
+          ? resumeFile.data.toString('utf-8')
+          : fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
       }
       
       if (!resumeText || resumeText.trim().length < 50) {
