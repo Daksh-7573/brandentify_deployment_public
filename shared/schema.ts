@@ -616,6 +616,7 @@ export const flagStatusEnum = pgEnum("flag_status", [
 export const pulses = pgTable("pulses", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
+  targetUserId: integer("target_user_id").references(() => users.id), // For personalized Musk pulses - if null, pulse is public
   type: pulseTypeEnum("type").notNull(),
   category: pulseCategoryEnum("category"), // Categorization of the pulse
   title: text("title").notNull(),

@@ -416,7 +416,7 @@ export interface IStorage {
   deleteService(id: number): Promise<boolean>;
   
   // Pulse operations
-  getPulses(): Promise<Pulse[]>;
+  getPulses(currentUserId?: number): Promise<Pulse[]>;
   getPulsesPaginated(limit: number, cursor?: string, filters?: {
     industry?: string;
     domain?: string;
@@ -2898,8 +2898,13 @@ export class MemStorage implements IStorage {
   }
 
   // Pulse operations
-  async getPulses(): Promise<Pulse[]> {
+  async getPulses(currentUserId?: number): Promise<Pulse[]> {
+    // Filter by visibility - show public pulses and personalized pulses for this user
     return Array.from(this.pulses.values())
+      .filter(pulse => {
+        // Show public pulses (no targetUserId) OR personalized pulses for this user
+        return !pulse.targetUserId || (currentUserId && pulse.targetUserId === currentUserId);
+      })
       .sort((a, b) => {
         const timeA = a.createdAt ? a.createdAt.getTime() : 0;
         const timeB = b.createdAt ? b.createdAt.getTime() : 0;
@@ -8317,9 +8322,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Pulse operations for DatabaseStorage
-  async getPulses(): Promise<Pulse[]> {
+  async getPulses(currentUserId?: number): Promise<Pulse[]> {
     try {
-      console.log('[db.getPulses] Fetching all pulses with time-decay ranking');
+      console.log(`[db.getPulses] Fetching pulses with personalization for user ${currentUserId || 'public'}`);
       
       // Apply time decay to reach_score for fresh feed
       // Formula: reach_score * decay_factor
@@ -8327,9 +8332,18 @@ export class DatabaseStorage implements IStorage {
       // - 24-48h: 0.5x 
       // - 48h-7d: 0.2x
       // - > 7d: 0.05x
+      
+      // Build WHERE clause to include personalized pulses
+      // Show: public pulses (target_user_id IS NULL) OR personalized pulses for this user (target_user_id = currentUserId)
+      const whereClause = currentUserId 
+        ? `is_published = true AND (target_user_id IS NULL OR target_user_id = $1)`
+        : `is_published = true AND target_user_id IS NULL`;
+      
+      const params = currentUserId ? [currentUserId] : [];
+      
       const result = await pool.query(`
         SELECT 
-          id, user_id as "userId", type, category, title, content, 
+          id, user_id as "userId", target_user_id as "targetUserId", type, category, title, content, 
           industry, domain, media_type as "mediaType", 
           media_urls as "mediaUrls", media_local_storage_keys as "mediaLocalStorageKeys",
           poll_options as "pollOptions", project_id as "projectId",
@@ -8348,11 +8362,14 @@ export class DatabaseStorage implements IStorage {
             END
           ) as time_weighted_score
         FROM pulses
-        WHERE is_published = true
+        WHERE ${whereClause}
         ORDER BY time_weighted_score DESC, created_at DESC
-      `);
+      `, params);
       
-      console.log(`[db.getPulses] Found ${result.rows.length} pulses with time-decay ranking`);
+      const personalizedCount = result.rows.filter(row => row.targetUserId != null).length;
+      const publicCount = result.rows.length - personalizedCount;
+      
+      console.log(`[db.getPulses] Found ${result.rows.length} pulses (${publicCount} public, ${personalizedCount} personalized) for user ${currentUserId || 'public'}`);
       return result.rows;
     } catch (error) {
       console.error('[db.getPulses] Error fetching pulses:', error);

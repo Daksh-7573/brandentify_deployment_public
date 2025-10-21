@@ -7,10 +7,12 @@
  */
 
 import { muskPulseGenerator } from './musk-pulse-generator';
+import { personalizedMuskPulseGenerator } from './personalized-musk-pulse-generator';
 
 export class MuskPulseScheduler {
   private scheduleIntervals: NodeJS.Timeout[] = [];
   private isRunning = false;
+  private usePersonalization = true; // Toggle for personalized vs shared pulses
 
   /**
    * Start the automated pulse generation schedule
@@ -91,18 +93,25 @@ export class MuskPulseScheduler {
   }
 
   /**
-   * Generate a scheduled pulse
+   * Generate a scheduled pulse (personalized for all users)
    */
   private async generateScheduledPulse(timeOfDay: 'morning' | 'afternoon' | 'evening'): Promise<void> {
     try {
-      console.log(`[MuskPulseScheduler] Generating ${timeOfDay} pulse`);
+      console.log(`[MuskPulseScheduler] Generating ${timeOfDay} pulse (personalized: ${this.usePersonalization})`);
       
-      await muskPulseGenerator.generateScheduledPulse({
-        timeOfDay,
-        eventDriven: false
-      });
+      if (this.usePersonalization) {
+        // Generate personalized pulses for each user
+        await personalizedMuskPulseGenerator.generatePersonalizedPulsesForAllUsers(timeOfDay);
+        console.log(`[MuskPulseScheduler] Successfully generated personalized ${timeOfDay} pulses`);
+      } else {
+        // Generate shared pulse for all users (old behavior)
+        await muskPulseGenerator.generateScheduledPulse({
+          timeOfDay,
+          eventDriven: false
+        });
+        console.log(`[MuskPulseScheduler] Successfully generated shared ${timeOfDay} pulse`);
+      }
       
-      console.log(`[MuskPulseScheduler] Successfully generated ${timeOfDay} pulse`);
     } catch (error) {
       console.error(`[MuskPulseScheduler] Error generating ${timeOfDay} pulse:`, error);
     }

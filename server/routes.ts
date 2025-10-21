@@ -4089,10 +4089,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // GET /api/pulses - Get all pulses for the industry pulse feed
+  // GET /api/pulses - Get all pulses for the industry pulse feed (includes personalized pulses)
   apiRouter.get("/pulses", async (req: Request, res: Response) => {
     try {
-      const pulses = await storage.getPulses();
+      // Get logged-in user ID from query params (passed by frontend)
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      
+      // Fetch pulses with personalization support
+      const pulses = await storage.getPulses(userId);
       
       // Get user data for each pulse to display in the UI
       const pulsesWithUserData = await Promise.all(
@@ -4108,7 +4112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
-      console.log(`[GET /pulses] Found ${pulses.length} pulses`);
+      console.log(`[GET /pulses] Found ${pulses.length} pulses for user ${userId || 'public'}`);
       res.json(pulsesWithUserData);
     } catch (error) {
       console.error('[GET /pulses] Error fetching pulses:', error);

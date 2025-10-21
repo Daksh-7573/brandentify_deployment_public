@@ -1216,6 +1216,7 @@ export default function IndustryPulsePage() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
+  const userId = user?.id; // Get current user ID for personalized pulses
   
   // Project modal state
   const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -1229,9 +1230,16 @@ export default function IndustryPulsePage() {
   // Comment toggle state
   const [expandedCommentsPulseId, setExpandedCommentsPulseId] = useState<number | null>(null);
   
-  // Fetch all pulses
+  // Fetch all pulses (includes personalized pulses for this user)
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
-    queryKey: ["/api/pulses"],
+    queryKey: ["/api/pulses", userId],
+    queryFn: async () => {
+      // Pass userId to get personalized pulses
+      const url = userId ? `/api/pulses?userId=${userId}` : '/api/pulses';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch pulses');
+      return res.json();
+    }
   });
   
   // Handle refresh button click
