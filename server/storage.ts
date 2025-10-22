@@ -8491,13 +8491,13 @@ export class DatabaseStorage implements IStorage {
       
       const result = await pool.query(`
         INSERT INTO pulses (
-          user_id, type, category, title, content, industry, domain,
+          user_id, target_user_id, type, category, title, content, industry, domain,
           media_type, media_urls, media_local_storage_keys, poll_options,
           project_id, is_published, expires_at
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
         ) RETURNING 
-          id, user_id as "userId", type, category, title, content, industry, domain,
+          id, user_id as "userId", target_user_id as "targetUserId", type, category, title, content, industry, domain,
           media_type as "mediaType", media_urls as "mediaUrls",
           media_local_storage_keys as "mediaLocalStorageKeys",
           poll_options as "pollOptions", project_id as "projectId",
@@ -8507,6 +8507,7 @@ export class DatabaseStorage implements IStorage {
           week_number as "weekNumber", year
       `, [
         insertPulse.userId,
+        insertPulse.targetUserId || null,
         insertPulse.type,
         insertPulse.category || null,
         insertPulse.title,
