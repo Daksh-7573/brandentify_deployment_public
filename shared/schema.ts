@@ -1188,6 +1188,7 @@ export const userQuests = pgTable("user_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  generatedQuestId: integer("generated_quest_id").references(() => generatedSocialQuests.id), // Link to AI-generated quest (if social quest)
   status: questStatusEnum("status").notNull().default("active"),
   progress: integer("progress").notNull().default(0), // Current progress count
   assignedAt: timestamp("assigned_at").defaultNow(),

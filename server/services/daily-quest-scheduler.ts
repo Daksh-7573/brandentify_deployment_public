@@ -6,6 +6,7 @@ import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
 import { smartQuestAllocator } from './smart-quest-allocator';
 import { intelligentHashtagGenerator } from './intelligent-hashtag-generator';
+import { socialQuestTemplateEngine } from './social-quest-template-engine';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -234,6 +235,8 @@ class DailyQuestScheduler {
 
   /**
    * Assign selected quests from smart allocator
+   * For social quests: Generate AI-personalized quests using SocialQuestTemplateEngine
+   * For career quests: Use standard quest_definitions
    */
   private async assignSelectedQuests(userId: number, allocation: any): Promise<any[]> {
     const assignedQuests: any[] = [];
@@ -243,25 +246,111 @@ class DailyQuestScheduler {
 
     try {
       for (const selectedQuest of allocation.selectedQuests) {
-        const [quest] = await db
-          .insert(userQuests)
-          .values({
-            userId,
-            questDefinitionId: selectedQuest.questDefinitionId,
-            status: 'active',
-            progress: 0,
-            assignedAt: new Date(),
-            assignedDate: todayDateString,
-            weekNumber: currentWeek,
-            year: currentYear
-          })
-          .returning();
         
-        assignedQuests.push({
-          ...quest,
-          category: selectedQuest.category,
-          questType: selectedQuest.questType
-        });
+        // For SOCIAL quests: Generate AI-personalized quest
+        if (selectedQuest.category === 'social') {
+          console.log(`[DailyQuestScheduler] 🤖 Generating AI quest for user ${userId}`);
+          
+          // Get quest definition to determine platform
+          const [questDef] = await db
+            .select()
+            .from(questDefinitions)
+            .where(eq(questDefinitions.id, selectedQuest.questDefinitionId))
+            .limit(1);
+          
+          const platform = questDef?.platform || 'linkedin';
+          
+          // Generate AI-personalized quest using template engine
+          const aiQuest = await socialQuestTemplateEngine.generatePersonalizedQuest(userId, platform);
+          
+          if (aiQuest) {
+            // Store AI-generated quest in generated_social_quests table
+            const [generatedQuest] = await db
+              .insert(generatedSocialQuests)
+              .values({
+                userId,
+                templateId: aiQuest.templateId,
+                questDefinitionId: selectedQuest.questDefinitionId,
+                personalizedTitle: aiQuest.title,
+                personalizedDescription: aiQuest.description,
+                personalizedMuskTip: aiQuest.muskTip,
+                variablesUsed: aiQuest.variablesUsed,
+                brandImpactScore: Math.round(selectedQuest.impactScore),
+                generatedAt: new Date(),
+                assignedDate: todayDateString,
+                status: 'active'
+              })
+              .returning();
+            
+            // Create user_quest that links to the generated quest
+            const [quest] = await db
+              .insert(userQuests)
+              .values({
+                userId,
+                questDefinitionId: selectedQuest.questDefinitionId,
+                generatedQuestId: generatedQuest.id,
+                status: 'active',
+                progress: 0,
+                assignedAt: new Date(),
+                assignedDate: todayDateString,
+                weekNumber: currentWeek,
+                year: currentYear
+              })
+              .returning();
+            
+            assignedQuests.push({
+              ...quest,
+              category: selectedQuest.category,
+              questType: selectedQuest.questType,
+              aiGenerated: true
+            });
+            
+            console.log(`[DailyQuestScheduler] ✅ AI quest generated: "${aiQuest.title}"`);
+          } else {
+            // Fallback to standard quest if AI generation fails
+            console.log(`[DailyQuestScheduler] ⚠️ AI quest generation failed, using standard quest`);
+            const [quest] = await db
+              .insert(userQuests)
+              .values({
+                userId,
+                questDefinitionId: selectedQuest.questDefinitionId,
+                status: 'active',
+                progress: 0,
+                assignedAt: new Date(),
+                assignedDate: todayDateString,
+                weekNumber: currentWeek,
+                year: currentYear
+              })
+              .returning();
+            
+            assignedQuests.push({
+              ...quest,
+              category: selectedQuest.category,
+              questType: selectedQuest.questType
+            });
+          }
+        } else {
+          // For CAREER quests: Use standard quest_definitions (no AI generation)
+          const [quest] = await db
+            .insert(userQuests)
+            .values({
+              userId,
+              questDefinitionId: selectedQuest.questDefinitionId,
+              status: 'active',
+              progress: 0,
+              assignedAt: new Date(),
+              assignedDate: todayDateString,
+              weekNumber: currentWeek,
+              year: currentYear
+            })
+            .returning();
+          
+          assignedQuests.push({
+            ...quest,
+            category: selectedQuest.category,
+            questType: selectedQuest.questType
+          });
+        }
       }
 
       console.log(`[DailyQuestScheduler] Successfully assigned ${assignedQuests.length} quests for user ${userId}`);
