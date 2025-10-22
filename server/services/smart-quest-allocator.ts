@@ -103,7 +103,7 @@ export class SmartQuestAllocator {
 
       if (availableCareerQuests.length === 0 && availableSocialQuests.length === 0) {
         console.log('[SmartQuestAllocator] No available quests - returning fallback');
-        return this.getFallbackAllocation();
+        return await this.getFallbackAllocation(userId);
       }
 
       // Calculate impact scores for all available quests
@@ -130,7 +130,7 @@ export class SmartQuestAllocator {
 
     } catch (error) {
       console.error('[SmartQuestAllocator] Error in allocation:', error);
-      return this.getFallbackAllocation();
+      return await this.getFallbackAllocation(userId);
     }
   }
 
@@ -496,18 +496,115 @@ export class SmartQuestAllocator {
 
   /**
    * Fallback allocation (original 1 Career + 1 Social)
+   * Fetches simple quests without brand goal filtering
    */
-  private getFallbackAllocation(): QuestAllocationResult {
+  private async getFallbackAllocation(userId?: number): Promise<QuestAllocationResult> {
     console.log('[SmartQuestAllocator] Using fallback allocation: 1 Career + 1 Social');
     
-    return {
-      totalQuests: 2,
-      careerQuests: 1,
-      socialQuests: 1,
-      totalImpactScore: 100,
-      allocationStrategy: 'Fallback: Default 1+1',
-      selectedQuests: []
-    };
+    try {
+      const todayDateString = new Date().toISOString().split('T')[0];
+      const selectedQuests: SelectedQuest[] = [];
+      
+      // Get today's assigned quest IDs if userId provided
+      let assignedIds: number[] = [];
+      if (userId) {
+        const todayAssigned = await db
+          .select({ questDefId: userQuests.questDefinitionId })
+          .from(userQuests)
+          .where(and(
+            eq(userQuests.userId, userId),
+            eq(userQuests.assignedDate, todayDateString)
+          ));
+        assignedIds = todayAssigned.map(q => q.questDefId);
+      }
+      
+      // Fetch a simple career quest (profile update or pulse creation)
+      const careerQuestsQuery = assignedIds.length > 0
+        ? db.select()
+            .from(questDefinitions)
+            .where(and(
+              eq(questDefinitions.isActive, true),
+              inArray(questDefinitions.type, ['profile_update', 'pulse_creation'] as any),
+              notInArray(questDefinitions.id, assignedIds)
+            ))
+            .limit(1)
+        : db.select()
+            .from(questDefinitions)
+            .where(and(
+              eq(questDefinitions.isActive, true),
+              inArray(questDefinitions.type, ['profile_update', 'pulse_creation'] as any)
+            ))
+            .limit(1);
+      
+      const careerQuests = await careerQuestsQuery;
+      
+      if (careerQuests.length > 0) {
+        const quest = careerQuests[0];
+        selectedQuests.push({
+          questDefinitionId: quest.id,
+          questType: quest.type,
+          category: 'career',
+          impactScore: 50,
+          estimatedMinutes: quest.estimatedTimeMinutes || 15,
+          title: quest.title,
+          description: quest.description || ''
+        });
+      }
+      
+      // Fetch a simple social quest
+      const socialQuestsQuery = assignedIds.length > 0
+        ? db.select()
+            .from(questDefinitions)
+            .where(and(
+              eq(questDefinitions.isActive, true),
+              inArray(questDefinitions.type, ['social_quest', 'social_post'] as any),
+              notInArray(questDefinitions.id, assignedIds)
+            ))
+            .limit(1)
+        : db.select()
+            .from(questDefinitions)
+            .where(and(
+              eq(questDefinitions.isActive, true),
+              inArray(questDefinitions.type, ['social_quest', 'social_post'] as any)
+            ))
+            .limit(1);
+      
+      const socialQuests = await socialQuestsQuery;
+      
+      if (socialQuests.length > 0) {
+        const quest = socialQuests[0];
+        selectedQuests.push({
+          questDefinitionId: quest.id,
+          questType: quest.type,
+          category: 'social',
+          impactScore: 50,
+          estimatedMinutes: quest.estimatedTimeMinutes || 15,
+          title: quest.title,
+          description: quest.description || ''
+        });
+      }
+      
+      console.log(`[SmartQuestAllocator] ✅ Fallback: Selected ${selectedQuests.length} quests`);
+      
+      return {
+        totalQuests: selectedQuests.length,
+        careerQuests: selectedQuests.filter(q => q.category === 'career').length,
+        socialQuests: selectedQuests.filter(q => q.category === 'social').length,
+        totalImpactScore: selectedQuests.reduce((sum, q) => sum + q.impactScore, 0),
+        allocationStrategy: 'Fallback: Default 1+1',
+        selectedQuests
+      };
+    } catch (error) {
+      console.error('[SmartQuestAllocator] Error in fallback allocation:', error);
+      return {
+        totalQuests: 0,
+        careerQuests: 0,
+        socialQuests: 0,
+        totalImpactScore: 0,
+        allocationStrategy: 'Fallback: Failed',
+        selectedQuests: []
+      };
+    }
   }
 
   /**
