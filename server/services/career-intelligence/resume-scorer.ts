@@ -498,7 +498,6 @@ Fix this FIRST: [#1 priority]`;
       client.release();
     }
   }
-}
 
   /**
    * Generate complete CV with all fixes applied (Word format)

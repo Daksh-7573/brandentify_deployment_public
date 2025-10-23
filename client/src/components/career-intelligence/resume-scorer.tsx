@@ -113,16 +113,35 @@ export default function ResumeScorer() {
     enabled: currentResumeScoreId !== null,
   });
 
-  const applyFixMutation = useMutation({
-    mutationFn: async (fixId: number) => {
-      const response = await apiRequest('POST', '/api/career-tools/apply-fix', {
-        resumeScoreId: currentResumeScoreId,
-        fixId
+  const generateCVMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/career-tools/generate-cv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resumeScoreId: currentResumeScoreId,
+          userId: user?.id
+        })
       });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/career-tools/resume-score', currentResumeScoreId] });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate CV');
+      }
+      
+      // Get the file blob
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'improved-resume.docx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      return true;
     }
   });
 
@@ -162,8 +181,8 @@ export default function ResumeScorer() {
     }
   };
 
-  const handleApplyFix = (fixId: number) => {
-    applyFixMutation.mutate(fixId);
+  const handleGenerateCV = () => {
+    generateCVMutation.mutate();
   };
 
   const analysis = (analyzeResumeMutation.data || resumeScoreData) as ResumeAnalysisResult | undefined;
@@ -344,6 +363,37 @@ export default function ResumeScorer() {
       {/* Results Section */}
       {analysis && score && (
         <div className="space-y-6">
+          {/* Generate CV Button */}
+          <Card className="p-6 glass-effect bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-2">📄 Ready to Download Your Improved Resume?</h3>
+                <p className="text-sm text-muted-foreground">
+                  We'll apply all {fixes.length} fixes to your resume and generate a professional Word document ready to send to employers.
+                </p>
+              </div>
+              <Button
+                onClick={handleGenerateCV}
+                disabled={generateCVMutation.isPending}
+                size="lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-w-[200px]"
+                data-testid="button-generate-cv"
+              >
+                {generateCVMutation.isPending ? (
+                  <>
+                    <Sparkles className="mr-2 h-5 w-5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="mr-2 h-5 w-5" />
+                    Generate & Download CV
+                  </>
+                )}
+              </Button>
+            </div>
+          </Card>
+
           {/* Score Overview */}
           <Card className="p-6 glass-effect">
             <div className="space-y-6">
@@ -409,8 +459,6 @@ export default function ResumeScorer() {
                     <FixCard
                       key={fix.id || index}
                       fix={fix}
-                      onApply={() => handleApplyFix(fix.id)}
-                      isApplying={applyFixMutation.isPending}
                     />
                   ))}
                 </div>
@@ -464,13 +512,9 @@ function ScoreItem({ label, score, max, icon }: {
 }
 
 function FixCard({ 
-  fix, 
-  onApply, 
-  isApplying 
+  fix
 }: { 
-  fix: ResumeFix; 
-  onApply: () => void; 
-  isApplying: boolean;
+  fix: ResumeFix;
 }) {
   const priorityColor = fix.priority === 'critical' 
     ? 'border-red-500/50 bg-red-500/5' 
@@ -522,23 +566,6 @@ function FixCard({
           </div>
         </div>
 
-        {/* Apply Button */}
-        {!fix.isApplied && (
-          <Button
-            onClick={onApply}
-            disabled={isApplying}
-            size="sm"
-            className="w-full"
-            data-testid={`button-apply-fix-${fix.id}`}
-          >
-            {isApplying ? 'Applying...' : '✨ Apply Fix'}
-          </Button>
-        )}
-        {fix.isApplied && (
-          <div className="text-center text-sm text-green-500 font-medium">
-            ✓ Applied
-          </div>
-        )}
       </div>
     </Card>
   );

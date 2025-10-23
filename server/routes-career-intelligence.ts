@@ -210,6 +210,45 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       });
     }
   });
+
+  /**
+   * Generate and download improved CV with all fixes
+   * POST /api/career-tools/generate-cv
+   */
+  app.post('/api/career-tools/generate-cv', async (req, res) => {
+    try {
+      const { resumeScoreId, userId } = req.body;
+      
+      if (!resumeScoreId || !userId) {
+        return res.status(400).json({ 
+          error: 'Resume score ID and user ID are required' 
+        });
+      }
+      
+      console.log(`[API] Generating improved CV for resume score ${resumeScoreId}, user ${userId}`);
+      
+      // Generate Word document with all fixes applied
+      const docBuffer = await resumeScorerService.generateImprovedCV(
+        parseInt(resumeScoreId),
+        parseInt(userId)
+      );
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', 'attachment; filename="improved-resume.docx"');
+      res.setHeader('Content-Length', docBuffer.length);
+      
+      // Send file
+      res.send(docBuffer);
+      
+      console.log(`[API] CV generated successfully: ${docBuffer.length} bytes`);
+    } catch (error: any) {
+      console.error('[API] Generate CV error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to generate CV' 
+      });
+    }
+  });
   
   // ============================================
   // JOB DESCRIPTION MATCHER
