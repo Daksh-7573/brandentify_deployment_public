@@ -9265,73 +9265,27 @@ ${extractedText.substring(0, 5000)}
 
       console.log(`[Instant Quest Assignment] Starting quest generation for user ${userId}`);
       
-      // Import required services
-      const { smartQuestAllocator } = await import('./services/smart-quest-allocator');
-      const { recommendationService } = await import('./services/recommendation-service');
-      const { intelligentHashtagGenerator } = await import('./services/intelligent-hashtag-generator');
+      // 🚀 USE NEW INTELLIGENT ASSIGNMENT SYSTEM
+      const { personalizedQuestAssignment } = await import('./services/personalized-quest-assignment');
       
-      // Get user data
-      const user = await storage.getUserById(userId);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
-      // Check if user already has quests assigned today
-      const todayDateString = new Date().toISOString().split('T')[0];
-      const existingTodayQuests = await db
-        .select()
-        .from(userQuests)
-        .where(and(
-          eq(userQuests.userId, userId),
-          eq(userQuests.assignedDate, todayDateString)
-        ));
+      const result = await personalizedQuestAssignment.assignDailyQuestsIntelligent(userId, {
+        maxDailyMinutes: 60,
+        preferHighXP: true
+      });
       
-      if (existingTodayQuests.length > 0) {
-        console.log(`[Instant Quest Assignment] User ${userId} already has ${existingTodayQuests.length} quests assigned today`);
-        return res.json({
-          success: true,
-          message: 'Quests already assigned',
-          questCount: existingTodayQuests.length,
-          quests: existingTodayQuests
-        });
+      if (!result.success) {
+        return res.status(400).json(result);
       }
       
-      // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
-      const allocation = await smartQuestAllocator.allocateDailyQuests(userId);
+      console.log(`[Instant Quest Assignment] ✅ ${result.message}`);
       
-      console.log(`[Instant Quest Assignment] Smart Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social)`);
-      
-      // Assign quests based on smart allocation
-      const assignedQuests: any[] = [];
-      const currentWeek = Math.ceil(((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000 + new Date(new Date().getFullYear(), 0, 1).getDay() + 1) / 7);
-      const currentYear = new Date().getFullYear();
+      const assignedQuests: any[] = result.assignedQuests.map((q: any) => ({
+        ...q,
+        category: q.questDefinition?.questType === 'social_quest' ? 'social' : 'career',
+        questType: q.questDefinition?.questType
+      }));
 
-      for (const selectedQuest of allocation.selectedQuests) {
-        const [quest] = await db
-          .insert(userQuests)
-          .values({
-            userId,
-            questDefinitionId: selectedQuest.questDefinitionId,
-            status: 'active',
-            progress: 0,
-            assignedAt: new Date(),
-            assignedDate: todayDateString,
-            weekNumber: currentWeek,
-            year: currentYear
-          })
-          .returning();
-        
-        assignedQuests.push({
-          ...quest,
-          category: selectedQuest.category,
-          questType: selectedQuest.questType
-        });
-      }
-
-      console.log(`[Instant Quest Assignment] ✅ Assigned ${assignedQuests.length} quests for user ${userId} (${user.name})`);
+      console.log(`[Instant Quest Assignment] ✅ Assigned ${assignedQuests.length} quests for user ${userId}`);
       
       res.json({
         success: true,

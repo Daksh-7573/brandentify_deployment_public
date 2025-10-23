@@ -111,22 +111,21 @@ class DailyQuestScheduler {
           
           console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
           
-          // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
-          const allocation = await smartQuestAllocator.allocateDailyQuests(user.id);
+          // 🚀 USE NEW INTELLIGENT ASSIGNMENT SYSTEM
+          const { personalizedQuestAssignment } = await import('./personalized-quest-assignment');
           
-          console.log(`[DailyQuestScheduler] 🎯 Smart Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social) - Strategy: ${allocation.allocationStrategy}`);
+          const result = await personalizedQuestAssignment.assignDailyQuestsIntelligent(user.id, {
+            maxDailyMinutes: 60,
+            preferHighXP: true
+          });
           
-          // Assign quests based on smart allocation
-          const assignedQuests = await this.assignSelectedQuests(user.id, allocation);
-          
-          // Add posting time recommendations and intelligent hashtags
-          if (assignedQuests.length > 0) {
-            await this.enhanceQuestsWithRecommendations(user, assignedQuests);
+          if (result.success) {
+            console.log(`[DailyQuestScheduler] ✅ ${result.message}`);
+            successCount++;
+          } else {
+            console.log(`[DailyQuestScheduler] ⚠️ ${result.message}`);
+            errorCount++;
           }
-          
-          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} total quests for ${user.name}`);
-          
-          successCount++;
           
         } catch (userError) {
           console.error(`[DailyQuestScheduler] ❌ Error assigning quests for user ${user.id}:`, userError);
