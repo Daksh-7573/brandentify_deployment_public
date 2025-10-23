@@ -1820,6 +1820,7 @@ export const generatedCareerQuests = pgTable("generated_career_quests", {
   userId: integer("user_id").references(() => users.id).notNull(),
   questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
   questType: text("quest_type").notNull(), // 'pulse_creation', 'resume', 'learning', 'portfolio'
+  variablesUsed: jsonb("variables_used").notNull(), // User context data used for personalization
   personalizedTitle: text("personalized_title").notNull(),
   personalizedDescription: text("personalized_description").notNull(),
   deliverableFormat: text("deliverable_format").notNull(), // Specific deliverable requirements (e.g., "3 images with captions, 600×400px each")

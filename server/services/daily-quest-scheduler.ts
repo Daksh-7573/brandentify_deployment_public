@@ -285,6 +285,16 @@ class DailyQuestScheduler {
           
           const detailedQuest = detailedQuests[0];
           
+          // Prepare variables_used metadata (IMPORTANT: jsonb expects object, not JSON string!)
+          const variablesUsed = {
+            user_name: userProfile?.name || 'Professional',
+            user_industry: userProfile?.industry || 'Technology',
+            user_domain: userProfile?.domain || 'General',
+            user_location: userProfile?.location || 'Global',
+            primary_audience: userProfile?.primaryAudience || ['professionals'],
+            brand_goals: userBrandGoals?.selectedGoals || []
+          };
+          
           // Insert the detailed quest specifications into generatedCareerQuests
           const [generatedCareerQuest] = await db
             .insert(generatedCareerQuests)
@@ -292,14 +302,7 @@ class DailyQuestScheduler {
               userId,
               questDefinitionId: selectedQuest.questDefinitionId,
               questType: detailedQuest.type,
-              variablesUsed: JSON.stringify({
-                user_name: userProfile.name || 'Professional',
-                user_industry: userProfile.industry || 'Professional',
-                user_domain: userProfile.domain || 'General',
-                user_location: userProfile.location || 'your region',
-                primary_audience: userProfile.primaryAudience || 'industry professionals',
-                brand_goals: userBrandGoals?.selectedGoals || []
-              }),
+              variablesUsed, // Pass object directly for jsonb type
               personalizedTitle: detailedQuest.title,
               personalizedDescription: detailedQuest.description,
               deliverableFormat: detailedQuest.deliverableFormat,
