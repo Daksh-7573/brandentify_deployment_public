@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
-import { userQuests, generatedSocialQuests, generatedCareerQuests, questDefinitions, brandGoals } from '@shared/schema';
+import { userQuests, generatedSocialQuests, generatedCareerQuests, questDefinitions, brandGoals, users } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
 import { smartQuestAllocator } from './smart-quest-allocator';
@@ -244,6 +244,10 @@ class DailyQuestScheduler {
     const currentWeek = this.getWeekNumber(new Date());
     const currentYear = new Date().getFullYear();
 
+    // Fetch user profile and brand goals for variables_used metadata
+    const [userProfile] = await db.select().from(users).where(eq(users.id, userId));
+    const [userBrandGoals] = await db.select().from(brandGoals).where(eq(brandGoals.userId, userId));
+
     try {
       for (const selectedQuest of allocation.selectedQuests) {
         
@@ -288,6 +292,14 @@ class DailyQuestScheduler {
               userId,
               questDefinitionId: selectedQuest.questDefinitionId,
               questType: detailedQuest.type,
+              variablesUsed: JSON.stringify({
+                user_name: userProfile.name || 'Professional',
+                user_industry: userProfile.industry || 'Professional',
+                user_domain: userProfile.domain || 'General',
+                user_location: userProfile.location || 'your region',
+                primary_audience: userProfile.primaryAudience || 'industry professionals',
+                brand_goals: userBrandGoals?.selectedGoals || []
+              }),
               personalizedTitle: detailedQuest.title,
               personalizedDescription: detailedQuest.description,
               deliverableFormat: detailedQuest.deliverableFormat,

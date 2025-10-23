@@ -94,6 +94,117 @@ export class LocalAIService {
   }
 
   /**
+   * Generate detailed career quest content with AI (FREE with Ollama)
+   */
+  async generateCareerQuest(questContext: {
+    questType: string;
+    baseTitle: string;
+    baseDescription: string;
+    userProfile: {
+      name: string;
+      title: string;
+      industry: string;
+      domain: string;
+      location: string;
+    };
+    brandGoal: string;
+    primaryAudience: string;
+    variables: any;
+  }): Promise<{
+    personalizedTitle: string;
+    personalizedDescription: string;
+    personalizedMuskTip: string;
+    deliverableFormat: string;
+    quantityValue: number;
+    quantityType: string;
+    platformConstraints: string;
+    guidanceSnippet: string;
+    estimatedTime: number;
+  }> {
+    const prompt = this.buildCareerQuestPrompt(questContext);
+    const response = await this.generateCompletion(prompt, 'career-quest-generation');
+    
+    // Parse structured output from AI
+    try {
+      // Extract JSON from response (AI might wrap it in markdown code blocks)
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      throw new Error('No valid JSON found in AI response');
+    } catch (parseError) {
+      console.error('[Local AI] Failed to parse quest JSON:', parseError);
+      // Fallback: extract sections manually
+      return this.parseQuestFromText(response, questContext);
+    }
+  }
+
+  /**
+   * Build career quest generation prompt
+   */
+  private buildCareerQuestPrompt(questContext: {
+    questType: string;
+    baseTitle: string;
+    baseDescription: string;
+    userProfile: any;
+    brandGoal: string;
+    primaryAudience: string;
+    variables: any;
+  }): string {
+    return `You are Musk, an expert career strategist. Generate a detailed, personalized career quest for a professional.
+
+PROFILE:
+- Name: ${questContext.userProfile.name}
+- Title: ${questContext.userProfile.title}
+- Industry: ${questContext.userProfile.industry}
+- Domain: ${questContext.userProfile.domain}
+- Location: ${questContext.userProfile.location}
+
+BRAND GOAL: ${questContext.brandGoal}
+PRIMARY AUDIENCE: ${questContext.primaryAudience}
+
+QUEST TYPE: ${questContext.questType}
+BASE TITLE: ${questContext.baseTitle}
+BASE DESCRIPTION: ${questContext.baseDescription}
+
+CONTEXT VARIABLES: ${JSON.stringify(questContext.variables, null, 2)}
+
+Generate a detailed quest with these specifications. Return ONLY valid JSON with NO markdown code blocks or additional text:
+
+{
+  "personalizedTitle": "Creative, specific title that includes location/industry context",
+  "personalizedDescription": "Detailed description (300-500 words) with specific deliverables, metrics, examples from their location/industry, and step-by-step requirements. Include exact numbers, formats, dimensions.",
+  "personalizedMuskTip": "Brutal, honest advice (100-150 words) in Musk's direct style. Reference specific aspects of their profile, location, or audience. No sugar-coating.",
+  "deliverableFormat": "Exact format specification (e.g., '3 images with captions, 800x600px, professional quality')",
+  "quantityValue": 3,
+  "quantityType": "images",
+  "platformConstraints": "Specific technical requirements or platform limitations",
+  "guidanceSnippet": "Step-by-step guidance (5-7 concrete steps) tailored to their profile",
+  "estimatedTime": 45
+}
+
+Be specific, use real examples from ${questContext.userProfile.location}, and make it actionable. Focus on ${questContext.brandGoal}.`;
+  }
+
+  /**
+   * Fallback parser if JSON extraction fails
+   */
+  private parseQuestFromText(response: string, questContext: any): any {
+    // Fallback to basic structure
+    return {
+      personalizedTitle: questContext.baseTitle,
+      personalizedDescription: questContext.baseDescription,
+      personalizedMuskTip: "Focus on execution. Results matter more than plans.",
+      deliverableFormat: "Standard format as specified",
+      quantityValue: 1,
+      quantityType: "item",
+      platformConstraints: "Follow best practices",
+      guidanceSnippet: "Complete the task according to specifications",
+      estimatedTime: 30
+    };
+  }
+
+  /**
    * Generate general AI completion
    */
   private async generateCompletion(prompt: string, taskType: string): Promise<string> {
