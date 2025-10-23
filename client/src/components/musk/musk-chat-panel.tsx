@@ -603,6 +603,66 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     pitchDeckFileInputRef.current?.click();
   };
   
+  const handleGenerateCV = async (resumeScoreId: number) => {
+    if (!user?.id && !context?.userId) {
+      toast({
+        title: 'Error',
+        description: 'User ID not found. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setIsGeneratingCV(true);
+    console.log('[Musk Chat] Generating CV for resume score:', resumeScoreId);
+    
+    try {
+      const userId = user?.id || context?.userId;
+      
+      const response = await fetch('/api/musk/generate-cv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resumeScoreId,
+          userId
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate CV');
+      }
+      
+      // Get the file blob
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'improved-resume.docx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: 'Success!',
+        description: 'Your improved resume has been downloaded.',
+      });
+      
+      console.log('[Musk Chat] CV downloaded successfully');
+    } catch (error) {
+      console.error('[Musk Chat] CV generation error:', error);
+      toast({
+        title: 'Generation Error',
+        description: 'Failed to generate CV. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingCV(false);
+    }
+  };
+  
   const panelVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
     visible: { 
