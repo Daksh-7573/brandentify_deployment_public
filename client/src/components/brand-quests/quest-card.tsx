@@ -311,9 +311,85 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             {getQuestStatusLabel(quest.status)}
           </Badge>
         </div>
-        <p className="ml-7 mt-1 text-white/80 text-sm">
-          {questDefinition?.description}
-        </p>
+        {/* Format description with better structure for slide-based quests */}
+        {questDefinition?.description && (() => {
+          const desc = questDefinition.description;
+          
+          // Check if this is a slide-based carousel quest
+          if (desc.includes('Slide 1:') || desc.includes('slide carousel')) {
+            // Split by slide markers and format each slide
+            const slides = desc.split(/→\s*/).map(s => s.trim()).filter(Boolean);
+            
+            return (
+              <div className="ml-7 mt-1 text-white/80 text-sm space-y-2">
+                {slides.map((slide, index) => {
+                  // Check if this is the intro line (before Slide 1)
+                  if (index === 0 && !slide.startsWith('Slide')) {
+                    return (
+                      <p key={index} className="font-medium text-white/90">
+                        {slide}
+                      </p>
+                    );
+                  }
+                  
+                  // Format slide content
+                  const slideMatch = slide.match(/^Slide (\d+):\s*(.+)$/);
+                  if (slideMatch) {
+                    const [, slideNum, content] = slideMatch;
+                    return (
+                      <div key={index} className="flex gap-2">
+                        <span className="text-blue-300 font-semibold shrink-0">Slide {slideNum}:</span>
+                        <span>{content}</span>
+                      </div>
+                    );
+                  }
+                  
+                  // Format slides range (e.g., "Slides 6-7: content")
+                  const rangeMatch = slide.match(/^Slides (\d+-\d+):\s*(.+)$/);
+                  if (rangeMatch) {
+                    const [, range, content] = rangeMatch;
+                    return (
+                      <div key={index} className="flex gap-2">
+                        <span className="text-blue-300 font-semibold shrink-0">Slides {range}:</span>
+                        <span>{content}</span>
+                      </div>
+                    );
+                  }
+                  
+                  return <p key={index}>{slide}</p>;
+                })}
+                
+                {/* Add formatting tip for carousel */}
+                <p className="text-xs text-white/50 mt-2 italic">
+                  💡 Format: 1080×1080px per slide
+                </p>
+              </div>
+            );
+          }
+          
+          // Check if this has subtasks or bullet points with "→"
+          if (desc.includes('→') && !desc.includes('Slide')) {
+            const parts = desc.split(/→\s*/).map(p => p.trim()).filter(Boolean);
+            
+            return (
+              <div className="ml-7 mt-1 text-white/80 text-sm space-y-2">
+                {parts.map((part, index) => (
+                  <div key={index} className="flex gap-2">
+                    <span className="text-blue-300 shrink-0">•</span>
+                    <span>{part}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          }
+          
+          // Default: show as regular paragraph
+          return (
+            <p className="ml-7 mt-1 text-white/80 text-sm">
+              {desc}
+            </p>
+          );
+        })()}
         
         {/* Deliverable Specifications - New specific quest metadata */}
         {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType) && (

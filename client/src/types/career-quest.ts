@@ -98,6 +98,7 @@ export interface UserQuest {
   industry?: string;      // User's industry
   domain?: string;        // User's domain/specialty
   targetAction?: string;  // Action required to complete quest
+  suggestedHashtags?: string[];  // AI-generated hashtag suggestions for social quests
 }
 
 export interface UserXp {
