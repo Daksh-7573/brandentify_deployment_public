@@ -12992,17 +12992,24 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         SELECT 
-          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.id, uq.user_id as "userId", uq.generated_quest_id as "generatedQuestId",
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
-          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+          gsq.personalized_title as "title", 
+          gsq.personalized_description as "description",
+          gsq.personalized_musk_tip as "muskTip",
+          gsq.template_id as "templateId",
+          gsq.platform,
+          'social_quest' as "type",
+          1 as "targetCount",
+          'complete_social_quest' as "targetAction",
+          50 as "xpReward",
+          NULL as "badgeReward"
         FROM user_quests uq
-        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-        WHERE uq.user_id = $1 AND qd.type IN ('social_quest', 'social_post')
+        LEFT JOIN generated_social_quests gsq ON uq.generated_quest_id = gsq.id
+        WHERE uq.user_id = $1 AND uq.generated_quest_id IS NOT NULL
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
@@ -13010,7 +13017,7 @@ export class DatabaseStorage implements IStorage {
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.questDefinitionId,
+          id: row.generatedQuestId,
           title: row.title,
           description: row.description,
           type: row.type,
@@ -13018,7 +13025,8 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          muskTip: row.muskTip,
+          platform: row.platform
         }
       }));
     } catch (error) {
@@ -13031,17 +13039,24 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         SELECT 
-          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.id, uq.user_id as "userId", uq.generated_career_quest_id as "generatedCareerQuestId",
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
-          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+          gcq.personalized_title as "title",
+          gcq.personalized_description as "description",
+          gcq.personalized_musk_tip as "muskTip",
+          gcq.career_template_id as "careerTemplateId",
+          gcq.difficulty,
+          gcq.xp_reward as "xpReward",
+          'career_quest' as "type",
+          1 as "targetCount",
+          'complete_career_quest' as "targetAction",
+          NULL as "badgeReward"
         FROM user_quests uq
-        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-        WHERE uq.user_id = $1 AND qd.type NOT IN ('social_quest', 'social_post')
+        LEFT JOIN generated_career_quests gcq ON uq.generated_career_quest_id = gcq.id
+        WHERE uq.user_id = $1 AND uq.generated_career_quest_id IS NOT NULL
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
@@ -13049,7 +13064,7 @@ export class DatabaseStorage implements IStorage {
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.questDefinitionId,
+          id: row.generatedCareerQuestId,
           title: row.title,
           description: row.description,
           type: row.type,
@@ -13057,7 +13072,8 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          muskTip: row.muskTip,
+          difficulty: row.difficulty
         }
       }));
     } catch (error) {
