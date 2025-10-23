@@ -566,6 +566,172 @@ export class PersonalizedQuestAssignment {
   }
 
   /**
+   * Intelligent daily quest assignment based on time and XP
+   * Assigns 1-4 quests per day respecting 60-minute cap and XP optimization
+   */
+  async assignDailyQuestsIntelligent(
+    userId: number,
+    options: { maxDailyMinutes: number; preferHighXP: boolean } = { 
+      maxDailyMinutes: 60, 
+      preferHighXP: true 
+    }
+  ): Promise<{
+    success: boolean;
+    assignedQuests: any[];
+    totalEstimatedMinutes: number;
+    totalXP: number;
+    message: string;
+  }> {
+    try {
+      console.log(`[IntelligentQuests] Starting daily assignment for user ${userId} (${options.maxDailyMinutes} min cap)`);
+      
+      // Get user profile for AI quest generation
+      const userProfile = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      
+      if (!userProfile || userProfile.length === 0) {
+        return {
+          success: false,
+          assignedQuests: [],
+          totalEstimatedMinutes: 0,
+          totalXP: 0,
+          message: 'User not found'
+        };
+      }
+
+      // Generate candidate quests with AI (mix of career and social)
+      const { UnifiedAIQuestGenerator } = await import('./unified-ai-quest-generator');
+      const questGenerator = new UnifiedAIQuestGenerator();
+      
+      const candidateQuests = [];
+      
+      // Generate 2 career quests and 2 social quests as candidates
+      for (let i = 0; i < 2; i++) {
+        const careerQuest = await questGenerator.generateCareerQuest(userId);
+        if (careerQuest) {
+          candidateQuests.push({ ...careerQuest, category: 'career' });
+        }
+        
+        const socialQuest = await questGenerator.generateSocialQuest(userId);
+        if (socialQuest) {
+          candidateQuests.push({ ...socialQuest, category: 'social' });
+        }
+      }
+
+      console.log(`[IntelligentQuests] Generated ${candidateQuests.length} candidate quests`);
+
+      // Calculate estimated time for each quest (sum of subtask times)
+      const questsWithMetrics = candidateQuests.map(quest => {
+        const estimatedMinutes = quest.subtasks 
+          ? quest.subtasks.reduce((sum, subtask) => sum + (subtask.estimatedMinutes || 15), 0)
+          : 30; // Default 30 min if no subtasks
+        
+        const xpPerMinute = estimatedMinutes > 0 ? quest.xpReward / estimatedMinutes : 0;
+        
+        return {
+          ...quest,
+          estimatedMinutes,
+          xpPerMinute,
+          impactScore: xpPerMinute * (quest.difficulty === 'advanced' ? 1.5 : 1.0)
+        };
+      });
+
+      // Sort by impact score (XP per minute * difficulty multiplier) if preferHighXP is true
+      if (options.preferHighXP) {
+        questsWithMetrics.sort((a, b) => b.impactScore - a.impactScore);
+      }
+
+      // Intelligent selection: fill daily time budget optimally
+      const selectedQuests = [];
+      let totalMinutes = 0;
+      let totalXP = 0;
+
+      for (const quest of questsWithMetrics) {
+        // Check if adding this quest would exceed daily cap
+        if (totalMinutes + quest.estimatedMinutes <= options.maxDailyMinutes) {
+          selectedQuests.push(quest);
+          totalMinutes += quest.estimatedMinutes;
+          totalXP += quest.xpReward;
+          
+          console.log(`[IntelligentQuests] Selected: ${quest.title} (${quest.estimatedMinutes} min, ${quest.xpReward} XP)`);
+          
+          // Stop if we've assigned 4 quests (max per day)
+          if (selectedQuests.length >= 4) {
+            break;
+          }
+        }
+      }
+
+      // If we have remaining time and only selected 1 quest, try to add smaller quests
+      if (selectedQuests.length === 1 && totalMinutes < options.maxDailyMinutes - 10) {
+        const remainingTime = options.maxDailyMinutes - totalMinutes;
+        const additionalQuest = questsWithMetrics.find(
+          q => !selectedQuests.includes(q) && q.estimatedMinutes <= remainingTime
+        );
+        
+        if (additionalQuest) {
+          selectedQuests.push(additionalQuest);
+          totalMinutes += additionalQuest.estimatedMinutes;
+          totalXP += additionalQuest.xpReward;
+          console.log(`[IntelligentQuests] Added bonus quest: ${additionalQuest.title}`);
+        }
+      }
+
+      console.log(`[IntelligentQuests] Final selection: ${selectedQuests.length} quests, ${totalMinutes} min, ${totalXP} XP`);
+
+      // Assign selected quests to user
+      const assignedQuests = [];
+      const now = new Date();
+      const weekNumber = this.getWeekNumber(now);
+      const year = now.getFullYear();
+
+      for (const quest of selectedQuests) {
+        const [insertedQuest] = await db
+          .insert(userQuests)
+          .values({
+            userId,
+            questDefinitionId: quest.questDefinitionId,
+            status: 'active',
+            progress: 0,
+            assignedDate: new Date().toISOString().split('T')[0],
+            weekNumber,
+            year,
+            assignedAt: new Date()
+          })
+          .returning();
+
+        assignedQuests.push({
+          ...insertedQuest,
+          questDefinition: quest,
+          estimatedMinutes: quest.estimatedMinutes,
+          subtasks: quest.subtasks
+        });
+      }
+
+      return {
+        success: true,
+        assignedQuests,
+        totalEstimatedMinutes: totalMinutes,
+        totalXP: totalXP,
+        message: `Assigned ${selectedQuests.length} quest${selectedQuests.length > 1 ? 's' : ''} (${totalMinutes} min, ${totalXP} XP)`
+      };
+
+    } catch (error) {
+      console.error('[IntelligentQuests] Error assigning daily quests:', error);
+      return {
+        success: false,
+        assignedQuests: [],
+        totalEstimatedMinutes: 0,
+        totalXP: 0,
+        message: 'Error assigning quests'
+      };
+    }
+  }
+
+  /**
    * Helper function to get week number
    */
   private getWeekNumber(date: Date): number {
