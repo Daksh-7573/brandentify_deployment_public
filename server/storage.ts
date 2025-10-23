@@ -13420,6 +13420,139 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
+  // Hashtag operations
+  async getHashtagById(id: number): Promise<Hashtag | undefined> {
+    try {
+      const result = await pool.query('SELECT * FROM hashtags WHERE id = $1', [id]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getHashtagById] Error:', error);
+      return undefined;
+    }
+  }
+
+  async getHashtagByTag(tag: string): Promise<Hashtag | undefined> {
+    try {
+      const normalizedTag = tag.startsWith('#') ? tag.substring(1).toLowerCase() : tag.toLowerCase();
+      const result = await pool.query('SELECT * FROM hashtags WHERE LOWER(tag) = $1', [normalizedTag]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getHashtagByTag] Error:', error);
+      return undefined;
+    }
+  }
+
+  async createHashtag(insertHashtag: InsertHashtag): Promise<Hashtag> {
+    try {
+      const result = await pool.query(
+        'INSERT INTO hashtags (tag, count, created_at, updated_at) VALUES ($1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *',
+        [insertHashtag.tag]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createHashtag] Error:', error);
+      throw error;
+    }
+  }
+
+  async incrementHashtagCount(id: number): Promise<Hashtag | undefined> {
+    try {
+      const result = await pool.query(
+        'UPDATE hashtags SET count = count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *',
+        [id]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.incrementHashtagCount] Error:', error);
+      return undefined;
+    }
+  }
+
+  async createPulseHashtag(insertPulseHashtag: InsertPulseHashtag): Promise<PulseHashtag> {
+    try {
+      const result = await pool.query(
+        'INSERT INTO pulse_hashtags (pulse_id, hashtag_id, created_at) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *',
+        [insertPulseHashtag.pulseId, insertPulseHashtag.hashtagId]
+      );
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createPulseHashtag] Error:', error);
+      throw error;
+    }
+  }
+
+  async getPulseHashtagsByPulseId(pulseId: number): Promise<PulseHashtag[]> {
+    try {
+      const result = await pool.query('SELECT * FROM pulse_hashtags WHERE pulse_id = $1', [pulseId]);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulseHashtagsByPulseId] Error:', error);
+      return [];
+    }
+  }
+
+  async getHashtagsByPulseId(pulseId: number): Promise<Hashtag[]> {
+    try {
+      const result = await pool.query(
+        'SELECT h.* FROM hashtags h JOIN pulse_hashtags ph ON h.id = ph.hashtag_id WHERE ph.pulse_id = $1',
+        [pulseId]
+      );
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getHashtagsByPulseId] Error:', error);
+      return [];
+    }
+  }
+
+  async extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]> {
+    try {
+      if (!text) return [];
+      
+      const hashtagRegex = /#(\w+)/g;
+      const matches = text.match(hashtagRegex);
+      
+      if (!matches) return [];
+      
+      const savedHashtags: Hashtag[] = [];
+      
+      for (const match of matches) {
+        try {
+          const tagText = match.substring(1).toLowerCase();
+          
+          if (!tagText) continue;
+          
+          let hashtag = await this.getHashtagByTag(tagText);
+          
+          if (hashtag) {
+            hashtag = await this.incrementHashtagCount(hashtag.id);
+          } else {
+            hashtag = await this.createHashtag({ tag: tagText });
+          }
+          
+          if (hashtag) {
+            try {
+              await this.createPulseHashtag({
+                pulseId,
+                hashtagId: hashtag.id
+              });
+              
+              savedHashtags.push(hashtag);
+            } catch (error) {
+              console.error(`[db.extractAndSaveHashtags] Error creating pulse-hashtag association for pulse ${pulseId} and hashtag ${hashtag.id}:`, error);
+            }
+          }
+        } catch (error) {
+          console.error(`[db.extractAndSaveHashtags] Error processing hashtag ${match}:`, error);
+        }
+      }
+      
+      return savedHashtags;
+    } catch (error) {
+      console.error('[db.extractAndSaveHashtags] Error:', error);
+      return [];
+    }
+  }
 }
 
 // Create a properly typed storage instance
