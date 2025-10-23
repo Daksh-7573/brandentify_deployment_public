@@ -37,6 +37,14 @@ Preferred communication style: Simple, everyday language.
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.
 - **Content Management**: Pulses (professional posts), Projects Showcase, Nowboard (opportunity discovery), Career Goals (milestone tracking).
+- **Quest Generation System (V2 - LIVE)**: Revolutionary platform-aware AI quest generator that creates **achievable in-platform activities** instead of impossible external deliverables:
+  - **Platform Activity Mapper**: Complete mapping of 69 quest types to real Brandentifier features (profile text fields, pulse posts, portfolio projects, networking interactions)
+  - **Profile Completeness Checker**: Prevents assigning quests for already-filled profile fields
+  - **Smart Deliverable Generator**: Produces correct deliverables (150-char UVP text, not 15-page PDFs)
+  - **V2 Generator Architecture**: `comprehensive-quest-generator-v2.ts` replaces legacy generator with platform-specific logic
+  - **Automated & Manual Assignment**: Both daily scheduler and manual API endpoint use V2 generator
+  - **Quest Type Mapping**: profile_update=text fields, pulse_creation=posts, portfolio=projects, networking=engagement
+  - Database: `generated_career_quests` table stores personalized quest specs with deliverable formats, time estimates, platform constraints
 - **Career Intelligence Suite (Phase 1 - LIVE)**: AI-powered career tools providing brutal, actionable advice:
   - **Resume Scorer**: Analyzes resumes with 0-100 score breakdown (ATS compatibility, impact metrics, keywords, structure, clarity). Generates ranked fixes by impact with one-click application. Real-time score updates.
   - **Job Description Matcher**: Parses job descriptions, calculates match score (0-100%), identifies matched/missing skills, generates gap analysis (critical/important/optional) with time estimates and fix strategies, provides application recommendations and salary estimates.
