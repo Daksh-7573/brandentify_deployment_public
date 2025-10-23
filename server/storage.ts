@@ -7301,21 +7301,18 @@ export class MemStorage implements IStorage {
       `, [userId, currentDate]);
       
       console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
-      
-      // Debug: Log the first row to see what fields we get
-      if (result.rows.length > 0) {
-        console.log('[db.getCurrentDayUserQuests] First row keys:', Object.keys(result.rows[0]));
-        console.log('[db.getCurrentDayUserQuests] Personalized quest fields:', {
-          title: result.rows[0].title,
-          muskTip: result.rows[0].muskTip,
-          estimatedTimeMinutes: result.rows[0].estimatedTimeMinutes,
-          difficultyLevel: result.rows[0].difficultyLevel
-        });
-      }
+      console.log('[db.getCurrentDayUserQuests] Raw result.rows:', JSON.stringify(result.rows, null, 2));
       
       // Add definition object for frontend compatibility (similar to social quests)
+      // IMPORTANT: Personalized fields (title, muskTip, etc.) are included at both top level AND in definition
       return result.rows.map(row => ({
         ...row,
+        // Top-level personalized fields for frontend display
+        title: row.title,
+        muskTip: row.muskTip,
+        estimatedTimeMinutes: row.estimatedTimeMinutes,
+        difficultyLevel: row.difficultyLevel,
+        // Definition object with all quest data
         definition: {
           id: row.questDefinitionId,
           title: row.title,
