@@ -365,7 +365,7 @@ class DailyQuestScheduler {
               .values({
                 userId,
                 questDefinitionId: aiCareerQuest.questDefinitionId,
-                generatedQuestId: generatedQuest.id,
+                generatedCareerQuestId: generatedQuest.id,
                 status: 'active',
                 progress: 0,
                 assignedAt: new Date(),
