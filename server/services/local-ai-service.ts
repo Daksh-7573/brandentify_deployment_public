@@ -94,6 +94,33 @@ export class LocalAIService {
   }
 
   /**
+   * Generate personalized quest using AI (career or social)
+   */
+  async generateQuest(userContext: {
+    name: string;
+    title: string;
+    industry: string;
+    domain: string;
+    location: string;
+    primaryAudience: string;
+    secondaryAudience?: string;
+    brandGoals: string[];
+    skills: string[];
+    questType: 'career' | 'social';
+    platform?: string;
+  }): Promise<{
+    title: string;
+    description: string;
+    muskTip: string;
+  }> {
+    const prompt = this.buildQuestPrompt(userContext);
+    const response = await this.generateCompletion(prompt, `${userContext.questType}-quest-generation`);
+    
+    // Parse the AI response to extract structured quest data
+    return this.parseQuestResponse(response);
+  }
+
+  /**
    * Generate general AI completion
    */
   private async generateCompletion(prompt: string, taskType: string): Promise<string> {
@@ -350,6 +377,107 @@ Example format:
 #CareerDevelopment #TechInnovation #ProfessionalGrowth
 
 Hashtags:`;
+  }
+
+  /**
+   * Build quest generation prompt
+   */
+  private buildQuestPrompt(context: {
+    name: string;
+    title: string;
+    industry: string;
+    domain: string;
+    location: string;
+    primaryAudience: string;
+    secondaryAudience?: string;
+    brandGoals: string[];
+    skills: string[];
+    questType: 'career' | 'social';
+    platform?: string;
+  }): string {
+    const audienceText = context.secondaryAudience 
+      ? `${context.primaryAudience} and ${context.secondaryAudience} professionals`
+      : `${context.primaryAudience} professionals`;
+
+    if (context.questType === 'career') {
+      return `You are Musk, a brutally honest career coach. Generate a personalized career development quest for this professional:
+
+NAME: ${context.name}
+TITLE: ${context.title}
+INDUSTRY: ${context.industry}
+DOMAIN/EXPERTISE: ${context.domain}
+LOCATION: ${context.location}
+TARGET AUDIENCE: ${audienceText}
+BRAND GOALS: ${context.brandGoals.join(', ')}
+SKILLS: ${context.skills.join(', ')}
+
+Generate a unique, actionable quest that helps them advance their career. Focus on:
+- Building expertise in ${context.domain}
+- Creating value for ${audienceText}
+- Aligning with their goals: ${context.brandGoals.join(', ')}
+
+The quest should be specific to THEIR profile, not generic. Make it challenging but achievable.
+
+RESPOND IN THIS EXACT FORMAT:
+
+TITLE: [A compelling, specific quest title - max 60 characters]
+
+DESCRIPTION: [Clear, actionable description that explains what they need to do and why it matters for their career. Include specific deliverables. 2-3 sentences max.]
+
+MUSK_TIP: [A brutally honest, motivating one-liner in Musk's direct style - max 100 characters]
+
+DO NOT include any other text. Follow the format exactly.`;
+    } else {
+      return `You are Musk, a brutally honest social media strategist. Generate a personalized social media quest for this professional:
+
+NAME: ${context.name}
+TITLE: ${context.title}
+INDUSTRY: ${context.industry}
+DOMAIN/EXPERTISE: ${context.domain}
+LOCATION: ${context.location}
+TARGET AUDIENCE: ${audienceText}
+BRAND GOALS: ${context.brandGoals.join(', ')}
+PLATFORM: ${context.platform || 'LinkedIn'}
+SKILLS: ${context.skills.join(', ')}
+
+Generate a unique, specific social media content quest. Focus on:
+- Showcasing their ${context.domain} expertise
+- Engaging ${audienceText} in ${context.location}
+- Creating authentic, valuable content (NO generic "thought leader" language)
+- Aligning with their goals: ${context.brandGoals.join(', ')}
+
+The quest should be SPECIFIC to their background and expertise, not a generic template.
+
+RESPOND IN THIS EXACT FORMAT:
+
+TITLE: [A compelling, specific quest title - max 60 characters]
+
+DESCRIPTION: [Clear, actionable description explaining what content to create, why it matters, and how to make it valuable for their audience. Be specific about deliverables. 2-3 sentences max.]
+
+MUSK_TIP: [A brutally honest, motivating one-liner about content creation - max 100 characters]
+
+DO NOT include any other text. Follow the format exactly.`;
+    }
+  }
+
+  /**
+   * Parse AI quest response into structured data
+   */
+  private parseQuestResponse(response: string): {
+    title: string;
+    description: string;
+    muskTip: string;
+  } {
+    // Extract title, description, and musk tip from AI response
+    const titleMatch = response.match(/TITLE:\s*(.+?)(?=\n|DESCRIPTION:|$)/i);
+    const descriptionMatch = response.match(/DESCRIPTION:\s*([\s\S]+?)(?=\n\nMUSK_TIP:|MUSK_TIP:|$)/i);
+    const muskTipMatch = response.match(/MUSK_TIP:\s*([\s\S]+?)(?=\n\n|$)/i);
+
+    return {
+      title: titleMatch?.[1]?.trim() || 'Quest Generated',
+      description: descriptionMatch?.[1]?.trim().replace(/\n/g, ' ') || 'Complete this quest to advance your career.',
+      muskTip: muskTipMatch?.[1]?.trim() || 'Action beats perfection. Start now.'
+    };
   }
 
   /**
