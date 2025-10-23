@@ -169,23 +169,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Hashtag suggestions INSIDE Musk's tip box */}
+              {/* Display static hashtag suggestions for active quests related to content creation */}
               {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <div className="mt-3">
-                  <div className="text-sm font-medium text-muted-foreground mb-2">
-                    <span className="mr-1">💡</span> Musk's hashtag suggestions:
-                  </div>
-                  <StaticHashtagSuggestions 
-                    hashtags={['CareerGrowth', 'ProfessionalDevelopment', 'Networking', 'BrandBuilding', 'SkillDevelopment', 'CareerGoals', 'ProfessionalNetworking']}
-                    onHashtagClick={(hashtag) => {
-                      navigator.clipboard.writeText(hashtag);
-                      toast({
-                        title: "Hashtag copied",
-                        description: `#${hashtag} copied to clipboard`
-                      });
-                    }}
-                  />
-                </div>
+                <StaticHashtagSuggestions hashtags={['CareerGrowth', 'ProfessionalDevelopment', 'Networking', 'BrandBuilding', 'SkillDevelopment']} />
               )}
             </div>
           )}

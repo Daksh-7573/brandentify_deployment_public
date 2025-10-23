@@ -478,70 +478,53 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-white/80 leading-relaxed">{muskTipContent}</p>
               
-              {/* Unified Hashtag Suggestions - Shows for ALL quests with hashtags */}
-              {(() => {
-                // Check if we should show hashtags
-                const isPulseQuest = questDefinition.type === 'pulse_creation' || 
-                                    questDefinition.targetAction === 'create_pulse' || 
-                                    (questDefinition.description && questDefinition.description.toLowerCase().includes('pulse'));
-                
-                const hasSocialHashtags = isSocialQuest && displayHashtags.length > 0;
-                
-                // Show hashtags if either condition is true
-                if (isPulseQuest || hasSocialHashtags) {
-                  return (
-                    <div className="mt-3">
-                      <div className="text-sm font-medium text-white/70 mb-2">
-                        <span className="mr-1">💡</span> Musk's hashtag suggestions:
-                      </div>
-                      
-                      {/* For social quests with AI-generated hashtags, show those */}
-                      {hasSocialHashtags ? (
-                        <div>
-                          <div className="grid grid-cols-2 gap-2">
-                            {displayHashtags.map((hashtag: string, index: number) => (
-                              <button
-                                key={index}
-                                onClick={() => {
-                                  navigator.clipboard.writeText(`#${hashtag}`);
-                                  toast({
-                                    title: "Hashtag copied",
-                                    description: `#${hashtag} copied to clipboard`
-                                  });
-                                }}
-                                className="group flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-br from-blue-500/15 to-purple-500/10 border border-blue-500/20 hover:from-blue-500/25 hover:to-purple-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10"
-                              >
-                                <span className="text-blue-400/60 group-hover:text-blue-300 transition-colors text-xs">#</span>
-                                <span className="text-xs font-medium text-blue-200/90 group-hover:text-blue-100 transition-colors truncate">
-                                  {hashtag}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                          <p className="text-[10px] text-white/40 mt-2 text-center">
-                            Click any hashtag to copy
-                          </p>
-                        </div>
-                      ) : (
-                        /* For pulse quests, use static suggestions based on industry */
-                        <StaticHashtagSuggestions 
-                          questType="pulse_creation"
-                          count={7}
-                          onHashtagClick={(hashtag) => {
-                            navigator.clipboard.writeText(hashtag);
-                            toast({
-                              title: "Hashtag copied",
-                              description: `#${hashtag} copied to clipboard`
-                            });
-                          }}
-                        />
-                      )}
-                    </div>
-                  );
-                }
-                
-                return null;
-              })()}
+              {/* Add StaticHashtagSuggestions component for pulse creation quests */}
+              {(questDefinition.type === 'pulse_creation' || 
+                questDefinition.targetAction === 'create_pulse' || 
+                (questDefinition.description && questDefinition.description.toLowerCase().includes('pulse'))) && (
+                <div className="mt-3">
+                  <div className="text-sm font-medium text-white/70 mb-2">
+                    <span className="mr-1">💡</span> Musk's hashtag suggestions:
+                  </div>
+                  <StaticHashtagSuggestions 
+                    questType="pulse_creation"
+                    count={7}
+                    onHashtagClick={(hashtag) => {
+                      navigator.clipboard.writeText(hashtag);
+                      toast({
+                        title: "Hashtag copied",
+                        description: `#${hashtag} copied to clipboard`
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Add StaticHashtagSuggestions component for Social Quests */}
+              {isSocialQuest && displayHashtags.length > 0 && (
+                <div className="mt-3">
+                  <div className="text-sm font-medium text-white/70 mb-2">
+                    <span className="mr-1">💡</span> Musk's hashtag suggestions:
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {displayHashtags.map((hashtag: string, index: number) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          navigator.clipboard.writeText(`#${hashtag}`);
+                          toast({
+                            title: "Hashtag copied",
+                            description: `#${hashtag} copied to clipboard`
+                          });
+                        }}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/30 transition-all duration-200 cursor-pointer"
+                      >
+                        #{hashtag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
             </div>
           )}

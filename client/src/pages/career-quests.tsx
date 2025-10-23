@@ -4,7 +4,7 @@ import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/career-quests/quest-panel';
 import { BadgeDisplay } from '@/components/career-quests/badge-display';
 import { XpProgressBar } from '@/components/career-quests/xp-progress-bar';
-// Removed HashtagSuggestions - now integrated inside quest cards
+import { HashtagSuggestions } from '@/components/career-quests/hashtag-suggestions';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
@@ -82,6 +82,24 @@ export default function BrandQuestsPage() {
           <div className="space-y-6">
             {/* Badges */}
             <BadgeDisplay userId={userId} />
+            
+            {/* Personalized Hashtag Suggestions */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Recommended Hashtags</CardTitle>
+                <CardDescription>Personalized for better visibility</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <HashtagSuggestions 
+                  questType="pulse_creation"
+                  count={5}
+                  onHashtagClick={(hashtag) => {
+                    navigator.clipboard.writeText(hashtag);
+                    // Could show a toast notification here
+                  }}
+                />
+              </CardContent>
+            </Card>
             
             {/* XP Transactions */}
             <Card>
