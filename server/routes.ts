@@ -9218,6 +9218,39 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // NEW: Intelligent Quest Assignment Test Endpoint
+  app.post('/api/test-intelligent-quests/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      console.log(`[Intelligent Quests] Testing new assignment system for user ${userId}`);
+      
+      const { personalizedQuestAssignment } = await import('./services/personalized-quest-assignment');
+      
+      const result = await personalizedQuestAssignment.assignDailyQuestsIntelligent(userId, {
+        maxDailyMinutes: 60,
+        preferHighXP: true
+      });
+      
+      console.log(`[Intelligent Quests] Result:`, result);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('[Intelligent Quests] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  });
+
   // Instant Quest Assignment for Single User (Post-Onboarding)
   app.post('/api/assign-initial-quests/:userId', async (req: Request, res: Response) => {
     try {

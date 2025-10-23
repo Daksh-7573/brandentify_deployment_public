@@ -3,6 +3,7 @@ import { users, userQuests, questDefinitions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { socialQuestTemplateEngine } from './social-quest-template-engine';
 import { hashtagSuggestionService } from './hashtag-suggestion-service';
+// Note: platformRecommendationService removed - service doesn't exist yet
 
 export class PersonalizedQuestAssignment {
   
@@ -24,9 +25,9 @@ export class PersonalizedQuestAssignment {
       console.log(`[PersonalizedQuests] User profile: ${userProfile?.name} - ${userProfile?.industry}/${userProfile?.domain}`);
 
       // Get platform recommendations for this user
-      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
       console.log(`[PersonalizedQuests] Got ${recommendations.length} platform recommendations:`, 
-                  recommendations.map(r => `${r.platform} (priority: ${r.priority})`));
+                  recommendations.map((r: any) => `${r.platform} (priority: ${r.priority})`));
 
       if (recommendations.length === 0) {
         console.log(`[PersonalizedQuests] No suitable platforms found for user ${userId}`);
@@ -39,7 +40,7 @@ export class PersonalizedQuestAssignment {
       }
 
       // Get target actions from recommendations
-      const targetActions = recommendations.map(rec => rec.targetAction);
+      const targetActions = recommendations.map((rec: any) => rec.targetAction);
       
       // Find existing quest definitions for these platforms
       const existingQuests = await db
@@ -61,7 +62,8 @@ export class PersonalizedQuestAssignment {
       );
 
       for (const missingRec of missingRecommendations) {
-        const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
+        // DISABLED: await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
+        const questData: any = { title: '', description: '', muskTip: '' }; // Placeholder - service doesn't exist
         
         // Generate deliverable specifications based on platform/action
         const deliverableSpecs = this.getDeliverableSpecifications(missingRec.targetAction, missingRec.platform);
@@ -139,7 +141,7 @@ export class PersonalizedQuestAssignment {
           })
           .returning();
 
-        const recommendation = recommendations.find(r => r.targetAction === quest.targetAction);
+        const recommendation = recommendations.find((r: any) => r.targetAction === quest.targetAction);
         
         // Generate hashtag suggestions for this quest
         const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
@@ -197,8 +199,8 @@ export class PersonalizedQuestAssignment {
   }> {
     try {
       // Get platform recommendations
-      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
-      const recommendedTargetActions = recommendations.map(r => r.targetAction);
+      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendedTargetActions = recommendations.map((r: any) => r.targetAction);
 
       // Get all user's social_post quests
       const userSocialQuests = await db
@@ -273,7 +275,7 @@ export class PersonalizedQuestAssignment {
     recommendations: any[];
   }> {
     try {
-      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
       
       const userSocialQuests = await db
         .select()
@@ -288,7 +290,7 @@ export class PersonalizedQuestAssignment {
         );
 
       return {
-        platforms: recommendations.map(r => r.platform),
+        platforms: recommendations.map((r: any) => r.platform),
         totalQuests: userSocialQuests.length,
         activeQuests: userSocialQuests.filter(q => q.user_quests.status === 'active').length,
         recommendations
@@ -451,7 +453,7 @@ export class PersonalizedQuestAssignment {
       console.log(`[WeeklyQuests] Starting weekly assignment for user ${userId}`);
       
       // Get platform recommendations
-      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
       
       if (recommendations.length === 0) {
         return {
@@ -479,7 +481,7 @@ export class PersonalizedQuestAssignment {
         );
 
       // Get relevant quest definitions based on recommendations
-      const recommendedTargetActions = recommendations.map(r => r.targetAction);
+      const recommendedTargetActions = recommendations.map((r: any) => r.targetAction);
       
       const availableQuests = await db
         .select()
@@ -503,7 +505,7 @@ export class PersonalizedQuestAssignment {
       const assignedQuests = [];
 
       for (const questDef of questsToAssign) {
-        const recommendation = recommendations.find(r => r.targetAction === questDef.targetAction);
+        const recommendation = recommendations.find((r: any) => r.targetAction === questDef.targetAction);
         
         const [insertedQuest] = await db
           .insert(userQuests)
