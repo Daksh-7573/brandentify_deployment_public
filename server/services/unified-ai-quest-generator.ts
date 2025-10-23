@@ -5,9 +5,22 @@
  */
 
 import { db } from '../db';
-import { users, skills, workExperiences, questDefinitions } from '@shared/schema';
+import { users, skills, workExperiences, questDefinitions, brandGoals } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { localAIService } from './local-ai-service';
+
+// Brand goal ID to text mapping
+const BRAND_GOAL_MAP: Record<string, string> = {
+  'professional_1': 'Position myself as an authority in my niche',
+  'professional_2': 'Transition into a new career',
+  'professional_3': 'Showcase my portfolio and attract clients',
+  'entrepreneurial_1': 'Build credibility for my startup or business',
+  'entrepreneurial_2': 'Network with investors and partners',
+  'entrepreneurial_3': 'Attract top talent to my team',
+  'personal_1': 'Share my journey and inspire others',
+  'personal_2': 'Advocate for causes I care about',
+  'personal_3': 'Build a personal community around shared interests'
+};
 
 export interface QuestSubtask {
   title: string;
@@ -102,7 +115,7 @@ export class UnifiedAIQuestGenerator {
       }
 
       // Determine best platform for user's audience
-      const platform = this.selectPlatformForAudience(userData.user);
+      const platform = this.selectPlatformForAudience(userData);
 
       // Build context for AI
       const context = this.buildUserContext(userData, 'social', platform);
@@ -130,7 +143,7 @@ export class UnifiedAIQuestGenerator {
   }
 
   /**
-   * Get user data including profile, skills, and experience
+   * Get user data including profile, skills, experience, and brand goals
    */
   private async getUserData(userId: number) {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
@@ -138,26 +151,37 @@ export class UnifiedAIQuestGenerator {
 
     const userSkills = await db.select().from(skills).where(eq(skills.userId, userId));
     const experiences = await db.select().from(workExperiences).where(eq(workExperiences.userId, userId));
+    
+    // ✅ FIX: Fetch brand goals from brand_goals table
+    const [userBrandGoals] = await db.select().from(brandGoals).where(eq(brandGoals.userId, userId));
+    
+    // Map selected goal IDs to full text descriptions
+    let mappedGoals: string[] = [];
+    if (userBrandGoals?.selectedGoals) {
+      mappedGoals = userBrandGoals.selectedGoals
+        .map((goalId: string) => BRAND_GOAL_MAP[goalId])
+        .filter(Boolean);
+    }
+    
+    // Add custom goals if any
+    if (userBrandGoals?.customGoals && userBrandGoals.customGoals.length > 0) {
+      mappedGoals.push(...userBrandGoals.customGoals);
+    }
 
-    return { user, skills: userSkills, experiences };
+    return { user, skills: userSkills, experiences, brandGoals: mappedGoals };
   }
 
   /**
    * Build context object for AI quest generation
    */
   private buildUserContext(userData: any, questType: 'career' | 'social', platform?: string) {
-    const { user, skills, experiences } = userData;
+    const { user, skills, experiences, brandGoals: fetchedBrandGoals } = userData;
 
     const primaryAudience = user.primaryAudience?.[0] || 'Professionals';
     const secondaryAudience = user.secondaryAudience?.[0] || '';
     
-    // Extract brand goals - handle both array and object formats
-    let brandGoals: string[] = [];
-    if (Array.isArray(user.brandGoals)) {
-      brandGoals = user.brandGoals;
-    } else if (user.brandGoals && typeof user.brandGoals === 'object') {
-      brandGoals = Object.values(user.brandGoals);
-    }
+    // ✅ FIX: Use brand goals fetched from database
+    let brandGoals: string[] = fetchedBrandGoals || [];
     
     // Default brand goals if none set
     if (brandGoals.length === 0) {
@@ -190,12 +214,13 @@ export class UnifiedAIQuestGenerator {
    * Selects best platform based on maximum audience reach potential
    * Considers: Primary/Secondary Audience + Industry + Domain + Goals
    */
-  private selectPlatformForAudience(user: any): string {
+  private selectPlatformForAudience(userData: any): string {
+    const { user, brandGoals: fetchedBrandGoals } = userData;
     const primaryAudience = user.primaryAudience || [];
     const secondaryAudience = user.secondaryAudience || [];
     const industry = (user.industry || '').toLowerCase();
     const domain = (user.domain || user.title || '').toLowerCase();
-    const goals = user.brandGoals || [];
+    const goals = fetchedBrandGoals || [];
 
     // Platform scoring system (0-100 points)
     const platformScores: Record<string, number> = {
