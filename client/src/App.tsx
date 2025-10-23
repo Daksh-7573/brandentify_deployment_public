@@ -73,6 +73,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
+const CareerTools = lazy(() => import("@/pages/career-tools"));
 const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const DesignerPortfolio = lazy(() => import("@/pages/designer-portfolio"));
@@ -289,6 +290,9 @@ function Router() {
         <>
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
+          )} />
+          <Route path="/career-tools" component={() => (
+            <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
           <Route path="/designer-portfolio" component={() => (
