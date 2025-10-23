@@ -1188,8 +1188,6 @@ export const userQuests = pgTable("user_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
-  generatedQuestId: integer("generated_quest_id").references(() => generatedSocialQuests.id), // Link to AI-generated quest (if social quest)
-  generatedCareerQuestId: integer("generated_career_quest_id").references(() => generatedCareerQuests.id), // Link to AI-generated career quest (if career quest)
   status: questStatusEnum("status").notNull().default("active"),
   progress: integer("progress").notNull().default(0), // Current progress count
   assignedAt: timestamp("assigned_at").defaultNow(),
@@ -1209,21 +1207,6 @@ export const userQuests = pgTable("user_quests", {
   profileSnapshot: text("profile_snapshot"), // JSON snapshot of user profile when quest was completed (for smart regeneration logic)
   // Removed field:
   // - dismissedReason (quest dismissal functionality removed)
-});
-
-// Quest Subtasks - detailed action items for each quest
-export const questSubtasks = pgTable("quest_subtasks", {
-  id: serial("id").primaryKey(),
-  userQuestId: integer("user_quest_id").references(() => userQuests.id).notNull(),
-  orderIndex: integer("order_index").notNull(), // Display order (1, 2, 3...)
-  title: text("title").notNull(), // Subtask title (e.g., "Research current market trends")
-  description: text("description").notNull(), // Detailed explanation of what to do
-  platformActivity: text("platform_activity"), // Specific platform action (e.g., "create_media_pulse", "create_project", "post_comment")
-  platformDetails: jsonb("platform_details"), // Details for platform activity (e.g., {"type": "media_pulse", "image_count": 5, "topic": "AI trends"})
-  estimatedMinutes: integer("estimated_minutes").default(15), // Time to complete this subtask
-  isCompleted: boolean("is_completed").default(false),
-  completedAt: timestamp("completed_at"),
-  createdAt: timestamp("created_at").defaultNow()
 });
 
 // Instant quest status enum
@@ -1385,12 +1368,6 @@ export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
   completedAt: true
 });
 
-export const insertQuestSubtaskSchema = createInsertSchema(questSubtasks).omit({
-  id: true,
-  completedAt: true,
-  createdAt: true
-});
-
 export const insertInstantQuestSchema = createInsertSchema(instantQuests).omit({
   id: true,
   createdAt: true,
@@ -1420,9 +1397,6 @@ export type InsertQuestDefinition = z.infer<typeof insertQuestDefinitionSchema>;
 
 export type UserQuest = typeof userQuests.$inferSelect;
 export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
-
-export type QuestSubtask = typeof questSubtasks.$inferSelect;
-export type InsertQuestSubtask = z.infer<typeof insertQuestSubtaskSchema>;
 
 export type InstantQuest = typeof instantQuests.$inferSelect;
 export type InsertInstantQuest = z.infer<typeof insertInstantQuestSchema>;
@@ -1839,26 +1813,6 @@ export const generatedSocialQuests = pgTable("generated_social_quests", {
   confidenceScore: integer("confidence_score") // Confidence level 0-100
 });
 
-// Generated career quests - AI-personalized career development quests
-export const generatedCareerQuests = pgTable("generated_career_quests", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
-  questType: text("quest_type").notNull(), // "profile_update", "pulse_creation", "skill_development", etc.
-  variablesUsed: jsonb("variables_used").notNull(), // User context used for generation
-  personalizedTitle: text("personalized_title").notNull(),
-  personalizedDescription: text("personalized_description").notNull(),
-  personalizedMuskTip: text("personalized_musk_tip").notNull(),
-  generatedAt: timestamp("generated_at").defaultNow(),
-  assignedAt: timestamp("assigned_at"),
-  completedAt: timestamp("completed_at"),
-  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format
-  status: questStatusEnum("status").default("active"),
-  brandImpactScore: integer("brand_impact_score").default(0),
-  xpReward: integer("xp_reward").default(50),
-  difficulty: text("difficulty") // "beginner", "intermediate", "advanced"
-});
-
 // Platform Activity Insights - stores optimal posting windows for different platforms/industries/domains
 export const platformActivityInsights = pgTable("platform_activity_insights", {
   id: serial("id").primaryKey(),
@@ -1902,13 +1856,6 @@ export const insertGeneratedSocialQuestSchema = createInsertSchema(generatedSoci
   completedAt: true
 });
 
-export const insertGeneratedCareerQuestSchema = createInsertSchema(generatedCareerQuests).omit({
-  id: true,
-  generatedAt: true,
-  assignedAt: true,
-  completedAt: true
-});
-
 // Export types for template system
 export type SocialQuestTemplateCategory = typeof socialQuestTemplateCategories.$inferSelect;
 export type InsertSocialQuestTemplateCategory = z.infer<typeof insertSocialQuestTemplateCategorySchema>;
@@ -1921,9 +1868,6 @@ export type InsertPersonalBrandVariables = z.infer<typeof insertPersonalBrandVar
 
 export type TemplateAssignmentRule = typeof templateAssignmentRules.$inferSelect;
 export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignmentRuleSchema>;
-
-export type GeneratedCareerQuest = typeof generatedCareerQuests.$inferSelect;
-export type InsertGeneratedCareerQuest = z.infer<typeof insertGeneratedCareerQuestSchema>;
 
 export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
 export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;

@@ -1,13 +1,11 @@
 import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
-import { userQuests, generatedSocialQuests, generatedCareerQuests, questDefinitions } from '@shared/schema';
+import { userQuests, generatedSocialQuests, questDefinitions } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
 import { smartQuestAllocator } from './smart-quest-allocator';
 import { intelligentHashtagGenerator } from './intelligent-hashtag-generator';
-import { socialQuestTemplateEngine } from './social-quest-template-engine';
-import { aiCareerQuestGenerator } from './ai-career-quest-generator';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -111,21 +109,22 @@ class DailyQuestScheduler {
           
           console.log(`[DailyQuestScheduler] Assigning daily quests for user ${user.id} (${user.name})`);
           
-          // 🚀 USE NEW INTELLIGENT ASSIGNMENT SYSTEM
-          const { personalizedQuestAssignment } = await import('./personalized-quest-assignment');
+          // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
+          const allocation = await smartQuestAllocator.allocateDailyQuests(user.id);
           
-          const result = await personalizedQuestAssignment.assignDailyQuestsIntelligent(user.id, {
-            maxDailyMinutes: 60,
-            preferHighXP: true
-          });
+          console.log(`[DailyQuestScheduler] 🎯 Smart Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social) - Strategy: ${allocation.allocationStrategy}`);
           
-          if (result.success) {
-            console.log(`[DailyQuestScheduler] ✅ ${result.message}`);
-            successCount++;
-          } else {
-            console.log(`[DailyQuestScheduler] ⚠️ ${result.message}`);
-            errorCount++;
+          // Assign quests based on smart allocation
+          const assignedQuests = await this.assignSelectedQuests(user.id, allocation);
+          
+          // Add posting time recommendations and intelligent hashtags
+          if (assignedQuests.length > 0) {
+            await this.enhanceQuestsWithRecommendations(user, assignedQuests);
           }
+          
+          console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} total quests for ${user.name}`);
+          
+          successCount++;
           
         } catch (userError) {
           console.error(`[DailyQuestScheduler] ❌ Error assigning quests for user ${user.id}:`, userError);
@@ -235,9 +234,6 @@ class DailyQuestScheduler {
 
   /**
    * Assign selected quests from smart allocator
-   * For social quests: Generate AI-personalized quests using SocialQuestTemplateEngine
-   * For career quests: Generate AI-personalized quests using AICareerQuestGenerator
-   * Both types use FREE local Ollama (Llama 3.2:3b) for personalization
    */
   private async assignSelectedQuests(userId: number, allocation: any): Promise<any[]> {
     const assignedQuests: any[] = [];
@@ -247,165 +243,25 @@ class DailyQuestScheduler {
 
     try {
       for (const selectedQuest of allocation.selectedQuests) {
+        const [quest] = await db
+          .insert(userQuests)
+          .values({
+            userId,
+            questDefinitionId: selectedQuest.questDefinitionId,
+            status: 'active',
+            progress: 0,
+            assignedAt: new Date(),
+            assignedDate: todayDateString,
+            weekNumber: currentWeek,
+            year: currentYear
+          })
+          .returning();
         
-        // For SOCIAL quests: Generate AI-personalized quest
-        if (selectedQuest.category === 'social') {
-          console.log(`[DailyQuestScheduler] 🤖 Generating AI quest for user ${userId}`);
-          
-          // Get quest definition to determine platform
-          const [questDef] = await db
-            .select()
-            .from(questDefinitions)
-            .where(eq(questDefinitions.id, selectedQuest.questDefinitionId))
-            .limit(1);
-          
-          const platform = questDef?.platform || 'linkedin';
-          
-          // Generate AI-personalized quest using template engine
-          const aiQuest = await socialQuestTemplateEngine.generatePersonalizedQuest(userId, platform);
-          
-          if (aiQuest) {
-            // Store AI-generated quest in generated_social_quests table
-            const [generatedQuest] = await db
-              .insert(generatedSocialQuests)
-              .values({
-                userId,
-                templateId: aiQuest.templateId,
-                questDefinitionId: selectedQuest.questDefinitionId,
-                personalizedTitle: aiQuest.title,
-                personalizedDescription: aiQuest.description,
-                personalizedMuskTip: aiQuest.muskTip,
-                variablesUsed: aiQuest.variablesUsed,
-                brandImpactScore: Math.round(selectedQuest.impactScore),
-                generatedAt: new Date(),
-                assignedDate: todayDateString,
-                status: 'active'
-              })
-              .returning();
-            
-            // Create user_quest that links to the generated quest
-            const [quest] = await db
-              .insert(userQuests)
-              .values({
-                userId,
-                questDefinitionId: selectedQuest.questDefinitionId,
-                generatedQuestId: generatedQuest.id,
-                status: 'active',
-                progress: 0,
-                assignedAt: new Date(),
-                assignedDate: todayDateString,
-                weekNumber: currentWeek,
-                year: currentYear
-              })
-              .returning();
-            
-            assignedQuests.push({
-              ...quest,
-              category: selectedQuest.category,
-              questType: selectedQuest.questType,
-              aiGenerated: true
-            });
-            
-            console.log(`[DailyQuestScheduler] ✅ AI quest generated: "${aiQuest.title}"`);
-          } else {
-            // Fallback to standard quest if AI generation fails
-            console.log(`[DailyQuestScheduler] ⚠️ AI quest generation failed, using standard quest`);
-            const [quest] = await db
-              .insert(userQuests)
-              .values({
-                userId,
-                questDefinitionId: selectedQuest.questDefinitionId,
-                status: 'active',
-                progress: 0,
-                assignedAt: new Date(),
-                assignedDate: todayDateString,
-                weekNumber: currentWeek,
-                year: currentYear
-              })
-              .returning();
-            
-            assignedQuests.push({
-              ...quest,
-              category: selectedQuest.category,
-              questType: selectedQuest.questType
-            });
-          }
-        } else {
-          // For CAREER quests: Generate AI-personalized career quest
-          console.log(`[DailyQuestScheduler] 🤖 Generating AI career quest for user ${userId}`);
-          
-          // Generate AI-personalized career quest
-          const aiCareerQuest = await aiCareerQuestGenerator.generatePersonalizedCareerQuest(userId);
-          
-          if (aiCareerQuest) {
-            // Store AI-generated career quest in generated_career_quests table
-            const [generatedQuest] = await db
-              .insert(generatedCareerQuests)
-              .values({
-                userId,
-                questDefinitionId: aiCareerQuest.questDefinitionId,
-                questType: aiCareerQuest.questType,
-                personalizedTitle: aiCareerQuest.title,
-                personalizedDescription: aiCareerQuest.description,
-                personalizedMuskTip: aiCareerQuest.muskTip,
-                variablesUsed: aiCareerQuest.variablesUsed,
-                brandImpactScore: Math.round(selectedQuest.impactScore),
-                xpReward: aiCareerQuest.xpReward,
-                difficulty: aiCareerQuest.difficulty,
-                generatedAt: new Date(),
-                assignedDate: todayDateString,
-                status: 'active'
-              })
-              .returning();
-            
-            // Create user_quest that links to the generated career quest
-            const [quest] = await db
-              .insert(userQuests)
-              .values({
-                userId,
-                questDefinitionId: aiCareerQuest.questDefinitionId,
-                generatedCareerQuestId: generatedQuest.id,
-                status: 'active',
-                progress: 0,
-                assignedAt: new Date(),
-                assignedDate: todayDateString,
-                weekNumber: currentWeek,
-                year: currentYear
-              })
-              .returning();
-            
-            assignedQuests.push({
-              ...quest,
-              category: selectedQuest.category,
-              questType: selectedQuest.questType,
-              aiGenerated: true
-            });
-            
-            console.log(`[DailyQuestScheduler] ✅ AI career quest generated: "${aiCareerQuest.title}"`);
-          } else {
-            // Fallback to standard quest if AI generation fails
-            console.log(`[DailyQuestScheduler] ⚠️ AI career quest generation failed, using standard quest`);
-            const [quest] = await db
-              .insert(userQuests)
-              .values({
-                userId,
-                questDefinitionId: selectedQuest.questDefinitionId,
-                status: 'active',
-                progress: 0,
-                assignedAt: new Date(),
-                assignedDate: todayDateString,
-                weekNumber: currentWeek,
-                year: currentYear
-              })
-              .returning();
-            
-            assignedQuests.push({
-              ...quest,
-              category: selectedQuest.category,
-              questType: selectedQuest.questType
-            });
-          }
-        }
+        assignedQuests.push({
+          ...quest,
+          category: selectedQuest.category,
+          questType: selectedQuest.questType
+        });
       }
 
       console.log(`[DailyQuestScheduler] Successfully assigned ${assignedQuests.length} quests for user ${userId}`);

@@ -7226,7 +7226,7 @@ export class MemStorage implements IStorage {
     try {
       const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       
-      console.log(`[db.getCurrentDayUserQuests] Fetching AI-generated quests for user ${userId} on date ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
       
       // Check if user_quests table exists
       const tableExists = await pool.query(`
@@ -7245,7 +7245,7 @@ export class MemStorage implements IStorage {
         SELECT 
           uq.id,
           uq.user_id as "userId",
-          uq.generated_career_quest_id as "generatedCareerQuestId",
+          uq.quest_definition_id as "questDefinitionId",
           uq.status,
           uq.progress,
           uq.assigned_at as "assignedAt",
@@ -7260,22 +7260,25 @@ export class MemStorage implements IStorage {
           uq.recommended_post_time as "recommendedPostTime",
           uq.recommendation_source as "recommendationSource",
           uq.confidence_score as "confidenceScore",
-          gcq.personalized_title as "title",
-          gcq.personalized_description as "description",
-          gcq.personalized_musk_tip as "muskTip",
-          gcq.quest_type as "questType",
-          gcq.difficulty,
-          gcq.xp_reward as "xpReward",
+          uq.suggested_hashtags as "suggestedHashtags",
+          qd.title,
+          qd.description,
           qd.type,
-          1 as "targetCount",
-          'complete_career_quest' as "targetAction",
-          NULL as "badgeReward"
+          qd.target_count as "targetCount",
+          qd.target_action as "targetAction",
+          qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward",
+          qd.musk_tip as "muskTip",
+          qd.deliverable_format as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          qd.guidance_snippet as "guidanceSnippet"
         FROM user_quests uq
-        LEFT JOIN generated_career_quests gcq ON uq.generated_career_quest_id = gcq.id
-        LEFT JOIN quest_definitions qd ON gcq.quest_definition_id = qd.id
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
           AND uq.assigned_date = $2
-          AND uq.generated_career_quest_id IS NOT NULL
+          AND qd.type NOT IN ('social_quest', 'social_post')
           AND uq.status = 'active'
         ORDER BY 
           CASE uq.status 
@@ -7286,22 +7289,36 @@ export class MemStorage implements IStorage {
           uq.assigned_at DESC
       `, [userId, currentDate]);
       
-      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} AI-generated quests for user ${userId} on ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
       
-      // Add definition object for frontend compatibility
+      // Debug: Log the first row to see what fields we get
+      if (result.rows.length > 0) {
+        console.log('[db.getCurrentDayUserQuests] First row keys:', Object.keys(result.rows[0]));
+        console.log('[db.getCurrentDayUserQuests] Recommendation fields:', {
+          recommendedPostTime: result.rows[0].recommendedPostTime,
+          recommendationSource: result.rows[0].recommendationSource,
+          confidenceScore: result.rows[0].confidenceScore
+        });
+      }
+      
+      // Add definition object for frontend compatibility (similar to social quests)
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.generatedCareerQuestId,
+          id: row.questDefinitionId,
           title: row.title,
           description: row.description,
-          type: row.type || 'career_quest',
+          type: row.type,
           targetCount: row.targetCount,
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
           muskTip: row.muskTip,
-          difficulty: row.difficulty
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet
         }
       }));
     } catch (error) {
@@ -12716,13 +12733,13 @@ export class DatabaseStorage implements IStorage {
     try {
       const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       
-      console.log(`[db.getCurrentDayUserQuests] Fetching AI-generated quests for user ${userId} on date ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Fetching quests for user ${userId} on date ${currentDate}`);
       
       const result = await pool.query(`
         SELECT 
           uq.id,
           uq.user_id as "userId",
-          uq.generated_career_quest_id as "generatedCareerQuestId",
+          uq.quest_definition_id as "questDefinitionId", 
           uq.status,
           uq.progress,
           uq.assigned_at as "assignedAt",
@@ -12737,22 +12754,24 @@ export class DatabaseStorage implements IStorage {
           uq.recommended_post_time as "recommendedPostTime",
           uq.recommendation_source as "recommendationSource",
           uq.confidence_score as "confidenceScore",
-          gcq.personalized_title as "title",
-          gcq.personalized_description as "description",
-          gcq.personalized_musk_tip as "muskTip",
-          gcq.quest_type as "questType",
-          gcq.difficulty,
-          gcq.xp_reward as "xpReward",
-          qd.type,
-          1 as "targetCount",
-          'complete_career_quest' as "targetAction",
-          NULL as "badgeReward"
+          qd.id as "definition_id",
+          qd.type as "definition_type",
+          qd.title as "definition_title",
+          qd.description as "definition_description",
+          qd.category as "definition_category",
+          qd.difficulty as "definition_difficulty",
+          qd.estimated_time_minutes as "definition_estimated_time",
+          qd.xp_reward as "definition_xp_reward",
+          qd.is_active as "definition_is_active",
+          qd.platform as "definition_platform",
+          qd.platform as "definition_platform_specific",
+          qd.content_type as "definition_content_type",
+          qd.musk_tip as "definition_musk_tip"
         FROM user_quests uq
-        LEFT JOIN generated_career_quests gcq ON uq.generated_career_quest_id = gcq.id
-        LEFT JOIN quest_definitions qd ON gcq.quest_definition_id = qd.id
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1
           AND uq.assigned_date = $2
-          AND uq.generated_career_quest_id IS NOT NULL
+          AND qd.type NOT IN ('social_quest', 'social_post')
           AND uq.status = 'active'
         ORDER BY 
           CASE uq.status 
@@ -12763,13 +12782,13 @@ export class DatabaseStorage implements IStorage {
           uq.assigned_at DESC
       `, [userId, currentDate]);
       
-      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} AI-generated quests for user ${userId} on ${currentDate}`);
+      console.log(`[db.getCurrentDayUserQuests] Found ${result.rows.length} quests for user ${userId} on ${currentDate}`);
       
-      // Add definition object for frontend compatibility
+      // Add definition object for frontend compatibility (similar to social quests)
       return result.rows.map(row => ({
         id: row.id,
         userId: row.userId,
-        generatedCareerQuestId: row.generatedCareerQuestId,
+        questDefinitionId: row.questDefinitionId,
         status: row.status,
         progress: row.progress,
         assignedAt: row.assignedAt,
@@ -12785,23 +12804,26 @@ export class DatabaseStorage implements IStorage {
         recommendationSource: row.recommendationSource,
         confidenceScore: row.confidenceScore,
         definition: {
-          id: row.generatedCareerQuestId,
-          title: row.title,
-          description: row.description,
-          type: row.type || 'career_quest',
-          targetCount: row.targetCount,
-          targetAction: row.targetAction,
-          xpReward: row.xpReward,
-          badgeReward: row.badgeReward,
-          muskTip: row.muskTip,
-          difficulty: row.difficulty
+          id: row.definition_id,
+          type: row.definition_type,
+          title: row.definition_title,
+          description: row.definition_description,
+          category: row.definition_category,
+          difficulty: row.definition_difficulty,
+          estimatedTime: row.definition_estimated_time,
+          xpReward: row.definition_xp_reward,
+          isActive: row.definition_is_active,
+          platform: row.definition_platform,
+          contentType: row.definition_content_type,
+          muskTip: row.definition_musk_tip
         }
       }));
     } catch (error) {
-      console.error(`[db.getCurrentDayUserQuests] Error fetching daily quests for user ${userId}:`, error);
+      console.error(`[db.getCurrentDayUserQuests] Error fetching quests for user ${userId}:`, error);
       return [];
     }
   }
+
 
   async assignDailyQuestsToUser(userId: number): Promise<UserQuest[]> {
     // Get current date information
@@ -12970,25 +12992,17 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         SELECT 
-          uq.id, uq.user_id as "userId", uq.generated_quest_id as "generatedQuestId",
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          gsq.personalized_title as "title", 
-          gsq.personalized_description as "description",
-          gsq.personalized_musk_tip as "muskTip",
-          gsq.template_id as "templateId",
-          qd.platform,
-          'social_quest' as "type",
-          1 as "targetCount",
-          'complete_social_quest' as "targetAction",
-          50 as "xpReward",
-          NULL as "badgeReward"
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
         FROM user_quests uq
-        LEFT JOIN generated_social_quests gsq ON uq.generated_quest_id = gsq.id
-        LEFT JOIN quest_definitions qd ON gsq.quest_definition_id = qd.id
-        WHERE uq.user_id = $1 AND uq.generated_quest_id IS NOT NULL
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND qd.type IN ('social_quest', 'social_post')
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
@@ -12996,7 +13010,7 @@ export class DatabaseStorage implements IStorage {
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.generatedQuestId,
+          id: row.questDefinitionId,
           title: row.title,
           description: row.description,
           type: row.type,
@@ -13004,8 +13018,7 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip,
-          platform: row.platform
+          muskTip: row.muskTip
         }
       }));
     } catch (error) {
@@ -13018,25 +13031,17 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         SELECT 
-          uq.id, uq.user_id as "userId", uq.generated_career_quest_id as "generatedCareerQuestId",
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          gcq.personalized_title as "title",
-          gcq.personalized_description as "description",
-          gcq.personalized_musk_tip as "muskTip",
-          gcq.quest_type as "questType",
-          gcq.difficulty,
-          gcq.xp_reward as "xpReward",
-          qd.type,
-          1 as "targetCount",
-          'complete_career_quest' as "targetAction",
-          NULL as "badgeReward"
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
         FROM user_quests uq
-        LEFT JOIN generated_career_quests gcq ON uq.generated_career_quest_id = gcq.id
-        LEFT JOIN quest_definitions qd ON gcq.quest_definition_id = qd.id
-        WHERE uq.user_id = $1 AND uq.generated_career_quest_id IS NOT NULL
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND qd.type NOT IN ('social_quest', 'social_post')
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
@@ -13044,16 +13049,15 @@ export class DatabaseStorage implements IStorage {
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.generatedCareerQuestId,
+          id: row.questDefinitionId,
           title: row.title,
           description: row.description,
-          type: row.type || 'career_quest',
+          type: row.type,
           targetCount: row.targetCount,
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip,
-          difficulty: row.difficulty
+          muskTip: row.muskTip
         }
       }));
     } catch (error) {
@@ -13066,11 +13070,9 @@ export class DatabaseStorage implements IStorage {
     try {
       const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       
-      console.log(`[db.getCurrentDaySocialQuests] Fetching AI-generated social quests for user ${userId} on date ${currentDate}`);
-      
       const result = await pool.query(`
         SELECT 
-          uq.id, uq.user_id as "userId", uq.generated_quest_id as "generatedQuestId",
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
           uq.status, uq.progress, uq.assigned_at as "assignedAt", 
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
@@ -13078,34 +13080,30 @@ export class DatabaseStorage implements IStorage {
           uq.recommended_post_time as "recommendedPostTime",
           uq.recommendation_source as "recommendationSource",
           uq.confidence_score as "confidenceScore",
-          gsq.personalized_title as "title",
-          gsq.personalized_description as "description",
-          gsq.personalized_musk_tip as "muskTip",
-          gsq.template_id as "templateId",
-          qd.platform,
-          qd.content_type as "contentType",
-          'social_quest' as "type",
-          1 as "targetCount",
-          'complete_social_quest' as "targetAction",
-          50 as "xpReward",
-          NULL as "badgeReward"
+          uq.suggested_hashtags as "suggestedHashtags",
+          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          qd.target_action as "targetAction", qd.xp_reward as "xpReward",
+          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip",
+          qd.platform, qd.content_type as "contentType",
+          qd.deliverable_format as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          qd.guidance_snippet as "guidanceSnippet"
         FROM user_quests uq
-        LEFT JOIN generated_social_quests gsq ON uq.generated_quest_id = gsq.id
-        LEFT JOIN quest_definitions qd ON gsq.quest_definition_id = qd.id
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
-          AND uq.generated_quest_id IS NOT NULL
+          AND qd.type IN ('social_quest', 'social_post')
           AND uq.assigned_date = $2
           AND uq.status = 'active'
         ORDER BY uq.assigned_at DESC
       `, [userId, currentDate]);
       
-      console.log(`[db.getCurrentDaySocialQuests] Found ${result.rows.length} AI-generated social quests for user ${userId} on ${currentDate}`);
-      
       // Add definition object for frontend compatibility
       return result.rows.map(row => ({
         ...row,
         definition: {
-          id: row.generatedQuestId,
+          id: row.questDefinitionId,
           title: row.title,
           description: row.description,
           type: row.type,
@@ -13115,7 +13113,12 @@ export class DatabaseStorage implements IStorage {
           badgeReward: row.badgeReward,
           muskTip: row.muskTip,
           platform: row.platform,
-          contentType: row.contentType
+          contentType: row.contentType,
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet
         }
       }));
     } catch (error) {
@@ -13420,139 +13423,6 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
-
-  // Hashtag operations
-  async getHashtagById(id: number): Promise<Hashtag | undefined> {
-    try {
-      const result = await pool.query('SELECT * FROM hashtags WHERE id = $1', [id]);
-      return result.rows[0];
-    } catch (error) {
-      console.error('[db.getHashtagById] Error:', error);
-      return undefined;
-    }
-  }
-
-  async getHashtagByTag(tag: string): Promise<Hashtag | undefined> {
-    try {
-      const normalizedTag = tag.startsWith('#') ? tag.substring(1).toLowerCase() : tag.toLowerCase();
-      const result = await pool.query('SELECT * FROM hashtags WHERE LOWER(tag) = $1', [normalizedTag]);
-      return result.rows[0];
-    } catch (error) {
-      console.error('[db.getHashtagByTag] Error:', error);
-      return undefined;
-    }
-  }
-
-  async createHashtag(insertHashtag: InsertHashtag): Promise<Hashtag> {
-    try {
-      const result = await pool.query(
-        'INSERT INTO hashtags (tag, count, created_at, updated_at) VALUES ($1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *',
-        [insertHashtag.tag]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('[db.createHashtag] Error:', error);
-      throw error;
-    }
-  }
-
-  async incrementHashtagCount(id: number): Promise<Hashtag | undefined> {
-    try {
-      const result = await pool.query(
-        'UPDATE hashtags SET count = count + 1, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *',
-        [id]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('[db.incrementHashtagCount] Error:', error);
-      return undefined;
-    }
-  }
-
-  async createPulseHashtag(insertPulseHashtag: InsertPulseHashtag): Promise<PulseHashtag> {
-    try {
-      const result = await pool.query(
-        'INSERT INTO pulse_hashtags (pulse_id, hashtag_id, created_at) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *',
-        [insertPulseHashtag.pulseId, insertPulseHashtag.hashtagId]
-      );
-      return result.rows[0];
-    } catch (error) {
-      console.error('[db.createPulseHashtag] Error:', error);
-      throw error;
-    }
-  }
-
-  async getPulseHashtagsByPulseId(pulseId: number): Promise<PulseHashtag[]> {
-    try {
-      const result = await pool.query('SELECT * FROM pulse_hashtags WHERE pulse_id = $1', [pulseId]);
-      return result.rows;
-    } catch (error) {
-      console.error('[db.getPulseHashtagsByPulseId] Error:', error);
-      return [];
-    }
-  }
-
-  async getHashtagsByPulseId(pulseId: number): Promise<Hashtag[]> {
-    try {
-      const result = await pool.query(
-        'SELECT h.* FROM hashtags h JOIN pulse_hashtags ph ON h.id = ph.hashtag_id WHERE ph.pulse_id = $1',
-        [pulseId]
-      );
-      return result.rows;
-    } catch (error) {
-      console.error('[db.getHashtagsByPulseId] Error:', error);
-      return [];
-    }
-  }
-
-  async extractAndSaveHashtags(text: string, pulseId: number): Promise<Hashtag[]> {
-    try {
-      if (!text) return [];
-      
-      const hashtagRegex = /#(\w+)/g;
-      const matches = text.match(hashtagRegex);
-      
-      if (!matches) return [];
-      
-      const savedHashtags: Hashtag[] = [];
-      
-      for (const match of matches) {
-        try {
-          const tagText = match.substring(1).toLowerCase();
-          
-          if (!tagText) continue;
-          
-          let hashtag = await this.getHashtagByTag(tagText);
-          
-          if (hashtag) {
-            hashtag = await this.incrementHashtagCount(hashtag.id);
-          } else {
-            hashtag = await this.createHashtag({ tag: tagText });
-          }
-          
-          if (hashtag) {
-            try {
-              await this.createPulseHashtag({
-                pulseId,
-                hashtagId: hashtag.id
-              });
-              
-              savedHashtags.push(hashtag);
-            } catch (error) {
-              console.error(`[db.extractAndSaveHashtags] Error creating pulse-hashtag association for pulse ${pulseId} and hashtag ${hashtag.id}:`, error);
-            }
-          }
-        } catch (error) {
-          console.error(`[db.extractAndSaveHashtags] Error processing hashtag ${match}:`, error);
-        }
-      }
-      
-      return savedHashtags;
-    } catch (error) {
-      console.error('[db.extractAndSaveHashtags] Error:', error);
-      return [];
-    }
-  }
 }
 
 // Create a properly typed storage instance
@@ -13855,7 +13725,6 @@ export const storage = {
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
   updatePulse: (id: number, pulse: Partial<Pulse>) => dbStorage.updatePulse(id, pulse),
   deletePulse: (id: number) => dbStorage.deletePulse(id),
-  extractAndSaveHashtags: (text: string, pulseId: number) => dbStorage.extractAndSaveHashtags(text, pulseId),
   
   // Pulse Comment methods
   getPulseCommentsByPulseId: (pulseId: number) => dbStorage.getPulseCommentsByPulseId(pulseId),

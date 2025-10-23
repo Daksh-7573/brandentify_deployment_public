@@ -3,7 +3,6 @@ import { users, userQuests, questDefinitions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { socialQuestTemplateEngine } from './social-quest-template-engine';
 import { hashtagSuggestionService } from './hashtag-suggestion-service';
-// Note: platformRecommendationService removed - service doesn't exist yet
 
 export class PersonalizedQuestAssignment {
   
@@ -25,9 +24,9 @@ export class PersonalizedQuestAssignment {
       console.log(`[PersonalizedQuests] User profile: ${userProfile?.name} - ${userProfile?.industry}/${userProfile?.domain}`);
 
       // Get platform recommendations for this user
-      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
       console.log(`[PersonalizedQuests] Got ${recommendations.length} platform recommendations:`, 
-                  recommendations.map((r: any) => `${r.platform} (priority: ${r.priority})`));
+                  recommendations.map(r => `${r.platform} (priority: ${r.priority})`));
 
       if (recommendations.length === 0) {
         console.log(`[PersonalizedQuests] No suitable platforms found for user ${userId}`);
@@ -40,7 +39,7 @@ export class PersonalizedQuestAssignment {
       }
 
       // Get target actions from recommendations
-      const targetActions = recommendations.map((rec: any) => rec.targetAction);
+      const targetActions = recommendations.map(rec => rec.targetAction);
       
       // Find existing quest definitions for these platforms
       const existingQuests = await db
@@ -62,8 +61,7 @@ export class PersonalizedQuestAssignment {
       );
 
       for (const missingRec of missingRecommendations) {
-        // DISABLED: await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
-        const questData: any = { title: '', description: '', muskTip: '' }; // Placeholder - service doesn't exist
+        const questData = await platformRecommendationService.getPlatformQuestData(missingRec.targetAction, userId, userProfile || undefined);
         
         // Generate deliverable specifications based on platform/action
         const deliverableSpecs = this.getDeliverableSpecifications(missingRec.targetAction, missingRec.platform);
@@ -141,7 +139,7 @@ export class PersonalizedQuestAssignment {
           })
           .returning();
 
-        const recommendation = recommendations.find((r: any) => r.targetAction === quest.targetAction);
+        const recommendation = recommendations.find(r => r.targetAction === quest.targetAction);
         
         // Generate hashtag suggestions for this quest
         const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(
@@ -199,8 +197,8 @@ export class PersonalizedQuestAssignment {
   }> {
     try {
       // Get platform recommendations
-      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
-      const recommendedTargetActions = recommendations.map((r: any) => r.targetAction);
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendedTargetActions = recommendations.map(r => r.targetAction);
 
       // Get all user's social_post quests
       const userSocialQuests = await db
@@ -275,7 +273,7 @@ export class PersonalizedQuestAssignment {
     recommendations: any[];
   }> {
     try {
-      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
       
       const userSocialQuests = await db
         .select()
@@ -290,7 +288,7 @@ export class PersonalizedQuestAssignment {
         );
 
       return {
-        platforms: recommendations.map((r: any) => r.platform),
+        platforms: recommendations.map(r => r.platform),
         totalQuests: userSocialQuests.length,
         activeQuests: userSocialQuests.filter(q => q.user_quests.status === 'active').length,
         recommendations
@@ -453,7 +451,7 @@ export class PersonalizedQuestAssignment {
       console.log(`[WeeklyQuests] Starting weekly assignment for user ${userId}`);
       
       // Get platform recommendations
-      const recommendations: any[] = []; // DISABLED: platformRecommendationService.getRecommendedPlatforms(userId);
+      const recommendations = await platformRecommendationService.getRecommendedPlatforms(userId);
       
       if (recommendations.length === 0) {
         return {
@@ -481,7 +479,7 @@ export class PersonalizedQuestAssignment {
         );
 
       // Get relevant quest definitions based on recommendations
-      const recommendedTargetActions = recommendations.map((r: any) => r.targetAction);
+      const recommendedTargetActions = recommendations.map(r => r.targetAction);
       
       const availableQuests = await db
         .select()
@@ -505,7 +503,7 @@ export class PersonalizedQuestAssignment {
       const assignedQuests = [];
 
       for (const questDef of questsToAssign) {
-        const recommendation = recommendations.find((r: any) => r.targetAction === questDef.targetAction);
+        const recommendation = recommendations.find(r => r.targetAction === questDef.targetAction);
         
         const [insertedQuest] = await db
           .insert(userQuests)
@@ -563,183 +561,6 @@ export class PersonalizedQuestAssignment {
         assignedQuests: [],
         recommendations: [],
         message: 'Error assigning weekly quests'
-      };
-    }
-  }
-
-  /**
-   * Intelligent daily quest assignment based on time and XP
-   * Assigns 1-4 quests per day respecting 60-minute cap and XP optimization
-   */
-  async assignDailyQuestsIntelligent(
-    userId: number,
-    options: { maxDailyMinutes: number; preferHighXP: boolean } = { 
-      maxDailyMinutes: 60, 
-      preferHighXP: true 
-    }
-  ): Promise<{
-    success: boolean;
-    assignedQuests: any[];
-    totalEstimatedMinutes: number;
-    totalXP: number;
-    message: string;
-  }> {
-    try {
-      console.log(`[IntelligentQuests] Starting daily assignment for user ${userId} (${options.maxDailyMinutes} min cap)`);
-      
-      // Get user profile for AI quest generation
-      const userProfile = await db
-        .select()
-        .from(users)
-        .where(eq(users.id, userId))
-        .limit(1);
-      
-      if (!userProfile || userProfile.length === 0) {
-        return {
-          success: false,
-          assignedQuests: [],
-          totalEstimatedMinutes: 0,
-          totalXP: 0,
-          message: 'User not found'
-        };
-      }
-
-      // Generate candidate quests with AI (mix of career and social)
-      const { UnifiedAIQuestGenerator } = await import('./unified-ai-quest-generator');
-      const questGenerator = new UnifiedAIQuestGenerator();
-      
-      const candidateQuests = [];
-      
-      // Generate UP TO 4 career quests
-      console.log('[IntelligentQuests] Generating up to 4 career quest candidates...');
-      for (let i = 0; i < 4; i++) {
-        const careerQuest = await questGenerator.generateCareerQuest(userId);
-        if (careerQuest) {
-          candidateQuests.push({ ...careerQuest, category: 'career' });
-        }
-      }
-      
-      // Generate UP TO 5 social quests
-      console.log('[IntelligentQuests] Generating up to 5 social quest candidates...');
-      for (let i = 0; i < 5; i++) {
-        const socialQuest = await questGenerator.generateSocialQuest(userId);
-        if (socialQuest) {
-          candidateQuests.push({ ...socialQuest, category: 'social' });
-        }
-      }
-
-      console.log(`[IntelligentQuests] Generated ${candidateQuests.length} candidate quests (up to 4 career + up to 5 social)`);
-
-      // Calculate metrics for each candidate quest
-      // Impact Score = (XP ÷ Time) × Difficulty Multiplier
-      const questsWithMetrics = candidateQuests.map(quest => {
-        const estimatedMinutes = quest.subtasks 
-          ? quest.subtasks.reduce((sum, subtask) => sum + (subtask.estimatedMinutes || 15), 0)
-          : 30; // Default 30 min if no subtasks
-        
-        const xpPerMinute = estimatedMinutes > 0 ? quest.xpReward / estimatedMinutes : 0;
-        
-        return {
-          ...quest,
-          estimatedMinutes,
-          xpPerMinute,
-          impactScore: xpPerMinute * (quest.difficulty === 'advanced' ? 1.5 : 1.0)
-        };
-      });
-
-      // Sort candidates by impact score (higher = better XP efficiency)
-      if (options.preferHighXP) {
-        questsWithMetrics.sort((a, b) => b.impactScore - a.impactScore);
-      }
-
-      // GREEDY ALGORITHM: Select optimal quest combination
-      // - Respects 60-minute daily cap
-      // - Maximizes total XP
-      // - Assigns 1-4 quests maximum
-      const selectedQuests: any[] = [];
-      let totalMinutes = 0;
-      let totalXP = 0;
-
-      for (const quest of questsWithMetrics) {
-        // Check if adding this quest would exceed daily cap
-        if (totalMinutes + quest.estimatedMinutes <= options.maxDailyMinutes) {
-          selectedQuests.push(quest);
-          totalMinutes += quest.estimatedMinutes;
-          totalXP += quest.xpReward;
-          
-          console.log(`[IntelligentQuests] ✓ Selected: ${quest.title} (${quest.estimatedMinutes} min, ${quest.xpReward} XP, ${quest.xpPerMinute.toFixed(1)} XP/min)`);
-          
-          // Stop if we've assigned 4 quests (max per day)
-          if (selectedQuests.length >= 4) {
-            break;
-          }
-        } else {
-          console.log(`[IntelligentQuests] ✗ Skipped: ${quest.title} (would exceed ${options.maxDailyMinutes} min cap)`);
-        }
-      }
-
-      // If we have remaining time and only selected 1 quest, try to add smaller quests
-      if (selectedQuests.length === 1 && totalMinutes < options.maxDailyMinutes - 10) {
-        const remainingTime = options.maxDailyMinutes - totalMinutes;
-        const additionalQuest = questsWithMetrics.find(
-          q => !selectedQuests.includes(q) && q.estimatedMinutes <= remainingTime
-        );
-        
-        if (additionalQuest) {
-          selectedQuests.push(additionalQuest);
-          totalMinutes += additionalQuest.estimatedMinutes;
-          totalXP += additionalQuest.xpReward;
-          console.log(`[IntelligentQuests] Added bonus quest: ${additionalQuest.title}`);
-        }
-      }
-
-      console.log(`[IntelligentQuests] Final selection: ${selectedQuests.length} quests, ${totalMinutes} min, ${totalXP} XP`);
-
-      // Assign selected quests to user
-      const assignedQuests = [];
-      const now = new Date();
-      const weekNumber = this.getWeekNumber(now);
-      const year = now.getFullYear();
-
-      for (const quest of selectedQuests) {
-        const [insertedQuest] = await db
-          .insert(userQuests)
-          .values({
-            userId,
-            questDefinitionId: quest.questDefinitionId,
-            status: 'active',
-            progress: 0,
-            assignedDate: new Date().toISOString().split('T')[0],
-            weekNumber,
-            year,
-            assignedAt: new Date()
-          })
-          .returning();
-
-        assignedQuests.push({
-          ...insertedQuest,
-          questDefinition: quest,
-          estimatedMinutes: quest.estimatedMinutes,
-          subtasks: quest.subtasks
-        });
-      }
-
-      return {
-        success: true,
-        assignedQuests,
-        totalEstimatedMinutes: totalMinutes,
-        totalXP: totalXP,
-        message: `Assigned ${selectedQuests.length} quest${selectedQuests.length > 1 ? 's' : ''} (${totalMinutes} min, ${totalXP} XP)`
-      };
-
-    } catch (error) {
-      console.error('[IntelligentQuests] Error assigning daily quests:', error);
-      return {
-        success: false,
-        assignedQuests: [],
-        totalEstimatedMinutes: 0,
-        totalXP: 0,
-        message: 'Error assigning quests'
       };
     }
   }

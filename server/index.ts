@@ -726,10 +726,10 @@ app.use((req, res, next) => {
 // Standard body parsers for all other routes with enhanced debugging
 app.use(express.json({ 
   limit: '50mb',
-  verify: (req: any, res, buf: Buffer, encoding) => {
-    if (req.url && req.url.includes('/users/')) {
-      console.log(`[JSON Parser] ${req.method} ${req.url} - Raw buffer length:`, buf.length);
-      console.log(`[JSON Parser] ${req.method} ${req.url} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
+  verify: (req, res, buf: Buffer, encoding) => {
+    if (req.path.includes('/users/')) {
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Raw buffer length:`, buf.length);
+      console.log(`[JSON Parser] ${req.method} ${req.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
     }
   }
 }));
@@ -832,22 +832,30 @@ console.log("Trend Intelligence Scheduler started - refreshing market trends hou
 (async () => {
   const server = await registerRoutes(app);
   
-  // 🚀 DAILY QUEST AUTO-GENERATION - DISABLED (too slow at boot, runs at 12:01 AM automatically)
-  // Boot-time quest generation commented out to speed up server startup
-  // The scheduler at 12:01 AM UTC will handle daily quest assignment automatically
-  
-  // Schedule hourly failsafe (still active)
-  setInterval(async () => {
-    try {
-      console.log("🔄 [HOURLY] Running quest check...");
-      const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
-      if (hourlyResult.successfulAssignments > 0) {
-        console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
+  // 🚀 DAILY QUEST AUTO-GENERATION - Runs immediately after routes are registered
+  console.log("========================================");
+  console.log("🚀 QUEST AUTO-GENERATION STARTING");
+  console.log("========================================");
+  try {
+    const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+    const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
+    console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
+    
+    // Schedule hourly failsafe
+    setInterval(async () => {
+      try {
+        console.log("🔄 [HOURLY] Running quest check...");
+        const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
+        if (hourlyResult.successfulAssignments > 0) {
+          console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
+        }
+      } catch (hourlyError) {
+        console.error("❌ [HOURLY] Quest check failed:", hourlyError);
       }
-    } catch (hourlyError) {
-      console.error("❌ [HOURLY] Quest check failed:", hourlyError);
-    }
-  }, 60 * 60 * 1000); // Every 60 minutes
+    }, 60 * 60 * 1000); // Every 60 minutes
+  } catch (bootError) {
+    console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
+  }
   
   // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
   console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
