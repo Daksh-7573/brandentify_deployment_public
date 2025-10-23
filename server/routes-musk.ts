@@ -781,6 +781,45 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
   }
 };
 
+// Generate improved CV with all fixes applied (Musk Chat version)
+export const handleGenerateCV = async (req: Request, res: Response) => {
+  console.log("[Musk CV Generator] Generate CV request received");
+  
+  try {
+    const { resumeScoreId, userId } = req.body;
+    
+    if (!resumeScoreId || !userId) {
+      console.log("[Musk CV Generator] Missing required fields");
+      return res.status(400).json({ 
+        error: 'Resume score ID and user ID are required' 
+      });
+    }
+    
+    console.log(`[Musk CV Generator] Generating improved CV for resume score ${resumeScoreId}, user ${userId}`);
+    
+    // Generate Word document with all fixes applied
+    const docBuffer = await resumeScorerService.generateImprovedCV(
+      parseInt(resumeScoreId),
+      parseInt(userId)
+    );
+    
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', 'attachment; filename="improved-resume.docx"');
+    res.setHeader('Content-Length', docBuffer.length);
+    
+    // Send file
+    res.send(docBuffer);
+    
+    console.log(`[Musk CV Generator] CV generated successfully: ${docBuffer.length} bytes`);
+  } catch (error: any) {
+    console.error('[Musk CV Generator] Error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to generate CV' 
+    });
+  }
+};
+
 // Handle Pitch Deck uploads for analysis by Musk
 export const handlePitchDeckUpload = async (req: Request, res: Response) => {
   try {
