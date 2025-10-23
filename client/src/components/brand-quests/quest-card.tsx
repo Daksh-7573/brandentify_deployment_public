@@ -359,22 +359,17 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             </div>
           )}
           
-          {formattedPostTime && (
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-xs">
-                <span>⏰</span>
-                <span className="text-emerald-400 font-medium">
-                  Best time to post: {formattedPostTime.local}
+          {quest.recommendedPostTime && (
+            <div className="flex items-center gap-2 text-xs">
+              <span>⏰</span>
+              <span className="text-emerald-400 font-medium">
+                Best time to post: {quest.recommendedPostTime}
+              </span>
+              {quest.confidenceScore && quest.confidenceScore > 70 && (
+                <span className="text-xs text-white/50">
+                  ({quest.confidenceScore}% confidence)
                 </span>
-                {quest.confidenceScore && quest.confidenceScore > 70 && (
-                  <span className="text-xs text-white/50">
-                    ({quest.confidenceScore}% confidence)
-                  </span>
-                )}
-              </div>
-              <div className="ml-5 text-xs text-white/40">
-                UTC: {formattedPostTime.utc}
-              </div>
+              )}
             </div>
           )}
         </div>

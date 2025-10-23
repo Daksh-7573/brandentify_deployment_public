@@ -82,6 +82,10 @@ export interface UserQuest {
   recommendationSource?: string;     // Source: "heuristic", "model", "telemetry"
   confidenceScore?: number;          // Confidence level 0-100
   
+  // Intelligent hashtag suggestions
+  suggestedHashtags?: string[];      // AI-generated hashtags for the quest
+  hashtagContext?: string;           // Context/explanation for the hashtags
+  
   // Different quest definition formats based on API source
   questDefinition?: QuestDefinition;  // Original format
   definition?: QuestDefinition;       // Direct DB query format
