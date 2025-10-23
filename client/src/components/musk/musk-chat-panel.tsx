@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -36,6 +36,7 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
+  canImprove?: boolean;
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -282,7 +283,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 timestamp: new Date(),
                 quickResponses: personalizedQuestions.length > 0 
                   ? personalizedQuestions 
-                  : quickResponses // Fallback to regular quick responses if no suggested questions
+                  : quickResponses, // Fallback to regular quick responses if no suggested questions
+                canImprove: true // Enable improve button for responses
               }
             : msg
         )
@@ -340,6 +342,105 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const handleQuickResponse = (response: string) => {
     setInputValue(response);
     inputRef.current?.focus();
+  };
+  
+  const handleImprove = async (messageId: string) => {
+    // Find the message to improve
+    const messageToImprove = messages.find(msg => msg.id === messageId);
+    if (!messageToImprove) return;
+    
+    // Get user ID from context
+    let userId;
+    if (user?.uid) {
+      userId = user.uid;
+    } else if (context?.userId) {
+      userId = context.userId;
+    }
+    
+    // Add a "thinking" message placeholder
+    const thinkingMessage: Message = {
+      id: 'thinking-' + Date.now().toString(),
+      content: '',
+      sender: 'musk',
+      timestamp: new Date(),
+      thinking: true
+    };
+    
+    setMessages(prev => [...prev, thinkingMessage]);
+    setIsTyping(true);
+    
+    try {
+      // Make API request to improve the response
+      const response = await fetch('/api/musk/improve', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          originalMessage: messageToImprove.content,
+          context
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json() as {id: string; message: string; timestamp: Date};
+      
+      // Get personalized questions for quick responses
+      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+      
+      // Replace the thinking message with the improved response
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === thinkingMessage.id 
+            ? {
+                id: data.id || 'improved-' + Date.now(),
+                content: data.message,
+                sender: 'musk',
+                timestamp: new Date(),
+                quickResponses: personalizedQuestions,
+                canImprove: true
+              }
+            : msg
+        )
+      );
+      
+      toast({
+        title: 'Response improved',
+        description: 'I\'ve enhanced my previous response with more details',
+      });
+      
+      // Generate new contextual suggestions
+      generateContextualSuggestions();
+      
+    } catch (error) {
+      console.error('Error improving response:', error);
+      
+      // Replace the thinking message with an error message
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === thinkingMessage.id 
+            ? {
+                id: 'error-' + Date.now(),
+                content: "I'm sorry, I had trouble improving the response. Please try again.",
+                sender: 'musk',
+                timestamp: new Date()
+              }
+            : msg
+        )
+      );
+      
+      toast({
+        title: 'Error',
+        description: 'Could not improve the response. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsTyping(false);
+    }
   };
   
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -512,7 +613,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: analyzeResult.analysis,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses
+                quickResponses,
+                canImprove: true // Enable improve button for analysis
               }
             : msg
         )
@@ -757,6 +859,39 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                         .replace(/\n\n/g, '</p><p>')
                     }}
                   ></div>
+                )}
+                
+                {/* Improve button for Musk messages */}
+                {message.sender === 'musk' && !message.thinking && message.canImprove && (
+                  <div className="mt-3">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="text-xs py-2 px-3 h-auto flex items-center gap-2 text-white border-0 w-full justify-center"
+                      onClick={() => handleImprove(message.id)}
+                      disabled={isTyping || isUploading}
+                      data-testid="button-improve-response"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2))',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(168, 85, 247, 0.3)',
+                        boxShadow: '0 4px 12px rgba(168, 85, 247, 0.2)'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isTyping && !isUploading) {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.3))';
+                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(168, 85, 247, 0.3)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2))';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(168, 85, 247, 0.2)';
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      <span className="font-medium">Improve Response</span>
+                    </Button>
+                  </div>
                 )}
                 
                 {/* Quick responses */}

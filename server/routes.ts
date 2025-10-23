@@ -19,7 +19,7 @@ import { handleParseResume } from "./routes-parse-resume";
 import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload, handleGenerateContextualSuggestions } from "./routes-musk";
+import { handleMuskChat, handleMuskImprove, handleResumeUpload, handlePitchDeckUpload, handleGenerateContextualSuggestions } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
@@ -7908,6 +7908,11 @@ ${extractedText.substring(0, 5000)}
   // Route for generating AI-powered contextual suggestions
   apiRouter.post("/musk/contextual-suggestions", async (req: Request, res: Response) => {
     await handleGenerateContextualSuggestions(req, res);
+  });
+  
+  // Route for improving Musk AI responses
+  apiRouter.post("/musk/improve", async (req: Request, res: Response) => {
+    await handleMuskImprove(req, res);
   });
 
   // Decision Engine routes for Smart Connect feature
