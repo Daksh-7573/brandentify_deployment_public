@@ -30,7 +30,15 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       const { userId, targetRole } = req.body;
       const file = req.file;
       
+      console.log('[API] Resume upload request:', {
+        hasFile: !!file,
+        userId,
+        targetRole,
+        bodyKeys: Object.keys(req.body)
+      });
+      
       if (!file || !userId) {
+        console.error('[API] Missing required fields - file:', !!file, 'userId:', userId);
         return res.status(400).json({ 
           error: 'Resume file and user ID are required' 
         });
