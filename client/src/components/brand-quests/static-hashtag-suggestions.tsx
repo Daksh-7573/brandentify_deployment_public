@@ -165,17 +165,25 @@ export function StaticHashtagSuggestions({
   }
   
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
-      {tagsToDisplay.map((hashtag) => (
-        <Badge 
-          key={hashtag} 
-          variant="outline"
-          className="cursor-pointer bg-black/20 text-blue-300 border-white/10 hover:bg-black/30 hover:border-white/20 backdrop-blur-sm transition-all duration-200 text-xs"
-          onClick={() => handleHashtagClick(hashtag)}
-        >
-          #{hashtag}
-        </Badge>
-      ))}
+    <div className={`${className}`}>
+      {/* Structured hashtag grid with better visual hierarchy */}
+      <div className="grid grid-cols-2 gap-2">
+        {tagsToDisplay.map((hashtag, index) => (
+          <button
+            key={hashtag}
+            onClick={() => handleHashtagClick(hashtag)}
+            className="group flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-br from-blue-500/15 to-purple-500/10 border border-blue-500/20 hover:from-blue-500/25 hover:to-purple-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10"
+          >
+            <span className="text-blue-400/60 group-hover:text-blue-300 transition-colors text-xs">#</span>
+            <span className="text-xs font-medium text-blue-200/90 group-hover:text-blue-100 transition-colors truncate">
+              {hashtag}
+            </span>
+          </button>
+        ))}
+      </div>
+      <p className="text-[10px] text-white/40 mt-2 text-center">
+        Click any hashtag to copy
+      </p>
     </div>
   );
 }

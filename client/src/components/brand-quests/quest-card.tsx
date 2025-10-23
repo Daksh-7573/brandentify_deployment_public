@@ -497,22 +497,30 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                       
                       {/* For social quests with AI-generated hashtags, show those */}
                       {hasSocialHashtags ? (
-                        <div className="flex flex-wrap gap-2">
-                          {displayHashtags.map((hashtag: string, index: number) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                navigator.clipboard.writeText(`#${hashtag}`);
-                                toast({
-                                  title: "Hashtag copied",
-                                  description: `#${hashtag} copied to clipboard`
-                                });
-                              }}
-                              className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20 hover:bg-blue-500/20 hover:border-blue-500/30 transition-all duration-200 cursor-pointer"
-                            >
-                              #{hashtag}
-                            </button>
-                          ))}
+                        <div>
+                          <div className="grid grid-cols-2 gap-2">
+                            {displayHashtags.map((hashtag: string, index: number) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`#${hashtag}`);
+                                  toast({
+                                    title: "Hashtag copied",
+                                    description: `#${hashtag} copied to clipboard`
+                                  });
+                                }}
+                                className="group flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-br from-blue-500/15 to-purple-500/10 border border-blue-500/20 hover:from-blue-500/25 hover:to-purple-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/10"
+                              >
+                                <span className="text-blue-400/60 group-hover:text-blue-300 transition-colors text-xs">#</span>
+                                <span className="text-xs font-medium text-blue-200/90 group-hover:text-blue-100 transition-colors truncate">
+                                  {hashtag}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-white/40 mt-2 text-center">
+                            Click any hashtag to copy
+                          </p>
                         </div>
                       ) : (
                         /* For pulse quests, use static suggestions based on industry */
