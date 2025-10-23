@@ -159,16 +159,22 @@ export class AICareerQuestGenerator {
       return null;
     }
 
-    // Build context
+    // Build context - ALWAYS prioritize current user profile over brand variables
+    const primaryAudience = user.primaryAudience?.[0] || null;
+    const secondaryAudience = user.secondaryAudience?.[0] || null;
+    const targetAudienceDisplay = primaryAudience 
+      ? `${primaryAudience} professionals${secondaryAudience ? ` and ${secondaryAudience}` : ''}`
+      : brandVars?.targetAudience || 'professionals in your network';
+    
     const context = {
       name: user.name || 'Professional',
       title: user.title || 'Professional',
       industry: user.industry || 'your industry',
       domain: user.domain || 'your field',
       location: user.location || 'your location',
-      expertiseArea: brandVars?.uniqueExpertise || user.title || 'your field',
-      uniqueValue: brandVars?.competitiveAdvantage || 'your unique skills',
-      targetAudience: brandVars?.targetAudience || 'professionals in your network',
+      expertiseArea: user.domain || brandVars?.uniqueExpertise || user.title || 'your field',
+      uniqueValue: user.domain || brandVars?.competitiveAdvantage || 'your unique skills',
+      targetAudience: targetAudienceDisplay,
       questType: questFocus.type,
       focusArea: questFocus.focus,
       missingElements: profileAnalysis.missingElements.join(', '),

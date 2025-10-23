@@ -518,6 +518,19 @@ export class SocialQuestTemplateEngine {
   }
 
   private identifyTargetAudience(user: any, experiences: any[]): string {
+    // ALWAYS prioritize user's actual primary/secondary audience over generic industry+location
+    const primaryAudience = user.primaryAudience?.[0] || null;
+    const secondaryAudience = user.secondaryAudience?.[0] || null;
+    
+    if (primaryAudience) {
+      const location = user.location ? ` in ${user.location}` : '';
+      if (secondaryAudience) {
+        return `${primaryAudience} and ${secondaryAudience} professionals${location}`;
+      }
+      return `${primaryAudience} professionals${location}`;
+    }
+    
+    // Fallback to generic industry+location only if no audience defined
     return `${user.industry || 'professional'} leaders in ${user.location || 'my region'}`;
   }
 
