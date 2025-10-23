@@ -59,7 +59,7 @@ export class UnifiedAIQuestGenerator {
         muskTip: aiQuest.muskTip,
         questType: questDef.type,
         xpReward: questDef.xpReward || 85,
-        difficulty: questDef.difficulty || 'advanced',
+        difficulty: questDef.difficultyLevel || 'advanced',
         questDefinitionId: questDef.id
       };
     } catch (error) {
