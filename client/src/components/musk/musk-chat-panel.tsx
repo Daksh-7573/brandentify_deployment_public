@@ -36,6 +36,8 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
+  resumeScoreId?: number;
+  isResumeAnalysis?: boolean;
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -45,6 +47,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [currentResumeScoreId, setCurrentResumeScoreId] = useState<number | null>(null);
+  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -479,6 +483,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
+      // Store resume score ID for CV generation (only for resume uploads)
+      if (isResume && uploadResult.resumeScoreId) {
+        setCurrentResumeScoreId(uploadResult.resumeScoreId);
+        console.log('[Musk Chat] Stored resume score ID:', uploadResult.resumeScoreId);
+      }
+      
       // The result includes the analysis message directly
       const analyzeResult = {
         analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
@@ -512,7 +522,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: analyzeResult.analysis,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses
+                quickResponses,
+                resumeScoreId: isResume ? uploadResult.resumeScoreId : undefined,
+                isResumeAnalysis: isResume
               }
             : msg
         )
