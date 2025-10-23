@@ -8,6 +8,7 @@ import { smartQuestAllocator } from './smart-quest-allocator';
 import { intelligentHashtagGenerator } from './intelligent-hashtag-generator';
 import { comprehensiveQuestGenerator } from './comprehensive-quest-generator';
 import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
+import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -389,7 +390,75 @@ class DailyQuestScheduler {
           });
           
         } else {
-          // Social quest - use existing system (already generates detailed specs via template system)
+          // Social quest - use V2 AI generator for platform-specific content
+          console.log(`[DailyQuestScheduler] 🎯 Generating AI-detailed social quest (V2) for user ${userId}: ${selectedQuest.questType}`);
+          
+          // Get platform from quest definition
+          const [questDefForPlatform] = await db
+            .select()
+            .from(questDefinitions)
+            .where(eq(questDefinitions.id, selectedQuest.questDefinitionId))
+            .limit(1);
+          
+          const platform = questDefForPlatform?.platform || 'LinkedIn';
+          
+          let detailedSocialQuest;
+          
+          try {
+            // Generate AI-powered social quest using V2 generator
+            detailedSocialQuest = await socialQuestGeneratorV2.generateSocialQuest(
+              userId,
+              selectedQuest.questDefinitionId,
+              platform
+            );
+            
+            console.log(`[DailyQuestScheduler] ✅ V2 Generated social: "${detailedSocialQuest.personalizedTitle}" for ${platform}`);
+            
+          } catch (generateError) {
+            console.error(`[DailyQuestScheduler] ⚠️ Social V2 generation failed, falling back:`, generateError);
+            // Fallback to standard quest assignment
+            const [quest] = await db
+              .insert(userQuests)
+              .values({
+                userId,
+                questDefinitionId: selectedQuest.questDefinitionId,
+                status: 'active',
+                progress: 0,
+                assignedAt: new Date(),
+                assignedDate: todayDateString,
+                weekNumber: currentWeek,
+                year: currentYear
+              })
+              .returning();
+            
+            assignedQuests.push({
+              ...quest,
+              category: selectedQuest.category,
+              questType: selectedQuest.questType
+            });
+            continue;
+          }
+          
+          // Insert the detailed quest specifications into generatedSocialQuests
+          const [generatedSocialQuest] = await db
+            .insert(generatedSocialQuests)
+            .values({
+              userId,
+              templateId: detailedSocialQuest.templateId,
+              questDefinitionId: selectedQuest.questDefinitionId,
+              variablesUsed: detailedSocialQuest.variablesUsed,
+              personalizedTitle: detailedSocialQuest.personalizedTitle,
+              personalizedDescription: detailedSocialQuest.personalizedDescription,
+              personalizedMuskTip: detailedSocialQuest.personalizedMuskTip,
+              assignedDate: todayDateString,
+              assignedAt: new Date(),
+              status: 'active'
+            })
+            .returning();
+          
+          console.log(`[DailyQuestScheduler] ✅ Generated detailed social quest ${generatedSocialQuest.id}: "${detailedSocialQuest.personalizedTitle}" for ${platform}`);
+          
+          // Insert into userQuests (standard quest tracking)
           const [quest] = await db
             .insert(userQuests)
             .values({
@@ -407,7 +476,8 @@ class DailyQuestScheduler {
           assignedQuests.push({
             ...quest,
             category: selectedQuest.category,
-            questType: selectedQuest.questType
+            questType: selectedQuest.questType,
+            generatedSocialQuestId: generatedSocialQuest.id
           });
         }
       }

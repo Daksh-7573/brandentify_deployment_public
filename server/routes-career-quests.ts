@@ -853,14 +853,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             uq.week_number as "weekNumber",
             uq.year,
             uq.assigned_date as "assignedDate",
-            COALESCE(gcq.personalized_title, qd.title) as title,
-            COALESCE(gcq.personalized_description, qd.description) as description,
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
             qd.type as type,
             qd.target_count as "targetCount",
             qd.target_action as "targetAction",
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
-            COALESCE(gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
             qd.quantity_type as "quantityType",
@@ -878,9 +879,16 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             ORDER BY id DESC
             LIMIT 1
           ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
           WHERE uq.user_id = $1
             AND uq.assigned_date = $2
-            AND qd.type NOT IN ('social_quest', 'social_post')
             AND uq.status = 'active'
           ORDER BY uq.assigned_at DESC
         `, [userId, currentDate]);
@@ -896,6 +904,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             targetAction: row.targetAction,
             xpReward: row.xpReward,
             badgeReward: row.badgeReward,
+            platform: row.platform,
             muskTip: row.muskTip,
             deliverableFormat: row.deliverableFormat,
             quantityValue: row.quantityValue,
