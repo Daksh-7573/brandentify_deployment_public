@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
-import { userQuests, generatedSocialQuests, questDefinitions } from '@shared/schema';
+import { userQuests, generatedSocialQuests, questDefinitions, brandGoals } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
 import { smartQuestAllocator } from './smart-quest-allocator';
@@ -278,6 +278,15 @@ class DailyQuestScheduler {
    */
   private async enhanceQuestsWithRecommendations(user: any, quests: any[]): Promise<void> {
     try {
+      // Fetch user's brand goals once for all quests
+      const [userBrandGoals] = await db
+        .select()
+        .from(brandGoals)
+        .where(eq(brandGoals.userId, user.id))
+        .limit(1);
+      
+      const userGoals = userBrandGoals?.selectedGoals || [];
+      
       for (const quest of quests) {
         // Get quest definition for details
         const [questDef] = await db
@@ -296,13 +305,13 @@ class DailyQuestScheduler {
           ? await recommendationService.getCareerQuestRecommendation(user.industry, user.domain)
           : await recommendationService.getSocialQuestRecommendation(platform, user.industry, user.domain);
 
-        // Generate intelligent hashtags
+        // Generate intelligent hashtags with user's actual brand goals
         const hashtagResult = await intelligentHashtagGenerator.generateIntelligentHashtags({
           userId: user.id,
           platform,
           contentType: questDef.type || 'post',
           questType: quest.questType || questDef.targetAction || 'default',
-          userGoals: [] // Will be fetched from brandGoals in the hashtag generator
+          userGoals: userGoals // Pass actual brand goals from database
         });
 
         // Update quest with recommendations and hashtags

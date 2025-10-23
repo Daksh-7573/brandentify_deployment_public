@@ -115,17 +115,28 @@ export class IntelligentHashtagGenerator {
   };
 
   /**
-   * Brand Goal specific hashtags
+   * Brand Goal specific hashtags (mapped to actual goal IDs from database)
    */
   private readonly GOAL_HASHTAGS: Record<string, string[]> = {
-    'visibility_awareness': ['#PersonalBranding', '#ThoughtLeadership', '#BrandVisibility', '#ProfessionalBranding', '#LinkedInCreator'],
-    'career_growth': ['#CareerGrowth', '#ProfessionalDevelopment', '#CareerAdvice', '#CareerTips', '#SkillDevelopment'],
-    'engagement_community': ['#CommunityBuilding', '#Networking', '#ProfessionalNetworking', '#CommunityEngagement', '#LetConnect'],
-    'monetization_impact': ['#BusinessGrowth', '#RevenueGrowth', '#ScaleYourBusiness', '#BusinessOpportunities', '#CreatorEconomy'],
-    'build_authority': ['#IndustryExpert', '#ThoughtLeader', '#SubjectMatterExpert', '#AuthorityMarketing', '#IndustryLeader'],
-    'attract_opportunities': ['#CareerOpportunities', '#JobOpportunities', '#BusinessOpportunities', '#OpenToWork', '#Hiring'],
-    'skill_development': ['#SkillsTraining', '#UpSkilling', '#ContinuousLearning', '#ProfessionalGrowth', '#SkillBuilding'],
-    'network_expansion': ['#ProfessionalNetwork', '#NetworkingTips', '#ConnectionsMatter', '#LinkedInNetworking', '#ExpandYourNetwork']
+    // Visibility & Awareness Goals
+    'visibility_1': ['#PersonalBranding', '#ThoughtLeadership', '#BrandVisibility', '#SocialMediaGrowth', '#OnlinePresence'],
+    'visibility_2': ['#BrandRecognition', '#BrandAwareness', '#MarketingStrategy', '#BrandBuilding', '#TargetAudience'],
+    'visibility_3': ['#ConsistentContent', '#ContentStrategy', '#MultiPlatform', '#CrossPlatform', '#DigitalPresence'],
+    'visibility_4': ['#SEO', '#PersonalSEO', '#OnlineReputation', '#DigitalFootprint', '#SearchVisibility'],
+    'visibility_5': ['#AudienceGrowth', '#FollowerGrowth', '#CommunityBuilding', '#EngagedAudience', '#SocialGrowth'],
+    
+    // Professional & Career Growth Goals
+    'professional_1': ['#ThoughtLeader', '#IndustryExpert', '#SubjectMatterExpert', '#AuthorityMarketing', '#NicheAuthority'],
+    'professional_2': ['#BusinessOpportunities', '#Networking', '#ProfessionalGrowth', '#CareerOpportunities', '#BusinessDevelopment'],
+    'professional_3': ['#PublicSpeaking', '#Podcast', '#MediaAppearances', '#ThoughtLeadership', '#IndustryVoice'],
+    
+    // Engagement & Community Goals
+    'engagement_1': ['#CommunityBuilding', '#Engagement', '#NetworkBuilding', '#ProfessionalCommunity', '#BrandCommunity'],
+    
+    // Monetization & Impact Goals
+    'monetization_1': ['#BrandPartnerships', '#Sponsorships', '#Collaborations', '#InfluencerMarketing', '#CreatorEconomy'],
+    'monetization_2': ['#LeadGeneration', '#ConversionStrategy', '#SalesStrategy', '#BusinessGrowth', '#CustomerAcquisition'],
+    'monetization_3': ['#ProductLaunch', '#Entrepreneurship', '#BusinessLaunch', '#PersonalBrand', '#OwnBusiness']
   };
 
   /**
@@ -216,9 +227,16 @@ export class IntelligentHashtagGenerator {
       hashtagSet.primary = industryDomainTags.slice(0, 3); // Top 3 most relevant
 
       // 2. AUDIENCE-TARGETED HASHTAGS
+      const primaryAudienceStr = Array.isArray(userProfile.primaryAudience) 
+        ? userProfile.primaryAudience.join(', ') 
+        : userProfile.primaryAudience;
+      const secondaryAudienceStr = Array.isArray(userProfile.secondaryAudience) 
+        ? userProfile.secondaryAudience.join(', ') 
+        : userProfile.secondaryAudience;
+      
       const audienceTags = this.getAudienceHashtags(
-        userProfile.primaryAudience,
-        userProfile.secondaryAudience
+        primaryAudienceStr,
+        secondaryAudienceStr
       );
       hashtagSet.audience = audienceTags.slice(0, 2);
 

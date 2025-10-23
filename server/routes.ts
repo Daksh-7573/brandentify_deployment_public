@@ -9259,6 +9259,15 @@ ${extractedText.substring(0, 5000)}
         return res.status(404).json({ success: false, message: 'User not found' });
       }
 
+      // Get user's brand goals
+      const [brandGoals] = await db
+        .select()
+        .from(schema.brandGoals)
+        .where(eq(schema.brandGoals.userId, userId))
+        .limit(1);
+      
+      const userGoals = brandGoals?.selectedGoals || [];
+
       // Get active quests
       const activeQuests = await db
         .select()
@@ -9289,13 +9298,13 @@ ${extractedText.substring(0, 5000)}
           user.domain || 'General'
         );
         
-        // Generate hashtags
+        // Generate hashtags with actual brand goals
         const hashtagResult = await intelligentHashtagGenerator.generateIntelligentHashtags({
           userId,
           platform,
           contentType: questDef.type || 'post',
           questType: questDef.targetAction || 'default',
-          userGoals: []
+          userGoals: userGoals
         });
 
         // Update quest
