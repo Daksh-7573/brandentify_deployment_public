@@ -9244,6 +9244,94 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Manually enhance quests with recommendations
+  app.post('/api/enhance-user-quests/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      console.log(`[Quest Enhancement] Enhancing quests for user ${userId}`);
+      
+      const { recommendationService } = await import('./services/recommendation-service');
+      const { intelligentHashtagGenerator } = await import('./services/intelligent-hashtag-generator');
+      
+      // Get user data
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      // Get active quests
+      const activeQuests = await db
+        .select()
+        .from(userQuests)
+        .where(and(
+          eq(userQuests.userId, userId),
+          eq(userQuests.status, 'active')
+        ));
+
+      const enhanced = [];
+      
+      for (const quest of activeQuests) {
+        // Get quest definition
+        const [questDef] = await db
+          .select()
+          .from(questDefinitions)
+          .where(eq(questDefinitions.id, quest.questDefinitionId))
+          .limit(1);
+
+        if (!questDef) continue;
+
+        const platform = questDef.platform || 'LinkedIn';
+        
+        // Get recommendations
+        const recommendation = await recommendationService.getSocialQuestRecommendation(
+          platform,
+          user.industry || 'Professional',
+          user.domain || 'General'
+        );
+        
+        // Generate hashtags
+        const hashtagResult = await intelligentHashtagGenerator.generateIntelligentHashtags({
+          userId,
+          platform,
+          contentType: questDef.type || 'post',
+          questType: questDef.targetAction || 'default',
+          userGoals: []
+        });
+
+        // Update quest
+        await db
+          .update(userQuests)
+          .set({
+            recommendedPostTime: recommendation.recommendedPostTime,
+            recommendationSource: recommendation.recommendationSource,
+            confidenceScore: recommendation.confidenceScore,
+            suggestedHashtags: hashtagResult.hashtags,
+            hashtagContext: hashtagResult.context
+          })
+          .where(eq(userQuests.id, quest.id));
+
+        enhanced.push({
+          questId: quest.id,
+          title: questDef.title,
+          postTime: recommendation.recommendedPostTime,
+          hashtags: hashtagResult.hashtags
+        });
+      }
+
+      res.json({
+        success: true,
+        enhanced: enhanced.length,
+        quests: enhanced
+      });
+    } catch (error) {
+      console.error('[Quest Enhancement] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
   // Instant Quest Assignment for Single User (Post-Onboarding)
   app.post('/api/assign-initial-quests/:userId', async (req: Request, res: Response) => {
     try {
