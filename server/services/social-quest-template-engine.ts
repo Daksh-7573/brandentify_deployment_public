@@ -495,10 +495,20 @@ export class SocialQuestTemplateEngine {
   }
 
   private generateSignatureMethodology(user: any, experiences: any[]): string {
+    // Generate a clean methodology description without redundant "proven" prefix
     if (experiences.length > 0) {
-      return `proven ${experiences[0].title} methodology`;
+      const title = experiences[0].title || '';
+      // Create a methodology based on domain/title that makes sense
+      if (user.domain) {
+        return `${user.domain} framework`;
+      }
+      // Only use title if it's meaningful (not generic like "Demo")
+      if (title.length > 4 && !['demo', 'test', 'sample'].includes(title.toLowerCase())) {
+        return `${title} methodology`;
+      }
     }
-    return `systematic ${user.domain || 'professional'} approach`;
+    // Fallback to domain-based or generic approach
+    return user.domain ? `${user.domain} approach` : 'professional framework';
   }
 
   private generateCareerStory(user: any, experiences: any[]): string {

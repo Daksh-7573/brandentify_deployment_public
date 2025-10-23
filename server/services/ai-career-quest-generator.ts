@@ -316,7 +316,7 @@ export class AICareerQuestGenerator {
     const [questDef] = await db
       .select()
       .from(questDefinitions)
-      .where(eq(questDefinitions.type, questType))
+      .where(eq(questDefinitions.type, questType as any))
       .limit(1);
     
     return questDef || null;
