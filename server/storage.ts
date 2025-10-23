@@ -13722,6 +13722,7 @@ export const storage = {
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
   updatePulse: (id: number, pulse: Partial<Pulse>) => dbStorage.updatePulse(id, pulse),
   deletePulse: (id: number) => dbStorage.deletePulse(id),
+  extractAndSaveHashtags: (text: string, pulseId: number) => dbStorage.extractAndSaveHashtags(text, pulseId),
   
   // Pulse Comment methods
   getPulseCommentsByPulseId: (pulseId: number) => dbStorage.getPulseCommentsByPulseId(pulseId),
