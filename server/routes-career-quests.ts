@@ -23,6 +23,61 @@ import { updateQuestProgress as serviceUpdateQuestProgress } from './services/qu
 import { socialQuestTemplateEngine } from './services/social-quest-template-engine';
 
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
+  // TEST ENDPOINT: Direct database query to debug personalized quests
+  apiRouter.get("/test-personalized-quest/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const currentDate = new Date().toISOString().split('T')[0];
+      
+      const result = await pool.query(`
+        SELECT 
+          uq.id,
+          uq.quest_definition_id,
+          uq.assigned_date,
+          qd.title as def_title,
+          qd.musk_tip as def_musk_tip,
+          qd.estimated_time_minutes as def_time,
+          qd.difficulty_level as def_difficulty,
+          gcq.id as gen_id,
+          gcq.personalized_title as gen_title,
+          gcq.personalized_musk_tip as gen_musk_tip,
+          gcq.estimated_time_minutes as gen_time,
+          gcq.difficulty_level as gen_difficulty
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        LEFT JOIN LATERAL (
+          SELECT * FROM generated_career_quests
+          WHERE user_id = uq.user_id
+            AND quest_definition_id = uq.quest_definition_id
+            AND assigned_date = uq.assigned_date::text
+          ORDER BY id DESC
+          LIMIT 1
+        ) gcq ON true
+        WHERE uq.user_id = $1
+          AND uq.assigned_date::text = $2
+        ORDER BY uq.assigned_at DESC
+      `, [userId, currentDate]);
+      
+      res.json({
+        currentDate,
+        userId,
+        rowCount: result.rows.length,
+        rawRows: result.rows,
+        processedQuests: result.rows.map(row => ({
+          id: row.id,
+          title: row.gen_title || row.def_title,
+          muskTip: row.gen_musk_tip || row.def_musk_tip,
+          estimatedTimeMinutes: row.gen_time || row.def_time,
+          difficultyLevel: row.gen_difficulty || row.def_difficulty,
+          hasPersonalizedData: !!row.gen_id
+        }))
+      });
+    } catch (error) {
+      console.error('[TEST PERSONALIZED QUEST] Error:', error);
+      res.status(500).json({ error: String(error) });
+    }
+  });
+  
   // Quest Definition routes
   apiRouter.get("/quest-definitions", async (req, res) => {
     try {
@@ -771,8 +826,76 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // Get today's active quests (note: will need to add definitions separately)
-        quests = await storage.getCurrentDayUserQuests(userId);
+        // HOTFIX: Query database directly to get personalized quest data
+        // TODO: Remove this once storage.ts reloads properly
+        const currentDate = new Date().toISOString().split('T')[0];
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            COALESCE(gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          WHERE uq.user_id = $1
+            AND uq.assigned_date = $2
+            AND qd.type NOT IN ('social_quest', 'social_post')
+            AND uq.status = 'active'
+          ORDER BY uq.assigned_at DESC
+        `, [userId, currentDate]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        }));
       } else if (bucket === 'completed') {
         // Get completed user quests WITH definitions (like social quests)
         const allQuests = await storage.getUserQuestsWithDefinitions(userId);

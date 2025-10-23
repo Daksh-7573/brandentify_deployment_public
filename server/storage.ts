@@ -7275,8 +7275,8 @@ export class MemStorage implements IStorage {
           qd.platform_constraints as "platformConstraints",
           COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
           gcq.suggested_hashtags as "aiHashtags",
-          gcq.estimated_time_minutes as "estimatedTimeMinutes",
-          gcq.difficulty_level as "difficultyLevel"
+          COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+          COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         LEFT JOIN LATERAL (
