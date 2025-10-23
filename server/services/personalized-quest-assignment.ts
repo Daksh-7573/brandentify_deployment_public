@@ -610,22 +610,28 @@ export class PersonalizedQuestAssignment {
       
       const candidateQuests = [];
       
-      // Generate 2 career quests and 2 social quests as candidates
-      for (let i = 0; i < 2; i++) {
+      // Generate UP TO 4 career quests
+      console.log('[IntelligentQuests] Generating up to 4 career quest candidates...');
+      for (let i = 0; i < 4; i++) {
         const careerQuest = await questGenerator.generateCareerQuest(userId);
         if (careerQuest) {
           candidateQuests.push({ ...careerQuest, category: 'career' });
         }
-        
+      }
+      
+      // Generate UP TO 5 social quests
+      console.log('[IntelligentQuests] Generating up to 5 social quest candidates...');
+      for (let i = 0; i < 5; i++) {
         const socialQuest = await questGenerator.generateSocialQuest(userId);
         if (socialQuest) {
           candidateQuests.push({ ...socialQuest, category: 'social' });
         }
       }
 
-      console.log(`[IntelligentQuests] Generated ${candidateQuests.length} candidate quests`);
+      console.log(`[IntelligentQuests] Generated ${candidateQuests.length} candidate quests (up to 4 career + up to 5 social)`);
 
-      // Calculate estimated time for each quest (sum of subtask times)
+      // Calculate metrics for each candidate quest
+      // Impact Score = (XP ÷ Time) × Difficulty Multiplier
       const questsWithMetrics = candidateQuests.map(quest => {
         const estimatedMinutes = quest.subtasks 
           ? quest.subtasks.reduce((sum, subtask) => sum + (subtask.estimatedMinutes || 15), 0)
@@ -641,13 +647,16 @@ export class PersonalizedQuestAssignment {
         };
       });
 
-      // Sort by impact score (XP per minute * difficulty multiplier) if preferHighXP is true
+      // Sort candidates by impact score (higher = better XP efficiency)
       if (options.preferHighXP) {
         questsWithMetrics.sort((a, b) => b.impactScore - a.impactScore);
       }
 
-      // Intelligent selection: fill daily time budget optimally
-      const selectedQuests = [];
+      // GREEDY ALGORITHM: Select optimal quest combination
+      // - Respects 60-minute daily cap
+      // - Maximizes total XP
+      // - Assigns 1-4 quests maximum
+      const selectedQuests: any[] = [];
       let totalMinutes = 0;
       let totalXP = 0;
 
@@ -658,12 +667,14 @@ export class PersonalizedQuestAssignment {
           totalMinutes += quest.estimatedMinutes;
           totalXP += quest.xpReward;
           
-          console.log(`[IntelligentQuests] Selected: ${quest.title} (${quest.estimatedMinutes} min, ${quest.xpReward} XP)`);
+          console.log(`[IntelligentQuests] ✓ Selected: ${quest.title} (${quest.estimatedMinutes} min, ${quest.xpReward} XP, ${quest.xpPerMinute.toFixed(1)} XP/min)`);
           
           // Stop if we've assigned 4 quests (max per day)
           if (selectedQuests.length >= 4) {
             break;
           }
+        } else {
+          console.log(`[IntelligentQuests] ✗ Skipped: ${quest.title} (would exceed ${options.maxDailyMinutes} min cap)`);
         }
       }
 
