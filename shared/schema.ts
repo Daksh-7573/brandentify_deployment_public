@@ -1814,6 +1814,26 @@ export const generatedSocialQuests = pgTable("generated_social_quests", {
   confidenceScore: integer("confidence_score") // Confidence level 0-100
 });
 
+// Generated career quests - AI-personalized career development quests
+export const generatedCareerQuests = pgTable("generated_career_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  questType: text("quest_type").notNull(), // "profile_update", "pulse_creation", "skill_development", etc.
+  variablesUsed: jsonb("variables_used").notNull(), // User context used for generation
+  personalizedTitle: text("personalized_title").notNull(),
+  personalizedDescription: text("personalized_description").notNull(),
+  personalizedMuskTip: text("personalized_musk_tip").notNull(),
+  generatedAt: timestamp("generated_at").defaultNow(),
+  assignedAt: timestamp("assigned_at"),
+  completedAt: timestamp("completed_at"),
+  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format
+  status: questStatusEnum("status").default("active"),
+  brandImpactScore: integer("brand_impact_score").default(0),
+  xpReward: integer("xp_reward").default(50),
+  difficulty: text("difficulty") // "beginner", "intermediate", "advanced"
+});
+
 // Platform Activity Insights - stores optimal posting windows for different platforms/industries/domains
 export const platformActivityInsights = pgTable("platform_activity_insights", {
   id: serial("id").primaryKey(),
@@ -1857,6 +1877,13 @@ export const insertGeneratedSocialQuestSchema = createInsertSchema(generatedSoci
   completedAt: true
 });
 
+export const insertGeneratedCareerQuestSchema = createInsertSchema(generatedCareerQuests).omit({
+  id: true,
+  generatedAt: true,
+  assignedAt: true,
+  completedAt: true
+});
+
 // Export types for template system
 export type SocialQuestTemplateCategory = typeof socialQuestTemplateCategories.$inferSelect;
 export type InsertSocialQuestTemplateCategory = z.infer<typeof insertSocialQuestTemplateCategorySchema>;
@@ -1869,6 +1896,9 @@ export type InsertPersonalBrandVariables = z.infer<typeof insertPersonalBrandVar
 
 export type TemplateAssignmentRule = typeof templateAssignmentRules.$inferSelect;
 export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignmentRuleSchema>;
+
+export type GeneratedCareerQuest = typeof generatedCareerQuests.$inferSelect;
+export type InsertGeneratedCareerQuest = z.infer<typeof insertGeneratedCareerQuestSchema>;
 
 export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
 export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
