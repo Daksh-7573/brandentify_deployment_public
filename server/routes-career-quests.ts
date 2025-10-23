@@ -790,7 +790,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.status(201).json([]);
         }
         
-        const assignedQuests = await storage.assignDailyQuestsToUser(userId);
+        // HOTFIX: Use V2 generator for achievable quests
+        // Import the daily quest scheduler to use the same logic
+        const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+        
+        // Trigger assignment for this specific user
+        await dailyQuestScheduler.triggerDailyAssignmentForUser(userId);
+        
+        // Return the newly assigned quests
+        const assignedQuests = await storage.getCurrentDayUserQuests(userId);
         res.status(201).json(assignedQuests);
       } catch (dbError) {
         console.error(`[POST /users/${req.params.userId}/quests/assign-daily] Database error:`, dbError);

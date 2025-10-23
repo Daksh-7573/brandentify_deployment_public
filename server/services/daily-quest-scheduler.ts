@@ -7,6 +7,7 @@ import { recommendationService } from './recommendation-service';
 import { smartQuestAllocator } from './smart-quest-allocator';
 import { intelligentHashtagGenerator } from './intelligent-hashtag-generator';
 import { comprehensiveQuestGenerator } from './comprehensive-quest-generator';
+import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
@@ -165,6 +166,38 @@ class DailyQuestScheduler {
       failedAssignments: assignmentResult.errorCount
     };
   }
+  
+  /**
+   * Trigger daily quest assignment for a specific user (V2 generator)
+   * Used by manual API endpoints
+   */
+  public async triggerDailyAssignmentForUser(userId: number) {
+    console.log(`[DailyQuestScheduler] Manual assignment for user ${userId} using V2 generator`);
+    
+    // Get user profile and brand goals
+    const [userProfile] = await db.select().from(users).where(eq(users.id, userId));
+    const [userBrandGoals] = await db.select().from(brandGoals).where(eq(brandGoals.userId, userId));
+    
+    if (!userProfile) {
+      throw new Error(`User ${userId} not found`);
+    }
+    
+    // Use Smart Quest Allocator to determine optimal quest quantity (1-4)
+    const allocation = await smartQuestAllocator.allocateDailyQuests(userId);
+    
+    console.log(`[DailyQuestScheduler] 🎯 Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social)`);
+    
+    // Assign quests using V2 generator
+    const assignedQuests = await this.assignSelectedQuests(userId, allocation);
+    
+    // Add posting time recommendations
+    if (assignedQuests.length > 0) {
+      await this.enhanceQuestsWithRecommendations(userProfile, assignedQuests);
+    }
+    
+    console.log(`[DailyQuestScheduler] ✅ Assigned ${assignedQuests.length} quests to user ${userId}`);
+    return assignedQuests;
+  }
 
   public getSchedulerStatus() {
     return {
@@ -251,15 +284,27 @@ class DailyQuestScheduler {
     try {
       for (const selectedQuest of allocation.selectedQuests) {
         
-        // If this is a career quest, generate detailed AI specifications
+        // If this is a career quest, generate detailed AI specifications using V2 generator
         if (selectedQuest.category === 'career') {
-          console.log(`[DailyQuestScheduler] 🎯 Generating AI-detailed career quest for user ${userId}: ${selectedQuest.questType}`);
+          console.log(`[DailyQuestScheduler] 🎯 Generating AI-detailed career quest (V2) for user ${userId}: ${selectedQuest.questType}`);
           
-          // Generate comprehensive detailed quest specifications
-          const detailedQuests = await comprehensiveQuestGenerator.generateDetailedCareerQuests(userId, 1);
+          let detailedQuest;
           
-          if (detailedQuests.length === 0) {
-            console.log(`[DailyQuestScheduler] ⚠️ No detailed quest generated, falling back to standard assignment`);
+          try {
+            // Generate REAL, achievable quest using V2 generator
+            detailedQuest = await comprehensiveQuestGeneratorV2.generatePersonalizedQuest(
+              userId,
+              selectedQuest.questDefinitionId,
+              userProfile,
+              userBrandGoals?.selectedGoals || []
+            );
+            
+            console.log(`[DailyQuestScheduler] ✅ V2 Generated: "${detailedQuest.title}"`);
+            console.log(`[DailyQuestScheduler] 📋 Platform Activity: ${detailedQuest.platformConstraints}`);
+            console.log(`[DailyQuestScheduler] ⏱️ Time: ${detailedQuest.estimatedTimeMinutes} min`);
+          
+          } catch (generateError) {
+            console.error(`[DailyQuestScheduler] ⚠️ V2 generation failed, falling back to standard assignment:`, generateError);
             // Fallback to standard quest assignment
             const [quest] = await db
               .insert(userQuests)
@@ -282,8 +327,6 @@ class DailyQuestScheduler {
             });
             continue;
           }
-          
-          const detailedQuest = detailedQuests[0];
           
           // Prepare variables_used metadata (IMPORTANT: jsonb expects object, not JSON string!)
           const variablesUsed = {
