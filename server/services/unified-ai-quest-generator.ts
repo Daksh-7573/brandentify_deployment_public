@@ -186,30 +186,136 @@ export class UnifiedAIQuestGenerator {
   }
 
   /**
-   * Select best platform based on user's target audience
+   * INTELLIGENT PLATFORM SELECTOR
+   * Selects best platform based on maximum audience reach potential
+   * Considers: Primary/Secondary Audience + Industry + Domain + Goals
    */
   private selectPlatformForAudience(user: any): string {
-    const primaryAudience = user.primaryAudience?.[0]?.toLowerCase() || '';
-    
-    // Platform selection based on audience demographics
-    const platformMap: Record<string, string> = {
-      'executives': 'linkedin',
-      'investors': 'linkedin',
-      'entrepreneurs': 'linkedin',
-      'students': 'instagram',
-      'creators': 'instagram',
-      'developers': 'twitter',
-      'designers': 'instagram',
-      'marketers': 'linkedin'
+    const primaryAudience = user.primaryAudience || [];
+    const secondaryAudience = user.secondaryAudience || [];
+    const industry = (user.industry || '').toLowerCase();
+    const domain = (user.domain || user.title || '').toLowerCase();
+    const goals = user.brandGoals || [];
+
+    // Platform scoring system (0-100 points)
+    const platformScores: Record<string, number> = {
+      'linkedin': 0,
+      'twitter': 0,
+      'instagram': 0,
+      'youtube': 0,
+      'tiktok': 0
     };
 
-    for (const [audience, platform] of Object.entries(platformMap)) {
-      if (primaryAudience.includes(audience)) {
-        return platform;
+    // 1️⃣ AUDIENCE-BASED SCORING (40 points)
+    const audiencePlatformMap: Record<string, Record<string, number>> = {
+      'executives': { linkedin: 20, twitter: 10, youtube: 5, instagram: 3, tiktok: 2 },
+      'investors': { linkedin: 20, twitter: 15, youtube: 8, instagram: 3, tiktok: 2 },
+      'entrepreneurs': { linkedin: 18, twitter: 15, instagram: 10, youtube: 8, tiktok: 5 },
+      'students': { instagram: 18, tiktok: 15, youtube: 12, linkedin: 8, twitter: 5 },
+      'creators': { instagram: 18, youtube: 18, tiktok: 15, twitter: 10, linkedin: 5 },
+      'developers': { twitter: 18, linkedin: 15, youtube: 10, instagram: 5, tiktok: 2 },
+      'designers': { instagram: 18, linkedin: 12, twitter: 10, youtube: 8, tiktok: 8 },
+      'marketers': { linkedin: 18, twitter: 15, instagram: 12, youtube: 10, tiktok: 8 },
+      'freelancers': { linkedin: 15, instagram: 12, twitter: 10, youtube: 8, tiktok: 5 },
+      'professionals': { linkedin: 20, twitter: 12, youtube: 8, instagram: 5, tiktok: 3 }
+    };
+
+    // Primary audience (higher weight)
+    primaryAudience.forEach((audience: string) => {
+      const audienceKey = audience.toLowerCase();
+      const scores = audiencePlatformMap[audienceKey];
+      if (scores) {
+        Object.entries(scores).forEach(([platform, score]) => {
+          platformScores[platform] += score;
+        });
+      }
+    });
+
+    // Secondary audience (lower weight - 50%)
+    secondaryAudience.forEach((audience: string) => {
+      const audienceKey = audience.toLowerCase();
+      const scores = audiencePlatformMap[audienceKey];
+      if (scores) {
+        Object.entries(scores).forEach(([platform, score]) => {
+          platformScores[platform] += score * 0.5;
+        });
+      }
+    });
+
+    // 2️⃣ INDUSTRY-BASED SCORING (30 points)
+    const industryPlatformMap: Record<string, Record<string, number>> = {
+      'technology': { twitter: 15, linkedin: 12, youtube: 8, instagram: 5, tiktok: 3 },
+      'finance': { linkedin: 18, twitter: 10, youtube: 6, instagram: 3, tiktok: 2 },
+      'healthcare': { linkedin: 15, youtube: 12, twitter: 8, instagram: 5, tiktok: 3 },
+      'education': { youtube: 15, linkedin: 12, instagram: 10, twitter: 8, tiktok: 8 },
+      'marketing': { instagram: 15, linkedin: 12, twitter: 12, youtube: 10, tiktok: 10 },
+      'creative': { instagram: 18, youtube: 15, tiktok: 12, twitter: 8, linkedin: 5 },
+      'entertainment': { tiktok: 18, instagram: 15, youtube: 15, twitter: 10, linkedin: 3 },
+      'consulting': { linkedin: 18, twitter: 10, youtube: 8, instagram: 3, tiktok: 2 }
+    };
+
+    for (const [ind, scores] of Object.entries(industryPlatformMap)) {
+      if (industry.includes(ind)) {
+        Object.entries(scores).forEach(([platform, score]) => {
+          platformScores[platform] += score;
+        });
+        break;
       }
     }
 
-    return 'linkedin'; // Default to LinkedIn for professionals
+    // 3️⃣ DOMAIN-BASED SCORING (20 points)
+    const domainKeywords: Record<string, Record<string, number>> = {
+      'software': { twitter: 10, linkedin: 8, youtube: 6, instagram: 3, tiktok: 2 },
+      'design': { instagram: 10, linkedin: 6, twitter: 5, youtube: 5, tiktok: 6 },
+      'sales': { linkedin: 10, twitter: 6, instagram: 5, youtube: 4, tiktok: 3 },
+      'content': { instagram: 10, youtube: 10, tiktok: 8, twitter: 6, linkedin: 4 },
+      'engineering': { linkedin: 8, twitter: 8, youtube: 6, instagram: 3, tiktok: 2 },
+      'management': { linkedin: 10, twitter: 6, youtube: 5, instagram: 3, tiktok: 2 }
+    };
+
+    for (const [keyword, scores] of Object.entries(domainKeywords)) {
+      if (domain.includes(keyword)) {
+        Object.entries(scores).forEach(([platform, score]) => {
+          platformScores[platform] += score;
+        });
+      }
+    }
+
+    // 4️⃣ GOAL-BASED SCORING (10 points)
+    const goalKeywords: Record<string, Record<string, number>> = {
+      'thought leadership': { linkedin: 5, twitter: 5, youtube: 3, instagram: 2, tiktok: 1 },
+      'brand awareness': { instagram: 5, tiktok: 5, youtube: 4, linkedin: 3, twitter: 3 },
+      'network': { linkedin: 5, twitter: 4, instagram: 3, youtube: 2, tiktok: 2 },
+      'clients': { linkedin: 5, instagram: 4, twitter: 3, youtube: 3, tiktok: 2 },
+      'influence': { instagram: 5, tiktok: 5, youtube: 4, twitter: 4, linkedin: 3 }
+    };
+
+    goals.forEach((goal: string) => {
+      const goalLower = goal.toLowerCase();
+      for (const [keyword, scores] of Object.entries(goalKeywords)) {
+        if (goalLower.includes(keyword)) {
+          Object.entries(scores).forEach(([platform, score]) => {
+            platformScores[platform] += score;
+          });
+        }
+      }
+    });
+
+    // 5️⃣ SELECT PLATFORM WITH HIGHEST SCORE (Max Audience Potential)
+    let maxScore = 0;
+    let selectedPlatform = 'linkedin'; // Default
+
+    Object.entries(platformScores).forEach(([platform, score]) => {
+      console.log(`[Platform Selector] ${platform}: ${score} points`);
+      if (score > maxScore) {
+        maxScore = score;
+        selectedPlatform = platform;
+      }
+    });
+
+    console.log(`[Platform Selector] ✅ Selected: ${selectedPlatform} (${maxScore} points) for max audience reach`);
+    
+    return selectedPlatform;
   }
 
   /**
