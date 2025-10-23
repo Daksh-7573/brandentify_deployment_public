@@ -36,8 +36,6 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
-  resumeScoreId?: number;
-  isResumeAnalysis?: boolean;
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -47,8 +45,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [currentResumeScoreId, setCurrentResumeScoreId] = useState<number | null>(null);
-  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -483,12 +479,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
-      // Store resume score ID for CV generation (only for resume uploads)
-      if (isResume && uploadResult.resumeScoreId) {
-        setCurrentResumeScoreId(uploadResult.resumeScoreId);
-        console.log('[Musk Chat] Stored resume score ID:', uploadResult.resumeScoreId);
-      }
-      
       // The result includes the analysis message directly
       const analyzeResult = {
         analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
@@ -522,9 +512,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: analyzeResult.analysis,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses,
-                resumeScoreId: isResume ? uploadResult.resumeScoreId : undefined,
-                isResumeAnalysis: isResume
+                quickResponses
               }
             : msg
         )
@@ -601,66 +589,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   const triggerPitchDeckUpload = () => {
     pitchDeckFileInputRef.current?.click();
-  };
-  
-  const handleGenerateCV = async (resumeScoreId: number) => {
-    if (!user?.id && !context?.userId) {
-      toast({
-        title: 'Error',
-        description: 'User ID not found. Please try again.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    setIsGeneratingCV(true);
-    console.log('[Musk Chat] Generating CV for resume score:', resumeScoreId);
-    
-    try {
-      const userId = user?.id || context?.userId;
-      
-      const response = await fetch('/api/musk/generate-cv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resumeScoreId,
-          userId
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate CV');
-      }
-      
-      // Get the file blob
-      const blob = await response.blob();
-      
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'improved-resume.docx';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      toast({
-        title: 'Success!',
-        description: 'Your improved resume has been downloaded.',
-      });
-      
-      console.log('[Musk Chat] CV downloaded successfully');
-    } catch (error) {
-      console.error('[Musk Chat] CV generation error:', error);
-      toast({
-        title: 'Generation Error',
-        description: 'Failed to generate CV. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsGeneratingCV(false);
-    }
   };
   
   const panelVariants = {
@@ -829,33 +757,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                         .replace(/\n\n/g, '</p><p>')
                     }}
                   ></div>
-                )}
-                
-                {/* CV Generation Button for Resume Analysis */}
-                {message.sender === 'musk' && message.isResumeAnalysis && message.resumeScoreId && (
-                  <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    <Button
-                      onClick={() => handleGenerateCV(message.resumeScoreId!)}
-                      disabled={isGeneratingCV}
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold border-0"
-                      data-testid="button-generate-cv-musk"
-                    >
-                      {isGeneratingCV ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating CV...
-                        </>
-                      ) : (
-                        <>
-                          <FileText className="mr-2 h-4 w-4" />
-                          Generate & Download Improved CV
-                        </>
-                      )}
-                    </Button>
-                    <p className="text-xs text-center mt-2 text-white/70">
-                      Click to download a Word document with all fixes applied
-                    </p>
-                  </div>
                 )}
                 
                 {/* Quick responses */}
