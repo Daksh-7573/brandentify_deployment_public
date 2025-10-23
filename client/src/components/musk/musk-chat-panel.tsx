@@ -831,6 +831,33 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   ></div>
                 )}
                 
+                {/* CV Generation Button for Resume Analysis */}
+                {message.sender === 'musk' && message.isResumeAnalysis && message.resumeScoreId && (
+                  <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                    <Button
+                      onClick={() => handleGenerateCV(message.resumeScoreId!)}
+                      disabled={isGeneratingCV}
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold border-0"
+                      data-testid="button-generate-cv-musk"
+                    >
+                      {isGeneratingCV ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating CV...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Generate & Download Improved CV
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-center mt-2 text-white/70">
+                      Click to download a Word document with all fixes applied
+                    </p>
+                  </div>
+                )}
+                
                 {/* Quick responses */}
                 {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
                   <div className="mt-3 flex flex-col gap-1">
