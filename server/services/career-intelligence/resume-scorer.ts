@@ -500,4 +500,136 @@ Fix this FIRST: [#1 priority]`;
   }
 }
 
+  /**
+   * Generate complete CV with all fixes applied (Word format)
+   */
+  async generateImprovedCV(resumeScoreId: number, userId: number): Promise<Buffer> {
+    const client = await pool.connect();
+    
+    try {
+      // Get resume score data
+      const scoreResult = await client.query(
+        `SELECT * FROM resume_scores WHERE id = $1 AND user_id = $2`,
+        [resumeScoreId, userId]
+      );
+      
+      if (scoreResult.rows.length === 0) {
+        throw new Error('Resume score not found or unauthorized');
+      }
+      
+      const resumeData = scoreResult.rows[0];
+      let improvedResumeText = resumeData.resume_text;
+      
+      // Get all fixes ordered by impact
+      const fixesResult = await client.query(
+        `SELECT * FROM resume_fixes 
+         WHERE resume_score_id = $1 
+         ORDER BY impact_score DESC`,
+        [resumeScoreId]
+      );
+      
+      const fixes = fixesResult.rows;
+      
+      console.log(`[CV Generator] Applying ${fixes.length} fixes to resume`);
+      
+      // Apply all fixes (replace current_text with suggested_text)
+      for (const fix of fixes) {
+        const currentText = fix.current_text;
+        const suggestedText = fix.suggested_text;
+        
+        // Safe replacement - only if current text exists in resume
+        if (improvedResumeText.includes(currentText)) {
+          improvedResumeText = improvedResumeText.replace(currentText, suggestedText);
+          console.log(`[CV Generator] Applied fix: "${currentText.substring(0, 50)}..." → "${suggestedText.substring(0, 50)}..."`);
+        } else {
+          console.log(`[CV Generator] Skipping fix - text not found: "${currentText.substring(0, 50)}..."`);
+        }
+      }
+      
+      // Generate Word document
+      const docBuffer = await this.createWordDocument(improvedResumeText, resumeData);
+      
+      return docBuffer;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Create Word document from resume text
+   */
+  private async createWordDocument(resumeText: string, metadata: any): Promise<Buffer> {
+    const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, UnderlineType } = await import('docx');
+    
+    // Parse resume into sections
+    const lines = resumeText.split('\n');
+    const paragraphs: any[] = [];
+    
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      
+      if (!trimmedLine) {
+        // Empty line - add spacing
+        paragraphs.push(new Paragraph({ text: '' }));
+        continue;
+      }
+      
+      // Detect if line is a heading (ALL CAPS or ends with colon)
+      const isHeading = trimmedLine === trimmedLine.toUpperCase() && trimmedLine.length > 2 && trimmedLine.length < 50;
+      const isSubheading = trimmedLine.endsWith(':') && !trimmedLine.includes('  ');
+      
+      if (isHeading) {
+        paragraphs.push(new Paragraph({
+          text: trimmedLine,
+          heading: HeadingLevel.HEADING_1,
+          spacing: { before: 240, after: 120 }
+        }));
+      } else if (isSubheading) {
+        paragraphs.push(new Paragraph({
+          children: [new TextRun({ text: trimmedLine, bold: true, size: 24 })],
+          spacing: { before: 200, after: 100 }
+        }));
+      } else if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+        // Bullet point
+        paragraphs.push(new Paragraph({
+          text: trimmedLine.substring(1).trim(),
+          bullet: { level: 0 },
+          spacing: { before: 60, after: 60 }
+        }));
+      } else {
+        // Regular paragraph
+        paragraphs.push(new Paragraph({
+          text: trimmedLine,
+          spacing: { before: 100, after: 100 }
+        }));
+      }
+    }
+    
+    // Create document
+    const doc = new Document({
+      sections: [{
+        properties: {
+          page: {
+            margin: {
+              top: 720,  // 0.5 inch
+              right: 720,
+              bottom: 720,
+              left: 720
+            }
+          }
+        },
+        children: paragraphs
+      }]
+    });
+    
+    // Generate buffer
+    const { Packer } = await import('docx');
+    const buffer = await Packer.toBuffer(doc);
+    
+    console.log(`[CV Generator] Generated Word document: ${buffer.length} bytes`);
+    
+    return buffer;
+  }
+}
+
 export const resumeScorerService = new ResumeScorerService();
