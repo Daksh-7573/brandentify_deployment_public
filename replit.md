@@ -3,6 +3,9 @@
 ## Overview
 Brandentifier is an AI-driven career development platform designed to help users build their professional brand, track career progress, and receive personalized guidance. It integrates an AI assistant and professional networking features, leveraging local AI infrastructure to optimize costs while maintaining full functionality. The platform aims to provide comprehensive insights and support for professional growth, offering personalized quest systems for career development, social media engagement, and brand building. The system intelligently assigns quests based on user goals, audience demographics, and impact scoring, ensuring relevant and effective guidance.
 
+## Recent Changes
+- **October 23, 2025**: Fixed hashtag extraction bug in personalized Musk pulse generator. Added 8 missing hashtag methods to `DatabaseStorage` class with PostgreSQL implementations: `getHashtagById`, `getHashtagByTag`, `createHashtag`, `incrementHashtagCount`, `createPulseHashtag`, `getPulseHashtagsByPulseId`, `getHashtagsByPulseId`, `extractAndSaveHashtags`. Hashtags are now successfully extracted from AI-generated pulse content and persisted to database (verified via SQL query on pulses 452-453).
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
