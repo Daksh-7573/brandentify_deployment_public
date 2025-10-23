@@ -1211,6 +1211,21 @@ export const userQuests = pgTable("user_quests", {
   // - dismissedReason (quest dismissal functionality removed)
 });
 
+// Quest Subtasks - detailed action items for each quest
+export const questSubtasks = pgTable("quest_subtasks", {
+  id: serial("id").primaryKey(),
+  userQuestId: integer("user_quest_id").references(() => userQuests.id).notNull(),
+  orderIndex: integer("order_index").notNull(), // Display order (1, 2, 3...)
+  title: text("title").notNull(), // Subtask title (e.g., "Research current market trends")
+  description: text("description").notNull(), // Detailed explanation of what to do
+  platformActivity: text("platform_activity"), // Specific platform action (e.g., "create_media_pulse", "create_project", "post_comment")
+  platformDetails: jsonb("platform_details"), // Details for platform activity (e.g., {"type": "media_pulse", "image_count": 5, "topic": "AI trends"})
+  estimatedMinutes: integer("estimated_minutes").default(15), // Time to complete this subtask
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
 // Instant quest status enum
 export const instantQuestStatusEnum = pgEnum("instant_quest_status", [
   "pending",
@@ -1370,6 +1385,12 @@ export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
   completedAt: true
 });
 
+export const insertQuestSubtaskSchema = createInsertSchema(questSubtasks).omit({
+  id: true,
+  completedAt: true,
+  createdAt: true
+});
+
 export const insertInstantQuestSchema = createInsertSchema(instantQuests).omit({
   id: true,
   createdAt: true,
@@ -1399,6 +1420,9 @@ export type InsertQuestDefinition = z.infer<typeof insertQuestDefinitionSchema>;
 
 export type UserQuest = typeof userQuests.$inferSelect;
 export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
+
+export type QuestSubtask = typeof questSubtasks.$inferSelect;
+export type InsertQuestSubtask = z.infer<typeof insertQuestSubtaskSchema>;
 
 export type InstantQuest = typeof instantQuests.$inferSelect;
 export type InsertInstantQuest = z.infer<typeof insertInstantQuestSchema>;
