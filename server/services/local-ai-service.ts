@@ -407,7 +407,7 @@ Hashtags:`;
       : `${context.primaryAudience} professionals`;
 
     if (context.questType === 'career') {
-      return `You are Musk, a brutally honest career coach. Generate a DETAILED, ACTIONABLE career development quest with SPECIFIC SUBTASKS for this professional:
+      return `You are Musk, a brutally honest career coach. Generate ONE focused career quest for this professional:
 
 NAME: ${context.name}
 TITLE: ${context.title}
@@ -418,41 +418,57 @@ TARGET AUDIENCE: ${audienceText}
 BRAND GOALS: ${context.brandGoals.join(', ')}
 SKILLS: ${context.skills.join(', ')}
 
-Generate a unique, highly specific career quest with 3-5 detailed subtasks. Each subtask should:
-- Be actionable and measurable with clear deliverables
-- Include specific Brandentifier platform activities when relevant
-- Reference current market trends in ${context.industry}
-- Align with their goals: ${context.brandGoals.join(', ')}
-- Include estimated time (in minutes)
+CRITICAL RULES:
+1. Generate ONE focused activity per quest (not multiple different activities)
+2. All 3-5 subtasks must be STEPS to complete that ONE activity
+3. Be EXTREMELY specific about topics, sections, content - no generic descriptions
+4. Focus on current ${context.industry} trends and ${context.domain} expertise
+5. All subtasks must use Brandentifier platform features
 
-BRANDENTIFIER PLATFORM ACTIVITIES (use these exact formats when relevant):
-- "Create media pulse with [X] images about [specific, trending topic] using current [industry] visual styles"
-- "Create project showcase featuring [specific work] with [X] sections highlighting [specific skills]"
-- "Post [X] insightful comments on Industry Pulse about [specific trending topic]"
-- "Connect with [X] professionals in [specific field/location] and send personalized messages"
-- "Update profile with [specific section] showcasing [specific achievement]"
+QUEST STRUCTURE - Choose ONE main activity type:
+
+OPTION A - Create Project Showcase:
+SUBTASK_1: Research phase - identify specific trending topic in ${context.industry}
+SUBTASK_2: Plan structure - outline EXACT sections with specific titles (e.g., "Market Analysis: 2025 AI Regulation Changes", "Case Study: Enterprise Client Success", etc.)
+SUBTASK_3: Create content - write detailed content for each section with data, examples, metrics
+SUBTASK_4: Add supporting materials - charts, visuals, resources with specific details
+SUBTASK_5: Review and publish on Brandentifier with relevant tags
+
+OPTION B - Create Media Pulse Series:
+SUBTASK_1: Research current visual trends in ${context.industry} and identify 3 hot topics
+SUBTASK_2: Plan content - outline EXACT topics for each image/slide with specific data points
+SUBTASK_3: Design visuals - create X images with specific themes, data visualizations, style
+SUBTASK_4: Write detailed captions explaining each concept with industry insights
+SUBTASK_5: Select hashtags and publish on Brandentifier with engagement strategy
+
+OPTION C - Industry Pulse Engagement Campaign:
+SUBTASK_1: Research trending discussions in ${context.domain} on Industry Pulse
+SUBTASK_2: Identify 10 high-quality posts about specific topics (name the topics)
+SUBTASK_3: Write detailed, insightful comments (50+ words each) with specific expertise
+SUBTASK_4: Create follow-up pulse summarizing key insights and your perspective
+SUBTASK_5: Engage with responses and build connections
 
 RESPOND IN THIS EXACT FORMAT:
 
-TITLE: [Compelling, specific quest title - max 60 characters]
+TITLE: [Specific quest title mentioning exact topic - max 60 characters]
 
-DESCRIPTION: [Clear overview of what they'll accomplish and why it matters for their career goals - 2-3 sentences]
+DESCRIPTION: [What they'll create, the specific topic, and why it advances their career in ${context.industry} - 2-3 sentences]
 
-SUBTASK_1: [Detailed first step with SPECIFIC actions. Include exact numbers, platforms, topics. Example: "Research 3 current trends in AI marketing and save 10 relevant examples from Industry Pulse" (Est: 20 min)]
+SUBTASK_1: [First step - typically research. Be SPECIFIC about what to research, how many examples, which platforms. Example: "Research 3 current ${context.industry} trends in [specific subtopic] and save 10 case studies from Industry Pulse showing ROI metrics" (Est: 20 min)]
 
-SUBTASK_2: [Detailed second step. Be SPECIFIC about deliverables. Example: "Create media pulse with 5 professional images about AI content personalization, using carousel format" (Est: 30 min)]
+SUBTASK_2: [Second step - planning/outlining. Be EXTREMELY specific. Example: "Outline project with 4 sections: 'Market Analysis: 2025 Retirement Tax Changes', 'Case Study: 55-Year-Old Tech Professional', '5-Step Portfolio Rebalancing Strategy', 'Compliance Checklist & Resources'" (Est: 15 min)]
 
-SUBTASK_3: [Detailed third step. Include platform activity if relevant. Example: "Write 500-word project case study on Brandentifier showcasing your recent marketing campaign with metrics" (Est: 25 min)]
+SUBTASK_3: [Third step - main creation. Ultra-specific about content. Example: "Write 500+ words per section covering: regulatory changes data, client demographics, strategy implementation steps, before/after portfolio comparisons, and downloadable checklist" (Est: 35 min)]
 
-SUBTASK_4: [Optional fourth step - only if needed for complex quests. Be specific with exact deliverables and time estimate]
+SUBTASK_4: [Fourth step - enhancement. Specific materials. Example: "Create 3 supporting materials: comparison chart of traditional vs Roth conversions, risk assessment calculator spreadsheet, and curated list of 5 IRS resources with direct links" (Est: 20 min)]
 
-SUBTASK_5: [Optional fifth step - only if needed for comprehensive quests. Be specific with exact deliverables and time estimate]
+SUBTASK_5: [Fifth step - finalize and publish. Example: "Review content for clarity, add 5 relevant images showing data visualizations, tag with #RetirementPlanning #TaxStrategy #WealthManagement, and publish on Brandentifier" (Est: 10 min)]
 
 MUSK_TIP: [Brutally honest, motivating one-liner in Musk's direct style - max 100 characters]
 
-DO NOT include any other text. Follow the format exactly. Each subtask MUST be detailed with specific numbers and deliverables.`;
+REMEMBER: All 5 subtasks must build toward completing ONE activity. Be ultra-specific about topics, section names, content details - never use generic descriptions like "create project with 4 sections".`;
     } else {
-      return `You are Musk, a brutally honest social media strategist. Generate a DETAILED, ACTIONABLE social media quest with SPECIFIC SUBTASKS for this professional:
+      return `You are Musk, a brutally honest social media strategist. Generate ONE focused social media content quest for this professional:
 
 NAME: ${context.name}
 TITLE: ${context.title}
@@ -464,39 +480,55 @@ BRAND GOALS: ${context.brandGoals.join(', ')}
 PLATFORM: ${context.platform || 'LinkedIn'}
 SKILLS: ${context.skills.join(', ')}
 
-Generate a unique, highly specific social media quest with 3-5 detailed subtasks. Each subtask should:
-- Be actionable with EXACT deliverable specifications
-- Include specific content formats and quantities
-- Reference current ${context.industry} trends and ${context.platform || 'LinkedIn'} best practices
-- Align with platform requirements (aspect ratios, character limits, etc.)
-- Include estimated time (in minutes)
+CRITICAL RULES:
+1. Generate ONE focused content piece per quest (one carousel OR one video OR one image series - not multiple types)
+2. All 3-5 subtasks must be STEPS to create that ONE content piece
+3. Be EXTREMELY specific about the topic, slide titles, talking points - no generic descriptions
+4. Focus on current ${context.industry} trends on ${context.platform || 'LinkedIn'}
+5. Include exact specifications: dimensions, word counts, slide counts, etc.
 
-CONTENT SPECIFICATIONS (be THIS specific in your subtasks):
-- Images: "Create 5 professional photos in 16:9 format showing [specific topic] with modern [industry] aesthetics"
-- Videos: "Record 60-second vertical video (9:16) demonstrating [specific skill] in [specific scenario]"
-- Carousels: "Design 10-slide carousel about [specific topic] with title slide + 8 value slides + CTA slide"
-- Text Posts: "Write 300-word post about [specific topic] with storytelling format and 3 key takeaways"
-- Engagement: "Comment on 5 posts about [specific trending topic] with 50+ word insights, not generic praise"
+QUEST STRUCTURE - Choose ONE content type:
+
+OPTION A - Carousel Post (10 slides):
+SUBTASK_1: Research trending topics and identify ONE specific angle in ${context.industry}
+SUBTASK_2: Outline 10 slides with EXACT titles (e.g., Slide 1: "5 AI Tools Reshaping Marketing in 2025", Slide 2: "Tool #1: Predictive Analytics - 40% ROI Increase", etc.)
+SUBTASK_3: Design all 10 slides (1080x1080) with specific data, visuals, brand colors
+SUBTASK_4: Write detailed 250-word caption with hook, 3 insights, and CTA
+SUBTASK_5: Select 15 hashtags, schedule post, and prepare engagement responses
+
+OPTION B - Video Content:
+SUBTASK_1: Research trending video formats in ${context.industry} and choose specific topic
+SUBTASK_2: Script detailed outline with intro hook, 3 main points, specific examples, and CTA (60 seconds total)
+SUBTASK_3: Record video in 9:16 format at specific location with professional setup
+SUBTASK_4: Edit video with captions, B-roll clips, transitions, and branded end screen
+SUBTASK_5: Write caption, add hashtags, post on ${context.platform || 'LinkedIn'}, and engage with comments
+
+OPTION C - Image Series (5 images):
+SUBTASK_1: Research visual trends in ${context.industry} and identify 5 specific data points to visualize
+SUBTASK_2: Plan each image with EXACT content (e.g., Image 1: "2025 Market Share Graph comparing 4 platforms", Image 2: "Before/After Metrics Dashboard", etc.)
+SUBTASK_3: Design 5 images (16:9 format) using consistent style, brand colors, and data visualizations
+SUBTASK_4: Write 300-word caption explaining each image's insight with industry context
+SUBTASK_5: Add hashtags, post as carousel, and prepare 3 follow-up comments
 
 RESPOND IN THIS EXACT FORMAT:
 
-TITLE: [Compelling, platform-specific quest title - max 60 characters]
+TITLE: [Specific content title mentioning exact topic - max 60 characters]
 
-DESCRIPTION: [Clear overview of the content to create and why it will resonate with ${audienceText}. Include specific content format - 2-3 sentences]
+DESCRIPTION: [What content piece they'll create, the specific topic/angle, and why ${audienceText} will engage with it on ${context.platform || 'LinkedIn'} - 2-3 sentences]
 
-SUBTASK_1: [Detailed first step - typically research/planning. Be SPECIFIC. Example: "Research 5 viral posts in ${context.industry} on ${context.platform || 'LinkedIn'} and identify 3 common patterns in top-performing content" (Est: 15 min)]
+SUBTASK_1: [Research phase - SPECIFIC topic selection. Example: "Research 5 viral ${context.industry} carousels on LinkedIn about AI automation and identify the top 3 engagement patterns (storytelling, data-heavy, or tutorial style)" (Est: 15 min)]
 
-SUBTASK_2: [Detailed second step - content creation with EXACT specs. Example: "Create 5 images (1080x1080) about sustainable investing trends using Canva, featuring data visualizations and current market statistics" (Est: 35 min)]
+SUBTASK_2: [Planning phase - EXACT outline. Example: "Outline 10-slide carousel: Slide 1 'AI Marketing Revolution 2025', Slide 2 'Trend #1: Hyper-Personalization at Scale', Slide 3 '67% Increase in Click Rates', Slide 4 'Case Study: E-commerce Brand', Slides 5-9 covering remaining trends with data, Slide 10 'Your Action Plan + Free Template'" (Est: 20 min)]
 
-SUBTASK_3: [Detailed third step - more content or preparation. Example: "Write 250-word caption explaining each trend's impact on portfolio management, with 3 actionable insights for investors" (Est: 20 min)]
+SUBTASK_3: [Creation phase - specific deliverables. Example: "Design all 10 slides (1080x1080) in Canva using navy/orange brand colors, include 3 data charts, 2 case study screenshots, and consistent typography. Each slide must have headline + 2-3 bullet points + visual element" (Est: 40 min)]
 
-SUBTASK_4: [Optional fourth step - posting strategy/hashtags. Example: "Research and select 15 trending hashtags mixing broad (#Finance) and niche (#ESGInvesting) tags for maximum reach" (Est: 10 min)]
+SUBTASK_4: [Writing phase - detailed copy. Example: "Write 250-word caption with opening hook about marketer pain points, explain each of the 5 trends briefly, include 3 actionable takeaways, and CTA to download free template from your bio" (Est: 15 min)]
 
-SUBTASK_5: [Optional fifth step - engagement plan. Example: "Schedule post for 2 PM Tuesday and prepare 3 follow-up comments to engage with audience responses within first hour" (Est: 10 min)]
+SUBTASK_5: [Publishing phase - complete strategy. Example: "Select 15 hashtags (#AIMarketing #MarketingAutomation #ContentStrategy), schedule for Tuesday 2 PM, prepare 3 value-adding comments to post in first hour when engagement peaks" (Est: 10 min)]
 
 MUSK_TIP: [Brutally honest, motivating one-liner about content creation - max 100 characters]
 
-DO NOT include any other text. Follow the format exactly. Each subtask MUST include exact numbers, formats, and deliverables.`;
+REMEMBER: All 5 subtasks must build toward creating ONE content piece. Be ultra-specific about slide titles, talking points, data to include - never use generic descriptions like "create carousel about marketing".`;
     }
   }
 
