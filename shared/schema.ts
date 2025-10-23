@@ -1813,6 +1813,36 @@ export const generatedSocialQuests = pgTable("generated_social_quests", {
   confidenceScore: integer("confidence_score") // Confidence level 0-100
 });
 
+// Generated Career Quests - AI-generated detailed career quest specifications
+// Similar to generatedSocialQuests but for career quests (pulse_creation, resume, learning, portfolio)
+export const generatedCareerQuests = pgTable("generated_career_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  questType: text("quest_type").notNull(), // 'pulse_creation', 'resume', 'learning', 'portfolio'
+  personalizedTitle: text("personalized_title").notNull(),
+  personalizedDescription: text("personalized_description").notNull(),
+  deliverableFormat: text("deliverable_format").notNull(), // Specific deliverable requirements (e.g., "3 images with captions, 600×400px each")
+  quantityValue: integer("quantity_value").notNull(), // Specific quantity (e.g., 3)
+  quantityType: text("quantity_type").notNull(), // Type of deliverable (e.g., "images", "bullet points", "sections")
+  platformConstraints: text("platform_constraints").notNull(), // Specific platform/format requirements
+  guidanceSnippet: text("guidance_snippet").notNull(), // Step-by-step guidance personalized to user
+  personalizedMuskTip: text("personalized_musk_tip").notNull(), // Personalized Musk tip
+  estimatedTimeMinutes: integer("estimated_time_minutes").notNull(), // Time estimate
+  difficultyLevel: text("difficulty_level").notNull(), // 'beginner', 'intermediate', 'advanced'
+  generatedAt: timestamp("generated_at").defaultNow(),
+  assignedAt: timestamp("assigned_at"), // When assigned to user
+  completedAt: timestamp("completed_at"), // When user completed it
+  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
+  brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (for pulse creation quests)
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score"), // Confidence level 0-100
+  suggestedHashtags: text("suggested_hashtags").array(), // AI-generated hashtags for pulse quests
+  hashtagContext: text("hashtag_context") // Explanation of hashtag choices
+});
+
 // Platform Activity Insights - stores optimal posting windows for different platforms/industries/domains
 export const platformActivityInsights = pgTable("platform_activity_insights", {
   id: serial("id").primaryKey(),
@@ -1856,6 +1886,13 @@ export const insertGeneratedSocialQuestSchema = createInsertSchema(generatedSoci
   completedAt: true
 });
 
+export const insertGeneratedCareerQuestSchema = createInsertSchema(generatedCareerQuests).omit({
+  id: true,
+  generatedAt: true,
+  assignedAt: true,
+  completedAt: true
+});
+
 // Export types for template system
 export type SocialQuestTemplateCategory = typeof socialQuestTemplateCategories.$inferSelect;
 export type InsertSocialQuestTemplateCategory = z.infer<typeof insertSocialQuestTemplateCategorySchema>;
@@ -1871,6 +1908,9 @@ export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignme
 
 export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
 export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
+
+export type GeneratedCareerQuest = typeof generatedCareerQuests.$inferSelect;
+export type InsertGeneratedCareerQuest = z.infer<typeof insertGeneratedCareerQuestSchema>;
 
 export const insertPlatformActivityInsightSchema = createInsertSchema(platformActivityInsights).omit({
   id: true,

@@ -9244,6 +9244,34 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Test Comprehensive Detailed Quest Generation
+  app.post('/api/test-detailed-career-quests/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const count = parseInt(req.query.count as string) || 4;
+      
+      console.log(`[Detailed Quest Test] Generating ${count} detailed career quests for user ${userId}`);
+      
+      const { comprehensiveQuestGenerator } = await import('./services/comprehensive-quest-generator');
+      
+      // Generate detailed career quests
+      const detailedQuests = await comprehensiveQuestGenerator.generateDetailedCareerQuests(userId, count);
+      
+      res.json({
+        success: true,
+        quests: detailedQuests,
+        count: detailedQuests.length,
+        message: `Generated ${detailedQuests.length} fully detailed career quests with specifications`
+      });
+    } catch (error) {
+      console.error('[Detailed Quest Test] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
   // Manually enhance quests with recommendations
   app.post('/api/enhance-user-quests/:userId', async (req: Request, res: Response) => {
     try {
