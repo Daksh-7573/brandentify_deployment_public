@@ -94,7 +94,7 @@ export class LocalAIService {
   }
 
   /**
-   * Generate personalized quest using AI (career or social)
+   * Generate personalized quest using AI (career or social) with detailed subtasks
    */
   async generateQuest(userContext: {
     name: string;
@@ -112,11 +112,18 @@ export class LocalAIService {
     title: string;
     description: string;
     muskTip: string;
+    subtasks?: Array<{
+      title: string;
+      description: string;
+      estimatedMinutes: number;
+      platformActivity?: string;
+      platformDetails?: any;
+    }>;
   }> {
     const prompt = this.buildQuestPrompt(userContext);
     const response = await this.generateCompletion(prompt, `${userContext.questType}-quest-generation`);
     
-    // Parse the AI response to extract structured quest data
+    // Parse the AI response to extract structured quest data including subtasks
     return this.parseQuestResponse(response);
   }
 
@@ -400,7 +407,7 @@ Hashtags:`;
       : `${context.primaryAudience} professionals`;
 
     if (context.questType === 'career') {
-      return `You are Musk, a brutally honest career coach. Generate a personalized career development quest for this professional:
+      return `You are Musk, a brutally honest career coach. Generate a DETAILED, ACTIONABLE career development quest with SPECIFIC SUBTASKS for this professional:
 
 NAME: ${context.name}
 TITLE: ${context.title}
@@ -411,24 +418,41 @@ TARGET AUDIENCE: ${audienceText}
 BRAND GOALS: ${context.brandGoals.join(', ')}
 SKILLS: ${context.skills.join(', ')}
 
-Generate a unique, actionable quest that helps them advance their career. Focus on:
-- Building expertise in ${context.domain}
-- Creating value for ${audienceText}
-- Aligning with their goals: ${context.brandGoals.join(', ')}
+Generate a unique, highly specific career quest with 3-5 detailed subtasks. Each subtask should:
+- Be actionable and measurable with clear deliverables
+- Include specific Brandentifier platform activities when relevant
+- Reference current market trends in ${context.industry}
+- Align with their goals: ${context.brandGoals.join(', ')}
+- Include estimated time (in minutes)
 
-The quest should be specific to THEIR profile, not generic. Make it challenging but achievable.
+BRANDENTIFIER PLATFORM ACTIVITIES (use these exact formats when relevant):
+- "Create media pulse with [X] images about [specific, trending topic] using current [industry] visual styles"
+- "Create project showcase featuring [specific work] with [X] sections highlighting [specific skills]"
+- "Post [X] insightful comments on Industry Pulse about [specific trending topic]"
+- "Connect with [X] professionals in [specific field/location] and send personalized messages"
+- "Update profile with [specific section] showcasing [specific achievement]"
 
 RESPOND IN THIS EXACT FORMAT:
 
-TITLE: [A compelling, specific quest title - max 60 characters]
+TITLE: [Compelling, specific quest title - max 60 characters]
 
-DESCRIPTION: [Clear, actionable description that explains what they need to do and why it matters for their career. Include specific deliverables. 2-3 sentences max.]
+DESCRIPTION: [Clear overview of what they'll accomplish and why it matters for their career goals - 2-3 sentences]
 
-MUSK_TIP: [A brutally honest, motivating one-liner in Musk's direct style - max 100 characters]
+SUBTASK_1: [Detailed first step with SPECIFIC actions. Include exact numbers, platforms, topics. Example: "Research 3 current trends in AI marketing and save 10 relevant examples from Industry Pulse" (Est: 20 min)]
 
-DO NOT include any other text. Follow the format exactly.`;
+SUBTASK_2: [Detailed second step. Be SPECIFIC about deliverables. Example: "Create media pulse with 5 professional images about AI content personalization, using carousel format" (Est: 30 min)]
+
+SUBTASK_3: [Detailed third step. Include platform activity if relevant. Example: "Write 500-word project case study on Brandentifier showcasing your recent marketing campaign with metrics" (Est: 25 min)]
+
+SUBTASK_4: [Optional fourth step - only if needed for complex quests. Be specific with exact deliverables and time estimate]
+
+SUBTASK_5: [Optional fifth step - only if needed for comprehensive quests. Be specific with exact deliverables and time estimate]
+
+MUSK_TIP: [Brutally honest, motivating one-liner in Musk's direct style - max 100 characters]
+
+DO NOT include any other text. Follow the format exactly. Each subtask MUST be detailed with specific numbers and deliverables.`;
     } else {
-      return `You are Musk, a brutally honest social media strategist. Generate a personalized social media quest for this professional:
+      return `You are Musk, a brutally honest social media strategist. Generate a DETAILED, ACTIONABLE social media quest with SPECIFIC SUBTASKS for this professional:
 
 NAME: ${context.name}
 TITLE: ${context.title}
@@ -440,43 +464,133 @@ BRAND GOALS: ${context.brandGoals.join(', ')}
 PLATFORM: ${context.platform || 'LinkedIn'}
 SKILLS: ${context.skills.join(', ')}
 
-Generate a unique, specific social media content quest. Focus on:
-- Showcasing their ${context.domain} expertise
-- Engaging ${audienceText} in ${context.location}
-- Creating authentic, valuable content (NO generic "thought leader" language)
-- Aligning with their goals: ${context.brandGoals.join(', ')}
+Generate a unique, highly specific social media quest with 3-5 detailed subtasks. Each subtask should:
+- Be actionable with EXACT deliverable specifications
+- Include specific content formats and quantities
+- Reference current ${context.industry} trends and ${context.platform || 'LinkedIn'} best practices
+- Align with platform requirements (aspect ratios, character limits, etc.)
+- Include estimated time (in minutes)
 
-The quest should be SPECIFIC to their background and expertise, not a generic template.
+CONTENT SPECIFICATIONS (be THIS specific in your subtasks):
+- Images: "Create 5 professional photos in 16:9 format showing [specific topic] with modern [industry] aesthetics"
+- Videos: "Record 60-second vertical video (9:16) demonstrating [specific skill] in [specific scenario]"
+- Carousels: "Design 10-slide carousel about [specific topic] with title slide + 8 value slides + CTA slide"
+- Text Posts: "Write 300-word post about [specific topic] with storytelling format and 3 key takeaways"
+- Engagement: "Comment on 5 posts about [specific trending topic] with 50+ word insights, not generic praise"
 
 RESPOND IN THIS EXACT FORMAT:
 
-TITLE: [A compelling, specific quest title - max 60 characters]
+TITLE: [Compelling, platform-specific quest title - max 60 characters]
 
-DESCRIPTION: [Clear, actionable description explaining what content to create, why it matters, and how to make it valuable for their audience. Be specific about deliverables. 2-3 sentences max.]
+DESCRIPTION: [Clear overview of the content to create and why it will resonate with ${audienceText}. Include specific content format - 2-3 sentences]
 
-MUSK_TIP: [A brutally honest, motivating one-liner about content creation - max 100 characters]
+SUBTASK_1: [Detailed first step - typically research/planning. Be SPECIFIC. Example: "Research 5 viral posts in ${context.industry} on ${context.platform || 'LinkedIn'} and identify 3 common patterns in top-performing content" (Est: 15 min)]
 
-DO NOT include any other text. Follow the format exactly.`;
+SUBTASK_2: [Detailed second step - content creation with EXACT specs. Example: "Create 5 images (1080x1080) about sustainable investing trends using Canva, featuring data visualizations and current market statistics" (Est: 35 min)]
+
+SUBTASK_3: [Detailed third step - more content or preparation. Example: "Write 250-word caption explaining each trend's impact on portfolio management, with 3 actionable insights for investors" (Est: 20 min)]
+
+SUBTASK_4: [Optional fourth step - posting strategy/hashtags. Example: "Research and select 15 trending hashtags mixing broad (#Finance) and niche (#ESGInvesting) tags for maximum reach" (Est: 10 min)]
+
+SUBTASK_5: [Optional fifth step - engagement plan. Example: "Schedule post for 2 PM Tuesday and prepare 3 follow-up comments to engage with audience responses within first hour" (Est: 10 min)]
+
+MUSK_TIP: [Brutally honest, motivating one-liner about content creation - max 100 characters]
+
+DO NOT include any other text. Follow the format exactly. Each subtask MUST include exact numbers, formats, and deliverables.`;
     }
   }
 
   /**
-   * Parse AI quest response into structured data
+   * Parse AI quest response into structured data with subtasks
    */
   private parseQuestResponse(response: string): {
     title: string;
     description: string;
     muskTip: string;
+    subtasks?: Array<{
+      title: string;
+      description: string;
+      estimatedMinutes: number;
+      platformActivity?: string;
+      platformDetails?: any;
+    }>;
   } {
     // Extract title, description, and musk tip from AI response
     const titleMatch = response.match(/TITLE:\s*(.+?)(?=\n|DESCRIPTION:|$)/i);
-    const descriptionMatch = response.match(/DESCRIPTION:\s*([\s\S]+?)(?=\n\nMUSK_TIP:|MUSK_TIP:|$)/i);
+    const descriptionMatch = response.match(/DESCRIPTION:\s*([\s\S]+?)(?=\n\nSUBTASK_1:|SUBTASK_1:|MUSK_TIP:|$)/i);
     const muskTipMatch = response.match(/MUSK_TIP:\s*([\s\S]+?)(?=\n\n|$)/i);
+
+    // Extract subtasks (SUBTASK_1 through SUBTASK_5)
+    const subtasks: Array<{
+      title: string;
+      description: string;
+      estimatedMinutes: number;
+      platformActivity?: string;
+      platformDetails?: any;
+    }> = [];
+
+    for (let i = 1; i <= 5; i++) {
+      const subtaskPattern = new RegExp(`SUBTASK_${i}:\\s*([\\s\\S]+?)(?=\\n\\nSUBTASK_${i + 1}:|SUBTASK_${i + 1}:|MUSK_TIP:|$)`, 'i');
+      const subtaskMatch = response.match(subtaskPattern);
+      
+      if (subtaskMatch && subtaskMatch[1]) {
+        const subtaskText = subtaskMatch[1].trim();
+        
+        // Extract time estimate from format like "(Est: 20 min)" or "(20 min)"
+        const timeMatch = subtaskText.match(/\((?:Est:\s*)?(\d+)\s*min(?:utes?)?\)/i);
+        const estimatedMinutes = timeMatch ? parseInt(timeMatch[1]) : 15;
+        
+        // Remove time estimate from description
+        const cleanText = subtaskText.replace(/\((?:Est:\s*)?\d+\s*min(?:utes?)?\)/i, '').trim();
+        
+        // Parse platform activity from text (e.g., "Create media pulse", "Create project")
+        let platformActivity = undefined;
+        let platformDetails = undefined;
+        
+        if (cleanText.match(/create\s+media\s+pulse/i)) {
+          platformActivity = 'create_media_pulse';
+          const imageCountMatch = cleanText.match(/(\d+)\s+images?/i);
+          const topicMatch = cleanText.match(/about\s+([^,\.]+)/i);
+          platformDetails = {
+            type: 'media_pulse',
+            imageCount: imageCountMatch ? parseInt(imageCountMatch[1]) : 3,
+            topic: topicMatch ? topicMatch[1].trim() : ''
+          };
+        } else if (cleanText.match(/create\s+project/i)) {
+          platformActivity = 'create_project';
+          const sectionMatch = cleanText.match(/(\d+)\s+sections?/i);
+          platformDetails = {
+            type: 'project',
+            sectionCount: sectionMatch ? parseInt(sectionMatch[1]) : 1
+          };
+        } else if (cleanText.match(/post.*comments?/i)) {
+          platformActivity = 'post_comment';
+          const countMatch = cleanText.match(/(\d+)\s+comments?/i);
+          platformDetails = {
+            type: 'comment',
+            count: countMatch ? parseInt(countMatch[1]) : 3
+          };
+        }
+        
+        // Generate concise title from first few words
+        const titleWords = cleanText.split(' ').slice(0, 8).join(' ');
+        const title = titleWords.length < cleanText.length ? titleWords + '...' : titleWords;
+        
+        subtasks.push({
+          title: title.substring(0, 100), // Max 100 chars for title
+          description: cleanText,
+          estimatedMinutes,
+          platformActivity,
+          platformDetails
+        });
+      }
+    }
 
     return {
       title: titleMatch?.[1]?.trim() || 'Quest Generated',
       description: descriptionMatch?.[1]?.trim().replace(/\n/g, ' ') || 'Complete this quest to advance your career.',
-      muskTip: muskTipMatch?.[1]?.trim() || 'Action beats perfection. Start now.'
+      muskTip: muskTipMatch?.[1]?.trim() || 'Action beats perfection. Start now.',
+      subtasks: subtasks.length > 0 ? subtasks : undefined
     };
   }
 

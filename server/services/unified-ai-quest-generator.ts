@@ -9,6 +9,14 @@ import { users, skills, workExperiences, questDefinitions } from '@shared/schema
 import { eq } from 'drizzle-orm';
 import { localAIService } from './local-ai-service';
 
+export interface QuestSubtask {
+  title: string;
+  description: string;
+  estimatedMinutes: number;
+  platformActivity?: string;
+  platformDetails?: any;
+}
+
 export interface GeneratedQuest {
   title: string;
   description: string;
@@ -18,6 +26,7 @@ export interface GeneratedQuest {
   difficulty: string;
   questDefinitionId: number;
   platform?: string;
+  subtasks?: QuestSubtask[];
 }
 
 /**
@@ -53,6 +62,8 @@ export class UnifiedAIQuestGenerator {
       // Generate quest using AI
       const aiQuest = await localAIService.generateQuest(context);
 
+      console.log(`[AI Quest Generator] Generated quest with ${aiQuest.subtasks?.length || 0} subtasks`);
+
       return {
         title: aiQuest.title,
         description: aiQuest.description,
@@ -60,7 +71,8 @@ export class UnifiedAIQuestGenerator {
         questType: questDef.type,
         xpReward: questDef.xpReward || 85,
         difficulty: questDef.difficultyLevel || 'advanced',
-        questDefinitionId: questDef.id
+        questDefinitionId: questDef.id,
+        subtasks: aiQuest.subtasks
       };
     } catch (error) {
       console.error(`[AI Quest Generator] Error generating career quest:`, error);
@@ -98,6 +110,8 @@ export class UnifiedAIQuestGenerator {
       // Generate quest using AI
       const aiQuest = await localAIService.generateQuest(context);
 
+      console.log(`[AI Quest Generator] Generated quest with ${aiQuest.subtasks?.length || 0} subtasks`);
+
       return {
         title: aiQuest.title,
         description: aiQuest.description,
@@ -106,7 +120,8 @@ export class UnifiedAIQuestGenerator {
         xpReward: questDef.xpReward || 50,
         difficulty: 'intermediate',
         questDefinitionId: questDef.id,
-        platform
+        platform,
+        subtasks: aiQuest.subtasks
       };
     } catch (error) {
       console.error(`[AI Quest Generator] Error generating social quest:`, error);
