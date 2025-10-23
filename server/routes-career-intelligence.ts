@@ -28,10 +28,18 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
    */
   app.post('/api/career-tools/upload-resume', async (req, res) => {
     try {
+      console.log('[API] Upload resume endpoint hit');
+      console.log('[API] req.files:', req.files);
+      console.log('[API] req.body:', req.body);
+      
       const { userId, targetRole } = req.body;
       const file = req.files?.resume as UploadedFile | undefined;
       
+      console.log('[API] Parsed file:', file);
+      console.log('[API] Parsed userId:', userId);
+      
       if (!file || !userId) {
+        console.log('[API] Missing file or userId - file:', !!file, 'userId:', !!userId);
         return res.status(400).json({ 
           error: 'Resume file and user ID are required' 
         });
