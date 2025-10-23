@@ -11,10 +11,9 @@
 import express from 'express';
 import { resumeScorerService } from './services/career-intelligence/resume-scorer';
 import { jobMatcherService } from './services/career-intelligence/job-matcher';
-import { extractTextFromFile } from './services/resume-parser-service';
+import { upload, extractTextFromFile } from './services/resume-parser-service';
 import { extractTextFromPdf } from './utils/pdf-extractor';
 import fs from 'fs';
-import { UploadedFile } from 'express-fileupload';
 
 export const registerCareerIntelligenceRoutes = (app: express.Express) => {
   
@@ -26,32 +25,24 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
    * Analyze resume from file upload
    * POST /api/career-tools/upload-resume
    */
-  app.post('/api/career-tools/upload-resume', async (req, res) => {
+  app.post('/api/career-tools/upload-resume', upload.single('resume'), async (req, res) => {
     try {
-      console.log('[API] Upload resume endpoint hit');
-      console.log('[API] req.files:', req.files);
-      console.log('[API] req.body:', req.body);
-      
       const { userId, targetRole } = req.body;
-      const file = req.files?.resume as UploadedFile | undefined;
-      
-      console.log('[API] Parsed file:', file);
-      console.log('[API] Parsed userId:', userId);
+      const file = req.file;
       
       if (!file || !userId) {
-        console.log('[API] Missing file or userId - file:', !!file, 'userId:', !!userId);
         return res.status(400).json({ 
           error: 'Resume file and user ID are required' 
         });
       }
       
-      console.log(`[API] Extracting text from uploaded resume: ${file.name}`);
+      console.log(`[API] Extracting text from uploaded resume: ${file.originalname}`);
       
       // Extract text from uploaded file
       let resumeText: string;
       try {
         if (file.mimetype === 'application/pdf') {
-          const fileBuffer = fs.readFileSync(file.tempFilePath);
+          const fileBuffer = fs.readFileSync(file.path);
           resumeText = await extractTextFromPdf(fileBuffer);
           
           // If PDF extraction returned empty, provide helpful message
@@ -62,14 +53,14 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
             });
           }
         } else {
-          resumeText = await extractTextFromFile(file.tempFilePath, file.mimetype);
+          resumeText = await extractTextFromFile(file.path, file.mimetype);
         }
       } catch (extractError: any) {
         console.error('[API] Text extraction error:', extractError);
         
         // Clean up uploaded file
-        if (fs.existsSync(file.tempFilePath)) {
-          fs.unlinkSync(file.tempFilePath);
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
         }
         
         return res.status(400).json({
@@ -79,8 +70,8 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       }
       
       // Clean up uploaded file after extraction
-      if (fs.existsSync(file.tempFilePath)) {
-        fs.unlinkSync(file.tempFilePath);
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
       }
       
       if (!resumeText || resumeText.trim().length < 100) {
@@ -113,9 +104,8 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       console.error('[API] Resume upload analysis error:', error);
       
       // Clean up uploaded file on error
-      const file = req.files?.resume as UploadedFile | undefined;
-      if (file && fs.existsSync(file.tempFilePath)) {
-        fs.unlinkSync(file.tempFilePath);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
       }
       
       res.status(500).json({ 
@@ -493,10 +483,10 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
    * Upload and analyze pitch deck
    * POST /api/career-tools/upload-pitch-deck
    */
-  app.post('/api/career-tools/upload-pitch-deck', async (req, res) => {
+  app.post('/api/career-tools/upload-pitch-deck', upload.single('deck'), async (req, res) => {
     try {
       const { userId, deckName, fundingStage, targetRaise } = req.body;
-      const file = req.files?.deck as UploadedFile | undefined;
+      const file = req.file;
       
       if (!file || !userId || !deckName) {
         return res.status(400).json({ 
@@ -511,18 +501,18 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       try {
         if (file.mimetype === 'application/pdf') {
           const { extractTextFromPdf } = await import('./utils/pdf-extractor');
-          const fileBuffer = fs.readFileSync(file.tempFilePath);
+          const fileBuffer = fs.readFileSync(file.path);
           deckText = await extractTextFromPdf(fileBuffer);
         } else {
           const { extractTextFromFile } = await import('./services/resume-parser-service');
-          deckText = await extractTextFromFile(file.tempFilePath, file.mimetype);
+          deckText = await extractTextFromFile(file.path, file.mimetype);
         }
       } catch (extractError: any) {
         console.error('[API] Deck text extraction error:', extractError);
         
         // Clean up uploaded file
-        if (fs.existsSync(file.tempFilePath)) {
-          fs.unlinkSync(file.tempFilePath);
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
         }
         
         return res.status(400).json({
@@ -532,8 +522,8 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       }
       
       // Clean up uploaded file
-      if (fs.existsSync(file.tempFilePath)) {
-        fs.unlinkSync(file.tempFilePath);
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
       }
       
       if (!deckText || deckText.trim().length < 200) {
@@ -608,9 +598,8 @@ export const registerCareerIntelligenceRoutes = (app: express.Express) => {
       console.error('[API] Pitch deck analysis error:', error);
       
       // Clean up uploaded file on error
-      const file = req.files?.deck as UploadedFile | undefined;
-      if (file && fs.existsSync(file.tempFilePath)) {
-        fs.unlinkSync(file.tempFilePath);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
       }
       
       res.status(500).json({ 
