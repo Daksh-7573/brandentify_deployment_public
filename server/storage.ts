@@ -7261,21 +7261,32 @@ export class MemStorage implements IStorage {
           uq.recommendation_source as "recommendationSource",
           uq.confidence_score as "confidenceScore",
           uq.suggested_hashtags as "suggestedHashtags",
-          qd.title,
-          qd.description,
-          qd.type,
+          COALESCE(gcq.personalized_title, qd.title) as title,
+          COALESCE(gcq.personalized_description, qd.description) as description,
+          COALESCE(gcq.quest_type, qd.type) as type,
           qd.target_count as "targetCount",
           qd.target_action as "targetAction",
           qd.xp_reward as "xpReward",
           qd.badge_reward as "badgeReward",
-          qd.musk_tip as "muskTip",
-          qd.deliverable_format as "deliverableFormat",
+          COALESCE(gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+          COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
           qd.quantity_value as "quantityValue",
           qd.quantity_type as "quantityType",
           qd.platform_constraints as "platformConstraints",
-          qd.guidance_snippet as "guidanceSnippet"
+          COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+          gcq.suggested_hashtags as "aiHashtags",
+          gcq.estimated_time_minutes as "estimatedTimeMinutes",
+          gcq.difficulty_level as "difficultyLevel"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        LEFT JOIN LATERAL (
+          SELECT * FROM generated_career_quests gcq_inner
+          WHERE gcq_inner.user_id = uq.user_id 
+            AND gcq_inner.quest_definition_id = uq.quest_definition_id 
+            AND gcq_inner.assigned_date = uq.assigned_date::text
+          ORDER BY gcq_inner.generated_at DESC
+          LIMIT 1
+        ) gcq ON true
         WHERE uq.user_id = $1
           AND uq.assigned_date = $2
           AND qd.type NOT IN ('social_quest', 'social_post')
@@ -7294,10 +7305,11 @@ export class MemStorage implements IStorage {
       // Debug: Log the first row to see what fields we get
       if (result.rows.length > 0) {
         console.log('[db.getCurrentDayUserQuests] First row keys:', Object.keys(result.rows[0]));
-        console.log('[db.getCurrentDayUserQuests] Recommendation fields:', {
-          recommendedPostTime: result.rows[0].recommendedPostTime,
-          recommendationSource: result.rows[0].recommendationSource,
-          confidenceScore: result.rows[0].confidenceScore
+        console.log('[db.getCurrentDayUserQuests] Personalized quest fields:', {
+          title: result.rows[0].title,
+          muskTip: result.rows[0].muskTip,
+          estimatedTimeMinutes: result.rows[0].estimatedTimeMinutes,
+          difficultyLevel: result.rows[0].difficultyLevel
         });
       }
       
