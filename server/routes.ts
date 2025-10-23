@@ -9218,6 +9218,32 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // AI Quest Generation Test Endpoint
+  app.post('/api/test-ai-quest-generation/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      console.log(`[AI Quest Test] Generating AI quests for user ${userId}`);
+      
+      const { simpleAIQuestGenerator } = await import('./services/simple-ai-quest-generator');
+      
+      // Generate AI quests
+      const aiQuests = await simpleAIQuestGenerator.generateMixedQuests(userId, 2, 2);
+      
+      res.json({
+        success: true,
+        careerQuests: aiQuests.career,
+        socialQuests: aiQuests.social,
+        message: `Generated ${aiQuests.career.length} AI career quests and ${aiQuests.social.length} AI social quests`
+      });
+    } catch (error) {
+      console.error('[AI Quest Test] Error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
   // Instant Quest Assignment for Single User (Post-Onboarding)
   app.post('/api/assign-initial-quests/:userId', async (req: Request, res: Response) => {
     try {
