@@ -36,7 +36,6 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
-  resumeScoreId?: number; // Track resume analysis for CV generation
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -46,7 +45,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadType, setUploadType] = useState<'resume' | 'pitchdeck'>('resume');
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -483,8 +481,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       // The result includes the analysis message directly
       const analyzeResult = {
-        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully',
-        resumeScoreId: uploadResult.resumeScoreId // Extract resume score ID from upload result
+        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
       };
       
       // Use personalized questions or fallback to file-type specific responses
