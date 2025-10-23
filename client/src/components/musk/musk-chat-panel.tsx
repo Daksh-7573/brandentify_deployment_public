@@ -11,8 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Sparkles, CheckCircle, TrendingUp, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -36,6 +38,20 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
+  resumeAnalysis?: {
+    resumeScoreId: number;
+    score: {
+      overall: number;
+      atsCompatibility: number;
+      impactMetrics: number;
+      keywords: number;
+      structure: number;
+      clarity: number;
+    };
+    criticalIssues: any[];
+    importantIssues: any[];
+    optionalIssues: any[];
+  };
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -342,6 +358,55 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     inputRef.current?.focus();
   };
   
+  // Apply a resume fix
+  const handleApplyFix = async (messageId: string, resumeScoreId: number, fixId: number) => {
+    try {
+      const response = await apiRequest('POST', '/api/career-tools/apply-fix', {
+        resumeScoreId,
+        fixId
+      });
+      const result = await response.json();
+      
+      // Update the message with new score data
+      setMessages(prev => 
+        prev.map(msg => {
+          if (msg.id === messageId && msg.resumeAnalysis) {
+            return {
+              ...msg,
+              content: `✅ Resume analyzed! Score: ${result.updatedScore.overall}/100`,
+              resumeAnalysis: {
+                ...msg.resumeAnalysis,
+                score: result.updatedScore,
+                criticalIssues: msg.resumeAnalysis.criticalIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                ),
+                importantIssues: msg.resumeAnalysis.importantIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                ),
+                optionalIssues: msg.resumeAnalysis.optionalIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                )
+              }
+            };
+          }
+          return msg;
+        })
+      );
+      
+      toast({
+        title: 'Fix applied!',
+        description: `Score updated: ${result.updatedScore.overall}/100`,
+      });
+    } catch (error) {
+      console.error('Error applying fix:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to apply fix. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+  
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     
@@ -431,7 +496,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     try {
       // Create form data for file upload
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append(isResume ? 'resume' : 'file', file);
       // Only append userId if it exists
       if (userId !== null && userId !== undefined) {
         formData.append('userId', userId.toString());
@@ -441,8 +506,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       const xhr = new XMLHttpRequest();
       
       const uploadPromise = new Promise<any>((resolve, reject) => {
-        // Determine the endpoint based on the file type
-        const endpoint = isResume ? '/api/musk/resume-upload' : '/api/musk/pitchdeck-upload';
+        // Use career-tools API for resumes to get structured analysis data
+        const endpoint = isResume ? '/api/career-tools/upload-resume' : '/api/musk/pitchdeck-upload';
         xhr.open('POST', endpoint);
         
         xhr.upload.onprogress = (event) => {
@@ -479,48 +544,61 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
-      // The result includes the analysis message directly
-      const analyzeResult = {
-        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
-      };
+      // Handle resume vs pitch deck differently
+      if (isResume && uploadResult.resumeScoreId) {
+        // Resume: Store structured analysis data
+        const analysisMessage: Message = {
+          id: 'resume-analysis-' + Date.now(),
+          content: `✅ Resume analyzed! Score: ${uploadResult.score.overall}/100`,
+          sender: 'musk',
+          timestamp: new Date(),
+          resumeAnalysis: {
+            resumeScoreId: uploadResult.resumeScoreId,
+            score: uploadResult.score,
+            criticalIssues: uploadResult.criticalIssues || [],
+            importantIssues: uploadResult.importantIssues || [],
+            optionalIssues: uploadResult.optionalIssues || []
+          }
+        };
+        
+        // Replace thinking message with analysis
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === thinkingMessage.id ? analysisMessage : msg
+          )
+        );
+      } else {
+        // Pitch deck or text-only analysis
+        const analyzeResult = {
+          analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
+        };
+        
+        const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+        const quickResponses = personalizedQuestions.length > 0 
+          ? personalizedQuestions
+          : [
+              'How can I improve my problem statement?',
+              'Is my business model compelling enough?',
+              'What should I focus on for investor readiness?'
+            ];
+        
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === thinkingMessage.id 
+              ? {
+                  id: 'analysis-' + Date.now(),
+                  content: analyzeResult.analysis,
+                  sender: 'musk',
+                  timestamp: new Date(),
+                  quickResponses
+                }
+              : msg
+          )
+        );
+      }
       
-      // Use personalized questions or fallback to file-type specific responses
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
-      
-      // If we have personalized questions, use them
-      // Otherwise fall back to default file-type specific responses
-      const quickResponses = personalizedQuestions.length > 0 
-        ? personalizedQuestions
-        : (isResume 
-            ? [
-                'How can I improve my skills section?',
-                'What about my work experiences?',
-                'Can you help me tailor it for a specific role?'
-              ]
-            : [
-                'How can I improve my problem statement?',
-                'Is my business model compelling enough?',
-                'What should I focus on for investor readiness?'
-              ]);
-      
-      // Replace the thinking message with the analysis result
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'analysis-' + Date.now(),
-                content: analyzeResult.analysis,
-                sender: 'musk',
-                timestamp: new Date(),
-                quickResponses
-              }
-            : msg
-        )
-      );
-      
-      // Update engagement history if we used personalized questions
-      if (personalizedQuestions.length > 0) {
-        // Find the categories of the questions we just used
+      // Update engagement history (only for pitch deck with questions)
+      if (!isResume && suggestedQuestions.length > 0) {
         const usedQuestions = suggestedQuestions.slice(0, 4);
         const newHistory = { ...engagementHistory };
         
@@ -537,7 +615,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           console.error("Failed to save question engagement history:", error);
         }
         
-        // Generate new AI-powered contextual questions based on the conversation
+        // Generate new AI-powered contextual questions
         generateContextualSuggestions();
       }
       
@@ -757,6 +835,103 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                         .replace(/\n\n/g, '</p><p>')
                     }}
                   ></div>
+                )}
+                
+                {/* Resume Analysis UI */}
+                {message.resumeAnalysis && (
+                  <div className="mt-4 space-y-4">
+                    {/* Score Breakdown */}
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">ATS</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.atsCompatibility}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.atsCompatibility} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Impact</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.impactMetrics}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.impactMetrics} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Keywords</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.keywords}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.keywords} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Structure</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.structure}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.structure} className="h-1" />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Critical Fixes */}
+                    {message.resumeAnalysis.criticalIssues.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-semibold text-red-400 flex items-center gap-1">
+                          <Sparkles className="h-3 w-3" />
+                          Critical Fixes
+                        </h4>
+                        {message.resumeAnalysis.criticalIssues.slice(0, 3).map((fix) => (
+                          <div key={fix.id} className="p-2 rounded bg-white/5 border border-white/10 space-y-1">
+                            <p className="text-xs text-white/90">{fix.reasoning}</p>
+                            <p className="text-xs text-green-400">→ {fix.suggestedText.substring(0, 80)}...</p>
+                            {!fix.isApplied ? (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="h-6 text-xs mt-1"
+                                onClick={() => handleApplyFix(message.id, message.resumeAnalysis!.resumeScoreId, fix.id)}
+                              >
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Apply Fix (+{fix.impactScore})
+                              </Button>
+                            ) : (
+                              <Badge variant="secondary" className="text-xs h-6">
+                                ✓ Applied
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Important Fixes */}
+                    {message.resumeAnalysis.importantIssues.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-semibold text-yellow-400 flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3" />
+                          Important Improvements ({message.resumeAnalysis.importantIssues.length})
+                        </h4>
+                        {message.resumeAnalysis.importantIssues.slice(0, 2).map((fix) => (
+                          <div key={fix.id} className="p-2 rounded bg-white/5 border border-white/10 space-y-1">
+                            <p className="text-xs text-white/80">{fix.reasoning.substring(0, 100)}...</p>
+                            {!fix.isApplied ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs mt-1 border-white/20"
+                                onClick={() => handleApplyFix(message.id, message.resumeAnalysis!.resumeScoreId, fix.id)}
+                              >
+                                Apply (+{fix.impactScore})
+                              </Button>
+                            ) : (
+                              <Badge variant="secondary" className="text-xs h-6">✓ Applied</Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
                 
                 {/* Quick responses */}
