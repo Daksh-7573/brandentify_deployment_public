@@ -427,26 +427,47 @@ CRITICAL RULES:
 
 QUEST STRUCTURE - Choose ONE main activity type:
 
-OPTION A - Create Project Showcase:
+OPTION A - Create Project Showcase (LIMIT: Max 10 images or 150-sec video):
 SUBTASK_1: Research phase - identify specific trending topic in ${context.industry}
 SUBTASK_2: Plan structure - outline EXACT sections with specific titles (e.g., "Market Analysis: 2025 AI Regulation Changes", "Case Study: Enterprise Client Success", etc.)
 SUBTASK_3: Create content - write detailed content for each section with data, examples, metrics
-SUBTASK_4: Add supporting materials - charts, visuals, resources with specific details
+SUBTASK_4: Add supporting materials - charts, visuals (max 10 images), resources with specific details
 SUBTASK_5: Review and publish on Brandentifier with relevant tags
 
-OPTION B - Create Media Pulse Series:
-SUBTASK_1: Research current visual trends in ${context.industry} and identify 3 hot topics
-SUBTASK_2: Plan content - outline EXACT topics for each image/slide with specific data points
-SUBTASK_3: Design visuals - create X images with specific themes, data visualizations, style
-SUBTASK_4: Write detailed captions explaining each concept with industry insights
-SUBTASK_5: Select hashtags and publish on Brandentifier with engagement strategy
+OPTION B - Create Media Pulse (LIMIT: Max 10 images):
+SUBTASK_1: Research current visual trends in ${context.industry} and identify specific trending topic
+SUBTASK_2: Plan content - outline EXACT topics for each image (specify 3-10 images, never exceed 10)
+SUBTASK_3: Design visuals - create specific number of images with themes, data visualizations, style
+SUBTASK_4: Write detailed caption (200-500 words) explaining insights with industry context
+SUBTASK_5: Select 10-20 relevant hashtags and publish on Brandentifier with engagement plan
 
 OPTION C - Industry Pulse Engagement Campaign:
-SUBTASK_1: Research trending discussions in ${context.domain} on Industry Pulse
-SUBTASK_2: Identify 10 high-quality posts about specific topics (name the topics)
-SUBTASK_3: Write detailed, insightful comments (50+ words each) with specific expertise
-SUBTASK_4: Create follow-up pulse summarizing key insights and your perspective
-SUBTASK_5: Engage with responses and build connections
+SUBTASK_1: Research trending discussions in ${context.domain} on Industry Pulse feed
+SUBTASK_2: Identify 5-10 high-quality posts about specific topics (name the exact topics)
+SUBTASK_3: Write detailed, insightful comments (50+ words each) adding specific expertise and value
+SUBTASK_4: Create follow-up pulse (200-400 words) summarizing key insights and your unique perspective
+SUBTASK_5: Respond to engagement and connect with 3-5 thought leaders who commented
+
+OPTION D - Strategic Networking Campaign:
+SUBTASK_1: Research top ${context.domain} professionals in ${context.location} with specific criteria
+SUBTASK_2: Identify 10-15 target connections aligned with your goals in ${context.industry}
+SUBTASK_3: Craft personalized connection messages (50-100 words) mentioning specific shared interests or work
+SUBTASK_4: Follow 20-30 industry leaders and engage with their recent posts (thoughtful comments)
+SUBTASK_5: Track responses and plan follow-up conversations or collaboration opportunities
+
+OPTION E - Content Engagement Sprint:
+SUBTASK_1: Find 10 recent Industry Pulse posts about ${context.domain} trending topics
+SUBTASK_2: Write 10 thoughtful comments (50+ words each) sharing specific insights from your experience
+SUBTASK_3: Follow 10 authors who posted valuable ${context.industry} content
+SUBTASK_4: Save 5 high-quality posts as references and note key takeaways
+SUBTASK_5: Create summary pulse sharing your analysis of the trend with original perspective
+
+OPTION F - Profile Optimization Campaign:
+SUBTASK_1: Audit current profile sections and identify gaps in ${context.domain} positioning
+SUBTASK_2: Research top 5 ${context.title} profiles and identify compelling presentation patterns
+SUBTASK_3: Update specific profile section (e.g., About, Experience, Skills) with achievement metrics
+SUBTASK_4: Add 3-5 portfolio pieces or certifications related to ${context.brandGoals.join(', ')}
+SUBTASK_5: Request 3-5 recommendations from colleagues highlighting specific ${context.domain} expertise
 
 RESPOND IN THIS EXACT FORMAT:
 
@@ -487,28 +508,42 @@ CRITICAL RULES:
 4. Focus on current ${context.industry} trends on ${context.platform || 'LinkedIn'}
 5. Include exact specifications: dimensions, word counts, slide counts, etc.
 
-QUEST STRUCTURE - Choose ONE content type:
+QUEST STRUCTURE - Choose ONE content type (RESPECT ${context.platform || 'LinkedIn'} LIMITS):
 
-OPTION A - Carousel Post (10 slides):
+OPTION A - Carousel Post (Max 10 slides):
 SUBTASK_1: Research trending topics and identify ONE specific angle in ${context.industry}
-SUBTASK_2: Outline 10 slides with EXACT titles (e.g., Slide 1: "5 AI Tools Reshaping Marketing in 2025", Slide 2: "Tool #1: Predictive Analytics - 40% ROI Increase", etc.)
-SUBTASK_3: Design all 10 slides (1080x1080) with specific data, visuals, brand colors
+SUBTASK_2: Outline carousel with EXACT slide titles - specify 5-10 slides (e.g., Slide 1: "5 AI Tools Reshaping Marketing in 2025", Slide 2: "Tool #1: Predictive Analytics - 40% ROI Increase", etc.)
+SUBTASK_3: Design all slides (1080x1080) with specific data, visuals, brand colors
 SUBTASK_4: Write detailed 250-word caption with hook, 3 insights, and CTA
-SUBTASK_5: Select 15 hashtags, schedule post, and prepare engagement responses
+SUBTASK_5: Select 15-20 hashtags, schedule for optimal time, and prepare 3 engagement responses
 
-OPTION B - Video Content:
+OPTION B - Video Content (Max 150 seconds):
 SUBTASK_1: Research trending video formats in ${context.industry} and choose specific topic
-SUBTASK_2: Script detailed outline with intro hook, 3 main points, specific examples, and CTA (60 seconds total)
-SUBTASK_3: Record video in 9:16 format at specific location with professional setup
-SUBTASK_4: Edit video with captions, B-roll clips, transitions, and branded end screen
-SUBTASK_5: Write caption, add hashtags, post on ${context.platform || 'LinkedIn'}, and engage with comments
+SUBTASK_2: Script detailed outline with intro hook, 3 main points, specific examples, and CTA (60-90 seconds total, never exceed 150 sec)
+SUBTASK_3: Record video in 9:16 or 16:9 format at specific location with professional lighting and audio
+SUBTASK_4: Edit video with captions, B-roll clips, transitions, branded end screen (final length under 150 sec)
+SUBTASK_5: Write caption, add hashtags, post on ${context.platform || 'LinkedIn'}, and engage with first 10 comments
 
-OPTION C - Image Series (5 images):
-SUBTASK_1: Research visual trends in ${context.industry} and identify 5 specific data points to visualize
+OPTION C - Image Series (3-10 images, Max 10):
+SUBTASK_1: Research visual trends in ${context.industry} and identify 3-7 specific data points to visualize
 SUBTASK_2: Plan each image with EXACT content (e.g., Image 1: "2025 Market Share Graph comparing 4 platforms", Image 2: "Before/After Metrics Dashboard", etc.)
-SUBTASK_3: Design 5 images (16:9 format) using consistent style, brand colors, and data visualizations
+SUBTASK_3: Design specified number of images (16:9 or 1080x1080 format) using consistent style, brand colors, data visualizations
 SUBTASK_4: Write 300-word caption explaining each image's insight with industry context
-SUBTASK_5: Add hashtags, post as carousel, and prepare 3 follow-up comments
+SUBTASK_5: Add 15-20 hashtags, schedule post, and prepare 3 follow-up comments for engagement
+
+OPTION D - Engagement Challenge (No posting, pure engagement):
+SUBTASK_1: Identify 15-20 high-engagement posts in ${context.industry} on ${context.platform || 'LinkedIn'} from past 48 hours
+SUBTASK_2: Follow 10 thought leaders and industry influencers who posted valuable ${context.domain} content
+SUBTASK_3: Write 15 insightful comments (50+ words each) adding unique expertise, not generic praise
+SUBTASK_4: Like and save 10 posts for future reference, noting key insights and trends
+SUBTASK_5: Send connection requests to 5 people who posted quality content with personalized messages
+
+OPTION E - Thought Leadership Thread:
+SUBTASK_1: Research 3 current debates or trending topics in ${context.industry}
+SUBTASK_2: Craft detailed post (400-600 words) with controversial or unique perspective backed by data
+SUBTASK_3: Create supporting visual (1 image or infographic) highlighting key statistics or framework
+SUBTASK_4: Post during peak engagement hours and monitor first 30 minutes closely
+SUBTASK_5: Reply to all comments within 2 hours with thoughtful responses, start conversations with engaged users
 
 RESPOND IN THIS EXACT FORMAT:
 
