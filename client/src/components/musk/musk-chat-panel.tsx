@@ -11,8 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Sparkles } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Sparkles, CheckCircle, TrendingUp, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -36,7 +38,20 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
-  canImprove?: boolean;
+  resumeAnalysis?: {
+    resumeScoreId: number;
+    score: {
+      overall: number;
+      atsCompatibility: number;
+      impactMetrics: number;
+      keywords: number;
+      structure: number;
+      clarity: number;
+    };
+    criticalIssues: any[];
+    importantIssues: any[];
+    optionalIssues: any[];
+  };
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -283,8 +298,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 timestamp: new Date(),
                 quickResponses: personalizedQuestions.length > 0 
                   ? personalizedQuestions 
-                  : quickResponses, // Fallback to regular quick responses if no suggested questions
-                canImprove: true // Enable improve button for responses
+                  : quickResponses // Fallback to regular quick responses if no suggested questions
               }
             : msg
         )
@@ -344,102 +358,52 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     inputRef.current?.focus();
   };
   
-  const handleImprove = async (messageId: string) => {
-    // Find the message to improve
-    const messageToImprove = messages.find(msg => msg.id === messageId);
-    if (!messageToImprove) return;
-    
-    // Get user ID from context
-    let userId;
-    if (user?.uid) {
-      userId = user.uid;
-    } else if (context?.userId) {
-      userId = context.userId;
-    }
-    
-    // Add a "thinking" message placeholder
-    const thinkingMessage: Message = {
-      id: 'thinking-' + Date.now().toString(),
-      content: '',
-      sender: 'musk',
-      timestamp: new Date(),
-      thinking: true
-    };
-    
-    setMessages(prev => [...prev, thinkingMessage]);
-    setIsTyping(true);
-    
+  // Apply a resume fix
+  const handleApplyFix = async (messageId: string, resumeScoreId: number, fixId: number) => {
     try {
-      // Make API request to improve the response
-      const response = await fetch('/api/musk/improve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          originalMessage: messageToImprove.content,
-          context
-        })
+      const response = await apiRequest('POST', '/api/career-tools/apply-fix', {
+        resumeScoreId,
+        fixId
       });
+      const result = await response.json();
       
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      
-      const data = await response.json() as {id: string; message: string; timestamp: Date};
-      
-      // Get personalized questions for quick responses
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
-      
-      // Replace the thinking message with the improved response
+      // Update the message with new score data
       setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: data.id || 'improved-' + Date.now(),
-                content: data.message,
-                sender: 'musk',
-                timestamp: new Date(),
-                quickResponses: personalizedQuestions,
-                canImprove: true
+        prev.map(msg => {
+          if (msg.id === messageId && msg.resumeAnalysis) {
+            return {
+              ...msg,
+              content: `✅ Resume analyzed! Score: ${result.updatedScore.overall}/100`,
+              resumeAnalysis: {
+                ...msg.resumeAnalysis,
+                score: result.updatedScore,
+                criticalIssues: msg.resumeAnalysis.criticalIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                ),
+                importantIssues: msg.resumeAnalysis.importantIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                ),
+                optionalIssues: msg.resumeAnalysis.optionalIssues.map(fix => 
+                  fix.id === fixId ? { ...fix, isApplied: true } : fix
+                )
               }
-            : msg
-        )
+            };
+          }
+          return msg;
+        })
       );
       
       toast({
-        title: 'Response improved',
-        description: 'I\'ve enhanced my previous response with more details',
+        title: 'Fix applied!',
+        description: `Score updated: ${result.updatedScore.overall}/100`,
       });
-      
-      // Generate new contextual suggestions
-      generateContextualSuggestions();
-      
     } catch (error) {
-      console.error('Error improving response:', error);
-      
-      // Replace the thinking message with an error message
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'error-' + Date.now(),
-                content: "I'm sorry, I had trouble improving the response. Please try again.",
-                sender: 'musk',
-                timestamp: new Date()
-              }
-            : msg
-        )
-      );
-      
+      console.error('Error applying fix:', error);
       toast({
         title: 'Error',
-        description: 'Could not improve the response. Please try again.',
-        variant: 'destructive',
+        description: 'Failed to apply fix. Please try again.',
+        variant: 'destructive'
       });
-    } finally {
-      setIsTyping(false);
     }
   };
   
@@ -532,7 +496,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     try {
       // Create form data for file upload
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append(isResume ? 'resume' : 'file', file);
       // Only append userId if it exists
       if (userId !== null && userId !== undefined) {
         formData.append('userId', userId.toString());
@@ -542,8 +506,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       const xhr = new XMLHttpRequest();
       
       const uploadPromise = new Promise<any>((resolve, reject) => {
-        // Determine the endpoint based on the file type
-        const endpoint = isResume ? '/api/musk/resume-upload' : '/api/musk/pitchdeck-upload';
+        // Use career-tools API for resumes to get structured analysis data
+        const endpoint = isResume ? '/api/career-tools/upload-resume' : '/api/musk/pitchdeck-upload';
         xhr.open('POST', endpoint);
         
         xhr.upload.onprogress = (event) => {
@@ -580,49 +544,61 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
-      // The result includes the analysis message directly
-      const analyzeResult = {
-        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
-      };
+      // Handle resume vs pitch deck differently
+      if (isResume && uploadResult.resumeScoreId) {
+        // Resume: Store structured analysis data
+        const analysisMessage: Message = {
+          id: 'resume-analysis-' + Date.now(),
+          content: `✅ Resume analyzed! Score: ${uploadResult.score.overall}/100`,
+          sender: 'musk',
+          timestamp: new Date(),
+          resumeAnalysis: {
+            resumeScoreId: uploadResult.resumeScoreId,
+            score: uploadResult.score,
+            criticalIssues: uploadResult.criticalIssues || [],
+            importantIssues: uploadResult.importantIssues || [],
+            optionalIssues: uploadResult.optionalIssues || []
+          }
+        };
+        
+        // Replace thinking message with analysis
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === thinkingMessage.id ? analysisMessage : msg
+          )
+        );
+      } else {
+        // Pitch deck or text-only analysis
+        const analyzeResult = {
+          analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
+        };
+        
+        const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+        const quickResponses = personalizedQuestions.length > 0 
+          ? personalizedQuestions
+          : [
+              'How can I improve my problem statement?',
+              'Is my business model compelling enough?',
+              'What should I focus on for investor readiness?'
+            ];
+        
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === thinkingMessage.id 
+              ? {
+                  id: 'analysis-' + Date.now(),
+                  content: analyzeResult.analysis,
+                  sender: 'musk',
+                  timestamp: new Date(),
+                  quickResponses
+                }
+              : msg
+          )
+        );
+      }
       
-      // Use personalized questions or fallback to file-type specific responses
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
-      
-      // If we have personalized questions, use them
-      // Otherwise fall back to default file-type specific responses
-      const quickResponses = personalizedQuestions.length > 0 
-        ? personalizedQuestions
-        : (isResume 
-            ? [
-                'How can I improve my skills section?',
-                'What about my work experiences?',
-                'Can you help me tailor it for a specific role?'
-              ]
-            : [
-                'How can I improve my problem statement?',
-                'Is my business model compelling enough?',
-                'What should I focus on for investor readiness?'
-              ]);
-      
-      // Replace the thinking message with the analysis result
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'analysis-' + Date.now(),
-                content: analyzeResult.analysis,
-                sender: 'musk',
-                timestamp: new Date(),
-                quickResponses,
-                canImprove: true // Enable improve button for analysis
-              }
-            : msg
-        )
-      );
-      
-      // Update engagement history if we used personalized questions
-      if (personalizedQuestions.length > 0) {
-        // Find the categories of the questions we just used
+      // Update engagement history (only for pitch deck with questions)
+      if (!isResume && suggestedQuestions.length > 0) {
         const usedQuestions = suggestedQuestions.slice(0, 4);
         const newHistory = { ...engagementHistory };
         
@@ -639,7 +615,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           console.error("Failed to save question engagement history:", error);
         }
         
-        // Generate new AI-powered contextual questions based on the conversation
+        // Generate new AI-powered contextual questions
         generateContextualSuggestions();
       }
       
@@ -861,36 +837,100 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   ></div>
                 )}
                 
-                {/* Improve button for Musk messages */}
-                {message.sender === 'musk' && !message.thinking && message.canImprove && (
-                  <div className="mt-3">
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      className="text-xs py-2 px-3 h-auto flex items-center gap-2 text-white border-0 w-full justify-center"
-                      onClick={() => handleImprove(message.id)}
-                      disabled={isTyping || isUploading}
-                      data-testid="button-improve-response"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2))',
-                        backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(168, 85, 247, 0.3)',
-                        boxShadow: '0 4px 12px rgba(168, 85, 247, 0.2)'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isTyping && !isUploading) {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.3))';
-                          e.currentTarget.style.boxShadow = '0 6px 16px rgba(168, 85, 247, 0.3)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.2))';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(168, 85, 247, 0.2)';
-                      }}
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      <span className="font-medium">Improve Response</span>
-                    </Button>
+                {/* Resume Analysis UI */}
+                {message.resumeAnalysis && (
+                  <div className="mt-4 space-y-4">
+                    {/* Score Breakdown */}
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">ATS</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.atsCompatibility}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.atsCompatibility} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Impact</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.impactMetrics}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.impactMetrics} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Keywords</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.keywords}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.keywords} className="h-1" />
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-white/70">Structure</span>
+                            <span className="text-white font-medium">{message.resumeAnalysis.score.structure}%</span>
+                          </div>
+                          <Progress value={message.resumeAnalysis.score.structure} className="h-1" />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Critical Fixes */}
+                    {message.resumeAnalysis.criticalIssues.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-semibold text-red-400 flex items-center gap-1">
+                          <Sparkles className="h-3 w-3" />
+                          Critical Fixes
+                        </h4>
+                        {message.resumeAnalysis.criticalIssues.slice(0, 3).map((fix) => (
+                          <div key={fix.id} className="p-2 rounded bg-white/5 border border-white/10 space-y-1">
+                            <p className="text-xs text-white/90">{fix.reasoning}</p>
+                            <p className="text-xs text-green-400">→ {fix.suggestedText.substring(0, 80)}...</p>
+                            {!fix.isApplied ? (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="h-6 text-xs mt-1"
+                                onClick={() => handleApplyFix(message.id, message.resumeAnalysis!.resumeScoreId, fix.id)}
+                              >
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Apply Fix (+{fix.impactScore})
+                              </Button>
+                            ) : (
+                              <Badge variant="secondary" className="text-xs h-6">
+                                ✓ Applied
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Important Fixes */}
+                    {message.resumeAnalysis.importantIssues.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-semibold text-yellow-400 flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3" />
+                          Important Improvements ({message.resumeAnalysis.importantIssues.length})
+                        </h4>
+                        {message.resumeAnalysis.importantIssues.slice(0, 2).map((fix) => (
+                          <div key={fix.id} className="p-2 rounded bg-white/5 border border-white/10 space-y-1">
+                            <p className="text-xs text-white/80">{fix.reasoning.substring(0, 100)}...</p>
+                            {!fix.isApplied ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 text-xs mt-1 border-white/20"
+                                onClick={() => handleApplyFix(message.id, message.resumeAnalysis!.resumeScoreId, fix.id)}
+                              >
+                                Apply (+{fix.impactScore})
+                              </Button>
+                            ) : (
+                              <Badge variant="secondary" className="text-xs h-6">✓ Applied</Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
                 

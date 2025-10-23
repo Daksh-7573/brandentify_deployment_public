@@ -579,8 +579,9 @@ app.use((req, res, next) => {
       safeFileNames: true,
       preserveExtension: true
     })(req, res, next);
+  } else {
+    next();
   }
-  next();
 });
 
 // Add secure file validation middleware
