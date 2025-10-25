@@ -71,11 +71,13 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Loader2, Eye, ChevronRight, Check, Bot, 
   Mail, Linkedin, Instagram, Briefcase, Award, User,
-  Code, Github, Terminal
+  Code, Github, Terminal, Lock, Gift
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { useReferralStatus } from "@/hooks/use-referral";
+import { ShareModal } from "@/components/referral/share-modal";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
@@ -109,6 +111,8 @@ export default function PortfolioBuilder() {
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
 
   // Define User type to match server-side schema
   type User = {
@@ -448,6 +452,13 @@ export default function PortfolioBuilder() {
     }
   });
 
+  // Check if a portfolio layout is locked
+  const isLayoutLocked = (layoutId: string): boolean => {
+    if (!referralStatus) return false;
+    const portfolio = referralStatus.portfolios.find((p) => p.id === layoutId);
+    return portfolio?.locked ?? false;
+  };
+
   // Layout templates
   const layoutOptions = [
     { 
@@ -765,46 +776,80 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <NeoGlassSection title="Step 1: Choose a Portfolio Layout">
-              <p className="text-white/70 mb-4">
-                Browse through multiple portfolio designs and select a layout that best represents your professional brand.
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-white/70">
+                  Browse through multiple portfolio designs and select a layout that best represents your professional brand.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowShareModal(true)}
+                  className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 whitespace-nowrap"
+                  data-testid="button-portfolio-share-to-unlock"
+                >
+                  <Gift className="h-4 w-4 mr-1" />
+                  Share to Unlock
+                </Button>
+              </div>
             
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {layoutOptions.map(layout => (
-                  <div 
-                    key={layout.id}
-                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-3 sm:p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
-                      form.watch("layout") === layout.id 
-                        ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
-                        : "border border-white/10 bg-black/60"
-                    }`}
-                    onClick={() => form.setValue("layout", layout.id as any)}
-                  >
-                    <div className="flex flex-col h-full">
-                      <div className="pb-2">
-                        <h3 className="text-base sm:text-lg font-medium text-white">{layout.name}</h3>
-                      </div>
-                      <div className="flex-grow">
-                        <div 
-                          className="text-xs sm:text-sm text-white/70 whitespace-pre-line" 
-                          style={{
-                            maxHeight: '180px',
-                            overflowY: 'auto'
-                          }}
-                        >
-                          {layout.description}
+                {layoutOptions.map(layout => {
+                  const locked = isLayoutLocked(layout.id);
+                  return (
+                    <div 
+                      key={layout.id}
+                      className={`neo-glass-card transition-all rounded-lg p-3 sm:p-4 ${
+                        locked 
+                          ? "opacity-60 cursor-not-allowed" 
+                          : "cursor-pointer hover:shadow-xl hover:border-white/20 hover:-translate-y-1"
+                      } ${
+                        form.watch("layout") === layout.id 
+                          ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
+                          : "border border-white/10 bg-black/60"
+                      }`}
+                      onClick={() => {
+                        if (locked) {
+                          setShowShareModal(true);
+                          toast({
+                            title: "Portfolio Locked",
+                            description: "Share Brandentifier with friends to unlock this portfolio!",
+                            variant: "default",
+                          });
+                        } else {
+                          form.setValue("layout", layout.id as any);
+                        }
+                      }}
+                      data-testid={`portfolio-card-${layout.id}`}
+                    >
+                      <div className="flex flex-col h-full">
+                        <div className="pb-2 flex items-center justify-between">
+                          <h3 className="text-base sm:text-lg font-medium text-white">
+                            {locked && <Lock className="h-4 w-4 mr-2 inline text-purple-400" />}
+                            {layout.name}
+                          </h3>
+                        </div>
+                        <div className="flex-grow">
+                          <div 
+                            className="text-xs sm:text-sm text-white/70 whitespace-pre-line" 
+                            style={{
+                              maxHeight: '180px',
+                              overflowY: 'auto'
+                            }}
+                          >
+                            {layout.description}
+                          </div>
+                        </div>
+                        <div className="pt-2 sm:pt-3 flex justify-end">
+                          {form.watch("layout") === layout.id && !locked && (
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center shadow-md">
+                              <Check className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="pt-2 sm:pt-3 flex justify-end">
-                        {form.watch("layout") === layout.id && (
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center shadow-md">
-                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                          </div>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               <div className="flex justify-center sm:justify-end mt-6">
@@ -1623,6 +1668,9 @@ export default function PortfolioBuilder() {
           )}
         </NeoGlassLayout>
       </div>
+      
+      {/* Share Modal for Referral System */}
+      <ShareModal open={showShareModal} onClose={() => setShowShareModal(false)} />
     </div>
   );
 }
