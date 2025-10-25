@@ -5,6 +5,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { insertMessageSchema } from "@shared/message-schema";
 import * as messageService from "./services/message-service";
+import { storage } from "./storage";
 
 const router = Router();
 
@@ -164,6 +165,38 @@ router.post("/conversations/:id/messages", async (req, res) => {
       ...req.body,
       conversationId
     });
+    
+    // Get the sender ID from the message data
+    const senderId = messageData.senderId;
+    
+    // Check if this is a direct conversation and if users are connected
+    const conversation = await messageService.getConversation(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+    
+    // For direct conversations (not group chats), check connection status
+    // Direct conversations have exactly 2 participants
+    if (conversation.type === 'direct') {
+      // Extract the other user ID from the conversation
+      // Direct conversations typically have user IDs in participantIds
+      const participants = conversation.participantIds || [];
+      
+      if (participants.length === 2) {
+        const otherUserId = participants.find((id: number) => id !== senderId);
+        
+        if (otherUserId) {
+          const areConnected = await storage.areUsersConnected(senderId, otherUserId);
+          
+          if (!areConnected) {
+            return res.status(403).json({ 
+              error: "You must be connected with this user to send messages. Please send a connection request first.",
+              requiresConnection: true
+            });
+          }
+        }
+      }
+    }
     
     const message = await messageService.sendMessage(messageData);
     res.status(201).json(message);

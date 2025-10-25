@@ -30,6 +30,7 @@ import { setupInstantQuestsRoutes } from "./routes-instant-quests";
 import { setupQuestProgressMiddleware } from "./routes-quest-progress";
 import { postSuggestionService } from "./services/post-suggestion-service";
 import mentorshipRoutes from "./routes-mentorship";
+import connectionRoutes from "./routes-connection";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
@@ -8270,6 +8271,10 @@ ${extractedText.substring(0, 5000)}
   // Mentorship Connect routes
   app.use('/api', mentorshipRoutes);
   console.log("Mentorship Connect routes loaded");
+  
+  // Connection Request routes
+  app.use('/api', connectionRoutes);
+  console.log("Connection Request routes loaded");
   
   // Domain-independent authentication routes
   app.use(directAuthRoutes);

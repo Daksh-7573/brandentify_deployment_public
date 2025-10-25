@@ -128,6 +128,7 @@ const ManageServicesPage = lazy(() => import("@/pages/manage-services"));
 import AddServicePage from "@/pages/add-service";
 // TestNowboardPage import removed as it's no longer needed
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
+import ConnectionsPage from "@/pages/ConnectionsPage"; // Connections management
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
 // Quest Demo Page removed per request
 import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
@@ -453,6 +454,10 @@ function Router() {
       {/* Messaging feature */}
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
+      </Route>
+      {/* Connections management */}
+      <Route path="/connections">
+        <ProtectedRoute path="/connections" component={ConnectionsPage} />
       </Route>
       {/* Privacy & Data Control page */}
       <Route path="/privacy">

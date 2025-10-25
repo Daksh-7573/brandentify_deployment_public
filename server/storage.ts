@@ -194,6 +194,8 @@ import {
   // Mentorship Connect models
   mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
   mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback,
+  // Connection Request models
+  connectionRequests, ConnectionRequest, InsertConnectionRequest,
   // Brand Goals models
   brandGoals, BrandGoal, InsertBrandGoal,
   // Career Capsule models - removed
@@ -664,6 +666,18 @@ export interface IStorage {
   createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
   canRequestMentorship(menteeId: number): Promise<boolean>;
   
+  // Connection Request operations
+  getConnectionRequestById(id: number): Promise<ConnectionRequest | undefined>;
+  getConnectionRequestsBySenderId(senderId: number): Promise<ConnectionRequest[]>;
+  getConnectionRequestsByReceiverId(receiverId: number): Promise<ConnectionRequest[]>;
+  getPendingConnectionRequestsCount(userId: number): Promise<number>;
+  areUsersConnected(userId1: number, userId2: number): Promise<boolean>;
+  getExistingConnectionRequest(userId1: number, userId2: number): Promise<ConnectionRequest | undefined>;
+  createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest>;
+  acceptConnectionRequest(id: number, conversationId: number): Promise<ConnectionRequest>;
+  declineConnectionRequest(id: number): Promise<ConnectionRequest>;
+  cancelConnectionRequest(id: number): Promise<ConnectionRequest>;
+  
   // Career Roadmap operations
   // Career Goal operations
   getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]>;
@@ -831,6 +845,9 @@ export class MemStorage implements IStorage {
   private mentorshipRequests: Map<number, MentorshipRequest>;
   private mentorshipFeedback: Map<number, MentorshipFeedback>;
   
+  // Connection Request models
+  private connectionRequests: Map<number, ConnectionRequest>;
+  
   // Career Capsule models - removed
   // private careerCapsules: Map<number, CareerCapsule>;
   // private capsuleYears: Map<number, CapsuleYear>;
@@ -901,6 +918,9 @@ export class MemStorage implements IStorage {
   private currentMentorshipRequestId: number;
   private currentMentorshipFeedbackId: number;
   
+  // Connection Request IDs
+  private currentConnectionRequestId: number;
+  
   // Career Capsule IDs - removed
   // private currentCareerCapsuleId: number;
   // private currentCapsuleYearId: number;
@@ -962,6 +982,9 @@ export class MemStorage implements IStorage {
     // Initialize Mentorship Connect maps
     this.mentorshipRequests = new Map();
     this.mentorshipFeedback = new Map();
+    
+    // Initialize Connection Request maps
+    this.connectionRequests = new Map();
     
     // Initialize Career Capsule maps - removed
     // this.careerCapsules = new Map();
@@ -1044,6 +1067,9 @@ export class MemStorage implements IStorage {
     // Initialize Mentorship Connect IDs
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
+    
+    // Initialize Connection Request IDs
+    this.currentConnectionRequestId = 1;
     
     // Initialize Career Capsule IDs - removed
     // this.currentCareerCapsuleId = 1;
@@ -4791,6 +4817,123 @@ export class MemStorage implements IStorage {
     return (activeCount + pendingCount) < 5;
   }
 
+  // Connection Request operations
+  async getConnectionRequestById(id: number): Promise<ConnectionRequest | undefined> {
+    return this.connectionRequests.get(id);
+  }
+
+  async getConnectionRequestsBySenderId(senderId: number): Promise<ConnectionRequest[]> {
+    return Array.from(this.connectionRequests.values())
+      .filter(request => request.senderId === senderId);
+  }
+
+  async getConnectionRequestsByReceiverId(receiverId: number): Promise<ConnectionRequest[]> {
+    return Array.from(this.connectionRequests.values())
+      .filter(request => request.receiverId === receiverId);
+  }
+
+  async getPendingConnectionRequestsCount(userId: number): Promise<number> {
+    const requests = Array.from(this.connectionRequests.values())
+      .filter(request => 
+        (request.receiverId === userId && request.status === 'pending')
+      );
+    return requests.length;
+  }
+
+  async areUsersConnected(userId1: number, userId2: number): Promise<boolean> {
+    const requests = Array.from(this.connectionRequests.values())
+      .filter(request => 
+        request.status === 'accepted' && (
+          (request.senderId === userId1 && request.receiverId === userId2) ||
+          (request.senderId === userId2 && request.receiverId === userId1)
+        )
+      );
+    return requests.length > 0;
+  }
+
+  async getExistingConnectionRequest(userId1: number, userId2: number): Promise<ConnectionRequest | undefined> {
+    const requests = Array.from(this.connectionRequests.values())
+      .filter(request => 
+        (request.senderId === userId1 && request.receiverId === userId2) ||
+        (request.senderId === userId2 && request.receiverId === userId1)
+      );
+    return requests[0];
+  }
+
+  async createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest> {
+    const id = this.currentConnectionRequestId++;
+    const now = new Date();
+    
+    const newRequest: ConnectionRequest = {
+      ...request,
+      id,
+      status: 'pending',
+      requestedAt: now,
+      respondedAt: null,
+      conversationId: null,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.connectionRequests.set(id, newRequest);
+    return newRequest;
+  }
+
+  async acceptConnectionRequest(id: number, conversationId: number): Promise<ConnectionRequest> {
+    const request = this.connectionRequests.get(id);
+    if (!request) {
+      throw new Error(`Connection request with id ${id} not found`);
+    }
+    
+    const now = new Date();
+    const updatedRequest: ConnectionRequest = {
+      ...request,
+      status: 'accepted',
+      respondedAt: now,
+      conversationId,
+      updatedAt: now
+    };
+    
+    this.connectionRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
+  async declineConnectionRequest(id: number): Promise<ConnectionRequest> {
+    const request = this.connectionRequests.get(id);
+    if (!request) {
+      throw new Error(`Connection request with id ${id} not found`);
+    }
+    
+    const now = new Date();
+    const updatedRequest: ConnectionRequest = {
+      ...request,
+      status: 'declined',
+      respondedAt: now,
+      updatedAt: now
+    };
+    
+    this.connectionRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
+  async cancelConnectionRequest(id: number): Promise<ConnectionRequest> {
+    const request = this.connectionRequests.get(id);
+    if (!request) {
+      throw new Error(`Connection request with id ${id} not found`);
+    }
+    
+    const now = new Date();
+    const updatedRequest: ConnectionRequest = {
+      ...request,
+      status: 'cancelled',
+      respondedAt: now,
+      updatedAt: now
+    };
+    
+    this.connectionRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
   // Career Roadmap operations
   // Career Goal operations
   async getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]> {
@@ -8295,7 +8438,7 @@ export class MemStorage implements IStorage {
 
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
-import { eq, desc, and, sql as drizzleSql } from 'drizzle-orm';
+import { eq, desc, and, or, sql as drizzleSql } from 'drizzle-orm';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -13391,6 +13534,209 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('[db.searchHashtags] Error searching hashtags:', error);
       return [];
+    }
+  }
+
+  // Connection Request operations
+  async getConnectionRequestById(id: number): Promise<ConnectionRequest | undefined> {
+    try {
+      const result = await db.select().from(connectionRequests).where(eq(connectionRequests.id, id));
+      return result[0];
+    } catch (error) {
+      console.error('[db.getConnectionRequestById] Error:', error);
+      return undefined;
+    }
+  }
+
+  async getConnectionRequestsBySenderId(senderId: number): Promise<ConnectionRequest[]> {
+    try {
+      const result = await db
+        .select({
+          id: connectionRequests.id,
+          senderId: connectionRequests.senderId,
+          receiverId: connectionRequests.receiverId,
+          reason: connectionRequests.reason,
+          message: connectionRequests.message,
+          status: connectionRequests.status,
+          conversationId: connectionRequests.conversationId,
+          createdAt: connectionRequests.createdAt,
+          updatedAt: connectionRequests.updatedAt,
+          receiverName: users.name,
+          receiverPhotoUrl: users.photoURL,
+        })
+        .from(connectionRequests)
+        .leftJoin(users, eq(connectionRequests.receiverId, users.id))
+        .where(eq(connectionRequests.senderId, senderId));
+      return result as any;
+    } catch (error) {
+      console.error('[db.getConnectionRequestsBySenderId] Error:', error);
+      return [];
+    }
+  }
+
+  async getConnectionRequestsByReceiverId(receiverId: number): Promise<ConnectionRequest[]> {
+    try {
+      const result = await db
+        .select({
+          id: connectionRequests.id,
+          senderId: connectionRequests.senderId,
+          receiverId: connectionRequests.receiverId,
+          reason: connectionRequests.reason,
+          message: connectionRequests.message,
+          status: connectionRequests.status,
+          conversationId: connectionRequests.conversationId,
+          createdAt: connectionRequests.createdAt,
+          updatedAt: connectionRequests.updatedAt,
+          senderName: users.name,
+          senderPhotoUrl: users.photoURL,
+        })
+        .from(connectionRequests)
+        .leftJoin(users, eq(connectionRequests.senderId, users.id))
+        .where(eq(connectionRequests.receiverId, receiverId));
+      return result as any;
+    } catch (error) {
+      console.error('[db.getConnectionRequestsByReceiverId] Error:', error);
+      return [];
+    }
+  }
+
+  async getPendingConnectionRequestsCount(userId: number): Promise<number> {
+    try {
+      const result = await db.select().from(connectionRequests).where(
+        and(
+          eq(connectionRequests.receiverId, userId),
+          eq(connectionRequests.status, 'pending')
+        )
+      );
+      return result.length;
+    } catch (error) {
+      console.error('[db.getPendingConnectionRequestsCount] Error:', error);
+      return 0;
+    }
+  }
+
+  async areUsersConnected(userId1: number, userId2: number): Promise<boolean> {
+    try {
+      const result = await db.select().from(connectionRequests).where(
+        and(
+          eq(connectionRequests.status, 'accepted'),
+          or(
+            and(
+              eq(connectionRequests.senderId, userId1),
+              eq(connectionRequests.receiverId, userId2)
+            ),
+            and(
+              eq(connectionRequests.senderId, userId2),
+              eq(connectionRequests.receiverId, userId1)
+            )
+          )
+        )
+      );
+      return result.length > 0;
+    } catch (error) {
+      console.error('[db.areUsersConnected] Error:', error);
+      return false;
+    }
+  }
+
+  async getExistingConnectionRequest(userId1: number, userId2: number): Promise<ConnectionRequest | undefined> {
+    try {
+      const result = await db.select().from(connectionRequests).where(
+        or(
+          and(
+            eq(connectionRequests.senderId, userId1),
+            eq(connectionRequests.receiverId, userId2)
+          ),
+          and(
+            eq(connectionRequests.senderId, userId2),
+            eq(connectionRequests.receiverId, userId1)
+          )
+        )
+      );
+      return result[0];
+    } catch (error) {
+      console.error('[db.getExistingConnectionRequest] Error:', error);
+      return undefined;
+    }
+  }
+
+  async createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest> {
+    try {
+      const result = await db.insert(connectionRequests).values(request).returning();
+      return result[0];
+    } catch (error) {
+      console.error('[db.createConnectionRequest] Error:', error);
+      throw error;
+    }
+  }
+
+  async acceptConnectionRequest(id: number, conversationId: number): Promise<ConnectionRequest> {
+    try {
+      const now = new Date();
+      const result = await db.update(connectionRequests)
+        .set({
+          status: 'accepted',
+          respondedAt: now,
+          conversationId,
+          updatedAt: now
+        })
+        .where(eq(connectionRequests.id, id))
+        .returning();
+      
+      if (result.length === 0) {
+        throw new Error(`Connection request with id ${id} not found`);
+      }
+      
+      return result[0];
+    } catch (error) {
+      console.error('[db.acceptConnectionRequest] Error:', error);
+      throw error;
+    }
+  }
+
+  async declineConnectionRequest(id: number): Promise<ConnectionRequest> {
+    try {
+      const now = new Date();
+      const result = await db.update(connectionRequests)
+        .set({
+          status: 'declined',
+          respondedAt: now,
+          updatedAt: now
+        })
+        .where(eq(connectionRequests.id, id))
+        .returning();
+      
+      if (result.length === 0) {
+        throw new Error(`Connection request with id ${id} not found`);
+      }
+      
+      return result[0];
+    } catch (error) {
+      console.error('[db.declineConnectionRequest] Error:', error);
+      throw error;
+    }
+  }
+
+  async cancelConnectionRequest(id: number): Promise<ConnectionRequest> {
+    try {
+      const now = new Date();
+      const result = await db.update(connectionRequests)
+        .set({
+          status: 'cancelled',
+          respondedAt: now,
+          updatedAt: now
+        })
+        .where(eq(connectionRequests.id, id))
+        .returning();
+      
+      if (result.length === 0) {
+        throw new Error(`Connection request with id ${id} not found`);
+      }
+      
+      return result[0];
+    } catch (error) {
+      console.error('[db.cancelConnectionRequest] Error:', error);
+      throw error;
     }
   }
 

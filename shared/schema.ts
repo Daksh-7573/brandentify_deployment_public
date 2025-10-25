@@ -1512,6 +1512,45 @@ export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedb
 export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
 export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
 
+// Professional Connection System
+// Connection request status enum
+export const connectionStatusEnum = pgEnum("connection_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "cancelled"
+]);
+
+// Connection requests table - tracks connection requests between users
+export const connectionRequests = pgTable("connection_requests", {
+  id: serial("id").primaryKey(),
+  senderId: integer("sender_id").references(() => users.id).notNull(), // User sending the request
+  receiverId: integer("receiver_id").references(() => users.id).notNull(), // User receiving the request
+  reason: text("reason").notNull(), // Reason for connection (job opportunity, collaboration, etc.)
+  message: text("message"), // Custom message from sender
+  status: connectionStatusEnum("status").notNull().default("pending"),
+  requestedAt: timestamp("requested_at").defaultNow(),
+  respondedAt: timestamp("responded_at"), // When the request was accepted/declined
+  conversationId: integer("conversation_id"), // Auto-created conversation ID when accepted
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for connection requests
+export const insertConnectionRequestSchema = createInsertSchema(connectionRequests).omit({
+  id: true,
+  status: true,
+  requestedAt: true,
+  respondedAt: true,
+  conversationId: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Connection System
+export type ConnectionRequest = typeof connectionRequests.$inferSelect;
+export type InsertConnectionRequest = z.infer<typeof insertConnectionRequestSchema>;
+
 // Career Capsule Feature (formerly Career Roadmap)
 // This feature allows users to set 1-5 year career goals and receive AI-generated
 // milestones/steps with timeline to achieve those goals.

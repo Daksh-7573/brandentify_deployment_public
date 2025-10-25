@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   UserPlus, MessageCircle, X, 
-  ChevronDown, Send, File, Paperclip
+  ChevronDown, Send, File, Paperclip, Loader2
 } from 'lucide-react';
 import {
   Dialog,
@@ -21,6 +21,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ResumeButton } from "@/components/shared/resume-button";
+import { useAuth } from "@/hooks/use-auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export interface PortfolioCtaButtonsProps {
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
@@ -52,6 +55,34 @@ export default function PortfolioCtaButtons({
   const [message, setMessage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Mutation for sending connection request
+  const connectionMutation = useMutation({
+    mutationFn: async (data: { receiverId: number, reason: string, message: string }) => {
+      return await apiRequest('POST', '/api/connection-requests', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Connection request sent!",
+        description: `Your connection request has been sent to ${userName}. You'll be notified when they respond.`,
+      });
+      setDialogOpen(false);
+      setSelectedIntro("");
+      setMessage("");
+      setFile(null);
+      // Invalidate connection requests cache
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id, 'sent-connection-requests'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to send request",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
   
   const introOptions = [
     "Exciting job opportunities are available, and I believe you'd be a great fit.",
@@ -71,7 +102,7 @@ export default function PortfolioCtaButtons({
     setFile(null);
   };
 
-  const handleSubmitRequest = () => {
+  const handleSubmitRequest = async () => {
     // Check if purpose is selected (now mandatory)
     if (!selectedIntro || selectedIntro === "") {
       toast({
@@ -92,24 +123,35 @@ export default function PortfolioCtaButtons({
       return;
     }
     
-    // Combine selected intro and message
-    const combinedMessage = `Purpose: ${selectedIntro}\n\n${message}`;
-      
-    // Send email with attachment info if present
-    const fileInfo = file ? `\n\nI've also prepared a file (${file.name}) to share with you.` : '';
-    const subject = `Let's Talk - Request from Brandentifier`;
-    const body = `Hello ${userName || ''},\n\n${combinedMessage}${fileInfo}\n\nLooking forward to your response!\n\nBest regards,`;
+    // Check if user is logged in
+    if (!user || !user.id) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to send connection requests",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // In a real application, you'd upload the file to a server here
-    // For now, we'll just direct to email
-    window.location.href = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // Check if receiverId is valid
+    if (!userId) {
+      toast({
+        title: "Invalid recipient",
+        description: "Cannot send connection request to this user",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Close dialog
-    setDialogOpen(false);
-    // Reset state
-    setSelectedIntro("");
-    setMessage("");
-    setFile(null);
+    // Send connection request via API (server uses authenticated user ID)
+    const fileInfo = file ? `\n\nAttachment: ${file.name}` : '';
+    const combinedMessage = `${message}${fileInfo}`;
+    
+    connectionMutation.mutate({
+      receiverId: typeof userId === 'string' ? parseInt(userId) : userId,
+      reason: selectedIntro,
+      message: combinedMessage,
+    });
   };
   
   const handleDownloadResume = () => {
@@ -329,9 +371,20 @@ export default function PortfolioCtaButtons({
               <Button 
                 onClick={handleSubmitRequest}
                 className="w-full bg-[#6a0dad] hover:bg-[#7b1fa2] text-white"
+                disabled={connectionMutation.isPending}
+                data-testid="button-send-connection-request"
               >
-                <Send size={16} className="mr-2" />
-                Send Request
+                {connectionMutation.isPending ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} className="mr-2" />
+                    Send Request
+                  </>
+                )}
               </Button>
             </div>
           </div>
