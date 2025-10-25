@@ -60,14 +60,14 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95 border-white/10 backdrop-blur-xl text-white">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95 border-white/10 backdrop-blur-xl text-white overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 bg-clip-text text-transparent">
             Share & Unlock Rewards
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto pr-2 flex-1">
           {/* Progress Section */}
           <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
             <div className="flex items-center justify-between mb-4">
@@ -205,7 +205,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-4 border-t border-white/10 flex-shrink-0">
           <Button
             variant="outline"
             onClick={onClose}
