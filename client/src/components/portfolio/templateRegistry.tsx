@@ -1,11 +1,9 @@
-import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
 import DesignerShowcase from "@/components/portfolio/templates/designer-showcase";
 import PhotographerPortfolio from "@/components/portfolio/templates/photographer-portfolio";
@@ -20,16 +18,12 @@ export type PortfolioLayoutKey =
   | "minimal"
   | "technical"
   | "executive"
-  | "minimalist_pro"
-  | "minimalist-pro"
   | "timeline-storyteller-2"
   | "visual-expert"
   | "corporate-executive"
   | "dynamic-innovator"
   | "freelancer-hub"
   | "animated"
-  | "animated-odyssey"
-  | "animated_odyssey"
   | "scholar"
   | "designer-portfolio"
   | "photographer-portfolio"
@@ -102,8 +96,6 @@ export interface PortfolioTemplateProps {
 
 const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   // Snake case to kebab case mappings
-  "minimalist_pro": "minimalist-pro",
-  "animated_odyssey": "animated-odyssey",
   "corporate_executive": "corporate-executive",
   "dynamic_innovator": "dynamic-innovator",
   "freelancer_hub": "freelancer-hub",
@@ -112,7 +104,7 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "visual_expert": "visual-expert",
   
   // Legacy aliases from brand-profile and random-profile switch statements
-  "minimalist": "minimalist-pro",
+  "minimalist": "scholar",
   "timeline": "timeline-storyteller-2",
   "visual": "visual-expert",
   "freelancer": "freelancer-hub",
@@ -148,51 +140,18 @@ const AnimatedWrapper: React.FC<PortfolioTemplateProps> = (props) => {
   );
 };
 
-const AnimatedOdysseyWrapper: React.FC<PortfolioTemplateProps> = (props) => {
-  return (
-    <AnimatedOdyssey
-      id={props.userInfo.id}
-      name={props.userInfo.name}
-      title={props.userInfo.title || ''}
-      industry={props.userInfo.industry || ''}
-      domain={props.userInfo.domain || ''}
-      location={props.userInfo.location || ''}
-      tagline={props.userInfo.tagline || ''}
-      lookingFor={props.userInfo.lookingFor || ''}
-      whatIOffer={props.userInfo.whatIOffer || ''}
-      email={props.userInfo.email || ''}
-      photoURL={props.userInfo.photoURL || ''}
-      aboutMe={props.userInfo.aboutMe || ''}
-      visionStatement={props.userInfo.visionStatement || ''}
-      missionStatement={props.userInfo.missionStatement || ''}
-      coreValues={props.userInfo.coreValues || []}
-      uniqueValueProposition={props.userInfo.uniqueValueProposition || ''}
-      services={props.userServices as any || []}
-      skills={props.userSkills as any || []}
-      experiences={props.userExperiences as any || []}
-      projects={props.userProjects as any || []}
-      educations={props.userEducations as any || []}
-      primaryAudience={props.userInfo.primaryAudience || []}
-      secondaryAudience={props.userInfo.secondaryAudience || []}
-      currentUserId={props.currentUserId}
-    />
-  );
-};
-
 const templateRegistry: Record<string, TemplateComponent> = {
   "professional": CorporateExecutive as any,
   "creative": VisualExpert as any,
-  "minimal": MinimalistPro as any,
-  "technical": MinimalistPro as any,
+  "minimal": Scholar as any,
+  "technical": Scholar as any,
   "executive": CorporateExecutive as any,
-  "minimalist-pro": MinimalistPro as any,
   "timeline-storyteller-2": TimelineStoryteller2 as any,
   "visual-expert": VisualExpert as any,
   "corporate-executive": CorporateExecutive as any,
   "dynamic-innovator": DynamicInnovator as any,
   "freelancer-hub": FreelancerHub as any,
   "animated": AnimatedWrapper,
-  "animated-odyssey": AnimatedOdysseyWrapper,
   "scholar": Scholar as any,
   "designer-portfolio": DesignerShowcase as any,
   "photographer-portfolio": PhotographerPortfolio as any,
