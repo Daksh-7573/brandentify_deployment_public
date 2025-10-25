@@ -44,7 +44,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [currentConversation?.messages]);
+  }, [currentConversation?.id]);
   
   // Mark conversation as read when it's opened
   useEffect(() => {
