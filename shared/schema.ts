@@ -2237,3 +2237,61 @@ export const insertJobMarketDataSchema = createInsertSchema(jobMarketData).omit(
 
 export type JobMarketData = typeof jobMarketData.$inferSelect;
 export type InsertJobMarketData = z.infer<typeof insertJobMarketDataSchema>;
+
+// ============================================
+// REFERRAL SYSTEM - Share to Unlock
+// ============================================
+
+// Referral Links - Generated unique links for users to share
+export const referralLinks = pgTable("referral_links", {
+  id: serial("id").primaryKey(),
+  referrerUserId: integer("referrer_user_id").references(() => users.id).notNull(),
+  uniqueCode: text("unique_code").notNull().unique(), // e.g., "SARAH-X7K2"
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"), // Optional expiration
+});
+
+export const insertReferralLinkSchema = createInsertSchema(referralLinks).omit({
+  id: true,
+  createdAt: true
+});
+
+export type ReferralLink = typeof referralLinks.$inferSelect;
+export type InsertReferralLink = z.infer<typeof insertReferralLinkSchema>;
+
+// Referral Conversions - Track successful referrals (friend signs up)
+export const referralConversions = pgTable("referral_conversions", {
+  id: serial("id").primaryKey(),
+  referrerUserId: integer("referrer_user_id").references(() => users.id).notNull(),
+  refereeUserId: integer("referee_user_id").references(() => users.id).notNull(), // New user who signed up
+  referralLinkId: integer("referral_link_id").references(() => referralLinks.id).notNull(),
+  conversionDate: timestamp("conversion_date").defaultNow(),
+  rewardGranted: boolean("reward_granted").default(false), // Whether unlock rewards were given
+});
+
+export const insertReferralConversionSchema = createInsertSchema(referralConversions).omit({
+  id: true,
+  conversionDate: true
+});
+
+export type ReferralConversion = typeof referralConversions.$inferSelect;
+export type InsertReferralConversion = z.infer<typeof insertReferralConversionSchema>;
+
+// User Unlocks - Track which Quantum Cards and Portfolios each user has unlocked
+export const userUnlocks = pgTable("user_unlocks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  unlockType: text("unlock_type").notNull(), // "quantum_card" or "portfolio"
+  unlockId: text("unlock_id").notNull(), // e.g., "holographic", "nature-creative"
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+  unlockSource: text("unlock_source").default("referral"), // "referral", "initial", "purchase", "promo"
+  referralConversionId: integer("referral_conversion_id").references(() => referralConversions.id), // Which referral unlocked this
+});
+
+export const insertUserUnlockSchema = createInsertSchema(userUnlocks).omit({
+  id: true,
+  unlockedAt: true
+});
+
+export type UserUnlock = typeof userUnlocks.$inferSelect;
+export type InsertUserUnlock = z.infer<typeof insertUserUnlockSchema>;
