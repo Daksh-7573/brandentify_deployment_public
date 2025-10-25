@@ -31,9 +31,9 @@ export function useReferralStatus() {
   const { user } = useAuth();
   
   return useQuery<ReferralStatus>({
-    queryKey: ['/api/referral/status', user?.id],
+    queryKey: ['/api/referral/status'],
     queryFn: async () => {
-      const response = await fetch(`/api/referral/status?userId=${user?.id}`);
+      const response = await fetch('/api/referral/status');
       if (!response.ok) throw new Error('Failed to fetch referral status');
       const data = await response.json();
       return {
@@ -42,7 +42,7 @@ export function useReferralStatus() {
         progress: data.progress,
       };
     },
-    enabled: !!user?.id,
+    enabled: !!user,
   });
 }
 
@@ -50,9 +50,9 @@ export function useReferralLink() {
   const { user } = useAuth();
   
   return useQuery<ReferralLink>({
-    queryKey: ['/api/referral/generate-link', user?.id],
+    queryKey: ['/api/referral/generate-link'],
     queryFn: async () => {
-      const response = await fetch(`/api/referral/generate-link?userId=${user?.id}`);
+      const response = await fetch('/api/referral/generate-link');
       if (!response.ok) throw new Error('Failed to generate referral link');
       const data = await response.json();
       return {
@@ -60,19 +60,16 @@ export function useReferralLink() {
         link: data.link,
       };
     },
-    enabled: !!user?.id,
+    enabled: !!user,
   });
 }
 
 export function useInitializeUnlocks() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
   
   return useMutation({
     mutationFn: async () => {
-      await apiRequest('POST', '/api/referral/initialize-unlocks', {
-        userId: user?.id,
-      });
+      await apiRequest('POST', '/api/referral/initialize-unlocks', {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/referral/status'] });

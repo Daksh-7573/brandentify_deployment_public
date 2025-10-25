@@ -271,6 +271,24 @@ export class ReferralService {
   }
   
   /**
+   * Validate if a referral code exists and is valid
+   */
+  async validateReferralCode(code: string): Promise<boolean> {
+    const client = await pool.connect();
+    
+    try {
+      const result = await client.query(
+        `SELECT id FROM referral_links WHERE unique_code = $1`,
+        [code]
+      );
+      
+      return result.rows.length > 0;
+    } finally {
+      client.release();
+    }
+  }
+  
+  /**
    * Get user's unlocked items
    */
   async getUserUnlocks(userId: number): Promise<{
