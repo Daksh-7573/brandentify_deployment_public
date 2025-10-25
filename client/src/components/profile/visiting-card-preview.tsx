@@ -81,8 +81,8 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // For professional-renewed card style, use the specialized component
-  if (cardType === "professional-renewed") {
+  // For professional card style, use the specialized component
+  if (cardType === "professional" || cardType === "professional-renewed") {
     return (
       <CardWrapper>
         <ProfessionalCardRenewed 
