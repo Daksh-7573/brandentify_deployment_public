@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Info, Download, Share2, Check, Loader2 } from "lucide-react";
+import { BadgeCheck, Info, Download, Share2, Check, Loader2, Lock, Gift } from "lucide-react";
 import { UserData } from "@/types/user";
 import VisitingCardPreview from "./visiting-card-preview";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useReferralStatus } from "@/hooks/use-referral";
+import { ShareModal } from "@/components/referral/share-modal";
 
 // Card type options
 const CARD_TYPES = [
@@ -31,11 +33,13 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
 }) => {
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "professional-renewed");
+  const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
   const [isLoading, setIsLoading] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { toast } = useToast();
+  const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
   
   // Set up a loading effect when first mounting the component
   useEffect(() => {
@@ -53,8 +57,24 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     };
   }, []);
   
+  // Check if a card is locked
+  const isCardLocked = (cardId: string): boolean => {
+    if (!referralStatus) return false;
+    const card = referralStatus.quantumCards.find((c) => c.id === cardId);
+    return card?.locked ?? false;
+  };
+
   // Handle tab change
   const handleTabChange = (value: string) => {
+    if (isCardLocked(value)) {
+      setShowShareModal(true);
+      toast({
+        title: "Card Locked",
+        description: "Share Brandentifier with friends to unlock this design!",
+        variant: "default",
+      });
+      return;
+    }
     setActiveTab(value);
     setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);
@@ -254,24 +274,85 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
           
           {/* Card Type Selection */}
           <div className="flex-1">
-            <h4 className="text-sm font-medium mb-3">Select Card Style</h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium">Select Card Style</h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowShareModal(true)}
+                className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10"
+                data-testid="button-share-to-unlock"
+              >
+                <Gift className="h-4 w-4 mr-1" />
+                Share to Unlock
+              </Button>
+            </div>
             <Tabs
               value={activeTab}
               onValueChange={handleTabChange}
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="professional-renewed" className="dark-tabs-trigger">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="dark-tabs-trigger">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="dark-tabs-trigger">Holographic</TabsTrigger>
+                <TabsTrigger 
+                  value="professional" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("professional") ? "opacity-60" : ""}`}
+                  data-testid="tab-professional"
+                >
+                  {isCardLocked("professional") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Professional
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="3d-animated" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("3d-animated") ? "opacity-60" : ""}`}
+                  data-testid="tab-3d-animated"
+                >
+                  {isCardLocked("3d-animated") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  3D
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="holographic" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("holographic") ? "opacity-60" : ""}`}
+                  data-testid="tab-holographic"
+                >
+                  {isCardLocked("holographic") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Holographic
+                </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="neoglow" className="dark-tabs-trigger">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="dark-tabs-trigger">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="dark-tabs-trigger">Artistic</TabsTrigger>
+                <TabsTrigger 
+                  value="neoglow" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("neoglow") ? "opacity-60" : ""}`}
+                  data-testid="tab-neoglow"
+                >
+                  {isCardLocked("neoglow") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  NeoGlow
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="creative" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("creative") ? "opacity-60" : ""}`}
+                  data-testid="tab-creative"
+                >
+                  {isCardLocked("creative") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Creative
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="artistic" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("artistic") ? "opacity-60" : ""}`}
+                  data-testid="tab-artistic"
+                >
+                  {isCardLocked("artistic") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Artistic
+                </TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="quantum" className="dark-tabs-trigger">Quantum Tech</TabsTrigger>
+              <TabsList className="grid grid-cols-1 mb-6 dark-tabs-list">
+                <TabsTrigger 
+                  value="quantum" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("quantum") ? "opacity-60" : ""}`}
+                  data-testid="tab-quantum"
+                >
+                  {isCardLocked("quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Quantum Tech
+                </TabsTrigger>
               </TabsList>
               
               {/* Finalize card button section */}
@@ -320,6 +401,9 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Share Modal for Referral System */}
+      <ShareModal open={showShareModal} onClose={() => setShowShareModal(false)} />
     </div>
   );
 };
