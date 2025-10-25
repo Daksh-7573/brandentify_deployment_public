@@ -14,9 +14,20 @@ router.get('/connection-requests/:id', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
+    // Verify user is authenticated
+    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    if (!currentUserId) {
+      return res.status(401).json({ message: 'You must be logged in to view connection requests' });
+    }
+
     const request = await storage.getConnectionRequestById(id);
     if (!request) {
       return res.status(404).json({ message: 'Connection request not found' });
+    }
+
+    // Verify the current user is either the sender or receiver of the request
+    if (request.senderId !== currentUserId && request.receiverId !== currentUserId) {
+      return res.status(403).json({ message: 'You are not authorized to view this connection request' });
     }
 
     return res.status(200).json(request);

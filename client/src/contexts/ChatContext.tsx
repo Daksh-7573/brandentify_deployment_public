@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 // Types
 export type Message = {
@@ -73,6 +74,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Set up WebSocket connection
   useEffect(() => {
@@ -212,6 +214,17 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       content,
     })
       .then(async (response) => {
+        // Check for 403 Forbidden (not connected)
+        if (response.status === 403) {
+          const error = await response.json();
+          toast({
+            title: "Connection required",
+            description: error.message || "You need to be connected to send messages. Visit their portfolio and send a connection request first.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
         const newMessage = await response.json() as Message;
         // Optimistically update message list
         queryClient.setQueryData<Message[]>(
@@ -221,6 +234,11 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       })
       .catch((error) => {
         console.error('Error sending message via API:', error);
+        toast({
+          title: "Failed to send message",
+          description: "Please try again later",
+          variant: "destructive",
+        });
       });
   };
 

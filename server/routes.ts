@@ -9003,7 +9003,7 @@ ${extractedText.substring(0, 5000)}
     });
     
     // Expect an authentication message first with user ID
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
       try {
         const data = JSON.parse(message.toString());
         
@@ -9026,31 +9026,58 @@ ${extractedText.substring(0, 5000)}
           }
         } else if (data.type === 'message') {
           // Handle new message
-          if (data.recipientId && data.conversationId && data.content) {
+          if (data.recipientId && data.conversationId && data.content && data.senderId) {
             const recipientId = parseInt(data.recipientId);
+            const senderId = parseInt(data.senderId);
             
-            // If recipient is connected, send them the message
-            if (clients.has(recipientId)) {
-              const recipientWs = clients.get(recipientId);
-              if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
-                try {
-                  recipientWs.send(JSON.stringify({
-                    type: 'new_message',
-                    senderId: data.senderId,
-                    senderName: data.senderName,
-                    conversationId: data.conversationId,
-                    content: data.content,
-                    timestamp: new Date().toISOString()
-                  }));
-                } catch (sendError) {
-                  console.error('Error sending message to recipient:', sendError);
+            // Verify users are connected before allowing real-time message delivery
+            try {
+              const areConnected = await storage.areUsersConnected(senderId, recipientId);
+              
+              if (!areConnected) {
+                console.log(`WebSocket message blocked: Users ${senderId} and ${recipientId} are not connected`);
+                // Send error back to sender if they're still connected
+                if (clients.has(senderId)) {
+                  const senderWs = clients.get(senderId);
+                  if (senderWs && senderWs.readyState === WebSocket.OPEN) {
+                    try {
+                      senderWs.send(JSON.stringify({
+                        type: 'error',
+                        message: 'You must be connected to send messages to this user'
+                      }));
+                    } catch (sendError) {
+                      console.error('Error sending error to sender:', sendError);
+                    }
+                  }
+                }
+                return;
+              }
+              
+              // If recipient is connected and users are connected, send them the message
+              if (clients.has(recipientId)) {
+                const recipientWs = clients.get(recipientId);
+                if (recipientWs && recipientWs.readyState === WebSocket.OPEN) {
+                  try {
+                    recipientWs.send(JSON.stringify({
+                      type: 'new_message',
+                      senderId: data.senderId,
+                      senderName: data.senderName,
+                      conversationId: data.conversationId,
+                      content: data.content,
+                      timestamp: new Date().toISOString()
+                    }));
+                  } catch (sendError) {
+                    console.error('Error sending message to recipient:', sendError);
+                    // Remove stale connection
+                    clients.delete(recipientId);
+                  }
+                } else {
                   // Remove stale connection
                   clients.delete(recipientId);
                 }
-              } else {
-                // Remove stale connection
-                clients.delete(recipientId);
               }
+            } catch (error) {
+              console.error('Error checking connection status:', error);
             }
           }
         }
