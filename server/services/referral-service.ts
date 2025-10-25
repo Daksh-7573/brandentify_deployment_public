@@ -1,0 +1,386 @@
+import { pool } from "../db";
+import { createId } from '@paralleldrive/cuid2';
+
+/**
+ * Referral System Service
+ * Handles share-to-unlock mechanics for Quantum Cards and Portfolio Templates
+ */
+
+// Available Quantum Card designs (7 total)
+const QUANTUM_CARDS = [
+  'professional',
+  'quantum',
+  '3d-animated',
+  'holographic',
+  'neoglow',
+  'creative',
+  'artistic'
+];
+
+// Available Portfolio Layouts (13 total)
+const PORTFOLIO_LAYOUTS = [
+  'corporate-executive',
+  'scholar',
+  'timeline-storyteller-2',
+  'visual-expert',
+  'dynamic-innovator',
+  'freelancer-hub',
+  'animated',
+  'designer-portfolio',
+  'photographer-portfolio',
+  'pastel-dreamscape',
+  'nature-creative',
+  'fashion-runway',
+  'yoga-fitness-model'
+];
+
+// Initial free access
+const INITIAL_QUANTUM_CARDS = ['professional', 'quantum'];
+const INITIAL_PORTFOLIOS = ['corporate-executive', 'scholar'];
+
+export class ReferralService {
+  /**
+   * Generate unique referral link for a user
+   */
+  async generateReferralLink(userId: number): Promise<{ code: string; link: string }> {
+    const client = await pool.connect();
+    
+    try {
+      // Check if user already has a referral link
+      const existing = await client.query(
+        `SELECT unique_code FROM referral_links 
+         WHERE referrer_user_id = $1 
+         ORDER BY created_at DESC LIMIT 1`,
+        [userId]
+      );
+      
+      if (existing.rows.length > 0) {
+        const code = existing.rows[0].unique_code;
+        return {
+          code,
+          link: `${process.env.REPLIT_DEV_DOMAIN || 'brandentifier.com'}/join/${code}`
+        };
+      }
+      
+      // Generate new unique code
+      const code = this.generateUniqueCode();
+      
+      // Store in database
+      await client.query(
+        `INSERT INTO referral_links (referrer_user_id, unique_code) 
+         VALUES ($1, $2)`,
+        [userId, code]
+      );
+      
+      return {
+        code,
+        link: `${process.env.REPLIT_DEV_DOMAIN || 'brandentifier.com'}/join/${code}`
+      };
+    } finally {
+      client.release();
+    }
+  }
+  
+  /**
+   * Generate a unique referral code (e.g., SARAH-X7K2)
+   */
+  private generateUniqueCode(): string {
+    const randomPart = createId().substring(0, 4).toUpperCase();
+    return `REF-${randomPart}`;
+  }
+  
+  /**
+   * Process referral conversion when new user signs up
+   */
+  async processReferralSignup(referralCode: string, newUserId: number): Promise<boolean> {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Find referral link
+      const linkResult = await client.query(
+        `SELECT id, referrer_user_id FROM referral_links 
+         WHERE unique_code = $1`,
+        [referralCode]
+      );
+      
+      if (linkResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return false;
+      }
+      
+      const link = linkResult.rows[0];
+      const referrerId = link.referrer_user_id;
+      
+      // Prevent self-referrals
+      if (referrerId === newUserId) {
+        await client.query('ROLLBACK');
+        return false;
+      }
+      
+      // Check if this user already referred this new user
+      const existingConversion = await client.query(
+        `SELECT id FROM referral_conversions 
+         WHERE referrer_user_id = $1 AND referee_user_id = $2`,
+        [referrerId, newUserId]
+      );
+      
+      if (existingConversion.rows.length > 0) {
+        await client.query('ROLLBACK');
+        return false; // Already credited
+      }
+      
+      // Create conversion record
+      const conversionResult = await client.query(
+        `INSERT INTO referral_conversions 
+         (referrer_user_id, referee_user_id, referral_link_id, reward_granted) 
+         VALUES ($1, $2, $3, false) 
+         RETURNING id`,
+        [referrerId, newUserId, link.id]
+      );
+      
+      const conversionId = conversionResult.rows[0].id;
+      
+      // Grant unlock rewards to referrer
+      await this.grantUnlockRewards(referrerId, conversionId, client);
+      
+      // Mark reward as granted
+      await client.query(
+        `UPDATE referral_conversions SET reward_granted = true WHERE id = $1`,
+        [conversionId]
+      );
+      
+      await client.query('COMMIT');
+      
+      console.log(`[Referral] User ${referrerId} referred user ${newUserId} - rewards granted`);
+      
+      return true;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('[Referral] Error processing referral signup:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+  
+  /**
+   * Grant unlock rewards: 1 random Quantum Card + 2 random Portfolios
+   * With re-roll logic for duplicates
+   */
+  private async grantUnlockRewards(userId: number, conversionId: number, client: any): Promise<void> {
+    // Get currently unlocked items
+    const unlockedResult = await client.query(
+      `SELECT unlock_type, unlock_id FROM user_unlocks WHERE user_id = $1`,
+      [userId]
+    );
+    
+    const unlocked = unlockedResult.rows;
+    const unlockedCards = unlocked
+      .filter((u: any) => u.unlock_type === 'quantum_card')
+      .map((u: any) => u.unlock_id);
+    const unlockedPortfolios = unlocked
+      .filter((u: any) => u.unlock_type === 'portfolio')
+      .map((u: any) => u.unlock_id);
+    
+    // Get locked items
+    const lockedCards = QUANTUM_CARDS.filter(c => !unlockedCards.includes(c));
+    const lockedPortfolios = PORTFOLIO_LAYOUTS.filter(p => !unlockedPortfolios.includes(p));
+    
+    console.log(`[Referral] User ${userId} - Locked cards: ${lockedCards.length}, Locked portfolios: ${lockedPortfolios.length}`);
+    
+    // Grant 1 random Quantum Card (if any available)
+    if (lockedCards.length > 0) {
+      const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+      await client.query(
+        `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source, referral_conversion_id) 
+         VALUES ($1, 'quantum_card', $2, 'referral', $3)`,
+        [userId, randomCard, conversionId]
+      );
+      console.log(`[Referral] Unlocked Quantum Card: ${randomCard}`);
+    } else {
+      console.log(`[Referral] All Quantum Cards already unlocked for user ${userId}`);
+    }
+    
+    // Grant 2 random Portfolios (if available)
+    const portfoliosToGrant = Math.min(2, lockedPortfolios.length);
+    
+    for (let i = 0; i < portfoliosToGrant; i++) {
+      // Re-calculate locked portfolios after each unlock to avoid duplicates
+      const currentUnlocked = await client.query(
+        `SELECT unlock_id FROM user_unlocks 
+         WHERE user_id = $1 AND unlock_type = 'portfolio'`,
+        [userId]
+      );
+      
+      const currentUnlockedIds = currentUnlocked.rows.map((u: any) => u.unlock_id);
+      const remainingLocked = PORTFOLIO_LAYOUTS.filter(p => !currentUnlockedIds.includes(p));
+      
+      if (remainingLocked.length > 0) {
+        const randomPortfolio = remainingLocked[Math.floor(Math.random() * remainingLocked.length)];
+        await client.query(
+          `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source, referral_conversion_id) 
+           VALUES ($1, 'portfolio', $2, 'referral', $3)`,
+          [userId, randomPortfolio, conversionId]
+        );
+        console.log(`[Referral] Unlocked Portfolio: ${randomPortfolio}`);
+      }
+    }
+  }
+  
+  /**
+   * Initialize default unlocks for new users
+   */
+  async initializeDefaultUnlocks(userId: number): Promise<void> {
+    const client = await pool.connect();
+    
+    try {
+      // Check if user already has initial unlocks
+      const existing = await client.query(
+        `SELECT COUNT(*) as count FROM user_unlocks WHERE user_id = $1`,
+        [userId]
+      );
+      
+      if (parseInt(existing.rows[0].count) > 0) {
+        return; // Already initialized
+      }
+      
+      // Grant initial Quantum Cards
+      for (const card of INITIAL_QUANTUM_CARDS) {
+        await client.query(
+          `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source) 
+           VALUES ($1, 'quantum_card', $2, 'initial')`,
+          [userId, card]
+        );
+      }
+      
+      // Grant initial Portfolios
+      for (const portfolio of INITIAL_PORTFOLIOS) {
+        await client.query(
+          `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source) 
+           VALUES ($1, 'portfolio', $2, 'initial')`,
+          [userId, portfolio]
+        );
+      }
+      
+      console.log(`[Referral] Initialized default unlocks for user ${userId}`);
+    } finally {
+      client.release();
+    }
+  }
+  
+  /**
+   * Get user's unlocked items
+   */
+  async getUserUnlocks(userId: number): Promise<{
+    quantumCards: string[];
+    portfolios: string[];
+    totalReferrals: number;
+  }> {
+    const client = await pool.connect();
+    
+    try {
+      // Get unlocks
+      const unlocksResult = await client.query(
+        `SELECT unlock_type, unlock_id FROM user_unlocks WHERE user_id = $1`,
+        [userId]
+      );
+      
+      const quantumCards = unlocksResult.rows
+        .filter((u: any) => u.unlock_type === 'quantum_card')
+        .map((u: any) => u.unlock_id);
+      
+      const portfolios = unlocksResult.rows
+        .filter((u: any) => u.unlock_type === 'portfolio')
+        .map((u: any) => u.unlock_id);
+      
+      // Get total referrals
+      const referralsResult = await client.query(
+        `SELECT COUNT(*) as count FROM referral_conversions 
+         WHERE referrer_user_id = $1`,
+        [userId]
+      );
+      
+      const totalReferrals = parseInt(referralsResult.rows[0].count);
+      
+      return {
+        quantumCards,
+        portfolios,
+        totalReferrals
+      };
+    } finally {
+      client.release();
+    }
+  }
+  
+  /**
+   * Get all available and locked items for a user
+   */
+  async getAvailabilityStatus(userId: number): Promise<{
+    quantumCards: { id: string; name: string; locked: boolean }[];
+    portfolios: { id: string; name: string; locked: boolean }[];
+    progress: {
+      totalReferrals: number;
+      unlockedCards: number;
+      totalCards: number;
+      unlockedPortfolios: number;
+      totalPortfolios: number;
+    };
+  }> {
+    const unlocks = await this.getUserUnlocks(userId);
+    
+    // Map IDs to display names
+    const cardNames: Record<string, string> = {
+      'professional': 'Professional',
+      'quantum': 'Quantum Tech',
+      '3d-animated': '3D Animated',
+      'holographic': 'Holographic Glass',
+      'neoglow': 'NeoGlow',
+      'creative': 'Creative',
+      'artistic': 'Artistic'
+    };
+    
+    const portfolioNames: Record<string, string> = {
+      'corporate-executive': 'Corporate Executive',
+      'scholar': 'Scholar',
+      'timeline-storyteller-2': 'Timeline Storyteller',
+      'visual-expert': 'Visual Expert',
+      'dynamic-innovator': 'Dynamic Innovator',
+      'freelancer-hub': 'Freelancer Hub',
+      'animated': 'Animated',
+      'designer-portfolio': 'Designer Showcase',
+      'photographer-portfolio': 'Photographer Portfolio',
+      'pastel-dreamscape': 'Pastel Dreamscape',
+      'nature-creative': 'Nature Creative',
+      'fashion-runway': 'Fashion Runway',
+      'yoga-fitness-model': 'Yoga & Fitness Model'
+    };
+    
+    const quantumCards = QUANTUM_CARDS.map(id => ({
+      id,
+      name: cardNames[id] || id,
+      locked: !unlocks.quantumCards.includes(id)
+    }));
+    
+    const portfolios = PORTFOLIO_LAYOUTS.map(id => ({
+      id,
+      name: portfolioNames[id] || id,
+      locked: !unlocks.portfolios.includes(id)
+    }));
+    
+    return {
+      quantumCards,
+      portfolios,
+      progress: {
+        totalReferrals: unlocks.totalReferrals,
+        unlockedCards: unlocks.quantumCards.length,
+        totalCards: QUANTUM_CARDS.length,
+        unlockedPortfolios: unlocks.portfolios.length,
+        totalPortfolios: PORTFOLIO_LAYOUTS.length
+      }
+    };
+  }
+}
+
+export const referralService = new ReferralService();

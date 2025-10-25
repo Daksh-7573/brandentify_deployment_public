@@ -48,6 +48,7 @@ import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { registerCareerIntelligenceRoutes } from "./routes-career-intelligence";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
+import { registerReferralRoutes } from "./routes-referral";
 import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
@@ -8345,6 +8346,10 @@ ${extractedText.substring(0, 5000)}
   registerCareerIntelligenceRoutes(app);
   registerTrendGraphRoutes(app);
   console.log("Trend Graph routes loaded");
+  
+  // Register Referral System routes (Share to Unlock)
+  registerReferralRoutes(app);
+  console.log("Referral System routes loaded");
   
   // Register Musk Career Insights routes
   registerMuskCareerInsightsRoutes(app);
