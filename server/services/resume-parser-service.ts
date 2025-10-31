@@ -1,4 +1,3 @@
-import OpenAI from "openai";
 import fs from "fs";
 import { promisify } from "util";
 import path from "path";
@@ -6,14 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { PDFExtract } from 'pdf.js-extract';
 import multer from 'multer';
 import { Express } from 'express';
+import { LocalAIService } from "./local-ai-service";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024
-const OPENAI_MODEL = "gpt-4o";
-
-// Setup OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize FREE Local AI Service (uses VPS Ollama)
+const localAI = new LocalAIService();
 
 // PDF extraction
 const pdfExtract = new PDFExtract();
@@ -252,20 +247,18 @@ export async function parseResume(resumeText: string): Promise<any> {
     ${resumeText}
     `;
 
-    const response = await openai.chat.completions.create({
-      model: OPENAI_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    });
+    // Call FREE VPS Ollama instead of expensive OpenAI
+    const response = await localAI.generateCompletion(prompt, 'resume-parsing');
 
-    const content = response.choices[0].message.content;
-    if (!content) {
-      throw new Error('No content in OpenAI response');
+    if (!response) {
+      throw new Error('No content in Ollama response');
     }
 
-    return JSON.parse(content);
+    // Extract JSON from Ollama's response
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
   } catch (error) {
-    console.error('Error parsing resume with OpenAI:', error);
+    console.error('Error parsing resume with Ollama:', error);
     throw new Error('Failed to parse resume content');
   }
 }

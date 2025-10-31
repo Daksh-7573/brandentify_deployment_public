@@ -4,10 +4,12 @@
  * This service handles follow-up questions that contain vague references
  * like "that", "this", "it", "both" by providing context from previous
  * conversation exchanges.
+ * 
+ * NOW USES FREE VPS OLLAMA!
  */
 
-import OpenAI from 'openai';
 import { getLastMuskResponse, getRecentMessages } from './conversation-memory';
+import { LocalAIService } from './local-ai-service';
 
 /**
  * Detect if a message contains vague references that need resolution
@@ -88,12 +90,6 @@ export async function enhancedReferenceResolution(
   userInput: string
 ): Promise<string> {
   try {
-    // Check if OpenAI is available for enhanced resolution
-    if (!process.env.OPENAI_API_KEY) {
-      console.log('[Reference Resolution] OpenAI not available, using basic resolution');
-      return rewriteFollowUp(userId, userInput);
-    }
-
     const recentMessages = getRecentMessages(userId, 4);
     
     if (recentMessages.length === 0) {
@@ -105,9 +101,8 @@ export async function enhancedReferenceResolution(
       return userInput;
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // Initialize FREE Local AI Service (uses VPS Ollama)
+    const localAI = new LocalAIService();
 
     // Build context from recent messages
     let conversationContext = "Recent conversation:\n";
@@ -115,7 +110,8 @@ export async function enhancedReferenceResolution(
       conversationContext += `${msg.role}: "${msg.message}"\n`;
     });
 
-    const resolutionPrompt = `
+    const resolutionPrompt = `You are a reference resolution assistant. Rewrite ambiguous messages to be clear and specific based on conversation context.
+
 You are helping resolve ambiguous references in a follow-up message. Given the recent conversation context, rewrite the user's latest message to be clear and specific.
 
 ${conversationContext}
@@ -127,23 +123,10 @@ Task: If the user's message contains vague references like "that", "this", "it",
 Return only the rewritten message, nothing else.
 `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: "You are a reference resolution assistant. Rewrite ambiguous messages to be clear and specific based on conversation context."
-        },
-        {
-          role: "user",
-          content: resolutionPrompt
-        }
-      ],
-      max_tokens: 200,
-      temperature: 0.3,
-    });
+    // Call FREE VPS Ollama instead of expensive OpenAI
+    const response = await localAI.generateCompletion(resolutionPrompt, 'reference-resolution');
 
-    const rewrittenMessage = response.choices[0]?.message?.content?.trim();
+    const rewrittenMessage = response.trim();
     
     if (rewrittenMessage && rewrittenMessage !== userInput) {
       console.log(`[Reference Resolution] Enhanced resolution: "${userInput}" → "${rewrittenMessage}"`);

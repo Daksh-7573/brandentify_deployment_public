@@ -3,12 +3,14 @@
  * 
  * Automated content generation system that creates news-pulse entries
  * for the Musk AI assistant at scheduled times and based on events.
+ * 
+ * NOW USES FREE VPS OLLAMA - NO OPENAI COSTS!
  */
 
-import OpenAI from "openai";
 import { pool } from "../db";
 import { InsertPulse } from "@shared/schema";
 import { storage } from "../storage";
+import { LocalAIService } from "./local-ai-service";
 
 /**
  * Generate contextually relevant publication URLs based on pulse content
@@ -96,8 +98,8 @@ function generateContextualLinks(pulseContent: string, industry?: string): Array
   return links.slice(0, 2); // Maximum 2 links when relevant
 }
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize FREE Local AI Service (uses VPS Ollama)
+const localAI = new LocalAIService();
 
 interface UserContext {
   id: number;
@@ -373,14 +375,12 @@ Respond with JSON format:
     `;
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7
-      });
-
-      const generated = JSON.parse(response.choices[0].message.content || '{}');
+      // Use FREE VPS Ollama instead of expensive OpenAI
+      const response = await localAI.generateCompletion(prompt, 'musk-pulse-generation');
+      
+      // Parse JSON from response (Ollama doesn't have strict JSON mode, so extract it)
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const generated = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
       
       // Generate contextual links ONLY if truly relevant to the pulse content
       const pulseContent = generated.content || "Stay updated with the latest industry news.";
@@ -445,14 +445,12 @@ Respond with JSON format:
     `;
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.7
-      });
-
-      const generated = JSON.parse(response.choices[0].message.content || '{}');
+      // Use FREE VPS Ollama instead of expensive OpenAI
+      const response = await localAI.generateCompletion(prompt, 'musk-pulse-generation');
+      
+      // Parse JSON from response (Ollama doesn't have strict JSON mode, so extract it)
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const generated = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
       
       // Generate contextual links ONLY if truly relevant to the pulse content (same as scheduled pulses)
       const pulseContent = generated.content || `Important developments in ${industry}. Stay informed and adapt your career strategy accordingly.`;

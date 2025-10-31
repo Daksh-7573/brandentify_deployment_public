@@ -1,9 +1,8 @@
-import { OpenAI } from 'openai';
 import { storage } from '../storage';
+import { LocalAIService } from './local-ai-service';
 
-// Initialize OpenAI client
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize FREE Local AI Service (uses VPS Ollama)
+const localAI = new LocalAIService();
 
 interface HashtagSuggestionsOptions {
   industry?: string | null;
@@ -66,24 +65,13 @@ export async function generatePersonalizedHashtags(options: HashtagSuggestionsOp
     
     prompt += `. Return as a JSON array with format: { "hashtags": ["tag1", "tag2", ...], "sources": ["source1", "source2", ...] }. Do not include the # symbol in the hashtags. Sources should be brief indicators of where the recommendation came from (industry trends, job market data, engagement patterns, etc).`;
     
-    // Call OpenAI API with the constructed prompt
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: `You are a specialized hashtag suggestion AI for a professional networking platform. Your job is to suggest relevant, trending hashtags based on industry, domain, and context. Focus on professional, industry-specific hashtags that would increase visibility and engagement. Avoid generic hashtags like #success or #motivation unless specifically appropriate.`
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
-    });
+    // Build full prompt with system context for Ollama
+    const fullPrompt = `You are a specialized hashtag suggestion AI for a professional networking platform. Your job is to suggest relevant, trending hashtags based on industry, domain, and context. Focus on professional, industry-specific hashtags that would increase visibility and engagement. Avoid generic hashtags like #success or #motivation unless specifically appropriate.
 
-    const rawResponse = completion.choices[0].message.content;
+${prompt}`;
+    
+    // Call FREE VPS Ollama instead of expensive OpenAI
+    const rawResponse = await localAI.generateCompletion(fullPrompt, 'hashtag-generation');
     
     if (!rawResponse) {
       return { 
@@ -94,8 +82,10 @@ export async function generatePersonalizedHashtags(options: HashtagSuggestionsOp
     }
     
     try {
-      // Parse the JSON response
-      const jsonResponse = JSON.parse(rawResponse);
+      // Parse the JSON response (extract from Ollama's text response)
+      const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
+      const jsonResponse = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+      
       return {
         hashtags: jsonResponse.hashtags || [],
         sources: jsonResponse.sources || []

@@ -1,8 +1,8 @@
 import { WorkExperience, Education, Skill, InsertWorkExperience, InsertEducation, InsertSkill } from "@shared/schema";
-import OpenAI from "openai";
+import { LocalAIService } from "./local-ai-service";
 
-// Initialize OpenAI with the API key
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize FREE Local AI Service (uses VPS Ollama)
+const localAI = new LocalAIService();
 
 /**
  * Parse structured resume text (output from GPT-based processing)

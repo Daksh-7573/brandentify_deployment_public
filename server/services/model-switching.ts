@@ -3,7 +3,11 @@
  * 
  * Implements intelligent model selection based on query complexity,
  * confidence scoring, and response quality assessment.
+ * 
+ * NOW USES FREE VPS OLLAMA FOR RETRY LOGIC!
  */
+
+import { LocalAIService } from './local-ai-service';
 
 // Import will be handled dynamically to avoid circular dependencies
 
@@ -230,30 +234,23 @@ async function generateWithAnthropic(message: string, context: any): Promise<str
 }
 
 /**
- * Generate response using OpenAI GPT-4
+ * Generate response using FREE VPS Ollama (was OpenAI GPT-4)
  */
 async function generateWithOpenAI(message: string, context: any): Promise<string> {
-  const { default: OpenAI } = await import('openai');
-  
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  // Initialize FREE Local AI Service (uses VPS Ollama)
+  const localAI = new LocalAIService();
 
   const systemPrompt = buildEnhancedSystemPrompt(context);
   const userPrompt = buildEnhancedUserPrompt(message, context);
 
-  console.log('[Model Switching] Using OpenAI GPT-4 for enhanced response');
+  console.log('[Model Switching] Using FREE VPS Ollama for enhanced response');
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o', // Latest GPT-4 model
-    max_tokens: 1500,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt }
-    ],
-  });
+  // Combine system and user prompts for Ollama
+  const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+  
+  const response = await localAI.generateCompletion(fullPrompt, 'model-switching-retry');
 
-  return response.choices[0]?.message?.content || 'I apologize, but I encountered an issue generating a response.';
+  return response || 'I apologize, but I encountered an issue generating a response.';
 }
 
 /**

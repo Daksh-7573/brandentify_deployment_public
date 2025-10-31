@@ -1,7 +1,7 @@
 /**
- * Service to provide job title suggestions using OpenAI API
+ * Service to provide job title suggestions using FREE VPS Ollama
  */
-import OpenAI from "openai";
+import { LocalAIService } from "./local-ai-service";
 
 /**
  * Get job title suggestions based on user input
@@ -51,35 +51,22 @@ export async function getJobTitleSuggestions(input: string): Promise<string[]> {
       title.toLowerCase().includes(lowerInput)
     );
 
-    // If we have OpenAI API key, use AI to generate more relevant suggestions
-    if (!process.env.OPENAI_API_KEY) {
-      console.log("No OpenAI API key found, using common job title suggestions");
-      return filteredCommonTitles.length > 0 ? filteredCommonTitles : commonJobTitles.slice(0, 5);
-    }
+    // Initialize FREE Local AI Service (uses VPS Ollama)
+    const localAI = new LocalAIService();
     
-    // Initialize OpenAI client
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    // Build prompt for Ollama
+    const prompt = `You are a job title suggestion engine. Provide the most relevant professional job titles that match the user's partial input. Return a JSON object with a "suggestions" array of strings. Be concise and accurate.
+
+Suggest 5-10 professional job titles that match this partial input: "${input}". Provide only the most common and professionally recognized titles. Ensure titles are properly capitalized. For example, "Software Engineer" not "software engineer".
+
+Return format: { "suggestions": ["Title 1", "Title 2", ...] }`;
     
-    // Make API request to get AI-generated suggestions
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages: [
-        {
-          role: "system",
-          content: "You are a job title suggestion engine. Provide the most relevant professional job titles that match the user's partial input. Return a JSON array of strings. Be concise and accurate."
-        },
-        {
-          role: "user",
-          content: `Suggest 5-10 professional job titles that match this partial input: "${input}". Provide only the most common and professionally recognized titles. Ensure titles are properly capitalized. For example, "Software Engineer" not "software engineer".`
-        }
-      ],
-      temperature: 0.3,
-      response_format: { type: "json_object" }
-    });
+    // Make FREE VPS Ollama request
+    const response = await localAI.generateCompletion(prompt, 'job-title-suggestions');
     
     // Extract and parse the suggestions
-    const content = response.choices[0].message.content;
-    const parsedContent = JSON.parse(content);
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    const parsedContent = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
     
     if (Array.isArray(parsedContent.suggestions)) {
       // If suggestions property exists and is an array, return it

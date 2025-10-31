@@ -2,14 +2,14 @@
  * Musk Career Capsule Milestones Service
  * 
  * This service provides AI-powered milestone generation for Career Capsules
- * leveraging OpenAI's capabilities.
+ * NOW USING FREE VPS OLLAMA!
  */
 
-import { OpenAI } from "openai";
 import { storage } from '../storage';
+import { LocalAIService } from './local-ai-service';
 
-// Initialize OpenAI client
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize FREE Local AI Service (uses VPS Ollama)
+const localAI = new LocalAIService();
 
 interface MilestoneGenerationRequest {
   userId: number;
@@ -93,18 +93,9 @@ function isCEORelatedGoal(goalType: string, customGoal?: string, description?: s
 export async function generateCapsuleMilestones(options: MilestoneGenerationRequest): Promise<MilestoneGenerationResult> {
   console.log(`[Musk AI] Starting milestone generation for career capsule ${options.capsuleId}`);
   console.log(`[Musk AI] Options:`, JSON.stringify(options));
+  console.log(`[Musk AI] Using FREE VPS Ollama for milestone generation`);
   
   try {
-    // Check that OpenAI API key is configured
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      console.error(`[Musk AI] Missing OpenAI API key`);
-      return {
-        success: false,
-        message: `Missing OpenAI API key`
-      };
-    }
-    
     // Get user profile data
     console.log(`[Musk AI] Fetching user profile for ID: ${options.userId}`);
     const user = await storage.getUser(options.userId);
@@ -404,31 +395,18 @@ For each year's milestones, include specific courses, books, and development act
 `;
     }
 
-    // Get AI response
+    // Get AI response using FREE VPS Ollama
     let aiResponse;
     
-    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
     const systemPrompt = isCEOCareerPath ? 
       "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
       "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
     
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { 
-          role: "system", 
-          content: systemPrompt
-        },
-        { 
-          role: "user", 
-          content: enhancedContext 
-        }
-      ],
-      max_tokens: 4000,
-      response_format: { type: "json_object" }
-    });
+    // Combine system and user prompts for Ollama
+    const fullPrompt = `${systemPrompt}\n\n${enhancedContext}`;
     
-    aiResponse = completion.choices[0].message.content;
+    // Call FREE VPS Ollama instead of expensive OpenAI
+    aiResponse = await localAI.generateCompletion(fullPrompt, 'career-milestone-generation');
 
     // Parse the response as JSON
     let milestones;
@@ -436,8 +414,10 @@ For each year's milestones, include specific courses, books, and development act
       // Log the raw AI response for debugging
       console.log(`[Musk AI] Raw AI response (truncated): ${aiResponse?.substring(0, 200)}...`);
       
-      const parsedResponse = JSON.parse(aiResponse || "{}");
-      console.log(`[Musk AI] Parsed OpenAI response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
+      // Extract JSON from Ollama's response (may include extra text)
+      const jsonMatch = aiResponse?.match(/\{[\s\S]*\}/) || ['{}'];
+      const parsedResponse = JSON.parse(jsonMatch[0]);
+      console.log(`[Musk AI] Parsed Ollama response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
       
       // Handle different response formats
       if (Array.isArray(parsedResponse)) {
