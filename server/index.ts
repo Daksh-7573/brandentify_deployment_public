@@ -832,30 +832,35 @@ console.log("Trend Intelligence Scheduler started - refreshing market trends hou
 (async () => {
   const server = await registerRoutes(app);
   
-  // 🚀 DAILY QUEST AUTO-GENERATION - Runs immediately after routes are registered
+  // 🚀 DAILY QUEST AUTO-GENERATION - Runs in background (non-blocking)
   console.log("========================================");
-  console.log("🚀 QUEST AUTO-GENERATION STARTING");
+  console.log("🚀 QUEST AUTO-GENERATION STARTING (Background)");
   console.log("========================================");
-  try {
-    const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
-    const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
-    console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
-    
-    // Schedule hourly failsafe
-    setInterval(async () => {
-      try {
-        console.log("🔄 [HOURLY] Running quest check...");
-        const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
-        if (hourlyResult.successfulAssignments > 0) {
-          console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
-        }
-      } catch (hourlyError) {
-        console.error("❌ [HOURLY] Quest check failed:", hourlyError);
+  
+  // Run in background - don't block server startup
+  (async () => {
+    try {
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
+      console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
+    } catch (bootError) {
+      console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
+    }
+  })();
+  
+  // Schedule hourly failsafe
+  setInterval(async () => {
+    try {
+      console.log("🔄 [HOURLY] Running quest check...");
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
+      if (hourlyResult.successfulAssignments > 0) {
+        console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
       }
-    }, 60 * 60 * 1000); // Every 60 minutes
-  } catch (bootError) {
-    console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
-  }
+    } catch (hourlyError) {
+      console.error("❌ [HOURLY] Quest check failed:", hourlyError);
+    }
+  }, 60 * 60 * 1000); // Every 60 minutes
   
   // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
   console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
