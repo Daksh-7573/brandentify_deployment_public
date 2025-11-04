@@ -2,15 +2,17 @@
  * Musk Pulse Scheduler Service
  * 
  * Handles automated scheduling of Musk pulse generation
- * - 3 times daily: 9 AM, 2 PM, 7 PM
+ * - 3 times daily: 9 AM, 2 PM, 7 PM UTC (cron-based, restart-resistant)
  * - Event-driven generation based on user activity and industry trends
  */
 
+import cron from 'node-cron';
 import { muskPulseGenerator } from './musk-pulse-generator';
 import { personalizedMuskPulseGenerator } from './personalized-musk-pulse-generator';
 
 export class MuskPulseScheduler {
   private scheduleIntervals: NodeJS.Timeout[] = [];
+  private cronJobs: cron.ScheduledTask[] = [];
   private isRunning = false;
   private usePersonalization = true; // Toggle for personalized vs shared pulses
 
@@ -43,53 +45,37 @@ export class MuskPulseScheduler {
     
     this.scheduleIntervals.forEach(interval => clearInterval(interval));
     this.scheduleIntervals = [];
+    
+    this.cronJobs.forEach(job => job.stop());
+    this.cronJobs = [];
+    
     this.isRunning = false;
     
     console.log('[MuskPulseScheduler] Schedule stopped');
   }
 
   /**
-   * Schedule pulses for 9 AM, 2 PM, and 7 PM daily
+   * Schedule pulses for 9 AM, 2 PM, and 7 PM daily using cron (restart-resistant)
    */
   private scheduleDailyPulses(): void {
-    // Define target times in 24-hour format
+    // Define target times using cron expressions (minute hour * * *)
     const scheduleTimes = [
-      { hour: 9, minute: 0, type: 'morning' as const },   // 9:00 AM
-      { hour: 14, minute: 0, type: 'afternoon' as const }, // 2:00 PM
-      { hour: 19, minute: 0, type: 'evening' as const }    // 7:00 PM
+      { cron: '0 9 * * *', type: 'morning' as const, time: '9:00 AM UTC' },     // 9:00 AM UTC daily
+      { cron: '0 14 * * *', type: 'afternoon' as const, time: '2:00 PM UTC' },  // 2:00 PM UTC daily
+      { cron: '0 19 * * *', type: 'evening' as const, time: '7:00 PM UTC' }     // 7:00 PM UTC daily
     ];
 
-    scheduleTimes.forEach(({ hour, minute, type }) => {
-      this.scheduleDaily(hour, minute, type);
-    });
-  }
-
-  /**
-   * Schedule a daily recurring task at specific time
-   */
-  private scheduleDaily(hour: number, minute: number, type: 'morning' | 'afternoon' | 'evening'): void {
-    const scheduleTime = () => {
-      const now = new Date();
-      const scheduled = new Date();
-      scheduled.setHours(hour, minute, 0, 0);
-
-      // If the time has passed today, schedule for tomorrow
-      if (scheduled <= now) {
-        scheduled.setDate(scheduled.getDate() + 1);
-      }
-
-      const timeUntilExecution = scheduled.getTime() - now.getTime();
-      
-      console.log(`[MuskPulseScheduler] Next ${type} pulse scheduled for: ${scheduled.toLocaleString()}`);
-
-      setTimeout(async () => {
+    scheduleTimes.forEach(({ cron: cronExpression, type, time }) => {
+      const job = cron.schedule(cronExpression, async () => {
+        console.log(`[MuskPulseScheduler] 🔔 Triggered ${type} pulse at ${time}`);
         await this.generateScheduledPulse(type);
-        // Schedule the next occurrence (24 hours later)
-        scheduleTime();
-      }, timeUntilExecution);
-    };
+      }, {
+        timezone: 'UTC'
+      });
 
-    scheduleTime();
+      this.cronJobs.push(job);
+      console.log(`[MuskPulseScheduler] ✅ ${type} pulse scheduled for ${time} daily`);
+    });
   }
 
   /**
@@ -270,10 +256,11 @@ export class MuskPulseScheduler {
   /**
    * Get scheduler status
    */
-  getStatus(): { isRunning: boolean; activeIntervals: number } {
+  getStatus(): { isRunning: boolean; activeIntervals: number; activeCronJobs: number } {
     return {
       isRunning: this.isRunning,
-      activeIntervals: this.scheduleIntervals.length
+      activeIntervals: this.scheduleIntervals.length,
+      activeCronJobs: this.cronJobs.length
     };
   }
 }
