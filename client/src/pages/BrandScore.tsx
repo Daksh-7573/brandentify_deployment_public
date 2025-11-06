@@ -37,10 +37,16 @@ interface BrandScore {
 export default function BrandScore() {
   const { user } = useUser();
 
-  const { data: scoreData, isLoading } = useQuery<{ success: boolean; brandScore: BrandScore }>({
+  console.log('[BrandScore] User object:', user);
+  console.log('[BrandScore] User ID:', user?.id);
+  console.log('[BrandScore] Query enabled:', !!user?.id);
+
+  const { data: scoreData, isLoading, error } = useQuery<{ success: boolean; brandScore: BrandScore }>({
     queryKey: user?.id ? [`/api/brand-score/${user.id}`] : [],
     enabled: !!user?.id
   });
+
+  console.log('[BrandScore] Query state:', { isLoading, hasData: !!scoreData, error });
 
   const brandScore = scoreData?.brandScore;
 
