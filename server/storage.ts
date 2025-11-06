@@ -12597,6 +12597,22 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getPulsesByUserId(userId: number): Promise<Pulse[]> {
+    try {
+      const result = await pool.query(`
+        SELECT p.* 
+        FROM pulses p
+        WHERE p.user_id = $1
+        ORDER BY p.created_at DESC
+      `, [userId]);
+      
+      return result.rows as Pulse[];
+    } catch (error) {
+      console.error('[db.getPulsesByUserId] Error:', error);
+      return [];
+    }
+  }
+
   async getHashtagsFromUserEngagements(userId: number): Promise<number[]> {
     try {
       const result = await pool.query(`

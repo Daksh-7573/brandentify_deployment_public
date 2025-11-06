@@ -295,6 +295,12 @@ function Router() {
           <Route path="/career-tools" component={() => (
             <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
+          <Route path="/brand-score" component={() => {
+        const BrandScore = lazy(() => import("@/pages/BrandScore"));
+        return (
+          <ProtectedRoute path="/brand-score" component={BrandScore} />
+        );
+      }} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
