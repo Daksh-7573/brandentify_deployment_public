@@ -14152,5 +14152,10 @@ export const storage = {
   
   // Brand Goals methods
   getBrandGoalsByUserId: (userId: number) => dbStorage.getBrandGoalsByUserId(userId),
-  saveBrandGoals: (userId: number, selectedGoals: string[], customGoals?: string[]) => dbStorage.saveBrandGoals(userId, selectedGoals, customGoals)
+  saveBrandGoals: (userId: number, selectedGoals: string[], customGoals?: string[]) => dbStorage.saveBrandGoals(userId, selectedGoals, customGoals),
+  
+  // Connection Request methods
+  getConnectionRequestById: (id: number) => dbStorage.getConnectionRequestById(id),
+  getConnectionRequestsBySenderId: (senderId: number) => dbStorage.getConnectionRequestsBySenderId(senderId),
+  getConnectionRequestsByReceiverId: (receiverId: number) => dbStorage.getConnectionRequestsByReceiverId(receiverId)
 } as IStorage;

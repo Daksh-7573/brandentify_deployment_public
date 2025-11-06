@@ -8279,14 +8279,17 @@ ${extractedText.substring(0, 5000)}
         });
       }
 
-      const [experiences, educations, skills, projects, pulses, connections] = await Promise.all([
+      const [experiences, educations, skills, projects, pulses, sentRequests, receivedRequests] = await Promise.all([
         storage.getWorkExperiencesByUserId(userId),
         storage.getEducationsByUserId(userId),
         storage.getSkillsByUserId(userId),
         storage.getProjectsByUserId(userId),
         storage.getPulsesByUserId(userId),
-        storage.getConnectionsByUserId(userId)
+        storage.getConnectionRequestsBySenderId(userId),
+        storage.getConnectionRequestsByReceiverId(userId)
       ]);
+
+      const connections = [...(sentRequests || []), ...(receivedRequests || [])];
 
       const userData = {
         industry: user.industry,
@@ -8297,7 +8300,7 @@ ${extractedText.substring(0, 5000)}
         skillsCount: skills?.length || 0,
         projectsCount: projects?.length || 0,
         pulsesCount: pulses?.length || 0,
-        connectionsCount: connections?.filter(c => c.status === 'accepted').length || 0
+        connectionsCount: connections.filter(c => c.status === 'accepted').length || 0
       };
 
       const aiSuggestions = await brandScoreAIAnalyzer.generateAISuggestions(

@@ -37,14 +37,17 @@ export class BrandScoreCalculator {
       throw new Error('User not found');
     }
 
-    const [experiences, educations, skills, projects, pulses, connections] = await Promise.all([
+    const [experiences, educations, skills, projects, pulses, sentRequests, receivedRequests] = await Promise.all([
       this.storage.getWorkExperiencesByUserId(userId),
       this.storage.getEducationsByUserId(userId),
       this.storage.getSkillsByUserId(userId),
       this.storage.getProjectsByUserId(userId),
       this.storage.getPulsesByUserId(userId),
-      this.storage.getConnectionsByUserId(userId)
+      this.storage.getConnectionRequestsBySenderId(userId),
+      this.storage.getConnectionRequestsByReceiverId(userId)
     ]);
+
+    const connections = [...(sentRequests || []), ...(receivedRequests || [])];
 
     const profileBasics = this.scoreProfileBasics(user);
     const experience = this.scoreExperience(experiences || []);
