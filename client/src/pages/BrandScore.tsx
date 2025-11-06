@@ -38,7 +38,7 @@ export default function BrandScore() {
   const { user } = useUser();
 
   const { data: scoreData, isLoading } = useQuery<{ success: boolean; brandScore: BrandScore }>({
-    queryKey: ['/api/brand-score', user?.id],
+    queryKey: user?.id ? [`/api/brand-score/${user.id}`] : [],
     enabled: !!user?.id
   });
 
