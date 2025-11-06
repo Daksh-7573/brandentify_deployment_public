@@ -8253,6 +8253,79 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Brand Score API
+  apiRouter.get('/brand-score/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid user ID'
+        });
+      }
+
+      const { BrandScoreCalculator } = await import('./services/brand-score-calculator');
+      const { brandScoreAIAnalyzer } = await import('./services/brand-score-ai-analyzer');
+      
+      const calculator = new BrandScoreCalculator(storage);
+      const brandScore = await calculator.calculateBrandScore(userId);
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      const [experiences, educations, skills, projects, pulses, connections] = await Promise.all([
+        storage.getWorkExperiencesByUserId(userId),
+        storage.getEducationsByUserId(userId),
+        storage.getSkillsByUserId(userId),
+        storage.getProjectsByUserId(userId),
+        storage.getPulsesByUserId(userId),
+        storage.getConnectionsByUserId(userId)
+      ]);
+
+      const userData = {
+        industry: user.industry,
+        domain: user.domain,
+        title: user.title,
+        experienceCount: experiences?.length || 0,
+        educationCount: educations?.length || 0,
+        skillsCount: skills?.length || 0,
+        projectsCount: projects?.length || 0,
+        pulsesCount: pulses?.length || 0,
+        connectionsCount: connections?.filter(c => c.status === 'accepted').length || 0
+      };
+
+      const aiSuggestions = await brandScoreAIAnalyzer.generateAISuggestions(
+        userId,
+        user.name || user.username,
+        brandScore,
+        userData
+      );
+
+      brandScore.aiSuggestions = aiSuggestions;
+
+      console.log(`[Brand Score] Generated score for user ${userId}: ${brandScore.totalScore}/100 (${brandScore.grade})`);
+
+      res.json({
+        success: true,
+        brandScore
+      });
+    } catch (error) {
+      console.error('[Brand Score API] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to calculate brand score',
+        error: String(error)
+      });
+    }
+  });
+  console.log("Brand Score API loaded");
+
   // Post Suggestion routes
   apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
     try {
