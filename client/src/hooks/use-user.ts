@@ -26,18 +26,18 @@ export function useUser() {
   const { user: authUser, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/users', authUser?.uid],
+    queryKey: ['/api/users', authUser?.id],
     queryFn: async () => {
-      if (!authUser?.uid) return null;
+      if (!authUser?.id) return null;
       try {
-        const data = await apiRequest(`/api/users/${authUser.uid}`);
+        const data = await apiRequest(`/api/users/${authUser.id}`);
         return data as User;
       } catch (error) {
         console.error("Error fetching user data:", error);
         throw error;
       }
     },
-    enabled: !!authUser?.uid && isAuthenticated,
+    enabled: !!authUser?.id && isAuthenticated,
   });
 
   return {

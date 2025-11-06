@@ -1,0 +1,86 @@
+[BrandScore] User object: undefined
+injected.js:27 [BrandScore] User ID: undefined
+injected.js:27 [BrandScore] Query enabled: false
+injected.js:27 [BrandScore] Query state: {isLoading: false, hasData: false, error: null}
+injected.js:27 [SW DISABLED] Unregistering all service workers to clear cache
+injected.js:27 [SW DISABLED] ✅ All service workers and caches cleared - fresh content will load
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=AZNA7NwMBepz' failed: 
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=AZNA7NwMBepz' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+injected.js:27 [Skeleton] Backup removal after 3s
+injected.js:27 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+injected.js:27 [PERF] React app initialization started
+injected.js:27 [PERF] React rendering started
+injected.js:27 [Skeleton] DOM loaded, preparing smooth transition
+injected.js:27 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+injected.js:27 [Progressive Loading] Starting tiered component loading
+injected.js:27 [Progressive Loading] ⚡ Core components ready
+injected.js:27 AuthProvider: Starting auth check, current loading state: true
+injected.js:27 AuthProvider: Running checkAuth
+injected.js:27 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+injected.js:27 AuthProvider: Domain check result: {hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isPublishedDomain: true}
+injected.js:27 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+injected.js:27 AuthProvider: Fetching server session for published domain...
+injected.js:27 [PERF] React app rendered in 45.90 ms
+injected.js:27 [PERF] Total initialization time: 46.30 ms
+injected.js:27 [Skeleton] Starting fade-out transition
+injected.js:27 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+injected.js:27 📊 Total page load time: 4607.70ms
+injected.js:27 🔥 Firebase init time: 4607.70ms
+injected.js:27 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+injected.js:27 ⚡ Expected improvement: 100-300ms faster cold starts
+injected.js:27 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+injected.js:27 ⚡ Expected improvement: 150-250ms faster auth loads
+injected.js:27 🔄 [Strategy 4] Service Worker: Installing...
+injected.js:27 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+injected.js:27 📈 Performance Optimization Complete - All 4 strategies active!
+injected.js:27 [Progressive Loading] 🚀 Secondary components loaded
+injected.js:27 [PERF] Skeleton loader removed in 159.60 ms
+injected.js:27 [Progressive Loading] 🔧 All components loaded in 200.90ms
+injected.js:27 [Skeleton] Skeleton loading complete - app ready
+injected.js:27 ⚡ [PERF] Skeleton-to-app transition: 4769.30ms
+injected.js:27 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+injected.js:27 ⚡ Expected improvement: 50-100ms perceived performance boost
+injected.js:27 AuthProvider: Server session response: {status: 200, ok: true, url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session'}
+injected.js:27 AuthProvider: Raw server response: {success: true, user: {…}}
+injected.js:27 AuthProvider: Unwrapped user from server response
+injected.js:27 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+injected.js:27 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: true, userEmail: 'nishant.brodos@gmail.com'}
+injected.js:27 Cached response for /api/users/2
+injected.js:27 Cached response for /api/users/2/experiences
+injected.js:27 Cached response for /api/users/2/educations
+injected.js:27 Cached response for /api/users/2/skills
+injected.js:27 Cached response for /api/users/2/projects
+injected.js:27 AuthProvider: Failsafe timeout - forcing loading to false
+(anonymous) @ injected.js:27
+(anonymous) @ simple-auth-context.tsx:46
+setTimeout
+(anonymous) @ simple-auth-context.tsx:44
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=9227ebad:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=9227ebad:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=9227ebad:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=9227ebad:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=9227ebad:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=9227ebad:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=9227ebad:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=9227ebad:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=9227ebad:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=9227ebad:19432
+commitRoot @ chunk-RPCDYKBN.js?v=9227ebad:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=9227ebad:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=9227ebad:18718
+workLoop @ chunk-RPCDYKBN.js?v=9227ebad:197
+flushWork @ chunk-RPCDYKBN.js?v=9227ebad:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=9227ebad:384Understand this warning
+injected.js:27 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+injected.js:27 [BrandScore] User object: undefined
+injected.js:27 [BrandScore] User ID: undefined
+injected.js:27 [BrandScore] Query enabled: false
+injected.js:27 [BrandScore] Query state: {isLoading: false, hasData: false, error: null}
