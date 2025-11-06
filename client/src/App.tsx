@@ -283,8 +283,14 @@ function Router() {
       <Route path="/_/auth/callback" component={AuthCallbackPage} />
       <Route path="/auth/callback" component={AuthCallbackPage} />
       
-      {/* Critical route - must be outside conditional to avoid conflict with /:brandName */}
+      {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
       <Route path="/search" component={SearchPage} />
+      <Route path="/brand-score" component={() => {
+        const BrandScore = lazy(() => import("@/pages/BrandScore"));
+        return (
+          <ProtectedRoute path="/brand-score" component={BrandScore} />
+        );
+      }} />
       
       {/* Tier 2: Secondary Routes (Load after 50ms) */}
       {secondaryLoaded && (
@@ -295,12 +301,6 @@ function Router() {
           <Route path="/career-tools" component={() => (
             <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
-          <Route path="/brand-score" component={() => {
-        const BrandScore = lazy(() => import("@/pages/BrandScore"));
-        return (
-          <ProtectedRoute path="/brand-score" component={BrandScore} />
-        );
-      }} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
