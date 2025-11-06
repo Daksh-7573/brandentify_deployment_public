@@ -8235,6 +8235,24 @@ ${extractedText.substring(0, 5000)}
   weeklyQuestScheduler.startScheduler();
   console.log("Weekly Quest Scheduler started");
 
+  // Daily Quest Scheduler API endpoints
+  apiRouter.get('/quests/scheduler/status', async (req: Request, res: Response) => {
+    try {
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      const status = dailyQuestScheduler.getSchedulerStatus();
+      res.json({
+        success: true,
+        status
+      });
+    } catch (error) {
+      console.error('[Daily Quest Scheduler API] Error getting status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error getting scheduler status'
+      });
+    }
+  });
+
   // Post Suggestion routes
   apiRouter.post('/post-suggestions/generate', async (req: Request, res: Response) => {
     try {

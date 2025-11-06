@@ -12,6 +12,7 @@ import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
+  private cronJob: cron.ScheduledTask | null = null;
 
   // Schedule to run every day at 12:01 AM UTC to handle quest expiration
   public startScheduler() {
@@ -21,8 +22,8 @@ class DailyQuestScheduler {
     }
 
     // Schedule: Every day at 12:01 AM (1 0 * * *)
-    cron.schedule('1 0 * * *', async () => {
-      console.log('[DailyQuestScheduler] Starting daily quest expiration check...');
+    this.cronJob = cron.schedule('1 0 * * *', async () => {
+      console.log('[DailyQuestScheduler] 🕛 Starting daily quest expiration check at 12:01 AM UTC...');
       await this.expirePreviousDayQuests();
       await this.assignNewDailyQuests();
     }, {
@@ -30,12 +31,16 @@ class DailyQuestScheduler {
     });
 
     this.isSchedulerActive = true;
-    console.log('[DailyQuestScheduler] Daily 12:01AM scheduler activated');
+    console.log('[DailyQuestScheduler] ✅ Daily 12:01 AM UTC cron job activated');
   }
 
   public stopScheduler() {
+    if (this.cronJob) {
+      this.cronJob.stop();
+      this.cronJob = null;
+    }
     this.isSchedulerActive = false;
-    console.log('[DailyQuestScheduler] Scheduler stopped');
+    console.log('[DailyQuestScheduler] Scheduler stopped and cron job destroyed');
   }
 
   /**
@@ -203,8 +208,10 @@ class DailyQuestScheduler {
   public getSchedulerStatus() {
     return {
       isActive: this.isSchedulerActive,
+      hasCronJob: this.cronJob !== null,
       nextRun: this.isSchedulerActive ? 'Daily at 12:01 AM UTC' : 'Not scheduled',
-      description: 'Expires previous day quests and assigns new daily quests'
+      description: 'Expires previous day quests and assigns new daily quests',
+      scheduledTime: '12:01 AM UTC'
     };
   }
 
