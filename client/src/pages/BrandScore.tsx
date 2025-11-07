@@ -37,16 +37,10 @@ interface BrandScore {
 export default function BrandScore() {
   const { user } = useUser();
 
-  console.log('[BrandScore] User object:', user);
-  console.log('[BrandScore] User ID:', user?.id);
-  console.log('[BrandScore] Query enabled:', !!user?.id);
-
-  const { data: scoreData, isLoading, error } = useQuery<{ success: boolean; brandScore: BrandScore }>({
+  const { data: scoreData, isLoading } = useQuery<{ success: boolean; brandScore: BrandScore }>({
     queryKey: user?.id ? [`/api/brand-score/${user.id}`] : [],
     enabled: !!user?.id
   });
-
-  console.log('[BrandScore] Query state:', { isLoading, hasData: !!scoreData, error });
 
   const brandScore = scoreData?.brandScore;
 
@@ -75,23 +69,23 @@ export default function BrandScore() {
   }
 
   const getGradeColor = (grade: string) => {
-    if (grade.startsWith('A')) return 'bg-emerald-500';
-    if (grade.startsWith('B')) return 'bg-blue-500';
-    if (grade === 'C') return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (grade.startsWith('A')) return 'bg-gradient-to-r from-purple-500 to-blue-500';
+    if (grade.startsWith('B')) return 'bg-gradient-to-r from-blue-500 to-cyan-500';
+    if (grade === 'C') return 'bg-gradient-to-r from-cyan-500 to-teal-500';
+    return 'bg-gradient-to-r from-slate-500 to-slate-600';
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === 'excellent') return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
-    if (status === 'good') return <TrendingUp className="w-5 h-5 text-blue-500" />;
-    return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+    if (status === 'excellent') return <CheckCircle2 className="w-5 h-5 text-purple-400" />;
+    if (status === 'good') return <TrendingUp className="w-5 h-5 text-blue-400" />;
+    return <AlertCircle className="w-5 h-5 text-cyan-400" />;
   };
 
   const getStatusColor = (status: string) => {
-    if (status === 'excellent') return 'text-emerald-500';
-    if (status === 'good') return 'text-blue-500';
-    if (status === 'needs_improvement') return 'text-yellow-500';
-    return 'text-red-500';
+    if (status === 'excellent') return 'text-purple-400';
+    if (status === 'good') return 'text-blue-400';
+    if (status === 'needs_improvement') return 'text-cyan-400';
+    return 'text-slate-400';
   };
 
   const components = Object.values(brandScore.components);
@@ -107,7 +101,7 @@ export default function BrandScore() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="glass p-8 lg:col-span-1" data-testid="card-overall-score">
+          <Card className="glass p-8 lg:col-span-1 border-white/10" data-testid="card-overall-score">
             <div className="flex flex-col items-center space-y-6">
               <div className="relative w-48 h-48">
                 <svg className="w-full h-full transform -rotate-90">
@@ -118,58 +112,69 @@ export default function BrandScore() {
                     stroke="currentColor"
                     strokeWidth="12"
                     fill="none"
-                    className="text-slate-700"
+                    className="text-white/10"
                   />
                   <circle
                     cx="96"
                     cy="96"
                     r="88"
-                    stroke="currentColor"
+                    stroke="url(#gradient)"
                     strokeWidth="12"
                     fill="none"
                     strokeDasharray={`${2 * Math.PI * 88}`}
                     strokeDashoffset={`${2 * Math.PI * 88 * (1 - brandScore.percentage / 100)}`}
-                    className="text-purple-500 transition-all duration-1000"
+                    className="transition-all duration-1000"
                     strokeLinecap="round"
                   />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#a855f7" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-5xl font-bold text-white" data-testid="text-total-score">
+                  <span className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent" data-testid="text-total-score">
                     {brandScore.totalScore}
                   </span>
-                  <span className="text-slate-400">/ 100</span>
+                  <span className="text-white/60 text-lg">/ 100</span>
                 </div>
               </div>
 
-              <div className="text-center space-y-2">
-                <Badge className={`${getGradeColor(brandScore.grade)} text-white px-4 py-2 text-lg`} data-testid="badge-grade">
-                  Grade: {brandScore.grade}
+              <div className="text-center space-y-3">
+                <Badge className={`${getGradeColor(brandScore.grade)} text-white px-6 py-2 text-lg font-semibold shadow-lg`} data-testid="badge-grade">
+                  Grade {brandScore.grade}
                 </Badge>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-white/60">
                   Updated {new Date(brandScore.lastUpdated).toLocaleDateString()}
                 </p>
               </div>
 
-              <div className="w-full space-y-2">
+              <div className="w-full space-y-3 pt-4 border-t border-white/10">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Profile Strength</span>
+                  <span className="text-white/70">Profile Strength</span>
                   <span className="text-white font-semibold">{brandScore.percentage}%</span>
                 </div>
-                <Progress value={brandScore.percentage} className="h-2" />
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-1000"
+                    style={{ width: `${brandScore.percentage}%` }}
+                  />
+                </div>
               </div>
             </div>
           </Card>
 
-          <Card className="glass p-8 lg:col-span-2" data-testid="card-component-breakdown">
+          <Card className="glass p-8 lg:col-span-2 border-white/10" data-testid="card-component-breakdown">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Target className="w-6 h-6" />
+              <Target className="w-6 h-6 text-purple-400" />
               Component Breakdown
             </h2>
             <div className="space-y-4">
               {components.map((component, index) => (
-                <div key={index} className="space-y-2" data-testid={`component-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div key={index} className="space-y-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200" data-testid={`component-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {getStatusIcon(component.status)}
                       <span className="text-white font-medium">{component.name}</span>
                     </div>
@@ -177,12 +182,17 @@ export default function BrandScore() {
                       <span className={`text-sm font-semibold ${getStatusColor(component.status)}`}>
                         {component.percentage}%
                       </span>
-                      <span className="text-slate-400 text-sm">
+                      <span className="text-white/60 text-sm">
                         {component.score}/{component.maxScore}
                       </span>
                     </div>
                   </div>
-                  <Progress value={component.percentage} className="h-2" />
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                      style={{ width: `${component.percentage}%` }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -190,44 +200,47 @@ export default function BrandScore() {
         </div>
 
         {brandScore.aiSuggestions.length > 0 && (
-          <Card className="glass p-8" data-testid="card-ai-suggestions">
+          <Card className="glass p-8 border-white/10" data-testid="card-ai-suggestions">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Lightbulb className="w-6 h-6 text-yellow-500" />
+              <Lightbulb className="w-6 h-6 text-purple-400" />
               AI-Powered Recommendations
             </h2>
             <div className="space-y-4">
               {brandScore.aiSuggestions.map((suggestion, index) => (
                 <div
                   key={index}
-                  className="flex gap-4 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                  className="flex gap-4 p-5 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-200"
                   data-testid={`ai-suggestion-${index}`}
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-purple-400 font-bold">{index + 1}</span>
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-sm">{index + 1}</span>
                   </div>
-                  <p className="text-slate-200 flex-1">{suggestion}</p>
+                  <p className="text-white/90 flex-1 leading-relaxed">{suggestion}</p>
                 </div>
               ))}
             </div>
           </Card>
         )}
 
-        <Card className="glass p-8" data-testid="card-all-suggestions">
-          <h2 className="text-2xl font-bold text-white mb-6">All Improvement Suggestions</h2>
+        <Card className="glass p-8 border-white/10" data-testid="card-all-suggestions">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <CheckCircle2 className="w-6 h-6 text-blue-400" />
+            Detailed Improvement Guide
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {components
               .filter(c => c.suggestions.length > 0)
               .map((component, index) => (
-                <div key={index} className="space-y-3" data-testid={`suggestions-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <div key={index} className="p-5 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all duration-200" data-testid={`suggestions-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
                     {getStatusIcon(component.status)}
                     {component.name}
                   </h3>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {component.suggestions.map((suggestion, sIndex) => (
                       <li
                         key={sIndex}
-                        className="text-sm text-slate-300 pl-4 border-l-2 border-purple-500/50"
+                        className="text-sm text-white/80 pl-4 border-l-2 border-purple-500/50 hover:border-purple-400 transition-colors leading-relaxed"
                         data-testid={`suggestion-${index}-${sIndex}`}
                       >
                         {suggestion}
