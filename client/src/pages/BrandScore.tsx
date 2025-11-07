@@ -126,7 +126,7 @@ export default function BrandScore() {
             </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <Card className="bg-transparent bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 p-8 lg:col-span-1" data-testid="card-overall-score">
+          <Card className="bg-transparent bg-gray-900/60 backdrop-blur-md border border-white/5 p-8 lg:col-span-1" data-testid="card-overall-score">
             <div className="flex flex-col items-center space-y-6">
               <div className="relative w-48 h-48">
                 <svg className="w-full h-full transform -rotate-90">
@@ -190,7 +190,7 @@ export default function BrandScore() {
             </div>
           </Card>
 
-          <Card className="bg-transparent bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 p-8 lg:col-span-2" data-testid="card-component-breakdown">
+          <Card className="bg-transparent bg-gray-900/60 backdrop-blur-md border border-white/5 p-8 lg:col-span-2" data-testid="card-component-breakdown">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
               <Target className="w-6 h-6 text-purple-400" />
               Component Breakdown
@@ -225,7 +225,7 @@ export default function BrandScore() {
         </div>
 
         {brandScore.aiSuggestions.length > 0 && (
-          <Card className="bg-transparent bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 p-8 mb-6" data-testid="card-ai-suggestions">
+          <Card className="bg-transparent bg-gray-900/60 backdrop-blur-md border border-white/5 p-8 mb-6" data-testid="card-ai-suggestions">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
               <Lightbulb className="w-6 h-6 text-purple-400" />
               AI-Powered Recommendations
@@ -247,7 +247,7 @@ export default function BrandScore() {
           </Card>
         )}
 
-        <Card className="bg-transparent bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 p-8" data-testid="card-all-suggestions">
+        <Card className="bg-transparent bg-gray-900/60 backdrop-blur-md border border-white/5 p-8" data-testid="card-all-suggestions">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <CheckCircle2 className="w-6 h-6 text-blue-400" />
             Detailed Improvement Guide
