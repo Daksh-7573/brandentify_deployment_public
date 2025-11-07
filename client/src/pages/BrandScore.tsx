@@ -69,10 +69,10 @@ export default function BrandScore() {
   }
 
   const getGradeColor = (grade: string) => {
-    if (grade.startsWith('A')) return 'bg-gradient-to-r from-purple-500 to-blue-500';
-    if (grade.startsWith('B')) return 'bg-gradient-to-r from-blue-500 to-cyan-500';
-    if (grade === 'C') return 'bg-gradient-to-r from-cyan-500 to-teal-500';
-    return 'bg-gradient-to-r from-slate-500 to-slate-600';
+    if (grade.startsWith('A')) return 'bg-gradient-to-r from-blue-400 to-purple-500';
+    if (grade.startsWith('B')) return 'bg-gradient-to-r from-blue-400 to-purple-500';
+    if (grade === 'C') return 'bg-gradient-to-r from-blue-400 to-purple-500';
+    return 'bg-gradient-to-r from-gray-400 to-gray-500';
   };
 
   const getStatusIcon = (status: string) => {
@@ -128,13 +128,13 @@ export default function BrandScore() {
                   />
                   <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#a855f7" />
-                      <stop offset="100%" stopColor="#3b82f6" />
+                      <stop offset="0%" stopColor="#60a5fa" />
+                      <stop offset="100%" stopColor="#a855f7" />
                     </linearGradient>
                   </defs>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent" data-testid="text-total-score">
+                  <span className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent" data-testid="text-total-score">
                     {brandScore.totalScore}
                   </span>
                   <span className="text-white/60 text-lg">/ 100</span>
@@ -155,9 +155,9 @@ export default function BrandScore() {
                   <span className="text-white/70">Profile Strength</span>
                   <span className="text-white font-semibold">{brandScore.percentage}%</span>
                 </div>
-                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
                   <div 
-                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-1000"
+                    className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-1000"
                     style={{ width: `${brandScore.percentage}%` }}
                   />
                 </div>
@@ -172,7 +172,7 @@ export default function BrandScore() {
             </h2>
             <div className="space-y-4">
               {components.map((component, index) => (
-                <div key={index} className="space-y-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200" data-testid={`component-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div key={index} className="space-y-3 p-4 rounded-lg bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 hover:shadow-md transition-all duration-300" data-testid={`component-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(component.status)}
@@ -187,9 +187,9 @@ export default function BrandScore() {
                       </span>
                     </div>
                   </div>
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
                     <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-500 ease-in-out"
                       style={{ width: `${component.percentage}%` }}
                     />
                   </div>
@@ -209,10 +209,10 @@ export default function BrandScore() {
               {brandScore.aiSuggestions.map((suggestion, index) => (
                 <div
                   key={index}
-                  className="flex gap-4 p-5 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-200"
+                  className="flex gap-4 p-5 rounded-lg bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 hover:shadow-md transition-all duration-300"
                   data-testid={`ai-suggestion-${index}`}
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center shadow-lg">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
                     <span className="text-white font-bold text-sm">{index + 1}</span>
                   </div>
                   <p className="text-white/90 flex-1 leading-relaxed">{suggestion}</p>
@@ -231,7 +231,7 @@ export default function BrandScore() {
             {components
               .filter(c => c.suggestions.length > 0)
               .map((component, index) => (
-                <div key={index} className="p-5 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all duration-200" data-testid={`suggestions-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div key={index} className="p-5 rounded-lg bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10 hover:shadow-md transition-all duration-300" data-testid={`suggestions-${component.name.toLowerCase().replace(/\s+/g, '-')}`}>
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
                     {getStatusIcon(component.status)}
                     {component.name}
@@ -240,7 +240,7 @@ export default function BrandScore() {
                     {component.suggestions.map((suggestion, sIndex) => (
                       <li
                         key={sIndex}
-                        className="text-sm text-white/80 pl-4 border-l-2 border-purple-500/50 hover:border-purple-400 transition-colors leading-relaxed"
+                        className="text-sm text-white/80 pl-4 border-l-2 border-blue-400/50 hover:border-purple-400 transition-colors leading-relaxed"
                         data-testid={`suggestion-${index}-${sIndex}`}
                       >
                         {suggestion}
