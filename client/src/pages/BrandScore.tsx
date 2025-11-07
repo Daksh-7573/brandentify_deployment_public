@@ -5,6 +5,8 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, AlertCircle, TrendingUp, Lightbulb, Target } from 'lucide-react';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+import Header from "@/components/layout/header";
 
 interface BrandScoreComponent {
   name: string;
@@ -46,12 +48,21 @@ export default function BrandScore() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-        <div className="max-w-6xl mx-auto space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Skeleton className="h-96 lg:col-span-1" />
-            <Skeleton className="h-96 lg:col-span-2" />
+      <div 
+        className="flex h-screen flex-col responsive-background"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        <Header />
+        <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
+          <div className="flex-1 overflow-auto w-full">
+            <div className="max-w-6xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
+              <Skeleton className="h-12 w-64 mb-6" />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Skeleton className="h-96 lg:col-span-1" />
+                <Skeleton className="h-96 lg:col-span-2" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -60,10 +71,17 @@ export default function BrandScore() {
 
   if (!brandScore) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 flex items-center justify-center">
-        <Card className="glass p-8 text-center">
-          <p className="text-white">Unable to load brand score</p>
-        </Card>
+      <div 
+        className="flex h-screen flex-col responsive-background"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        <Header />
+        <div className="flex flex-1 overflow-hidden pt-16 relative z-10 items-center justify-center">
+          <Card className="glass p-8 text-center">
+            <p className="text-white">Unable to load brand score</p>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -91,14 +109,21 @@ export default function BrandScore() {
   const components = Object.values(brandScore.components);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-white mb-2">Personal Brand Score</h1>
-          <p className="text-slate-300">
-            Real-time analysis of your professional profile strength
-          </p>
-        </div>
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      <Header />
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
+        <div className="flex-1 overflow-auto w-full">
+          <div className="max-w-6xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Personal Brand Score</h1>
+              <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight">
+                Real-time analysis of your professional profile strength
+              </p>
+            </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="glass p-8 lg:col-span-1 border-white/10" data-testid="card-overall-score">
@@ -251,6 +276,8 @@ export default function BrandScore() {
               ))}
           </div>
         </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
