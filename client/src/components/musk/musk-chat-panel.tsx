@@ -138,15 +138,19 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Generate AI-powered INITIAL welcome suggestions (first-time chat)
   const generateInitialSuggestions = async () => {
-    if (!user?.id) return;
+    const userId = user?.id || context?.userId;
+    if (!userId) {
+      console.log('[Musk Chat] No userId available for initial suggestions');
+      return;
+    }
     
     try {
-      console.log('[Musk Chat] Fetching personalized welcome questions from AI...');
+      console.log('[Musk Chat] Fetching personalized welcome questions from AI...', {userId, hasUser: !!user, hasContext: !!context});
       const response = await fetch('/api/musk/initial-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id
+          userId: userId
         })
       });
       
@@ -177,14 +181,15 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Generate AI-powered CONTEXTUAL follow-up suggestions (ongoing conversation)
   const generateContextualSuggestions = async () => {
-    if (!user?.id) return;
+    const userId = user?.id || context?.userId;
+    if (!userId) return;
     
     try {
       const response = await fetch('/api/musk/contextual-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
+          userId: userId,
           conversationHistory: messages,
           profileData: userData ? {
             title: userData.title,
