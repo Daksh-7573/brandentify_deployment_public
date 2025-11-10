@@ -96,17 +96,33 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Fetch user data when component mounts
   useEffect(() => {
+    console.log('[Musk Chat] Fetch user data effect triggered', {
+      hasContext: !!context,
+      contextUserId: context?.userId,
+      contextKeys: context ? Object.keys(context) : []
+    });
+    
     const fetchUserData = async () => {
       if (context?.userId) {
+        console.log(`[Musk Chat] Fetching user data for userId: ${context.userId}`);
         try {
           const response = await fetch(`/api/users/${context.userId}`);
+          console.log('[Musk Chat] User data fetch response:', response.status, response.ok);
           if (response.ok) {
             const data = await response.json();
+            console.log('[Musk Chat] User data loaded:', {
+              id: data.id,
+              name: data.name,
+              hasIndustry: !!data.industry,
+              hasDomain: !!data.domain
+            });
             setUserData(data);
           }
         } catch (error) {
           console.error('Failed to fetch user data for Musk suggestions:', error);
         }
+      } else {
+        console.log('[Musk Chat] ❌ No userId in context, cannot fetch user data');
       }
     };
     
