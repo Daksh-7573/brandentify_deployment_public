@@ -1,7 +1,7 @@
 import { generateIntelligentCareerQuests, PersonalizedQuest, ProfileCompletionData } from './intelligent-career-quest-generator';
 import { careerQuestPersonalizationService } from './career-quest-personalization-service';
 import { db } from '../db';
-import { users, skills, experiences, educations, projects } from '@shared/schema';
+import { users, skills, workExperiences, educations, projects } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -24,7 +24,7 @@ export class SimpleAIQuestGenerator {
 
       // Get user skills, experiences, education, and projects
       const userSkills = await db.select().from(skills).where(eq(skills.userId, userId));
-      const userExperiences = await db.select().from(experiences).where(eq(experiences.userId, userId));
+      const userExperiences = await db.select().from(workExperiences).where(eq(workExperiences.userId, userId));
       const userEducations = await db.select().from(educations).where(eq(educations.userId, userId));
       const userProjects = await db.select().from(projects).where(eq(projects.userId, userId));
 

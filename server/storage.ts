@@ -2618,124 +2618,6 @@ export class MemStorage implements IStorage {
     return this.portfolios.delete(id);
   }
   
-  // Service operations
-  async getServicesByUserId(userId: number): Promise<Service[]> {
-    console.log(`[storage.getServicesByUserId] Looking for services with userId: ${userId}`);
-    console.log(`[storage.getServicesByUserId] Total services in database: ${this.services.size}`);
-    
-    // Convert to array and filter
-    let userServices = Array.from(this.services.values())
-      .filter(service => service.userId === userId);
-    
-    // If no services found and this is user 1 (demo/test user), create demo services
-    if (userServices.length === 0 && userId === 1) {
-      console.log(`[storage.getServicesByUserId] Creating demo services for userId: ${userId}`);
-      
-      // Create demo services
-      const demoServices: Service[] = [
-        {
-          id: Date.now(),
-          userId: 1,
-          title: "Web Application Development",
-          description: "Full-stack web application development using modern JavaScript frameworks.",
-          category: "Development",
-          price: "100",
-          currency: "USD",
-          duration: "1",
-          durationType: "hour",
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: Date.now() + 1,
-          userId: 1,
-          title: "Technical Consulting",
-          description: "Expert advice on architecture, technology selection, and development best practices.",
-          category: "Consulting",
-          price: "150",
-          currency: "USD",
-          duration: "1",
-          durationType: "hour",
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: Date.now() + 2,
-          userId: 1,
-          title: "Code Review & Optimization",
-          description: "Thorough code review with performance optimization recommendations.",
-          category: "Development",
-          price: "75",
-          currency: "USD",
-          duration: "30",
-          durationType: "minutes",
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-      
-      // Add demo services to the Map
-      demoServices.forEach(service => {
-        this.services.set(service.id, service);
-      });
-      
-      // Update userServices
-      userServices = demoServices;
-      
-      console.log(`[storage.getServicesByUserId] Created ${demoServices.length} demo services for userId: ${userId}`);
-    }
-    
-    console.log(`[storage.getServicesByUserId] Found ${userServices.length} services for userId: ${userId}`);
-    if (userServices.length > 0) {
-      console.log(`[storage.getServicesByUserId] First service: ${JSON.stringify(userServices[0])}`);
-    }
-    
-    return userServices;
-  }
-
-  async getServiceById(id: number): Promise<Service | undefined> {
-    return this.services.get(id);
-  }
-
-  async createService(insertService: InsertService): Promise<Service> {
-    const id = this.currentServiceId++;
-    const createdAt = new Date();
-    const service: Service = {
-      id,
-      userId: insertService.userId,
-      title: insertService.title,
-      description: insertService.description ?? null,
-      category: insertService.category ?? "other",
-      priceInr: insertService.priceInr ?? null,
-      priceUsd: insertService.priceUsd ?? null,
-      isHourly: insertService.isHourly ?? false,
-      features: insertService.features ?? [],
-      imageUrl: insertService.imageUrl ?? null,
-      order: insertService.order ?? 0,
-      isActive: insertService.isActive ?? true,
-      createdAt,
-      updatedAt: createdAt
-    };
-    this.services.set(id, service);
-    return service;
-  }
-
-  async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
-    const service = this.services.get(id);
-    if (!service) return undefined;
-    
-    const updatedService = { ...service, ...serviceData };
-    this.services.set(id, updatedService);
-    return updatedService;
-  }
-
-  async deleteService(id: number): Promise<boolean> {
-    return this.services.delete(id);
-  }
-  
   /**
    * Create demo pulses for testing carousel/image gallery functionality
    */
@@ -3179,44 +3061,6 @@ export class MemStorage implements IStorage {
       console.error('[db.deletePulseComment] Error:', error);
       throw error;
     }
-  }
-  
-  // Poll Vote operations
-  async getPollVotesByPulseId(pulseId: number): Promise<PollVote[]> {
-    return Array.from(this.pollVotes.values())
-      .filter(vote => vote.pulseId === pulseId);
-  }
-  
-  async getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined> {
-    return Array.from(this.pollVotes.values())
-      .find(vote => vote.userId === userId && vote.pulseId === pulseId);
-  }
-  
-  async createPollVote(insertVote: InsertPollVote): Promise<PollVote> {
-    const id = this.currentPollVoteId++;
-    const createdAt = new Date();
-    
-    const vote: PollVote = {
-      ...insertVote,
-      id,
-      createdAt
-    };
-    
-    this.pollVotes.set(id, vote);
-    return vote;
-  }
-  
-  async updatePollVote(id: number, voteData: Partial<PollVote>): Promise<PollVote | undefined> {
-    const vote = this.pollVotes.get(id);
-    if (!vote) return undefined;
-    
-    const updatedVote = { ...vote, ...voteData };
-    this.pollVotes.set(id, updatedVote);
-    return updatedVote;
-  }
-  
-  async deletePollVote(id: number): Promise<boolean> {
-    return this.pollVotes.delete(id);
   }
   
   // Pulse Reaction operations
@@ -7600,57 +7444,6 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
-    try {
-      console.log(`[db.getQuestDefinitionById] Fetching quest definition with ID: ${id}`);
-      
-      const tableCheck = await pool.query(`
-        SELECT EXISTS (
-          SELECT 1 
-          FROM information_schema.tables 
-          WHERE table_name = 'quest_definitions'
-        );
-      `);
-      
-      if (!tableCheck.rows[0].exists) {
-        console.log(`[db.getQuestDefinitionById] quest_definitions table does not exist`);
-        return undefined;
-      }
-      
-      const result = await pool.query(`
-        SELECT 
-          id,
-          title,
-          description,
-          type,
-          target_count as "targetCount",
-          target_action as "targetAction",
-          xp_reward as "xpReward",
-          badge_reward as "badgeReward",
-          required_profile_completion as "requiredProfileCompletion",
-          required_career_stage as "requiredCareerStage",
-          required_industry as "requiredIndustry",
-          musk_tip as "muskTip",
-          is_active as "isActive",
-          created_at as "createdAt",
-          updated_at as "updatedAt"
-        FROM quest_definitions
-        WHERE id = $1
-      `, [id]);
-      
-      if (result.rows.length === 0) {
-        console.log(`[db.getQuestDefinitionById] No quest definition found with ID ${id}`);
-        return undefined;
-      }
-      
-      console.log(`[db.getQuestDefinitionById] Found quest definition with ID ${id}`);
-      return result.rows[0];
-    } catch (error) {
-      console.error(`[db.getQuestDefinitionById] Error fetching quest definition with ID ${id}:`, error);
-      return undefined;
-    }
-  }
-
   async getAllQuestDefinitions(): Promise<QuestDefinition[]> {
     try {
       console.log('[db.getAllQuestDefinitions] Starting quest definitions fetch');
@@ -8360,13 +8153,6 @@ export class MemStorage implements IStorage {
     
     this.xpTransactions.set(id, xpTransaction);
     return xpTransaction;
-  }
-
-  // Helper function to calculate week number (1-52) from date
-  private getWeekNumber(date: Date): number {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
 }
 
@@ -10242,74 +10028,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Service operations
-  async getServicesByUserId(userId: number): Promise<Service[]> {
-    console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
-    
-    return executeWithRetry(async () => {
-      try {
-        // Use direct pool query for more control over the result format
-        const result = await pool.query(`
-          SELECT 
-            id, 
-            user_id as "userId", 
-            title, 
-            description, 
-            category, 
-            price_inr as "priceInr", 
-            price_usd as "priceUsd",
-            is_hourly as "isHourly", 
-            features, 
-            image_url as "imageUrl",
-            "order", 
-            is_active as "isActive", 
-            created_at as "createdAt", 
-            updated_at as "updatedAt"
-          FROM services
-          WHERE user_id = $1
-        `, [userId]);
-        
-        console.log(`[storage.getServicesByUserId] Found ${result.rows.length} services for user ${userId} (Query returned ${result.rowCount} rows)`);
-        
-        return result.rows;
-      } catch (error) {
-        console.error(`[storage.getServicesByUserId] Error fetching services for user ${userId}:`, error);
-        throw error; // Rethrow for retry mechanism
-      }
-    }, 3, 800).catch(error => {
-      console.error(`[storage.getServicesByUserId] All retries failed for user ${userId}:`, error);
-      // Return empty array on error instead of throwing, to prevent UI from breaking
-      return [];
-    });
-  }
-
-  async getServiceById(id: number): Promise<Service | undefined> {
-    const [service] = await db.select().from(services).where(eq(services.id, id));
-    return service || undefined;
-  }
-
-  async createService(insertService: InsertService): Promise<Service> {
-    const [service] = await db.insert(services).values(insertService).returning();
-    return service;
-  }
-
-  async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
-    const [updatedService] = await db
-      .update(services)
-      .set(serviceData)
-      .where(eq(services.id, id))
-      .returning();
-    return updatedService || undefined;
-  }
-
-  async deleteService(id: number): Promise<boolean> {
-    const result = await db.delete(services).where(eq(services.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Additional methods from IStorage will be implemented as needed
-  // This is a partial implementation for the demo profile data requirement
-  
   // Resume operations
   async getResumeByUserId(userId: number): Promise<Resume | undefined> {
     try {
@@ -11684,25 +11402,6 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('[db.getAllQuestDefinitions] Error:', error);
       return [];
-    }
-  }
-
-  async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
-    try {
-      const result = await pool.query(`
-        SELECT 
-          id, title, description, category, difficulty, xp_reward as "xpReward",
-          estimated_time_minutes as "estimatedTimeMinutes", instructions,
-          success_criteria as "successCriteria", is_active as "isActive",
-          week_number as "weekNumber", year
-        FROM quest_definitions
-        WHERE id = $1
-      `, [id]);
-      
-      return result.rows[0];
-    } catch (error) {
-      console.error(`[db.getQuestDefinitionById] Error fetching quest ${id}:`, error);
-      return undefined;
     }
   }
 
