@@ -56,19 +56,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   const { user } = useAuth(); // Get current user data from auth context
   
-  // Initialize with default welcome message
+  // Initialize with default welcome message (personalized questions will load)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       content: "Hi there! I'm Musk, your AI career assistant. I can analyze your resume or pitch deck, and provide personalized professional guidance. How can I help with your career development today?",
       sender: 'musk',
       timestamp: new Date(),
-      quickResponses: [
-        'What career advice can you offer?',
-        'Analyze my resume',
-        'Evaluate my pitch deck',
-        'Help me network better'
-      ]
+      quickResponses: [] // Will be populated with AI-generated personalized questions
     }
   ]);
   
