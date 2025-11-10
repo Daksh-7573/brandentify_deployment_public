@@ -239,54 +239,82 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
    * Generate completion using Ollama (recommended for local deployment)
    */
   private async generateWithOllama(prompt: string): Promise<string> {
-    const response = await fetch(`${this.config.baseUrl}/api/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: this.config.temperature,
-          num_predict: this.config.maxTokens
-        }
-      })
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    try {
+      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: this.config.temperature,
+            num_predict: this.config.maxTokens
+          }
+        }),
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json() as any;
+      return data.response || 'No response generated';
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Ollama request timeout after 30 seconds - VPS may be down');
+      }
+      throw error;
     }
-
-    const data = await response.json() as any;
-    return data.response || 'No response generated';
   }
 
   /**
    * Generate completion using LM Studio
    */
   private async generateWithLMStudio(prompt: string): Promise<string> {
-    const response = await fetch(`${this.config.baseUrl}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` })
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: this.config.maxTokens,
-        temperature: this.config.temperature
-      })
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    try {
+      const response = await fetch(`${this.config.baseUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.config.apiKey && { 'Authorization': `Bearer ${this.config.apiKey}` })
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: this.config.maxTokens,
+          temperature: this.config.temperature
+        }),
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
-      throw new Error(`LM Studio API error: ${response.status} ${response.statusText}`);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`LM Studio API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json() as any;
+      return data.choices[0]?.message?.content || 'No response generated';
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('LM Studio request timeout after 30 seconds');
+      }
+      throw error;
     }
-
-    const data = await response.json() as any;
-    return data.choices[0]?.message?.content || 'No response generated';
   }
 
   /**
@@ -297,28 +325,42 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
       throw new Error('Hugging Face API key is required');
     }
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${this.config.model}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: this.config.maxTokens,
-          temperature: this.config.temperature,
-          return_full_text: false
-        }
-      })
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    try {
+      const response = await fetch(`https://api-inference.huggingface.co/models/${this.config.model}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: this.config.maxTokens,
+            temperature: this.config.temperature,
+            return_full_text: false
+          }
+        }),
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json() as any;
+      return data[0]?.generated_text || 'No response generated';
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Hugging Face request timeout after 30 seconds');
+      }
+      throw error;
     }
-
-    const data = await response.json() as any;
-    return data[0]?.generated_text || 'No response generated';
   }
 
   /**
