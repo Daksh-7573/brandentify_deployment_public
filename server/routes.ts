@@ -4095,8 +4095,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GET /api/pulses - Get all pulses for the industry pulse feed (includes personalized pulses)
   apiRouter.get("/pulses", async (req: Request, res: Response) => {
     try {
-      // Get logged-in user ID from query params (passed by frontend)
-      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      // Get logged-in user ID from authenticated session OR query params (fallback)
+      const userId = (req as any).user?.id || (req.query.userId ? parseInt(req.query.userId as string) : undefined);
+      
+      console.log(`[GET /pulses] Fetching pulses for authenticated user: ${userId || 'anonymous'}`);
       
       // Fetch pulses with personalization support
       const pulses = await storage.getPulses(userId);
