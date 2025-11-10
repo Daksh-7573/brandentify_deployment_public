@@ -1100,7 +1100,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
   try {
     const { userId: rawUserId, conversationHistory, profileData } = req.body;
     
-    console.log('[Contextual Suggestions] Generating AI-powered suggestions');
+    console.log('[Contextual Suggestions] Generating personalized AI-powered suggestions');
     
     // Handle both Firebase UIDs and numeric user IDs
     let numericUserId = 0;
@@ -1124,13 +1124,21 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     
     const userId = numericUserId;
     
-    // Fetch user data for context
+    // Fetch comprehensive user data including experiences, skills, education, projects
     let userData: any = profileData;
-    if (!userData && userId) {
+    let userExperiences: any[] = [];
+    let userSkills: any[] = [];
+    let userEducations: any[] = [];
+    let userProjects: any[] = [];
+    let resumeHighlights = '';
+    
+    if (userId) {
       try {
+        // Fetch user profile
         const user = await storage.getUser(userId);
         if (user) {
           userData = {
+            name: user.name,
             title: user.title,
             industry: user.industry,
             lookingFor: user.lookingFor,
@@ -1138,6 +1146,27 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
             location: user.location
           };
         }
+        
+        // Fetch work experiences
+        userExperiences = await storage.getWorkExperiencesByUserId(userId) || [];
+        
+        // Fetch skills
+        userSkills = await storage.getSkillsByUserId(userId) || [];
+        
+        // Fetch education
+        userEducations = await storage.getEducationsByUserId(userId) || [];
+        
+        // Fetch projects
+        userProjects = await storage.getProjectsByUserId(userId) || [];
+        
+        // Get resume context if available
+        if (global.resumeContexts && global.resumeContexts[userId]) {
+          const resumeContext = global.resumeContexts[userId];
+          resumeHighlights = resumeContext.resumeText?.substring(0, 400) || ''; // First 400 chars
+        }
+        
+        console.log(`[Contextual Suggestions] Loaded rich data: ${userExperiences.length} experiences, ${userSkills.length} skills, ${userEducations.length} education, ${userProjects.length} projects`);
+        
       } catch (error) {
         console.error('[Contextual Suggestions] Error fetching user data:', error);
       }
@@ -1150,44 +1179,107 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
         ).join('\n')
       : 'No conversation yet - this is the start of the chat.';
     
-    const userProfile = userData ? `
-User Profile:
-- Role: ${userData.title || 'Not specified'}
-- Industry: ${userData.industry || 'Not specified'}
-- Looking For: ${userData.lookingFor || 'Career growth'}
-- Domain: ${userData.domain || 'Not specified'}
-- Location: ${userData.location || 'Not specified'}
-` : 'No profile data available';
+    // Detect career stage based on total years of experience
+    let careerStage = 'entry';
+    let totalYears = 0;
+    if (userExperiences.length > 0) {
+      totalYears = userExperiences.reduce((sum: number, exp: any) => {
+        const start = new Date(exp.startDate || Date.now());
+        const end = exp.endDate ? new Date(exp.endDate) : new Date();
+        const years = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365);
+        return sum + Math.max(0, years);
+      }, 0);
+      
+      if (totalYears < 3) careerStage = 'entry';
+      else if (totalYears < 7) careerStage = 'mid';
+      else if (totalYears < 12) careerStage = 'senior';
+      else careerStage = 'executive';
+    }
     
-    // Create AI prompt for generating contextual suggestions
-    const prompt = `You are Musk, an AI career assistant. Based on the conversation context and user profile, generate 4 highly relevant, contextual follow-up questions that would help the user in their career journey.
+    // Build enriched user profile with actual career data
+    let enrichedProfile = `User Profile:
+- Name: ${userData?.name || 'Professional'}
+- Role: ${userData?.title || 'Not specified'}
+- Industry: ${userData?.industry || 'Not specified'}
+- Career Stage: ${careerStage}-level (${Math.round(totalYears)} years experience)
+- Looking For: ${userData?.lookingFor || 'Career growth'}
+- Domain: ${userData?.domain || 'Not specified'}
+- Location: ${userData?.location || 'Not specified'}`;
 
-${userProfile}
+    // Add recent work experience (latest 2 roles)
+    if (userExperiences.length > 0) {
+      enrichedProfile += `\n\nRecent Work Experience:`;
+      userExperiences.slice(0, 2).forEach((exp: any) => {
+        enrichedProfile += `\n- ${exp.title} at ${exp.company || 'Company'} (${exp.startDate ? new Date(exp.startDate).getFullYear() : 'Present'})`;
+      });
+    }
+    
+    // Add top skills (up to 8)
+    if (userSkills.length > 0) {
+      const topSkills = userSkills.slice(0, 8).map((s: any) => s.name || s.skillName).join(', ');
+      enrichedProfile += `\n\nKey Skills: ${topSkills}`;
+    }
+    
+    // Add education (highest degree)
+    if (userEducations.length > 0) {
+      const highestEdu = userEducations[0];
+      enrichedProfile += `\n\nEducation: ${highestEdu.degree || 'Degree'} in ${highestEdu.field || 'Field'}`;
+    }
+    
+    // Add recent projects (1-2 flagship)
+    if (userProjects.length > 0) {
+      enrichedProfile += `\n\nRecent Projects:`;
+      userProjects.slice(0, 2).forEach((proj: any) => {
+        enrichedProfile += `\n- ${proj.title || 'Project'}`;
+      });
+    }
+    
+    // Add resume highlights if available
+    if (resumeHighlights) {
+      enrichedProfile += `\n\nResume Highlights: ${resumeHighlights}`;
+    }
+    
+    // Create enhanced AI prompt for generating personalized contextual suggestions
+    const prompt = `You are Musk, an AI career expert. Generate 4 HIGHLY PERSONALIZED follow-up questions based on this user's ACTUAL career data and conversation.
+
+${enrichedProfile}
 
 Recent Conversation:
 ${conversationContext}
 
-IMPORTANT RULES:
-1. Questions should be SPECIFIC to the conversation topic if there's an ongoing discussion
-2. Questions should be ACTIONABLE and drive the conversation forward
-3. Include profile-aware questions (referencing their industry, role, or goals when relevant)
-4. Keep questions concise (under 15 words each)
-5. Make questions feel natural and conversational
-6. If conversation is about resume/job search, suggest next steps in that journey
-7. If conversation is about skills, suggest specific skill development paths
-8. If conversation is general, suggest high-impact career topics for their profile
-9. NEVER suggest "Analyze my resume" or "Evaluate my pitch deck" - there are dedicated upload buttons for these
-10. Focus on conversation topics, career advice, and actionable insights
+CRITICAL PERSONALIZATION RULES:
+1. Use SPECIFIC details from their profile (companies, skills, education, projects, years of experience)
+2. Questions should reflect their career stage (${careerStage}-level professionals have different needs)
+3. Reference their ACTUAL background - e.g., "With 5 years at Google as a PM..." or "Your React + Python skillset..."
+4. Make questions ACTIONABLE and forward-looking based on their real trajectory
+5. Consider their industry (${userData?.industry || 'their field'}) norms and progression paths
+6. If they have specific skills/projects, ask about leveraging or expanding them
+7. Match question complexity to career stage (entry=foundations, senior=strategy/leadership)
+8. NEVER ask generic questions like "What skills should I learn?" - be SPECIFIC to their profile
+9. NEVER suggest "Analyze my resume" or "Evaluate my pitch deck" - there are upload buttons
+10. Focus on NEXT STEPS based on where they actually are in their career
 
-Format your response as exactly 4 questions, one per line, without numbering or bullets. Just the questions.`;
+Examples of GOOD personalized questions:
+- "With your React expertise and 3 years at startup X, should you target Staff Engineer or transition to Tech Lead?"
+- "Your finance background + MBA makes you perfect for FinTech PM roles - should we explore that pivot?"
+- "As a senior designer with B2B SaaS portfolio, how can you break into enterprise-level companies?"
+
+Examples of BAD generic questions:
+- "What skills should I learn?" (too vague)
+- "How can I grow my career?" (not using their data)
+- "Should I get certified?" (doesn't reference their actual background)
+
+Format: Exactly 4 questions, one per line, no numbering, no bullets. Make each question feel like it came from someone who carefully reviewed their profile.`;
+
 
     try {
-      // Use Ollama for free local AI generation
-      const ollamaResponse = await fetch('http://localhost:11434/api/generate', {
+      // Use VPS Ollama for FREE AI generation (same as main Musk chat)
+      console.log('[Contextual Suggestions] Calling VPS Ollama for personalized questions...');
+      const ollamaResponse = await fetch('http://65.20.73.122:11434/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama3.2:3b',
+          model: 'llama3.2:1b',
           prompt: prompt,
           stream: false,
           options: {
@@ -1226,12 +1318,21 @@ Format your response as exactly 4 questions, one per line, without numbering or 
         }
       }
     } catch (ollamaError) {
-      console.log('[Contextual Suggestions] Ollama not available, trying fallback');
+      console.log('[Contextual Suggestions] VPS Ollama not available, using enriched fallback');
     }
     
-    // Fallback to profile-aware static questions if AI fails
-    console.log('[Contextual Suggestions] Using fallback suggestions');
-    const fallbackQuestions = generateFallbackSuggestions(userData, conversationHistory);
+    // Fallback to enriched profile-aware suggestions if AI fails
+    console.log('[Contextual Suggestions] Using personalized fallback suggestions');
+    const fallbackQuestions = generateEnrichedFallbackSuggestions(
+      userData, 
+      userExperiences, 
+      userSkills, 
+      userEducations, 
+      userProjects, 
+      careerStage, 
+      totalYears,
+      conversationHistory
+    );
     
     return res.json({ 
       suggestions: fallbackQuestions,
@@ -1255,68 +1356,92 @@ Format your response as exactly 4 questions, one per line, without numbering or 
 };
 
 /**
- * Generate smart fallback suggestions based on profile and conversation
+ * Generate enriched fallback suggestions using actual user career data
  */
-function generateFallbackSuggestions(userData: any, conversationHistory: any[]): string[] {
+function generateEnrichedFallbackSuggestions(
+  userData: any,
+  experiences: any[],
+  skills: any[],
+  educations: any[],
+  projects: any[],
+  careerStage: string,
+  totalYears: number,
+  conversationHistory: any[]
+): string[] {
   const suggestions: string[] = [];
   
-  // Check if conversation is about specific topics
+  // Check conversation context
   const recentMessages = conversationHistory?.slice(-4).map(m => m.content?.toLowerCase() || '') || [];
   const conversationText = recentMessages.join(' ');
   
   const hasResumeContext = conversationText.includes('resume') || conversationText.includes('cv');
-  const hasJobContext = conversationText.includes('job') || conversationText.includes('interview') || conversationText.includes('position');
-  const hasSkillContext = conversationText.includes('skill') || conversationText.includes('learn') || conversationText.includes('develop');
-  const hasNetworkContext = conversationText.includes('network') || conversationText.includes('connect') || conversationText.includes('linkedin');
+  const hasJobContext = conversationText.includes('job') || conversationText.includes('interview');
+  const hasSkillContext = conversationText.includes('skill') || conversationText.includes('learn');
+  const hasNetworkContext = conversationText.includes('network') || conversationText.includes('connect');
   
-  // Generate contextual questions based on conversation
+  const industry = userData?.industry || 'your field';
+  const title = userData?.title || 'your role';
+  const lookingFor = userData?.lookingFor?.toLowerCase() || '';
+  
+  // Get actual data points
+  const latestCompany = experiences[0]?.company || 'your current company';
+  const latestRole = experiences[0]?.title || title;
+  const topSkill = skills[0]?.name || skills[0]?.skillName || 'your expertise';
+  const secondSkill = skills[1]?.name || skills[1]?.skillName;
+  const degree = educations[0]?.degree || 'your degree';
+  const field = educations[0]?.field || 'your field';
+  
+  // PERSONALIZED suggestions based on context + actual data
   if (hasResumeContext) {
-    suggestions.push('What are the key things recruiters look for in my field?');
-    suggestions.push('How can I quantify my achievements more effectively?');
-    suggestions.push('Should I tailor my resume for each application?');
-    suggestions.push('What ATS optimization tips should I know?');
+    suggestions.push(`As a ${latestRole} with ${Math.round(totalYears)} years experience, what metrics should highlight my impact?`);
+    suggestions.push(`How can ${topSkill} skills be quantified for ATS systems in ${industry}?`);
+    suggestions.push(`What resume format works best for ${careerStage}-level ${industry} roles?`);
+    suggestions.push(`Should I emphasize ${experiences.length > 1 ? 'my progression' : 'depth of experience'} at ${latestCompany}?`);
   } else if (hasJobContext) {
-    suggestions.push('What salary range should I target for my next role?');
-    suggestions.push('How do I negotiate the best offer?');
-    suggestions.push('What questions should I ask in my next interview?');
-    suggestions.push('How can I stand out from other candidates?');
+    suggestions.push(`What's the typical salary range for ${careerStage}-level ${latestRole} roles in ${industry}?`);
+    suggestions.push(`With ${topSkill}${secondSkill ? ' and ' + secondSkill : ''}, what companies should I target?`);
+    suggestions.push(`How do I position my ${latestCompany} experience for bigger opportunities?`);
+    suggestions.push(`What interview questions should I prepare for ${title} roles?`);
   } else if (hasSkillContext) {
-    suggestions.push('Which certifications would boost my career the most?');
-    suggestions.push('How do I demonstrate new skills in my portfolio?');
-    suggestions.push(`What's the fastest way to learn in-demand skills?`);
-    suggestions.push('Should I specialize or stay generalist?');
-  } else if (hasNetworkContext) {
-    suggestions.push('How can I build authentic professional relationships?');
-    suggestions.push('What content should I share to build thought leadership?');
-    suggestions.push('How do I approach industry leaders for mentorship?');
-    suggestions.push('What networking events are worth my time?');
-  } else {
-    // Use profile-based questions if no clear context
-    const lookingFor = userData?.lookingFor?.toLowerCase() || '';
-    const industry = userData?.industry?.toLowerCase() || '';
-    
-    if (lookingFor.includes('job')) {
-      suggestions.push(`Which companies are hiring in ${industry || 'my field'} right now?`);
-      suggestions.push('How should I tailor my resume for my target role?');
-      suggestions.push('What interview prep strategies work best?');
-      suggestions.push('How can I stand out in applicant tracking systems?');
-    } else if (lookingFor.includes('mentor')) {
-      suggestions.push('What skills should I focus on developing next?');
-      suggestions.push('How can I transition to a leadership role?');
-      suggestions.push('What career path options fit my background?');
-      suggestions.push('How do I prepare for my next performance review?');
-    } else if (lookingFor.includes('network')) {
-      suggestions.push(`How can I become more visible in ${industry || 'my industry'}?`);
-      suggestions.push('What kind of posts build thought leadership?');
-      suggestions.push('How do I connect with industry leaders authentically?');
-      suggestions.push('Should I focus on quality or quantity in networking?');
+    if (careerStage === 'entry') {
+      suggestions.push(`With ${topSkill} foundation, what complementary skills accelerate ${industry} careers?`);
+      suggestions.push(`Should I get certified in ${topSkill} or diversify to ${secondSkill || 'related areas'}?`);
     } else {
-      // Generic high-value questions
-      suggestions.push('What skills are most in-demand in my industry?');
-      suggestions.push('How can I accelerate my career growth?');
-      suggestions.push('What opportunities should I be exploring?');
-      suggestions.push('How can I build a stronger professional brand?');
+      suggestions.push(`How can I leverage ${topSkill} expertise to move into leadership in ${industry}?`);
+      suggestions.push(`With ${Math.round(totalYears)} years experience, should I specialize deeper or expand to management?`);
     }
+    suggestions.push(`What's the ROI of certifications for ${careerStage}-level ${industry} professionals?`);
+    suggestions.push(`How do I showcase ${topSkill} skills beyond my resume?`);
+  } else if (hasNetworkContext) {
+    suggestions.push(`As a ${latestRole} at ${latestCompany}, who should I connect with in ${industry}?`);
+    suggestions.push(`What thought leadership topics resonate for ${careerStage}-level ${industry} professionals?`);
+    suggestions.push(`Should I focus on building ${industry} network or cross-industry connections?`);
+    suggestions.push(`How can I leverage ${topSkill} expertise to attract meaningful connections?`);
+  } else {
+    // Career stage-specific personalized questions
+    if (careerStage === 'entry') {
+      suggestions.push(`With ${degree} in ${field} and ${topSkill} skills, what's my optimal career path?`);
+      suggestions.push(`How can I accelerate growth from ${latestRole} to senior roles in ${industry}?`);
+      suggestions.push(`Should I deepen ${topSkill} expertise or build T-shaped skills?`);
+      suggestions.push(`What companies value ${field} backgrounds in ${industry}?`);
+    } else if (careerStage === 'mid') {
+      suggestions.push(`After ${Math.round(totalYears)} years as ${latestRole}, should I aim for Staff/Lead or management?`);
+      suggestions.push(`How do I transition from ${latestRole} to ${industry} leadership positions?`);
+      suggestions.push(`Is my ${latestCompany} experience enough to break into top-tier companies?`);
+      suggestions.push(`Should I pivot industries or deepen ${industry} expertise?`);
+    } else if (careerStage === 'senior' || careerStage === 'executive') {
+      suggestions.push(`With ${Math.round(totalYears)} years in ${industry}, how do I position for C-suite roles?`);
+      suggestions.push(`Should I leverage ${latestCompany} experience for consulting or advisory work?`);
+      suggestions.push(`How can I build thought leadership in ${industry} using ${topSkill} expertise?`);
+      suggestions.push(`What's the path from ${latestRole} to executive sponsor or board member?`);
+    }
+  }
+  
+  // Use profile goals if available
+  if (lookingFor.includes('job') && suggestions.length < 4) {
+    suggestions.push(`Based on my ${latestCompany} experience, what roles am I qualified for?`);
+  } else if (lookingFor.includes('mentor') && suggestions.length < 4) {
+    suggestions.push(`Who in ${industry} would be ideal mentors for ${careerStage}-level ${title}?`);
   }
   
   return suggestions.slice(0, 4);
