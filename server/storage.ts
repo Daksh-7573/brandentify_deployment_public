@@ -12040,6 +12040,62 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined> {
+    try {
+      console.log(`[db.getPollVoteByUserAndPulse] Fetching vote for user ${userId} on pulse ${pulseId}`);
+      
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+        FROM poll_votes 
+        WHERE pulse_id = $1 AND user_id = $2
+        LIMIT 1
+      `, [pulseId, userId]);
+      
+      console.log(`[db.getPollVoteByUserAndPulse] Found: ${result.rows.length > 0}`);
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error('[db.getPollVoteByUserAndPulse] Error:', error);
+      return undefined;
+    }
+  }
+
+  async createPollVote(vote: InsertPollVote): Promise<PollVote> {
+    try {
+      console.log(`[db.createPollVote] Creating vote for user ${vote.userId} on pulse ${vote.pulseId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO poll_votes (pulse_id, user_id, option_index)
+        VALUES ($1, $2, $3)
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+      `, [vote.pulseId, vote.userId, vote.optionIndex]);
+      
+      console.log(`[db.createPollVote] Created vote with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createPollVote] Error:', error);
+      throw error;
+    }
+  }
+
+  async updatePollVote(id: number, voteData: Partial<PollVote>): Promise<PollVote | undefined> {
+    try {
+      console.log(`[db.updatePollVote] Updating vote ${id}`);
+      
+      const result = await pool.query(`
+        UPDATE poll_votes
+        SET option_index = COALESCE($1, option_index)
+        WHERE id = $2
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+      `, [voteData.optionIndex, id]);
+      
+      console.log(`[db.updatePollVote] Updated: ${result.rows.length > 0}`);
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error('[db.updatePollVote] Error:', error);
+      return undefined;
+    }
+  }
+
   async checkUserPostingRestrictions(userId: number): Promise<{
     isRestricted: boolean;
     restrictionType?: string;
