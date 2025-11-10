@@ -115,6 +115,13 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Generate suggested questions when user data is available
   useEffect(() => {
+    console.log('[Musk Chat] useEffect triggered!', {
+      hasUserData: !!userData,
+      messagesLength: messages.length,
+      userId: userData?.id,
+      userName: userData?.name
+    });
+    
     if (userData) {
       // Load engagement history from localStorage if available
       try {
@@ -126,13 +133,19 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         console.error("Failed to load question engagement history:", error);
       }
       
+      console.log('[Musk Chat] About to check messages.length:', messages.length);
+      
       // Generate INITIAL welcome suggestions for first-time chat (no conversation history)
       if (messages.length === 1) {
+        console.log('[Musk Chat] Calling generateInitialSuggestions...');
         generateInitialSuggestions();
       } else {
+        console.log('[Musk Chat] Calling generateContextualSuggestions...');
         // Generate contextual follow-up suggestions for ongoing conversations
         generateContextualSuggestions();
       }
+    } else {
+      console.log('[Musk Chat] No userData yet, skipping suggestions...');
     }
   }, [userData]);
   
