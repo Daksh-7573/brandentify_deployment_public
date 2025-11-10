@@ -141,11 +141,16 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     const userId = user?.id || context?.userId;
     if (!userId) {
       console.log('[Musk Chat] No userId available for initial suggestions');
+      // Fallback to static questions
+      const questions = getSuggestedQuestions(userData, engagementHistory);
+      setSuggestedQuestions(questions);
       return;
     }
     
     try {
       console.log('[Musk Chat] Fetching personalized welcome questions from AI...', {userId, hasUser: !!user, hasContext: !!context});
+      console.log('[Musk Chat] Making fetch request to /api/musk/initial-suggestions');
+      
       const response = await fetch('/api/musk/initial-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -154,8 +159,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         })
       });
       
+      console.log('[Musk Chat] Got response:', response.status, response.ok);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[Musk Chat] Parsed response data:', data);
         const aiQuestions: SuggestedQuestion[] = data.suggestions.map((text: string, idx: number) => ({
           id: `ai-initial-${Date.now()}-${idx}`,
           text,
@@ -166,7 +174,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         
         setSuggestedQuestions(aiQuestions);
         console.log('[Musk Chat] Generated INITIAL AI welcome questions from:', data.source);
+        console.log('[Musk Chat] Questions set:', aiQuestions.map(q => q.text));
       } else {
+        console.warn('[Musk Chat] API returned non-ok status:', response.status);
         // Fallback to static questions if API fails
         const questions = getSuggestedQuestions(userData, engagementHistory);
         setSuggestedQuestions(questions);
