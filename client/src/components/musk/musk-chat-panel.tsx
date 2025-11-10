@@ -64,10 +64,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       sender: 'musk',
       timestamp: new Date(),
       quickResponses: [
-        'What career advice can you offer?',
-        'Analyze my resume',
-        'Evaluate my pitch deck',
-        'Help me network better'
+        '🔄 LOADING PERSONALIZED SUGGESTIONS...',
+        '⏳ Please wait...',
+        '🚀 AI is generating custom questions',
+        '✨ Based on your profile data'
       ]
     }
   ]);
