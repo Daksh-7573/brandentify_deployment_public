@@ -58,7 +58,7 @@ export class LocalAIService {
     customAdviceText?: string;
   }): Promise<string> {
     const prompt = this.buildCareerAdvicePrompt(userProfile);
-    return this.generateCompletion(prompt, 'career-advice');
+    return this._generateCompletion(prompt, 'career-advice');
   }
 
   /**
@@ -66,7 +66,7 @@ export class LocalAIService {
    */
   async analyzeResume(resumeText: string): Promise<string> {
     const prompt = this.buildResumeAnalysisPrompt(resumeText);
-    return this.generateCompletion(prompt, 'resume-analysis');
+    return this._generateCompletion(prompt, 'resume-analysis');
   }
 
   /**
@@ -79,7 +79,7 @@ export class LocalAIService {
     platform?: string;
   }): Promise<string[]> {
     const prompt = this.buildHashtagPrompt(context);
-    const response = await this.generateCompletion(prompt, 'hashtag-suggestions');
+    const response = await this._generateCompletion(prompt, 'hashtag-suggestions');
     
     // Extract hashtags from response
     const hashtags = response.match(/#\w+/g) || [];
@@ -90,7 +90,7 @@ export class LocalAIService {
    * Generate news content for personalized Musk Pulses (FREE with Ollama)
    */
   async generateNewsContent(prompt: string): Promise<string> {
-    return this.generateCompletion(prompt, 'news-pulse-generation');
+    return this._generateCompletion(prompt, 'news-pulse-generation');
   }
 
   /**
@@ -122,7 +122,7 @@ export class LocalAIService {
     estimatedTime: number;
   }> {
     const prompt = this.buildCareerQuestPrompt(questContext);
-    const response = await this.generateCompletion(prompt, 'career-quest-generation');
+    const response = await this._generateCompletion(prompt, 'career-quest-generation');
     
     // Parse structured output from AI
     try {
@@ -205,9 +205,68 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
   }
 
   /**
-   * Generate general AI completion
+   * Generate response with custom options (used by dynamic quest narrative generator)
    */
-  private async generateCompletion(prompt: string, taskType: string): Promise<string> {
+  async generateResponse(prompt: string, options?: {
+    systemPrompt?: string;
+    temperature?: number;
+    maxTokens?: number;
+  }): Promise<string> {
+    // If system prompt provided, prepend it to the user prompt
+    const fullPrompt = options?.systemPrompt 
+      ? `${options.systemPrompt}\n\n${prompt}`
+      : prompt;
+    
+    // Temporarily override config if custom options provided
+    const originalTemp = this.config.temperature;
+    const originalTokens = this.config.maxTokens;
+    
+    if (options?.temperature !== undefined) {
+      this.config.temperature = options.temperature;
+    }
+    if (options?.maxTokens !== undefined) {
+      this.config.maxTokens = options.maxTokens;
+    }
+    
+    try {
+      const result = await this._generateCompletion(fullPrompt, 'custom-request');
+      return result;
+    } finally {
+      // Restore original config
+      this.config.temperature = originalTemp;
+      this.config.maxTokens = originalTokens;
+    }
+  }
+
+  /**
+   * Public method for general completions with customizable temperature and maxTokens
+   */
+  async generateCompletion(prompt: string, temperature?: number, maxTokens?: number): Promise<string> {
+    // Temporarily override config if parameters provided
+    const originalTemp = this.config.temperature;
+    const originalTokens = this.config.maxTokens;
+    
+    if (temperature !== undefined) {
+      this.config.temperature = temperature;
+    }
+    if (maxTokens !== undefined) {
+      this.config.maxTokens = maxTokens;
+    }
+    
+    try {
+      const result = await this._generateCompletion(prompt, 'general-completion');
+      return result;
+    } finally {
+      // Restore original config
+      this.config.temperature = originalTemp;
+      this.config.maxTokens = originalTokens;
+    }
+  }
+
+  /**
+   * Internal method for AI completion (private)
+   */
+  private async _generateCompletion(prompt: string, taskType: string): Promise<string> {
     try {
       console.log(`[Local AI] Generating ${taskType} with ${this.config.provider}`);
       
@@ -517,7 +576,7 @@ Hashtags:`;
   }> {
     try {
       const startTime = Date.now();
-      await this.generateCompletion('Test prompt for health check', 'health-check');
+      await this._generateCompletion('Test prompt for health check', 'health-check');
       const latency = Date.now() - startTime;
 
       return {
@@ -537,4 +596,8 @@ Hashtags:`;
   }
 }
 
+// Export singleton instance
 export const localAIService = new LocalAIService();
+
+// Export as localAI for backward compatibility
+export const localAI = localAIService;

@@ -2,6 +2,28 @@ import { Skill, WorkExperience, Education } from "@shared/schema";
 import { storage } from "../storage";
 import { localAIService } from "./local-ai-service";
 
+/**
+ * General AI function for making AI calls
+ * Used by career intelligence services (pitch deck analyzer, skill benchmark, etc.)
+ */
+export async function callAI(prompt: string, options?: {
+  temperature?: number;
+  maxTokens?: number;
+}): Promise<string> {
+  try {
+    // Use local AI service for all AI calls
+    const response = await localAIService.generateCompletion(
+      prompt,
+      options?.temperature || 0.7,
+      options?.maxTokens || 2000
+    );
+    return response;
+  } catch (error) {
+    console.error('[callAI] Error:', error);
+    throw new Error('Failed to generate AI response. Please try again later.');
+  }
+}
+
 export async function generateCareerAdvice(
   message: string,
   skills: Skill[],
