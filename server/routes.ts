@@ -19,7 +19,7 @@ import { handleParseResume } from "./routes-parse-resume";
 import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload, handleGenerateContextualSuggestions, handleGenerateInitialSuggestions } from "./routes-musk";
+import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload, handleGenerateContextualSuggestions } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
@@ -7907,12 +7907,7 @@ ${extractedText.substring(0, 5000)}
     await handlePitchDeckUpload(req, res);
   });
   
-  // Route for generating AI-powered INITIAL suggestions (welcome questions)
-  apiRouter.post("/musk/initial-suggestions", async (req: Request, res: Response) => {
-    await handleGenerateInitialSuggestions(req, res);
-  });
-  
-  // Route for generating AI-powered contextual suggestions (follow-up questions)
+  // Route for generating AI-powered contextual suggestions
   apiRouter.post("/musk/contextual-suggestions", async (req: Request, res: Response) => {
     await handleGenerateContextualSuggestions(req, res);
   });

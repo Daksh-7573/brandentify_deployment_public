@@ -64,10 +64,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       sender: 'musk',
       timestamp: new Date(),
       quickResponses: [
-        '🔄 LOADING PERSONALIZED SUGGESTIONS...',
-        '⏳ Please wait...',
-        '🚀 AI is generating custom questions',
-        '✨ Based on your profile data'
+        'What career advice can you offer?',
+        'Analyze my resume',
+        'Evaluate my pitch deck',
+        'Help me network better'
       ]
     }
   ]);
@@ -96,33 +96,17 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Fetch user data when component mounts
   useEffect(() => {
-    console.log('[Musk Chat] Fetch user data effect triggered', {
-      hasContext: !!context,
-      contextUserId: context?.userId,
-      contextKeys: context ? Object.keys(context) : []
-    });
-    
     const fetchUserData = async () => {
       if (context?.userId) {
-        console.log(`[Musk Chat] Fetching user data for userId: ${context.userId}`);
         try {
           const response = await fetch(`/api/users/${context.userId}`);
-          console.log('[Musk Chat] User data fetch response:', response.status, response.ok);
           if (response.ok) {
             const data = await response.json();
-            console.log('[Musk Chat] User data loaded:', {
-              id: data.id,
-              name: data.name,
-              hasIndustry: !!data.industry,
-              hasDomain: !!data.domain
-            });
             setUserData(data);
           }
         } catch (error) {
           console.error('Failed to fetch user data for Musk suggestions:', error);
         }
-      } else {
-        console.log('[Musk Chat] ❌ No userId in context, cannot fetch user data');
       }
     };
     
@@ -131,13 +115,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Generate suggested questions when user data is available
   useEffect(() => {
-    console.log('[Musk Chat] useEffect triggered!', {
-      hasUserData: !!userData,
-      messagesLength: messages.length,
-      userId: userData?.id,
-      userName: userData?.name
-    });
-    
     if (userData) {
       // Load engagement history from localStorage if available
       try {
@@ -149,86 +126,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         console.error("Failed to load question engagement history:", error);
       }
       
-      console.log('[Musk Chat] About to check messages.length:', messages.length);
-      
-      // Generate INITIAL welcome suggestions for first-time chat (no conversation history)
-      if (messages.length === 1) {
-        console.log('[Musk Chat] Calling generateInitialSuggestions...');
-        generateInitialSuggestions();
-      } else {
-        console.log('[Musk Chat] Calling generateContextualSuggestions...');
-        // Generate contextual follow-up suggestions for ongoing conversations
-        generateContextualSuggestions();
-      }
-    } else {
-      console.log('[Musk Chat] No userData yet, skipping suggestions...');
+      // Generate AI-powered contextual suggestions
+      generateContextualSuggestions();
     }
   }, [userData]);
   
-  // Generate AI-powered INITIAL welcome suggestions (first-time chat)
-  const generateInitialSuggestions = async () => {
-    const userId = user?.id || context?.userId;
-    if (!userId) {
-      console.log('[Musk Chat] No userId available for initial suggestions');
-      // Fallback to static questions
-      const questions = getSuggestedQuestions(userData, engagementHistory);
-      setSuggestedQuestions(questions);
-      return;
-    }
-    
-    try {
-      console.log('[Musk Chat] Fetching personalized welcome questions from AI...', {userId, hasUser: !!user, hasContext: !!context});
-      console.log('[Musk Chat] Making fetch request to /api/musk/initial-suggestions');
-      
-      const response = await fetch('/api/musk/initial-suggestions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userId
-        })
-      });
-      
-      console.log('[Musk Chat] Got response:', response.status, response.ok);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('[Musk Chat] Parsed response data:', data);
-        const aiQuestions: SuggestedQuestion[] = data.suggestions.map((text: string, idx: number) => ({
-          id: `ai-initial-${Date.now()}-${idx}`,
-          text,
-          category: 'career',
-          relevanceScore: 1.0,
-          isNew: true
-        }));
-        
-        setSuggestedQuestions(aiQuestions);
-        console.log('[Musk Chat] Generated INITIAL AI welcome questions from:', data.source);
-        console.log('[Musk Chat] Questions set:', aiQuestions.map(q => q.text));
-      } else {
-        console.warn('[Musk Chat] API returned non-ok status:', response.status);
-        // Fallback to static questions if API fails
-        const questions = getSuggestedQuestions(userData, engagementHistory);
-        setSuggestedQuestions(questions);
-      }
-    } catch (error) {
-      console.error('[Musk Chat] Error generating initial suggestions:', error);
-      // Fallback to static questions
-      const questions = getSuggestedQuestions(userData, engagementHistory);
-      setSuggestedQuestions(questions);
-    }
-  };
-  
-  // Generate AI-powered CONTEXTUAL follow-up suggestions (ongoing conversation)
+  // Generate AI-powered contextual suggestions
   const generateContextualSuggestions = async () => {
-    const userId = user?.id || context?.userId;
-    if (!userId) return;
+    if (!user?.id) return;
     
     try {
       const response = await fetch('/api/musk/contextual-suggestions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: userId,
+          userId: user.id,
           conversationHistory: messages,
           profileData: userData ? {
             title: userData.title,
@@ -251,14 +163,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         }));
         
         setSuggestedQuestions(aiQuestions);
-        console.log('[Musk Chat] Generated CONTEXTUAL AI suggestions from:', data.source);
+        console.log('[Musk Chat] Generated AI suggestions from:', data.source);
       } else {
         // Fallback to static questions if API fails
         const questions = getSuggestedQuestions(userData, engagementHistory);
         setSuggestedQuestions(questions);
       }
     } catch (error) {
-      console.error('[Musk Chat] Error generating contextual suggestions:', error);
+      console.error('[Musk Chat] Error generating suggestions:', error);
       // Fallback to static questions
       const questions = getSuggestedQuestions(userData, engagementHistory);
       setSuggestedQuestions(questions);
