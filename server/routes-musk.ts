@@ -440,7 +440,7 @@ export const handleMuskChat = async (req: Request, res: Response) => {
         );
         
         response = enhancedResult.response;
-        enhanced = enhancedResult.enhanced;
+        enhanced = true; // Enhanced system was used
         metadata = enhancedResult.metadata || {};
         
         if (enhanced) {
@@ -449,7 +449,7 @@ export const handleMuskChat = async (req: Request, res: Response) => {
           console.log('[Musk Chat] Fallback to basic processing');
         }
         
-      } catch (error) {
+      } catch (error: any) {
         console.error('[Musk Chat] Enhanced system failed, using original system:', error);
         console.error('[Musk Chat] Error details:', error.stack);
         response = await generateMuskResponse(message, enrichedContext);
@@ -1128,7 +1128,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     let userData: any = profileData;
     if (!userData && userId) {
       try {
-        const user = await storage.getUserById(userId);
+        const user = await storage.getUser(userId);
         if (user) {
           userData = {
             title: user.title,

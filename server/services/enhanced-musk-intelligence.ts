@@ -187,7 +187,8 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       predictiveInsights,
       crossUserRecommendations,
       emotionalContext,
-      emotionalResponseStrategy
+      emotionalResponseStrategy,
+      userIdString
     );
 
     // Phase 1: Add Musk response to conversation memory
@@ -255,7 +256,8 @@ async function generatePhase3EnhancedResponse(
   predictiveInsights: PredictiveInsight,
   crossUserRecommendations: any[],
   emotionalContext: any,
-  emotionalResponseStrategy: any
+  emotionalResponseStrategy: any,
+  userId?: string
 ): Promise<string> {
   try {
     console.log(`[Enhanced Musk] Generating Phase 3 ${personaAnalysis.selectedPersona.name} response`);
@@ -305,7 +307,7 @@ ${proactiveInsight.suggestions.slice(0, 2).map(s => `- ${s.title}: ${s.descripti
 ${crossUserRecommendations.slice(0, 2).map(r => `- ${r.title}: ${r.description}`).join('\n')}
 
 ` : ''}${emotionalResponseStrategy.supportElements.length > 0 ? `Emotional Support Elements to Include:
-${emotionalResponseStrategy.supportElements.slice(0, 2).map(element => `- ${element}`).join('\n')}
+${emotionalResponseStrategy.supportElements.slice(0, 2).map((element: string) => `- ${element}`).join('\n')}
 
 ` : ''}Provide specific, actionable advice that:
 1. Addresses their specific question with emotional awareness
@@ -323,7 +325,7 @@ Make the response deeply personal, emotionally intelligent, and forward-looking 
     let enhancedPrompt = enhancePromptWithPersona(basePrompt, personaAnalysis, conversationFlow);
     enhancedPrompt = enhancePromptWithEmotionalIntelligence(enhancedPrompt, emotionalContext, emotionalResponseStrategy);
     
-    return await generateIntelligentResponse(enhancedPrompt, context, message);
+    return await generateIntelligentResponse(enhancedPrompt, context, message, userId);
     
   } catch (error) {
     console.error('[Enhanced Musk] Error in generatePhase3EnhancedResponse:', error);
@@ -469,7 +471,7 @@ Make the response personal and relevant to their career level and industry.`;
 /**
  * Generate AI response using enhanced prompt
  */
-async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
+async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = '', userId?: string): Promise<string> {
   console.log('[Enhanced Musk] Using advanced contextual intelligence for reliability');
   
   // Check for career questions first and use dynamic AI generation
@@ -477,7 +479,7 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
   
   if (isCareer) {
     console.log('[Enhanced Musk] Detected career question, using dynamic AI generation');
-    return generateDynamicCareerAdvice(context, message);
+    return generateDynamicCareerAdvice(context, message, userId);
   }
   
   // Use intelligent fallback for other questions
@@ -485,9 +487,84 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
 }
 
 /**
+ * Format experiences into concise bullet points (max 2 most recent)
+ */
+function formatExperiences(experiences: Array<{ title: string; company: string; duration: string; domain?: string; achievements?: string[] }>): string {
+  if (!experiences || experiences.length === 0) return '';
+  
+  const recent = experiences.slice(0, 2); // Latest 2 roles
+  const bullets = recent.map((exp: { title: string; company: string; duration: string }) => {
+    const role = exp.title || 'Professional';
+    const company = exp.company || '';
+    const duration = exp.duration || '';
+    return `  - ${role}${company ? ` at ${company}` : ''}${duration ? ` (${duration})` : ''}`;
+  });
+  
+  return bullets.join('\n');
+}
+
+/**
+ * Format skills into grouped categories (max 8 skills)
+ */
+function formatSkills(skills: Array<{ name: string; level?: string; proficiency?: number }>): string {
+  if (!skills || skills.length === 0) return '';
+  
+  const topSkills = skills.slice(0, 8); // Top 8 skills
+  return '  - ' + topSkills.map((s: { name: string }) => s.name).join(', ');
+}
+
+/**
+ * Format education into concise summary (highest degree + relevant certs)
+ */
+function formatEducation(educations: Array<{ degree: string; institution: string; field?: string }>): string {
+  if (!educations || educations.length === 0) return '';
+  
+  const highest = educations[0]; // Assume first is highest
+  const degree = highest.degree || 'Degree';
+  const institution = highest.institution || '';
+  const field = highest.field || '';
+  
+  return `  - ${degree}${field ? ` in ${field}` : ''}${institution ? ` from ${institution}` : ''}`;
+}
+
+/**
+ * Format projects into achievement highlights (max 2 flagship projects)
+ */
+function formatProjects(projects: Array<{ title: string; description?: string; summary?: string }>): string {
+  if (!projects || projects.length === 0) return '';
+  
+  const flagship = projects.slice(0, 2); // Top 2 projects
+  const bullets = flagship.map((proj: { title: string; description?: string; summary?: string }) => {
+    const title = proj.title || 'Project';
+    const description = proj.description || proj.summary || '';
+    const short = description.substring(0, 80); // Limit to 80 chars
+    return `  - ${title}${short ? `: ${short}...` : ''}`;
+  });
+  
+  return bullets.join('\n');
+}
+
+/**
+ * Format resume highlights (max 800 chars)
+ */
+function formatResumeHighlights(resumeText: string): string {
+  if (!resumeText) return '';
+  
+  // Remove common headers/noise
+  const cleaned = resumeText
+    .replace(/RESUME|CV|CURRICULUM VITAE/gi, '')
+    .replace(/\n{3,}/g, '\n\n') // Collapse multiple newlines
+    .trim();
+  
+  // Take first 800 chars as highlights
+  const snippet = cleaned.substring(0, 800);
+  return snippet + (cleaned.length > 800 ? '...' : '');
+}
+
+/**
  * Generate dynamic AI-powered career advice
  */
-async function generateDynamicCareerAdvice(context: EnrichedContext, message: string): Promise<string> {
+async function generateDynamicCareerAdvice(context: EnrichedContext, message: string, userId?: string): Promise<string> {
   const { user } = context;
   const userName = user.basicInfo.name || 'there';
   const title = user.basicInfo.title || 'professional';
@@ -502,24 +579,56 @@ async function generateDynamicCareerAdvice(context: EnrichedContext, message: st
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    const userLocation = user.basicInfo.location || 'their area';
-    const careerPrompt = `As an expert career strategist, provide specific advice for ${userName}, a ${title} in ${industry} located in ${userLocation}.
+    // Build structured, data-driven prompt
+    let profileSection = `User Profile:\n- Name: ${userName}\n- Current Role: ${title}\n- Industry: ${industry}\n- Location: ${location}\n- Career Goals: ${lookingFor}`;
+    
+    // Add work experience if available
+    if (user.professional?.experiences && user.professional.experiences.length > 0) {
+      const expBullets = formatExperiences(user.professional.experiences);
+      profileSection += `\n\nRecent Work Experience:\n${expBullets}`;
+    }
+    
+    // Add skills if available
+    if (user.professional?.skills && user.professional.skills.length > 0) {
+      const skillsBullets = formatSkills(user.professional.skills);
+      profileSection += `\n\nKey Skills:\n${skillsBullets}`;
+    }
+    
+    // Add education if available
+    if (user.professional?.education && user.professional.education.length > 0) {
+      const eduBullets = formatEducation(user.professional.education);
+      profileSection += `\n\nEducation:\n${eduBullets}`;
+    }
+    
+    // Add projects if available
+    if (user.professional?.projects && user.professional.projects.length > 0) {
+      const projBullets = formatProjects(user.professional.projects);
+      profileSection += `\n\nNotable Projects:\n${projBullets}`;
+    }
+    
+    // Add resume highlights if available (passed as separate parameter)
+    if (userId && global.resumeContexts && global.resumeContexts[userId]) {
+      const resumeData = global.resumeContexts[userId];
+      if (resumeData.resumeText) {
+        const highlights = formatResumeHighlights(resumeData.resumeText);
+        profileSection += `\n\nResume Highlights:\n${highlights}`;
+      }
+    }
+    
+    const careerPrompt = `As an expert career strategist, analyze ${userName}'s profile and provide specific, personalized advice.
 
-User Profile:
-- Role: ${title} 
-- Industry: ${industry}
-- Location: ${userLocation}
-- Career Goals: ${lookingFor}
-- Experience: Senior-level professional seeking advancement
+${profileSection}
 
-Provide concise, actionable career advancement advice covering:
-1. Specific next steps for role progression
-2. Key skills to develop for VP-level positions
-3. Strategic networking recommendations
-4. Leadership development priorities
-5. Industry-specific career moves
+User Question: "${message}"
 
-Keep response under 500 words with clear, actionable recommendations.`;
+Provide concise, actionable advice that:
+1. Directly addresses their specific question
+2. Uses their ACTUAL background (${title} in ${industry}) 
+3. References their real skills, experience, and education
+4. Provides industry-specific next steps
+5. Includes concrete, personalized recommendations
+
+Keep response under 500 words with clear, actionable recommendations based on their actual profile.`;
 
     console.log(`[Enhanced Musk] Generating AI career advice for ${title} in ${industry}`);
     
@@ -533,25 +642,18 @@ Keep response under 500 words with clear, actionable recommendations.`;
 
     const aiAdvice = completion.choices[0].message.content;
     
+    // Return AI-generated advice with minimal, personalized branding
     return `Hello ${userName},
 
 ${aiAdvice}
 
-**Immediate Actions on Brandentifier:**
-• Complete your professional profile to 100% for maximum visibility
-• Showcase your UX research expertise through detailed project portfolios
-• Connect with other ${industry} leaders and professionals
-• Share insights about UX research trends and methodologies
-• Engage with industry discussions and thought leadership content
+**Next Steps on Brandentifier:**
+• Complete your professional profile for maximum visibility
+• Showcase your ${industry} expertise through projects and portfolios
+• Connect with industry professionals and thought leaders
+• Share insights and engage with relevant discussions
 
-**Strategic Next Steps:**
-• Document your impact metrics and success stories from previous roles
-• Build thought leadership through professional content sharing
-• Expand your network within ${industry} and adjacent fields
-• Consider speaking opportunities at industry conferences
-• Mentor junior professionals to build your leadership profile
-
-What specific aspect of your career development would you like to explore further?`;
+What specific aspect would you like to explore further?`;
   } catch (error) {
     console.error('[Enhanced Musk] Error generating dynamic career advice:', error);
     
@@ -587,7 +689,7 @@ What specific career challenge or opportunity would you like to discuss further?
  * Advanced fallback response generator with intelligent context analysis
  */
 async function generateAdvancedFallback(context: EnrichedContext, message: string): Promise<string> {
-  const { user, proactiveSuggestions, predictiveInsights, selectedPersona } = context;
+  const { user } = context;
   const userName = user.basicInfo.name || 'there';
   const title = user.basicInfo.title || 'professional';
   const industry = user.basicInfo.industry || 'your field';
@@ -789,9 +891,9 @@ What specific career challenge or opportunity would you like to discuss further?
   }
   
   // Add contextual recommendations based on available data
-  if (context.experiences && context.experiences.length > 0) {
+  if (context.user.professional?.experiences && context.user.professional.experiences.length > 0) {
     response += `**Based on Your Experience:**\n`;
-    response += `• Leverage your background in ${context.experiences[0]?.title || 'your field'}\n`;
+    response += `• Leverage your background in ${context.user.professional.experiences[0]?.title || 'your field'}\n`;
     response += `• Build upon your proven track record for strategic advantage\n\n`;
   }
   

@@ -32,6 +32,7 @@ Preferred communication style: Simple, everyday language.
 - **Security**: AI prompt injection protection and content moderation
 - **Core AI Features**: Musk AI Assistant for career guidance, Resume Analysis (PDF processing), Career Insights, Hashtag Suggestions, Predictive Career Modeling, Cross-User Intelligence, Emotional Intelligence, and Cohort-Based Recommendations.
 - **AI Personalization**: Dynamic Persona Switching (Career Mentor, Strategist, Executive Coach), Proactive Suggestion Engine, Learning Pattern Recognition, and Conversation Memory with context-aware responses.
+- **Musk AI Chat Personalization (Fixed Nov 10, 2025)**: Chat responses now use ACTUAL user profile data instead of hardcoded templates. System analyzes user's work experience, skills, education, projects, and uploaded CV/resume to provide truly personalized career guidance. Formatter utilities cap data to prevent token bloat (2 recent roles, 8 top skills, highest degree, 2 flagship projects, 800-char resume highlights). AI prompts dynamically built from real user data with graceful fallback for incomplete profiles.
 - **Complete OpenAI → Ollama Migration (Oct 31, 2025)**: All 8 critical AI services migrated from expensive OpenAI GPT-4o to FREE VPS Ollama (llama3.2:1b):
   - **musk-pulse-generator.ts**: Personalized news pulse generation (3x daily per user) - BIGGEST COST SAVER
   - **personalized-hashtag-service.ts**: 6-layer context-aware hashtag suggestions
