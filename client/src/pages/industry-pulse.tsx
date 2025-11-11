@@ -1281,16 +1281,20 @@ export default function IndustryPulsePage() {
   const { user } = useAuth();
   const userId = user?.id || 1;
   
-  // Clear localStorage cache for pulses on mount to ensure fresh data
+  // Clear localStorage cache AND React Query cache for pulses on mount to ensure fresh data
   useEffect(() => {
     try {
-      // Clear all pulse-related cache keys
+      // Clear all pulse-related cache keys from localStorage
       Object.keys(localStorage).forEach(key => {
         if (key.includes('api_cache_/api/pulses')) {
           localStorage.removeItem(key);
-          console.log('Cleared pulse cache:', key);
+          console.log('Cleared pulse localStorage cache:', key);
         }
       });
+      
+      // Invalidate React Query cache to force fresh fetch
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses?userId=${userId}`] });
+      console.log('✅ Invalidated React Query cache for pulses - forcing fresh AI-powered fetch');
     } catch (error) {
       console.error('Error clearing pulse cache:', error);
     }
@@ -1302,42 +1306,45 @@ export default function IndustryPulsePage() {
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Fetch all pulses (including personalized Musk Pulses for this user)
+  // IMPORTANT: No onSuccess callback - it's deprecated in TanStack Query v5
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: [`/api/pulses?userId=${userId}`],
     staleTime: 0, // Always consider data stale
     gcTime: 0, // Don't cache data
     refetchOnMount: 'always', // Always refetch on mount
-    // @ts-ignore - onSuccess is valid but TS is complaining
-    onSuccess: (data: PulseWithUser[]) => {
-      // Initialize project cache for faster loading
-      const projectPulses = data.filter((pulse: PulseWithUser) => pulse.type === 'project' && pulse.projectId);
-      
-      if (projectPulses.length > 0) {
-        // Pre-fetch project data for all project pulses
-        const prefetchProjects = async () => {
-          // @ts-ignore - Create global cache if it doesn't exist
-          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
-          
-          for (const pulse of projectPulses) {
-            if (!pulse.projectId) continue;
-            
-            try {
-              const response = await fetch(`/api/projects/${pulse.projectId}`);
-              if (response.ok) {
-                const projectData = await response.json();
-                // @ts-ignore - Add to global cache
-                window.__PROJECT_CACHE__[pulse.projectId] = projectData;
-              }
-            } catch (error) {
-              console.error(`Error prefetching project ${pulse.projectId}:`, error);
-            }
-          }
-        };
-        
-        prefetchProjects();
-      }
-    }
   });
+  
+  // Prefetch project data when pulses are loaded (replaces deprecated onSuccess)
+  useEffect(() => {
+    if (!pulses || pulses.length === 0) return;
+    
+    const projectPulses = pulses.filter((pulse: PulseWithUser) => pulse.type === 'project' && pulse.projectId);
+    
+    if (projectPulses.length > 0) {
+      // Pre-fetch project data for all project pulses
+      const prefetchProjects = async () => {
+        // @ts-ignore - Create global cache if it doesn't exist
+        window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
+        
+        for (const pulse of projectPulses) {
+          if (!pulse.projectId) continue;
+          
+          try {
+            const response = await fetch(`/api/projects/${pulse.projectId}`);
+            if (response.ok) {
+              const projectData = await response.json();
+              // @ts-ignore - Add to global cache
+              window.__PROJECT_CACHE__[pulse.projectId] = projectData;
+            }
+          } catch (error) {
+            console.error(`Error prefetching project ${pulse.projectId}:`, error);
+          }
+        }
+      };
+      
+      prefetchProjects();
+    }
+  }, [pulses]); // Run when pulses data changes
   
   // Simulate a new content notification (for demo purposes)
   // In a real implementation, this would be triggered by a websocket or polling
