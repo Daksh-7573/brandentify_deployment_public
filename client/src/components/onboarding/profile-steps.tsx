@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -67,6 +68,67 @@ const LOOKING_FOR_CATEGORIES = [
   // Freelance & Side Hustle category
   { value: "freelance_gigs", label: "💰 Freelance Gigs" },
   { value: "hiring_freelancers", label: "💰 Hiring Freelancers" },
+];
+
+// Curated timezone options for common regions
+const TIMEZONE_OPTIONS = [
+  // UTC
+  { value: "UTC", label: "UTC (Coordinated Universal Time)" },
+  
+  // North America
+  { value: "America/New_York", label: "Eastern Time (US & Canada)" },
+  { value: "America/Chicago", label: "Central Time (US & Canada)" },
+  { value: "America/Denver", label: "Mountain Time (US & Canada)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (US & Canada)" },
+  { value: "America/Phoenix", label: "Arizona" },
+  { value: "America/Toronto", label: "Toronto" },
+  { value: "America/Vancouver", label: "Vancouver" },
+  { value: "America/Mexico_City", label: "Mexico City" },
+  
+  // Europe
+  { value: "Europe/London", label: "London (GMT/BST)" },
+  { value: "Europe/Paris", label: "Paris (CET/CEST)" },
+  { value: "Europe/Berlin", label: "Berlin (CET/CEST)" },
+  { value: "Europe/Madrid", label: "Madrid (CET/CEST)" },
+  { value: "Europe/Rome", label: "Rome (CET/CEST)" },
+  { value: "Europe/Amsterdam", label: "Amsterdam (CET/CEST)" },
+  { value: "Europe/Brussels", label: "Brussels (CET/CEST)" },
+  { value: "Europe/Vienna", label: "Vienna (CET/CEST)" },
+  { value: "Europe/Stockholm", label: "Stockholm (CET/CEST)" },
+  { value: "Europe/Warsaw", label: "Warsaw (CET/CEST)" },
+  { value: "Europe/Athens", label: "Athens (EET/EEST)" },
+  { value: "Europe/Istanbul", label: "Istanbul (TRT)" },
+  { value: "Europe/Moscow", label: "Moscow (MSK)" },
+  
+  // Asia
+  { value: "Asia/Dubai", label: "Dubai (GST)" },
+  { value: "Asia/Kolkata", label: "India (IST)" },
+  { value: "Asia/Karachi", label: "Pakistan (PKT)" },
+  { value: "Asia/Dhaka", label: "Bangladesh (BST)" },
+  { value: "Asia/Bangkok", label: "Bangkok (ICT)" },
+  { value: "Asia/Singapore", label: "Singapore (SGT)" },
+  { value: "Asia/Hong_Kong", label: "Hong Kong (HKT)" },
+  { value: "Asia/Shanghai", label: "China (CST)" },
+  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+  { value: "Asia/Seoul", label: "Seoul (KST)" },
+  
+  // Australia & Pacific
+  { value: "Australia/Sydney", label: "Sydney (AEDT/AEST)" },
+  { value: "Australia/Melbourne", label: "Melbourne (AEDT/AEST)" },
+  { value: "Australia/Brisbane", label: "Brisbane (AEST)" },
+  { value: "Australia/Perth", label: "Perth (AWST)" },
+  { value: "Pacific/Auckland", label: "Auckland (NZDT/NZST)" },
+  
+  // South America
+  { value: "America/Sao_Paulo", label: "São Paulo (BRT)" },
+  { value: "America/Buenos_Aires", label: "Buenos Aires (ART)" },
+  { value: "America/Santiago", label: "Santiago (CLT)" },
+  
+  // Africa
+  { value: "Africa/Cairo", label: "Cairo (EET)" },
+  { value: "Africa/Johannesburg", label: "Johannesburg (SAST)" },
+  { value: "Africa/Lagos", label: "Lagos (WAT)" },
+  { value: "Africa/Nairobi", label: "Nairobi (EAT)" },
 ];
 
 // Define steps
@@ -140,6 +202,7 @@ type FormData = {
   title: string;
   company: string;
   location: string;
+  timezone: string;
   industry: string;
   domain: string;
   lookingFor: string;
@@ -310,6 +373,7 @@ export default function ProfileSteps({
     title: '',
     company: '',
     location: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', // Auto-detect timezone
     industry: '',
     domain: '',
     lookingFor: '',
@@ -735,6 +799,7 @@ export default function ProfileSteps({
           title: safeUserData.title || '',
           company: safeUserData.company || '',
           location: safeUserData.location || '',
+          timezone: safeUserData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
           industry: safeUserData.industry?.split(': ')[0] || '',
           domain: safeUserData.industry?.includes(': ') ? safeUserData.industry.split(': ')[1] : '',
           lookingFor: safeUserData.lookingFor || '',
@@ -1402,17 +1467,44 @@ export default function ProfileSteps({
           </p>
         </div>
         
-        {/* Location */}
-        <div className="space-y-2">
-          <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-          <Input
-            id="location"
-            name="location"
-            placeholder="City, State, Country"
-            value={formData.location}
-            onChange={handleInputChange}
-            required
-          />
+        {/* Location and Timezone */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+            <Input
+              id="location"
+              name="location"
+              placeholder="City, State, Country"
+              value={formData.location}
+              onChange={handleInputChange}
+              required
+              data-testid="input-location"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="timezone">Timezone <span className="text-red-500">*</span></Label>
+            <Select 
+              value={formData.timezone} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, timezone: value }))}
+            >
+              <SelectTrigger data-testid="select-timezone">
+                <SelectValue placeholder="Select your timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                <ScrollArea className="h-[300px]">
+                  {TIMEZONE_OPTIONS.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Auto-detected: {Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}
+            </p>
+          </div>
         </div>
         
         {/* Industry */}
