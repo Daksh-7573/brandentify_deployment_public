@@ -811,10 +811,11 @@ console.log("Phase 3 microservices architecture initialized");
 (async () => {
   const server = await registerRoutes(app);
   
-  // Start Musk Pulse automation system (MOVED HERE - executes after server is ready)
-  console.log("Starting Musk Pulse automation system...");
-  muskPulseScheduler.start();
-  console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
+  // DISABLED: Musk Pulse automation system
+  // console.log("Starting Musk Pulse automation system...");
+  // muskPulseScheduler.start();
+  // console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
+  console.log("⚠️  Musk Pulse automation system is DISABLED - no AI pulses will be generated");
 
   // Start Daily Quest Scheduler for quest expiration and assignment
   console.log("Starting Daily Quest Scheduler system...");
@@ -966,8 +967,10 @@ console.log("Phase 3 microservices architecture initialized");
     
     // 🚀 START AUTOMATED SCHEDULERS
     console.log('🎯 Starting automated schedulers...');
-    muskPulseScheduler.start();
-    console.log('✅ Musk Pulse Scheduler started');
+    // DISABLED: Musk Pulse Scheduler
+    // muskPulseScheduler.start();
+    // console.log('✅ Musk Pulse Scheduler started');
+    console.log('⚠️  Musk Pulse Scheduler is DISABLED');
   });
   
   server.on('error', (err) => {
