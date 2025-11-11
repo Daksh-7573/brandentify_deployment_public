@@ -23,9 +23,10 @@ class DailyQuestScheduler {
 
     // Schedule: Every day at 12:01 AM (1 0 * * *)
     this.cronJob = cron.schedule('1 0 * * *', async () => {
-      console.log('[DailyQuestScheduler] 🕛 Starting daily quest expiration check at 12:01 AM UTC...');
-      await this.expirePreviousDayQuests();
+      console.log('[DailyQuestScheduler] 🕛 Starting daily quest assignment at 12:01 AM UTC...');
+      // CRITICAL FIX: Assign new quests BEFORE expiring old ones to prevent empty quest state
       await this.assignNewDailyQuests();
+      await this.expirePreviousDayQuests();
     }, {
       timezone: 'UTC'
     });
