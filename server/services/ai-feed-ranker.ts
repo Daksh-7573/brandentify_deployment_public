@@ -85,6 +85,22 @@ export class AIFeedRanker {
       if (p.industry) summary += ` | Industry: ${p.industry}`;
       if (p.domain) summary += ` | Domain: ${p.domain}`;
       if (p.category) summary += ` | Category: ${p.category}`;
+      
+      // Add content snippet
+      if (p.content) {
+        const contentPreview = p.content.substring(0, 100).replace(/\n/g, ' ');
+        summary += ` | Content: "${contentPreview}${p.content.length > 100 ? '...' : ''}"`;
+      }
+      
+      // Add hashtags
+      if (p.hashtags && p.hashtags.length > 0) {
+        summary += ` | Tags: ${p.hashtags.slice(0, 3).join(', ')}`;
+      }
+      
+      // Add engagement stats
+      const engagement = (p.insightfulCount || 0) + (p.misinformedCount || 0) + (p.comments || 0);
+      summary += ` | Engagement: ${engagement} (${p.insightfulCount || 0}👍 ${p.misinformedCount || 0}👎 ${p.comments || 0}💬)`;
+      
       return summary;
     }).join('\n');
 
@@ -98,9 +114,10 @@ ${pulseSummaries}
 Task: Rank these pulses from MOST to LEAST relevant for this user based on:
 1. Alignment with their industry, domain, and career goals
 2. Usefulness for their target audience and brand goals
-3. Geographic relevance (if location matters)
-4. Professional growth potential
-5. Timeliness and current trends
+3. Content quality and engagement (higher engagement = more valuable)
+4. Geographic relevance (if location matters)
+5. Professional growth potential
+6. Timeliness and current trends
 
 Respond with ONLY a comma-separated list of pulse IDs in order of relevance (most relevant first).
 Example: 12,45,3,67,89
@@ -155,68 +172,66 @@ Your ranking:`;
    * Parse AI ranking response to extract pulse IDs
    */
   private parseAIRankingResponse(response: string, pulses: Pulse[]): number[] {
-    try {
-      // Extract comma-separated numbers
-      const matches = response.match(/\d+/g);
-      if (!matches) {
-        throw new Error('No pulse IDs found in AI response');
-      }
-
-      const rankedIds = matches.map(Number);
-      const validPulseIds = new Set(pulses.map(p => p.id));
-
-      // Filter to only valid pulse IDs and remove duplicates
-      const validRankedIds = [...new Set(rankedIds)].filter(id => validPulseIds.has(id));
-
-      // Add any missing pulses at the end
-      const missingIds = pulses
-        .map(p => p.id)
-        .filter(id => !validRankedIds.includes(id));
-
-      return [...validRankedIds, ...missingIds];
-    } catch (error) {
-      console.error('[AIFeedRanker] Error parsing AI response:', error);
-      // Fallback: return pulses in original order
-      return pulses.map(p => p.id);
+    // Extract comma-separated numbers
+    const matches = response.match(/\d+/g);
+    if (!matches || matches.length === 0) {
+      console.warn('[AIFeedRanker] No pulse IDs found in AI response, using fallback');
+      throw new Error('Invalid AI response format');
     }
+
+    const rankedIds = matches.map(Number);
+    const validPulseIds = new Set(pulses.map(p => p.id));
+
+    // Filter to only valid pulse IDs and remove duplicates
+    const validRankedIds = [...new Set(rankedIds)].filter(id => validPulseIds.has(id));
+
+    if (validRankedIds.length === 0) {
+      console.warn('[AIFeedRanker] No valid pulse IDs in AI response, using fallback');
+      throw new Error('No valid pulse IDs in AI response');
+    }
+
+    // Add any missing pulses at the end
+    const missingIds = pulses
+      .map(p => p.id)
+      .filter(id => !validRankedIds.includes(id));
+
+    return [...validRankedIds, ...missingIds];
   }
 
   /**
    * Apply diversity filter to prevent over-clustering
+   * Enforces: NO 3 consecutive pulses from same author
    */
   private applyDiversityFilter(rankings: RankedPulse[], pulses: Pulse[]): RankedPulse[] {
     const pulseMap = new Map(pulses.map(p => [p.id, p]));
     const result: RankedPulse[] = [];
-    const userIdCounts = new Map<number, number>();
-    const typeCounts = new Map<string, number>();
+    const deferred: RankedPulse[] = []; // Store pulses that break consecutive rule
+    let lastAuthorId: number | null = null;
+    let consecutiveCount = 0;
 
     for (const ranking of rankings) {
       const pulse = pulseMap.get(ranking.pulseId);
       if (!pulse) continue;
 
-      const userCount = userIdCounts.get(pulse.userId) || 0;
-      const typeCount = typeCounts.get(pulse.type) || 0;
-
-      // Allow max 3 consecutive pulses from same user
-      if (userCount >= 3) {
-        // Skip this pulse for now, will add at end
-        continue;
-      }
-
-      // Ensure variety of content types (max 5 of same type in top 20)
-      if (result.length < 20 && typeCount >= 5) {
-        continue;
+      // Check if this would be the 3rd consecutive from same author
+      if (pulse.userId === lastAuthorId) {
+        consecutiveCount++;
+        if (consecutiveCount >= 3) {
+          // Defer this pulse to break the consecutive streak
+          deferred.push(ranking);
+          continue;
+        }
+      } else {
+        // Different author, reset counter
+        consecutiveCount = 1;
+        lastAuthorId = pulse.userId;
       }
 
       result.push(ranking);
-      userIdCounts.set(pulse.userId, userCount + 1);
-      typeCounts.set(pulse.type, typeCount + 1);
     }
 
-    // Add any skipped pulses at the end
-    const addedIds = new Set(result.map(r => r.pulseId));
-    const skipped = rankings.filter(r => !addedIds.has(r.pulseId));
-    result.push(...skipped);
+    // Append deferred pulses at the end (maintaining their AI ranking order)
+    result.push(...deferred);
 
     return result;
   }

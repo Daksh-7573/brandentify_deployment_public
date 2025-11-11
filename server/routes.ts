@@ -68,6 +68,9 @@ import { createUserUpdateRoutes } from "./routes-user-update";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
+import { UserContextBuilder } from "./services/user-context-builder.js";
+import { AIFeedRanker } from "./services/ai-feed-ranker.js";
+import { feedCache } from "./services/feed-cache.js";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute } from "./auth-oauth-routes";
 import { 
   handleSmartConnect, 
@@ -4092,32 +4095,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // GET /api/pulses - Get all pulses for the industry pulse feed (includes personalized pulses)
+  // GET /api/pulses - Get all pulses for the industry pulse feed (AI-powered personalization)
   apiRouter.get("/pulses", async (req: Request, res: Response) => {
     try {
       // Get logged-in user ID from authenticated session OR query params (fallback)
       const userId = (req as any).user?.id || (req.query.userId ? parseInt(req.query.userId as string) : undefined);
+      const forceRefresh = req.query.refresh === 'true'; // Allow manual cache invalidation
       
-      console.log(`[GET /pulses] Fetching pulses for authenticated user: ${userId || 'anonymous'}`);
+      console.log(`[GET /pulses] Fetching pulses for user: ${userId || 'anonymous'}, forceRefresh: ${forceRefresh}`);
       
-      // Fetch pulses with personalization support
+      // Fetch all available pulses
       const pulses = await storage.getPulses(userId);
       
-      // Get user data for each pulse to display in the UI
+      if (!userId || pulses.length === 0) {
+        // No user or no pulses - return unranked pulses
+        const pulsesWithUserData = await Promise.all(
+          pulses.map(async (pulse) => {
+            const user = await storage.getUser(pulse.userId);
+            return {
+              ...pulse,
+              user: user ? { name: user.name, photoURL: user.photoURL } : undefined
+            };
+          })
+        );
+        console.log(`[GET /pulses] Returning ${pulses.length} unranked pulses`);
+        return res.json(pulsesWithUserData);
+      }
+      
+      // Check cache first (unless force refresh requested)
+      if (!forceRefresh) {
+        const cachedResult = feedCache.get(userId);
+        if (cachedResult) {
+          // Re-hydrate cached rankings with user data
+          const cachedPulseIds = new Set(cachedResult.rankedPulseIds);
+          const rankedPulses = cachedResult.rankedPulseIds
+            .map(id => pulses.find(p => p.id === id))
+            .filter(Boolean);
+          
+          // CRITICAL FIX: Append NEW pulses not in cache to maintain freshness
+          const newPulses = pulses.filter(p => !cachedPulseIds.has(p.id));
+          if (newPulses.length > 0) {
+            console.log(`[GET /pulses] Appending ${newPulses.length} new pulses to cached ranking`);
+            rankedPulses.push(...newPulses);
+          }
+          
+          const pulsesWithUserData = await Promise.all(
+            rankedPulses.map(async (pulse: any) => {
+              const user = await storage.getUser(pulse.userId);
+              return {
+                ...pulse,
+                user: user ? { name: user.name, photoURL: user.photoURL } : undefined
+              };
+            })
+          );
+          
+          console.log(`[GET /pulses] Returning ${pulsesWithUserData.length} cached AI-ranked pulses (${newPulses.length} new)`);
+          return res.json(pulsesWithUserData);
+        }
+      }
+      
+      // No cache or force refresh - rank with AI
+      console.log(`[GET /pulses] Ranking ${pulses.length} pulses with AI for user ${userId}`);
+      const contextBuilder = new UserContextBuilder(storage);
+      const aiRanker = new AIFeedRanker(contextBuilder);
+      const rankingResult = await aiRanker.rankFeedForUser(userId, pulses);
+      
+      // Cache the result
+      feedCache.set(userId, rankingResult);
+      
+      // Re-order pulses according to AI ranking
+      const rankedPulses = rankingResult.rankedPulseIds
+        .map(id => pulses.find(p => p.id === id))
+        .filter(Boolean);
+      
+      // Add user data
       const pulsesWithUserData = await Promise.all(
-        pulses.map(async (pulse) => {
+        rankedPulses.map(async (pulse: any) => {
           const user = await storage.getUser(pulse.userId);
           return {
             ...pulse,
-            user: user ? {
-              name: user.name,
-              photoURL: user.photoURL
-            } : undefined
+            user: user ? { name: user.name, photoURL: user.photoURL } : undefined
           };
         })
       );
       
-      console.log(`[GET /pulses] Found ${pulses.length} pulses for user ${userId || 'public'}`);
+      console.log(`[GET /pulses] Returning ${pulsesWithUserData.length} AI-ranked pulses (usedAI: ${rankingResult.usedAI})`);
       res.json(pulsesWithUserData);
     } catch (error) {
       console.error('[GET /pulses] Error fetching pulses:', error);
@@ -4331,6 +4393,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newPulse = await storage.createPulse(pulseData);
       console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
       
+      // CACHE INVALIDATION: New pulse means all feeds should be re-ranked
+      feedCache.invalidateAll();
+      console.log('[POST /pulses] Invalidated all feed caches for fresh content');
+      
       // Get the user data to return with the response
       console.log('[POST /pulses] Fetching user data...');
       const user = await storage.getUser(newPulse.userId);
@@ -4405,6 +4471,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newComment = await storage.createPulseComment(commentData);
       
       console.log(`[POST /pulse-comments] Created new comment with ID: ${newComment.id}`);
+      
+      // CACHE INVALIDATION: User's engagement affects their personalized feed
+      feedCache.invalidate(commentData.userId);
+      console.log(`[POST /pulse-comments] Invalidated feed cache for user ${commentData.userId}`);
       
       // Recalculate reach_score: (comments × 3) + insightful - misinformed
       await pool.query(`
@@ -7348,6 +7418,10 @@ ${extractedText.substring(0, 5000)}
       `, [pulseId, userId, reactionType]);
       
       console.log(`[POST /pulse-reactions] Created reaction:`, result.rows[0]);
+      
+      // CACHE INVALIDATION: User's engagement affects their personalized feed
+      feedCache.invalidate(userId);
+      console.log(`[POST /pulse-reactions] Invalidated feed cache for user ${userId}`);
       
       // Update pulse count using conditional SQL
       if (reactionType === "insightful") {
