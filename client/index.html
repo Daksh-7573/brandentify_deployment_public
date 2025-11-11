@@ -6,6 +6,30 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  
+  <!-- EMERGENCY CACHE BUSTER - Forces browser to reload fresh code -->
+  <script>
+    (function() {
+      const CACHE_VERSION = 'v2024111101'; // Updated version
+      const currentVersion = localStorage.getItem('app_cache_version');
+      
+      if (currentVersion !== CACHE_VERSION) {
+        console.log('🔥 CACHE CLEAR: Detected old version, forcing hard reload...');
+        localStorage.setItem('app_cache_version', CACHE_VERSION);
+        
+        // Clear all caches
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            names.forEach(name => caches.delete(name));
+          });
+        }
+        
+        // Force hard reload with cache bypass
+        window.location.reload(true);
+      }
+    })();
+  </script>
+  
   <title>Brandentifier - Professional Networking & AI-Powered Career Platform</title>
   
   <!-- Enhanced Preconnect & DNS-Prefetch for Maximum Performance -->
