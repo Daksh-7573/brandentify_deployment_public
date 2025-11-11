@@ -1281,6 +1281,21 @@ export default function IndustryPulsePage() {
   const { user } = useAuth();
   const userId = user?.id || 1;
   
+  // Clear localStorage cache for pulses on mount to ensure fresh data
+  useEffect(() => {
+    try {
+      // Clear all pulse-related cache keys
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('api_cache_/api/pulses')) {
+          localStorage.removeItem(key);
+          console.log('Cleared pulse cache:', key);
+        }
+      });
+    } catch (error) {
+      console.error('Error clearing pulse cache:', error);
+    }
+  }, []); // Run once on mount
+  
   // Smart refresh state
   const [hasNewContent, setHasNewContent] = useState(false);
   const [hasPremiumContent, setHasPremiumContent] = useState(false);
