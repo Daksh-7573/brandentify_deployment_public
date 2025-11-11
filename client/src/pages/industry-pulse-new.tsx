@@ -1262,14 +1262,14 @@ export default function IndustryPulsePage() {
   };
   
   // Filter pulses based on the active tab
+  // IMPORTANT: Hide all Musk Pulses (news-pulse type, userId 3)
   const filteredPulses = pulses.filter((pulse: PulseWithUser) => {
+    // First, exclude all Musk Pulses (news-pulse type OR userId 3)
+    const isMuskPulse = (pulse.type as string) === "news-pulse" || pulse.userId === 3;
+    if (isMuskPulse) return false;
+    
+    // Then apply tab filtering
     if (activeTab === "all") return true;
-    
-    if (activeTab === "musk-news") {
-      // Filter for news pulses specifically from Musk (userId 3 is Musk in our system)
-      return (pulse.type as string) === "news-pulse" && pulse.userId === 3;
-    }
-    
     return pulse.type === activeTab;
   });
 
@@ -1332,9 +1332,6 @@ export default function IndustryPulsePage() {
                   <TabsTrigger value="media-pulse" className="dark-tabs-trigger">Media</TabsTrigger>
                   <TabsTrigger value="poll" className="dark-tabs-trigger">Polls</TabsTrigger>
                   <TabsTrigger value="project" className="dark-tabs-trigger">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="dark-tabs-trigger">
-                    Musk ⚡
-                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value={activeTab}>
@@ -1355,27 +1352,15 @@ export default function IndustryPulsePage() {
                         <p className="text-center text-white/70 max-w-md mb-6">
                           {activeTab === "all" 
                             ? "Be the first to create a pulse in your professional network!" 
-                            : activeTab === "musk-news" 
-                              ? "No Musk news updates available yet. Check back later for the latest insights!" 
-                              : `No ${activeTab} pulses available yet. Create one to get started!`}
+                            : `No ${activeTab} pulses available yet. Create one to get started!`}
                         </p>
-                        {activeTab === "musk-news" ? (
-                          <button 
-                            onClick={() => setActiveTab("all")} 
-                            className="neo-glass-button flex items-center gap-2 py-2 px-4"
-                          >
-                            <Newspaper className="w-4 h-4 mr-2" />
-                            <span>View All Pulses</span>
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => setLocation("/create-pulse")} 
-                            className="neo-glass-button flex items-center gap-2 py-2 px-4"
-                          >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Create Your First Pulse
-                          </button>
-                        )}
+                        <button 
+                          onClick={() => setLocation("/create-pulse")} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Create Your First Pulse
+                        </button>
                       </div>
                     </NeoGlassSection>
                   ) : (
