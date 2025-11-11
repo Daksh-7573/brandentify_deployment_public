@@ -22,6 +22,45 @@ import { updateQuestProgress as serviceUpdateQuestProgress } from './services/qu
 // Import social quest template engine
 import { socialQuestTemplateEngine } from './services/social-quest-template-engine';
 
+// Helper function to classify quest types
+function isCareerQuest(quest: any): boolean {
+  const socialPlatforms = ['linkedin', 'instagram', 'twitter', 'facebook', 'youtube', 'tiktok', 'medium', 'pinterest'];
+  const questType = quest.type || quest.definition?.type;
+  const platform = quest.platform || quest.definition?.platform;
+  
+  // Exclude if it's explicitly a social_quest or social_post type
+  if (questType === 'social_quest' || questType === 'social_post') {
+    return false;
+  }
+  
+  // Exclude if the platform is a social media platform
+  if (platform && socialPlatforms.includes(platform.toLowerCase())) {
+    return false;
+  }
+  
+  // Include all other Brandentifier platform activities
+  return true;
+}
+
+function isSocialQuest(quest: any): boolean {
+  const socialPlatforms = ['linkedin', 'instagram', 'twitter', 'facebook', 'youtube', 'tiktok', 'medium', 'pinterest'];
+  const questType = quest.type || quest.definition?.type;
+  const platform = quest.platform || quest.definition?.platform;
+  
+  // Include if it's explicitly a social_quest or social_post type
+  if (questType === 'social_quest' || questType === 'social_post') {
+    return true;
+  }
+  
+  // Include if the platform is a social media platform
+  if (platform && socialPlatforms.includes(platform.toLowerCase())) {
+    return true;
+  }
+  
+  // Exclude all other quests
+  return false;
+}
+
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // TEST ENDPOINT: Direct database query to debug personalized quests
   apiRouter.get("/test-personalized-quest/:userId", async (req, res) => {
@@ -912,15 +951,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             platformConstraints: row.platformConstraints,
             guidanceSnippet: row.guidanceSnippet
           }
-        }));
+        })).filter(isCareerQuest);
       } else if (bucket === 'completed') {
         // Get completed user quests WITH definitions (like social quests)
         const allQuests = await storage.getUserQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'completed');
+        quests = allQuests.filter((q: any) => q.status === 'completed' && isCareerQuest(q));
       } else if (bucket === 'missed') {
         // Get all user quests WITH definitions and filter by expired/dismissed status
         const allQuests = await storage.getUserQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'expired' || q.status === 'dismissed');
+        quests = allQuests.filter((q: any) => (q.status === 'expired' || q.status === 'dismissed') && isCareerQuest(q));
       }
 
       res.json(quests || []);
