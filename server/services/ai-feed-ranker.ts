@@ -111,15 +111,25 @@ ${userSummary}
 Available Pulses:
 ${pulseSummaries}
 
-Task: Rank these pulses from MOST to LEAST relevant for this user based on:
-1. Alignment with their industry, domain, and career goals
-2. Usefulness for their target audience and brand goals
-3. Content quality and engagement (higher engagement = more valuable)
-4. Geographic relevance (if location matters)
-5. Professional growth potential
-6. Timeliness and current trends
+CRITICAL: Rank pulses by CAREER IMPORTANCE, not engagement preference.
 
-Respond with ONLY a comma-separated list of pulse IDs in order of relevance (most relevant first).
+Ranking Priority (in order):
+1. CAREER GOAL ALIGNMENT & SKILL GAPS: Pulses that directly advance their career goals, teach missing skills, or fill knowledge gaps (HIGHEST PRIORITY)
+2. STRATEGIC OPPORTUNITIES: Industry trends, senior-level guidance, challenging content, leadership insights, emerging technologies in their domain
+3. CONTEXTUAL FIT: Industry/domain match, geographic relevance, target audience alignment
+4. TIMELINESS: Recent posts and current events (freshness matters)
+5. ENGAGEMENT (TIE-BREAKER ONLY): Only use engagement stats to break ties between equally valuable content
+
+IMPORTANT INSTRUCTIONS:
+- Do NOT favor "comfortable" or "familiar" content just because the user engaged with it before
+- Do NOT prioritize entertainment over education
+- DO prioritize content that challenges the user to grow professionally
+- DO surface content that might be outside their comfort zone if it helps career advancement
+- DO rank difficult/advanced content higher if it matches their career goals
+
+Example: If user is a junior developer who clicks on memes, STILL rank senior engineering advice higher than memes.
+
+Respond with ONLY a comma-separated list of pulse IDs in order of CAREER VALUE (most valuable first).
 Example: 12,45,3,67,89
 
 Your ranking:`;

@@ -4132,11 +4132,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             .map(id => pulses.find(p => p.id === id))
             .filter(Boolean);
           
-          // CRITICAL FIX: Append NEW pulses not in cache to maintain freshness
+          // CRITICAL FIX: PREPEND new pulses at TOP for maximum freshness
           const newPulses = pulses.filter(p => !cachedPulseIds.has(p.id));
           if (newPulses.length > 0) {
-            console.log(`[GET /pulses] Appending ${newPulses.length} new pulses to cached ranking`);
-            rankedPulses.push(...newPulses);
+            // Sort new pulses by creation date (newest first)
+            const sortedNewPulses = newPulses.sort((a, b) => 
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+            console.log(`[GET /pulses] PREPENDING ${sortedNewPulses.length} new pulses at TOP of cached ranking`);
+            rankedPulses.unshift(...sortedNewPulses);
           }
           
           const pulsesWithUserData = await Promise.all(
