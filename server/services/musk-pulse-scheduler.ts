@@ -6,13 +6,13 @@
  * - Event-driven generation based on user activity and industry trends
  */
 
-import cron, { ScheduledTask } from 'node-cron';
+import * as cron from 'node-cron';
 import { muskPulseGenerator } from './musk-pulse-generator';
 import { personalizedMuskPulseGenerator } from './personalized-musk-pulse-generator';
 
 export class MuskPulseScheduler {
   private scheduleIntervals: NodeJS.Timeout[] = [];
-  private cronJobs: ScheduledTask[] = [];
+  private cronJobs: cron.ScheduledTask[] = [];
   private isRunning = false;
   private usePersonalization = true; // Toggle for personalized vs shared pulses
 
