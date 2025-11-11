@@ -321,6 +321,8 @@ export interface IStorage {
   getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined>;
   createPulseReaction(reaction: InsertPulseReaction): Promise<PulseReaction>;
   deletePulseReaction(id: number): Promise<boolean>;
+  getUserReactions(userId: number, limit: number): Promise<PulseReaction[]>;
+  getUserComments(userId: number, limit: number): Promise<any[]>;
   
   // User Reaction Quota operations
   getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined>;
@@ -3192,6 +3194,44 @@ export class MemStorage implements IStorage {
     } catch (error) {
       console.error('[db.deletePulseReaction] Error:', error);
       return false;
+    }
+  }
+  
+  // Get recent reactions by user (for AI feed personalization)
+  async getUserReactions(userId: number, limit: number): Promise<PulseReaction[]> {
+    try {
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE user_id = $1 
+        ORDER BY created_at DESC
+        LIMIT $2
+      `, [userId, limit]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getUserReactions] Error:', error);
+      return [];
+    }
+  }
+  
+  // Get recent comments by user (for AI feed personalization)
+  async getUserComments(userId: number, limit: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId",
+               content, created_at as "createdAt"
+        FROM pulse_comments 
+        WHERE user_id = $1 
+        ORDER BY created_at DESC
+        LIMIT $2
+      `, [userId, limit]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getUserComments] Error:', error);
+      return [];
     }
   }
   
