@@ -230,9 +230,9 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       
       if (!hasRemainingQuota) {
         toast({
-          title: "⚠️ Daily limit reached",
+          title: "Daily limit reached",
           description: `You've used all your ${reactionType} reactions for today (${quota?.max})`,
-          variant: "default",
+          variant: "warning",
         });
         return;
       }
@@ -245,9 +245,9 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
   const handleShareSubmit = () => {
     if (!shareRecipientId) {
       toast({
-        title: "⚠️ Select a recipient",
+        title: "Select a recipient",
         description: "Please select a recipient to share with",
-        variant: "default",
+        variant: "warning",
       });
       return;
     }
@@ -858,15 +858,13 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
       }
       return undefined;
     },
-  });
-  
-  // TanStack Query v5: Replace onSuccess with useEffect
-  useEffect(() => {
-    if (project) {
-      setLocalProject(project);
+    
+    // Initialize the UI with partial data immediately
+    onSuccess: (data) => {
+      setLocalProject(data);
       setInitialLoad(false);
     }
-  }, [project]);
+  });
   
   // Fast parallel fetch outside React Query for faster initial render
   useEffect(() => {
@@ -986,6 +984,293 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
       )} />
       <span className="font-medium">New posts available</span>
     </button>
+  );
+}
+
+export default function IndustryPulsePage() {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  
+  // State for the share dialog
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
+  const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
+  
+  // Get user reaction quota
+  const { data: quotaData } = useQuery<any>({
+    queryKey: [`/api/users/${userId}/reaction-quota`],
+  });
+  
+  // Get user's reactions for this pulse
+  const { data: userReactionData, refetch: refetchUserReactions } = useQuery<any>({
+    queryKey: [`/api/pulses/${pulse.id}/reactions`],
+  });
+  
+  // Determine if user has already reacted to this pulse
+  const hasInsightfulReaction = userReactionData?.some(
+    (reaction: any) => reaction.userId === userId && reaction.reactionType === "insightful"
+  );
+  
+  const hasMisinformedReaction = userReactionData?.some(
+    (reaction: any) => reaction.userId === userId && reaction.reactionType === "misinformed"
+  );
+  
+  // Mutation for creating reactions
+  const reactionMutation = useMutation({
+    mutationFn: async (reactionType: "insightful" | "misinformed") => {
+      const res = await apiRequest("POST", "/api/pulse-reactions", {
+        userId,
+        pulseId: pulse.id,
+        reactionType
+      });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      // Invalidate queries to refresh reaction data
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: data.reaction.reactionType === "insightful" 
+          ? "Marked as Insightful! 🔥" 
+          : "Flagged as Misinformed ⚠️",
+        description: `Daily usage: ${data.quota.used}/${data.quota.max}`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to react",
+        description: 'Error submitting your reaction',
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for deleting reactions
+  const deleteReactionMutation = useMutation({
+    mutationFn: async (reactionId: number) => {
+      const res = await apiRequest("DELETE", `/api/pulse-reactions/${reactionId}`);
+      return res.ok;
+    },
+    onSuccess: () => {
+      // Invalidate queries to refresh reaction data
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: "Reaction removed",
+        description: "Your reaction has been removed",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to remove reaction",
+        description: 'Error removing your reaction',
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for sharing pulses
+  const shareMutation = useMutation({
+    mutationFn: async () => {
+      if (!shareRecipientId) throw new Error("No recipient selected");
+      
+      const res = await apiRequest("POST", "/api/pulse-shares", {
+        pulseId: pulse.id,
+        senderId: userId,
+        recipientId: shareRecipientId,
+        message: shareMessage
+      });
+      return await res.json();
+    },
+    onSuccess: () => {
+      setIsShareDialogOpen(false);
+      setShareMessage("");
+      setShareRecipientId(null);
+      
+      // Invalidate queries to refresh share data
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: "Pulse shared successfully",
+        description: "The recipient will be notified",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to share pulse",
+        description: 'Error sharing the pulse',
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Handle reaction button click
+  const handleReaction = (reactionType: "insightful" | "misinformed") => {
+    const userReactions = userReactionData || [];
+    const existingReaction = userReactions.find(
+      (reaction: any) => reaction.userId === userId && reaction.reactionType === reactionType
+    );
+    
+    if (existingReaction) {
+      // Remove existing reaction
+      deleteReactionMutation.mutate(existingReaction.id);
+    } else {
+      // Check quota and add new reaction
+      const quota = quotaData?.[reactionType];
+      const hasRemainingQuota = quota?.remaining > 0;
+      
+      if (!hasRemainingQuota) {
+        toast({
+          title: "Daily limit reached",
+          description: `You've used all your ${reactionType} reactions for today (${quota?.max})`,
+          variant: "warning",
+        });
+        return;
+      }
+      
+      reactionMutation.mutate(reactionType);
+    }
+  };
+  
+  // Handle share button click
+  const handleShareSubmit = () => {
+    if (!shareRecipientId) {
+      toast({
+        title: "Select a recipient",
+        description: "Please select a recipient to share with",
+        variant: "warning",
+      });
+      return;
+    }
+    
+    shareMutation.mutate();
+  };
+  
+  // React query gives us loading states
+  const isLoading = reactionMutation.isPending || deleteReactionMutation.isPending || shareMutation.isPending;
+  
+  // Format counts with abbreviations for large numbers
+  const formatCount = (count: number = 0) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    }
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
+  };
+  
+  return (
+    <div className="flex flex-wrap gap-2">
+      {/* Insightful Button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant={hasInsightfulReaction ? "default" : "ghost"} 
+              size="sm" 
+              disabled={isLoading}
+              className={`${hasInsightfulReaction ? "bg-amber-600 hover:bg-amber-700" : "text-muted-foreground"}`}
+              onClick={() => handleReaction("insightful")}
+            >
+              <Flame className={`h-4 w-4 mr-2 ${hasInsightfulReaction ? "text-white" : ""}`} />
+              {formatCount(pulse.insightfulCount || 0)}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Mark as Insightful 🔥</p>
+            {quotaData && (
+              <p className="text-xs mt-1">Remaining: {quotaData.insightful?.remaining}/{quotaData.insightful?.max}</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {/* Misinformed Button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant={hasMisinformedReaction ? "default" : "ghost"} 
+              size="sm" 
+              disabled={isLoading}
+              className={`${hasMisinformedReaction ? "bg-red-600 hover:bg-red-700" : "text-muted-foreground"}`}
+              onClick={() => handleReaction("misinformed")}
+            >
+              <AlertTriangle className={`h-4 w-4 mr-2 ${hasMisinformedReaction ? "text-white" : ""}`} />
+              {formatCount(pulse.misinformedCount || 0)}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Flag as Misinformed ⚠️</p>
+            {quotaData && (
+              <p className="text-xs mt-1">Remaining: {quotaData.misinformed?.remaining}/{quotaData.misinformed?.max}</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {/* Share Button */}
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Share className="h-4 w-4 mr-2" />
+            {formatCount(pulse.shareCount || 0)}
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share this pulse</DialogTitle>
+            <DialogDescription>
+              Share this pulse with another user in your network.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="recipient">Recipient</Label>
+              {/* This would be replaced with a proper user search/select */}
+              <select 
+                id="recipient" 
+                className="w-full rounded-md border border-input p-2"
+                value={shareRecipientId || ""}
+                onChange={(e) => setShareRecipientId(Number(e.target.value) || null)}
+              >
+                <option value="">Select a user</option>
+                <option value="1">Demo User</option>
+                {userId !== 1 && <option value="1">Senior Professional</option>}
+                {userId !== 2 && user && <option value="2">{user.name || user.username}</option>}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message">Message (optional)</Label>
+              <Input
+                id="message"
+                placeholder="Add a message..."
+                value={shareMessage}
+                onChange={(e) => setShareMessage(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleShareSubmit} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Share
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Comments Button */}
+      <Button variant="ghost" size="sm" className="text-muted-foreground">
+        <MessageSquare className="h-4 w-4 mr-2" />
+        {formatCount(pulse.comments || 0)}
+      </Button>
+    </div>
   );
 }
 
