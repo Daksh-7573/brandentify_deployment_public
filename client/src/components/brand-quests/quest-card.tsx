@@ -330,7 +330,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType}</span>
               </div>
             )}
-            {/* Show Type for career quests, Platform for social quests */}
+            {/* Show detailed Type for career quests, Platform for social quests */}
             {questDefinition.type && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 {questDefinition.type === 'social_quest' || questDefinition.type === 'social_post' ? (
@@ -341,7 +341,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 ) : (
                   <>
                     <span className="font-semibold">📋 Type:</span>
-                    <span className="capitalize">{questDefinition.type.replace(/_/g, ' ')}</span>
+                    <span className="capitalize">
+                      {questDefinition.type.replace(/_/g, ' ')}
+                      {questDefinition.targetAction && questDefinition.targetAction !== 'default' && (
+                        <span className="text-blue-300"> - {questDefinition.targetAction.replace(/_/g, ' ').replace(/add |create |update /gi, '').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</span>
+                      )}
+                    </span>
                   </>
                 )}
               </div>
