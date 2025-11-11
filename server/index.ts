@@ -808,29 +808,29 @@ messageQueue.registerHandler(TaskTypes.USER_ACTIVITY_LOG, async (payload) => {
 
 console.log("Phase 3 microservices architecture initialized");
 
-// Start Musk Pulse automation system
-console.log("Starting Musk Pulse automation system...");
-muskPulseScheduler.start();
-console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
-
-// Start Daily Quest Scheduler for quest expiration and assignment
-console.log("Starting Daily Quest Scheduler system...");
-dailyQuestScheduler.startScheduler();
-console.log("Daily Quest Scheduler started - expiring previous day quests and assigning new daily quests at 12:01 AM UTC");
-
-// Start Trend Intelligence Refresh Scheduler for market trend tracking
-console.log("Starting Trend Intelligence Refresh Scheduler...");
-trendRefreshScheduler.startScheduler();
-console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
-
-// Start Trend Spike Scheduler for instant quest generation
-// DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
-// console.log("Starting Trend Spike Scheduler for instant quests...");
-// trendSpikeScheduler.start();
-// console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
-
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Start Musk Pulse automation system (MOVED HERE - executes after server is ready)
+  console.log("Starting Musk Pulse automation system...");
+  muskPulseScheduler.start();
+  console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
+
+  // Start Daily Quest Scheduler for quest expiration and assignment
+  console.log("Starting Daily Quest Scheduler system...");
+  dailyQuestScheduler.startScheduler();
+  console.log("Daily Quest Scheduler started - expiring previous day quests and assigning new daily quests at 12:01 AM UTC");
+
+  // Start Trend Intelligence Refresh Scheduler for market trend tracking
+  console.log("Starting Trend Intelligence Refresh Scheduler...");
+  trendRefreshScheduler.startScheduler();
+  console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
+
+  // Start Trend Spike Scheduler for instant quest generation
+  // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
+  // console.log("Starting Trend Spike Scheduler for instant quests...");
+  // trendSpikeScheduler.start();
+  // console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
   
   // 🚀 DAILY QUEST AUTO-GENERATION - Runs in background (non-blocking)
   console.log("========================================");
