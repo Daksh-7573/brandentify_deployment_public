@@ -1278,15 +1278,17 @@ export default function IndustryPulsePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const userId = user?.id || 1;
   
   // Smart refresh state
   const [hasNewContent, setHasNewContent] = useState(false);
   const [hasPremiumContent, setHasPremiumContent] = useState(false);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Fetch all pulses
+  // Fetch all pulses (including personalized Musk Pulses for this user)
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
-    queryKey: ["/api/pulses"],
+    queryKey: [`/api/pulses?userId=${userId}`],
     // @ts-ignore - onSuccess is valid but TS is complaining
     onSuccess: (data: PulseWithUser[]) => {
       // Initialize project cache for faster loading
