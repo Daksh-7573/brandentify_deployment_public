@@ -992,15 +992,16 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
 
       if (bucket === 'daily') {
         // Get today's active social quests (note: will need to add definitions separately)
-        quests = await storage.getCurrentDaySocialQuests(userId);
+        const dailyQuests = await storage.getCurrentDaySocialQuests(userId);
+        quests = dailyQuests.filter(isSocialQuest);
       } else if (bucket === 'completed') {
         // Get all user social quests with definitions and filter by completed status
         const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'completed');
+        quests = allQuests.filter((q: any) => q.status === 'completed' && isSocialQuest(q));
       } else if (bucket === 'missed') {
         // Get all user social quests with definitions and filter by expired/dismissed status
         const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'expired' || q.status === 'dismissed');
+        quests = allQuests.filter((q: any) => (q.status === 'expired' || q.status === 'dismissed') && isSocialQuest(q));
       }
 
       res.json(quests || []);
