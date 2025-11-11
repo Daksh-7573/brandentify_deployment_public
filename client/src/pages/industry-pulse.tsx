@@ -1408,15 +1408,14 @@ export default function IndustryPulsePage() {
   };
   
   // Filter pulses based on the active tab
+  // IMPORTANT: Hide all Musk Pulses (news-pulse type, userId 3)
   const filteredPulses = pulses.filter((pulse: PulseWithUser) => {
+    // First, exclude all Musk Pulses (news-pulse type OR userId 3)
+    const isMuskPulse = (pulse.type as string) === "news-pulse" || pulse.userId === 3;
+    if (isMuskPulse) return false;
+    
+    // Then apply tab filtering
     if (activeTab === "all") return true;
-    
-    if (activeTab === "musk-news") {
-      // Filter for news pulses specifically from Musk (userId 3 is Musk in our system)
-      // Need to use type assertion for TypeScript since "news-pulse" isn't in the basic types
-      return (pulse.type as string) === "news-pulse" && pulse.userId === 3;
-    }
-    
     return pulse.type === activeTab;
   });
 
@@ -1473,16 +1472,11 @@ export default function IndustryPulsePage() {
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
               <div className="mb-4 sm:mb-6 w-full overflow-x-auto tabs-container-mobile">
-                <TabsList className="grid w-full grid-cols-5 h-auto p-1 tabs-list-mobile">
+                <TabsList className="grid w-full grid-cols-4 h-auto p-1 tabs-list-mobile">
                   <TabsTrigger value="all" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">All</TabsTrigger>
                   <TabsTrigger value="poll" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Polls</TabsTrigger>
                   <TabsTrigger value="media-pulse" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Media</TabsTrigger>
                   <TabsTrigger value="project" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="flex items-center justify-center gap-1 text-xs px-1 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">
-                    <span className="text-amber-500">⚡</span> 
-                    <span className="hidden sm:inline">Musk </span>
-                    <span>News</span>
-                  </TabsTrigger>
                 </TabsList>
               </div>
               
@@ -1504,19 +1498,11 @@ export default function IndustryPulsePage() {
                       <p className="text-center text-muted-foreground max-w-md mb-6">
                         {activeTab === "all" 
                           ? "Be the first to create a pulse in your professional network!" 
-                          : activeTab === "musk-news" 
-                            ? "No Musk news updates available yet. Check back later for the latest insights!" 
-                            : `No ${activeTab} pulses available yet. Create one to get started!`}
+                          : `No ${activeTab} pulses available yet. Create one to get started!`}
                       </p>
-                      {activeTab === "musk-news" ? (
-                        <Button variant="outline" onClick={() => setActiveTab("all")}>
-                          View All Pulses
-                        </Button>
-                      ) : (
-                        <Button onClick={() => setLocation("/create-pulse")}>
-                          Create Your First Pulse
-                        </Button>
-                      )}
+                      <Button onClick={() => setLocation("/create-pulse")}>
+                        Create Your First Pulse
+                      </Button>
                     </CardContent>
                   </Card>
                 ) : (
