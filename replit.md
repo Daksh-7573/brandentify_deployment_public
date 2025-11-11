@@ -3,6 +3,11 @@
 ## Overview
 Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform leverages local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth.
 
+## Recent Changes (Nov 11, 2024)
+- **Musk Pulse Feature Disabled**: Completely removed Musk AI news pulse automation and UI tab from Industry Pulse page per user request
+- **Code Cleanup**: Removed 3 duplicate/unused Industry Pulse page files (industry-pulse.tsx, industry-pulse-BACKUP.tsx, industry-pulse-optimized.tsx)
+- **Active File**: `client/src/pages/industry-pulse-new.tsx` is the single source of truth for Industry Pulse feature
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
@@ -27,11 +32,11 @@ Preferred communication style: Simple, everyday language.
 - **Fallback AI Provider**: Optional OpenAI for critical operations.
 - **Caching**: Redis-based response caching.
 - **Security**: AI prompt injection protection, content moderation.
-- **Core AI Features**: Musk AI Assistant, Resume Analysis, Career Insights, Hashtag Suggestions, Predictive Modeling, Cross-User Intelligence, Emotional Intelligence, Cohort-Based Recommendations.
+- **Core AI Features**: Resume Analysis, Career Insights, Hashtag Suggestions, Predictive Modeling, Cross-User Intelligence, Emotional Intelligence, Cohort-Based Recommendations.
 - **AI Personalization**: Dynamic Persona Switching (Mentor, Strategist, Coach), Proactive Suggestion Engine, Learning Pattern Recognition, Conversation Memory with context-aware responses.
 - **Enhanced Personalization**: AI chat responses and follow-up questions use actual user profile data (work experience, skills, education, projects, CV) with token-capping formatter utilities.
 - **OpenAI to Ollama Migration**: All 8 critical AI services (pulse generation, hashtag suggestions, resume parsing, profile analysis, title suggestions, milestone generation, reference resolution, model switching) migrated to Ollama for cost savings, with graceful OpenAI fallback.
-- **Personalized Musk Pulse System**: Automated, per-user personalized news pulse generation (3x daily in local timezone) based on user's profile, industry, domain, career goals, location, and interests using Ollama.
+- **Musk Pulse System**: DISABLED per user request - Backend automation stopped, UI tab removed, all Musk pulses filtered from feed.
 
 ### Key Components
 - **User Management**: Comprehensive profiles, secure JWT auth, gamified profile building.
