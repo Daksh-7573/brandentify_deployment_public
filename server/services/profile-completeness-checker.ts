@@ -157,7 +157,10 @@ export class ProfileCompletenessChecker {
     const industry = user.industry?.toLowerCase() || '';
     const domain = user.domain?.toLowerCase() || '';
     const location = user.location?.toLowerCase() || '';
-    const primaryAudience = user.primaryAudience?.toLowerCase() || '';
+    // Handle primaryAudience as array (join with space before lowercasing)
+    const primaryAudience = Array.isArray(user.primaryAudience) 
+      ? user.primaryAudience.join(' ').toLowerCase()
+      : (user.primaryAudience?.toLowerCase() || '');
     
     // Extract keywords from field value
     const fieldTokens = valueStr.split(/[\s,]+/);

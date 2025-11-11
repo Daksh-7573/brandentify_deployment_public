@@ -17,9 +17,9 @@ import { localAIService } from './local-ai-service';
 import { 
   PLATFORM_ACTIVITIES, 
   PlatformActivity,
-  checkProfileCompleteness, 
   getRecommendedQuestType 
 } from './platform-activity-mapper';
+import { ProfileCompletenessChecker, ProfileCompletenessResult, FieldAlignmentStatus } from './profile-completeness-checker';
 
 export interface DetailedPersonalizedQuest {
   type: string;
@@ -49,12 +49,12 @@ export class ComprehensiveQuestGeneratorV2 {
     questDefinitionId: number,
     userProfile: any,
     selectedGoals: string[]
-  ): Promise<DetailedPersonalizedQuest> {
+  ): Promise<DetailedPersonalizedQuest | null> {
     
     console.log(`[QuestGenV2] Generating quest for user ${userId} with definition ${questDefinitionId}`);
     
-    // Step 1: Check profile completeness
-    const profileCompleteness = await checkProfileCompleteness(userId);
+    // Step 1: Check profile completeness with enhanced alignment checking
+    const profileCompleteness = await ProfileCompletenessChecker.checkProfileCompleteness(userId);
     console.log(`[QuestGenV2] Profile completeness: ${profileCompleteness.completionPercentage}%`, 
                 `Missing: ${profileCompleteness.missingFields.join(', ')}`);
     
@@ -70,7 +70,7 @@ export class ComprehensiveQuestGeneratorV2 {
       return this.generateFallbackQuest(questDef, userProfile, selectedGoals);
     }
     
-    // Step 4: Generate quest based on type
+    // Step 4: Generate quest based on type (may return null if field is already satisfied)
     if (questDef.type === 'profile_update') {
       return this.generateProfileUpdateQuest(activity, userProfile, profileCompleteness, selectedGoals);
     } else if (questDef.type === 'pulse_creation') {
@@ -90,9 +90,31 @@ export class ComprehensiveQuestGeneratorV2 {
   private async generateProfileUpdateQuest(
     activity: PlatformActivity,
     userProfile: any,
-    profileCompleteness: any,
+    profileCompleteness: ProfileCompletenessResult,
     brandGoals: string[]
-  ): Promise<DetailedPersonalizedQuest> {
+  ): Promise<DetailedPersonalizedQuest | null> {
+    
+    // Map targetAction to profile field name
+    const fieldMapping: Record<string, string> = {
+      'add_uvp': 'uniqueValueProposition',
+      'add_vision_statement': 'visionStatement',
+      'add_mission_statement': 'missionStatement',
+      'add_core_values': 'coreValues',
+      'add_tagline': 'tagline',
+      'add_title': 'title',
+      'add_about_me': 'aboutMe',
+      'add_what_i_offer': 'whatIOffer',
+    };
+    
+    const targetField = fieldMapping[activity.targetAction] || activity.targetAction.replace('add_', '');
+    
+    // Check if this field is already satisfied (filled AND aligned with brand goals)
+    const fieldAlignment = profileCompleteness.fieldAlignments.find(f => f.field === targetField);
+    
+    if (fieldAlignment?.status === 'satisfied') {
+      console.log(`[QuestGenV2] Skipping quest for ${targetField} - field is already satisfied (filled and aligned)`);
+      return null; // Skip this quest - field is good
+    }
     
     const name = userProfile.name || 'professional';
     const industry = userProfile.industry || 'Professional';
@@ -103,6 +125,11 @@ export class ComprehensiveQuestGeneratorV2 {
     const brandGoalLabel = brandGoals.includes('professional_1') 
       ? 'Position myself as an authority in my niche' 
       : 'Build my professional brand';
+    
+    // Check if field is misaligned - if so, inject context about what needs updating
+    const misalignmentContext = fieldAlignment?.status === 'misaligned'
+      ? `\n\nCURRENT VALUE ISSUE: ${fieldAlignment.reason}\nCurrent value: "${fieldAlignment.currentValue}"\n\nGenerate a quest that asks them to UPDATE this field to better align with their brand goals.`
+      : '';
     
     // Build prompt that ENFORCES text field constraints
     const prompt = `You are Musk, a career strategist. Generate a quest for ${name} to complete their Brandentifier profile.
@@ -117,9 +144,9 @@ PROFILE:
 
 QUEST TASK: ${activity.completionMethod}
 CHARACTER LIMIT: ${activity.characterLimit || 'N/A'}
-PLATFORM LOCATION: ${activity.platformFeature}
+PLATFORM LOCATION: ${activity.platformFeature}${misalignmentContext}
 
-Generate a quest that asks them to fill this profile field. Return ONLY valid JSON:
+Generate a quest that asks them to ${fieldAlignment?.status === 'misaligned' ? 'UPDATE' : 'fill'} this profile field. Return ONLY valid JSON:
 
 {
   "personalizedTitle": "Craft Your ${activity.targetAction.replace('add_', '').replace('_', ' ').toUpperCase()}",

@@ -308,6 +308,12 @@ class DailyQuestScheduler {
               userBrandGoals?.selectedGoals || []
             );
             
+            // SMART FILTERING: Skip if quest returned null (field already satisfied)
+            if (!detailedQuest) {
+              console.log(`[DailyQuestScheduler] ⏭️ Skipping quest ${selectedQuest.questType} - profile field already satisfied (filled and aligned with brand goals)`);
+              continue; // Move to next quest in allocation
+            }
+            
             console.log(`[DailyQuestScheduler] ✅ V2 Generated: "${detailedQuest.title}"`);
             console.log(`[DailyQuestScheduler] 📋 Platform Activity: ${detailedQuest.platformConstraints}`);
             console.log(`[DailyQuestScheduler] ⏱️ Time: ${detailedQuest.estimatedTimeMinutes} min`);
