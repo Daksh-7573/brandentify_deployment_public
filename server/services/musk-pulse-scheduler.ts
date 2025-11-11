@@ -55,31 +55,89 @@ export class MuskPulseScheduler {
   }
 
   /**
-   * Schedule pulses for 9 AM, 2 PM, and 7 PM daily using cron (restart-resistant)
+   * Schedule hourly checks to generate pulses for users based on their local timezone
+   * Generates pulses at 9 AM, 2 PM, and 7 PM in each user's timezone
    */
   private scheduleDailyPulses(): void {
-    // Define target times using cron expressions (minute hour * * *)
-    const scheduleTimes = [
-      { cron: '0 9 * * *', type: 'morning' as const, time: '9:00 AM UTC' },     // 9:00 AM UTC daily
-      { cron: '0 14 * * *', type: 'afternoon' as const, time: '2:00 PM UTC' },  // 2:00 PM UTC daily
-      { cron: '0 19 * * *', type: 'evening' as const, time: '7:00 PM UTC' }     // 7:00 PM UTC daily
-    ];
-
-    scheduleTimes.forEach(({ cron: cronExpression, type, time }) => {
-      const job = cron.schedule(cronExpression, async () => {
-        console.log(`[MuskPulseScheduler] 🔔 Triggered ${type} pulse at ${time}`);
-        await this.generateScheduledPulse(type);
-      }, {
-        timezone: 'UTC'
-      });
-
-      this.cronJobs.push(job);
-      console.log(`[MuskPulseScheduler] ✅ ${type} pulse scheduled for ${time} daily`);
+    // Run every hour at minute 0 (top of the hour)
+    const job = cron.schedule('0 * * * *', async () => {
+      console.log(`[MuskPulseScheduler] 🔔 Hourly check triggered - checking user timezones`);
+      await this.generatePulsesForUserTimezones();
+    }, {
+      timezone: 'UTC'
     });
+
+    this.cronJobs.push(job);
+    console.log(`[MuskPulseScheduler] ✅ Hourly timezone-based pulse generation scheduled`);
   }
 
   /**
-   * Generate a scheduled pulse (personalized for all users)
+   * Generate pulses for users based on their local timezone
+   * Checks each user's timezone and generates pulses if it's 9 AM, 2 PM, or 7 PM in their timezone
+   */
+  private async generatePulsesForUserTimezones(): Promise<void> {
+    try {
+      const { db } = await import('../db');
+      const { users } = await import('../../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      // Get all users with their timezones
+      const allUsers = await db.select({
+        id: users.id,
+        name: users.name,
+        timezone: users.timezone
+      }).from(users);
+      
+      const now = new Date();
+      const targetHours = [9, 14, 19]; // 9 AM, 2 PM, 7 PM
+      const timeOfDayMap: Record<number, 'morning' | 'afternoon' | 'evening'> = {
+        9: 'morning',
+        14: 'afternoon',
+        19: 'evening'
+      };
+      
+      for (const user of allUsers) {
+        try {
+          const userTimezone = user.timezone || 'UTC';
+          
+          // Get current hour in user's timezone
+          const formatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: userTimezone,
+            hour: 'numeric',
+            hour12: false
+          });
+          
+          const userHourStr = formatter.format(now);
+          const userHour = parseInt(userHourStr, 10);
+          
+          // Check if it's one of the target hours
+          if (targetHours.includes(userHour)) {
+            const timeOfDay = timeOfDayMap[userHour];
+            console.log(`[MuskPulseScheduler] Generating ${timeOfDay} pulse for user ${user.id} (${user.name}) in ${userTimezone} (local hour: ${userHour})`);
+            
+            if (this.usePersonalization) {
+              await personalizedMuskPulseGenerator.generatePersonalizedPulsesForSpecificUsers([user.id], timeOfDay);
+            } else {
+              await muskPulseGenerator.generateScheduledPulse({
+                timeOfDay,
+                eventDriven: false
+              });
+            }
+          }
+        } catch (userError) {
+          console.error(`[MuskPulseScheduler] Error processing user ${user.id}:`, userError);
+          // Continue with next user
+        }
+      }
+      
+      console.log(`[MuskPulseScheduler] Timezone-based pulse generation check completed`);
+    } catch (error) {
+      console.error(`[MuskPulseScheduler] Error in timezone-based pulse generation:`, error);
+    }
+  }
+
+  /**
+   * Generate a scheduled pulse (deprecated - kept for compatibility)
    */
   private async generateScheduledPulse(timeOfDay: 'morning' | 'afternoon' | 'evening'): Promise<void> {
     try {
@@ -95,7 +153,7 @@ export class MuskPulseScheduler {
           timeOfDay,
           eventDriven: false
         });
-        console.log(`[MuskPulseScheduler] Successfully generated shared ${timeOfDay} pulse`);
+        console.log(`[MuskPulseScheduler] Successfully generated shared ${timeOfDay} pulses`);
       }
       
     } catch (error) {

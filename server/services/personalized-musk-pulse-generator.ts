@@ -44,6 +44,38 @@ export class PersonalizedMuskPulseGenerator {
   private static readonly MUSK_USER_ID = 3;
 
   /**
+   * Generate personalized pulses for specific users (timezone-based scheduling)
+   */
+  async generatePersonalizedPulsesForSpecificUsers(userIds: number[], timeOfDay: 'morning' | 'afternoon' | 'evening'): Promise<void> {
+    console.log(`[PersonalizedMuskPulseGenerator] Starting ${timeOfDay} pulse generation for ${userIds.length} specific users`);
+    
+    try {
+      // Get specific users
+      const users = await this.getSpecificUsers(userIds);
+      console.log(`[PersonalizedMuskPulseGenerator] Found ${users.length} users to personalize pulses for`);
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const user of users) {
+        try {
+          await this.generatePersonalizedPulseForUser(user, timeOfDay);
+          successCount++;
+          console.log(`[PersonalizedMuskPulseGenerator] ✅ Generated ${timeOfDay} pulse for ${user.name} (${user.id})`);
+        } catch (error) {
+          console.error(`[PersonalizedMuskPulseGenerator] ❌ Error for user ${user.id}:`, error);
+          errorCount++;
+        }
+      }
+
+      console.log(`[PersonalizedMuskPulseGenerator] ${timeOfDay} pulse generation complete: ${successCount} success, ${errorCount} errors`);
+    } catch (error) {
+      console.error(`[PersonalizedMuskPulseGenerator] Fatal error:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Generate personalized pulses for all users at a given time of day
    */
   async generatePersonalizedPulsesForAllUsers(timeOfDay: 'morning' | 'afternoon' | 'evening'): Promise<void> {
@@ -172,6 +204,89 @@ export class PersonalizedMuskPulseGenerator {
       }
     } catch (error) {
       console.error('[PersonalizedMuskPulseGenerator] Error fetching users:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get specific users by IDs (for timezone-based scheduling)
+   */
+  private async getSpecificUsers(userIds: number[]): Promise<UserProfile[]> {
+    try {
+      if (userIds.length === 0) return [];
+
+      const client = await pool.connect();
+      try {
+        // Get users by specific IDs
+        const placeholders = userIds.map((_, i) => `$${i + 1}`).join(',');
+        const userResult = await client.query(`
+          SELECT DISTINCT 
+            u.id, u.name, u.industry, u.domain, u.location, u.title, u.looking_for
+          FROM users u
+          WHERE u.id IN (${placeholders}) AND u.industry IS NOT NULL
+          ORDER BY u.id
+        `, userIds);
+        
+        const users: UserProfile[] = [];
+        
+        for (const row of userResult.rows) {
+          const userId = Number(row.id);
+          
+          // Get user goals
+          const goalsResult = await client.query(`
+            SELECT title, goal_type, target_industry, target_role
+            FROM career_goals 
+            WHERE user_id = $1 AND status != 'completed'
+            LIMIT 3
+          `, [userId]);
+          
+          // Get followed hashtags
+          const hashtagsResult = await client.query(`
+            SELECT h.tag
+            FROM user_hashtag_follows uhf
+            JOIN hashtags h ON uhf.hashtag_id = h.id
+            WHERE uhf.user_id = $1
+            ORDER BY h.count DESC
+            LIMIT 10
+          `, [userId]);
+
+          // Get top skills
+          const skillsResult = await client.query(`
+            SELECT name, level
+            FROM skills
+            WHERE user_id = $1
+            ORDER BY proficiency DESC
+            LIMIT 5
+          `, [userId]);
+          
+          users.push({
+            id: userId,
+            name: row.name as string,
+            industry: row.industry as string,
+            domain: row.domain as string,
+            location: row.location as string,
+            title: row.title as string,
+            lookingFor: row.looking_for as string,
+            goals: goalsResult.rows.map((goal: any) => ({
+              title: goal.title,
+              goalType: goal.goal_type,
+              targetIndustry: goal.target_industry,
+              targetRole: goal.target_role
+            })),
+            followedHashtags: hashtagsResult.rows.map((row: any) => row.tag),
+            skills: skillsResult.rows.map((skill: any) => ({
+              name: skill.name,
+              level: skill.level
+            }))
+          });
+        }
+        
+        return users;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error('[PersonalizedMuskPulseGenerator] Error fetching specific users:', error);
       return [];
     }
   }
