@@ -963,6 +963,11 @@ console.log("Phase 3 microservices architecture initialized");
     
     // 🔍 DATABASE VERIFICATION - Critical for database unification verification
     await logDatabaseStartupInfo();
+    
+    // 🚀 START AUTOMATED SCHEDULERS
+    console.log('🎯 Starting automated schedulers...');
+    muskPulseScheduler.start();
+    console.log('✅ Musk Pulse Scheduler started');
   });
   
   server.on('error', (err) => {

@@ -10,6 +10,7 @@
 import { Router, Request, Response } from 'express';
 import { muskPulseScheduler } from './services/musk-pulse-scheduler';
 import { muskPulseGenerator } from './services/musk-pulse-generator';
+import { personalizedMuskPulseGenerator } from './services/personalized-musk-pulse-generator';
 
 const router = Router();
 
@@ -82,19 +83,29 @@ router.get('/status', async (req: Request, res: Response) => {
 
 /**
  * POST /api/musk-pulse/generate-test
- * Generate a test pulse immediately
+ * Generate a test pulse immediately (personalized for all users)
  */
 router.post('/generate-test', async (req: Request, res: Response) => {
   try {
-    const { type = 'afternoon' } = req.body;
+    const { type = 'afternoon', userId } = req.body;
     
     console.log(`[MuskPulse] Generating test ${type} pulse`);
     
-    await muskPulseScheduler.generateTestPulse(type);
+    if (userId) {
+      // Generate personalized pulse for specific user
+      await personalizedMuskPulseGenerator.generatePersonalizedPulsesForSpecificUsers([userId], type);
+      console.log(`[MuskPulse] Generated personalized ${type} pulse for user ${userId}`);
+    } else {
+      // Generate personalized pulses for all users
+      await personalizedMuskPulseGenerator.generatePersonalizedPulsesForAllUsers(type);
+      console.log(`[MuskPulse] Generated personalized ${type} pulses for all users`);
+    }
     
     res.json({
       message: `Test ${type} pulse generated successfully`,
       type,
+      personalized: true,
+      userId: userId || 'all users',
       timestamp: new Date().toISOString()
     });
   } catch (error) {
