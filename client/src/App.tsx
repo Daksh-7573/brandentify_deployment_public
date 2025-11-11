@@ -78,7 +78,6 @@ const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const DesignerPortfolio = lazy(() => import("@/pages/designer-portfolio"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
-const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
 
@@ -397,10 +396,6 @@ function Router() {
       
       <Route path="/add-service" component={() => (
         <ProtectedRoute path="/add-service" component={AddServicePage} />
-      )} />
-      
-      <Route path="/industry-pulse-optimized" component={() => (
-        <ProtectedRoute path="/industry-pulse-optimized" component={IndustryPulseOptimizedPage} />
       )} />
       
       {/* Dashboard route - direct to Industry Pulse */}
