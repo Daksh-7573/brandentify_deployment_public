@@ -30,6 +30,7 @@ export const users = pgTable("users", {
   aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   timezone: text("timezone").default("UTC"), // User's timezone (e.g., "America/New_York", "Asia/Kolkata", "Europe/London")
+  nextQuestAssignmentTime: timestamp("next_quest_assignment_time"), // Next time to assign daily quests (calculated from user's timezone)
   industry: text("industry"), // User's industry
   domain: text("domain"), // User's domain within the industry
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
