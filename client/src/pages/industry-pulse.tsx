@@ -1304,6 +1304,9 @@ export default function IndustryPulsePage() {
   // Fetch all pulses (including personalized Musk Pulses for this user)
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: [`/api/pulses?userId=${userId}`],
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache data
+    refetchOnMount: 'always', // Always refetch on mount
     // @ts-ignore - onSuccess is valid but TS is complaining
     onSuccess: (data: PulseWithUser[]) => {
       // Initialize project cache for faster loading
