@@ -330,11 +330,20 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType}</span>
               </div>
             )}
-            {/* Only show Platform for social quests (not career quests) */}
-            {(questDefinition as any)?.platformConstraints && questDefinition.type !== 'pulse_creation' && (
+            {/* Show Type for career quests, Platform for social quests */}
+            {questDefinition.type && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
-                <span className="font-semibold">📱 Platform:</span>
-                <span>{(questDefinition as any).platformConstraints}</span>
+                {questDefinition.type === 'social_quest' || questDefinition.type === 'social_post' ? (
+                  <>
+                    <span className="font-semibold">📱 Platform:</span>
+                    <span>{(questDefinition as any).platformConstraints || (questDefinition as any).platform || 'Social Media'}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold">📋 Type:</span>
+                    <span className="capitalize">{questDefinition.type.replace(/_/g, ' ')}</span>
+                  </>
+                )}
               </div>
             )}
             {(questDefinition as any)?.guidanceSnippet && (
