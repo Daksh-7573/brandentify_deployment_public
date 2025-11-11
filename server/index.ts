@@ -23,6 +23,7 @@ import { apiGateway } from "./services/api-gateway";
 import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
+import { timezoneAwareQuestScheduler } from "./services/timezone-aware-quest-scheduler";
 import { trendRefreshScheduler } from "./services/trend-intelligence/trend-refresh-scheduler";
 import { trendSpikeScheduler } from "./services/trend-intelligence/trend-spike-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
@@ -817,10 +818,16 @@ console.log("Phase 3 microservices architecture initialized");
   // console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
   console.log("⚠️  Musk Pulse automation system is DISABLED - no AI pulses will be generated");
 
-  // Start Daily Quest Scheduler for quest expiration and assignment
-  console.log("Starting Daily Quest Scheduler system...");
-  dailyQuestScheduler.startScheduler();
-  console.log("Daily Quest Scheduler started - expiring previous day quests and assigning new daily quests at 12:01 AM UTC");
+  // Start Timezone-Aware Quest Scheduler for personalized quest assignment
+  console.log("Starting Timezone-Aware Quest Scheduler system...");
+  timezoneAwareQuestScheduler.startScheduler();
+  console.log("✅ Timezone-Aware Quest Scheduler started - checking every 15 minutes for users due for quests");
+  
+  // Initialize nextQuestAssignmentTime for existing users (one-time migration)
+  console.log("🔄 Initializing timezone-aware quest times for existing users...");
+  timezoneAwareQuestScheduler.initializeUsersNextAssignmentTime()
+    .then(() => console.log("✅ User quest times initialized"))
+    .catch((err) => console.error("❌ Failed to initialize user quest times:", err));
 
   // Start Trend Intelligence Refresh Scheduler for market trend tracking
   console.log("Starting Trend Intelligence Refresh Scheduler...");
@@ -833,35 +840,37 @@ console.log("Phase 3 microservices architecture initialized");
   // trendSpikeScheduler.start();
   // console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
   
-  // 🚀 DAILY QUEST AUTO-GENERATION - Runs in background (non-blocking)
-  console.log("========================================");
-  console.log("🚀 QUEST AUTO-GENERATION STARTING (Background)");
-  console.log("========================================");
+  // OLD QUEST AUTO-GENERATION SYSTEM - DISABLED (replaced with timezone-aware scheduler)
+  // The new timezone-aware quest scheduler checks every 15 minutes and assigns quests
+  // at midnight in each user's local timezone instead of a global UTC time
+  // console.log("========================================");
+  // console.log("🚀 QUEST AUTO-GENERATION STARTING (Background)");
+  // console.log("========================================");
   
   // Run in background - don't block server startup
-  (async () => {
-    try {
-      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
-      const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
-      console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
-    } catch (bootError) {
-      console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
-    }
-  })();
+  // (async () => {
+  //   try {
+  //     const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+  //     const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
+  //     console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
+  //   } catch (bootError) {
+  //     console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
+  //   }
+  // })();
   
-  // Schedule hourly failsafe
-  setInterval(async () => {
-    try {
-      console.log("🔄 [HOURLY] Running quest check...");
-      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
-      const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
-      if (hourlyResult.successfulAssignments > 0) {
-        console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
-      }
-    } catch (hourlyError) {
-      console.error("❌ [HOURLY] Quest check failed:", hourlyError);
-    }
-  }, 60 * 60 * 1000); // Every 60 minutes
+  // Schedule hourly failsafe - DISABLED (replaced with 15-minute timezone-aware checks)
+  // setInterval(async () => {
+  //   try {
+  //     console.log("🔄 [HOURLY] Running quest check...");
+  //     const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+  //     const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
+  //     if (hourlyResult.successfulAssignments > 0) {
+  //       console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
+  //     }
+  //   } catch (hourlyError) {
+  //     console.error("❌ [HOURLY] Quest check failed:", hourlyError);
+  //   }
+  // }, 60 * 60 * 1000); // Every 60 minutes
   
   // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
   console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
