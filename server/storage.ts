@@ -12899,8 +12899,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCurrentDaySocialQuests(userId: number): Promise<any[]> {
     try {
-      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      
+      // Show all ACTIVE social quests regardless of assigned date (fixes issue where yesterday's quests disappear)
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
@@ -12925,10 +12924,9 @@ export class DatabaseStorage implements IStorage {
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         WHERE uq.user_id = $1 
           AND qd.type IN ('social_quest', 'social_post')
-          AND uq.assigned_date = $2
           AND uq.status = 'active'
         ORDER BY uq.assigned_at DESC
-      `, [userId, currentDate]);
+      `, [userId]);
       
       // Add definition object for frontend compatibility
       return result.rows.map(row => ({

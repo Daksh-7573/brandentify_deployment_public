@@ -873,9 +873,8 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // HOTFIX: Query database directly to get personalized quest data
-        // TODO: Remove this once storage.ts reloads properly
-        const currentDate = new Date().toISOString().split('T')[0];
+        // Query database directly to get personalized quest data
+        // Show all ACTIVE quests regardless of assigned date (fixes issue where yesterday's quests disappear)
         const result = await pool.query(`
           SELECT 
             uq.id,
@@ -927,10 +926,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             LIMIT 1
           ) gsq ON true
           WHERE uq.user_id = $1
-            AND uq.assigned_date = $2
             AND uq.status = 'active'
           ORDER BY uq.assigned_at DESC
-        `, [userId, currentDate]);
+        `, [userId]);
         
         quests = result.rows.map(row => ({
           ...row,
