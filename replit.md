@@ -3,7 +3,11 @@
 ## Overview
 Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform leverages local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth.
 
-## Recent Changes (Nov 11, 2024)
+## Recent Changes (Nov 12, 2024)
+- **Critical Bug Fix: Daily Quest Bucket**: Fixed daily quest bucket logic in both career and social quests to return ALL active quests regardless of assignment date (removed strict `assigned_date = currentDate` filter). This ensures users see all their active quests, not just today's newly assigned ones. Architect-approved and verified working.
+- **Critical Bug Fix: Scheduler Initialization**: Fixed timezone-aware quest scheduler to only initialize users without `nextQuestAssignmentTime` (added `isNull` check). Previously, scheduler reset ALL users on every server restart, causing duplicate quest assignments. Now scheduler respects existing schedules. Architect-approved.
+
+## Previous Changes (Nov 11, 2024)
 - **Musk Pulse Feature Disabled**: Completely removed Musk AI news pulse automation and UI tab from Industry Pulse page per user request
 - **Code Cleanup**: Removed 3 duplicate/unused Industry Pulse page files (industry-pulse.tsx, industry-pulse-BACKUP.tsx, industry-pulse-optimized.tsx)
 - **Active File**: `client/src/pages/industry-pulse-new.tsx` is the single source of truth for Industry Pulse feature
