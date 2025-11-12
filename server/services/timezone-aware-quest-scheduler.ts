@@ -15,7 +15,7 @@ import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
 import { users, userQuests } from '@shared/schema';
-import { and, lte, isNotNull, eq } from 'drizzle-orm';
+import { and, lte, isNotNull, isNull, eq } from 'drizzle-orm';
 import { smartQuestAllocator } from './smart-quest-allocator';
 import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
 import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
@@ -218,12 +218,13 @@ class TimezoneAwareQuestScheduler {
   /**
    * Initialize nextQuestAssignmentTime for users who don't have it set
    * Run this once during migration
+   * CRITICAL FIX: Only initialize users WITHOUT nextQuestAssignmentTime to avoid resetting on every restart
    */
   public async initializeUsersNextAssignmentTime() {
     try {
       console.log('[TimezoneQuestScheduler] 🔄 Initializing nextQuestAssignmentTime for users...');
       
-      // Find users without nextQuestAssignmentTime set
+      // Find users without nextQuestAssignmentTime set (CRITICAL: avoid resetting on restart)
       const uninitializedUsers = await db
         .select({
           id: users.id,
@@ -232,7 +233,10 @@ class TimezoneAwareQuestScheduler {
         })
         .from(users)
         .where(
-          isNotNull(users.timezone) // Only users with timezone set
+          and(
+            isNotNull(users.timezone),  // Only users with timezone set
+            isNull(users.nextQuestAssignmentTime)  // CRITICAL: Only uninitialized users
+          )
         );
 
       console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize`);
