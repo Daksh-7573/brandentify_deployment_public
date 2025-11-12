@@ -19,6 +19,8 @@ import { and, lte, isNotNull, isNull, eq } from 'drizzle-orm';
 import { smartQuestAllocator } from './smart-quest-allocator';
 import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
 import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
+import { fromZonedTime } from 'date-fns-tz';
+import { addDays, startOfDay, setHours, setMinutes } from 'date-fns';
 
 class TimezoneAwareQuestScheduler {
   private isSchedulerActive = false;
@@ -179,22 +181,21 @@ class TimezoneAwareQuestScheduler {
 
   /**
    * Calculate the next midnight in the given timezone
+   * FIXED: Now properly converts user's local midnight to UTC using date-fns-tz
    */
   private calculateNextMidnight(timezone: string): Date {
     try {
-      const now = new Date();
+      // Get tomorrow's date at 00:01 in the user's timezone
+      const tomorrow = addDays(new Date(), 1);
+      const tomorrowMidnight = startOfDay(tomorrow); // 00:00:00
+      const tomorrowMidnightPlusOne = setMinutes(setHours(tomorrowMidnight, 0), 1); // 00:01:00
       
-      // Get current time in user's timezone
-      const userTimeString = now.toLocaleString('en-US', { timeZone: timezone });
-      const userTime = new Date(userTimeString);
+      // Convert this local time (in user's timezone) to UTC
+      const nextMidnightUTC = fromZonedTime(tomorrowMidnightPlusOne, timezone);
       
-      // Set to next midnight
-      const nextMidnight = new Date(userTime);
-      nextMidnight.setHours(24, 1, 0, 0); // Tomorrow at 00:01 (12:01 AM)
-      
-      // Convert back to UTC for storage
-      const utcOffset = now.getTime() - userTime.getTime();
-      const nextMidnightUTC = new Date(nextMidnight.getTime() + utcOffset);
+      console.log(`[TimezoneQuestScheduler] 🕐 Calculated next midnight for timezone ${timezone}:`);
+      console.log(`  - Local time: ${tomorrowMidnightPlusOne.toISOString()} (as interpreted in ${timezone})`);
+      console.log(`  - UTC time: ${nextMidnightUTC.toISOString()}`);
       
       return nextMidnightUTC;
       
