@@ -4975,8 +4975,7 @@ export class MemStorage implements IStorage {
         SELECT 
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
-          features, image_url as "imageUrl", "order", is_active as "isActive",
-          week_number as "weekNumber", year
+          features, image_url as "imageUrl", "order", is_active as "isActive"
         FROM services 
         WHERE user_id = $1 
         ORDER BY "order" ASC, created_at DESC
@@ -4998,8 +4997,7 @@ export class MemStorage implements IStorage {
         SELECT 
           id, user_id as "userId", title, description, category,
           price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
-          features, image_url as "imageUrl", "order", is_active as "isActive",
-          week_number as "weekNumber", year
+          features, image_url as "imageUrl", "order", is_active as "isActive"
         FROM services 
         WHERE id = $1
       `, [id]);
