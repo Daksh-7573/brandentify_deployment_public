@@ -70,7 +70,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 cursor-pointer underline decoration-blue-400/50 hover:decoration-blue-300"
                 >
-                  {`${window.location.origin}/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
+                  {`brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
                 </a>
               </div>
             </div>
