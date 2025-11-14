@@ -122,7 +122,12 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
           }
           
           // Invalidate conversations to refresh unread counts
-          queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
+          queryClient.invalidateQueries({ 
+            predicate: (query) => {
+              const key = query.queryKey[0];
+              return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+            }
+          });
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
@@ -148,7 +153,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
 
   // Fetch conversations
   const { data: conversationsData, isLoading: loadingConversations } = useQuery({
-    queryKey: ['/api/messaging/conversations'],
+    queryKey: [`/api/messaging/conversations?userId=${userId}`],
     enabled: !!userId,
   });
 
@@ -175,7 +180,12 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       return data as Conversation;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+        }
+      });
     },
   });
 
@@ -186,7 +196,12 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+        }
+      });
     },
   });
 
