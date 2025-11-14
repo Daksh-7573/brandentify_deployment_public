@@ -3,12 +3,16 @@
 ## Overview
 Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform leverages local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth.
 
-## Recent Changes (Nov 12, 2024)
+## Recent Changes (Nov 14, 2024)
+- **Routing Fix: Brand Profile URLs**: Changed catch-all route from `/:brandName` to `/@:brandName` pattern to prevent conflicts with internal routes like `/brand/profile`. Updated all profile links to use `/@${brandName || username}` with fallback to username. Backend now queries by both brand_name and username with priority for brand_name. Architect-approved.
+- **Auto-Generated Brand Names**: Migrated 22 users with NULL/empty brand_name to use their username as brand_name. Updated both DatabaseStorage and MemStorage `createUser` functions to automatically set `brandName = username` if brandName is not provided during user registration. Ensures all users have a valid brand_name for profile URLs. Architect-approved.
+
+## Previous Changes (Nov 12, 2024)
 - **Critical Bug Fix: Daily Quest Bucket**: Fixed daily quest bucket logic in both career and social quests to return ALL active quests regardless of assignment date (removed strict `assigned_date = currentDate` filter). This ensures users see all their active quests, not just today's newly assigned ones. Architect-approved and verified working.
 - **Critical Bug Fix: Scheduler Initialization**: Fixed timezone-aware quest scheduler to only initialize users without `nextQuestAssignmentTime` (added `isNull` check). Previously, scheduler reset ALL users on every server restart, causing duplicate quest assignments. Now scheduler respects existing schedules. Architect-approved.
 - **Critical Bug Fix: Timezone Calculation**: Fixed `calculateNextMidnight` function to properly convert each user's local midnight to UTC using `date-fns-tz`'s `fromZonedTime` instead of broken `toLocaleString` approach. Previously, ALL users were getting midnight NY time (05:01 UTC) regardless of their timezone. Now each user gets quests at midnight in THEIR timezone (e.g., Pacific users at 08:01 UTC, Eastern users at 05:01 UTC). Architect-approved and verified working with test users in multiple timezones.
 
-## Previous Changes (Nov 11, 2024)
+## Earlier Changes (Nov 11, 2024)
 - **Musk Pulse Feature Disabled**: Completely removed Musk AI news pulse automation and UI tab from Industry Pulse page per user request
 - **Code Cleanup**: Removed 3 duplicate/unused Industry Pulse page files (industry-pulse.tsx, industry-pulse-BACKUP.tsx, industry-pulse-optimized.tsx)
 - **Active File**: `client/src/pages/industry-pulse-new.tsx` is the single source of truth for Industry Pulse feature
