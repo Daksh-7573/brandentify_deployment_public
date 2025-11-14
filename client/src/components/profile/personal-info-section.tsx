@@ -58,26 +58,20 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </div>
           )}
           
-          {/* Profile URL - uses randomProfileLink for permanent URL (or brand name/username as fallback) */}
-          {(userData.randomProfileLink || userData.brandName || userData.username) && (
+          {/* Profile URL - automatically generated from Brand Name */}
+          {(userData.brandName || userData.username) && (
             <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
               <Globe className="h-5 w-5 text-white/70" />
               <div className="flex-1">
                 <div className="text-xs text-white/60 mb-1">Profile URL</div>
                 <a 
-                  href={userData.randomProfileLink 
-                    ? `/r/${userData.randomProfileLink}` 
-                    : `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`
-                  }
+                  href={`/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 cursor-pointer underline decoration-blue-400/50 hover:decoration-blue-300"
                   data-testid="link-profile-url"
                 >
-                  {userData.randomProfileLink 
-                    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-                    : `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`
-                  }
+                  {`brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
                 </a>
               </div>
             </div>

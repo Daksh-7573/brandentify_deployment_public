@@ -8,15 +8,11 @@ interface QuantumCardProps {
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
-  // Format profile link using randomProfileLink for permanent URL (or brand name/username as fallback)
-  const profileLink = userData.randomProfileLink 
-    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-    : `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  // Format profile link using brand name (or username as fallback)
+  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Generate the actual link href for navigation
-  const profileHref = userData.randomProfileLink 
-    ? `/r/${userData.randomProfileLink}` 
-    : `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileHref = `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
     <div className="quantum-card w-full min-h-[500px] relative rounded-xl">
