@@ -1,0 +1,244 @@
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/289
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/217?t=1763126359931 404 (Not Found)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:338
+fetchFn @ @tanstack_react-query.js?v=1a7bdad0:840
+run @ @tanstack_react-query.js?v=1a7bdad0:494
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1a7bdad0:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1a7bdad0:555
+flush @ @tanstack_react-query.js?v=1a7bdad0:569
+batch @ @tanstack_react-query.js?v=1a7bdad0:587
+dispatch_fn @ @tanstack_react-query.js?v=1a7bdad0:996
+setData @ @tanstack_react-query.js?v=1a7bdad0:696
+onSuccess @ @tanstack_react-query.js?v=1a7bdad0:897
+resolve @ @tanstack_react-query.js?v=1a7bdad0:456
+Promise.then
+run @ @tanstack_react-query.js?v=1a7bdad0:498
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1a7bdad0:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18718
+workLoop @ chunk-RPCDYKBN.js?v=1a7bdad0:197
+flushWork @ chunk-RPCDYKBN.js?v=1a7bdad0:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1a7bdad0:384Understand this error
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/217
+stallwart.build.js:1 stallwart: failed ping 1
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1763126359967 404 (Not Found)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:338
+fetchFn @ @tanstack_react-query.js?v=1a7bdad0:840
+run @ @tanstack_react-query.js?v=1a7bdad0:494
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1a7bdad0:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1a7bdad0:555
+flush @ @tanstack_react-query.js?v=1a7bdad0:569
+batch @ @tanstack_react-query.js?v=1a7bdad0:587
+dispatch_fn @ @tanstack_react-query.js?v=1a7bdad0:996
+setData @ @tanstack_react-query.js?v=1a7bdad0:696
+onSuccess @ @tanstack_react-query.js?v=1a7bdad0:897
+resolve @ @tanstack_react-query.js?v=1a7bdad0:456
+Promise.then
+run @ @tanstack_react-query.js?v=1a7bdad0:498
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1a7bdad0:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18718
+workLoop @ chunk-RPCDYKBN.js?v=1a7bdad0:197
+flushWork @ chunk-RPCDYKBN.js?v=1a7bdad0:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1a7bdad0:384Understand this error
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/40
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1763126359980 404 (Not Found)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:338
+fetchFn @ @tanstack_react-query.js?v=1a7bdad0:840
+run @ @tanstack_react-query.js?v=1a7bdad0:494
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1a7bdad0:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1a7bdad0:555
+flush @ @tanstack_react-query.js?v=1a7bdad0:569
+batch @ @tanstack_react-query.js?v=1a7bdad0:587
+dispatch_fn @ @tanstack_react-query.js?v=1a7bdad0:996
+setData @ @tanstack_react-query.js?v=1a7bdad0:696
+onSuccess @ @tanstack_react-query.js?v=1a7bdad0:897
+resolve @ @tanstack_react-query.js?v=1a7bdad0:456
+Promise.then
+run @ @tanstack_react-query.js?v=1a7bdad0:498
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1a7bdad0:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18718
+workLoop @ chunk-RPCDYKBN.js?v=1a7bdad0:197
+flushWork @ chunk-RPCDYKBN.js?v=1a7bdad0:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1a7bdad0:384Understand this error
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/4
+injected.js:204  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1763126359988 404 (Not Found)
+apply @ injected.js:204
+(anonymous) @ queryClient.ts:338
+fetchFn @ @tanstack_react-query.js?v=1a7bdad0:840
+run @ @tanstack_react-query.js?v=1a7bdad0:494
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1a7bdad0:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1a7bdad0:555
+flush @ @tanstack_react-query.js?v=1a7bdad0:569
+batch @ @tanstack_react-query.js?v=1a7bdad0:587
+dispatch_fn @ @tanstack_react-query.js?v=1a7bdad0:996
+setData @ @tanstack_react-query.js?v=1a7bdad0:696
+onSuccess @ @tanstack_react-query.js?v=1a7bdad0:897
+resolve @ @tanstack_react-query.js?v=1a7bdad0:456
+Promise.then
+run @ @tanstack_react-query.js?v=1a7bdad0:498
+start @ @tanstack_react-query.js?v=1a7bdad0:536
+fetch @ @tanstack_react-query.js?v=1a7bdad0:926
+executeFetch_fn @ @tanstack_react-query.js?v=1a7bdad0:2211
+onSubscribe @ @tanstack_react-query.js?v=1a7bdad0:1898
+subscribe @ @tanstack_react-query.js?v=1a7bdad0:24
+(anonymous) @ @tanstack_react-query.js?v=1a7bdad0:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1a7bdad0:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1a7bdad0:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1a7bdad0:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1a7bdad0:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1a7bdad0:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1a7bdad0:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1a7bdad0:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1a7bdad0:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1a7bdad0:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1a7bdad0:18718
+workLoop @ chunk-RPCDYKBN.js?v=1a7bdad0:197
+flushWork @ chunk-RPCDYKBN.js?v=1a7bdad0:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1a7bdad0:384Understand this error
+injected.js:27 No poll vote found (expected): /api/poll-votes/user/1/pulse/3
+faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://25d68c5d-166d-4f92-b5c…:1  GET https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/&size=32 404 (Not Found)
+Image
+uG @ ed1e693c96a75807.js:2
+e @ ed1e693c96a75807.js:2
+(anonymous) @ ed1e693c96a75807.js:2
+iB @ ed1e693c96a75807.js:2
+iT @ ed1e693c96a75807.js:2
+r6 @ ed1e693c96a75807.js:2
+(anonymous) @ ed1e693c96a75807.js:2Understand this error
+faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://25d68c5d-166d-4f92-b5c1…:1  GET https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev&size=32 404 (Not Found)Understand this error
