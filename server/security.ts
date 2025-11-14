@@ -517,7 +517,8 @@ export async function setupSecurity(app: any) {
     // Explicitly remove X-Frame-Options to allow iframe embedding
     res.removeHeader('X-Frame-Options');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    // Allow geolocation for same-origin (radar page needs it), block camera and microphone
+    res.setHeader('Permissions-Policy', 'geolocation=(self), microphone=(), camera=()');
     next();
   });
   
