@@ -1864,6 +1864,9 @@ export class MemStorage implements IStorage {
     const id = this.currentUserId++;
     const createdAt = new Date();
     
+    // Auto-generate brandName from username if not provided
+    const brandName = insertUser.brandName || insertUser.username;
+    
     // Ensure all nullable fields have explicit null values instead of undefined
     const user: User = { 
       ...insertUser, 
@@ -1885,7 +1888,7 @@ export class MemStorage implements IStorage {
       googleId: insertUser.googleId ?? null,
       authProvider: insertUser.authProvider ?? null,
       lastLoginAt: insertUser.lastLoginAt ?? null,
-      brandName: insertUser.brandName ?? null,
+      brandName: brandName,  // Auto-generate from username if not provided
       emailVerified: false,
       emailVerificationToken: null,
       emailVerificationExpires: null
@@ -9132,10 +9135,14 @@ export class DatabaseStorage implements IStorage {
     // Generate unique random profile link
     const randomProfileLink = await ensureUniqueRandomProfileLink();
     
-    // Add random profile link to user data
+    // Auto-generate brandName from username if not provided
+    const brandName = insertUser.brandName || insertUser.username;
+    
+    // Add random profile link and brandName to user data
     const userWithRandomLink = {
       ...insertUser,
-      randomProfileLink
+      randomProfileLink,
+      brandName
     };
     
     const [user] = await db.insert(users).values(userWithRandomLink).returning();
