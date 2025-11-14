@@ -71,8 +71,8 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   
-  // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
+  // Format profile link using brand name (or username as fallback)
+  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Define industry icons and tags
   const getIndustryIcon = (tag: string) => {

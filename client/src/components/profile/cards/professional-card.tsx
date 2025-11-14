@@ -25,8 +25,8 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
-  // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
+  // Format profile link using brand name (or username as fallback)
+  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Handle card reveal
   const toggleReveal = () => {
