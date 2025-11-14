@@ -14,7 +14,7 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
   cardType,
 }) => {
   // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
+  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.brandName || userData.username}`;
   
   if (cardType === "artistic") {
     return (
@@ -134,7 +134,7 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ opacity: 0.7 }} />
               <a 
-                href={`/${userData.brandName}`}
+                href={`/@${userData.brandName || userData.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "inherit", textDecoration: "underline", cursor: "pointer" }}
@@ -427,7 +427,7 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ color: "#3b82f6" }} />
               <a 
-                href={`/${userData.brandName}`}
+                href={`/@${userData.brandName || userData.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "#3b82f6", textDecoration: "underline", cursor: "pointer" }}
@@ -717,7 +717,7 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ color: "#64748b" }} />
               <a 
-                href={`/${userData.brandName}`}
+                href={`/@${userData.brandName || userData.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "#3b82f6", textDecoration: "underline", cursor: "pointer" }}

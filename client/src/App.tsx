@@ -666,7 +666,7 @@ function Router() {
       </Route>
       
       {/* Brand name public profile route - must be last to avoid conflicts */}
-      <Route path="/:brandName">
+      <Route path="/@:brandName">
         {(params) => <BrandProfile brandName={params.brandName} />}
       </Route>
       

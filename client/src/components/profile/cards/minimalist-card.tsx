@@ -8,7 +8,7 @@ interface MinimalistCardProps {
 
 const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
   // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
+  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.brandName || userData.username}`;
   
   return (
     <div className="w-full aspect-[2/3.5] bg-white dark:bg-slate-900 rounded-lg overflow-hidden shadow-md border border-gray-200 dark:border-gray-800 flex flex-col">
@@ -92,7 +92,7 @@ const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
           <div className="flex items-center gap-3 text-sm">
             <Globe className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <a 
-              href={`/${userData.brandName}`}
+              href={`/@${userData.brandName || userData.username}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 cursor-pointer underline decoration-blue-600/50 hover:decoration-blue-700"

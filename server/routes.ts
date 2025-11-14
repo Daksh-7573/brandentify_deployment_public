@@ -1101,9 +1101,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const brandName = req.params.brandName;
       
-      console.log(`[GET /users/brand/:brandName] Looking up user with brand name: ${brandName}`);
+      console.log(`[GET /users/brand/:brandName] Looking up user with brand name or username: ${brandName}`);
       
-      // Query database for user with this brand name (case-insensitive)
+      // Query database for user with this brand name OR username (case-insensitive, brand_name has priority)
       const result = await pool.query(
         `SELECT 
           id, username, email, password, 
@@ -1122,12 +1122,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", 
           created_at as "createdAt"
-        FROM users WHERE LOWER(brand_name) = LOWER($1)`,
+        FROM users 
+        WHERE LOWER(brand_name) = LOWER($1) OR LOWER(username) = LOWER($1)
+        ORDER BY CASE WHEN LOWER(brand_name) = LOWER($1) THEN 1 ELSE 2 END
+        LIMIT 1`,
         [brandName]
       );
       
       if (result.rows.length === 0) {
-        console.log(`[GET /users/brand/:brandName] No user found with brand name: ${brandName}`);
+        console.log(`[GET /users/brand/:brandName] No user found with brand name or username: ${brandName}`);
         return res.status(404).json({ message: "User not found" });
       }
       

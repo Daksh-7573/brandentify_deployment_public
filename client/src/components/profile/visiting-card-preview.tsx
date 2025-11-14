@@ -34,7 +34,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   isLoading = false,
 }) => {
   // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`;
+  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.brandName || userData.username}`;
   
   // For 3D animated card style, use the specialized component
   if (cardType === "3d-animated") {
@@ -215,7 +215,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
             <div className="flex items-center gap-2">
               <Globe className={`h-3.5 w-3.5 ${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400" : "text-white/70"}`} />
               <a 
-                href={`/${userData.brandName}`}
+                href={`/@${userData.brandName || userData.username}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${cardType === "minimalist" ? "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" : "text-white hover:text-white/80"} transition-colors duration-200 cursor-pointer underline decoration-current/50`}
