@@ -73,6 +73,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
+const ProfileResolver = lazy(() => import("@/pages/profile-resolver"));
 const CareerTools = lazy(() => import("@/pages/career-tools"));
 const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
@@ -304,9 +305,6 @@ function Router() {
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
           )} />
-          <Route path="/@:username">
-            {(params) => <PublicProfile username={params.username} />}
-          </Route>
         </>
       )}
       
@@ -370,8 +368,9 @@ function Router() {
       )}
       
       {/* Routes that should always be available */}
-      <Route path="/@:username">
-        {(params) => <PublicProfile username={params.username} />}
+      {/* Profile route - uses resolver to choose between BrandProfile and PublicProfile */}
+      <Route path="/@:identifier">
+        {(params) => <ProfileResolver identifier={params.identifier} />}
       </Route>
       
       {/* Additional protected routes */}
@@ -663,11 +662,6 @@ function Router() {
             <RandomProfile />
           </Suspense>
         )}
-      </Route>
-      
-      {/* Brand name public profile route - must be last to avoid conflicts */}
-      <Route path="/@:brandName">
-        {(params) => <BrandProfile brandName={params.brandName} />}
       </Route>
       
       {/* Default 404 route */}
