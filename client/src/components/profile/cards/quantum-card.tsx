@@ -8,8 +8,15 @@ interface QuantumCardProps {
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
-  // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  // Format profile link using randomProfileLink for permanent URL (or brand name/username as fallback)
+  const profileLink = userData.randomProfileLink 
+    ? `brandentifier.com/r/${userData.randomProfileLink}` 
+    : `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  
+  // Generate the actual link href for navigation
+  const profileHref = userData.randomProfileLink 
+    ? `/r/${userData.randomProfileLink}` 
+    : `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
     <div className="quantum-card w-full min-h-[500px] relative rounded-xl">
@@ -179,7 +186,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
                 )}
               </div>
               
-              {/* Profile Link with barcode-style */}
+              {/* Profile Link with barcode-style - clickable */}
               <div className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 transition-all duration-300 hover:translate-x-1 group">
                 <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
                   <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-400" />
@@ -187,7 +194,15 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
                 {isLoading ? (
                   <span className="w-28 sm:w-32 h-2.5 sm:h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-cyan-400 text-xs tracking-wide font-medium truncate">{profileLink}</span>
+                  <a 
+                    href={profileHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 text-xs tracking-wide font-medium truncate hover:text-cyan-300 transition-colors"
+                    data-testid="link-profile-url"
+                  >
+                    {profileLink}
+                  </a>
                 )}
               </div>
             </div>
