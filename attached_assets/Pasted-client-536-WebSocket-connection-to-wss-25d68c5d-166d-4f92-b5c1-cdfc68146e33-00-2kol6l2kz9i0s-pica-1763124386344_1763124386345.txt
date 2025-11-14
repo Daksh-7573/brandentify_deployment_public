@@ -1,0 +1,36 @@
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=mn6T1nB6TRIJ' failed: 
+
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=mn6T1nB6TRIJ' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+
+    injected.js:27 AuthProvider: Failsafe timeout - forcing loading to false
+
+    injected.js:204 
+ GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5877080 404 (Not Found)
+
+injected.js:27 API Error 404 for /api/users/brand/profile
+injected.js:27 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:383:17
+
+    injected.js:204 
+ GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5877080 404 (Not Found)
+
+ injected.js:27 API Error 404 for /api/users/brand/profile
+
+injected.js:27 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:383:17
+
+    GET https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/&size=32 404 (Not Found)
+Image
+uG @ ed1e693c96a75807.js:2
+e @ ed1e693c96a75807.js:2
+(anonymous) @ ed1e693c96a75807.js:2
+iB @ ed1e693c96a75807.js:2
+iT @ ed1e693c96a75807.js:2
+r6 @ ed1e693c96a75807.js:2
+(anonymous) @ ed1e693c96a75807.js:2Understand this error
+faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://25d68c5d-166d-4f92-b5c1…:1  GET https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev&size=32 404 (Not Found)Understand this error
+faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://25d68c5d-166d-4f92-b5c…:1  GET https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/&size=32 404 (Not Found)
+
