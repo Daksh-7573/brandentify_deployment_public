@@ -359,12 +359,6 @@ export const getQueryFn: <T>(options: {
           throw new Error("You must be logged in to view this content");
         }
         
-        // Handle expected 404s for poll votes (user hasn't voted yet) - return null instead of throwing
-        if (res.status === 404 && url.includes('/poll-votes/user/')) {
-          console.log("No poll vote found (expected):", url);
-          return null as unknown as T;
-        }
-        
         // For other error responses
         if (!res.ok) {
           console.error(`API Error ${res.status} for ${url}`);

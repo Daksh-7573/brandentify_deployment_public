@@ -4621,7 +4621,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json(vote);
       } else {
         console.log(`[GET /poll-votes/user/${userId}/pulse/${pulseId}] User has not voted`);
-        res.status(404).json({ message: 'No vote found' });
+        res.status(200).json(null);
       }
     } catch (error) {
       console.error(`[GET /poll-votes/user/:userId/pulse/:pulseId] Error:`, error);
