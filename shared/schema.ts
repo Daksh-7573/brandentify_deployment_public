@@ -57,10 +57,12 @@ export const users = pgTable("users", {
   uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
   primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
   secondaryAudience: text("secondary_audience").array(), // Secondary audience (max 5 items)
-  // Subscription fields
+  // Subscription fields (provider-agnostic)
   subscriptionTier: text("subscription_tier").default("free"), // "free" | "premium"
-  subscriptionStatus: text("subscription_status").default("active"), // "active" | "canceled" | "expired"
-  stripeCustomerId: text("stripe_customer_id"),
+  subscriptionStatus: text("subscription_status").default("active"), // "active" | "canceled" | "expired" | "pending"
+  paymentProvider: text("payment_provider"), // "razorpay" | "stripe"
+  providerCustomerId: text("provider_customer_id"), // Razorpay customer_id or Stripe customer_id
+  providerSubscriptionId: text("provider_subscription_id"), // Razorpay subscription_id or Stripe subscription_id
   subscriptionStartDate: timestamp("subscription_start_date"),
   subscriptionEndDate: timestamp("subscription_end_date"),
   premiumFeaturesUsage: jsonb("premium_features_usage").default('{"aiChatCount": 0, "resumeAnalysisCount": 0, "insightfulCount": 0, "misinformedCount": 0, "lastResetDate": null}'),
@@ -79,16 +81,19 @@ export const userFieldBackups = pgTable("user_field_backups", {
   uniqueUserField: unique().on(table.userId, table.fieldName),
 }));
 
-// Subscription transactions model - tracks all subscription payments
+// Subscription transactions model - tracks all subscription payments (provider-agnostic)
 export const subscriptionTransactions = pgTable("subscription_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  stripeSessionId: text("stripe_session_id"),
-  stripePaymentIntentId: text("stripe_payment_intent_id"),
-  amount: integer("amount").notNull(), // in cents
-  currency: text("currency").default("usd"), // "usd" | "inr"
+  paymentProvider: text("payment_provider").notNull(), // "razorpay" | "stripe"
+  providerOrderId: text("provider_order_id"), // Razorpay order_id or Stripe session_id
+  providerPaymentId: text("provider_payment_id"), // Razorpay payment_id or Stripe payment_intent_id
+  providerEventId: text("provider_event_id"), // For webhook idempotency
+  amountMinor: integer("amount_minor").notNull(), // Amount in smallest currency unit (paise for INR, cents for USD)
+  currency: text("currency").notNull(), // "inr" | "usd"
   status: text("status").notNull(), // "pending" | "completed" | "failed" | "refunded"
   planType: text("plan_type").notNull(), // "monthly" | "yearly"
+  providerMetadata: jsonb("provider_metadata"), // Provider-specific data
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
