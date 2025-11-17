@@ -81,6 +81,7 @@ const DesignerPortfolio = lazy(() => import("@/pages/designer-portfolio"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
+const PricingPage = lazy(() => import("@/pages/pricing"));
 
 // Admin and debug components (lowest priority)
 const NavigationTest = lazy(() => import("@/pages/navigation-test"));
@@ -305,6 +306,8 @@ function Router() {
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
           )} />
+          <Route path="/pricing" component={PricingPage} />
+          <Route path="/upgrade" component={PricingPage} />
         </>
       )}
       
