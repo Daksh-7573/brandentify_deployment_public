@@ -57,6 +57,13 @@ export const users = pgTable("users", {
   uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
   primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
   secondaryAudience: text("secondary_audience").array(), // Secondary audience (max 5 items)
+  // Subscription fields
+  subscriptionTier: text("subscription_tier").default("free"), // "free" | "premium"
+  subscriptionStatus: text("subscription_status").default("active"), // "active" | "canceled" | "expired"
+  stripeCustomerId: text("stripe_customer_id"),
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  premiumFeaturesUsage: jsonb("premium_features_usage").default('{"aiChatCount": 0, "resumeAnalysisCount": 0, "insightfulCount": 0, "misinformedCount": 0, "lastResetDate": null}'),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -71,6 +78,20 @@ export const userFieldBackups = pgTable("user_field_backups", {
 }, (table) => ({
   uniqueUserField: unique().on(table.userId, table.fieldName),
 }));
+
+// Subscription transactions model - tracks all subscription payments
+export const subscriptionTransactions = pgTable("subscription_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  stripeSessionId: text("stripe_session_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  amount: integer("amount").notNull(), // in cents
+  currency: text("currency").default("usd"), // "usd" | "inr"
+  status: text("status").notNull(), // "pending" | "completed" | "failed" | "refunded"
+  planType: text("plan_type").notNull(), // "monthly" | "yearly"
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 // Resume theme enum
 export const resumeThemeEnum = pgEnum("resume_theme", [
@@ -696,6 +717,12 @@ export const insertPulseCommentSchema = createInsertSchema(pulseComments).omit({
 export const insertPollVoteSchema = createInsertSchema(pollVotes).omit({
   id: true,
   createdAt: true
+});
+
+export const insertSubscriptionTransactionSchema = createInsertSchema(subscriptionTransactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
 });
 
 export const insertPulseFlagSchema = createInsertSchema(pulseFlags).omit({

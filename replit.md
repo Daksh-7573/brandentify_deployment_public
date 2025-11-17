@@ -3,7 +3,15 @@
 ## Overview
 Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform leverages local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth.
 
-## Recent Changes (Nov 14, 2024)
+## Recent Changes (Nov 17, 2024)
+- **Premium Subscription System - In Progress**: Implementing free vs premium tier subscription system with Stripe integration.
+  - **Database Schema**: Added subscription fields to users table (subscriptionTier, subscriptionStatus, stripeCustomerId, subscriptionStartDate, subscriptionEndDate, premiumFeaturesUsage). Created subscriptionTransactions table for payment tracking.
+  - **Pulse Reactions System**: Discovered existing pulse reactions infrastructure (pulseReactions, userReactionQuotas tables already implemented). Free users: 10 Insightful + 10 Misinformed daily. Premium users: 20 each daily.
+  - **Free Tier Features**: Full profile, 2 portfolio templates (Corporate Executive, Scholar), 2 visiting card templates (Professional, Quantum Tech), 5 AI chat messages/month, 1 resume analysis/month, career quests only (no social quests), 1 career capsule, basic hashtag suggestions (3).
+  - **Premium Tier Features**: All portfolio templates, all visiting card templates, unlimited AI chat, unlimited resume analysis, all quest types (career + social), unlimited career capsules, advanced hashtag suggestions (10+), priority support, early access to features.
+  - **Premium Badge**: Luxury "B" monogram with gold gradient for premium users on profiles, search results, and pulse author names.
+
+## Previous Changes (Nov 14, 2024)
 - **Profile URL Standardization**: Standardized all profile URLs to use `/@brandname` format (e.g., `brandentifier.com/@nishantchopra`). Updated Quantum Card and Personal Info Section to display and link to `/@brandname` URLs. Made Quantum Card profile URL clickable. Profile URLs fall back to `/@username` if brand name is not set. This provides clean, memorable, brandable URLs that match user identity.
 - **Profile URL Routing Fix**: Created ProfileResolver component that uses `/api/users/brand/:identifier` endpoint (queries both brand_name and username with priority for brand_name), renders BrandProfile when identifier matches brand_name, otherwise renders PublicProfile. Removed duplicate routes, keeping single `/@:identifier` route at line 375.
 - **Services Endpoint 500 Error Fix**: Fixed 500 error on `/api/users/:userId/services` endpoint in portfolio-builder page. Root cause: SQL query in `storage.ts` was trying to SELECT non-existent columns `week_number` and `year` from services table. Solution: Removed these columns from both `getServicesByUserId()` and `getServiceById()` methods. Services table schema only includes: id, userId, title, description, category, priceInr, priceUsd, isHourly, features, imageUrl, order, isActive, createdAt, updatedAt. Fix tested and verified working.
