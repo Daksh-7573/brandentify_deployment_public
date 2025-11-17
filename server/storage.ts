@@ -3264,8 +3264,40 @@ export class MemStorage implements IStorage {
   
   async getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota> {
     try {
+      // Get user's subscription tier to determine quota limits
+      const user = await this.getUser(userId);
+      const isPremium = user?.subscriptionTier === 'premium';
+      const quotaMax = isPremium ? 20 : 10; // Premium: 20, Free: 10
+      
       const existingQuota = await this.getUserReactionQuota(userId);
+      
+      // If quota exists, check if max values need updating (e.g., user just upgraded/downgraded)
       if (existingQuota) {
+        const needsUpdate = 
+          existingQuota.insightfulQuotaMax !== quotaMax || 
+          existingQuota.misinformedQuotaMax !== quotaMax;
+        
+        if (needsUpdate) {
+          // Update quota max values to match current tier
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const result = await pool.query(`
+            UPDATE user_reaction_quotas 
+            SET insightful_quota_max = $3, misinformed_quota_max = $3, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = $1 AND date = $2
+            RETURNING id, user_id as "userId", date, 
+                      insightful_quota_used as "insightfulQuotaUsed",
+                      misinformed_quota_used as "misinformedQuotaUsed",
+                      insightful_quota_max as "insightfulQuotaMax",
+                      misinformed_quota_max as "misinformedQuotaMax",
+                      updated_at as "updatedAt"
+          `, [userId, today, quotaMax]);
+          
+          console.log(`[db.getOrCreateUserReactionQuota] Updated quota max for user ${userId} from ${existingQuota.insightfulQuotaMax} to ${quotaMax}`);
+          return result.rows[0];
+        }
+        
         return existingQuota;
       }
       
@@ -3275,14 +3307,14 @@ export class MemStorage implements IStorage {
       
       const result = await pool.query(`
         INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used, insightful_quota_max, misinformed_quota_max)
-        VALUES ($1, $2, 0, 0, 10, 10)
+        VALUES ($1, $2, 0, 0, $3, $3)
         RETURNING id, user_id as "userId", date, 
                   insightful_quota_used as "insightfulQuotaUsed",
                   misinformed_quota_used as "misinformedQuotaUsed",
                   insightful_quota_max as "insightfulQuotaMax",
                   misinformed_quota_max as "misinformedQuotaMax",
                   updated_at as "updatedAt"
-      `, [userId, today]);
+      `, [userId, today, quotaMax]);
       
       return result.rows[0];
     } catch (error) {

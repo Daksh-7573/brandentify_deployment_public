@@ -4,12 +4,15 @@
 Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform leverages local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth.
 
 ## Recent Changes (Nov 17, 2024)
-- **Premium Subscription System - In Progress**: Implementing free vs premium tier subscription system with Stripe integration.
-  - **Database Schema**: Added subscription fields to users table (subscriptionTier, subscriptionStatus, stripeCustomerId, subscriptionStartDate, subscriptionEndDate, premiumFeaturesUsage). Created subscriptionTransactions table for payment tracking.
-  - **Pulse Reactions System**: Discovered existing pulse reactions infrastructure (pulseReactions, userReactionQuotas tables already implemented). Free users: 10 Insightful + 10 Misinformed daily. Premium users: 20 each daily.
-  - **Free Tier Features**: Full profile, 2 portfolio templates (Corporate Executive, Scholar), 2 visiting card templates (Professional, Quantum Tech), 5 AI chat messages/month, 1 resume analysis/month, career quests only (no social quests), 1 career capsule, basic hashtag suggestions (3).
-  - **Premium Tier Features**: All portfolio templates, all visiting card templates, unlimited AI chat, unlimited resume analysis, all quest types (career + social), unlimited career capsules, advanced hashtag suggestions (10+), priority support, early access to features.
-  - **Premium Badge**: Luxury "B" monogram with gold gradient for premium users on profiles, search results, and pulse author names.
+- **Premium Subscription System - In Progress**: Implementing free vs premium tier subscription system with Razorpay integration (Stripe replaced with Razorpay for India market).
+  - **Database Schema**: Migrated to provider-agnostic subscription model. Added fields to users table: subscriptionTier, subscriptionStatus, paymentProvider, providerCustomerId, providerSubscriptionId, subscriptionStartDate, subscriptionEndDate, premiumFeaturesUsage. Updated subscriptionTransactions table with provider-agnostic fields: paymentProvider, providerOrderId, providerPaymentId, providerEventId, amountMinor, currency, providerMetadata.
+  - **Pulse Reactions System**: Updated reaction quotas to be tier-aware. Free users: 10 Insightful + 10 Misinformed daily. Premium users: 20 each daily.
+  - **Premium Badge Component**: Created luxury "B" monogram with gold gradient (`linear-gradient(135deg, #FFD700, #FFA500)`) for premium users.
+  - **Pricing Page**: Built glassmorphic pricing page with ₹799/month (monthly) and ₹7,999/year (17% savings on annual plan). Includes psychological triggers, feature comparison, FAQ section, and trust badges.
+  - **Free Tier Features**: Full profile, 2 portfolio templates (Corporate Executive, Scholar), 2 visiting card templates (Professional, Quantum Tech), 5 AI chat messages/month, 1 resume analysis/month, career quests only (no social quests), 1 career capsule, basic hashtag suggestions (3), 10 Insightful/Misinformed reactions daily.
+  - **Premium Tier Features**: All portfolio templates, all visiting card templates, unlimited AI chat, unlimited resume analysis, all quest types (career + social), unlimited career capsules, advanced hashtag suggestions (10+), priority support, early access to features, 20 Insightful/Misinformed reactions daily, premium badge on profile.
+  - **Payment Provider**: Razorpay (India-focused) with provider-agnostic schema for future multi-provider support. Razorpay package installed. Payment integration will be added when ready to go live.
+  - **Routes Added**: `/pricing` and `/upgrade` routes added to App.tsx.
 
 ## Previous Changes (Nov 14, 2024)
 - **Profile URL Standardization**: Standardized all profile URLs to use `/@brandname` format (e.g., `brandentifier.com/@nishantchopra`). Updated Quantum Card and Personal Info Section to display and link to `/@brandname` URLs. Made Quantum Card profile URL clickable. Profile URLs fall back to `/@username` if brand name is not set. This provides clean, memorable, brandable URLs that match user identity.
