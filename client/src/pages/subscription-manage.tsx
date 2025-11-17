@@ -24,12 +24,17 @@ export default function SubscriptionManage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const subscriptionTier = (user as any)?.subscriptionTier || 'free';
-  const subscriptionStatus = (user as any)?.subscriptionStatus || 'active';
+  const isPremium = subscriptionTier === 'premium';
+  
+  // Derive subscription status properly - free users are not subscribed
+  const subscriptionStatus = isPremium 
+    ? ((user as any)?.subscriptionStatus || 'active')
+    : 'not_subscribed';
+  
   const subscriptionStartDate = (user as any)?.subscriptionStartDate;
   const subscriptionEndDate = (user as any)?.subscriptionEndDate;
   const paymentProvider = (user as any)?.paymentProvider;
 
-  const isPremium = subscriptionTier === 'premium';
   const isActive = subscriptionStatus === 'active';
 
   const handleCancelSubscription = async () => {
@@ -86,12 +91,18 @@ export default function SubscriptionManage() {
             </div>
             <Badge
               className={
-                isActive
+                isPremium && isActive
                   ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                  : subscriptionStatus === 'not_subscribed'
+                  ? 'bg-gray-500/20 text-gray-400 border-gray-500/30'
                   : 'bg-red-500/20 text-red-400 border-red-500/30'
               }
             >
-              {isActive ? (
+              {subscriptionStatus === 'not_subscribed' ? (
+                <>
+                  Free Tier
+                </>
+              ) : isActive ? (
                 <>
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Active
@@ -105,7 +116,7 @@ export default function SubscriptionManage() {
             </Badge>
           </div>
 
-          {isPremium && (
+          {isPremium && isActive && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {subscriptionStartDate && (
