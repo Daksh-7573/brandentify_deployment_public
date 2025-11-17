@@ -62,6 +62,7 @@ import { Label } from "@/components/ui/label";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { SearchableUserSelect } from "@/components/share/searchable-user-select";
 import { SocialShareButtons } from "@/components/share/social-share-buttons";
+import { PremiumBadge } from "@/components/ui/premium-badge";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -1380,8 +1381,9 @@ export default function IndustryPulsePage() {
                                   )}
                                 </Avatar>
                                 <div>
-                                  <div className="font-medium">
-                                    {pulse.user?.name || "Anonymous User"}
+                                  <div className="font-medium flex items-center gap-2">
+                                    <span>{pulse.user?.name || "Anonymous User"}</span>
+                                    {(pulse.user as any)?.subscriptionTier === 'premium' && <PremiumBadge size="sm" />}
                                     {/* Special labeling for Musk */}
                                     {pulse.userId === 3 && <span className="text-amber-500 ml-1">⚡</span>}
                                   </div>

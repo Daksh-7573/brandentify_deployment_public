@@ -82,6 +82,8 @@ const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
 const PricingPage = lazy(() => import("@/pages/pricing"));
+const SubscriptionManagePage = lazy(() => import("@/pages/subscription-manage"));
+const SubscriptionSuccessPage = lazy(() => import("@/pages/subscription-success"));
 
 // Admin and debug components (lowest priority)
 const NavigationTest = lazy(() => import("@/pages/navigation-test"));
@@ -308,6 +310,12 @@ function Router() {
           )} />
           <Route path="/pricing" component={PricingPage} />
           <Route path="/upgrade" component={PricingPage} />
+          <Route path="/subscription/manage" component={() => (
+            <ProtectedRoute path="/subscription/manage" component={SubscriptionManagePage} />
+          )} />
+          <Route path="/subscription/success" component={() => (
+            <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
+          )} />
         </>
       )}
       

@@ -46,6 +46,7 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { SkillsListSkeleton, EducationItemSkeleton, ExperienceItemSkeleton, ProfileCardSkeleton } from "@/components/ui/skeleton-components";
+import { PremiumBadge } from "@/components/ui/premium-badge";
 
 // Define "I am looking for" categories - matching the form constants with icons
 const LOOKING_FOR_CATEGORIES = [
@@ -455,7 +456,10 @@ export default function ProfileNeo() {
                     </div>
                     
                     <div className="text-center mt-3 sm:mt-4">
-                      <h2 className="text-lg sm:text-xl font-bold text-white">{userData?.name}</h2>
+                      <div className="flex items-center justify-center gap-2">
+                        <h2 className="text-lg sm:text-xl font-bold text-white">{userData?.name}</h2>
+                        {(userData as any)?.subscriptionTier === 'premium' && <PremiumBadge size="md" />}
+                      </div>
                       
                       {/* Edit Profile Button */}
                       <button

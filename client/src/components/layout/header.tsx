@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield, Crown } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
+import { PremiumBadge } from "@/components/ui/premium-badge";
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -292,6 +293,22 @@ export default function Header() {
               )}
             </Button>
 
+            {/* Premium Upgrade or Status */}
+            {(userData as any)?.subscriptionTier === 'premium' ? (
+              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-400/20 to-orange-500/20 border border-yellow-400/30">
+                <PremiumBadge size="sm" showTooltip={false} />
+                <span className="text-xs font-medium text-yellow-400">Premium</span>
+              </div>
+            ) : (
+              <button 
+                className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-yellow-500/30 transition-all hover:scale-105"
+                onClick={() => setLocation('/pricing')}
+              >
+                <Crown className="h-4 w-4" />
+                <span>Upgrade to Premium</span>
+              </button>
+            )}
+            
             {/* Create Pulse Button */}
             <button 
               className="neo-glass-button hidden sm:flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"

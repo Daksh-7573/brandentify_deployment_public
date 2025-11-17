@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PremiumBadge } from "@/components/ui/premium-badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
@@ -48,6 +49,7 @@ type SearchResultsType = {
     location: string | null;
     industry: string | null;
     randomProfileLink: string | null;
+    subscriptionTier?: string;
   }>;
   hashtags: Array<{
     id: number;
@@ -662,7 +664,10 @@ function SearchPage() {
                                   </Avatar>
                                 </div>
                                 <div className="text-center">
-                                  <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
+                                  <div className="flex items-center justify-center gap-2">
+                                    <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
+                                    {profile.subscriptionTier === 'premium' && <PremiumBadge size="sm" />}
+                                  </div>
                                   <p className="text-gray-300">{profile.title || "Professional"}</p>
                                   
                                   {(profile.location || profile.industry) && (
