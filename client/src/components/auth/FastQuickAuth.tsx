@@ -21,13 +21,14 @@ export function FastQuickAuth({ simulateNewUser = false }: FastQuickAuthProps) {
     try {
       console.log('🚀 Fast Quick Auth starting...');
       
-      // Create test user data
+      // Create test user data with unique email to avoid conflicts
+      const timestamp = Date.now();
       const userData = {
-        firebaseUid: 'quick-test-' + Date.now(),
-        email: 'quicktest@brandentifier.com',
-        name: 'Quick Test User',
+        firebaseUid: 'quick-test-' + timestamp,
+        email: `test${timestamp}@brandentifier.com`,
+        name: 'Test User',
         photoURL: '',
-        googleId: 'quick-google-' + Date.now(),
+        googleId: 'quick-google-' + timestamp,
         authProvider: 'google',
         emailVerified: true
       };
