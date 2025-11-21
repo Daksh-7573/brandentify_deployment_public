@@ -456,10 +456,15 @@ export default function ProfileNeo() {
                     </div>
                     
                     <div className="text-center mt-3 sm:mt-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <h2 className="text-lg sm:text-xl font-bold text-white">{userData?.name}</h2>
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                        <h2 className={`text-lg sm:text-xl font-bold ${(userData as any)?.subscriptionTier === 'premium' ? 'bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 bg-clip-text text-transparent' : 'text-white'}`}>{userData?.name}</h2>
                         {(userData as any)?.subscriptionTier === 'premium' && <PremiumBadge size="md" />}
                       </div>
+                      {(userData as any)?.subscriptionTier === 'premium' && (
+                        <div className="mt-2 inline-block px-3 py-1 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 border border-yellow-400/50 rounded-full">
+                          <p className="text-xs font-semibold bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">★ PREMIUM MEMBER ★</p>
+                        </div>
+                      )}
                       
                       {/* Edit Profile Button */}
                       <button
