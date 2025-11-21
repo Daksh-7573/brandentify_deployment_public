@@ -8975,7 +8975,12 @@ export class DatabaseStorage implements IStorage {
             core_values as "coreValues",
             unique_value_proposition as "uniqueValueProposition",
             primary_audience as "primaryAudience",
-            secondary_audience as "secondaryAudience"
+            secondary_audience as "secondaryAudience",
+            subscription_tier as "subscriptionTier",
+            subscription_status as "subscriptionStatus",
+            subscription_start_date as "subscriptionStartDate",
+            subscription_end_date as "subscriptionEndDate",
+            payment_provider as "paymentProvider"
           FROM users
           WHERE id = $1
         `;
@@ -9023,7 +9028,12 @@ export class DatabaseStorage implements IStorage {
             core_values as "coreValues",
             unique_value_proposition as "uniqueValueProposition",
             primary_audience as "primaryAudience",
-            secondary_audience as "secondaryAudience"
+            secondary_audience as "secondaryAudience",
+            subscription_tier as "subscriptionTier",
+            subscription_status as "subscriptionStatus",
+            subscription_start_date as "subscriptionStartDate",
+            subscription_end_date as "subscriptionEndDate",
+            payment_provider as "paymentProvider"
           FROM users
           WHERE email = $1
         `, [email]);
