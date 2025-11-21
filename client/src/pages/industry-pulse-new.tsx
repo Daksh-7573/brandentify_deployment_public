@@ -107,6 +107,28 @@ function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactions
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
+  // Clean up all old cache entries and invalidate old queries when user changes
+  useEffect(() => {
+    console.log(`[QUOTA FIX] PulseReactions mounted/updated with currentUserId: ${currentUserId}, computed userId: ${userId}`);
+    
+    // Clear ALL user quota caches from localStorage
+    try {
+      for (let i = 1; i <= 10; i++) {
+        const cacheKey = `api_cache_/api/users/${i}/reaction-quota`;
+        localStorage.removeItem(cacheKey);
+      }
+      console.log(`[QUOTA FIX] Cleared all user quota caches from localStorage`);
+    } catch (e) {
+      console.warn('Failed to clear localStorage cache:', e);
+    }
+    
+    // Invalidate all user quota queries from React Query
+    queryClient.invalidateQueries({ 
+      queryKey: [/\/api\/users\/.*\/reaction-quota/] as any
+    });
+    console.log(`[QUOTA FIX] Invalidated all user quota queries from React Query`);
+  }, [userId]);
+  
   // Get user reaction quota - always fetch fresh (no caching)
   const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
@@ -114,24 +136,6 @@ function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactions
     refetchOnMount: 'always', // Always refetch when component mounts
     gcTime: 0, // Don't cache at all
   });
-  
-  // Force refetch quota whenever currentUserId changes (especially when switching from 1 to real userId)
-  useEffect(() => {
-    if (currentUserId !== undefined && currentUserId > 1) {
-      // Clear localStorage cache for this user
-      const cacheKey = `api_cache_/api/users/${currentUserId}/reaction-quota`;
-      try {
-        localStorage.removeItem(cacheKey);
-        console.log(`[QUOTA FIX] Cleared localStorage for user ${currentUserId}`);
-      } catch (e) {
-        console.warn('Failed to clear localStorage cache:', e);
-      }
-      
-      // Force refetch
-      console.log(`[QUOTA FIX] Refetching quota for user ${currentUserId}`);
-      refetchQuota();
-    }
-  }, [currentUserId, refetchQuota]);
   
   // Get user's reactions for this pulse
   const { data: userReactionsData } = useQuery<any[]>({
