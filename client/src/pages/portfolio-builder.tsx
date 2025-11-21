@@ -130,6 +130,16 @@ export default function PortfolioBuilder() {
     return true;
   };
 
+  // Filter templates - show only free templates for free users
+  const FREE_PORTFOLIO_TEMPLATES = ['professional', 'scholar'];
+  const getVisibleTemplates = () => {
+    const allLayouts = layoutOptions;
+    if (isPremium) {
+      return allLayouts;
+    }
+    return allLayouts.filter(layout => FREE_PORTFOLIO_TEMPLATES.includes(layout.id));
+  };
+
   // Define User type to match server-side schema
   type User = {
     id: number;
@@ -809,7 +819,7 @@ export default function PortfolioBuilder() {
               </div>
             
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {layoutOptions.map(layout => {
+                {getVisibleTemplates().map(layout => {
                   const locked = isLayoutLocked(layout.id);
                   return (
                     <div 

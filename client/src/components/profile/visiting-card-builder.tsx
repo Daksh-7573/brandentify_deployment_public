@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Info, Download, Share2, Check, Loader2, Lock, Gift } from "lucide-react";
+import { BadgeCheck, Info, Download, Share2, Check, Loader2, Lock, Gift, Crown } from "lucide-react";
 import { UserData } from "@/types/user";
 import VisitingCardPreview from "./visiting-card-preview";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useReferralStatus } from "@/hooks/use-referral";
 import { ShareModal } from "@/components/referral/share-modal";
+import { FREE_VISITING_CARD_TEMPLATES } from "@/lib/feature-access";
 
 // Card type options
 const CARD_TYPES = [
@@ -68,6 +69,11 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     if (!referralStatus) return false;
     const card = referralStatus.quantumCards.find((c) => c.id === cardId);
     return card?.locked ?? false;
+  };
+
+  // Check if a card is free tier
+  const isCardFree = (cardId: string): boolean => {
+    return FREE_VISITING_CARD_TEMPLATES.includes(cardId);
   };
 
   // Handle tab change
@@ -314,6 +320,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("professional") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Professional
+                  {!isCardFree("professional") && !isCardLocked("professional") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="3d-animated" 
@@ -322,6 +329,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("3d-animated") && <Lock className="h-3 w-3 mr-1 inline" />}
                   3D
+                  {!isCardFree("3d-animated") && !isCardLocked("3d-animated") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="holographic" 
@@ -330,6 +338,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("holographic") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Holographic
+                  {!isCardFree("holographic") && !isCardLocked("holographic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
@@ -340,6 +349,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("neoglow") && <Lock className="h-3 w-3 mr-1 inline" />}
                   NeoGlow
+                  {!isCardFree("neoglow") && !isCardLocked("neoglow") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="creative" 
@@ -348,6 +358,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("creative") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Creative
+                  {!isCardFree("creative") && !isCardLocked("creative") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="artistic" 
@@ -356,6 +367,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("artistic") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Artistic
+                  {!isCardFree("artistic") && !isCardLocked("artistic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-1 mb-6 dark-tabs-list">
@@ -366,6 +378,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                 >
                   {isCardLocked("quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Quantum Tech
+                  {!isCardFree("quantum") && !isCardLocked("quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               
