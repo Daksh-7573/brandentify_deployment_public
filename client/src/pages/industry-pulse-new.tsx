@@ -107,9 +107,23 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
-  // Get user reaction quota
-  const { data: quotaData } = useQuery<any>({
+  // Clear localStorage cache for reaction quota on component mount to force fresh data
+  useEffect(() => {
+    const cacheKey = `api_cache_/api/users/${userId}/reaction-quota`;
+    try {
+      localStorage.removeItem(cacheKey);
+      console.log('[QUOTA FIX] Cleared stale localStorage cache for reaction quota');
+    } catch (e) {
+      console.warn('Failed to clear localStorage cache:', e);
+    }
+  }, [userId]);
+  
+  // Get user reaction quota - always fetch fresh (no caching)
+  const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
+    staleTime: 0, // Always consider stale, force refetch
+    refetchOnMount: 'always', // Always refetch when component mounts
+    gcTime: 0, // Don't cache at all
   });
   
   // Get user's reactions for this pulse
