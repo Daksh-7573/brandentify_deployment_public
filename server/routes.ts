@@ -7725,6 +7725,11 @@ ${extractedText.substring(0, 5000)}
         }
       }
       
+      // Get user's subscription tier to determine max quota
+      const userResult = await pool.query(`SELECT subscription_tier FROM users WHERE id = $1`, [userId]);
+      const userTier = userResult.rows[0]?.subscription_tier;
+      const defaultMaxQuota = userTier === 'premium' ? 20 : 10;
+      
       // Direct database query for reaction quota to fix the issue
       const result = await pool.query(`
         SELECT user_id as "userId", 
@@ -7743,37 +7748,41 @@ ${extractedText.substring(0, 5000)}
         const createResult = await pool.query(`
           INSERT INTO user_reaction_quotas (user_id, insightful_quota_used, insightful_quota_max, 
                                           misinformed_quota_used, misinformed_quota_max, date)
-          VALUES ($1, 0, 10, 0, 10, CURRENT_DATE)
+          VALUES ($1, 0, $2, 0, $2, CURRENT_DATE)
           RETURNING user_id as "userId", 
                    insightful_quota_used as "insightfulQuotaUsed",
                    insightful_quota_max as "insightfulQuotaMax",
                    misinformed_quota_used as "misinformedQuotaUsed",
                    misinformed_quota_max as "misinformedQuotaMax",
                    date as "lastResetDate"
-        `, [userId]);
+        `, [userId, defaultMaxQuota]);
         quota = createResult.rows[0];
       } else {
         quota = result.rows[0];
       }
       
+      // Use defaultMaxQuota for premium users, or stored max for existing records
+      const insightfulMax = quota.insightfulQuotaMax || defaultMaxQuota;
+      const misinformedMax = quota.misinformedQuotaMax || defaultMaxQuota;
+      
       // Format the response
       const response = {
         insightful: {
           used: quota.insightfulQuotaUsed || 0,
-          remaining: (quota.insightfulQuotaMax || 10) - (quota.insightfulQuotaUsed || 0),
-          max: quota.insightfulQuotaMax || 10
+          remaining: insightfulMax - (quota.insightfulQuotaUsed || 0),
+          max: insightfulMax
         },
         misinformed: {
           used: quota.misinformedQuotaUsed || 0,
-          remaining: (quota.misinformedQuotaMax || 10) - (quota.misinformedQuotaUsed || 0),
-          max: quota.misinformedQuotaMax || 10
+          remaining: misinformedMax - (quota.misinformedQuotaUsed || 0),
+          max: misinformedMax
         },
         date: quota.date
       };
       
       res.json(response);
     } catch (error) {
-      console.error("Error fetching reaction quota:", error);
+      console.error("Error fetching reaction quota:", error as Error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
