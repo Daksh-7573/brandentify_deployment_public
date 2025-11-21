@@ -96,19 +96,18 @@ interface PulseWithUser {
 interface PulseReactionsProps {
   pulse: PulseWithUser;
   onCommentClick?: () => void;
+  userId: number; // Pass userId from parent to avoid auth context issues
 }
 
-function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
+function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) {
   const { toast } = useToast();
-  const { user } = useAuth();
-  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
   
   // State for the share dialog
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
   // Get user reaction quota - with explicit refetch on userId change
-  const { data: quotaData, refetch: refetchQuota, isLoading: quotaLoading } = useQuery<any>({
+  const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
     enabled: true, // Always enabled
     refetchOnWindowFocus: true,
@@ -116,16 +115,8 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
     staleTime: 0, // Always consider stale, always refetch
   });
   
-  // Debug logging
-  useEffect(() => {
-    console.log('[QUOTA DEBUG] userId:', userId);
-    console.log('[QUOTA DEBUG] quotaData:', quotaData);
-    console.log('[QUOTA DEBUG] quotaLoading:', quotaLoading);
-  }, [userId, quotaData, quotaLoading]);
-  
   // Refetch quota when userId changes
   useEffect(() => {
-    console.log('[QUOTA DEBUG] Refetching quota for userId:', userId);
     refetchQuota();
   }, [userId, refetchQuota]);
   
@@ -1523,7 +1514,8 @@ export default function IndustryPulsePage() {
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-2">
                             <PulseReactions 
-                              pulse={pulse} 
+                              pulse={pulse}
+                              userId={userId || 1}
                               onCommentClick={() => {
                                 setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
                               }}
