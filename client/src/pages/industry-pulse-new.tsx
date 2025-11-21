@@ -1304,19 +1304,27 @@ export default function IndustryPulsePage() {
   
   // Filter pulses based on the active tab
   // IMPORTANT: Hide all Musk Pulses (news-pulse type, userId 3)
-  const filteredPulses = pulses.filter((pulse: PulseWithUser) => {
-    // First, exclude all Musk Pulses (news-pulse type OR userId 3)
-    const isMuskPulse = (pulse.type as string) === "news-pulse" || pulse.userId === 3;
-    if (isMuskPulse) return false;
-    
-    // Then apply tab filtering
-    if (activeTab === "all") return true;
-    return pulse.type === activeTab;
-  });
+  // Apply subscription tier limits: Premium = 20, Free = 5
+  const userSubscriptionTier = user?.subscriptionTier || 'free';
+  const pulseLimit = userSubscriptionTier === 'premium' ? 20 : 5;
+  
+  const filteredPulses = pulses
+    .filter((pulse: PulseWithUser) => {
+      // First, exclude all Musk Pulses (news-pulse type OR userId 3)
+      const isMuskPulse = (pulse.type as string) === "news-pulse" || pulse.userId === 3;
+      if (isMuskPulse) return false;
+      
+      // Then apply tab filtering
+      if (activeTab === "all") return true;
+      return pulse.type === activeTab;
+    })
+    .slice(0, pulseLimit); // Apply subscription tier limit
   
   console.log('[INDUSTRY PULSE] Debug info:', {
     pulsesCount: pulses.length,
     filteredCount: filteredPulses.length,
+    userSubscriptionTier,
+    pulseLimit,
     isLoading,
     isError,
     activeTab
