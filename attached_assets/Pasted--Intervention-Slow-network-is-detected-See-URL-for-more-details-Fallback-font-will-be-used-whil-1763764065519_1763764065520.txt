@@ -1,0 +1,424 @@
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+76The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+76The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+76The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+Brandentifier:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+Brandentifier:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+Brandentifier:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+430ca3654902c4d1.js:2 [Coframe] Replit Enterprise watcher loaded
+430ca3654902c4d1.js:2 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+430ca3654902c4d1.js:2 Download the Apollo DevTools for a better development experience: https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+430ca3654902c4d1.js:2 [LaunchDarkly] LaunchDarkly client initialized
+Brandentifier:1 Access to fetch at 'https://e.adora-cdn.com/sessions/019aa805-4a4c-772a-8a77-8e8f6e6c79bd/events' from origin 'https://replit.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
+e.adora-cdn.com/sessions/019aa805-4a4c-772a-8a77-8e8f6e6c79bd/events:1  Failed to load resource: net::ERR_FAILEDUnderstand this error
+Brandentifier:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+53Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+ed1e693c96a75807.js:2 Unrecognized feature: 'ambient-light-sensor'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'battery'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'execution-while-not-rendered'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'execution-while-out-of-viewport'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'layout-animations'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'legacy-image-formats'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'navigation-override'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'oversized-images'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'publickey-credentials'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'speaker-selection'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'unoptimized-images'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'unsized-media'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'pointer-lock'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Allow attribute will take precedence over 'allowfullscreen'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Allow attribute will take precedence over 'allowpaymentrequest'.
+z @ ed1e693c96a75807.js:2Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+stallwart.build.js:1 stallwart: failed ping 1
+430ca3654902c4d1.js:2 [Coframe] Mutation callback infinite loop protection triggered, disconnecting mutation observer Object
+(anonymous) @ 430ca3654902c4d1.js:2Understand this error
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+mixkit-achievement-bell-600.wav:1  Failed to load resource: net::ERR_CACHE_OPERATION_NOT_SUPPORTEDUnderstand this error
+Brandentifier:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was receivedUnderstand this error
+stallwart.build.js:1 stallwart: failed ping 1
+Brandentifier:1 WebGL: CONTEXT_LOST_WEBGL: loseContext: context lostUnderstand this warning
+430ca3654902c4d1.js:2 webglcontextlost event received
+430ca3654902c4d1.js:2 webglcontextrestored event received
+(anonymous) @ 430ca3654902c4d1.js:2
+(anonymous) @ 88d0f16a452cf8eb.js:2
+o @ 430ca3654902c4d1.js:2Understand this warning
+24WebGL: INVALID_OPERATION: delete: object does not belong to this contextUnderstand this warning
+3stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+2stallwart.build.js:1 stallwart: failed ping 1
+t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://nishant.br&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://nishant.br/&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2hd%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/:131 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/:132 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=JPGq2luUruHq' failed: 
+setupWebSocket @ client:536Understand this error
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=UnF4_o04N4RlHQlkhrXzf:1  Failed to load resource: the server responded with a status of 504 (Gateway Timeout)Understand this error
+12The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/:131 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/:132 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+injected.js:37 [SW DISABLED] Unregistering all service workers to clear cache
+injected.js:37 [SW DISABLED] ✅ All service workers and caches cleared - fresh content will load
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=JPGq2luUruHq' failed: 
+setupWebSocket @ client:536Understand this error
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=JPGq2luUruHq' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)Understand this error
+injected.js:37 [Skeleton] Backup removal after 3s
+injected.js:37 🚫 Firebase configuration file loaded but Firebase is DISABLED - using custom OAuth only
+injected.js:37 [PERF] React app initialization started
+injected.js:37 [PERF] React rendering started
+injected.js:37 [Skeleton] DOM loaded, preparing smooth transition
+injected.js:37 AuthProvider: Current state: Object
+injected.js:37 [PERF] React app rendered in 29.50 ms
+injected.js:37 [PERF] Total initialization time: 29.80 ms
+injected.js:37 AuthProvider: Starting auth check, current loading state: true
+injected.js:37 AuthProvider: Running checkAuth
+injected.js:37 AuthProvider: Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+injected.js:37 AuthProvider: Domain check result: Object
+injected.js:37 AuthProvider: Replit domain detected, checking server session 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+injected.js:37 AuthProvider: Fetching server session for published domain...
+injected.js:37 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+injected.js:37 📊 Total page load time: 4942.50ms
+injected.js:37 🔥 Firebase init time: 4942.50ms
+injected.js:37 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+injected.js:37 ⚡ Expected improvement: 100-300ms faster cold starts
+injected.js:37 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+injected.js:37 ⚡ Expected improvement: 150-250ms faster auth loads
+injected.js:37 🔄 [Strategy 4] Service Worker: Installing...
+injected.js:37 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+injected.js:37 📈 Performance Optimization Complete - All 4 strategies active!
+injected.js:37 [Skeleton] Starting fade-out transition
+injected.js:37 [PERF] Skeleton loader removed in 152.80 ms
+injected.js:37 [Skeleton] Skeleton loading complete - app ready
+injected.js:37 ⚡ [PERF] Skeleton-to-app transition: 5103.80ms
+injected.js:37 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+injected.js:37 ⚡ Expected improvement: 50-100ms perceived performance boost
+injected.js:37 Landing page - Auth state: Object
+injected.js:37 [Progressive Loading] Starting tiered component loading
+injected.js:37 [Progressive Loading] ⚡ Core components ready
+injected.js:37 [Progressive Loading] 🚀 Secondary components loaded
+injected.js:37 [Progressive Loading] 🔧 All components loaded in 204.80ms
+injected.js:37 AuthProvider: Server session response: Object
+injected.js:37 AuthProvider: Raw server response: Object
+injected.js:37 AuthProvider: Unwrapped user from server response
+injected.js:37 AuthProvider: Server session found for user: nishant.brodos@gmail.com
+injected.js:37 AuthProvider: Current state: Object
+injected.js:37 Landing page - Auth state: Object
+injected.js:37 Cached response for /api/users/2
+injected.js:37 Cached response for /api/users/2/skills
+injected.js:37 AuthProvider: Failsafe timeout - forcing loading to false
+(anonymous) @ injected.js:37Understand this warning
+injected.js:37 AuthProvider: Current state: Object
+injected.js:37 Cached response for /api/users/2/experiences
+injected.js:37 Cached response for /api/users/2/educations
+injected.js:37 Cached response for /api/users/2/projects
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 [HEADER PERFORMANCE] Fetching user data for ID: 2
+injected.js:37 Header mounted - invalidating user query
+injected.js:37 [HEADER PERFORMANCE] Fetching user data for ID: 2
+injected.js:37 Fetching data from: /api/nowboard-items
+injected.js:37 [HEADER IMAGE DEBUG] Image loaded successfully
+injected.js:37 [HEADER IMAGE DEBUG] Image source type: BASE64
+injected.js:37 [HEADER IMAGE DEBUG] Image source length: 40579
+2injected.js:37 Cached response for /api/users/2
+injected.js:37 Cached response for /api/users/2/experiences
+injected.js:37 Cached response for /api/users/2/educations
+injected.js:37 Cached response for /api/users/2/skills
+injected.js:37 Cached response for /api/users/2/projects
+2injected.js:37 [HEADER PERFORMANCE] User data loaded: SUCCESS
+injected.js:37 Cached response for /api/notifications/2/count
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:37 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:37 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:37 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:37 Fetching data from: /api/nowboard-items/14/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/13/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/11/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/10/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/9/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/7/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/5/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/4/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/1/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/2/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/3/inspired-by/2
+injected.js:37 Fetching data from: /api/nowboard-items/6/inspired-by/2
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 NowboardMenu rendering for item: 14 currentUser: 2 itemUser: 2
+injected.js:37 NowboardMenu rendering for item: 13 currentUser: 2 itemUser: 2
+injected.js:37 NowboardMenu rendering for item: 11 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 10 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 9 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 7 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 5 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 4 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 1 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 2 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 3 currentUser: 2 itemUser: 4
+injected.js:37 NowboardMenu rendering for item: 6 currentUser: 2 itemUser: 4
+injected.js:37 Pulse received for carousel: {id: 6, userId: 4, targetUserId: null, type: 'media-pulse', category: null, …}
+injected.js:37 Media URLs: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+injected.js:37 Media localStorage keys: []
+injected.js:37 Using mediaUrls for carousel: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+injected.js:37 Fetching data from: /api/users/1/reaction-quota
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/6/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/2/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/1/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/333
+injected.js:37 Fetching data from: /api/pulses/333/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/333/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/294
+injected.js:37 Fetching data from: /api/pulses/294/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/294/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/289
+injected.js:37 Fetching data from: /api/pulses/289/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/289/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/403/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/402/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/401/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/400/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/393/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/217
+injected.js:37 Fetching data from: /api/pulses/217/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/217/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/218/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/219/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/159
+injected.js:37 Fetching data from: /api/pulses/159/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/159/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/158
+injected.js:37 Fetching data from: /api/pulses/158/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/158/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/41
+injected.js:37 Fetching data from: /api/pulses/41/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/41/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/40
+injected.js:37 Fetching data from: /api/pulses/40/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/40/reactions
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/7/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/4
+injected.js:37 Fetching data from: /api/pulses/4/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/4/reactions
+injected.js:37 Fetching data from: /api/poll-votes/user/1/pulse/3
+injected.js:37 Fetching data from: /api/pulses/3/poll-votes
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: undefined
+injected.js:37 [QUOTA DEBUG] quotaLoading: true
+injected.js:37 [QUOTA DEBUG] Refetching quota for userId: 1
+injected.js:37 Fetching data from: /api/pulses/3/reactions
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
+injected.js:37 [QUOTA DEBUG] userId: 1
+injected.js:37 [QUOTA DEBUG] quotaData: {insightful: {…}, misinformed: {…}}
+injected.js:37 [QUOTA DEBUG] quotaLoading: false
