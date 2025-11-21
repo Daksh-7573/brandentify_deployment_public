@@ -268,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         request_host: req.get('host'),
         user_agent: req.get('user-agent')?.substring(0, 50) + '...'
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`🚨 [DB FINGERPRINT] Error:`, error);
       res.status(500).json({
         error: 'Database fingerprint error',
@@ -710,7 +710,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "User registered successfully, but verification email could not be sent. Please try again later."
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
       } else {
@@ -736,7 +736,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/by-username/:username] Found user with username: ${username}`);
       return res.json(user);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching user by username:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -758,7 +758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/by-email/:email] Found user with email:`, user);
       return res.json(user);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching user by email:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -781,7 +781,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" is ${available ? 'available' : 'taken'}`);
       return res.json({ available });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error checking brand name availability:", error);
       res.status(500).json({ available: false, reason: 'server_error' });
     }
@@ -866,7 +866,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             user.domain = result.rows[0].domain;
             console.log(`[GET /users/:id] Added domain explicitly:`, user.domain);
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(`[GET /users/:id] Error fetching domain:`, error);
         }
       }
@@ -876,7 +876,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/:id] Found user with numeric ID: ${user.id}`);
       res.json(user);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -962,7 +962,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedUser);
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("[FORCE UPDATE] Error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1033,7 +1033,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (result.rows.length > 0 && result.rows[0].domain) {
             user.domain = result.rows[0].domain;
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(`[GET /shared-card/:id] Error fetching domain:`, error);
         }
       }
@@ -1049,7 +1049,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /shared-card/:id] Returning enhanced user data for shared card`);
       return res.json(enhancedUser);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error in shared card endpoint:", error);
       res.status(500).json({ message: "Internal server error fetching shared card" });
     }
@@ -1090,7 +1090,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Brand name is taken by another user
       console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" is taken by user ${existingUser.id}`);
       res.json({ available: false, reason: 'Brand name is already taken' });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error checking brand name availability:", error);
       res.status(500).json({ available: false, reason: 'Server error' });
     }
@@ -1157,7 +1157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       res.json(publicUser);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching user by brand name:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1202,7 +1202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[GET /users/search] Found ${result.rows.length} users matching "${query}"`);
       
       res.json(result.rows);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error searching users:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1282,7 +1282,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       res.json(publicUser);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching user by random link:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1431,7 +1431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Continue to the actual route handler
       next();
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('❌ [AUTH-GUARD] Authentication validation error:', error);
       return res.status(500).json({
         success: false,
@@ -1663,7 +1663,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error(`[PUT /users/:id] Fresh data fetch failed:`, freshError);
         res.json(updatedUser);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating user:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1760,7 +1760,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error(`[PATCH /users/:id] Fresh data fetch failed:`, freshError);
         res.json(updatedUser);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating user (PATCH):", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1793,7 +1793,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const resume = await storage.createResume(resumeData);
       console.log(`[POST /resumes] Created resume with ID: ${resume.id}`);
       res.status(201).json(resume);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         console.error(`[POST /resumes] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
@@ -1847,7 +1847,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/:userId/resume] Found resume:`, resume);
       res.json(resume);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching resume:", error);
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1894,7 +1894,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Return the parsed resume data
         return res.status(200).json(parsedResume);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(`[POST /resume/parse] Error processing file:`, error);
         
         // Try to clean up temporary file even if processing failed
@@ -7327,6 +7327,10 @@ ${extractedText.substring(0, 5000)}
       
       console.log(`[POST /pulse-reactions] User ${userId} verified, proceeding with reaction`);
       
+      // Get user's subscription tier to determine reaction quota limit
+      const userTierResult = await pool.query(`SELECT subscription_tier FROM users WHERE id = $1`, [userId]);
+      const userTier = userTierResult.rows[0]?.subscription_tier;
+      const defaultMaxQuota = userTier === 'premium' ? 20 : 10;
       
       // Check quota first
       const today = new Date().toISOString().split('T')[0];
@@ -7334,14 +7338,14 @@ ${extractedText.substring(0, 5000)}
         SELECT 
           COALESCE(insightful_quota_used, 0) as insightful_used,
           COALESCE(misinformed_quota_used, 0) as misinformed_used,
-          COALESCE(insightful_quota_max, 10) as insightful_max,
-          COALESCE(misinformed_quota_max, 10) as misinformed_max
+          COALESCE(insightful_quota_max, $3) as insightful_max,
+          COALESCE(misinformed_quota_max, $3) as misinformed_max
         FROM user_reaction_quotas 
         WHERE user_id = $1 AND date = $2
-      `, [userId, today]);
+      `, [userId, today, defaultMaxQuota]);
       
       let currentUsed = 0;
-      let maxQuota = 10;
+      let maxQuota = defaultMaxQuota;
       
       if (quotaResult.rows.length > 0) {
         const quota = quotaResult.rows[0];
@@ -7526,7 +7530,7 @@ ${extractedText.substring(0, 5000)}
         message: "Reaction created successfully"
       });
     } catch (error) {
-      console.error(`[POST /pulse-reactions] Error:`, error);
+      console.error(`[POST /pulse-reactions] Error:`, error as Error);
       res.status(500).json({ message: "Internal server error", error: error instanceof Error ? error.message : String(error) });
     }
   });
@@ -7593,21 +7597,26 @@ ${extractedText.substring(0, 5000)}
         `, [user_id, today]);
       }
       
+      // Get user's subscription tier to determine reaction quota limit
+      const userTierResult = await pool.query(`SELECT subscription_tier FROM users WHERE id = $1`, [user_id]);
+      const userTier = userTierResult.rows[0]?.subscription_tier;
+      const defaultMaxQuota = userTier === 'premium' ? 20 : 10;
+      
       // Get updated quota info to return
       const quotaResult = await pool.query(`
         SELECT 
           COALESCE(insightful_quota_used, 0) as insightful_used,
           COALESCE(misinformed_quota_used, 0) as misinformed_used,
-          COALESCE(insightful_quota_max, 10) as insightful_max,
-          COALESCE(misinformed_quota_max, 10) as misinformed_max
+          COALESCE(insightful_quota_max, $3) as insightful_max,
+          COALESCE(misinformed_quota_max, $3) as misinformed_max
         FROM user_reaction_quotas 
         WHERE user_id = $1 AND date = $2
-      `, [user_id, today]);
+      `, [user_id, today, defaultMaxQuota]);
       
       let quotaData = {
         used: 0,
-        remaining: 10,
-        max: 10
+        remaining: defaultMaxQuota,
+        max: defaultMaxQuota
       };
       
       if (quotaResult.rows.length > 0) {
@@ -7629,7 +7638,7 @@ ${extractedText.substring(0, 5000)}
         quota: quotaData
       });
     } catch (error) {
-      console.error(`[DELETE /pulse-reactions/:id] Error:`, error);
+      console.error(`[DELETE /pulse-reactions/:id] Error:`, error as Error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -7659,7 +7668,7 @@ ${extractedText.substring(0, 5000)}
       
       res.json(reactions);
     } catch (error) {
-      console.error(`[GET /pulses/:pulseId/reactions] Error:`, error);
+      console.error(`[GET /pulses/:pulseId/reactions] Error:`, error as Error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
