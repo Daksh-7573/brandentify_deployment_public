@@ -1610,6 +1610,222 @@ export default function IndustryPulsePage() {
                     </NeoGlassSection>
                   )}
                 </TabsContent>
+                
+                <TabsContent value="poll">
+                  {/* Smart refresh banner */}
+                  <SmartRefreshBanner 
+                    hasNewContent={hasNewContent} 
+                    onRefresh={handleRefresh}
+                    isPremiumContent={hasPremiumContent}
+                  />
+                  
+                  {isLoading && (
+                    <FeedSkeleton count={2} />
+                  )}
+                  
+                  {isError && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">Error loading feed</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          {error?.message || 'Failed to load pulses. Please try again.'}
+                        </p>
+                        <button 
+                          onClick={() => refetch()} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Try Again
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length > 0 && (
+                    <div className="space-y-6">
+                      {filteredPulses.map((pulse: PulseWithUser) => (
+                        <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
+                          <div className="pb-3">
+                            <div className="flex justify-between">
+                              <div className="flex items-start gap-3">
+                                <Avatar className="h-9 w-9">
+                                  {pulse.user?.photoURL ? (
+                                    <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
+                                  ) : (
+                                    <AvatarFallback>
+                                      {pulse.user?.name?.[0] || "U"}
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium flex items-center gap-2 text-white">
+                                    <span>{pulse.user?.name || "Anonymous User"}</span>
+                                    {(pulse.user as any)?.subscriptionTier === 'premium' && <PremiumBadge size="sm" />}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>
+                                      {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                                    </span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      {getPulseIcon(pulse)}
+                                      {pulse.type === 'media-pulse' ? pulse.mediaType : pulse.type}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="px-4 py-2">
+                            <h3 
+                              className="text-xl font-semibold mb-3 text-white hover:text-blue-400 cursor-pointer transition-colors"
+                              onClick={() => setLocation(`/pulse/${pulse.id}`)}
+                              data-testid={`pulse-title-${pulse.id}`}
+                            >
+                              {pulse.title}
+                            </h3>
+                            {pulse.content && (
+                              <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
+                            )}
+                            <div className="flex gap-2 mt-4">
+                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
+                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
+                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
+                            </div>
+                          </div>
+                        </NeoGlassSection>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length === 0 && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-white/80 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">No poll pulses yet</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          No poll pulses available yet. Create one to get started!
+                        </p>
+                        <button 
+                          onClick={() => setLocation("/create-pulse")} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Create Your First Pulse
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="project">
+                  {/* Smart refresh banner */}
+                  <SmartRefreshBanner 
+                    hasNewContent={hasNewContent} 
+                    onRefresh={handleRefresh}
+                    isPremiumContent={hasPremiumContent}
+                  />
+                  
+                  {isLoading && (
+                    <FeedSkeleton count={2} />
+                  )}
+                  
+                  {isError && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">Error loading feed</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          {error?.message || 'Failed to load pulses. Please try again.'}
+                        </p>
+                        <button 
+                          onClick={() => refetch()} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Try Again
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length > 0 && (
+                    <div className="space-y-6">
+                      {filteredPulses.map((pulse: PulseWithUser) => (
+                        <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
+                          <div className="pb-3">
+                            <div className="flex justify-between">
+                              <div className="flex items-start gap-3">
+                                <Avatar className="h-9 w-9">
+                                  {pulse.user?.photoURL ? (
+                                    <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
+                                  ) : (
+                                    <AvatarFallback>
+                                      {pulse.user?.name?.[0] || "U"}
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium flex items-center gap-2 text-white">
+                                    <span>{pulse.user?.name || "Anonymous User"}</span>
+                                    {(pulse.user as any)?.subscriptionTier === 'premium' && <PremiumBadge size="sm" />}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>
+                                      {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                                    </span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      {getPulseIcon(pulse)}
+                                      {pulse.type === 'media-pulse' ? pulse.mediaType : pulse.type}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="px-4 py-2">
+                            <h3 
+                              className="text-xl font-semibold mb-3 text-white hover:text-blue-400 cursor-pointer transition-colors"
+                              onClick={() => setLocation(`/pulse/${pulse.id}`)}
+                              data-testid={`pulse-title-${pulse.id}`}
+                            >
+                              {pulse.title}
+                            </h3>
+                            {pulse.content && (
+                              <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
+                            )}
+                            <div className="flex gap-2 mt-4">
+                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
+                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
+                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
+                            </div>
+                          </div>
+                        </NeoGlassSection>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length === 0 && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-white/80 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">No project pulses yet</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          No project pulses available yet. Create one to get started!
+                        </p>
+                        <button 
+                          onClick={() => setLocation("/create-pulse")} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Create Your First Pulse
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
+                </TabsContent>
               </Tabs>
               </div>
               
