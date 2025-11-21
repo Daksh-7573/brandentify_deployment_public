@@ -7720,6 +7720,11 @@ ${extractedText.substring(0, 5000)}
         }
       }
       
+      // Fetch user's subscription tier to determine quota
+      const userResult = await pool.query(`SELECT subscription_tier FROM users WHERE id = $1`, [userId]);
+      const subscriptionTier = userResult.rows[0]?.subscription_tier;
+      const defaultQuota = subscriptionTier === 'premium' ? 20 : 10;
+      
       // Direct database query for reaction quota to fix the issue
       const result = await pool.query(`
         SELECT user_id as "userId", 
@@ -7734,34 +7739,34 @@ ${extractedText.substring(0, 5000)}
       
       let quota;
       if (result.rows.length === 0) {
-        // Create default quota if it doesn't exist
+        // Create default quota if it doesn't exist (use premium tier if applicable)
         const createResult = await pool.query(`
           INSERT INTO user_reaction_quotas (user_id, insightful_quota_used, insightful_quota_max, 
                                           misinformed_quota_used, misinformed_quota_max, date)
-          VALUES ($1, 0, 10, 0, 10, CURRENT_DATE)
+          VALUES ($1, 0, $2, 0, $2, CURRENT_DATE)
           RETURNING user_id as "userId", 
                    insightful_quota_used as "insightfulQuotaUsed",
                    insightful_quota_max as "insightfulQuotaMax",
                    misinformed_quota_used as "misinformedQuotaUsed",
                    misinformed_quota_max as "misinformedQuotaMax",
                    date as "lastResetDate"
-        `, [userId]);
+        `, [userId, defaultQuota]);
         quota = createResult.rows[0];
       } else {
         quota = result.rows[0];
       }
       
-      // Format the response
+      // Format the response - use premium quota if applicable
       const response = {
         insightful: {
           used: quota.insightfulQuotaUsed || 0,
-          remaining: (quota.insightfulQuotaMax || 10) - (quota.insightfulQuotaUsed || 0),
-          max: quota.insightfulQuotaMax || 10
+          remaining: (quota.insightfulQuotaMax || defaultQuota) - (quota.insightfulQuotaUsed || 0),
+          max: quota.insightfulQuotaMax || defaultQuota
         },
         misinformed: {
           used: quota.misinformedQuotaUsed || 0,
-          remaining: (quota.misinformedQuotaMax || 10) - (quota.misinformedQuotaUsed || 0),
-          max: quota.misinformedQuotaMax || 10
+          remaining: (quota.misinformedQuotaMax || defaultQuota) - (quota.misinformedQuotaUsed || 0),
+          max: quota.misinformedQuotaMax || defaultQuota
         },
         date: quota.date
       };
