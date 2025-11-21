@@ -7761,9 +7761,9 @@ ${extractedText.substring(0, 5000)}
         quota = result.rows[0];
       }
       
-      // Use defaultMaxQuota for premium users, or stored max for existing records
-      const insightfulMax = quota.insightfulQuotaMax || defaultMaxQuota;
-      const misinformedMax = quota.misinformedQuotaMax || defaultMaxQuota;
+      // Always use subscription tier-based quota, not stored database values
+      const insightfulMax = defaultMaxQuota;
+      const misinformedMax = defaultMaxQuota;
       
       // Format the response
       const response = {
