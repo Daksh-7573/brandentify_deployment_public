@@ -1432,11 +1432,9 @@ export default function IndustryPulsePage() {
                                   )}
                                 </Avatar>
                                 <div>
-                                  <div className="font-medium flex items-center gap-2">
+                                  <div className="font-medium flex items-center gap-2 text-white">
                                     <span>{pulse.user?.name || "Anonymous User"}</span>
                                     {(pulse.user as any)?.subscriptionTier === 'premium' && <PremiumBadge size="sm" />}
-                                    {/* Special labeling for Musk */}
-                                    {pulse.userId === 3 && <span className="text-amber-500 ml-1">⚡</span>}
                                   </div>
                                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <span>
@@ -1450,12 +1448,6 @@ export default function IndustryPulsePage() {
                                   </div>
                                 </div>
                               </div>
-                              
-                              <PulseMenu 
-                                pulseId={pulse.id}
-                                currentUserId={user?.id || 0}
-                                pulseCreatorId={pulse.userId}
-                              />
                             </div>
                           </div>
                           <div className="px-4 py-2">
@@ -1466,111 +1458,15 @@ export default function IndustryPulsePage() {
                             >
                               {pulse.title}
                             </h3>
-                            {/* Render content with clickable reference links */}
-                            {(() => {
-                              if (!pulse.content) return null;
-                              
-                              // Check if content contains reference links section
-                              const readMoreIndex = pulse.content.indexOf('📚 Read More:');
-                              
-                              if (readMoreIndex === -1) {
-                                // No reference links, render as normal text
-                                return <p className="text-white/70">{pulse.content}</p>;
-                              }
-                              
-                              // Split content into main content and reference links
-                              const mainContent = pulse.content.substring(0, readMoreIndex).trim();
-                              const referencesSection = pulse.content.substring(readMoreIndex);
-                              
-                              // Parse reference links from the text
-                              const referenceLines = referencesSection.split('\n').slice(1); // Skip the "📚 Read More:" line
-                              const references = [];
-                              
-                              for (let i = 0; i < referenceLines.length; i += 2) {
-                                const titleLine = referenceLines[i];
-                                const urlLine = referenceLines[i + 1];
-                                
-                                if (titleLine && urlLine && titleLine.startsWith('•') && urlLine.trim().startsWith('http')) {
-                                  const titleMatch = titleLine.match(/^•\s*(.+?)\s*-\s*(.+)$/);
-                                  if (titleMatch) {
-                                    references.push({
-                                      title: titleMatch[1].trim(),
-                                      source: titleMatch[2].trim(),
-                                      url: urlLine.trim()
-                                    });
-                                  }
-                                }
-                              }
-                              
-                              return (
-                                <div className="space-y-3">
-                                  <p className="text-white/70">{mainContent}</p>
-                                  
-                                  {references.length > 0 && (
-                                    <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <span className="text-sm font-medium text-white/90">📚 Read More</span>
-                                      </div>
-                                      <div className="space-y-3">
-                                        {references.map((ref, index) => (
-                                          <div key={index} className="flex flex-col gap-1">
-                                            <a 
-                                              href={ref.url} 
-                                              target="_blank" 
-                                              rel="noopener noreferrer"
-                                              className="text-sm text-blue-400 hover:text-blue-300 hover:underline font-medium transition-colors"
-                                            >
-                                              {ref.title}
-                                            </a>
-                                            <span className="text-xs text-white/50">{ref.source}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })()}
-                            
-                            {/* Render pulse content based on type */}
-                            {pulse.type === 'poll' && (
-                              <PollVoting pulse={pulse} />
+                            {pulse.content && (
+                              <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            
-                            {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
-                              <ImageCarousel pulse={pulse} />
-                            )}
-                            
-                            {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
-                              <VideoPlayer pulse={pulse} />
-                            )}
-                            
-                            {pulse.type === 'project' && (
-                              <ProjectDetails 
-                                pulse={pulse} 
-                                onViewProject={(project) => {
-                                  setSelectedProject(project);
-                                  setIsProjectModalOpen(true);
-                                }}
-                              />
-                            )}
-                          </div>
-                          <div className="flex justify-between pt-0 px-4 pb-2">
-                            <PulseReactions 
-                              key={`pulse-reactions-${pulse.id}-${userId}`}
-                              pulse={pulse} 
-                              currentUserId={userId}
-                              onCommentClick={() => {
-                                setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
-                              }}
-                            />
-                          </div>
-                          {/* Comment Section - Hidden for Musk AI pulses */}
-                          {expandedCommentsPulseId === pulse.id && pulse.userId !== 3 && (
-                            <div className="px-4 pb-4">
-                              <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} isExpanded={true} />
+                            <div className="flex gap-2 mt-4">
+                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
+                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
+                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
                             </div>
-                          )}
+                          </div>
                         </NeoGlassSection>
                       ))}
                     </div>
