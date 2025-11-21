@@ -1332,6 +1332,7 @@ export default function IndustryPulsePage() {
       
       <div className="relative z-10 flex h-screen flex-col">
         <Header />
+        <AuthLoadingBoundary>
         <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
@@ -1651,6 +1652,7 @@ export default function IndustryPulsePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        </AuthLoadingBoundary>
     </div>
   );
 }
