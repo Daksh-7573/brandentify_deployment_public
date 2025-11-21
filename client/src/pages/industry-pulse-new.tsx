@@ -1313,6 +1313,14 @@ export default function IndustryPulsePage() {
     if (activeTab === "all") return true;
     return pulse.type === activeTab;
   });
+  
+  console.log('[INDUSTRY PULSE] Debug info:', {
+    pulsesCount: pulses.length,
+    filteredCount: filteredPulses.length,
+    isLoading,
+    isError,
+    activeTab
+  });
 
   const getPulseIcon = (pulse: PulseWithUser) => {
     switch (pulse.type) {
@@ -1407,26 +1415,7 @@ export default function IndustryPulsePage() {
                     </NeoGlassSection>
                   )}
                   
-                  {!isLoading && !isError && filteredPulses.length === 0 ? (
-                    <NeoGlassSection>
-                      <div className="flex flex-col items-center justify-center py-10">
-                        <Users className="h-16 w-16 text-white/80 mb-4" />
-                        <h3 className="text-xl font-semibold mb-2 text-white">No pulses yet</h3>
-                        <p className="text-center text-white/70 max-w-md mb-6">
-                          {activeTab === "all" 
-                            ? "Be the first to create a pulse in your professional network!" 
-                            : `No ${activeTab} pulses available yet. Create one to get started!`}
-                        </p>
-                        <button 
-                          onClick={() => setLocation("/create-pulse")} 
-                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
-                        >
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Create Your First Pulse
-                        </button>
-                      </div>
-                    </NeoGlassSection>
-                  ) : !isLoading && !isError ? (
+                  {!isLoading && !isError && filteredPulses.length > 0 && (
                     <div className="space-y-6">
                       {filteredPulses.map((pulse: PulseWithUser) => (
                         <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
@@ -1585,7 +1574,28 @@ export default function IndustryPulsePage() {
                         </NeoGlassSection>
                       ))}
                     </div>
-                  ) : null}
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length === 0 && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-white/80 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">No pulses yet</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          {activeTab === "all" 
+                            ? "Be the first to create a pulse in your professional network!" 
+                            : `No ${activeTab} pulses available yet. Create one to get started!`}
+                        </p>
+                        <button 
+                          onClick={() => setLocation("/create-pulse")} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Create Your First Pulse
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
                 </TabsContent>
               </Tabs>
               </div>
