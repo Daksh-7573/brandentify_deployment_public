@@ -29,6 +29,7 @@ interface MuskResumeWriterProps {
 export default function MuskResumeWriter({ onGenerate }: MuskResumeWriterProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isPremium, resumeAnalysis } = useFeatureAccess();
   const [selectedSection, setSelectedSection] = useState<ResumeSection>('summary');
   const [prompt, setPrompt] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');

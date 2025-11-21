@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +54,7 @@ const getStatusColor = (status: string | null) => {
 
 export default function CareerCapsulePage() {
   const { user } = useAuth();
+  const { isPremium, canCreateCareerCapsule } = useFeatureAccess();
   const userId = user?.id || 1; // Default to user ID 1 for demo if not logged in
   
   const { 
