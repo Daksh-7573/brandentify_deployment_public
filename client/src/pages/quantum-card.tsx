@@ -1,11 +1,13 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import {
   NeoGlassLayout,
   NeoGlassSection,
@@ -17,9 +19,15 @@ import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
+  const { isPremium } = useFeatureAccess();
+  const { toast } = useToast();
   const [_, navigate] = useLocation();
   const queryClient = useQueryClient();
   const [showEditContactInfo, setShowEditContactInfo] = useState(false);
+  
+  // Premium card access control
+  const FREE_CARDS = ['professional', 'quantum'];
+  const canAccessCard = (cardType: string) => isPremium || FREE_CARDS.includes(cardType);
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
@@ -90,15 +98,36 @@ export default function QuantumCardPage() {
         {/* Quantum Card Builder Section */}
         <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
           <div className="p-6">
+            {!isPremium && (
+              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-yellow-400">Limited to 2 Free Card Designs</p>
+                    <p className="text-sm text-yellow-300/80 mt-1">Unlock all {7} premium card designs with Brandentifier Premium for ₹799/month</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {userData ? (
               <VisitingCardBuilder
                 userData={userData as any}
                 selectedCardType={
-                  (userData as any)?.visitingCardType || "neoglow"
+                  (userData as any)?.visitingCardType || "professional"
                 }
                 onCardTypeSelect={(cardType) => {
+                  if (!canAccessCard(cardType)) {
+                    toast({
+                      title: "Premium Feature",
+                      description: "This card design is only available for Premium members. Upgrade to unlock all card designs!",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
                   console.log("Selected card type:", cardType);
                 }}
+                isPremium={isPremium}
+                canAccessCard={canAccessCard}
               />
             ) : (
               <div className="text-center py-8">

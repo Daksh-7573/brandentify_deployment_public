@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useFeatureAccess } from '@/hooks/use-feature-access';
+import { Lock } from 'lucide-react';
 import { 
   useUserQuestsWithDefinitions, 
   useUserWeeklyQuests,
@@ -21,9 +23,13 @@ interface QuestPanelProps {
 
 export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { toast } = useToast();
+  const { isPremium, canAccessQuestType } = useFeatureAccess();
   const [tabValue, setTabValue] = useState('today');
   const currentWeek = getCurrentWeekNumber();
   const currentYear = getCurrentYear();
+  
+  // Check social quest access
+  const canAccessSocialQuests = canAccessQuestType('social').hasAccess;
   
   const { 
     data: dailyCareerQuests,
@@ -46,10 +52,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchAll
   } = useUserQuestsWithDefinitions(userId);
   
-  // Combine daily career and social quests
+  // Combine daily career and social quests (filtered by access)
   const dailyQuests = [
     ...(dailyCareerQuests || []),
-    ...(dailySocialQuests || [])
+    ...(canAccessSocialQuests ? (dailySocialQuests || []) : [])
   ];
   
   // Removed XP progress functionality since it's now in the parent component
@@ -140,6 +146,12 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     <Card className={cn("w-full", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-2xl">Brand Quests</CardTitle>
+        {!canAccessSocialQuests && (
+          <div className="mt-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded text-sm flex items-start gap-2">
+            <Lock className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <span className="text-amber-600">Social media quests available in Premium tier</span>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         

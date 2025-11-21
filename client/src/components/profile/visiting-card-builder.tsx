@@ -25,12 +25,16 @@ interface VisitingCardBuilderProps {
   userData: UserData;
   selectedCardType: string;
   onCardTypeSelect: (cardType: string) => void;
+  isPremium?: boolean;
+  canAccessCard?: (cardType: string) => boolean;
 }
 
 const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   userData,
   selectedCardType,
   onCardTypeSelect,
+  isPremium = true,
+  canAccessCard = () => true,
 }) => {
   // Set default card type if none selected
   const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
@@ -66,6 +70,14 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
 
   // Handle tab change
   const handleTabChange = (value: string) => {
+    if (!canAccessCard(value)) {
+      toast({
+        title: "Premium Feature",
+        description: "This card design is only available for Premium members. Upgrade to unlock all card designs!",
+        variant: "default",
+      });
+      return;
+    }
     if (isCardLocked(value)) {
       setShowShareModal(true);
       toast({

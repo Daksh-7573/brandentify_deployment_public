@@ -54,6 +54,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
 // Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
@@ -103,6 +104,7 @@ const STEPS = {
 
 export default function PortfolioBuilder() {
   const { user } = useAuth();
+  const { isPremium, quotas } = useFeatureAccess();
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -113,6 +115,11 @@ export default function PortfolioBuilder() {
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
+  
+  // Premium template access control
+  const FREE_TEMPLATES = ['professional', 'creative'];
+  const isPremiumTemplate = (layout: string) => !FREE_TEMPLATES.includes(layout);
+  const canAccessTemplate = (layout: string) => isPremium || FREE_TEMPLATES.includes(layout);
 
   // Define User type to match server-side schema
   type User = {
