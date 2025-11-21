@@ -107,24 +107,32 @@ function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactions
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
-  // Clear localStorage cache for reaction quota on component mount to force fresh data
-  useEffect(() => {
-    const cacheKey = `api_cache_/api/users/${userId}/reaction-quota`;
-    try {
-      localStorage.removeItem(cacheKey);
-      console.log('[QUOTA FIX] Cleared stale localStorage cache for reaction quota');
-    } catch (e) {
-      console.warn('Failed to clear localStorage cache:', e);
-    }
-  }, [userId]);
-  
   // Get user reaction quota - always fetch fresh (no caching)
   const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
     staleTime: 0, // Always consider stale, force refetch
     refetchOnMount: 'always', // Always refetch when component mounts
     gcTime: 0, // Don't cache at all
+    enabled: currentUserId !== undefined, // Only run query when we have a valid userId
   });
+  
+  // Force refetch quota whenever currentUserId changes
+  useEffect(() => {
+    if (currentUserId !== undefined && currentUserId !== 1) {
+      // Clear localStorage cache for this user
+      const cacheKey = `api_cache_/api/users/${currentUserId}/reaction-quota`;
+      try {
+        localStorage.removeItem(cacheKey);
+        console.log(`[QUOTA FIX] Cleared localStorage for user ${currentUserId}`);
+      } catch (e) {
+        console.warn('Failed to clear localStorage cache:', e);
+      }
+      
+      // Force refetch
+      console.log(`[QUOTA FIX] Refetching quota for user ${currentUserId}`);
+      refetchQuota();
+    }
+  }, [currentUserId, refetchQuota]);
   
   // Get user's reactions for this pulse
   const { data: userReactionsData } = useQuery<any[]>({
@@ -1519,13 +1527,17 @@ export default function IndustryPulsePage() {
                             )}
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-2">
-                            <PulseReactions 
-                              pulse={pulse} 
-                              currentUserId={userId}
-                              onCommentClick={() => {
-                                setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
-                              }}
-                            />
+                            {userId ? (
+                              <PulseReactions 
+                                pulse={pulse} 
+                                currentUserId={userId}
+                                onCommentClick={() => {
+                                  setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
+                                }}
+                              />
+                            ) : (
+                              <div className="text-xs text-gray-400">Loading...</div>
+                            )}
                           </div>
                           {/* Comment Section - Hidden for Musk AI pulses */}
                           {expandedCommentsPulseId === pulse.id && pulse.userId !== 3 && (
