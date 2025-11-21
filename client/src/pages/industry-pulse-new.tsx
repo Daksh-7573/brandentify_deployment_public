@@ -1468,11 +1468,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <div className="flex gap-2 mt-4">
-                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
-                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
-                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
-                            </div>
+                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1577,11 +1573,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <div className="flex gap-2 mt-4">
-                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
-                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
-                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
-                            </div>
+                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1687,11 +1679,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <div className="flex gap-2 mt-4">
-                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
-                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
-                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
-                            </div>
+                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1795,11 +1783,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <div className="flex gap-2 mt-4">
-                              <span className="text-sm text-white/60">Type: {pulse.type}</span>
-                              <span className="text-sm text-white/60">• Likes: {pulse.likes || 0}</span>
-                              <span className="text-sm text-white/60">• Comments: {pulse.comments || 0}</span>
-                            </div>
+                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
                           </div>
                         </NeoGlassSection>
                       ))}
