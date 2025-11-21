@@ -1468,7 +1468,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
+                            <PulseReactions pulse={pulse} onCommentClick={() => setExpandedCommentsPulseId(pulse.id)} currentUserId={userId} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1573,7 +1573,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
+                            <PulseReactions pulse={pulse} onCommentClick={() => setExpandedCommentsPulseId(pulse.id)} currentUserId={userId} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1679,7 +1679,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
+                            <PulseReactions pulse={pulse} onCommentClick={() => setExpandedCommentsPulseId(pulse.id)} currentUserId={userId} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1783,7 +1783,7 @@ export default function IndustryPulsePage() {
                             {pulse.content && (
                               <p className="text-white/70 mb-4 line-clamp-3">{pulse.content}</p>
                             )}
-                            <PulseReactions pulse={pulse} onCommentClick={() => setLocation(`/pulse/${pulse.id}`)} />
+                            <PulseReactions pulse={pulse} onCommentClick={() => setExpandedCommentsPulseId(pulse.id)} currentUserId={userId} />
                           </div>
                         </NeoGlassSection>
                       ))}
@@ -1821,6 +1821,23 @@ export default function IndustryPulsePage() {
         </div>
         </div>
       
+      {/* Comment Modal */}
+      <Dialog open={expandedCommentsPulseId !== null} onOpenChange={(open) => {
+        if (!open) setExpandedCommentsPulseId(null);
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto neo-glass-card bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-white">Comments</DialogTitle>
+          </DialogHeader>
+          {expandedCommentsPulseId && (
+            <CommentSection 
+              pulseId={expandedCommentsPulseId} 
+              isExpanded={expandedCommentsPulseId !== null}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto neo-glass-card bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95">
