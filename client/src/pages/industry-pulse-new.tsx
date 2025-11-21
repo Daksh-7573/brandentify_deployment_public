@@ -1360,7 +1360,6 @@ export default function IndustryPulsePage() {
       
       <div className="relative z-10 flex h-screen flex-col">
         <Header />
-        <AuthLoadingBoundary fallback={<div className="text-white text-2xl p-8">🔄 Auth Loading...</div>}>
         <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
@@ -1837,7 +1836,6 @@ export default function IndustryPulsePage() {
           </NeoGlassLayout>
         </div>
         </div>
-        </AuthLoadingBoundary>
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
