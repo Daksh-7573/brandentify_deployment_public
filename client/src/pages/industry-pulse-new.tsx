@@ -103,6 +103,8 @@ function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactions
   const { toast } = useToast();
   const userId = currentUserId || 1; // Use passed userId, default to 1 if not provided
   
+  console.log(`[PULSE REACTIONS] Rendering with currentUserId=${currentUserId}, userId=${userId}`);
+  
   // State for the share dialog
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
@@ -1531,8 +1533,9 @@ export default function IndustryPulsePage() {
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-2">
                             <PulseReactions 
+                              key={`pulse-reactions-${pulse.id}-${userId}`}
                               pulse={pulse} 
-                              currentUserId={userId || 1}
+                              currentUserId={userId}
                               onCommentClick={() => {
                                 setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
                               }}
