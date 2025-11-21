@@ -5,6 +5,7 @@ import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Loader2, MessageSquare, Home, Search, MapPin, Trophy, Flag, Shield, Zap, MessageCircle, Settings, BellRing, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
+import { useFeatureAccess } from '@/hooks/use-feature-access';
 import { useLocation } from 'wouter';
 import Header from '@/components/layout/header';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
@@ -14,6 +15,7 @@ import { FeedSkeleton } from '@/components/ui/skeleton-components';
 const ChatPage: React.FC = () => {
   // Get current user data from the auth context
   const { user, isLoading: authLoading } = useAuth();
+  const { isPremium, aiChat } = useFeatureAccess();
   const [, setLocation] = useLocation();
   
   // Get current user ID (from auth context or localStorage as fallback)
