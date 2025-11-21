@@ -113,12 +113,11 @@ function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactions
     staleTime: 0, // Always consider stale, force refetch
     refetchOnMount: 'always', // Always refetch when component mounts
     gcTime: 0, // Don't cache at all
-    enabled: currentUserId !== undefined, // Only run query when we have a valid userId
   });
   
-  // Force refetch quota whenever currentUserId changes
+  // Force refetch quota whenever currentUserId changes (especially when switching from 1 to real userId)
   useEffect(() => {
-    if (currentUserId !== undefined && currentUserId !== 1) {
+    if (currentUserId !== undefined && currentUserId > 1) {
       // Clear localStorage cache for this user
       const cacheKey = `api_cache_/api/users/${currentUserId}/reaction-quota`;
       try {
@@ -1527,17 +1526,13 @@ export default function IndustryPulsePage() {
                             )}
                           </div>
                           <div className="flex justify-between pt-0 px-4 pb-2">
-                            {userId ? (
-                              <PulseReactions 
-                                pulse={pulse} 
-                                currentUserId={userId}
-                                onCommentClick={() => {
-                                  setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
-                                }}
-                              />
-                            ) : (
-                              <div className="text-xs text-gray-400">Loading...</div>
-                            )}
+                            <PulseReactions 
+                              pulse={pulse} 
+                              currentUserId={userId || 1}
+                              onCommentClick={() => {
+                                setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
+                              }}
+                            />
                           </div>
                           {/* Comment Section - Hidden for Musk AI pulses */}
                           {expandedCommentsPulseId === pulse.id && pulse.userId !== 3 && (
