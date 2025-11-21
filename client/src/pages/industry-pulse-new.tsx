@@ -1564,7 +1564,8 @@ export default function IndustryPulsePage() {
             </div>
           </NeoGlassLayout>
         </div>
-      </div>
+        </div>
+        </AuthLoadingBoundary>
       </div>
       
       {/* Project Detail Modal */}
