@@ -96,12 +96,12 @@ interface PulseWithUser {
 interface PulseReactionsProps {
   pulse: PulseWithUser;
   onCommentClick?: () => void;
+  currentUserId?: number;
 }
 
-function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
+function PulseReactions({ pulse, onCommentClick, currentUserId }: PulseReactionsProps) {
   const { toast } = useToast();
-  const { user } = useAuth();
-  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  const userId = currentUserId || 1; // Use passed userId, default to 1 if not provided
   
   // State for the share dialog
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
@@ -1521,6 +1521,7 @@ export default function IndustryPulsePage() {
                           <div className="flex justify-between pt-0 px-4 pb-2">
                             <PulseReactions 
                               pulse={pulse} 
+                              currentUserId={userId}
                               onCommentClick={() => {
                                 setExpandedCommentsPulseId(expandedCommentsPulseId === pulse.id ? null : pulse.id);
                               }}
