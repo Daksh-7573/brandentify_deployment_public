@@ -7756,20 +7756,32 @@ ${extractedText.substring(0, 5000)}
         quota = result.rows[0];
       }
       
-      // Format the response - use premium quota if applicable
+      // Format the response - ALWAYS use defaultQuota from subscription tier, ignoring database values
+      const insightfulUsed = quota.insightfulQuotaUsed || 0;
+      const misinformedUsed = quota.misinformedQuotaUsed || 0;
+      
       const response = {
         insightful: {
-          used: quota.insightfulQuotaUsed || 0,
-          remaining: (quota.insightfulQuotaMax || defaultQuota) - (quota.insightfulQuotaUsed || 0),
-          max: quota.insightfulQuotaMax || defaultQuota
+          used: insightfulUsed,
+          remaining: defaultQuota - insightfulUsed,
+          max: defaultQuota
         },
         misinformed: {
-          used: quota.misinformedQuotaUsed || 0,
-          remaining: (quota.misinformedQuotaMax || defaultQuota) - (quota.misinformedQuotaUsed || 0),
-          max: quota.misinformedQuotaMax || defaultQuota
+          used: misinformedUsed,
+          remaining: defaultQuota - misinformedUsed,
+          max: defaultQuota
         },
         date: quota.date
       };
+      
+      // Update database quota max values if they don't match subscription tier
+      if (quota.insightfulQuotaMax !== defaultQuota || quota.misinformedQuotaMax !== defaultQuota) {
+        await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET insightful_quota_max = $2, misinformed_quota_max = $2
+          WHERE user_id = $1
+        `, [userId, defaultQuota]);
+      }
       
       res.json(response);
     } catch (error) {
