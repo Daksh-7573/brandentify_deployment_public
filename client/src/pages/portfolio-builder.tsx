@@ -104,7 +104,7 @@ const STEPS = {
 
 export default function PortfolioBuilder() {
   const { user } = useAuth();
-  const { isPremium, quotas } = useFeatureAccess();
+  const { isPremium, canAccessPortfolioTemplate } = useFeatureAccess();
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -116,10 +116,19 @@ export default function PortfolioBuilder() {
   const [showShareModal, setShowShareModal] = useState(false);
   const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
   
-  // Premium template access control
-  const FREE_TEMPLATES = ['professional', 'creative'];
-  const isPremiumTemplate = (layout: string) => !FREE_TEMPLATES.includes(layout);
-  const canAccessTemplate = (layout: string) => isPremium || FREE_TEMPLATES.includes(layout);
+  // Premium template access control using feature access system
+  const checkTemplateAccess = (layout: string) => {
+    const result = canAccessPortfolioTemplate(layout);
+    if (!result.hasAccess) {
+      toast({
+        title: "Premium Template",
+        description: result.message || "This template is only available for Premium members.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
 
   // Define User type to match server-side schema
   type User = {

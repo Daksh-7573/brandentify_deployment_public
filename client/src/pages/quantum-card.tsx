@@ -19,15 +19,17 @@ import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
-  const { isPremium } = useFeatureAccess();
+  const { isPremium, canAccessVisitingCard } = useFeatureAccess();
   const { toast } = useToast();
   const [_, navigate] = useLocation();
   const queryClient = useQueryClient();
   const [showEditContactInfo, setShowEditContactInfo] = useState(false);
   
-  // Premium card access control
-  const FREE_CARDS = ['professional', 'quantum'];
-  const canAccessCard = (cardType: string) => isPremium || FREE_CARDS.includes(cardType);
+  // Premium card access control using feature access system
+  const canAccessCard = (cardType: string) => {
+    const result = canAccessVisitingCard(cardType);
+    return result.hasAccess;
+  };
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
