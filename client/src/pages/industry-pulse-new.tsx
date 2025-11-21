@@ -108,14 +108,24 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
   // Get user reaction quota - with explicit refetch on userId change
-  const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
+  const { data: quotaData, refetch: refetchQuota, isLoading: quotaLoading } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
+    enabled: true, // Always enabled
     refetchOnWindowFocus: true,
+    refetchOnMount: true, // Force refetch on mount
     staleTime: 0, // Always consider stale, always refetch
   });
   
+  // Debug logging
+  useEffect(() => {
+    console.log('[QUOTA DEBUG] userId:', userId);
+    console.log('[QUOTA DEBUG] quotaData:', quotaData);
+    console.log('[QUOTA DEBUG] quotaLoading:', quotaLoading);
+  }, [userId, quotaData, quotaLoading]);
+  
   // Refetch quota when userId changes
   useEffect(() => {
+    console.log('[QUOTA DEBUG] Refetching quota for userId:', userId);
     refetchQuota();
   }, [userId, refetchQuota]);
   
