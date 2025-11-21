@@ -29,7 +29,8 @@ import {
   Newspaper,
   Share,
   AlertTriangle,
-  Flame
+  Flame,
+  AlertCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -1260,15 +1261,26 @@ export default function IndustryPulsePage() {
   const [expandedCommentsPulseId, setExpandedCommentsPulseId] = useState<number | null>(null);
   
   // Fetch all pulses (includes personalized pulses for this user)
-  const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
-    queryKey: ["/api/pulses", userId],
+  const { data: pulses = [], isLoading, isError, error, refetch } = useQuery<PulseWithUser[]>({
+    queryKey: ["/api/pulses"],
     queryFn: async () => {
-      // Pass userId to get personalized pulses
-      const url = userId ? `/api/pulses?userId=${userId}` : '/api/pulses';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch pulses');
-      return res.json();
-    }
+      console.log('[INDUSTRY PULSE] Fetching pulses...');
+      try {
+        const res = await fetch('/api/pulses');
+        if (!res.ok) {
+          console.error('[INDUSTRY PULSE] Fetch failed with status:', res.status);
+          throw new Error('Failed to fetch pulses');
+        }
+        const data = await res.json();
+        console.log('[INDUSTRY PULSE] Fetched pulses:', data.length);
+        return data;
+      } catch (err) {
+        console.error('[INDUSTRY PULSE] Query error:', err);
+        throw err;
+      }
+    },
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
   });
   
   // Handle refresh button click
@@ -1372,9 +1384,30 @@ export default function IndustryPulsePage() {
                     isPremiumContent={hasPremiumContent}
                   />
                   
-                  {isLoading ? (
+                  {isLoading && (
                     <FeedSkeleton count={2} />
-                  ) : filteredPulses.length === 0 ? (
+                  )}
+                  
+                  {isError && (
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">Error loading feed</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
+                          {error?.message || 'Failed to load pulses. Please try again.'}
+                        </p>
+                        <button 
+                          onClick={() => refetch()} 
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                        >
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Try Again
+                        </button>
+                      </div>
+                    </NeoGlassSection>
+                  )}
+                  
+                  {!isLoading && !isError && filteredPulses.length === 0 ? (
                     <NeoGlassSection>
                       <div className="flex flex-col items-center justify-center py-10">
                         <Users className="h-16 w-16 text-white/80 mb-4" />
@@ -1393,7 +1426,7 @@ export default function IndustryPulsePage() {
                         </button>
                       </div>
                     </NeoGlassSection>
-                  ) : (
+                  ) : !isLoading && !isError ? (
                     <div className="space-y-6">
                       {filteredPulses.map((pulse: PulseWithUser) => (
                         <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
@@ -1552,7 +1585,7 @@ export default function IndustryPulsePage() {
                         </NeoGlassSection>
                       ))}
                     </div>
-                  )}
+                  ) : null}
                 </TabsContent>
               </Tabs>
               </div>
