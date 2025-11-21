@@ -106,18 +106,27 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
-  // Get user reaction quota - with explicit refetch on userId change
+  // Get user reaction quota - wait for auth to load first
   const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
-    queryKey: [`/api/users/${userId}/reaction-quota`],
-    enabled: true, // Always enabled
+    queryKey: [`/api/users/${userId}/reaction-quota`, userId],
+    enabled: userId > 0, // Only query when we have a valid userId
     refetchOnWindowFocus: true,
-    refetchOnMount: true, // Force refetch on mount
-    staleTime: 0, // Always consider stale, always refetch
+    refetchOnMount: true,
+    staleTime: 0,
   });
   
-  // Refetch quota when userId changes
+  // Invalidate and refetch quota when userId changes
   useEffect(() => {
-    refetchQuota();
+    if (userId > 0) {
+      // Clear any stale quota queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/reaction-quota');
+        }
+      });
+      refetchQuota();
+    }
   }, [userId, refetchQuota]);
   
   // Get user's reactions for this pulse
@@ -1224,8 +1233,8 @@ export default function IndustryPulsePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
-  const { user } = useAuth();
-  const userId = user?.id; // Get current user ID for personalized pulses
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const userId = user?.id || 1; // Get current user ID for personalized pulses, default to 1
   
   // Project modal state
   const [selectedProject, setSelectedProject] = useState<any>(null);
