@@ -20,6 +20,11 @@ export interface User {
   profileCompleted: number | null;
   emailVerified: boolean;
   createdAt: Date;
+  subscriptionTier?: 'free' | 'premium';
+  subscriptionStatus?: 'active' | 'inactive' | 'cancelled';
+  subscriptionStartDate?: Date | null;
+  subscriptionEndDate?: Date | null;
+  premiumFeaturesUsage?: any;
 }
 
 export function useUser() {
