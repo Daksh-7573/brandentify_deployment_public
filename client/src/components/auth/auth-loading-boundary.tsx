@@ -19,12 +19,13 @@ interface AuthLoadingBoundaryProps {
 export function AuthLoadingBoundary({ children, fallback }: AuthLoadingBoundaryProps) {
   const { isLoading, user } = useAuth();
 
-  // While loading or no user, show skeleton/fallback
-  if (isLoading || !user?.id) {
+  // If auth is still loading and we have no user data, show skeleton
+  if (isLoading && !user?.id) {
     return fallback || <AuthLoadingSkeleton />;
   }
 
-  // User is loaded and authenticated, render children
+  // User exists (even if auth still loading), render children immediately
+  // This prevents blocking the feed while auth context finalizes
   return <>{children}</>;
 }
 
