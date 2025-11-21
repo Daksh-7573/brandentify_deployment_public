@@ -314,10 +314,8 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Mark as Insightful 🔥</p>
-            {quotaData && (
-              <p className="text-xs mt-1">Remaining: {quotaData.insightful?.remaining}/{quotaData.insightful?.max}</p>
-            )}
+            <p>Insightful: {quotaData?.insightful?.used || 0}/{quotaData?.insightful?.max || 0}</p>
+            <p className="text-xs opacity-50">User ID: {userId}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -336,10 +334,8 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Flag as Misinformed ⚠️</p>
-            {quotaData && (
-              <p className="text-xs mt-1">Remaining: {quotaData.misinformed?.remaining}/{quotaData.misinformed?.max}</p>
-            )}
+            <p>Misinformed: {quotaData?.misinformed?.used || 0}/{quotaData?.misinformed?.max || 0}</p>
+            <p className="text-xs opacity-50">User ID: {userId}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
