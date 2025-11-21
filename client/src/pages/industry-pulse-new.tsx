@@ -1566,7 +1566,6 @@ export default function IndustryPulsePage() {
         </div>
         </div>
         </AuthLoadingBoundary>
-      </div>
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
@@ -1653,7 +1652,7 @@ export default function IndustryPulsePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        </AuthLoadingBoundary>
+      </div>
     </div>
   );
 }
