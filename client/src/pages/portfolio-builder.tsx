@@ -107,6 +107,9 @@ export default function PortfolioBuilder() {
   const { user } = useAuth();
   const { isPremium, canAccessPortfolioTemplate } = useFeatureAccess();
   const { toast } = useToast();
+  
+  // DEBUG: Log premium status
+  console.log('[PortfolioBuilder] isPremium:', isPremium);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(STEPS.SELECT_LAYOUT);
