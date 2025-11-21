@@ -72,7 +72,7 @@ export const PREMIUM_TIER_QUOTAS: FeatureQuotas = {
 };
 
 // Free tier allowed templates
-export const FREE_PORTFOLIO_TEMPLATES = ['professional', 'scholar'];
+export const FREE_PORTFOLIO_TEMPLATES = ['corporate-executive', 'scholar'];
 export const FREE_VISITING_CARD_TEMPLATES = ['professional', 'quantum-tech'];
 
 export function getFeatureQuotas(subscriptionTier?: string): FeatureQuotas {
