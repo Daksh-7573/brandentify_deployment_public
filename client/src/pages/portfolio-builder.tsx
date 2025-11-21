@@ -483,6 +483,7 @@ export default function PortfolioBuilder() {
 
   // Check if a portfolio layout is locked
   const isLayoutLocked = (layoutId: string): boolean => {
+    if (isPremium) return false; // Premium users have no locked templates
     if (!referralStatus) return false;
     const portfolio = referralStatus.portfolios.find((p) => p.id === layoutId);
     return portfolio?.locked ?? false;
