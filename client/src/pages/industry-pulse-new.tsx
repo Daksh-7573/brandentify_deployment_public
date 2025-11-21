@@ -107,10 +107,17 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
   
-  // Get user reaction quota
-  const { data: quotaData } = useQuery<any>({
+  // Get user reaction quota - with explicit refetch on userId change
+  const { data: quotaData, refetch: refetchQuota } = useQuery<any>({
     queryKey: [`/api/users/${userId}/reaction-quota`],
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider stale, always refetch
   });
+  
+  // Refetch quota when userId changes
+  React.useEffect(() => {
+    refetchQuota();
+  }, [userId, refetchQuota]);
   
   // Get user's reactions for this pulse
   const { data: userReactionsData } = useQuery<any[]>({
