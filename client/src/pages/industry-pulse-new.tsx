@@ -115,7 +115,7 @@ function PulseReactions({ pulse, onCommentClick }: PulseReactionsProps) {
   });
   
   // Refetch quota when userId changes
-  React.useEffect(() => {
+  useEffect(() => {
     refetchQuota();
   }, [userId, refetchQuota]);
   
