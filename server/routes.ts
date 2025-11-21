@@ -7327,6 +7327,10 @@ ${extractedText.substring(0, 5000)}
       
       console.log(`[POST /pulse-reactions] User ${userId} verified, proceeding with reaction`);
       
+      // Fetch user's subscription tier to determine quota
+      const userTierResult = await pool.query(`SELECT subscription_tier FROM users WHERE id = $1`, [userId]);
+      const subscriptionTier = userTierResult.rows[0]?.subscription_tier;
+      const defaultQuota = subscriptionTier === 'premium' ? 20 : 10;
       
       // Check quota first
       const today = new Date().toISOString().split('T')[0];
@@ -7334,14 +7338,14 @@ ${extractedText.substring(0, 5000)}
         SELECT 
           COALESCE(insightful_quota_used, 0) as insightful_used,
           COALESCE(misinformed_quota_used, 0) as misinformed_used,
-          COALESCE(insightful_quota_max, 10) as insightful_max,
-          COALESCE(misinformed_quota_max, 10) as misinformed_max
+          COALESCE(insightful_quota_max, $3::integer) as insightful_max,
+          COALESCE(misinformed_quota_max, $3::integer) as misinformed_max
         FROM user_reaction_quotas 
         WHERE user_id = $1 AND date = $2
-      `, [userId, today]);
+      `, [userId, today, defaultQuota]);
       
       let currentUsed = 0;
-      let maxQuota = 10;
+      let maxQuota = defaultQuota;
       
       if (quotaResult.rows.length > 0) {
         const quota = quotaResult.rows[0];
@@ -7472,9 +7476,9 @@ ${extractedText.substring(0, 5000)}
         const insightfulUsed = reactionType === "insightful" ? 1 : 0;
         const misinformedUsed = reactionType === "misinformed" ? 1 : 0;
         await pool.query(`
-          INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used)
-          VALUES ($1, $2, $3, $4)
-        `, [userId, today, insightfulUsed, misinformedUsed]);
+          INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used, insightful_quota_max, misinformed_quota_max)
+          VALUES ($1, $2, $3, $4, $5, $6)
+        `, [userId, today, insightfulUsed, misinformedUsed, defaultQuota, defaultQuota]);
       }
       
       // Return updated quota info
