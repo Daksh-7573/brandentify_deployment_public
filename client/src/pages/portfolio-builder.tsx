@@ -831,6 +831,8 @@ export default function PortfolioBuilder() {
                             description: "Share Brandentifier with friends to unlock this portfolio!",
                             variant: "default",
                           });
+                        } else if (!checkTemplateAccess(layout.id)) {
+                          return;
                         } else {
                           form.setValue("layout", layout.id as any);
                         }
@@ -841,7 +843,9 @@ export default function PortfolioBuilder() {
                         <div className="pb-2 flex items-center justify-between">
                           <h3 className="text-base sm:text-lg font-medium text-white">
                             {locked && <Lock className="h-4 w-4 mr-2 inline text-purple-400" />}
+                            {!checkTemplateAccess(layout.id) && !locked && <Lock className="h-4 w-4 mr-2 inline text-yellow-500" />}
                             {layout.name}
+                            {!checkTemplateAccess(layout.id) && !locked && <span className="text-xs ml-2 text-yellow-400">(Premium)</span>}
                           </h3>
                         </div>
                         <div className="flex-grow">

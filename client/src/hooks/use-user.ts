@@ -20,11 +20,17 @@ export interface User {
   profileCompleted: number | null;
   emailVerified: boolean;
   createdAt: Date;
+  // Subscription fields - use snake_case to match database
+  subscription_tier?: 'free' | 'premium';
+  subscription_status?: 'active' | 'inactive' | 'cancelled';
+  subscription_start_date?: Date | null;
+  subscription_end_date?: Date | null;
+  premiumFeaturesUsage?: any;
+  // Also support camelCase for compatibility
   subscriptionTier?: 'free' | 'premium';
   subscriptionStatus?: 'active' | 'inactive' | 'cancelled';
   subscriptionStartDate?: Date | null;
   subscriptionEndDate?: Date | null;
-  premiumFeaturesUsage?: any;
 }
 
 export function useUser() {

@@ -19,7 +19,8 @@ import {
 export function useFeatureAccess() {
   const { user } = useUser();
   
-  const subscriptionTier = (user as any)?.subscriptionTier;
+  // Support both camelCase and snake_case from database
+  const subscriptionTier = (user as any)?.subscription_tier || (user as any)?.subscriptionTier;
   const premiumFeaturesUsage = (user as any)?.premiumFeaturesUsage as FeatureUsage | undefined;
   
   const isPremium = subscriptionTier === 'premium';

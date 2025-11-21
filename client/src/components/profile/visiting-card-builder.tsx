@@ -27,6 +27,7 @@ interface VisitingCardBuilderProps {
   onCardTypeSelect: (cardType: string) => void;
   isPremium?: boolean;
   canAccessCard?: (cardType: string) => boolean;
+  canAccessVisitingCard?: (cardType: string) => any;
 }
 
 const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
@@ -35,6 +36,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
   isPremium = true,
   canAccessCard = () => true,
+  canAccessVisitingCard,
 }) => {
   // Set default card type if none selected
   const [activeTab, setActiveTab] = useState(selectedCardType || "professional");

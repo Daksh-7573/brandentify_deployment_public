@@ -118,10 +118,11 @@ export default function QuantumCardPage() {
                   (userData as any)?.visitingCardType || "professional"
                 }
                 onCardTypeSelect={(cardType) => {
-                  if (!canAccessCard(cardType)) {
+                  const result = canAccessVisitingCard(cardType);
+                  if (!result.hasAccess) {
                     toast({
                       title: "Premium Feature",
-                      description: "This card design is only available for Premium members. Upgrade to unlock all card designs!",
+                      description: result.message || "This card design is only available for Premium members. Upgrade to unlock all card designs!",
                       variant: "destructive"
                     });
                     return;
@@ -130,6 +131,7 @@ export default function QuantumCardPage() {
                 }}
                 isPremium={isPremium}
                 canAccessCard={canAccessCard}
+                canAccessVisitingCard={canAccessVisitingCard}
               />
             ) : (
               <div className="text-center py-8">
