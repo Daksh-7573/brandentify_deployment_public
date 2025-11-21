@@ -55,6 +55,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { FREE_PORTFOLIO_TEMPLATES } from "@/lib/feature-access";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
 // Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
@@ -131,7 +132,6 @@ export default function PortfolioBuilder() {
   };
 
   // Filter templates - show only free templates for free users
-  const FREE_PORTFOLIO_TEMPLATES = ['professional', 'scholar'];
   const getVisibleTemplates = () => {
     const allLayouts = layoutOptions;
     if (isPremium) {
