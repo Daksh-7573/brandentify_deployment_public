@@ -1340,6 +1340,14 @@ export default function IndustryPulsePage() {
     }
   };
 
+  // DIAGNOSTIC: Force render check
+  console.log('🔍 [RENDER CHECK] Component rendering with:', {
+    isLoading,
+    pulsesCount: pulses.length,
+    filteredCount: filteredPulses.length,
+    hasError: isError
+  });
+
   return (
     <div 
       className="flex h-screen flex-col responsive-background"
@@ -1352,7 +1360,7 @@ export default function IndustryPulsePage() {
       
       <div className="relative z-10 flex h-screen flex-col">
         <Header />
-        <AuthLoadingBoundary>
+        <AuthLoadingBoundary fallback={<div className="text-white text-2xl p-8">🔄 Auth Loading...</div>}>
         <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
@@ -1385,6 +1393,13 @@ export default function IndustryPulsePage() {
                 </TabsList>
                 
                 <TabsContent value={activeTab}>
+                  {/* DIAGNOSTIC: Always visible test div */}
+                  <div className="bg-green-500 text-white p-8 text-2xl font-bold mb-4">
+                    🔍 TEST: If you see this, TabsContent IS rendering!
+                    <div>isLoading: {String(isLoading)}</div>
+                    <div>filteredPulses: {filteredPulses.length}</div>
+                  </div>
+                  
                   {/* Smart refresh banner */}
                   <SmartRefreshBanner 
                     hasNewContent={hasNewContent} 
