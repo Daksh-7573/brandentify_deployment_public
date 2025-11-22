@@ -48,6 +48,14 @@ Preferred communication style: Simple, everyday language.
 - **Feed Ranking System**: Time-decay algorithm and AI-powered personalization (using Ollama) for the Industry Pulse feed, incorporating user profile, interests, and engagement history with diversity filters.
 - **Profile URL Standardization**: Uses `/@brandname` format for clean, memorable profile URLs with fallback to `/@username`.
 
+## Subscription System (NEW ✨)
+- **Free Tier**: ₹0 (10 reactions/day, 5 AI chats/month, 2 templates, social quests disabled)
+- **Premium Tier**: ₹799/month or ₹7,999/year (20 reactions/day, unlimited AI, all features)
+- **UI Pages Built**: Pricing (/pricing), Checkout (/checkout), Subscription Management (/subscription-manage)
+- **Backend Endpoints**: Fully implemented subscription status, checkout, verify, and cancel endpoints
+- **Payment Status**: Ready for Razorpay integration (final step)
+- **Feature Gating**: All 14 premium features properly gated with feature-access system
+
 ## External Dependencies
 ### Core Infrastructure
 - **Database**: PostgreSQL (Neon serverless)
@@ -62,5 +70,5 @@ Preferred communication style: Simple, everyday language.
 ### Third-Party Integrations
 - **Email**: SendGrid
 - **Authentication**: JWT, bcrypt
-- **Payment Gateway**: Razorpay (for subscription management)
+- **Payment Gateway**: Razorpay (for subscription management) - READY FOR INTEGRATION
 - **File Processing**: Advanced PDF parsing

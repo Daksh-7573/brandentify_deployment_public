@@ -84,6 +84,7 @@ const EmailVerification = lazy(() => import("@/pages/email-verification"));
 const PricingPage = lazy(() => import("@/pages/pricing"));
 const SubscriptionManagePage = lazy(() => import("@/pages/subscription-manage"));
 const SubscriptionSuccessPage = lazy(() => import("@/pages/subscription-success"));
+const CheckoutPage = lazy(() => import("@/pages/checkout"));
 
 // Admin and debug components (lowest priority)
 const NavigationTest = lazy(() => import("@/pages/navigation-test"));
@@ -310,6 +311,12 @@ function Router() {
           )} />
           <Route path="/pricing" component={PricingPage} />
           <Route path="/upgrade" component={PricingPage} />
+          <Route path="/checkout" component={() => (
+            <ProtectedRoute path="/checkout" component={CheckoutPage} />
+          )} />
+          <Route path="/subscription-manage" component={() => (
+            <ProtectedRoute path="/subscription-manage" component={SubscriptionManagePage} />
+          )} />
           <Route path="/subscription/manage" component={() => (
             <ProtectedRoute path="/subscription/manage" component={SubscriptionManagePage} />
           )} />

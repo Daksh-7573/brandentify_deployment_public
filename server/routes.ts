@@ -9905,6 +9905,183 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // ============ SUBSCRIPTION ENDPOINTS ============
+  
+  // GET subscription status
+  app.get('/api/subscription/status/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+        subscriptionTier: user.subscriptionTier || 'free',
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionStartDate: user.subscriptionStartDate,
+        subscriptionEndDate: user.subscriptionEndDate,
+        paymentProvider: user.paymentProvider,
+      });
+    } catch (error) {
+      console.error('Error fetching subscription status:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // POST - Create checkout session (initialize Razorpay order)
+  app.post('/api/subscription/checkout', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { planType } = req.body; // 'monthly' or 'yearly'
+      
+      if (!['monthly', 'yearly'].includes(planType)) {
+        return res.status(400).json({ error: 'Invalid plan type' });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Define pricing
+      const pricing = {
+        monthly: {
+          amount: 79900, // ₹799 in paise
+          currency: 'INR',
+          planName: 'Premium Monthly',
+        },
+        yearly: {
+          amount: 799900, // ₹7,999 in paise
+          currency: 'INR',
+          planName: 'Premium Yearly',
+        },
+      };
+
+      const plan = pricing[planType as keyof typeof pricing];
+
+      // For now, return checkout details
+      // Razorpay integration will be the final step
+      const checkoutDetails = {
+        planType,
+        amount: plan.amount,
+        currency: plan.currency,
+        planName: plan.planName,
+        userName: user.name,
+        userEmail: user.email,
+        userId,
+        // Razorpay key will be added when payment is implemented
+        message: 'Razorpay payment will be integrated next',
+      };
+
+      res.json({
+        success: true,
+        checkout: checkoutDetails,
+      });
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // POST - Verify payment and update subscription
+  app.post('/api/subscription/verify', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { planType, paymentId, orderId } = req.body;
+
+      if (!['monthly', 'yearly'].includes(planType)) {
+        return res.status(400).json({ error: 'Invalid plan type' });
+      }
+
+      // Calculate subscription end date
+      const now = new Date();
+      const endDate = new Date();
+      if (planType === 'monthly') {
+        endDate.setMonth(endDate.getMonth() + 1);
+      } else {
+        endDate.setFullYear(endDate.getFullYear() + 1);
+      }
+
+      // Update user subscription
+      const result = await pool.query(
+        `UPDATE users SET 
+          subscription_tier = $1, 
+          subscription_status = $2,
+          subscription_start_date = $3,
+          subscription_end_date = $4,
+          payment_provider = $5,
+          provider_payment_id = $6,
+          provider_subscription_id = $7
+        WHERE id = $8
+        RETURNING id, email, name, subscription_tier as "subscriptionTier", subscription_status as "subscriptionStatus"`,
+        ['premium', 'active', now, endDate, 'razorpay', paymentId, orderId, userId]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const updatedUser = result.rows[0];
+
+      // Log transaction
+      await pool.query(
+        `INSERT INTO subscription_transactions 
+          (user_id, payment_provider, provider_payment_id, provider_order_id, amount_minor, currency, status, plan_type, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+        [
+          userId,
+          'razorpay',
+          paymentId,
+          orderId,
+          planType === 'monthly' ? 79900 : 799900,
+          'inr',
+          'completed',
+          planType,
+        ]
+      );
+
+      res.json({
+        success: true,
+        message: 'Subscription activated successfully',
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // POST - Cancel subscription (placeholder for Razorpay)
+  app.post('/api/subscription/cancel', async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      // This will call Razorpay API when integrated
+      // For now, just return a placeholder message
+      
+      res.json({
+        success: true,
+        message: 'Subscription cancellation will be processed via Razorpay',
+      });
+    } catch (error) {
+      console.error('Error canceling subscription:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
