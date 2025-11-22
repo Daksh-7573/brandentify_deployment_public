@@ -10134,13 +10134,24 @@ ${extractedText.substring(0, 5000)}
     try {
       const userId = req.query.userId as string || (req as any).user?.id;
       if (!userId) {
+        console.log('[GET /api/services] Missing userId');
         return res.status(400).json({ error: 'userId required' });
       }
-      const services = await storage.getServicesByUserId(parseInt(userId));
+      
+      console.log(`[GET /api/services] Fetching services for userId: ${userId}`);
+      const parsedUserId = parseInt(userId);
+      
+      if (isNaN(parsedUserId)) {
+        console.log(`[GET /api/services] Invalid userId format: ${userId}`);
+        return res.status(400).json({ error: 'Invalid userId format' });
+      }
+      
+      const services = await storage.getServicesByUserId(parsedUserId);
+      console.log(`[GET /api/services] Returned ${services.length} services`);
       res.json(services || []);
     } catch (error) {
-      console.error('Error fetching services:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('[GET /api/services] Error fetching services:', error);
+      res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) });
     }
   });
 
