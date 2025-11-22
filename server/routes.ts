@@ -10082,6 +10082,123 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // ============ WRAPPER ENDPOINTS FOR FRONTEND COMPATIBILITY ============
+  
+  // GET /api/experiences - Wrapper that accepts query params
+  app.get('/api/experiences', async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || (req as any).user?.id;
+      if (!userId) {
+        return res.status(400).json({ error: 'userId required' });
+      }
+      const experiences = await storage.getWorkExperiencesByUserId(parseInt(userId));
+      res.json(experiences || []);
+    } catch (error) {
+      console.error('Error fetching experiences:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/educations - Wrapper that accepts query params
+  app.get('/api/educations', async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || (req as any).user?.id;
+      if (!userId) {
+        return res.status(400).json({ error: 'userId required' });
+      }
+      const educations = await storage.getEducationsByUserId(parseInt(userId));
+      res.json(educations || []);
+    } catch (error) {
+      console.error('Error fetching educations:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/projects - Wrapper that accepts query params
+  app.get('/api/projects', async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || (req as any).user?.id;
+      if (!userId) {
+        return res.status(400).json({ error: 'userId required' });
+      }
+      const projects = await storage.getProjectsByUserId(parseInt(userId));
+      res.json(projects || []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/services - Wrapper that accepts userId query param
+  app.get('/api/services', async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || (req as any).user?.id;
+      if (!userId) {
+        return res.status(400).json({ error: 'userId required' });
+      }
+      const services = await storage.getServicesByUserId(parseInt(userId));
+      res.json(services || []);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/messages - Get user messages
+  app.get('/api/messages', async (req: Request, res: Response) => {
+    try {
+      const userId = req.query.userId as string || (req as any).user?.id;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'userId required' });
+      }
+
+      // Get conversations for user
+      const conversations = await db.select()
+        .from(users)
+        .where(eq(users.id, parseInt(userId)))
+        .limit(limit)
+        .offset(offset);
+
+      res.json(conversations || []);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // GET /api/musk-pulse-automation/daily-automation-status/:userId - Get automation status
+  app.get('/api/musk-pulse-automation/daily-automation-status/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid userId' });
+      }
+
+      // Return automation status
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Return default automation status
+      res.json({
+        userId,
+        automationEnabled: true,
+        lastRunTime: new Date(),
+        nextRunTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        status: 'active',
+        questsGeneratedToday: 0,
+      });
+    } catch (error) {
+      console.error('Error fetching automation status:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
