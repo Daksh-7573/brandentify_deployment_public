@@ -35,7 +35,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { 
@@ -1231,6 +1231,9 @@ export default function IndustryPulsePage() {
   const { toast } = useToast();
   const { user, isLoading: isAuthLoading } = useAuth();
   const userId = user?.id || 1; // Get current user ID for personalized pulses, default to 1
+  
+  // DEBUG: Log the userId being used
+  console.log('[PULSE PAGE] user:', user, 'userId:', userId, 'user?.id:', user?.id);
   
   // Project modal state
   const [selectedProject, setSelectedProject] = useState<any>(null);
