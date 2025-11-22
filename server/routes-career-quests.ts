@@ -951,13 +951,159 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           }
         })).filter(isCareerQuest);
       } else if (bucket === 'completed') {
-        // Get completed user quests WITH definitions (like social quests)
-        const allQuests = await storage.getUserQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'completed' && isCareerQuest(q));
+        // Get completed user quests WITH personalized generated data
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
+          WHERE uq.user_id = $1
+            AND uq.status = 'completed'
+          ORDER BY uq.completed_at DESC
+        `, [userId]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        })).filter(isCareerQuest);
       } else if (bucket === 'missed') {
-        // Get all user quests WITH definitions and filter by expired/dismissed status
-        const allQuests = await storage.getUserQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => (q.status === 'expired' || q.status === 'dismissed') && isCareerQuest(q));
+        // Get missed/expired user quests WITH personalized generated data
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
+          WHERE uq.user_id = $1
+            AND (uq.status = 'expired' OR uq.status = 'dismissed')
+          ORDER BY uq.assigned_at DESC
+        `, [userId]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        })).filter(isCareerQuest);
       }
 
       res.json(quests || []);
@@ -993,13 +1139,159 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const dailyQuests = await storage.getCurrentDaySocialQuests(userId);
         quests = dailyQuests.filter(isSocialQuest);
       } else if (bucket === 'completed') {
-        // Get all user social quests with definitions and filter by completed status
-        const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => q.status === 'completed' && isSocialQuest(q));
+        // Get completed social quests WITH personalized generated data
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
+          WHERE uq.user_id = $1
+            AND uq.status = 'completed'
+          ORDER BY uq.completed_at DESC
+        `, [userId]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        })).filter(isSocialQuest);
       } else if (bucket === 'missed') {
-        // Get all user social quests with definitions and filter by expired/dismissed status
-        const allQuests = await storage.getUserSocialQuestsWithDefinitions(userId);
-        quests = allQuests.filter((q: any) => (q.status === 'expired' || q.status === 'dismissed') && isSocialQuest(q));
+        // Get missed/expired social quests WITH personalized generated data
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
+          WHERE uq.user_id = $1
+            AND (uq.status = 'expired' OR uq.status = 'dismissed')
+          ORDER BY uq.assigned_at DESC
+        `, [userId]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        })).filter(isSocialQuest);
       }
 
       res.json(quests || []);
