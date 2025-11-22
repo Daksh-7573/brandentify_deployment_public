@@ -15,7 +15,7 @@ import { Video } from 'lucide-react';
 
 // Internal components and utilities
 import { queryClient, apiRequest } from '@/lib/queryClient';
-import { useAuth } from '@/context/auth-context';
+import { useAuth } from '@/hooks/use-auth';
 import { IndustryCombobox } from '@/components/ui/industry-combobox';
 
 // Project Schema

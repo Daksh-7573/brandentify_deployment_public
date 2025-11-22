@@ -44,7 +44,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/lib/auth';
+import { useAuth } from '@/hooks/use-auth';
 
 // Form validation schema
 import { z } from 'zod';

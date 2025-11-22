@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { AuthContext } from "@/context/auth-context";
+import { AuthContext } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { MobileSignupForm } from "./mobile-signup-form";
 

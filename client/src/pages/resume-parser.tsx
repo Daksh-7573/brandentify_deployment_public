@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '@/context/auth-context';
+import { useAuth } from '@/hooks/use-auth';
 import { ResumeDrop } from '@/components/resume-parser/ResumeDrop';
 import { ResumeMapping } from '@/components/resume-parser/ResumeMapping';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +7,7 @@ import Header from '@/components/layout/header';
 import { useLocation } from 'wouter';
 
 export default function ResumeParserPage() {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   

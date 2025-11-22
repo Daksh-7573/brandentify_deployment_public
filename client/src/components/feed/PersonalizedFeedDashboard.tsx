@@ -29,7 +29,7 @@ import {
   useFollowUser,
   useUnfollowUser
 } from '@/hooks/feed/use-personalized-feed';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/use-auth';
 import { 
   Heart, 
   MessageCircle, 
