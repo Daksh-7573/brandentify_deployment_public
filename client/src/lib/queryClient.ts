@@ -97,6 +97,11 @@ export async function apiRequest(
       return;
     }
     
+    // NEVER cache reaction quota endpoints - they update immediately per user
+    if (url.includes('/reaction-quota')) {
+      return;
+    }
+    
     if (method === 'GET' && response.ok) {
       try {
         const cacheKey = `api_cache_${url}`;
@@ -300,9 +305,10 @@ export const getQueryFn: <T>(options: {
       const isSkillsEndpoint = url.includes('/skills') || url.includes('/projects') || 
                                url.includes('/experiences') || url.includes('/educations') ||
                                url.includes('/services');
-      const isProfileEndpoint = url.includes('/api/users') || 
-                                url.includes('/enhanced-user') || 
-                                url.includes('/what-i-offer');
+      const isProfileEndpoint = url.includes('/api/users') && 
+                                !url.includes('/reaction-quota') && // Always fresh for reaction quotas
+                                (url.includes('/enhanced-user') || 
+                                 url.includes('/what-i-offer'));
       
       // Comments should NEVER be cached - always fresh
       const isCommentEndpoint = url.includes('/comments');
