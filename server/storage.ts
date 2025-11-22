@@ -1674,9 +1674,11 @@ export class MemStorage implements IStorage {
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
-        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
+        tagline, vision_statement as "visionStatement", mission_statement as "misionStatement",
         core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
-        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience",
+        subscription_tier as "subscriptionTier", subscription_status as "subscriptionStatus",
+        subscription_start_date as "subscriptionStartDate", subscription_end_date as "subscriptionEndDate"
         FROM users WHERE id = $1
       `;
       
@@ -1733,7 +1735,9 @@ export class MemStorage implements IStorage {
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
         tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
         core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
-        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience",
+        subscription_tier as "subscriptionTier", subscription_status as "subscriptionStatus",
+        subscription_start_date as "subscriptionStartDate", subscription_end_date as "subscriptionEndDate"
         FROM users WHERE email = $1
       `;
       
@@ -1764,7 +1768,9 @@ export class MemStorage implements IStorage {
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
         tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
         core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
-        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience"
+        primary_audience as "primaryAudience", secondary_audience as "secondaryAudience",
+        subscription_tier as "subscriptionTier", subscription_status as "subscriptionStatus",
+        subscription_start_date as "subscriptionStartDate", subscription_end_date as "subscriptionEndDate"
         FROM users WHERE username = $1
       `;
       
