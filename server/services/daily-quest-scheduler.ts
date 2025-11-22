@@ -12,7 +12,7 @@ import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
 
 class DailyQuestScheduler {
   private isSchedulerActive = false;
-  private cronJob: cron.ScheduledTask | null = null;
+  private cronJob: any = null;
 
   // Schedule to run every day at 12:01 AM UTC to handle quest expiration
   public startScheduler() {
