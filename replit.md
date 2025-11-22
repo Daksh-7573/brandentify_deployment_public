@@ -72,3 +72,11 @@ Preferred communication style: Simple, everyday language.
 - **Authentication**: JWT, bcrypt
 - **Payment Gateway**: Razorpay (for subscription management) - READY FOR INTEGRATION
 - **File Processing**: Advanced PDF parsing
+
+## Automated Testing Suite (NEW ✨)
+- **Quick Test**: `./scripts/quick-test.sh` - 24 essential endpoints (95% pass rate, ~30 seconds)
+- **Comprehensive Suite**: `./scripts/test-suite.sh` - 40+ endpoints, 10 sections
+- **Reaction Tests**: `./scripts/test-reactions.sh` - 10 dedicated reaction feature tests
+- **Pre-Deployment Check**: `./scripts/pre-deployment-check.sh` - Full validation
+- **Coverage**: User auth, Feed, Reactions (insightful/misinformed), Subscriptions, Career Tools, Services, Portfolio, Messaging, Notifications
+- **Documentation**: See `AUTOMATED_TESTING_GUIDE.md` for complete guide
