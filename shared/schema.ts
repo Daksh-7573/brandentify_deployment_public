@@ -1,4 +1,2373 @@
-// Last part of file - append to existing content
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
+import { pgEnum } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+import { notifications, insertNotificationSchema } from "./notification-schema";
+
+// Re-export notifications table for database
+export { notifications, insertNotificationSchema };
+
+// User model  
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  password: text("password"),
+  phoneNumber: text("phone_number").unique(), // Added phone number for mobile login
+  name: text("name"),
+  // Firebase authentication fields
+  firebaseUid: text("firebase_uid").unique(), // Firebase user ID
+  googleId: text("google_id").unique(), // Google OAuth ID
+  authProvider: text("auth_provider").default("email"), // 'email', 'google', 'phone'
+  lastLoginAt: timestamp("last_login_at"),
+  brandName: text("brand_name").unique(), // Professional brand name for URL
+  photoURL: text("photo_url"),
+  profileUrl: text("profile_url"), // Portfolio or LinkedIn URL
+  randomProfileLink: text("random_profile_link").unique(), // Unique random link for profile access
+  title: text("title"), // Job title
+  company: text("company"), // Company name
+  aboutMe: text("about_me"), // About Me section - max 350 words
+  location: text("location"), // User location (city/state name)
+  timezone: text("timezone").default("UTC"), // User's timezone (e.g., "America/New_York", "Asia/Kolkata", "Europe/London")
+  nextQuestAssignmentTime: timestamp("next_quest_assignment_time"), // Next time to assign daily quests (calculated from user's timezone)
+  industry: text("industry"), // User's industry
+  domain: text("domain"), // User's domain within the industry
+  lookingFor: text("looking_for"), // What the user is looking for (networking type)
+  whatIOffer: text("what_i_offer"), // What skills/services the user offers - max 250 words
+  visitingCardType: text("visiting_card_type"), // Type of digital visiting card
+  selectedPortfolioLayout: text("selected_portfolio_layout").default("professional"), // User's preferred portfolio template
+  profileCompleted: integer("profile_completed").default(0), // Percentage
+  hasGeneratedResume: boolean("has_generated_resume").default(false), // Whether a resume has been auto-generated
+  resumeUrl: text("resume_url"), // URL to the generated resume
+  resumeGeneratedAt: timestamp("resume_generated_at"), // When resume was last generated
+  emailVerified: boolean("email_verified").default(false), // Whether email is verified
+  emailVerificationToken: text("email_verification_token"), // Token for email verification
+  emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
+  // Smart Radar geolocation fields
+  geoLatitude: decimal("geo_latitude", { precision: 10, scale: 8 }), // Latitude for Smart Radar
+  geoLongitude: decimal("geo_longitude", { precision: 11, scale: 8 }), // Longitude for Smart Radar
+  geoVisibleNearby: boolean("geo_visible_nearby").default(true), // Whether user is visible in Smart Radar
+  geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
+  // Personal branding fields
+  tagline: text("tagline"), // Personal motto (max 80 characters)
+  visionStatement: text("vision_statement"), // Long-term vision (max 200 characters)
+  missionStatement: text("mission_statement"), // What user stands for (max 220 characters)
+  coreValues: text("core_values").array(), // 3-5 keywords (max 5 items)
+  uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
+  primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
+  secondaryAudience: text("secondary_audience").array(), // Secondary audience (max 5 items)
+  // Subscription fields (provider-agnostic)
+  subscriptionTier: text("subscription_tier").default("free"), // "free" | "premium"
+  subscriptionStatus: text("subscription_status").default("active"), // "active" | "canceled" | "expired" | "pending"
+  paymentProvider: text("payment_provider"), // "razorpay" | "stripe"
+  providerCustomerId: text("provider_customer_id"), // Razorpay customer_id or Stripe customer_id
+  providerSubscriptionId: text("provider_subscription_id"), // Razorpay subscription_id or Stripe subscription_id
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  subscriptionEndDate: timestamp("subscription_end_date"),
+  premiumFeaturesUsage: jsonb("premium_features_usage").default('{"aiChatCount": 0, "resumeAnalysisCount": 0, "insightfulCount": 0, "misinformedCount": 0, "lastResetDate": null}'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User field backups for critical data persistence
+export const userFieldBackups = pgTable("user_field_backups", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  fieldName: text("field_name").notNull(),
+  fieldValue: text("field_value"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  uniqueUserField: unique().on(table.userId, table.fieldName),
+}));
+
+// Subscription transactions model - tracks all subscription payments (provider-agnostic)
+export const subscriptionTransactions = pgTable("subscription_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  paymentProvider: text("payment_provider").notNull(), // "razorpay" | "stripe"
+  providerOrderId: text("provider_order_id"), // Razorpay order_id or Stripe session_id
+  providerPaymentId: text("provider_payment_id"), // Razorpay payment_id or Stripe payment_intent_id
+  providerEventId: text("provider_event_id"), // For webhook idempotency
+  amountMinor: integer("amount_minor").notNull(), // Amount in smallest currency unit (paise for INR, cents for USD)
+  currency: text("currency").notNull(), // "inr" | "usd"
+  status: text("status").notNull(), // "pending" | "completed" | "failed" | "refunded"
+  planType: text("plan_type").notNull(), // "monthly" | "yearly"
+  providerMetadata: jsonb("provider_metadata"), // Provider-specific data
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Resume theme enum
+export const resumeThemeEnum = pgEnum("resume_theme", [
+  "professional",
+  "creative", 
+  "minimal", 
+  "technical",
+  "executive",
+  "minimalist_pro",
+  "timeline",
+  "visual_expert",
+  "freelancer_hub",
+  "scholar",
+  "animated",
+  "dynamic_innovator",
+  "animated_odyssey"
+]);
+
+// Resume model
+export const resumes = pgTable("resumes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  fileName: text("file_name").notNull(),
+  fileData: text("file_data").notNull(), // Base64 encoded data
+  score: integer("score").default(0), // AI-generated score
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+  isShadowResume: boolean("is_shadow_resume").default(false), // Whether this is a Musk-generated shadow resume
+  themeStyle: resumeThemeEnum("theme_style").default("professional"), // Theme style for the resume
+  isDownloadable: boolean("is_downloadable").default(false), // Whether others can download this resume
+  lastUpdatedByMusk: timestamp("last_updated_by_musk"), // When Musk last updated this resume
+  visibility: text("visibility").default("private"), // private, connections, public
+  metadata: text("metadata"), // Stores form data for Resume Editor
+});
+
+// Shadow Resume model - stores automatically generated resume content by Musk
+export const shadowResumes = pgTable("shadow_resumes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  resumeId: integer("resume_id").references(() => resumes.id), // Link to the generated resume when published
+  content: jsonb("content").notNull(), // Structured JSON data containing all resume sections and content
+  suggestions: jsonb("suggestions").default('[]'), // New content suggestions from Musk
+  history: jsonb("history").default('[]'), // History of changes made to the resume
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Work Experience model
+export const workExperiences = pgTable("work_experiences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  company: text("company").notNull(),
+  industry: text("industry"),
+  domain: text("domain"),
+  location: text("location"),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  description: text("description"),
+  keyResponsibilities: jsonb("key_responsibilities").default('[]'),
+});
+
+// Education model
+export const educations = pgTable("educations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  degree: text("degree").notNull(),
+  institution: text("institution").notNull(),
+  location: text("location"),
+  industry: text("industry"),
+  domain: text("domain"),
+  fieldOfStudy: text("field_of_study"),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  skillsAcquired: jsonb("skills_acquired").default('[]'),
+});
+
+// Skill model
+export const skills = pgTable("skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  level: text("level").notNull(), // Beginner, Intermediate, Advanced
+  proficiency: integer("proficiency").default(0), // Percentage
+});
+
+// AI Chat messages model
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(), // actual message content
+  sender: text("sender").notNull(), // user or ai
+  messageType: text("message_type").default("general"), // general, career_advice, resume_analysis, networking_recommendations
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// OTP verification model for phone login
+export const otpVerifications = pgTable("otp_verifications", {
+  id: serial("id").primaryKey(),
+  phoneNumber: text("phone_number").notNull(),
+  otp: text("otp").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  verified: boolean("verified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Email verification model
+export const emailVerifications = pgTable("email_verifications", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  token: text("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  verified: boolean("verified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Projects model
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  startDate: text("start_date"),
+  projectUrl: text("project_url"),
+  category: text("category"), // Web Development, Mobile App, Design, etc.
+  industry: text("industry"), // Healthcare, Technology, Finance, etc.
+  thumbnailUrl: text("thumbnail_url"), // URL to the main thumbnail image for the project
+  thumbnailFile: text("thumbnail_file"), // Filename for uploaded image
+  mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array
+  // isVisible field removed as requested
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Project collaborators model
+export const projectCollaborators = pgTable("project_collaborators", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  name: text("name").notNull().default("Team Member"), // Default name for all team members
+  email: text("email"),
+  role: text("role").notNull().default("Collaborator"), // Default role for all team members
+  profileLink: text("profile_link").notNull(), // Required Brandentifier profile link for connecting users
+  userId: integer("user_id").references(() => users.id), // Optional: if the collaborator is on the platform
+  inviteStatus: text("invite_status").default("Pending"), // Pending, Accepted, Declined
+  inviteToken: text("invite_token"),
+  inviteExpires: timestamp("invite_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Project endorsements model
+export const projectEndorsements = pgTable("project_endorsements", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id).notNull(),
+  clientName: text("client_name").default("Client"), // Default name for client
+  clientEmail: text("client_email"),
+  clientTitle: text("client_title"), // Job title of the client
+  clientCompany: text("client_company"),
+  message: text("message"),
+  rating: integer("rating"), // e.g., 1-5 stars
+  profileLink: text("profile_link"), // Brandentifier profile link for connecting users
+  userId: integer("user_id").references(() => users.id), // If the client is on the platform
+  approvalStatus: text("approval_status").default("Pending"), // Pending, Approved, Declined
+  isVerified: boolean("is_verified").default(false), // Whether the endorsement has been verified by the client
+  verificationToken: text("verification_token"),
+  verificationExpires: timestamp("verification_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Helper function to count words
+const countWords = (text: string | null | undefined): number => {
+  if (!text || text.trim() === '') return 0;
+  return text.trim().split(/\s+/).length;
+};
+
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users)
+  .omit({ id: true, createdAt: true, emailVerified: true, emailVerificationToken: true, emailVerificationExpires: true })
+  .extend({
+    tagline: z.string().nullable().optional().refine(
+      (val) => !val || val.length <= 80,
+      { message: "Tagline must be 80 characters or less" }
+    ),
+    visionStatement: z.string().nullable().optional().refine(
+      (val) => !val || val.length <= 200,
+      { message: "Vision Statement must be 200 characters or less" }
+    ),
+    missionStatement: z.string().nullable().optional().refine(
+      (val) => !val || val.length <= 220,
+      { message: "Mission Statement must be 220 characters or less" }
+    ),
+    uniqueValueProposition: z.string().nullable().optional().refine(
+      (val) => !val || val.length <= 150,
+      { message: "Unique Value Proposition must be 150 characters or less" }
+    ),
+    coreValues: z.array(z.string()).max(5, { message: "Maximum 5 core values allowed" }).nullable().optional(),
+    primaryAudience: z.array(z.string()).max(5, { message: "Maximum 5 primary audience items allowed" }).nullable().optional(),
+    secondaryAudience: z.array(z.string()).max(5, { message: "Maximum 5 secondary audience items allowed" }).nullable().optional(),
+  });
+export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, uploadedAt: true, lastUpdatedByMusk: true });
+export const insertWorkExperienceSchema = createInsertSchema(workExperiences).omit({ id: true });
+export const insertEducationSchema = createInsertSchema(educations).omit({ id: true });
+export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
+export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ id: true, verified: true, createdAt: true });
+export const insertEmailVerificationSchema = createInsertSchema(emailVerifications).omit({ id: true, verified: true, createdAt: true });
+
+// Project schemas
+export const insertProjectSchema = createInsertSchema(projects).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export const insertProjectCollaboratorSchema = createInsertSchema(projectCollaborators).omit({ 
+  id: true, 
+  createdAt: true, 
+  inviteStatus: true, 
+  inviteToken: true, 
+  inviteExpires: true 
+});
+export const insertProjectEndorsementSchema = createInsertSchema(projectEndorsements).omit({ 
+  id: true, 
+  createdAt: true, 
+  approvalStatus: true,
+  isVerified: true, 
+  verificationToken: true, 
+  verificationExpires: true 
+});
+
+// Insert schema for ShadowResume
+export const insertShadowResumeSchema = createInsertSchema(shadowResumes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type Resume = typeof resumes.$inferSelect;
+export type InsertResume = z.infer<typeof insertResumeSchema>;
+
+export type ShadowResume = typeof shadowResumes.$inferSelect;
+export type InsertShadowResume = z.infer<typeof insertShadowResumeSchema>;
+
+export type WorkExperience = typeof workExperiences.$inferSelect;
+export type InsertWorkExperience = z.infer<typeof insertWorkExperienceSchema>;
+
+export type Education = typeof educations.$inferSelect;
+export type InsertEducation = z.infer<typeof insertEducationSchema>;
+
+export type Skill = typeof skills.$inferSelect;
+export type InsertSkill = z.infer<typeof insertSkillSchema>;
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
+export type OtpVerification = typeof otpVerifications.$inferSelect;
+export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+
+export type EmailVerification = typeof emailVerifications.$inferSelect;
+export type InsertEmailVerification = z.infer<typeof insertEmailVerificationSchema>;
+
+// Project related types
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+
+export type ProjectCollaborator = typeof projectCollaborators.$inferSelect;
+export type InsertProjectCollaborator = z.infer<typeof insertProjectCollaboratorSchema>;
+
+export type ProjectEndorsement = typeof projectEndorsements.$inferSelect;
+export type InsertProjectEndorsement = z.infer<typeof insertProjectEndorsementSchema>;
+
+// Service category enum for categorizing user services
+export const serviceCategoryEnum = pgEnum("service_category", [
+  "consulting", 
+  "development",
+  "design",
+  "marketing",
+  "writing",
+  "coaching",
+  "teaching",
+  "other"
+]);
+
+// Portfolio layout enum
+export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
+  "professional", 
+  "creative", 
+  "minimal", 
+  "technical",
+  "executive",
+  "minimalist_pro", // Added "The Minimalist Pro" theme with snake_case format
+  "timeline-storyteller-2", // Timeline Storyteller 2.0 template - comprehensive interactive timeline
+  "visual-expert",
+  "corporate-executive",
+  "dynamic-innovator",
+  "animated",
+  "animated-odyssey", // New immersive animated template with continuous scrolling
+  "freelancer-hub",
+  "scholar",
+  "designer-portfolio", // Designer portfolio template with glassmorphic design
+  "photographer-portfolio", // Photographer portfolio template with magazine-quality aesthetic
+  "nature-creative", // Nature-themed creative portfolio for freelancers with parallax effects and animations
+  "fashion-runway", // High-fashion editorial portfolio for fashion models with 3-layer parallax
+  "yoga-fitness-model" // Clean, soulful yoga/fitness portfolio with earth tones and mindful aesthetics
+]);
+
+// Portfolio model
+export const portfolios = pgTable("portfolios", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  layout: portfolioLayoutEnum("layout").notNull().default("professional"),
+  customTitle: text("custom_title"), // Custom title for the portfolio
+  customBio: text("custom_bio"), // Additional bio information
+  customizationOptions: jsonb("customization_options").default("{}"), // JSON data for customization (colors, fonts, etc.)
+  isPublished: boolean("is_published").default(false), // Whether portfolio is public
+  publicUrl: text("public_url"), // Custom URL for the portfolio
+  featuredProjects: jsonb("featured_projects").default("[]"), // IDs of featured projects
+  featuredSkills: jsonb("featured_skills").default("[]"), // IDs of featured skills
+  featuredExperiences: jsonb("featured_experiences").default("[]"), // IDs of featured work experiences
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for Portfolio
+export const insertPortfolioSchema = createInsertSchema(portfolios).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Portfolio
+export type Portfolio = typeof portfolios.$inferSelect;
+export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;
+
+// Services model for showcasing user services with pricing
+export const services = pgTable("services", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: serviceCategoryEnum("category").notNull().default("other"),
+  priceInr: decimal("price_inr", { precision: 10, scale: 2 }), // Price in INR
+  priceUsd: decimal("price_usd", { precision: 10, scale: 2 }), // Price in USD
+  isHourly: boolean("is_hourly").default(false), // Whether price is per hour or fixed
+  features: jsonb("features").default("[]"), // Array of features included in the service
+  imageUrl: text("image_url"), // URL to service image
+  order: integer("order").default(0), // For ordering services (1, 2, 3 for top services)
+  isActive: boolean("is_active").default(true), // Whether service is active
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for Services
+const baseServiceSchema = createInsertSchema(services).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Custom schema with more relaxed validation for price fields
+export const insertServiceSchema = baseServiceSchema.extend({
+  // Make sure category always defaults to "other" if not provided
+  category: z.enum(["consulting", "development", "design", "marketing", "writing", "coaching", "teaching", "other"]).default("other"),
+  // Allow prices to be string or number or null
+  priceInr: z.union([z.number().nullable(), z.string().transform(val => val ? parseFloat(val) : null).nullable()]).nullable().optional(),
+  priceUsd: z.union([z.number().nullable(), z.string().transform(val => val ? parseFloat(val) : null).nullable()]).nullable().optional(),
+  // Make sure features is always an array
+  features: z.array(z.any()).default([])
+});
+
+// Export types for Services
+export type Service = typeof services.$inferSelect;
+export type InsertService = z.infer<typeof insertServiceSchema>;
+
+// Feedback type enum
+export const feedbackTypeEnum = pgEnum("feedback_type", [
+  "helpful", // Yes/No binary feedback
+  "rating", // 1-5 stars
+  "text", // Text feedback for improvement
+  "save" // Saved to career plan
+]);
+
+// Feedback model for Musk response feedback
+export const muskFeedbacks = pgTable("musk_feedbacks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  conversationId: text("conversation_id").notNull(), // Unique ID for the conversation
+  messageId: text("message_id").notNull(), // ID of the specific message
+  feedbackType: feedbackTypeEnum("feedback_type").notNull(),
+  rating: integer("rating"), // For star ratings (1-5)
+  helpful: boolean("helpful"), // For yes/no feedback
+  textFeedback: text("text_feedback"), // For text feedback
+  savedToPlan: boolean("saved_to_plan").default(false), // Whether saved to career plan
+  context: text("context"), // Context of the conversation (e.g., resume review, career advice)
+  promptCategory: text("prompt_category"), // Category of the prompt (e.g., career growth, job search)
+  promptDetails: jsonb("prompt_details").default("{}"), // JSON with detailed prompt info
+  responseDetails: jsonb("response_details").default("{}"), // JSON with response details
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for MuskFeedback
+export const insertMuskFeedbackSchema = createInsertSchema(muskFeedbacks).omit({
+  id: true,
+  createdAt: true
+});
+
+// Feedback analysis model for tracking aggregated feedback patterns
+export const feedbackAnalytics = pgTable("feedback_analytics", {
+  id: serial("id").primaryKey(),
+  promptCategory: text("prompt_category").notNull(), // Category of the prompt
+  responseType: text("response_type").notNull(), // Type of response (e.g., advice, analysis)
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }), // Average star rating
+  helpfulCount: integer("helpful_count").default(0), // Count of helpful responses
+  unhelpfulCount: integer("unhelpful_count").default(0), // Count of unhelpful responses
+  savedCount: integer("saved_count").default(0), // Times saved to career plan
+  careerStage: text("career_stage"), // Target career stage (entry, mid, senior)
+  industry: text("industry"), // Target industry
+  mostCommonFeedback: jsonb("most_common_feedback").default("[]"), // Top feedback themes
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for FeedbackAnalytics
+export const insertFeedbackAnalyticsSchema = createInsertSchema(feedbackAnalytics).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Export types for Feedback
+export type MuskFeedback = typeof muskFeedbacks.$inferSelect;
+export type InsertMuskFeedback = z.infer<typeof insertMuskFeedbackSchema>;
+export type FeedbackAnalytics = typeof feedbackAnalytics.$inferSelect;
+export type InsertFeedbackAnalytics = z.infer<typeof insertFeedbackAnalyticsSchema>;
+
+// Skill trend data for job market analysis
+export const skillTrends = pgTable("skill_trends", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  industry: text("industry").notNull(),
+  category: text("category").notNull(), // e.g., "technical", "soft", "domain"
+  growthRate: decimal("growth_rate", { precision: 5, scale: 2 }).notNull(), // Percentage growth over period
+  demandScore: integer("demand_score").notNull(), // 1-100 scale
+  timeFrame: text("time_frame").notNull(), // e.g., "6_months", "1_year", "3_years"
+  dataSource: text("data_source"), // e.g., "linkedin", "indeed", "stackoverflow"
+  jobCount: integer("job_count"), // Number of jobs requiring this skill
+  avgSalaryImpact: integer("avg_salary_impact"), // Salary boost this skill provides
+  relatedSkills: jsonb("related_skills").default("[]"), // Related skills as array
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for SkillTrends
+export const insertSkillTrendSchema = createInsertSchema(skillTrends).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Career paths and job roles
+export const careerPathNodes = pgTable("career_path_nodes", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  industry: text("industry").notNull(),
+  level: text("level").notNull(), // e.g., "entry", "mid", "senior", "executive"
+  avgSalary: integer("avg_salary"),
+  requiredSkills: jsonb("required_skills").default("[]"), // Required skills array
+  recommendedSkills: jsonb("recommended_skills").default("[]"), // Recommended skills array
+  jobDescription: text("job_description"),
+  growthOutlook: text("growth_outlook"), // e.g., "growing", "stable", "declining"
+  entryBarrier: text("entry_barrier"), // e.g., "low", "medium", "high"
+  commonPathways: jsonb("common_pathways").default("{}"), // Previous and next common roles
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for CareerPathNodes
+export const insertCareerPathNodeSchema = createInsertSchema(careerPathNodes).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Career transitions between roles
+export const careerTransitions = pgTable("career_transitions", {
+  id: serial("id").primaryKey(),
+  fromNodeId: integer("from_node_id").notNull().references(() => careerPathNodes.id),
+  toNodeId: integer("to_node_id").notNull().references(() => careerPathNodes.id),
+  transitionDifficulty: text("transition_difficulty").notNull(), // e.g., "easy", "moderate", "difficult"
+  skillGaps: jsonb("skill_gaps").default("[]"), // Skills needed to make the transition
+  avgTransitionTime: integer("avg_transition_time"), // In months
+  recommendedSteps: jsonb("recommended_steps").default("[]"), // Steps to make the transition
+  successRate: integer("success_rate"), // Percentage of people who make this transition
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schema for CareerTransitions
+export const insertCareerTransitionSchema = createInsertSchema(careerTransitions).omit({
+  id: true,
+  updatedAt: true
+});
+
+// Export types for Trend Graph and Job Graph
+export type SkillTrend = typeof skillTrends.$inferSelect;
+export type InsertSkillTrend = z.infer<typeof insertSkillTrendSchema>;
+export type CareerPathNode = typeof careerPathNodes.$inferSelect;
+export type InsertCareerPathNode = z.infer<typeof insertCareerPathNodeSchema>;
+export type CareerTransition = typeof careerTransitions.$inferSelect;
+export type InsertCareerTransition = z.infer<typeof insertCareerTransitionSchema>;
+
+// Pulse type enum
+export const pulseTypeEnum = pgEnum("pulse_type", [
+  "poll", 
+  "media-pulse", 
+  "project",
+  "news-pulse" // Added News Pulse type for AI-generated industry news
+]);
+
+// Pulse category enum
+export const pulseCategoryEnum = pgEnum("pulse_category", [
+  "certification",
+  "launch",
+  "award",
+  "project",
+  "announcement",
+  "highlight" // 24-hour temporary content
+]);
+
+// Media type enum for Media Pulses
+export const mediaTypeEnum = pgEnum("media_type", [
+  "image",
+  "video"
+]);
+
+// Reaction type enum for pulse reactions
+export const reactionTypeEnum = pgEnum("reaction_type", [
+  "insightful",
+  "misinformed",
+]);
+
+// Flag status enum for content flags
+export const flagStatusEnum = pgEnum("flag_status", [
+  "pending",
+  "reviewed",
+  "resolved",
+  "dismissed"
+]);
+
+// Pulses model for user-created content
+export const pulses = pgTable("pulses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  targetUserId: integer("target_user_id").references(() => users.id), // For personalized Musk pulses - if null, pulse is public
+  type: pulseTypeEnum("type").notNull(),
+  category: pulseCategoryEnum("category"), // Categorization of the pulse
+  title: text("title").notNull(),
+  content: text("content"),
+  industry: text("industry"), // Industry related to the pulse content
+  domain: text("domain"), // Domain/specialty within the industry
+  mediaType: mediaTypeEnum("media_type"),
+  mediaUrls: jsonb("media_urls").default('[]'), // URLs to images or videos stored as JSON array
+  mediaLocalStorageKeys: jsonb("media_local_storage_keys").default('[]'), // Keys to access images/videos in localStorage
+  pollOptions: jsonb("poll_options").default('[]'), // For poll type pulses
+  projectId: integer("project_id").references(() => projects.id), // For project type pulses
+  likes: integer("likes").default(0), // Legacy field - will be replaced by insightful_count
+  insightfulCount: integer("insightful_count").default(0), // Count of insightful reactions
+  misinformedCount: integer("misinformed_count").default(0), // Count of misinformed reactions
+  shareCount: integer("share_count").default(0), // Count of shares
+  comments: integer("comments").default(0),
+  reachScore: integer("reach_score").default(0), // Calculated score for feed ranking: (comments × 3) + insightful - misinformed
+  isPublished: boolean("is_published").default(true),
+  expiresAt: timestamp("expires_at"), // When the pulse expires (for highlight category)
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse comments model
+export const pulseComments = pgTable("pulse_comments", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  likes: integer("likes").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Poll votes model - tracks votes on poll options
+export const pollVotes = pgTable("poll_votes", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  optionIndex: integer("option_index").notNull(), // Index of the option that was voted for
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  // Ensure each user can only vote once per poll
+  userPollUnique: unique().on(table.userId, table.pulseId),
+}));
+
+// Pulse flags model - tracks flagged inappropriate content
+export const pulseFlags = pgTable("pulse_flags", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  reporterId: integer("reporter_id").references(() => users.id).notNull(),
+  reason: text("reason").notNull(), // Reason for flagging (inappropriate, spam, etc.)
+  description: text("description"), // Additional details from reporter
+  status: flagStatusEnum("status").default("pending"),
+  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed the flag
+  reviewNote: text("review_note"), // Note from admin during review
+  createdAt: timestamp("created_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
+// Insert schemas for Pulses
+export const insertPulseSchema = createInsertSchema(pulses).omit({
+  id: true,
+  likes: true,
+  comments: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPulseCommentSchema = createInsertSchema(pulseComments).omit({
+  id: true,
+  likes: true,
+  createdAt: true
+});
+
+export const insertPollVoteSchema = createInsertSchema(pollVotes).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertSubscriptionTransactionSchema = createInsertSchema(subscriptionTransactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPulseFlagSchema = createInsertSchema(pulseFlags).omit({
+  id: true,
+  status: true,
+  reviewedBy: true,
+  reviewNote: true,
+  createdAt: true,
+  reviewedAt: true
+});
+
+// Export types for Pulses
+export type Pulse = typeof pulses.$inferSelect;
+export type InsertPulse = z.infer<typeof insertPulseSchema>;
+
+export type PulseComment = typeof pulseComments.$inferSelect;
+export type InsertPulseComment = z.infer<typeof insertPulseCommentSchema>;
+
+export type PulseFlag = typeof pulseFlags.$inferSelect;
+export type InsertPulseFlag = z.infer<typeof insertPulseFlagSchema>;
+
+export type PollVote = typeof pollVotes.$inferSelect;
+export type InsertPollVote = z.infer<typeof insertPollVoteSchema>;
+
+// Hashtags model for tracking hashtags used in pulses
+export const hashtags = pgTable("hashtags", {
+  id: serial("id").primaryKey(),
+  tag: text("tag").notNull().unique(), // The hashtag text (without the # symbol)
+  count: integer("count").default(1), // How many times this hashtag has been used
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse hashtags relationship model - links pulses with hashtags
+export const pulseHashtags = pgTable("pulse_hashtags", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  hashtagId: integer("hashtag_id").references(() => hashtags.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for Hashtags
+export const insertHashtagSchema = createInsertSchema(hashtags).omit({
+  id: true,
+  count: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPulseHashtagSchema = createInsertSchema(pulseHashtags).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Hashtags
+export type Hashtag = typeof hashtags.$inferSelect;
+export type InsertHashtag = z.infer<typeof insertHashtagSchema>;
+
+export type PulseHashtag = typeof pulseHashtags.$inferSelect;
+export type InsertPulseHashtag = z.infer<typeof insertPulseHashtagSchema>;
+
+// User-hashtag following relationship model - tracks which hashtags a user follows
+export const userHashtagFollows = pgTable("user_hashtag_follows", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  hashtagId: integer("hashtag_id").references(() => hashtags.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for user-hashtag follows
+export const insertUserHashtagFollowSchema = createInsertSchema(userHashtagFollows).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for user-hashtag follows
+export type UserHashtagFollow = typeof userHashtagFollows.$inferSelect;
+export type InsertUserHashtagFollow = z.infer<typeof insertUserHashtagFollowSchema>;
+
+// User mentor following relationship model - tracks which mentors/users a user follows
+export const userFollows = pgTable("user_follows", {
+  id: serial("id").primaryKey(),
+  followerId: integer("follower_id").references(() => users.id).notNull(),
+  followeeId: integer("followee_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User interests model - AI-detected interests based on engagement patterns
+export const userInterests = pgTable("user_interests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  interest: text("interest").notNull(), // AI-detected interest topic
+  confidence: decimal("confidence", { precision: 5, scale: 2 }).default("0.5"), // AI confidence score 0-1
+  source: text("source").default("ai_detected"), // How interest was detected: ai_detected, manual, engagement
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Pulse engagement tracking for personalization
+export const pulseEngagements = pgTable("pulse_engagements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  engagementType: text("engagement_type").notNull(), // insightful, misinformed, inspired, share, comment, view
+  weight: decimal("weight", { precision: 3, scale: 2 }).default("1.0"), // Engagement weight for personalization
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for new tables
+export const insertUserFollowSchema = createInsertSchema(userFollows).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertUserInterestSchema = createInsertSchema(userInterests).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true
+});
+
+export const insertPulseEngagementSchema = createInsertSchema(pulseEngagements).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for new tables
+export type UserFollow = typeof userFollows.$inferSelect;
+export type InsertUserFollow = z.infer<typeof insertUserFollowSchema>;
+
+export type UserInterest = typeof userInterests.$inferSelect;
+export type InsertUserInterest = z.infer<typeof insertUserInterestSchema>;
+
+export type PulseEngagement = typeof pulseEngagements.$inferSelect;
+export type InsertPulseEngagement = z.infer<typeof insertPulseEngagementSchema>;
+
+// News source categories enum
+export const newsSourceCategoryEnum = pgEnum("news_source_category", [
+  "technology",
+  "business",
+  "finance",
+  "marketing",
+  "design",
+  "healthcare",
+  "education",
+  "engineering",
+  "general"
+]);
+
+// News sources model - for tracking different news sources
+export const newsSources = pgTable("news_sources", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  category: newsSourceCategoryEnum("category").notNull(),
+  apiEndpoint: text("api_endpoint"),
+  apiKey: text("api_key"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// News articles model - for storing fetched news articles
+export const newsArticles = pgTable("news_articles", {
+  id: serial("id").primaryKey(),
+  sourceId: integer("source_id").references(() => newsSources.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  content: text("content"),
+  url: text("url"),
+  imageUrl: text("image_url"),
+  author: text("author"),
+  publishedAt: timestamp("published_at"),
+  category: newsSourceCategoryEnum("category"),
+  industries: jsonb("industries").default('[]'), // Array of industries this article is relevant for
+  processed: boolean("processed").default(false), // Whether this article has been processed and posted
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// News user preferences model - for tracking user preferences for news
+export const newsUserPreferences = pgTable("news_user_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  preferredIndustries: jsonb("preferred_industries").default('[]'), // Array of preferred industries
+  preferredSources: jsonb("preferred_sources").default('[]'), // Array of preferred source IDs
+  excludedSources: jsonb("excluded_sources").default('[]'), // Array of excluded source IDs
+  deliveryTime: text("delivery_time").default('17:00'), // 24-hour format for when to deliver news (default 5pm)
+  enabled: boolean("enabled").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schemas for News models
+export const insertNewsSourceSchema = createInsertSchema(newsSources).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertNewsArticleSchema = createInsertSchema(newsArticles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertNewsUserPreferenceSchema = createInsertSchema(newsUserPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for News models
+export type NewsSource = typeof newsSources.$inferSelect;
+export type InsertNewsSource = z.infer<typeof insertNewsSourceSchema>;
+
+export type NewsArticle = typeof newsArticles.$inferSelect;
+export type InsertNewsArticle = z.infer<typeof insertNewsArticleSchema>;
+
+export type NewsUserPreference = typeof newsUserPreferences.$inferSelect;
+export type InsertNewsUserPreference = z.infer<typeof insertNewsUserPreferenceSchema>;
+
+// Pulse reactions model - tracks user reactions (insightful, misinformed) to pulses
+export const pulseReactions = pgTable("pulse_reactions", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  reactionType: reactionTypeEnum("reaction_type").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User reaction quotas model - tracks daily quotas for user reactions
+export const userReactionQuotas = pgTable("user_reaction_quotas", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  date: timestamp("date").notNull(),
+  insightfulQuotaUsed: integer("insightful_quota_used").default(0),
+  misinformedQuotaUsed: integer("misinformed_quota_used").default(0),
+  insightfulQuotaMax: integer("insightful_quota_max").default(10),
+  misinformedQuotaMax: integer("misinformed_quota_max").default(10),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Pulse shares model - tracks when users share pulses with other users
+export const pulseShares = pgTable("pulse_shares", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  recipientId: integer("recipient_id").references(() => users.id).notNull(),
+  message: text("message"),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for the new models
+export const insertPulseReactionSchema = createInsertSchema(pulseReactions).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertUserReactionQuotaSchema = createInsertSchema(userReactionQuotas).omit({
+  id: true,
+  updatedAt: true
+});
+
+export const insertPulseShareSchema = createInsertSchema(pulseShares).omit({
+  id: true,
+  isRead: true,
+  createdAt: true
+});
+
+// Export types for the new models
+export type PulseReaction = typeof pulseReactions.$inferSelect;
+export type InsertPulseReaction = z.infer<typeof insertPulseReactionSchema>;
+
+export type UserReactionQuota = typeof userReactionQuotas.$inferSelect;
+export type InsertUserReactionQuota = z.infer<typeof insertUserReactionQuotaSchema>;
+
+export type PulseShare = typeof pulseShares.$inferSelect;
+export type InsertPulseShare = z.infer<typeof insertPulseShareSchema>;
+
+// MuskMatch model - tracks AI suggestions for user connections
+export const muskMatches = pgTable("musk_matches", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(), // User receiving the suggestion
+  suggestedUserId: integer("suggested_user_id").references(() => users.id).notNull(), // User being suggested
+  matchType: text("match_type").notNull(), // Based on lookingFor value pairs
+  matchScore: integer("match_score").default(0), // AI-calculated match score (0-100)
+  matchReason: text("match_reason"), // AI-generated reason for the match
+  industry: text("industry"), // Matched industry
+  domain: text("domain"), // Matched domain
+  skills: jsonb("skills").default('[]'), // Matched skills as array
+  isRead: boolean("is_read").default(false), // Whether the user has seen this suggestion
+  isDismissed: boolean("is_dismissed").default(false), // Whether the user has dismissed this suggestion
+  isConnected: boolean("is_connected").default(false), // Whether the users have connected
+  shownAt: timestamp("shown_at").defaultNow(), // When the match was shown to the user
+  expiresAt: timestamp("expires_at"), // When the match suggestion expires
+});
+
+// Insert schema for MuskMatch
+export const insertMuskMatchSchema = createInsertSchema(muskMatches).omit({
+  id: true,
+  isRead: true,
+  isDismissed: true,
+  isConnected: true,
+  shownAt: true
+});
+
+// Export types for MuskMatch
+export type MuskMatch = typeof muskMatches.$inferSelect;
+export type InsertMuskMatch = z.infer<typeof insertMuskMatchSchema>;
+
+// Nowboard - For storing micro-actions professionals are taking
+export const nowboardCategoryEnum = pgEnum("nowboard_category", [
+  "growth",
+  "learning",
+  "launch",
+  "planning",
+  "collaboration",
+  "visibility"
+]);
+
+export const nowboardItems = pgTable("nowboard_items", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  content: varchar("content", { length: 150 }).notNull(),
+  category: nowboardCategoryEnum("category").notNull(),
+  visibility: varchar("visibility", { length: 20 }).notNull().default("public").$type<"public" | "connections-only">(),
+  inspiredCount: integer("inspired_count").notNull().default(0),
+  relatedSkills: text("related_skills"),
+  relatedProject: integer("related_project"),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Nowboard inspired-by tracking
+export const nowboardInspiredBy = pgTable("nowboard_inspired_by", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  nowboardItemId: integer("nowboard_item_id").notNull().references(() => nowboardItems.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas for Nowboard
+export const insertNowboardItemSchema = createInsertSchema(nowboardItems).omit({
+  id: true,
+  inspiredCount: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertNowboardInspiredBySchema = createInsertSchema(nowboardInspiredBy).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Nowboard
+export type NowboardItem = typeof nowboardItems.$inferSelect;
+export type InsertNowboardItem = z.infer<typeof insertNowboardItemSchema>;
+
+export type NowboardInspiredBy = typeof nowboardInspiredBy.$inferSelect;
+export type InsertNowboardInspiredBy = z.infer<typeof insertNowboardInspiredBySchema>;
+
+// Career Quests Feature
+// Quest types enum
+export const questTypeEnum = pgEnum("quest_type", [
+  "profile_update",
+  "pulse_creation",
+  "networking",
+  "learning",
+  "portfolio",
+  "resume",
+  "visibility",
+  "engagement", // Brandentifier platform engagement (comments, reactions, discussions)
+  "social_post", // Social Media Post Suggestions
+  "social_quest" // Social Media Quest Activities
+]);
+
+// Content types enum for enhanced social quest variations
+export const contentTypeEnum = pgEnum("content_type", [
+  // Instagram content types
+  "instagram_reel",
+  "instagram_story",
+  "instagram_story_poll",
+  "instagram_story_qa",
+  "instagram_carousel",
+  "instagram_post",
+  "instagram_igtv",
+  
+  // LinkedIn content types
+  "linkedin_post",
+  "linkedin_article",
+  "linkedin_story",
+  "linkedin_document",
+  "linkedin_poll",
+  
+  // Twitter/X content types
+  "twitter_tweet",
+  "twitter_thread",
+  "twitter_reply",
+  "twitter_quote_tweet",
+  "twitter_space",
+  
+  // YouTube content types
+  "youtube_long_video",
+  "youtube_short",
+  "youtube_community_post",
+  "youtube_live_stream",
+  
+  // TikTok content types
+  "tiktok_video",
+  "tiktok_story",
+  "tiktok_live",
+  
+  // Facebook content types
+  "facebook_post",
+  "facebook_story",
+  "facebook_reel",
+  "facebook_event",
+  
+  // General content types
+  "blog_post",
+  "podcast_episode",
+  "webinar",
+  "newsletter",
+  "case_study",
+  "white_paper",
+  
+  // Default
+  "general_post"
+]);
+
+// Quest status enum (simplified)
+export const questStatusEnum = pgEnum("quest_status", [
+  "active",
+  "completed",
+  "expired"
+  // Removed "dismissed" status (quest dismissal functionality removed)
+]);
+
+// Mentorship request status enum
+export const mentorshipStatusEnum = pgEnum("mentorship_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "expired",
+  "completed"
+]);
+
+// Badge type enum
+export const badgeTypeEnum = pgEnum("badge_type", [
+  "quest_initiate",
+  "weekly_hustler",
+  "musk_learner",
+  "thought_leader",
+  "portfolio_star",
+  "visibility_boosted"
+]);
+
+// Quests definition model - stores templates for quests (simplified version)
+export const questDefinitions = pgTable("quest_definitions", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  type: questTypeEnum("type").notNull(),
+  contentType: contentTypeEnum("content_type").default("general_post"), // Enhanced content type for social quests
+  platform: text("platform"), // Social media platform (instagram, linkedin, twitter, youtube, etc.)
+  targetCount: integer("target_count").notNull().default(1), // Number of actions needed to complete
+  targetAction: text("target_action").notNull(), // Specific action required for engagement quests
+  xpReward: integer("xp_reward").notNull().default(50),
+  badgeReward: badgeTypeEnum("badge_reward"),
+  muskTip: text("musk_tip"), // Enhanced tip from Musk about this specific content type
+  estimatedTimeMinutes: integer("estimated_time_minutes").default(15), // Time to complete the quest
+  difficultyLevel: text("difficulty_level").default("beginner"), // beginner, intermediate, advanced
+  // Structured deliverable metadata for specific, actionable quests
+  deliverableFormat: text("deliverable_format"), // e.g., "60-second video", "LinkedIn post", "carousel with 10 slides"
+  quantityValue: integer("quantity_value"), // Specific count: 3, 500, 10, etc.
+  quantityType: text("quantity_type"), // What we're counting: "hashtags", "words", "slides", "connections", etc.
+  platformConstraints: text("platform_constraints"), // Specific platform requirements: "vertical format", "16:9 ratio", etc.
+  guidanceSnippet: text("guidance_snippet"), // Specific action guidance: "Use canva.com", "Record on phone", etc.
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+  // Removed unused fields:
+  // - requiredProfileCompletion
+  // - requiredCareerStage
+  // - requiredIndustry
+});
+
+// User quests model - tracks active and completed quests for each user (updated for daily quests)
+export const userQuests = pgTable("user_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  status: questStatusEnum("status").notNull().default("active"),
+  progress: integer("progress").notNull().default(0), // Current progress count
+  assignedAt: timestamp("assigned_at").defaultNow(),
+  completedAt: timestamp("completed_at"), // When the quest was completed
+  assignedDate: text("assigned_date").notNull(), // Date in YYYY-MM-DD format for daily tracking
+  weekNumber: integer("week_number").notNull(), // Week of the year (1-52) - kept for backwards compatibility
+  year: integer("year").notNull(), // Year of the quest
+  xpEarned: integer("xp_earned"), // Actual XP earned upon completion
+  badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
+  muskResponse: text("musk_response"), // Custom response from Musk on completion
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score"), // Confidence level 0-100
+  suggestedHashtags: text("suggested_hashtags").array(), // AI-generated intelligent hashtags based on context
+  hashtagContext: text("hashtag_context"), // Explanation of why these hashtags were chosen
+  brandGoalsSnapshot: text("brand_goals_snapshot"), // JSON snapshot of user's Brand Goals when quest was completed (for smart profile quest tracking)
+  profileSnapshot: text("profile_snapshot"), // JSON snapshot of user profile when quest was completed (for smart regeneration logic)
+  // Removed field:
+  // - dismissedReason (quest dismissal functionality removed)
+});
+
+// Instant quest status enum
+export const instantQuestStatusEnum = pgEnum("instant_quest_status", [
+  "pending",
+  "accepted",
+  "dismissed",
+  "expired"
+]);
+
+// Instant Quest category enum - career (Brandentifier) or social (external platforms)
+export const instantQuestCategoryEnum = pgEnum("instant_quest_category", [
+  "career", // For Brandentifier platform engagement (posting pulse, etc.)
+  "social"  // For external social platforms (LinkedIn, Twitter, etc.)
+]);
+
+// Instant Quests model - stores trending opportunity quests that appear based on real-time trend spikes
+export const instantQuests = pgTable("instant_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questType: instantQuestCategoryEnum("quest_type").notNull(), // 'career' for Brandentifier, 'social' for external platforms
+  trendTopic: text("trend_topic").notNull(), // Main trending topic
+  trendKeywords: text("trend_keywords").array(), // Keywords related to the trend
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id), // Link to the generated quest
+  suggestedHashtags: text("suggested_hashtags").array(), // Hashtags for this trending topic
+  status: instantQuestStatusEnum("status").notNull().default("pending"),
+  spikeScore: integer("spike_score"), // The trend spike score when detected
+  relevanceScore: integer("relevance_score"), // How relevant this trend is to the user (0-100)
+  feedSources: text("feed_sources").array(), // Which RSS feeds mentioned this trend
+  expiresAt: timestamp("expires_at").notNull(), // When this instant quest expires (6 hours)
+  createdAt: timestamp("created_at").defaultNow(),
+  acceptedAt: timestamp("accepted_at"), // When user accepted the quest
+  dismissedAt: timestamp("dismissed_at"), // When user dismissed the quest
+});
+
+// User XP model - tracks user XP balance and history (further simplified)
+export const userXp = pgTable("user_xp", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(), // Added unique constraint for clarity
+  balance: integer("balance").notNull().default(0), // Current XP balance
+  lifetimeEarned: integer("lifetime_earned").notNull().default(0), // Total XP earned all-time
+  lastEarnedAt: timestamp("last_earned_at"), // Last time XP was earned
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User badges model - tracks badges earned by users
+export const userBadges = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  badgeType: badgeTypeEnum("badge_type").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  questId: integer("quest_id").references(() => userQuests.id), // Quest that earned this badge
+  displayOnProfile: boolean("display_on_profile").default(true), // Whether to show on profile
+  displayOnResume: boolean("display_on_resume").default(false), // Whether to show on downloaded resume
+});
+
+// XP transactions model - tracks all XP earned/spent
+export const xpTransactions = pgTable("xp_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  amount: integer("amount").notNull(), // Can be positive (earned) or negative (spent)
+  source: text("source").notNull(), // quest_completion, daily_login, reaction, etc.
+  sourceId: integer("source_id"), // ID of the source (quest ID, etc.)
+  description: text("description").notNull(), // Human-readable description
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// ============================================================
+// TREND INTELLIGENCE SYSTEM
+// ============================================================
+
+// Trend source enum - tracks where trends come from
+export const trendSourceEnum = pgEnum("trend_source", [
+  "news_api",      // NewsAPI or similar news aggregators
+  "twitter",       // Twitter/X API
+  "linkedin",      // LinkedIn API
+  "rss_feed",      // RSS feed aggregators
+  "google_trends", // Google Trends API
+  "reddit",        // Reddit API
+  "internal"       // Internal Brandentifier analytics
+]);
+
+// Industry trends model - stores normalized trend data per industry/domain
+export const industryTrends = pgTable("industry_trends", {
+  id: serial("id").primaryKey(),
+  
+  // Core trend data
+  topic: text("topic").notNull(), // Main trend topic/keyword
+  content: text("content").notNull(), // Summary or headline of the trend
+  
+  // Categorization
+  industry: text("industry").notNull(), // Target industry (e.g., "Technology", "Healthcare")
+  domain: text("domain"), // Specific domain (e.g., "AI/ML", "Corporate Travel")
+  
+  // Trend metrics
+  velocityScore: integer("velocity_score").notNull().default(50), // 0-100, how fast it's trending
+  sentimentScore: integer("sentiment_score").default(50), // 0-100, negative to positive
+  relevanceScore: integer("relevance_score").notNull().default(50), // 0-100, relevance to industry
+  
+  // Geographic context
+  region: text("region").default("global"), // "global", "US", "EU", etc.
+  
+  // Source metadata
+  source: trendSourceEnum("source").notNull(),
+  sourceUrl: text("source_url"), // Original URL
+  sourceMetadata: jsonb("source_metadata"), // Additional source-specific data
+  
+  // Cache management
+  fetchedAt: timestamp("fetched_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(), // TTL for cache invalidation
+  
+  // Provenance tracking
+  adapterVersion: text("adapter_version"), // Version of the adapter that fetched this
+  processingMetadata: jsonb("processing_metadata"), // Normalization details
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Trend source health - tracks API health, rate limits, and reliability
+export const trendSourceHealth = pgTable("trend_source_health", {
+  id: serial("id").primaryKey(),
+  source: trendSourceEnum("source").notNull().unique(),
+  
+  // Health metrics
+  isActive: boolean("is_active").notNull().default(true),
+  lastSuccessAt: timestamp("last_success_at"),
+  lastFailureAt: timestamp("last_failure_at"),
+  consecutiveFailures: integer("consecutive_failures").notNull().default(0),
+  
+  // Rate limiting
+  requestsToday: integer("requests_today").notNull().default(0),
+  dailyLimit: integer("daily_limit").notNull().default(100),
+  lastResetAt: timestamp("last_reset_at").defaultNow(),
+  
+  // Performance metrics
+  averageResponseTime: integer("average_response_time"), // milliseconds
+  trendsIngested: integer("trends_ingested").notNull().default(0),
+  
+  // Error tracking
+  lastError: text("last_error"),
+  errorMetadata: jsonb("error_metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schemas for Career Quests
+export const insertQuestDefinitionSchema = createInsertSchema(questDefinitions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
+  id: true,
+  assignedAt: true,
+  completedAt: true
+});
+
+export const insertInstantQuestSchema = createInsertSchema(instantQuests).omit({
+  id: true,
+  createdAt: true,
+  acceptedAt: true,
+  dismissedAt: true
+});
+
+export const insertUserXpSchema = createInsertSchema(userXp).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserBadgeSchema = createInsertSchema(userBadges).omit({
+  id: true,
+  earnedAt: true
+});
+
+export const insertXpTransactionSchema = createInsertSchema(xpTransactions).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for Career Quests
+export type QuestDefinition = typeof questDefinitions.$inferSelect;
+export type InsertQuestDefinition = z.infer<typeof insertQuestDefinitionSchema>;
+
+export type UserQuest = typeof userQuests.$inferSelect;
+export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
+
+export type InstantQuest = typeof instantQuests.$inferSelect;
+export type InsertInstantQuest = z.infer<typeof insertInstantQuestSchema>;
+
+export type UserXp = typeof userXp.$inferSelect;
+export type InsertUserXp = z.infer<typeof insertUserXpSchema>;
+
+export type UserBadge = typeof userBadges.$inferSelect;
+export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
+
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+// Insert schemas for Trend Intelligence
+export const insertIndustryTrendSchema = createInsertSchema(industryTrends).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  fetchedAt: true
+});
+
+export const insertTrendSourceHealthSchema = createInsertSchema(trendSourceHealth).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastResetAt: true
+});
+
+// Export types for Trend Intelligence
+export type IndustryTrend = typeof industryTrends.$inferSelect;
+export type InsertIndustryTrend = z.infer<typeof insertIndustryTrendSchema>;
+
+export type TrendSourceHealth = typeof trendSourceHealth.$inferSelect;
+export type InsertTrendSourceHealth = z.infer<typeof insertTrendSourceHealthSchema>;
+
+
+// Brand of the Day model - for storing and tracking featured profiles
+export const brandsOfTheDay = pgTable("brands_of_the_day", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  industry: text("industry").notNull(),  // Industry category
+  domain: text("domain").notNull(),      // Domain/specialty within industry
+  brandValueScore: integer("brand_value_score").notNull(), // Score out of 100
+  muskComment: text("musk_comment").notNull(), // AI-generated comment about why featured
+  scoreBreakdown: jsonb("score_breakdown").notNull(), // Detailed score components
+  featuredDate: timestamp("featured_date").notNull().defaultNow(), // When profile was featured
+  expiresDate: timestamp("expires_date").notNull(), // When feature expires (24h later)
+  hasBeenShared: boolean("has_been_shared").default(false), // Whether user has shared their feature
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schema for Brand of the Day
+export const insertBrandOfTheDaySchema = createInsertSchema(brandsOfTheDay).omit({
+  id: true,
+  createdAt: true,
+  expiresDate: true,
+});
+
+// Export types for Brand of the Day
+export type BrandOfTheDay = typeof brandsOfTheDay.$inferSelect;
+export type InsertBrandOfTheDay = z.infer<typeof insertBrandOfTheDaySchema>;
+
+// Mentorship Connect Feature
+// Mentorship requests table - tracks mentorship requests between users
+export const mentorshipRequests = pgTable("mentorship_requests", {
+  id: serial("id").primaryKey(),
+  menteeId: integer("mentee_id").references(() => users.id).notNull(), // User requesting mentorship
+  mentorId: integer("mentor_id").references(() => users.id).notNull(), // User being asked to mentor
+  message: text("message"), // Custom message from mentee (300 chars max)
+  status: mentorshipStatusEnum("status").notNull().default("pending"),
+  requestedAt: timestamp("requested_at").defaultNow(),
+  respondedAt: timestamp("responded_at"), // When the request was accepted/declined
+  startDate: timestamp("start_date"), // When the mentorship started (if accepted)
+  endDate: timestamp("end_date"), // When the mentorship ends (30 days after acceptance)
+  declineReason: text("decline_reason"), // Optional reason for declining
+  isFeedbackRequested: boolean("is_feedback_requested").default(false), // Whether feedback has been requested
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Mentorship feedback table - tracks feedback for completed mentorships
+export const mentorshipFeedback = pgTable("mentorship_feedback", {
+  id: serial("id").primaryKey(), 
+  mentorshipId: integer("mentorship_id").references(() => mentorshipRequests.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(), // User giving feedback
+  rating: integer("rating").notNull(), // 1-5 star rating
+  positiveNotes: text("positive_notes"), // What went well
+  improvementNotes: text("improvement_notes"), // What could be improved
+  wouldRepeat: boolean("would_repeat").default(false), // Whether they would mentor/be mentored again
+  isPublic: boolean("is_public").default(false), // Whether feedback can be shown publicly
+  providedAt: timestamp("provided_at").defaultNow(),
+});
+
+// Insert schemas for Mentorship Connect
+export const insertMentorshipRequestSchema = createInsertSchema(mentorshipRequests).omit({
+  id: true,
+  status: true,
+  requestedAt: true,
+  respondedAt: true,
+  startDate: true,
+  endDate: true,
+  isFeedbackRequested: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedback).omit({
+  id: true,
+  providedAt: true
+});
+
+// Export types for Mentorship Connect
+export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
+export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
+
+// Professional Connection System
+// Connection request status enum
+export const connectionStatusEnum = pgEnum("connection_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "cancelled"
+]);
+
+// Connection requests table - tracks connection requests between users
+export const connectionRequests = pgTable("connection_requests", {
+  id: serial("id").primaryKey(),
+  senderId: integer("sender_id").references(() => users.id).notNull(), // User sending the request
+  receiverId: integer("receiver_id").references(() => users.id).notNull(), // User receiving the request
+  reason: text("reason").notNull(), // Reason for connection (job opportunity, collaboration, etc.)
+  message: text("message"), // Custom message from sender
+  status: connectionStatusEnum("status").notNull().default("pending"),
+  requestedAt: timestamp("requested_at").defaultNow(),
+  respondedAt: timestamp("responded_at"), // When the request was accepted/declined
+  conversationId: integer("conversation_id"), // Auto-created conversation ID when accepted
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schema for connection requests
+export const insertConnectionRequestSchema = createInsertSchema(connectionRequests).omit({
+  id: true,
+  status: true,
+  requestedAt: true,
+  respondedAt: true,
+  conversationId: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Connection System
+export type ConnectionRequest = typeof connectionRequests.$inferSelect;
+export type InsertConnectionRequest = z.infer<typeof insertConnectionRequestSchema>;
+
+// Career Capsule Feature (formerly Career Roadmap)
+// This feature allows users to set 1-5 year career goals and receive AI-generated
+// milestones/steps with timeline to achieve those goals.
+
+// Career Capsule enums for goal types
+export const careerGoalTypeEnum = pgEnum("career_goal_type", [
+  "position_change", // e.g., "Become a Product Manager"
+  "skill_acquisition", // e.g., "Master AI/ML"
+  "promotion", // e.g., "Get promoted to VP-level"
+  "industry_switch", // e.g., "Move from Finance to Tech"
+  "entrepreneurship", // e.g., "Launch my own agency"
+  "relocation", // e.g., "Work remotely in Canada"
+  "education", // e.g., "Get an MBA"
+  "certification", // e.g., "Get certified in data science"
+  "custom" // Custom user-defined goal
+]);
+
+// Status enum for career goals
+export const goalStatusEnum = pgEnum("goal_status", [
+  "not_started", // Just created, no progress
+  "in_progress", // Some milestones completed
+  "completed", // All milestones completed
+  "abandoned" // User decided to abandon this goal
+]);
+
+// Career Goal model - parent container for the capsule
+export const careerGoals = pgTable("career_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  goalType: careerGoalTypeEnum("goal_type").notNull(),
+  timeframe: integer("timeframe").notNull().default(5), // 1-5 years
+  description: text("description"),
+  targetIndustry: text("target_industry"), // Target industry for the goal
+  targetRole: text("target_role"), // Target role/position
+  currentSkills: jsonb("current_skills").default("[]"), // Skills the user currently has
+  requiredSkills: jsonb("required_skills").default("[]"), // Skills needed to achieve the goal
+  status: goalStatusEnum("status").default("not_started"),
+  progress: integer("progress").default(0), // 0-100%
+  isPrivate: boolean("is_private").default(true),
+  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether AI helped create the capsule
+  startDate: timestamp("start_date").defaultNow(),
+  targetDate: timestamp("target_date"), // Estimated completion date
+  lastUpdated: timestamp("last_updated").defaultNow()
+});
+
+// Goal Milestone model - key achievements/steps toward the goal
+export const goalMilestones = pgTable("goal_milestones", {
+  id: serial("id").primaryKey(),
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category"), // e.g., "skill", "networking", "education", "certification"
+  timeframeMonths: integer("timeframe_months"), // When this should be completed (in months from start)
+  isCompleted: boolean("is_completed").default(false),
+  completedDate: timestamp("completed_date"), // When the milestone was completed
+  priority: integer("priority").default(2), // 1 (low) to 3 (high)
+  difficulty: integer("difficulty").default(2), // 1 (easy) to 3 (hard)
+  muskTips: text("musk_tips"), // AI tips on how to accomplish this milestone
+  resources: jsonb("resources").default("[]"), // Relevant resources (links, courses, etc.)
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Goal Skills model - specific skills to acquire for the goal
+export const goalSkills = pgTable("goal_skills", {
+  id: serial("id").primaryKey(),
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
+  name: text("name").notNull(),
+  importance: integer("importance").default(3), // 1-5 scale
+  currentLevel: integer("current_level").default(0), // 0-100
+  targetLevel: integer("target_level").default(80), // 0-100
+  learningResources: jsonb("learning_resources").default("[]"), // Resources for learning this skill
+  timeToAcquire: integer("time_to_acquire"), // Estimated time in months
+  isAcquired: boolean("is_acquired").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Progress Log model - for users to track progress and reflections
+export const goalProgressLogs = pgTable("goal_progress_logs", {
+  id: serial("id").primaryKey(),
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
+  title: text("title").notNull().default("Progress Update"),
+  content: text("content").notNull(),
+  sentiment: text("sentiment"), // e.g., "positive", "neutral", "challenged"
+  milestoneId: integer("milestone_id").references(() => goalMilestones.id), // Optional related milestone
+  logDate: timestamp("log_date").defaultNow(),
+  isPrivate: boolean("is_private").default(true)
+});
+
+// Insert schemas for Career Capsule
+export const insertCareerGoalSchema = createInsertSchema(careerGoals).omit({
+  id: true,
+  progress: true,
+  startDate: true,
+  lastUpdated: true
+});
+
+export const insertGoalMilestoneSchema = createInsertSchema(goalMilestones).omit({
+  id: true,
+  isCompleted: true,
+  completedDate: true,
+  createdAt: true
+});
+
+export const insertGoalSkillSchema = createInsertSchema(goalSkills).omit({
+  id: true,
+  isAcquired: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertGoalProgressLogSchema = createInsertSchema(goalProgressLogs).omit({
+  id: true,
+  logDate: true
+});
+
+// Export types for Career Capsule
+export type CareerGoal = typeof careerGoals.$inferSelect;
+export type InsertCareerGoal = z.infer<typeof insertCareerGoalSchema>;
+
+export type GoalMilestone = typeof goalMilestones.$inferSelect;
+export type InsertGoalMilestone = z.infer<typeof insertGoalMilestoneSchema>;
+
+export type GoalSkill = typeof goalSkills.$inferSelect;
+export type InsertGoalSkill = z.infer<typeof insertGoalSkillSchema>;
+
+export type GoalProgressLog = typeof goalProgressLogs.$inferSelect;
+export type InsertGoalProgressLog = z.infer<typeof insertGoalProgressLogSchema>;
+
+export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
+export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;
+
+// Export notification types
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+// Auto-deletion system tables
+// Content flagging tracking
+export const flaggedItems = pgTable("flagged_items", {
+  id: serial("id").primaryKey(),
+  itemType: text("item_type").notNull(), // 'pulse' or 'nowboard'
+  itemId: integer("item_id").notNull(),
+  flaggedByUserId: integer("flagged_by_user_id").notNull(),
+  reason: text("reason"), // Optional reason for flagging
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  autoDeleted: boolean("auto_deleted").default(false),
+});
+
+// Item view tracking for ratio calculation
+export const itemViews = pgTable("item_views", {
+  id: serial("id").primaryKey(),
+  itemType: text("item_type").notNull(), // 'pulse' or 'nowboard'
+  itemId: integer("item_id").notNull(),
+  userId: integer("user_id").notNull(),
+  viewedAt: timestamp("viewed_at").notNull().defaultNow(),
+});
+
+// User restriction tracking
+export const userRestrictionTypeEnum = pgEnum("user_restriction_type", [
+  "posting_block",
+  "permanent_ban"
+]);
+
+export const userRestrictions = pgTable("user_restrictions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  restrictionType: userRestrictionTypeEnum("restriction_type").notNull(),
+  startTime: timestamp("start_time").notNull().defaultNow(),
+  endTime: timestamp("end_time"), // null for permanent restrictions
+  reason: text("reason").notNull(),
+  isActive: boolean("is_active").default(true),
+});
+
+// Insert schemas for auto-deletion system
+export const insertFlaggedItemSchema = createInsertSchema(flaggedItems).omit({
+  id: true,
+  createdAt: true,
+  autoDeleted: true
+});
+
+export const insertItemViewSchema = createInsertSchema(itemViews).omit({
+  id: true,
+  viewedAt: true
+});
+
+export const insertUserRestrictionSchema = createInsertSchema(userRestrictions).omit({
+  id: true,
+  startTime: true,
+  isActive: true
+});
+
+// Export types for auto-deletion system
+export type FlaggedItem = typeof flaggedItems.$inferSelect;
+export type InsertFlaggedItem = z.infer<typeof insertFlaggedItemSchema>;
+
+export type ItemView = typeof itemViews.$inferSelect;
+export type InsertItemView = z.infer<typeof insertItemViewSchema>;
+
+export type UserRestriction = typeof userRestrictions.$inferSelect;
+export type InsertUserRestriction = z.infer<typeof insertUserRestrictionSchema>;
+
+// ===== TEMPLATE-BASED SOCIAL QUEST SYSTEM =====
+// New architecture for personalized, scalable social quest generation
+
+// Template category enumeration
+export const templateCategoryEnum = pgEnum("template_category", [
+  "authority_builder", // Thought leadership content
+  "story_driver", // Personal journey sharing
+  "problem_solver", // Target audience pain points
+  "network_builder", // Strategic connections
+  "engagement_catalyst", // Community interaction
+  "expertise_showcase", // Skills and knowledge display
+  "value_provider", // Helpful tips and insights
+  "brand_storytelling" // Personal brand narrative
+]);
+
+// Template categories - defines different types of quest templates
+export const socialQuestTemplateCategories = pgTable("social_quest_template_categories", {
+  id: serial("id").primaryKey(),
+  name: templateCategoryEnum("name").notNull(),
+  description: text("description").notNull(),
+  brandImpact: text("brand_impact").notNull(), // What this category achieves for personal brand
+  priority: integer("priority").default(3), // 1-5, higher = more impactful for brand building
+  minProfileCompletion: integer("min_profile_completion").default(50), // Minimum profile % needed
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Social quest templates - actual template definitions with variables
+export const socialQuestTemplates = pgTable("social_quest_templates", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("category_id").references(() => socialQuestTemplateCategories.id).notNull(),
+  title: text("title").notNull(), // Template title with variables: "Share Your {signature_methodology} on {platform}"
+  description: text("description").notNull(), // Template description with variables
+  muskTip: text("musk_tip").notNull(), // Template Musk tip with variables
+  platform: text("platform").notNull(), // linkedin, instagram, twitter, etc.
+  targetAction: text("target_action").notNull(), // create_linkedin_post, create_instagram_reel, etc.
+  variables: jsonb("variables").default('[]'), // Array of variable names used: ["signature_methodology", "quantified_achievements"]
+  brandImpactDescription: text("brand_impact_description").notNull(), // What this specific template achieves
+  callToAction: text("call_to_action").notNull(), // CTA back to Brandentifier
+  difficultyLevel: text("difficulty_level").default('beginner'), // beginner, intermediate, advanced
+  estimatedTimeMinutes: integer("estimated_time_minutes").default(15),
+  xpReward: integer("xp_reward").default(50),
+  requiredUserData: jsonb("required_user_data").default('[]'), // What profile data is needed: ["industry", "domain", "workExperiences"]
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Personal brand variables - extracted and stored user brand data
+export const personalBrandVariables = pgTable("personal_brand_variables", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  uniqueExpertise: text("unique_expertise"), // e.g., "Technology + Hospitality fusion"
+  quantifiedAchievements: jsonb("quantified_achievements").default('[]'), // e.g., ["reduced costs by 40% for 5 hotels"]
+  signatureMethodology: text("signature_methodology"), // e.g., "3-step automation process"
+  careerStory: text("career_story"), // e.g., "from traditional hospitality to tech innovation"
+  personalMission: text("personal_mission"), // e.g., "democratizing hospitality technology in Gujarat"
+  targetAudience: text("target_audience"), // e.g., "Gujarat hotel owners struggling with costs"
+  competitiveAdvantage: text("competitive_advantage"), // e.g., "only tech-savvy hospitality expert in region"
+  coreValues: jsonb("core_values").default('[]'), // Array of values
+  contentThemes: jsonb("content_themes").default('[]'), // What they should talk about
+  industryInsights: jsonb("industry_insights").default('[]'), // Industry-specific knowledge
+  extractedAt: timestamp("extracted_at").defaultNow(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  isComplete: boolean("is_complete").default(false) // Whether all key variables are populated
+});
+
+// Template assignment rules - logic for which templates to assign
+export const templateAssignmentRules = pgTable("template_assignment_rules", {
+  id: serial("id").primaryKey(),
+  templateId: integer("template_id").references(() => socialQuestTemplates.id).notNull(),
+  ruleType: text("rule_type").notNull(), // "industry_match", "profile_completion", "goal_alignment", etc.
+  ruleCondition: jsonb("rule_condition").notNull(), // JSON condition: {"industry": ["Hospitality"], "min_completion": 70}
+  priority: integer("priority").default(1), // Higher = more likely to be assigned
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// Generated quest tracking - tracks which templates were used for which users
+export const generatedSocialQuests = pgTable("generated_social_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  templateId: integer("template_id").references(() => socialQuestTemplates.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  variablesUsed: jsonb("variables_used").notNull(), // Actual values used for variables
+  personalizedTitle: text("personalized_title").notNull(),
+  personalizedDescription: text("personalized_description").notNull(),
+  personalizedMuskTip: text("personalized_musk_tip").notNull(),
+  generatedAt: timestamp("generated_at").defaultNow(),
+  assignedAt: timestamp("assigned_at"), // When assigned to user
+  completedAt: timestamp("completed_at"), // When user completed it
+  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
+  brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score") // Confidence level 0-100
+});
+
+// Generated Career Quests - AI-generated detailed career quest specifications
+// Similar to generatedSocialQuests but for career quests (pulse_creation, resume, learning, portfolio)
+export const generatedCareerQuests = pgTable("generated_career_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  questType: text("quest_type").notNull(), // 'pulse_creation', 'resume', 'learning', 'portfolio'
+  variablesUsed: jsonb("variables_used").notNull(), // User context data used for personalization
+  personalizedTitle: text("personalized_title").notNull(),
+  personalizedDescription: text("personalized_description").notNull(),
+  deliverableFormat: text("deliverable_format").notNull(), // Specific deliverable requirements (e.g., "3 images with captions, 600×400px each")
+  quantityValue: integer("quantity_value").notNull(), // Specific quantity (e.g., 3)
+  quantityType: text("quantity_type").notNull(), // Type of deliverable (e.g., "images", "bullet points", "sections")
+  platformConstraints: text("platform_constraints").notNull(), // Specific platform/format requirements
+  guidanceSnippet: text("guidance_snippet").notNull(), // Step-by-step guidance personalized to user
+  personalizedMuskTip: text("personalized_musk_tip").notNull(), // Personalized Musk tip
+  estimatedTimeMinutes: integer("estimated_time_minutes").notNull(), // Time estimate
+  difficultyLevel: text("difficulty_level").notNull(), // 'beginner', 'intermediate', 'advanced'
+  generatedAt: timestamp("generated_at").defaultNow(),
+  assignedAt: timestamp("assigned_at"), // When assigned to user
+  completedAt: timestamp("completed_at"), // When user completed it
+  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
+  brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
+  recommendedPostTime: text("recommended_post_time"), // Optimal time to post (for pulse creation quests)
+  recommendationSource: text("recommendation_source"), // Source: "heuristic", "model", "telemetry"
+  confidenceScore: integer("confidence_score"), // Confidence level 0-100
+  suggestedHashtags: text("suggested_hashtags").array(), // AI-generated hashtags for pulse quests
+  hashtagContext: text("hashtag_context") // Explanation of hashtag choices
+});
+
+// Platform Activity Insights - stores optimal posting windows for different platforms/industries/domains
+export const platformActivityInsights = pgTable("platform_activity_insights", {
+  id: serial("id").primaryKey(),
+  platform: text("platform").notNull(), // brandentifier, linkedin, twitter, instagram, etc.
+  industry: text("industry"), // Industry filter (null = applies to all)
+  domain: text("domain"), // Domain filter (null = applies to all)
+  optimalWindowStart: text("optimal_window_start").notNull(), // Start time in UTC (e.g., "14:00")
+  optimalWindowEnd: text("optimal_window_end").notNull(), // End time in UTC (e.g., "16:00")
+  dataSource: text("data_source").notNull(), // "heuristic", "telemetry", "model"
+  confidenceScore: integer("confidence_score").notNull().default(70), // 0-100 confidence
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schemas for template system
+export const insertSocialQuestTemplateCategorySchema = createInsertSchema(socialQuestTemplateCategories).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertSocialQuestTemplateSchema = createInsertSchema(socialQuestTemplates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPersonalBrandVariablesSchema = createInsertSchema(personalBrandVariables).omit({
+  id: true,
+  extractedAt: true,
+  lastUpdated: true
+});
+
+export const insertTemplateAssignmentRuleSchema = createInsertSchema(templateAssignmentRules).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertGeneratedSocialQuestSchema = createInsertSchema(generatedSocialQuests).omit({
+  id: true,
+  generatedAt: true,
+  assignedAt: true,
+  completedAt: true
+});
+
+export const insertGeneratedCareerQuestSchema = createInsertSchema(generatedCareerQuests).omit({
+  id: true,
+  generatedAt: true,
+  assignedAt: true,
+  completedAt: true
+});
+
+// Export types for template system
+export type SocialQuestTemplateCategory = typeof socialQuestTemplateCategories.$inferSelect;
+export type InsertSocialQuestTemplateCategory = z.infer<typeof insertSocialQuestTemplateCategorySchema>;
+
+export type SocialQuestTemplate = typeof socialQuestTemplates.$inferSelect;
+export type InsertSocialQuestTemplate = z.infer<typeof insertSocialQuestTemplateSchema>;
+
+export type PersonalBrandVariables = typeof personalBrandVariables.$inferSelect;
+export type InsertPersonalBrandVariables = z.infer<typeof insertPersonalBrandVariablesSchema>;
+
+export type TemplateAssignmentRule = typeof templateAssignmentRules.$inferSelect;
+export type InsertTemplateAssignmentRule = z.infer<typeof insertTemplateAssignmentRuleSchema>;
+
+export type GeneratedSocialQuest = typeof generatedSocialQuests.$inferSelect;
+export type InsertGeneratedSocialQuest = z.infer<typeof insertGeneratedSocialQuestSchema>;
+
+export type GeneratedCareerQuest = typeof generatedCareerQuests.$inferSelect;
+export type InsertGeneratedCareerQuest = z.infer<typeof insertGeneratedCareerQuestSchema>;
+
+export const insertPlatformActivityInsightSchema = createInsertSchema(platformActivityInsights).omit({
+  id: true,
+  updatedAt: true
+});
+
+export type PlatformActivityInsight = typeof platformActivityInsights.$inferSelect;
+export type InsertPlatformActivityInsight = z.infer<typeof insertPlatformActivityInsightSchema>;
+
+// Brand Goals - User's selected brand building goals
+export const brandGoals = pgTable("brand_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  selectedGoals: text("selected_goals").array().notNull().default(sql`'{}'`), // Array of selected pre-defined goal IDs (max 3 total combined)
+  customGoals: text("custom_goals").array().default(sql`'{}'`), // Array of user-written custom goals (max 200 chars each)
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertBrandGoalSchema = createInsertSchema(brandGoals).omit({
+  id: true,
+  updatedAt: true
+});
+
+export type BrandGoal = typeof brandGoals.$inferSelect;
+export type InsertBrandGoal = z.infer<typeof insertBrandGoalSchema>;
+
+// ============================================
+// CAREER INTELLIGENCE SUITE
+// ============================================
+
+// Resume Scores - AI-powered resume analysis with brutal feedback
+export const resumeScores = pgTable("resume_scores", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  resumeUrl: text("resume_url"), // URL to original resume in object storage
+  resumeText: text("resume_text").notNull(), // Extracted text from resume
+  overallScore: integer("overall_score").notNull(), // 0-100
+  atsCompatibility: integer("ats_compatibility"), // 0-25
+  impactMetrics: integer("impact_metrics"), // 0-25
+  keywordScore: integer("keyword_score"), // 0-20
+  structureScore: integer("structure_score"), // 0-15
+  clarityScore: integer("clarity_score"), // 0-15
+  criticalIssuesCount: integer("critical_issues_count").default(0),
+  importantIssuesCount: integer("important_issues_count").default(0),
+  optionalIssuesCount: integer("optional_issues_count").default(0),
+  analysis: text("analysis"), // Full AI analysis text
+  optimizedResumeText: text("optimized_resume_text"), // Resume with all fixes applied
+  optimizedResumeUrl: text("optimized_resume_url"), // URL to optimized resume PDF
+  targetRole: text("target_role"), // Optional: role this was scored for
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertResumeScoreSchema = createInsertSchema(resumeScores).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type ResumeScore = typeof resumeScores.$inferSelect;
+export type InsertResumeScore = z.infer<typeof insertResumeScoreSchema>;
+
+// Resume Fixes - Individual fix suggestions ranked by impact
+export const resumeFixes = pgTable("resume_fixes", {
+  id: serial("id").primaryKey(),
+  resumeScoreId: integer("resume_score_id").references(() => resumeScores.id).notNull(),
+  priority: text("priority").notNull(), // 'critical', 'important', 'optional'
+  category: text("category").notNull(), // 'metrics', 'verbs', 'keywords', 'structure', 'formatting'
+  lineNumber: integer("line_number"), // Line number in original resume
+  currentText: text("current_text").notNull(),
+  suggestedText: text("suggested_text").notNull(),
+  reasoning: text("reasoning").notNull(), // Why this fix matters
+  expectedImpact: text("expected_impact"), // e.g., "+40% callbacks"
+  timeToFix: text("time_to_fix"), // e.g., "5 minutes"
+  impactScore: integer("impact_score").default(0), // 0-100 for ranking
+  isApplied: boolean("is_applied").default(false), // Whether user clicked "Apply Fix"
+  appliedAt: timestamp("applied_at"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertResumeFixSchema = createInsertSchema(resumeFixes).omit({
+  id: true,
+  createdAt: true
+});
+
+export type ResumeFix = typeof resumeFixes.$inferSelect;
+export type InsertResumeFix = z.infer<typeof insertResumeFixSchema>;
+
+// Job Matches - JD analysis with gap analysis
+export const jobMatches = pgTable("job_matches", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  jobTitle: text("job_title").notNull(),
+  companyName: text("company_name"),
+  jobDescription: text("job_description").notNull(),
+  jobUrl: text("job_url"),
+  matchScore: integer("match_score").notNull(), // 0-100
+  hardRequirementsMatched: integer("hard_requirements_matched"),
+  hardRequirementsTotal: integer("hard_requirements_total"),
+  preferredRequirementsMatched: integer("preferred_requirements_matched"),
+  preferredRequirementsTotal: integer("preferred_requirements_total"),
+  requiredSkills: text("required_skills").array(), // Skills from JD
+  matchedSkills: text("matched_skills").array(), // User's matching skills
+  missingSkills: text("missing_skills").array(), // Skills user lacks
+  experienceMatch: boolean("experience_match"), // Does experience level match?
+  educationMatch: boolean("education_match"), // Does education match?
+  gapAnalysis: jsonb("gap_analysis"), // Structured gap analysis with priorities
+  resumeRewrites: jsonb("resume_rewrites"), // Tailored resume suggestions
+  applicationStrategy: text("application_strategy"), // How to approach this job
+  interviewProbability: integer("interview_probability"), // 0-100% chance
+  salaryEstimate: text("salary_estimate"), // Estimated salary range
+  appliedAt: timestamp("applied_at"), // When user applied
+  resultStatus: text("result_status"), // 'saved', 'applied', 'interview', 'offer', 'rejected'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertJobMatchSchema = createInsertSchema(jobMatches).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type JobMatch = typeof jobMatches.$inferSelect;
+export type InsertJobMatch = z.infer<typeof insertJobMatchSchema>;
+
+// ============================================
+// PHASE 2: SKILL BENCHMARK ENGINE
+// ============================================
+
+// Skill Benchmarks - Compare user skills against market data
+export const skillBenchmarks = pgTable("skill_benchmarks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  skillName: text("skill_name").notNull(),
+  userProficiency: integer("user_proficiency").notNull(), // 0-100
+  marketAverage: integer("market_average").notNull(), // 0-100
+  percentileRank: integer("percentile_rank"), // Where user ranks (0-100)
+  marketDemand: text("market_demand"), // high, medium, low
+  averageSalary: text("average_salary"), // Salary range for this skill
+  salaryByLevel: jsonb("salary_by_level"), // { junior: "$X", mid: "$Y", senior: "$Z" }
+  topCompaniesHiring: text("top_companies_hiring").array().default(sql`'{}'`),
+  learningPath: jsonb("learning_path"), // Recommended courses/certs
+  timeToImprove: text("time_to_improve"), // e.g., "3-6 months"
+  relatedSkills: text("related_skills").array().default(sql`'{}'`),
+  industryTrends: jsonb("industry_trends"), // Growth/decline data
+  certificationRecommendations: jsonb("certification_recommendations"),
+  analysis: text("analysis"), // AI-generated insights
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertSkillBenchmarkSchema = createInsertSchema(skillBenchmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type SkillBenchmark = typeof skillBenchmarks.$inferSelect;
+export type InsertSkillBenchmark = z.infer<typeof insertSkillBenchmarkSchema>;
+
+// ============================================
+// PHASE 2: PITCH DECK ANALYZER
+// ============================================
+
+// Pitch Deck Analyses - AI analysis of startup pitch decks
+export const pitchDeckAnalyses = pgTable("pitch_deck_analyses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  deckName: text("deck_name").notNull(),
+  deckUrl: text("deck_url"), // URL to uploaded deck in object storage
+  overallScore: integer("overall_score").notNull(), // 0-100
+  storyScore: integer("story_score").notNull(), // 0-25
+  marketScore: integer("market_score").notNull(), // 0-25
+  financialsScore: integer("financials_score").notNull(), // 0-25
+  teamScore: integer("team_score").notNull(), // 0-25
+  // Detailed analysis
+  problemStatementAnalysis: jsonb("problem_statement_analysis"),
+  solutionAnalysis: jsonb("solution_analysis"),
+  marketSizeAnalysis: jsonb("market_size_analysis"),
+  businessModelAnalysis: jsonb("business_model_analysis"),
+  competitiveAnalysis: jsonb("competitive_analysis"),
+  tractionAnalysis: jsonb("traction_analysis"),
+  financialProjectionsAnalysis: jsonb("financial_projections_analysis"),
+  teamAnalysis: jsonb("team_analysis"),
+  askAnalysis: jsonb("ask_analysis"),
+  // Investor perspective
+  investorFeedback: text("investor_feedback"), // Full AI analysis
+  criticalIssues: jsonb("critical_issues").default('[]'),
+  strengthsHighlighted: jsonb("strengths_highlighted").default('[]'),
+  fundingProbability: integer("funding_probability"), // 0-100
+  suggestedValuation: text("suggested_valuation"),
+  recommendedChanges: jsonb("recommended_changes").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const insertPitchDeckAnalysisSchema = createInsertSchema(pitchDeckAnalyses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type PitchDeckAnalysis = typeof pitchDeckAnalyses.$inferSelect;
+export type InsertPitchDeckAnalysis = z.infer<typeof insertPitchDeckAnalysisSchema>;
+
+// ============================================
+// PHASE 2: MARKET INTELLIGENCE
+// ============================================
+
+// Market Intelligence - Scraped job posting data for real market insights
+export const marketIntelligence = pgTable("market_intelligence", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  company: text("company").notNull(),
+  location: text("location"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryCurrency: text("salary_currency").default("USD"),
+  experienceLevel: text("experience_level"), // entry, mid, senior, lead, executive
+  requiredSkills: text("required_skills").array().default(sql`'{}'`),
+  preferredSkills: text("preferred_skills").array().default(sql`'{}'`),
+  industry: text("industry"),
+  employmentType: text("employment_type"), // full-time, contract, etc
+  remotePolicy: text("remote_policy"), // remote, hybrid, onsite
+  benefits: text("benefits").array().default(sql`'{}'`),
+  jobDescription: text("job_description"),
+  companySize: text("company_size"),
+  fundingStage: text("funding_stage"),
+  sourceUrl: text("source_url"),
+  sourceBoard: text("source_board"), // linkedin, indeed, etc
+  postedDate: timestamp("posted_date"),
+  scrapedAt: timestamp("scraped_at").defaultNow(),
+  isActive: boolean("is_active").default(true)
+});
+
+export const insertMarketIntelligenceSchema = createInsertSchema(marketIntelligence).omit({
+  id: true,
+  scrapedAt: true
+});
+
+export type MarketIntelligence = typeof marketIntelligence.$inferSelect;
+export type InsertMarketIntelligence = z.infer<typeof insertMarketIntelligenceSchema>;
+
+// Skill Demand Trends - Track skill demand over time
+export const skillDemandTrends = pgTable("skill_demand_trends", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  weekStart: timestamp("week_start").notNull(),
+  jobPostingsCount: integer("job_postings_count").default(0),
+  averageSalary: integer("average_salary"),
+  salaryGrowth: decimal("salary_growth", { precision: 5, scale: 2 }), // % growth
+  topIndustries: text("top_industries").array().default(sql`'{}'`),
+  topCompanies: text("top_companies").array().default(sql`'{}'`),
+  remotePercentage: integer("remote_percentage"), // % of remote jobs
+  growthTrend: text("growth_trend"), // rising, stable, declining
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertSkillDemandTrendSchema = createInsertSchema(skillDemandTrends).omit({
+  id: true,
+  createdAt: true
+});
+
+export type SkillDemandTrend = typeof skillDemandTrends.$inferSelect;
+export type InsertSkillDemandTrend = z.infer<typeof insertSkillDemandTrendSchema>;
+
+// Market Skills - Industry skill demand data
+export const marketSkills = pgTable("market_skills", {
+  id: serial("id").primaryKey(),
+  skillName: text("skill_name").notNull(),
+  industry: text("industry").notNull(),
+  location: text("location"), // City or region
+  demandScore: integer("demand_score"), // 0-100 based on job posting frequency
+  avgSalaryMin: integer("avg_salary_min"),
+  avgSalaryMax: integer("avg_salary_max"),
+  jobPostingCount: integer("job_posting_count"), // How many jobs require this
+  growthRate: decimal("growth_rate"), // YoY growth percentage
+  top10PercentileSalary: integer("top10_percentile_salary"), // Top earners with this skill
+  proficiencyDistribution: jsonb("proficiency_distribution"), // How users rank (0-25%, 25-50%, etc)
+  relatedSkills: text("related_skills").array(), // Often seen together
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertMarketSkillSchema = createInsertSchema(marketSkills).omit({
+  id: true,
+  createdAt: true,
+  lastUpdated: true
+});
+
+export type MarketSkill = typeof marketSkills.$inferSelect;
+export type InsertMarketSkill = z.infer<typeof insertMarketSkillSchema>;
+
+// Job Market Data - Scraped job postings for market intelligence
+export const jobMarketData = pgTable("job_market_data", {
+  id: serial("id").primaryKey(),
+  jobTitle: text("job_title").notNull(),
+  companyName: text("company_name"),
+  industry: text("industry"),
+  location: text("location"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryCurrency: text("salary_currency").default("USD"),
+  requiredSkills: text("required_skills").array(),
+  preferredSkills: text("preferred_skills").array(),
+  requiredExperienceYears: integer("required_experience_years"),
+  experienceLevel: text("experience_level"), // 'entry', 'mid', 'senior', 'lead', 'executive'
+  educationRequired: text("education_required"),
+  jobType: text("job_type"), // 'full-time', 'part-time', 'contract', 'remote'
+  benefits: text("benefits").array(),
+  source: text("source"), // 'linkedin', 'indeed', 'glassdoor', 'manual'
+  sourceUrl: text("source_url"),
+  scrapedAt: timestamp("scraped_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+export const insertJobMarketDataSchema = createInsertSchema(jobMarketData).omit({
+  id: true,
+  scrapedAt: true,
+  createdAt: true
+});
+
+export type JobMarketData = typeof jobMarketData.$inferSelect;
+export type InsertJobMarketData = z.infer<typeof insertJobMarketDataSchema>;
+
+// ============================================
+// REFERRAL SYSTEM - Share to Unlock
+// ============================================
+
+// Referral Links - Generated unique links for users to share
+export const referralLinks = pgTable("referral_links", {
+  id: serial("id").primaryKey(),
+  referrerUserId: integer("referrer_user_id").references(() => users.id).notNull(),
+  uniqueCode: text("unique_code").notNull().unique(), // e.g., "SARAH-X7K2"
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"), // Optional expiration
+});
+
+export const insertReferralLinkSchema = createInsertSchema(referralLinks).omit({
+  id: true,
+  createdAt: true
+});
+
+export type ReferralLink = typeof referralLinks.$inferSelect;
+export type InsertReferralLink = z.infer<typeof insertReferralLinkSchema>;
+
+// Referral Conversions - Track successful referrals (friend signs up)
+export const referralConversions = pgTable("referral_conversions", {
+  id: serial("id").primaryKey(),
+  referrerUserId: integer("referrer_user_id").references(() => users.id).notNull(),
+  refereeUserId: integer("referee_user_id").references(() => users.id).notNull(), // New user who signed up
+  referralLinkId: integer("referral_link_id").references(() => referralLinks.id).notNull(),
+  conversionDate: timestamp("conversion_date").defaultNow(),
+  rewardGranted: boolean("reward_granted").default(false), // Whether unlock rewards were given
+});
+
+export const insertReferralConversionSchema = createInsertSchema(referralConversions).omit({
+  id: true,
+  conversionDate: true
+});
+
+export type ReferralConversion = typeof referralConversions.$inferSelect;
+export type InsertReferralConversion = z.infer<typeof insertReferralConversionSchema>;
+
+// User Unlocks - Track which Quantum Cards and Portfolios each user has unlocked
+export const userUnlocks = pgTable("user_unlocks", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  unlockType: text("unlock_type").notNull(), // "quantum_card" or "portfolio"
+  unlockId: text("unlock_id").notNull(), // e.g., "holographic", "nature-creative"
+  unlockedAt: timestamp("unlocked_at").defaultNow(),
+  unlockSource: text("unlock_source").default("referral"), // "referral", "initial", "purchase", "promo"
+  referralConversionId: integer("referral_conversion_id").references(() => referralConversions.id), // Which referral unlocked this
+});
+
+export const insertUserUnlockSchema = createInsertSchema(userUnlocks).omit({
+  id: true,
+  unlockedAt: true
+});
+
+export type UserUnlock = typeof userUnlocks.$inferSelect;
+export type InsertUserUnlock = z.infer<typeof insertUserUnlockSchema>;
 
 // ============================================
 // MUSK FOLLOW-UP SYSTEM
@@ -7,12 +2376,12 @@
 // Follow-up Templates - Pre-written, intent-driven templates for Musk chat
 export const followupTemplates = pgTable("followup_templates", {
   id: serial("id").primaryKey(),
-  industry: text("industry").notNull(), // "Technology", "Finance", "Healthcare", etc.
-  type: text("type").notNull(), // "action", "probe", "resource", "clarify", "confirm", "alternative", "close"
-  text: text("text").notNull(), // The actual follow-up question/statement
-  why: text("why"), // Brief explanation of why this template is useful
-  actionHint: text("action_hint"), // Optional action to trigger (e.g., "generate_post", "schedule_call")
-  tags: text("tags").array(), // Tags for filtering (e.g., ["resume", "portfolio", "networking"])
+  industry: text("industry").notNull(),
+  type: text("type").notNull(),
+  text: text("text").notNull(),
+  why: text("why"),
+  actionHint: text("action_hint"),
+  tags: text("tags").array(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -28,11 +2397,11 @@ export type InsertFollowupTemplate = z.infer<typeof insertFollowupTemplateSchema
 export const followupFeedback = pgTable("followup_feedback", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  followupText: text("followup_text").notNull(), // The suggested follow-up text
-  followupType: text("followup_type"), // The intent type of the follow-up
-  helpful: boolean("helpful"), // true for thumbs up, false for thumbs down
-  templateId: integer("template_id").references(() => followupTemplates.id), // Which template was used (if any)
-  context: jsonb("context"), // Store context: {"userMessage", "intent", "industry", ...}
+  followupText: text("followup_text").notNull(),
+  followupType: text("followup_type"),
+  helpful: boolean("helpful"),
+  templateId: integer("template_id").references(() => followupTemplates.id),
+  context: jsonb("context"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

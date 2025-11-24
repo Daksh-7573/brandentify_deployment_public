@@ -80,3 +80,15 @@ Preferred communication style: Simple, everyday language.
 - **Pre-Deployment Check**: `./scripts/pre-deployment-check.sh` - Full validation
 - **Coverage**: User auth, Feed, Reactions (insightful/misinformed), Subscriptions, Career Tools, Services, Portfolio, Messaging, Notifications
 - **Documentation**: See `AUTOMATED_TESTING_GUIDE.md` for complete guide
+
+## Enhanced Musk Follow-up System (ENHANCED ✨)
+- **Intent Classification**: 7-type intent classifier (clarify, probe, action, resource, confirm, alternative, close)
+- **Template Database**: 22+ pre-written industry-specific templates (Technology, Finance, Healthcare, Marketing, Design, Education, Sales)
+- **Structured Output**: JSON format with `{type, text, why, actionHint}` for better UX
+- **Hybrid Generation**: Blends template-based and AI generation with Ollama fallback
+- **Feedback Tracking**: `followup_feedback` table to track user reactions for model improvement
+- **Database Tables**: 
+  - `followup_templates`: Industry + Intent-specific templates (22 seeded)
+  - `followup_feedback`: User feedback on suggested follow-ups
+- **Service**: `server/services/intent-classifier.ts` with keyword-based rule matching
+- **Updated Endpoint**: `/api/musk/contextual-suggestions` now returns structured JSON with intent classification
