@@ -1,0 +1,312 @@
+{
+  "Technology": [
+    {
+      "type": "action",
+      "text": "Shall I draft a LinkedIn post summarizing your latest tech innovation?",
+      "why": "Showcases innovation and builds authority",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "Are you focused on B2B software or consumer tech solutions?",
+      "why": "Clarifies audience",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would you like a presentation template for your upcoming pitch?",
+      "why": "Helps prepare professional decks",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "clarify",
+      "text": "Do you want to highlight product features or use cases first?",
+      "why": "Content strategy decision",
+      "actionHint": null
+    },
+    {
+      "type": "action",
+      "text": "Should I generate a short demo video script for your product?",
+      "why": "Supports visual content creation",
+      "actionHint": "generate_script"
+    },
+    {
+      "type": "probe",
+      "text": "Which technology stack defines your expertise best?",
+      "why": "Helps shape your brand identity",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Want a checklist to optimize your tech portfolio?",
+      "why": "Improves presentation quality",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "action",
+      "text": "Would you like to share your tech blog post to Medium automatically?",
+      "why": "Increases reach",
+      "actionHint": "schedule_post"
+    },
+    {
+      "type": "probe",
+      "text": "What kind of users benefit most from your product?",
+      "why": "Enhances target precision",
+      "actionHint": null
+    },
+    {
+      "type": "confirm",
+      "text": "Shall I go ahead and create your innovation showcase post?",
+      "why": "Confirms next action",
+      "actionHint": "generate_post"
+    }
+  ],
+  "Finance": [
+    {
+      "type": "action",
+      "text": "Shall I draft a carousel explaining your financial strategy?",
+      "why": "Highlights expertise",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "Do you focus on personal finance, investment, or fintech?",
+      "why": "Clarifies niche",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would you like financial planning templates for clients?",
+      "why": "Adds value to your brand",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "clarify",
+      "text": "Should your content be educational or advisory?",
+      "why": "Defines tone and goal",
+      "actionHint": null
+    },
+    {
+      "type": "action",
+      "text": "Want a one-minute explainer video outline for your service?",
+      "why": "Engaging content creation",
+      "actionHint": "generate_script"
+    },
+    {
+      "type": "probe",
+      "text": "What key pain point do your clients face?",
+      "why": "Improves storytelling",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would a client case study template help showcase success?",
+      "why": "Builds credibility",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "action",
+      "text": "Shall I prepare your year-end financial insights post?",
+      "why": "Seasonal engagement",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "alternative",
+      "text": "Would you prefer to post about investment tips or case results?",
+      "why": "Content theme selection",
+      "actionHint": null
+    },
+    {
+      "type": "confirm",
+      "text": "Ready to share your portfolio results summary?",
+      "why": "Final confirmation",
+      "actionHint": "generate_post"
+    }
+  ],
+  "Healthcare": [
+    {
+      "type": "action",
+      "text": "Would you like to post a health awareness infographic?",
+      "why": "Educates and builds trust",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "Which healthcare topic aligns most with your practice?",
+      "why": "Personalizes outreach",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Want ready-to-edit wellness post templates?",
+      "why": "Simplifies creation",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "clarify",
+      "text": "Is your audience patients or other professionals?",
+      "why": "Sets tone and content type",
+      "actionHint": null
+    },
+    {
+      "type": "action",
+      "text": "Shall I create a LinkedIn article about your recent case study?",
+      "why": "Builds authority",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "What health challenge are you most passionate about solving?",
+      "why": "Personal connection",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would you like a caption pack for awareness campaigns?",
+      "why": "Boosts engagement",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "action",
+      "text": "Want to showcase a patient success story?",
+      "why": "Inspires trust",
+      "actionHint": "create_portfolio_item"
+    },
+    {
+      "type": "alternative",
+      "text": "Prefer written blogs or video content for your awareness posts?",
+      "why": "Defines content strategy",
+      "actionHint": null
+    },
+    {
+      "type": "confirm",
+      "text": "Shall I post your awareness campaign now?",
+      "why": "Final go-ahead",
+      "actionHint": "generate_post"
+    }
+  ],
+  "Education": [
+    {
+      "type": "action",
+      "text": "Shall I help you post about your teaching philosophy?",
+      "why": "Positions you as a thought leader",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "Do you teach online, offline, or hybrid?",
+      "why": "Helps tailor platform strategy",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would you like a content template for course promotions?",
+      "why": "Saves time",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "clarify",
+      "text": "Is your audience students or fellow educators?",
+      "why": "Clarifies communication style",
+      "actionHint": null
+    },
+    {
+      "type": "action",
+      "text": "Should I create a visual post summarizing your student achievements?",
+      "why": "Boosts credibility",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "What\u2019s the core outcome students achieve from your course?",
+      "why": "Improves marketing messaging",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Want a checklist for better online course branding?",
+      "why": "Supports marketing",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "action",
+      "text": "Would you like to promote your webinar next week?",
+      "why": "Timely promotion",
+      "actionHint": "schedule_post"
+    },
+    {
+      "type": "alternative",
+      "text": "Would you prefer a carousel or a story-based format?",
+      "why": "Format decision",
+      "actionHint": null
+    },
+    {
+      "type": "confirm",
+      "text": "Proceed to post your educational insights now?",
+      "why": "Confirm posting",
+      "actionHint": "generate_post"
+    }
+  ],
+  "Real Estate": [
+    {
+      "type": "action",
+      "text": "Shall I draft your property highlight carousel?",
+      "why": "Drives leads",
+      "actionHint": "generate_post"
+    },
+    {
+      "type": "probe",
+      "text": "Are you targeting buyers, investors, or tenants?",
+      "why": "Clarifies target segment",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Want real estate caption templates to increase engagement?",
+      "why": "Quick content boost",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "clarify",
+      "text": "Do you prefer to feature new or resale properties first?",
+      "why": "Prioritization",
+      "actionHint": null
+    },
+    {
+      "type": "action",
+      "text": "Shall I generate a 15-second reel script showcasing your top listing?",
+      "why": "Increases visual appeal",
+      "actionHint": "generate_script"
+    },
+    {
+      "type": "probe",
+      "text": "Which city are your listings located in?",
+      "why": "Enhances local SEO",
+      "actionHint": null
+    },
+    {
+      "type": "resource",
+      "text": "Would a pricing sheet template help with leads?",
+      "why": "Improves conversions",
+      "actionHint": "share_template"
+    },
+    {
+      "type": "action",
+      "text": "Should I schedule posts for weekend property showcases?",
+      "why": "Engagement timing",
+      "actionHint": "schedule_post"
+    },
+    {
+      "type": "alternative",
+      "text": "Want to focus on virtual tours or testimonials next?",
+      "why": "Content planning",
+      "actionHint": null
+    },
+    {
+      "type": "confirm",
+      "text": "Ready to publish your featured property post?",
+      "why": "Confirmation",
+      "actionHint": "generate_post"
+    }
+  ]
+}

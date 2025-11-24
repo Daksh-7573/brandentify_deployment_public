@@ -1,0 +1,372 @@
+Part A — Intent Classifier: exact rules, features & implementation plan
+
+Goal: classify user utterances into one of the intent buckets used for follow-up generation:
+{clarify, probe, action, resource, confirm, alternative, close}
+
+1) Inputs & engineered features (order for priority)
+
+text_raw — raw user message(s) (use last 1–3 messages concatenated)
+
+profile_summary — user industry/domain, selected brand goals, experience level
+
+dialogue_state_flags — e.g. profile_complete, asked_resume, last_action, platform_pref
+
+available_actions — system actions like generate_post, schedule_call, share_template, connect_person
+
+conversation_history_features:
+
+turn_count (length of conversation)
+
+last_bot_action_type (if bot suggested action)
+
+user_action_response (did user accept/decline)
+
+Derived text features:
+
+token counts, punctuation counts, question mark count
+
+presence of modal verbs (can, should, would)
+
+presence of first/second person pronouns
+
+sentiment score (pos/neg/neutral)
+
+named-entity tags (companies, platforms, skills)
+
+TF-IDF vector or BERT embedding for semantic similarity
+
+2) Keyword & regex rules (fast path) — use these first (deterministic)
+
+Run these in order and if match -> map to the intent. If multiple match, use priority ranking (Action > Clarify > Probe > Resource > Confirm > Alternative > Close).
+
+Action-intent indicators (high priority)
+
+If message contains actionable requests or call-to-action keywords:
+
+Regex / keywords:
+
+\b(draft|write|create|generate|schedule|book|send|share|post|publish|upload|export|download|apply|connect me|introduce me|show me)\b
+
+I'd like you to (draft|write|create|show) or Can you (draft|create|write|post)
+
+help me (create|draft|write|build)
+
+→ Map to action
+
+Clarify-intent indicators
+
+If user asks a clarifying question or a yes/no / binary choice or ambiguous pronouns:
+
+Regex / keywords:
+
+\b(do you mean|which (one|platform)|which (tool|format|version)|did you mean|or do you mean)\b
+
+trailing ? with short question (<10 tokens) and high ambiguity
+
+pronouns with ambiguity: this/that/it/them/they without noun in previous sentence
+
+Patterns:
+
+Short question + profile data lacking (e.g., user says “Do it on LinkedIn?” but last bot message didn't mention LinkedIn explicitly)
+
+→ Map to clarify
+
+Probe-intent indicators (depth & context seeking)
+
+If user expresses goals or partial info and invites exploration:
+
+Keywords:
+
+why, what, how, which, tell me more, explain, more about, go deeper, examples
+
+"I want", "I'm trying to", "my goal is", "I need to"
+
+If message length >12 tokens and contains goal-like words (grow, get clients, pivot, monetize)
+→ Map to probe
+
+Resource-intent indicators
+
+When user asks for templates, examples, checklists, tools:
+
+Keywords:
+
+template, example, sample, checklist, outline, templates, pack, tool, guide, resource, swipe file
+
+do you have a template, send me, show sample, give example
+→ Map to resource
+
+Confirm-intent indicators
+
+Short confirmations / acceptance language:
+
+Keywords:
+
+yes, yep, sure, okay, do it, please proceed, confirm, sounds good, go ahead, let's do it
+
+If previous bot offered an explicit action and user replies with affirmation -> confirm
+
+Alternative/Reframe indicators
+
+User rejects or asks for different approach:
+
+Keywords:
+
+or, instead, another, different, not that, don’t want, prefer, rather
+→ Map to alternative
+
+Close (end-of-conversation)
+
+Keywords:
+
+thanks, thank you, that’s all, bye, done, not now, later
+→ Map to close
+
+3) ML layer (fallback + improve coverage)
+
+If deterministic rules don't fire, use a lightweight classifier (fast):
+
+Model: logistic regression or small transformer classifier (DistilBERT) fine-tuned on your labeled intents.
+
+Input features: last message embedding (BERT), token counts, presence of question mark, number of modal verbs, profile flags.
+
+Output: intent probabilities; set threshold 0.45 for top intent; if top probability < 0.45 fallback to probe intent.
+
+4) Post-classification heuristics & tie-breaking
+
+If available_actions include a direct match (e.g., generate_post) and message contains draft or write → force action
+
+If user is short (<8 tokens) and contains ? → prefer clarify
+
+If user is a photographer and mentions portfolio → boost weight for resource/probe about portfolio
+
+If user has goal=Visibility → favor action/resource oriented follow-ups
+
+5) Training labels & data suggestions
+
+Label examples per intent: collect 500–1,000 utterances per class initially.
+
+Domains to sample from: support chat logs, onboarding dialogues, quest interactions, social post creation flows.
+
+Augment data: paraphrase with back-translation and synonyms.
+
+Evaluation: precision/recall per intent; require >85% precision on action and clarify intents (they drive UX).
+
+6) Implementation checklist (engineering)
+
+Implement deterministic keyword/regex filters (fast path).
+
+Run ML classifier only when deterministic rules produce no clear match.
+
+Return intent + confidence + matched_rule so downstream logic knows why.
+
+Log all inputs + chosen intent for review and periodic rule improvements.
+
+Add human-in-the-loop review for ambiguous cases.
+
+Add A/B testing to compare user engagement rates for follow-ups triggered by the new classifier vs old.
+
+Part B — 50+ Canned Follow-up Templates (seed pool)
+
+Format used: {type} | "text" | why | actionHint (optional)
+
+I provide grouped templates by industry (Design, SaaS, Marketing, Photography). Templates are short, specific, and match your action set (e.g., generate_post, share_template, schedule_call, create_portfolio_item, suggest_connections, share_hashtag_pack).
+
+Implementation tip: store these templates in DB with fields: id, industry, type, text, why, actionHint, tags
+
+A. Design (15 templates)
+
+action | "Shall I draft a 5-slide Instagram carousel showing your design process?" | fast actionable deliverable | generate_post
+
+probe | "Which clients do you want to attract — startups or agencies?" | narrows target audience | null
+
+resource | "Want a portfolio case-study template for UI projects?" | gives ready-to-use asset | share_template
+
+clarify | "Do you prefer carousels or single-image posts for case studies?" | clarifies format | null
+
+action | "Shall I create a project entry with visuals for your latest UI case?" | quick portfolio add | create_portfolio_item
+
+probe | "What metric did your redesign improve — CTR, retention, or conversion?" | pulls a measurable result | null
+
+resource | "Would you like 3 caption variants we can test for this case study?" | text A/B options | share_template
+
+action | "Want me to generate hashtags and keywords for design leaders?" | increases discoverability | share_hashtag_pack
+
+clarify | "Is this work client-owned or can we post the UI assets publicly?" | checks permissions | null
+
+probe | "Who was the primary decision-maker on this project?" | gathers stakeholder info | null
+
+action | "Should I draft a LinkedIn thought post emphasizing your design methodology?" | builds authority | generate_post
+
+resource | "Need a 1-page PDF portfolio to send to prospects?" | sales asset | generate_pdf_portfolio
+
+probe | "How often can you commit to posting case studies — weekly or monthly?" | sets cadence | null
+
+alternative | "Would you rather showcase micro case studies or deep-dives?" | offers strategy alternative | null
+
+confirm | "Shall I proceed to create the carousel draft now?" | confirms next step | generate_post
+
+B. SaaS (15 templates)
+
+probe | "Are you targeting SMBs or enterprise customers?" | clarifies target market | null
+
+action | "Shall I draft a founder story post showing your product-market fit?" | builds founder authority | generate_post
+
+resource | "Want a launch-email template for beta signups?" | conversion asset | share_template
+
+clarify | "Are you selling B2B or B2C?" | important product angle | null
+
+action | "Should I create a one-page case study showing ARR uplift?" | revenue-focused asset | create_portfolio_item
+
+probe | "Which KPI matters most for you — MRR, CAC, churn?" | tailors messaging | null
+
+resource | "Want a list of SaaS pitch hooks for investors?" | raises funding readiness | share_template
+
+action | "Shall I schedule a 15-min intro call with a potential mentor in growth?" | connects to mentor | schedule_call
+
+clarify | "Is the product in private beta or public beta?" | product state | null
+
+probe | "Who are 3 competitors we should differentiate from?" | competitive angle | null
+
+resource | "I can generate a concise deck slide for your GTM — need it?" | quick deck help | generate_slide_deck
+
+action | "Shall I draft a tweet thread explaining your technical advantage?" | technical authority | generate_post
+
+alternative | "Prefer a case study or an explainer demo video to show traction?" | content format choice | null
+
+resource | "Would a customer testimonial template help capture proof?" | endorsements collection | share_template
+
+confirm | "Ready to publish the case study to your Brandentifier portfolio?" | confirm publishing | create_portfolio_item
+
+C. Marketing (12 templates)
+
+probe | "Which channel drives most of your leads — LinkedIn, Instagram, or Ads?" | channel focus | null
+
+action | "Shall I draft a 5-step campaign brief you can use this month?" | operational deliverable | generate_post
+
+resource | "Want a social calendar template for the next 30 days?" | planning asset | share_template
+
+clarify | "Are you focused on brand awareness or direct response?" | campaign objective | null
+
+action | "Should I generate copy + CTAs for a paid ad set (3 variants)?" | ad creative generation | generate_post
+
+probe | "What conversion metric matters — leads, signups, or purchases?" | KPI clarity | null
+
+resource | "Would a swipe file of high-performing captions help?" | content inspiration | share_template
+
+action | "Should I create an analytics dashboard template for weekly reviews?" | measurement tool | generate_report_template
+
+clarify | "Do you already have tracking (UTM + pixels) in place?" | readiness check | null
+
+probe | "Who’s your ideal customer persona in two sentences?" | narrows messaging | null
+
+resource | "Want a checklist for converting followers into customers?" | conversion checklist | share_template
+
+confirm | "Shall I run a quick audit of your social channels and send key fixes?" | propose audit | generate_audit_report
+
+D. Photography (12 templates)
+
+action | "Shall I draft a portfolio case post for your best wedding shoot?" | portfolio content | generate_post
+
+probe | "Do you want to attract local clients or destination weddings?" | market focus | null
+
+resource | "Would you like a caption + hashtag pack for wedding photography?" | discovery help | share_hashtag_pack
+
+clarify | "Are you comfortable sharing client photos publicly?" | legal/consent check | null
+
+action | "Want a 1-page downloadable portfolio PDF for client pitches?" | sales asset | generate_pdf_portfolio
+
+probe | "Which service makes up most of your revenue — events, commercial, or portraits?" | revenue focus | null
+
+resource | "I can auto-generate a pricing page template — need one?" | commercial asset | share_template
+
+action | "Shall I create an Instagram story series showcasing your top 3 shoots?" | engagement content | generate_post
+
+alternative | "Prefer highlight reels or still-image carousels for Instagram?" | format decision | null
+
+probe | "Which camera/lens do you use for the signature style?" | craft detail | null
+
+resource | "Would you like an email script to request client testimonials?" | reputation building | share_template
+
+confirm | "Ready to publish this project to your portfolio and share externally?" | push-live confirm | create_portfolio_item
+
+Canned Templates — raw JSON-style array (developer-ready)
+
+Below is a condensed set in JSON-like structure for easy seeding. (You can import these into the DB; replace id as needed.)
+
+[
+  {"industry":"design","type":"action","text":"Shall I draft a 5-slide Instagram carousel showing your design process?","why":"Fast actionable deliverable","actionHint":"generate_post"},
+  {"industry":"design","type":"probe","text":"Which clients do you want to attract — startups or agencies?","why":"Narrows target audience","actionHint":null},
+  {"industry":"design","type":"resource","text":"Want a portfolio case-study template for UI projects?","why":"Gives ready-to-use asset","actionHint":"share_template"},
+  {"industry":"design","type":"clarify","text":"Do you prefer carousels or single-image posts for case studies?","why":"Clarifies format","actionHint":null},
+  {"industry":"design","type":"action","text":"Shall I create a project entry with visuals for your latest UI case?","why":"Quick portfolio add","actionHint":"create_portfolio_item"},
+  {"industry":"design","type":"probe","text":"What metric did your redesign improve — CTR, retention, or conversion?","why":"Pulls a measurable result","actionHint":null},
+  {"industry":"design","type":"resource","text":"Would you like 3 caption variants we can test for this case study?","why":"Text A/B options","actionHint":"share_template"},
+  {"industry":"design","type":"action","text":"Want me to generate hashtags and keywords for design leaders?","why":"Increases discoverability","actionHint":"share_hashtag_pack"},
+  {"industry":"design","type":"clarify","text":"Is this work client-owned or can we post the UI assets publicly?","why":"Checks permissions","actionHint":null},
+  {"industry":"design","type":"probe","text":"Who was the primary decision-maker on this project?","why":"Gathers stakeholder info","actionHint":null},
+  {"industry":"design","type":"action","text":"Should I draft a LinkedIn thought post emphasizing your design methodology?","why":"Builds authority","actionHint":"generate_post"},
+  {"industry":"design","type":"resource","text":"Need a 1-page PDF portfolio to send to prospects?","why":"Sales asset","actionHint":"generate_pdf_portfolio"},
+  {"industry":"design","type":"probe","text":"How often can you commit to posting case studies — weekly or monthly?","why":"Sets cadence","actionHint":null},
+  {"industry":"design","type":"alternative","text":"Would you rather showcase micro case studies or deep-dives?","why":"Gives strategy alternative","actionHint":null},
+  {"industry":"design","type":"confirm","text":"Shall I proceed to create the carousel draft now?","why":"Confirms next step","actionHint":"generate_post"},
+
+  {"industry":"saas","type":"probe","text":"Are you targeting SMBs or enterprise customers?","why":"Clarifies target market","actionHint":null},
+  {"industry":"saas","type":"action","text":"Shall I draft a founder story post showing your product-market fit?","why":"Builds founder authority","actionHint":"generate_post"},
+  {"industry":"saas","type":"resource","text":"Want a launch-email template for beta signups?","why":"Conversion asset","actionHint":"share_template"},
+  {"industry":"saas","type":"clarify","text":"Are you selling B2B or B2C?","why":"Important product angle","actionHint":null},
+  {"industry":"saas","type":"action","text":"Should I create a one-page case study showing ARR uplift?","why":"Revenue-focused asset","actionHint":"create_portfolio_item"},
+  {"industry":"saas","type":"probe","text":"Which KPI matters most for you — MRR, CAC, churn?","why":"Tailors messaging","actionHint":null},
+  {"industry":"saas","type":"resource","text":"Want a list of SaaS pitch hooks for investors?","why":"Funding readiness","actionHint":"share_template"},
+  {"industry":"saas","type":"action","text":"Shall I schedule a 15-min intro call with a potential mentor in growth?","why":"Connects to mentor","actionHint":"schedule_call"},
+  {"industry":"saas","type":"clarify","text":"Is the product in private beta or public beta?","why":"Product state","actionHint":null},
+  {"industry":"saas","type":"probe","text":"Who are 3 competitors we should differentiate from?","why":"Competitive angle","actionHint":null},
+  {"industry":"saas","type":"resource","text":"I can generate a concise deck slide for your GTM — need it?","why":"Quick deck help","actionHint":"generate_slide_deck"},
+  {"industry":"saas","type":"action","text":"Shall I draft a tweet thread explaining your technical advantage?","why":"Technical authority","actionHint":"generate_post"},
+  {"industry":"saas","type":"alternative","text":"Prefer a case study or an explainer demo video to show traction?","why":"Content format choice","actionHint":null},
+  {"industry":"saas","type":"resource","text":"Would a customer testimonial template help capture proof?","why":"Endorsements collection","actionHint":"share_template"},
+  {"industry":"saas","type":"confirm","text":"Ready to publish the case study to your Brandentifier portfolio?","why":"Confirm publishing","actionHint":"create_portfolio_item"},
+
+  {"industry":"marketing","type":"probe","text":"Which channel drives most of your leads — LinkedIn, Instagram, or Ads?","why":"Channel focus","actionHint":null},
+  {"industry":"marketing","type":"action","text":"Shall I draft a 5-step campaign brief you can use this month?","why":"Operational deliverable","actionHint":"generate_post"},
+  {"industry":"marketing","type":"resource","text":"Want a social calendar template for the next 30 days?","why":"Planning asset","actionHint":"share_template"},
+  {"industry":"marketing","type":"clarify","text":"Are you focused on brand awareness or direct response?","why":"Campaign objective","actionHint":null},
+  {"industry":"marketing","type":"action","text":"Should I generate copy + CTAs for a paid ad set (3 variants)?","why":"Ad creative generation","actionHint":"generate_post"},
+  {"industry":"marketing","type":"probe","text":"What conversion metric matters — leads, signups, or purchases?","why":"KPI clarity","actionHint":null},
+  {"industry":"marketing","type":"resource","text":"Would a swipe file of high-performing captions help?","why":"Content inspiration","actionHint":"share_template"},
+  {"industry":"marketing","type":"action","text":"Should I create an analytics dashboard template for weekly reviews?","why":"Measurement tool","actionHint":"generate_report_template"},
+  {"industry":"marketing","type":"clarify","text":"Do you already have tracking (UTM + pixels) in place?","why":"Readiness check","actionHint":null},
+  {"industry":"marketing","type":"probe","text":"Who’s your ideal customer persona in two sentences?","why":"Narrows messaging","actionHint":null},
+  {"industry":"marketing","type":"resource","text":"Want a checklist for converting followers into customers?","why":"Conversion checklist","actionHint":"share_template"},
+  {"industry":"marketing","type":"confirm","text":"Shall I run a quick audit of your social channels and send key fixes?","why":"Propose audit","actionHint":"generate_audit_report"},
+
+  {"industry":"photography","type":"action","text":"Shall I draft a portfolio case post for your best wedding shoot?","why":"Portfolio content","actionHint":"generate_post"},
+  {"industry":"photography","type":"probe","text":"Do you want to attract local clients or destination weddings?","why":"Market focus","actionHint":null},
+  {"industry":"photography","type":"resource","text":"Would you like a caption + hashtag pack for wedding photography?","why":"Discovery help","actionHint":"share_hashtag_pack"},
+  {"industry":"photography","type":"clarify","text":"Are you comfortable sharing client photos publicly?","why":"Legal/consent check","actionHint":null},
+  {"industry":"photography","type":"action","text":"Want a 1-page downloadable portfolio PDF for client pitches?","why":"Sales asset","actionHint":"generate_pdf_portfolio"},
+  {"industry":"photography","type":"probe","text":"Which service makes up most of your revenue — events, commercial, or portraits?","why":"Revenue focus","actionHint":null},
+  {"industry":"photography","type":"resource","text":"I can auto-generate a pricing page template — need one?","why":"Commercial asset","actionHint":"share_template"},
+  {"industry":"photography","type":"action","text":"Shall I create an Instagram story series showcasing your top 3 shoots?","why":"Engagement content","actionHint":"generate_post"},
+  {"industry":"photography","type":"alternative","text":"Prefer highlight reels or still-image carousels for Instagram?","why":"Format decision","actionHint":null},
+  {"industry":"photography","type":"probe","text":"Which camera/lens do you use for the signature style?","why":"Craft detail","actionHint":null},
+  {"industry":"photography","type":"resource","text":"Would you like an email script to request client testimonials?","why":"Reputation building","actionHint":"share_template"},
+  {"industry":"photography","type":"confirm","text":"Ready to publish this project to your portfolio and share externally?","why":"Push-live confirm","actionHint":"create_portfolio_item"}
+]
+
+Part C — How to use & integrate these templates
+
+Seed DB: Insert templates into followup_templates table with fields: industry, type, text, why, actionHint, tags.
+
+Selection logic:
+
+Filter by industry (if user.profile.industry present). Also keep global templates available for generic fallback.
+
+Score templates by relevance_score = semantic_similarity(user_text, text) + (profile_goal_match ? +0.2) + (dialogue_state_match ? +0.15) + (actionable ? +0.1)
+
+Rerank and pick top 6 candidates; use diversity penalty to remove near-duplicates; return best 3–4 to UI.
+
+Personalization: run simple substitution to inject user variables (e.g., {{platform}}, {{metric}}, {{city}}) — templates are written to allow this. Example: “Shall I draft a 5-slide Instagram carousel showing your design process?” → if user prefers LinkedIn replace “Instagram” with {{platform}}.
+
+Action routing: if template includes actionHint, wire the button to a client route that opens the relevant tool (editor, schedule modal, template viewer).
+
+Feedback loop: log which follow-up was shown and whether user accepted it. Use that to improve ranking weights.

@@ -1,0 +1,240 @@
+Why follow-ups fail (quick diagnosis)
+
+Common causes we see:
+
+Context poverty — model lacks recent user context, profile data, or conversation goals.
+
+One-size-fits-all prompt — same generation prompt for all scenarios → bland questions.
+
+No intent-classification — the system doesn’t know whether to clarify, probe, or suggest an action.
+
+Poor diversity / ranking — model generates similar or low-quality follow-ups and there’s no ranking filter.
+
+UX mismatch — follow-ups are shown as raw text rather than actionable choices (makes them feel weak).
+
+No learning loop — no metrics or training signal to optimize follow-up quality.
+
+Fixing this requires combined improvements across prompt engineering, contextual signals, generation control, UX, and monitoring.
+
+✅ High-level solution (one sentence)
+
+Generate follow-ups that are context-aware, intent-driven, diverse, and actionable — use profile + recent conversation + goal to condition the model, categorize desired follow-up types, produce a ranked list of 3–5 options with templates and meta tags, and surface them in the UI as tappable actions.
+
+1) Inputs the follow-up generator must use (order matters)
+
+Always feed the generation model with:
+
+Last 2–4 user messages (most recent context).
+
+Conversation goal / task (if user selected a Brand Goal or flow).
+
+User profile variables (industry, domain, goals, experience level).
+
+Dialogue state (has user accepted earlier suggestions? completed quests?).
+
+Available actions (what the product can do right now: schedule, show templates, connect).
+
+Intent prior (model/classifier output: Clarify / Explore / Suggest / Confirm / Close).
+
+This context turns vague prompts into precise follow-ups.
+
+2) Intent-driven follow-up taxonomy (must implement)
+
+Classify follow-ups into these types — generation will follow template per type:
+
+Clarifying — resolve ambiguity. (e.g., “Do you mean X or Y?”)
+
+Probing (Depth) — dig deeper into problem. (e.g., “What outcome do you expect?”)
+
+Scope / Action — push toward next action. (e.g., “Would you like me to draft that post?”)
+
+Offering resources — suggest concrete tools/templates. (e.g., “Want a ready LinkedIn carousel template?”)
+
+Confirmation / Summarize — short recap and confirm before acting.
+
+Alternative / Reframe — suggest another angle.
+
+Warm-close — wrap up or schedule follow-up.
+
+Implementation: run a lightweight intent classifier on the last user text and conversation state; pick the top 2–3 intent types to generate follow-ups from.
+
+3) Prompt engineering: template + constraints
+
+Use a controlled prompt with instructions + examples + quality filters. Example prompt skeleton you can integrate:
+
+System: You are a concise, helpful career & branding assistant (Musk AI). 
+Task: Given the recent conversation context and the user profile, generate 4 follow-up questions the assistant can ask next.
+
+Inputs:
+- USER_LAST: "{user_last_message}"
+- RECENT_CONTEXT: "{last_3_messages}"
+- USER_PROFILE_SUMMARY: "{name}, {industry}, {goal1,goal2}, experience: {years}"
+- AVAILABLE_ACTIONS: [ "generate_post", "schedule_call", "share_template", "create_portfolio_item" ]
+- DIALOGUE_STATE: "{state_flags}"   // e.g., profile_complete=false, asked_about_resume=true
+
+Constraints:
+- Output exactly 4 follow-up items ranked by usefulness (1 most useful).
+- Each item object must include: {type: one-of[clarify, probe, action, resource, confirm], text: short question (<= 90 chars), why: one-line rationale, actionHint: optional (one of AVAILABLE_ACTIONS or null)}.
+- Avoid generic or yes/no only questions unless confirming. Prefer actionable or specific phrasing.
+- Use the user profile to personalize (industry, example metrics). 
+- Tone: encouraging, concise, and professional.
+
+Examples:
+- type: probe, text: "Which platform do you want to prioritize — LinkedIn or Instagram?", why: "Narrows platform", actionHint: null
+- type: action, text: "Shall I draft a 5-slide LinkedIn carousel about your case study?", why: "Offers immediate deliverable", actionHint: generate_post
+
+Now produce the 4 follow-up items in JSON.
+
+
+Why JSON? It’s easy to parse, allows UI to render buttons, and keeps meta info (type, hint) for downstream routing.
+
+4) Generation & ranking improvements
+
+Generate N (e.g., 8) candidates and rerank them by a scoring function before returning top 3–4. Scoring signals:
+
+Relevance to user goal (match keywords vs profile)
+
+Actionability (contains an offer to act)
+
+Specificity (mentions platform/metric/domain)
+
+Diversity (penalize semantically duplicate queries)
+
+Safety/neutrality (avoid risky asks)
+
+Use a small cross-encoder model or heuristic scoring (TF-IDF overlap + action keyword weight) to rerank, or use the LLM itself as a ranker with an eval prompt.
+
+5) UX: How to surface follow-ups (critical)
+
+Show 3 options as tappable chips/buttons under the assistant reply:
+
+Button 1: Clarifying question (text)
+
+Button 2: Immediate action (e.g., “Draft this for me”)
+
+Button 3: Resource offer (e.g., “Show template”)
+
+Also include “More options” which expands to additional follow-ups or lets the assistant auto-generate a custom follow-up on demand.
+
+For voice or chat flows, present the top follow-up automatically as a question, and show 2 alternatives as quick replies.
+
+When user taps an actionHint, the client should invoke the corresponding backend action directly (e.g., open editor with prefilled draft).
+
+6) Personalization examples (how follow-ups should look)
+
+Take a few cases and ideal follow-ups:
+
+Case A — Photographer user, wants visibility
+User: “I want more clients for my wedding photography.”
+Good follow-ups:
+
+Action: “Shall I draft a 5-slide Instagram carousel showcasing your last wedding case study?” (actionHint: generate_post)
+
+Probe: “What city/market do you want to attract clients in — local or destination?” (type: probe)
+
+Resource: “Want a headline & caption templates for wedding posts?” (actionHint: share_template)
+
+Case B — Mid-level product manager wants to pivot
+User: “I want to move into growth.”
+
+Clarify: “Are you targeting growth at startups or enterprise?”
+
+Probe: “Which skills do you already have: analytics, acquisition, experimentation?”
+
+Action: “Should I create a 90-day learning plan and portfolio case study outline?” (generate_post)
+
+7) Add a “follow-up quality” feedback loop
+
+Let users rate follow-up usefulness (thumbs up/down). Use that as training signal:
+
+Save context + follow-up + user reaction.
+
+Periodically fine-tune ranker/prompt or feed to a supervised reranker.
+
+Metrics to track:
+
+Follow-up CTR (tap rate on a suggested question)
+
+Completion Rate (if action, do they complete the action)
+
+User satisfaction (thumbs up %)
+
+Conversion lift (did follow-ups lead to goal completion — e.g., profile update, post, connection)
+
+Aim: improve CTR and completion over time.
+
+8) Safety & privacy guardrails
+
+Never surface follow-ups that ask for private data (PII) unnecessarily.
+
+If follow-up implies contacting other users, indicate opt-in and show user’s purpose text.
+
+For professional advice (legal/medical), show disclaimer and direct to human experts.
+
+9) Short checklist for engineering rollout (prioritized)
+
+Quick win: Add the intent classifier (clarify/probe/action/resource) to conversation pipeline.
+
+Prompt upgrade: Replace generic follow-up prompt with JSON-producing conditional prompt (see template).
+
+Reranking: Implement simple TF-IDF + action-keyword heuristic to select top 4.
+
+UI: Render 3 tappable suggestions beneath responses with action routing.
+
+Analytics: Instrument follow-up CTR and completion.
+
+Feedback loop: Allow thumbs up/down per suggestion; collect training data.
+
+Advanced: Add cross-encoder reranker / RL-from-feedback to improve quality over months.
+
+10) Example JSON response (what the system should return)
+[
+  {
+    "type": "action",
+    "text": "Shall I draft a 5-slide LinkedIn carousel highlighting your last project?",
+    "why": "Offers a fast, actionable deliverable to boost visibility",
+    "actionHint": "generate_linkedin_carousel"
+  },
+  {
+    "type": "probe",
+    "text": "Which audience are you targeting — startups, agencies, or consumer brands?",
+    "why": "Narrowing audience helps tailor the messaging",
+    "actionHint": null
+  },
+  {
+    "type": "resource",
+    "text": "Would you like our wedding-photography caption + hashtag pack?",
+    "why": "Gives ready-to-use content tailored to photographers",
+    "actionHint": "share_hashtag_pack"
+  },
+  {
+    "type": "clarify",
+    "text": "Do you prefer organic posts or paid promotions to reach clients?",
+    "why": "Clarifies channels to suggest the right tactics",
+    "actionHint": null
+  }
+]
+
+
+This structure makes it easy to parse, display, and route actions.
+
+11) Example LLM follow-up generation prompt (compact, copy-ready)
+You are a professional career & branding assistant. Produce 4 follow-up items in JSON given the inputs. Use USER_LAST, PROFILE_SUMMARY, AVAILABLE_ACTIONS, and DIALOGUE_STATE. Prefer actionable, specific and personalized items. Output array of objects with keys: type, text, why, actionHint. Use types [clarify, probe, action, resource, confirm]. Do not include extra commentary.
+
+
+(Feed with the inputs above.)
+
+12) A/B test ideas
+
+A: Current system (single follow-up text)
+
+B: New system (3 tappable follow-ups with action routing)
+Measure: CTR on suggestions, subsequent task completion, user satisfaction.
+
+Final note (practical priorities)
+
+Do this first: intent classifier + JSON prompt + UI quick replies (gives biggest UX lift).
+
+Next: reranking + feedback loop (improves quality fast).
+
+Later: train reranker / fine-tune to model responses if you have high-quality labeled data.
