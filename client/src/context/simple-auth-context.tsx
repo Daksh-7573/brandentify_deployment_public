@@ -148,12 +148,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Handle Google auth success event
-    const handleGoogleAuthSuccess = (event: CustomEvent) => {
+    const handleGoogleAuthSuccess = async (event: CustomEvent) => {
       const { user: userData } = event.detail;
       console.log('Google auth success event received:', userData.email);
       setUser(userData);
       setIsLoading(false);
       sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+      
+      // Check if there's a pending referral code
+      const referralCode = sessionStorage.getItem('referral_code');
+      if (referralCode && userData.id) {
+        console.log('[Referral] Found pending referral code on Google auth success, processing...');
+        await processReferral(userData.id, referralCode);
+      }
     };
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
@@ -170,9 +177,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const processReferral = async (userId: number, referralCode: string) => {
+    try {
+      console.log('[Referral] Processing referral for user:', userId, 'code:', referralCode);
+      
+      const response = await fetch('/api/referral/process-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referralCode,
+          newUserId: userId
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Referral] Referral processed successfully:', data);
+        // Clear the referral code from sessionStorage
+        sessionStorage.removeItem('referral_code');
+        return true;
+      } else {
+        console.warn('[Referral] Failed to process referral:', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.error('[Referral] Error processing referral:', error);
+      return false;
+    }
+  };
+
   const signIn = (userData: AuthUser) => {
     console.log('Signing in user:', userData.email);
     setUser(userData);
+    
+    // Check if there's a pending referral code
+    const referralCode = sessionStorage.getItem('referral_code');
+    if (referralCode && userData.id) {
+      console.log('[Referral] Found pending referral code, processing...');
+      processReferral(userData.id, referralCode);
+    }
     setIsLoading(false);
     sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
   };

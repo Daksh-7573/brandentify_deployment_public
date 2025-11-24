@@ -147,6 +147,8 @@ import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass d
 import PitchDeckDownload from "@/pages/pitch-deck-download"; // Pitch deck download page
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
+// Referral join page
+const JoinReferralPage = lazy(() => import("@/pages/join-referral"));
 // Brand of the Day is now integrated into Nowboard
 
 // Custom redirect component to handle page redirects
@@ -207,6 +209,14 @@ function Router() {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
       }} />
+      {/* Referral join link handler */}
+      <Route path="/join/:code">
+        {(params) => (
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div>Loading...</div></div>}>
+            <JoinReferralPage code={params.code} />
+          </Suspense>
+        )}
+      </Route>
 
 
 
