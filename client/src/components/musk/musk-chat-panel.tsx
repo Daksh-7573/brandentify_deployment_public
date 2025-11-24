@@ -696,29 +696,31 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         </div>
         
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto" role="log" aria-live="polite" aria-label="Chat messages">
           <div className="flex flex-col gap-4">
             {messages.map((message) => (
               <div 
                 key={message.id}
                 className={cn(
-                  "flex flex-col rounded-lg p-3 animate-in fade-in-0 zoom-in-95 duration-300",
+                  "flex flex-col rounded-2xl p-4 animate-in fade-in-0 zoom-in-95 duration-300",
                   message.sender === 'user' 
-                    ? "ml-auto rounded-br-none max-w-[85%]" 
-                    : "mr-auto rounded-bl-none max-w-[90%]"
+                    ? "ml-auto rounded-br-none max-w-[62%] sm:max-w-[70%]" 
+                    : "mr-auto rounded-bl-none max-w-[72%] sm:max-w-[70%]"
                 )}
                 style={message.sender === 'user' ? {
                   background: 'rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.18)',
                   color: 'white',
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
                 } : {
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255, 255, 255, 0.14)',
                   color: 'white'
                 }}
+                role={message.sender === 'musk' ? 'article' : undefined}
+                aria-label={`${message.sender === 'user' ? 'Your' : 'Musk'} message`}
               >
                 {/* Show thinking indicator */}
                 {message.thinking ? (
@@ -760,55 +762,93 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   ></div>
                 )}
                 
-                {/* Explainable Musk Banner (Layer 8) */}
+                {/* Message Meta Chips (B5) - Intent, Stage, Confidence */}
                 {message.sender === 'musk' && message.explainable && (
-                  <div className="mt-3 p-2 rounded border-l-2 border-blue-400" style={{
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    borderLeft: '2px solid rgba(59, 130, 246, 0.5)'
-                  }}>
-                    <div className="flex items-start gap-2">
-                      <LightbulbIcon className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex flex-col gap-1 text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                        <div className="font-medium">💡 Musk tailored this based on:</div>
-                        {message.explainable.emotion && (
-                          <div>Your <strong>{message.explainable.emotion}</strong> state</div>
-                        )}
-                        {message.explainable.stage && (
-                          <div>You're in the <strong>{message.explainable.stage}</strong> stage</div>
-                        )}
-                        {message.explainable.reason && (
-                          <div className="text-xs italic">{message.explainable.reason}</div>
-                        )}
-                      </div>
-                    </div>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity">
+                    {message.explainable.emotion && (
+                      <span className="px-2 py-1 rounded-full bg-[rgba(59,130,246,0.15)] border border-[rgba(59,130,246,0.3)] text-[rgba(255,255,255,0.8)]">
+                        {message.explainable.emotion}
+                      </span>
+                    )}
+                    {message.explainable.stage && (
+                      <span className="px-2 py-1 rounded-full bg-[rgba(168,85,247,0.15)] border border-[rgba(168,85,247,0.3)] text-[rgba(255,255,255,0.8)]">
+                        {message.explainable.stage}
+                      </span>
+                    )}
                   </div>
                 )}
 
-                {/* Quick responses */}
+                {/* Explainable Musk Banner (Layer 8) - Collapsible with Emoji & Why Link */}
+                {message.sender === 'musk' && message.explainable && (
+                  <details className="mt-3 cursor-pointer group">
+                    <summary className="flex items-center gap-2 p-3 rounded-lg bg-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.12)] border border-[rgba(59,130,246,0.3)] text-xs font-medium text-white transition-colors">
+                      <LightbulbIcon className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                      <span>
+                        {message.explainable.emotion && `😊 ${message.explainable.emotion}`}
+                        {message.explainable.stage && ` • ${message.explainable.stage}`}
+                      </span>
+                    </summary>
+                    <div className="mt-2 p-3 rounded-lg bg-[rgba(59,130,246,0.06)] border-l-4 border-l-[rgba(59,130,246,0.5)]" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      <div className="text-xs leading-relaxed">
+                        {message.explainable.reason && (
+                          <div className="mb-2">{message.explainable.reason}</div>
+                        )}
+                        <button 
+                          className="text-blue-400 hover:text-blue-300 underline text-xs transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toast({
+                              title: "Why this suggestion?",
+                              description: `Intent classification matched your ${message.explainable?.emotion} state in the ${message.explainable?.stage} stage, using 8-layer emotional intelligence system.`
+                            });
+                          }}
+                        >
+                          Why this? →
+                        </button>
+                      </div>
+                    </div>
+                  </details>
+                )}
+
+                {/* Rich Action Cards (B1) - Actionable cards with icons + CTAs */}
                 {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
-                  <div className="mt-3 flex flex-col gap-1">
-                    {message.quickResponses.map((response, i) => (
-                      <Button 
+                  <div className="mt-4 flex flex-col gap-2">
+                    {message.quickResponses.slice(0, 3).map((response, i) => (
+                      <button
                         key={i}
-                        variant="secondary"
-                        size="sm"
-                        className="text-xs py-1 px-2 h-auto text-left w-full justify-start overflow-hidden whitespace-normal text-white border-0"
                         onClick={() => handleQuickResponse(response)}
+                        className="px-4 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.1)',
-                          backdropFilter: 'blur(8px)',
-                          border: '1px solid rgba(255, 255, 255, 0.2)'
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          color: 'rgba(255, 255, 255, 0.95)'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)';
+                          e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+                        }}
+                        aria-label={`Suggested response: ${response}`}
+                      >
+                        <div className="line-clamp-2">{response}</div>
+                      </button>
+                    ))}
+                    {message.quickResponses.length > 3 && (
+                      <button 
+                        className="text-blue-400 hover:text-blue-300 text-xs underline"
+                        onClick={() => {
+                          toast({
+                            title: "More suggestions",
+                            description: `${message.quickResponses!.slice(3).join(', ')}`
+                          });
                         }}
                       >
-                        <span className="line-clamp-2">{response}</span>
-                      </Button>
-                    ))}
+                        +{message.quickResponses.length - 3} more
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
