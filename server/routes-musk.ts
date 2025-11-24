@@ -9,6 +9,9 @@ import { generatePersonalizedResponse, MuskContext } from './services/musk-intel
 import { processWithBackwardCompatibility } from './services/enhanced-musk-intelligence';
 import { extractTextFromPdf } from './utils/pdf-extractor';
 import { ResumeScorerService } from './services/career-intelligence/resume-scorer';
+import { intentClassifier } from './services/intent-classifier';
+import { db, pool } from './db';
+import { followupTemplates } from '@shared/schema';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -1094,13 +1097,14 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
 }
 
 /**
- * Generate AI-powered contextual suggestions based on conversation history and user profile
+ * Generate AI-powered contextual suggestions with intent classification and template-based personalization
+ * NEW: Uses intent classifier + template database + JSON structure for better follow-ups
  */
 export const handleGenerateContextualSuggestions = async (req: Request, res: Response) => {
   try {
     const { userId: rawUserId, conversationHistory, profileData } = req.body;
     
-    console.log('[Contextual Suggestions] Generating personalized AI-powered suggestions');
+    console.log('[Musk Follow-ups] Generating enhanced follow-ups with intent classification');
     
     // Handle both Firebase UIDs and numeric user IDs
     let numericUserId = 0;
@@ -1117,24 +1121,22 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
             numericUserId = user.id;
           }
         } catch (error) {
-          console.error(`Error looking up numeric ID:`, error);
+          console.error(`[Musk Follow-ups] Error looking up numeric ID:`, error);
         }
       }
     }
     
     const userId = numericUserId;
     
-    // Fetch comprehensive user data including experiences, skills, education, projects
+    // Fetch comprehensive user data
     let userData: any = profileData;
     let userExperiences: any[] = [];
     let userSkills: any[] = [];
     let userEducations: any[] = [];
     let userProjects: any[] = [];
-    let resumeHighlights = '';
     
     if (userId) {
       try {
-        // Fetch user profile
         const user = await storage.getUser(userId);
         if (user) {
           userData = {
@@ -1147,213 +1149,151 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
           };
         }
         
-        // Fetch work experiences
         userExperiences = await storage.getWorkExperiencesByUserId(userId) || [];
-        
-        // Fetch skills
         userSkills = await storage.getSkillsByUserId(userId) || [];
-        
-        // Fetch education
         userEducations = await storage.getEducationsByUserId(userId) || [];
-        
-        // Fetch projects
         userProjects = await storage.getProjectsByUserId(userId) || [];
         
-        // Get resume context if available
-        if (global.resumeContexts && global.resumeContexts[userId]) {
-          const resumeContext = global.resumeContexts[userId];
-          resumeHighlights = resumeContext.resumeText?.substring(0, 400) || ''; // First 400 chars
-        }
-        
-        console.log(`[Contextual Suggestions] Loaded rich data: ${userExperiences.length} experiences, ${userSkills.length} skills, ${userEducations.length} education, ${userProjects.length} projects`);
-        
       } catch (error) {
-        console.error('[Contextual Suggestions] Error fetching user data:', error);
+        console.error('[Musk Follow-ups] Error fetching user data:', error);
       }
     }
     
-    // Build context for AI
-    const conversationContext = conversationHistory && conversationHistory.length > 0
-      ? conversationHistory.slice(-6).map((msg: any) => 
-          `${msg.sender === 'user' ? 'User' : 'Musk'}: ${msg.content}`
-        ).join('\n')
-      : 'No conversation yet - this is the start of the chat.';
+    // Classify the latest user message into an intent type
+    const lastUserMessage = conversationHistory && conversationHistory.length > 0
+      ? conversationHistory[conversationHistory.length - 1]?.content || ''
+      : '';
     
-    // Detect career stage based on total years of experience
-    let careerStage = 'entry';
-    let totalYears = 0;
-    if (userExperiences.length > 0) {
-      totalYears = userExperiences.reduce((sum: number, exp: any) => {
-        const start = new Date(exp.startDate || Date.now());
-        const end = exp.endDate ? new Date(exp.endDate) : new Date();
-        const years = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365);
-        return sum + Math.max(0, years);
-      }, 0);
-      
-      if (totalYears < 3) careerStage = 'entry';
-      else if (totalYears < 7) careerStage = 'mid';
-      else if (totalYears < 12) careerStage = 'senior';
-      else careerStage = 'executive';
-    }
+    const intentResult = intentClassifier.classifyIntent(lastUserMessage, userData);
+    console.log(`[Musk Follow-ups] Classified intent: ${intentResult.intent} (confidence: ${intentResult.confidence})`);
     
-    // Build enriched user profile with actual career data
-    let enrichedProfile = `User Profile:
-- Name: ${userData?.name || 'Professional'}
-- Role: ${userData?.title || 'Not specified'}
-- Industry: ${userData?.industry || 'Not specified'}
-- Career Stage: ${careerStage}-level (${Math.round(totalYears)} years experience)
-- Looking For: ${userData?.lookingFor || 'Career growth'}
-- Domain: ${userData?.domain || 'Not specified'}
-- Location: ${userData?.location || 'Not specified'}`;
-
-    // Add recent work experience (latest 2 roles)
-    if (userExperiences.length > 0) {
-      enrichedProfile += `\n\nRecent Work Experience:`;
-      userExperiences.slice(0, 2).forEach((exp: any) => {
-        enrichedProfile += `\n- ${exp.title} at ${exp.company || 'Company'} (${exp.startDate ? new Date(exp.startDate).getFullYear() : 'Present'})`;
-      });
-    }
+    // Get matching templates from database based on industry and intent
+    let templates: any[] = [];
+    const userIndustry = userData?.industry || 'Technology';
     
-    // Add top skills (up to 8)
-    if (userSkills.length > 0) {
-      const topSkills = userSkills.slice(0, 8).map((s: any) => s.name || s.skillName).join(', ');
-      enrichedProfile += `\n\nKey Skills: ${topSkills}`;
-    }
-    
-    // Add education (highest degree)
-    if (userEducations.length > 0) {
-      const highestEdu = userEducations[0];
-      enrichedProfile += `\n\nEducation: ${highestEdu.degree || 'Degree'} in ${highestEdu.field || 'Field'}`;
-    }
-    
-    // Add recent projects (1-2 flagship)
-    if (userProjects.length > 0) {
-      enrichedProfile += `\n\nRecent Projects:`;
-      userProjects.slice(0, 2).forEach((proj: any) => {
-        enrichedProfile += `\n- ${proj.title || 'Project'}`;
-      });
-    }
-    
-    // Add resume highlights if available
-    if (resumeHighlights) {
-      enrichedProfile += `\n\nResume Highlights: ${resumeHighlights}`;
-    }
-    
-    // Create enhanced AI prompt for generating personalized contextual suggestions
-    const prompt = `You are Musk, an AI career expert. Generate 4 HIGHLY PERSONALIZED follow-up questions based on this user's ACTUAL career data and conversation.
-
-${enrichedProfile}
-
-Recent Conversation:
-${conversationContext}
-
-CRITICAL PERSONALIZATION RULES:
-1. Use SPECIFIC details from their profile (companies, skills, education, projects, years of experience)
-2. Questions should reflect their career stage (${careerStage}-level professionals have different needs)
-3. Reference their ACTUAL background - e.g., "With 5 years at Google as a PM..." or "Your React + Python skillset..."
-4. Make questions ACTIONABLE and forward-looking based on their real trajectory
-5. Consider their industry (${userData?.industry || 'their field'}) norms and progression paths
-6. If they have specific skills/projects, ask about leveraging or expanding them
-7. Match question complexity to career stage (entry=foundations, senior=strategy/leadership)
-8. NEVER ask generic questions like "What skills should I learn?" - be SPECIFIC to their profile
-9. NEVER suggest "Analyze my resume" or "Evaluate my pitch deck" - there are upload buttons
-10. Focus on NEXT STEPS based on where they actually are in their career
-
-Examples of GOOD personalized questions:
-- "With your React expertise and 3 years at startup X, should you target Staff Engineer or transition to Tech Lead?"
-- "Your finance background + MBA makes you perfect for FinTech PM roles - should we explore that pivot?"
-- "As a senior designer with B2B SaaS portfolio, how can you break into enterprise-level companies?"
-
-Examples of BAD generic questions:
-- "What skills should I learn?" (too vague)
-- "How can I grow my career?" (not using their data)
-- "Should I get certified?" (doesn't reference their actual background)
-
-Format: Exactly 4 questions, one per line, no numbering, no bullets. Make each question feel like it came from someone who carefully reviewed their profile.`;
-
-
     try {
-      // Use VPS Ollama for FREE AI generation (same as main Musk chat)
-      console.log('[Contextual Suggestions] Calling VPS Ollama for personalized questions...');
-      const ollamaResponse = await fetch('http://65.20.73.122:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama3.2:1b',
-          prompt: prompt,
-          stream: false,
-          options: {
-            temperature: 0.8,
-            top_p: 0.9,
-            top_k: 40,
-          }
-        })
-      });
-      
-      if (ollamaResponse.ok) {
-        const ollamaData = await ollamaResponse.json();
-        const generatedText = ollamaData.response || '';
-        
-        // Parse the questions from the response
-        const questions = generatedText
-          .split('\n')
-          .map((q: string) => q.trim())
-          .filter((q: string) => {
-            if (!q.length || !q.includes('?')) return false;
-            const lowerQ = q.toLowerCase();
-            // Filter out resume and pitch deck upload suggestions (redundant with upload buttons)
-            if (lowerQ.includes('analyze') && (lowerQ.includes('resume') || lowerQ.includes('cv'))) return false;
-            if (lowerQ.includes('evaluate') && (lowerQ.includes('pitch') || lowerQ.includes('deck'))) return false;
-            if (lowerQ.includes('upload') && (lowerQ.includes('resume') || lowerQ.includes('pitch'))) return false;
-            return true;
-          })
-          .slice(0, 4);
-        
-        if (questions.length >= 3) {
-          console.log('[Contextual Suggestions] Successfully generated AI suggestions:', questions.length);
-          return res.json({ 
-            suggestions: questions,
-            source: 'ai-ollama'
-          });
-        }
-      }
-    } catch (ollamaError) {
-      console.log('[Contextual Suggestions] VPS Ollama not available, using enriched fallback');
+      const result = await pool.query(
+        `SELECT * FROM followup_templates 
+         WHERE industry = $1 AND type = $2
+         ORDER BY RANDOM()
+         LIMIT 5`,
+        [userIndustry, intentResult.intent]
+      );
+      templates = result.rows || [];
+      console.log(`[Musk Follow-ups] Found ${templates.length} matching templates for ${userIndustry}/${intentResult.intent}`);
+    } catch (error) {
+      console.error('[Musk Follow-ups] Error fetching templates:', error);
     }
     
-    // Fallback to enriched profile-aware suggestions if AI fails
-    console.log('[Contextual Suggestions] Using personalized fallback suggestions');
-    const fallbackQuestions = generateEnrichedFallbackSuggestions(
-      userData, 
-      userExperiences, 
-      userSkills, 
-      userEducations, 
-      userProjects, 
-      careerStage, 
-      totalYears,
-      conversationHistory
-    );
+    // Fallback: Get any templates if industry-specific not found
+    if (templates.length === 0) {
+      try {
+        const result = await pool.query(
+          `SELECT * FROM followup_templates 
+           WHERE type = $1
+           ORDER BY RANDOM()
+           LIMIT 5`,
+          [intentResult.intent]
+        );
+        templates = result.rows || [];
+        console.log(`[Musk Follow-ups] Fallback: Found ${templates.length} templates for intent ${intentResult.intent}`);
+      } catch (error) {
+        console.error('[Musk Follow-ups] Error fetching fallback templates:', error);
+      }
+    }
+    
+    // Build structured follow-up suggestions
+    const suggestions = templates.slice(0, 4).map(template => ({
+      type: template.type,
+      text: template.text,
+      why: template.why || `Helps with ${template.type} questions`,
+      actionHint: template.action_hint
+    }));
+    
+    // If we have suggestions, return them
+    if (suggestions.length > 0) {
+      console.log(`[Musk Follow-ups] Returning ${suggestions.length} structured follow-ups`);
+      return res.json({ 
+        suggestions: suggestions,
+        source: 'template-database',
+        intent: intentResult.intent
+      });
+    }
+    
+    // Fallback: Generate follow-ups using AI if templates insufficient
+    console.log('[Musk Follow-ups] Insufficient templates, using AI generation fallback');
+    const aiSuggestions = await generateAIFollowups(userData, userExperiences, userSkills, conversationHistory);
     
     return res.json({ 
-      suggestions: fallbackQuestions,
-      source: 'fallback'
+      suggestions: aiSuggestions,
+      source: 'ai-generated',
+      intent: intentResult.intent
     });
     
   } catch (error) {
-    console.error('[Contextual Suggestions] Error:', error);
+    console.error('[Musk Follow-ups] Error:', error);
     
-    // Return basic fallback questions
+    // Return basic fallback
     return res.json({ 
       suggestions: [
-        'What skills should I focus on developing next?',
-        'How can I stand out in my industry?',
-        'What career opportunities should I explore?',
-        'How can I improve my professional brand?'
+        { type: 'probe', text: 'What specific goal are you working toward right now?', why: 'Understands your priorities', actionHint: null },
+        { type: 'action', text: 'Would you like me to help draft a related message?', why: 'Provides immediate help', actionHint: null },
+        { type: 'resource', text: 'Would a template or example be helpful?', why: 'Offers concrete resources', actionHint: null },
+        { type: 'clarify', text: 'Can you tell me more about what you mean?', why: 'Clarifies context', actionHint: null }
       ],
       source: 'error-fallback'
     });
   }
 };
+
+/**
+ * Generate AI follow-ups when templates are insufficient
+ */
+async function generateAIFollowups(userData: any, experiences: any[], skills: any[], conversationHistory: any[]): Promise<any[]> {
+  try {
+    const prompt = `You are Musk, an AI career expert. Generate 4 follow-up questions in JSON format.
+
+User: ${userData?.name || 'Professional'} (${userData?.industry || 'Field'})
+Recent Message: ${conversationHistory && conversationHistory.length > 0 ? conversationHistory[conversationHistory.length - 1]?.content : 'Starting conversation'}
+
+Return ONLY a JSON array of 4 objects with fields: type (one of: clarify, probe, action, resource), text (the question), why (brief reason), actionHint (null or string).
+Make each unique and personalized to their actual background.`;
+
+    const ollamaResponse = await fetch('http://65.20.73.122:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'llama3.2:1b',
+        prompt: prompt,
+        stream: false,
+        options: { temperature: 0.7, top_p: 0.9, top_k: 40 }
+      })
+    });
+    
+    if (ollamaResponse.ok) {
+      const data = await ollamaResponse.json();
+      try {
+        const jsonMatch = data.response.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          return Array.isArray(parsed) ? parsed.slice(0, 4) : [];
+        }
+      } catch (parseError) {
+        console.log('[Musk Follow-ups] Could not parse AI JSON response');
+      }
+    }
+  } catch (error) {
+    console.log('[Musk Follow-ups] AI generation failed, using fallback');
+  }
+  
+  // Fallback questions
+  return [
+    { type: 'probe', text: 'What area would you like to focus on first?', why: 'Clarifies priorities', actionHint: null },
+    { type: 'action', text: 'Should I draft something to help you move forward?', why: 'Provides immediate action', actionHint: null },
+    { type: 'resource', text: 'Would you like a template or example?', why: 'Offers concrete help', actionHint: null },
+    { type: 'clarify', text: 'Can you expand on that a bit more?', why: 'Gathers more context', actionHint: null }
+  ];
+}
 
 /**
  * Generate enriched fallback suggestions using actual user career data
