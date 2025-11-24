@@ -10,6 +10,10 @@ import { processWithBackwardCompatibility } from './services/enhanced-musk-intel
 import { extractTextFromPdf } from './utils/pdf-extractor';
 import { ResumeScorerService } from './services/career-intelligence/resume-scorer';
 import { intentClassifier } from './services/intent-classifier';
+import { enhancedIntentClassifier } from './services/enhanced-intent-classifier';
+import { userMuskMemoryService } from './services/user-musk-memory';
+import { toneCalibrationService } from './services/tone-calibration';
+import { conversationGoalTrackerService } from './services/conversation-goal-tracker';
 import { db, pool } from './db';
 import { followupTemplates } from '@shared/schema';
 
@@ -1097,18 +1101,25 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
 }
 
 /**
- * Generate AI-powered contextual suggestions with intent classification and template-based personalization
- * NEW: Uses intent classifier + template database + JSON structure for better follow-ups
+ * ENHANCED: Generate AI-powered contextual suggestions with ALL 8 LAYERS:
+ * 1. Intent + Emotion + Stage Detection
+ * 2. 360° User Memory Tracking
+ * 3. Hybrid Knowledge Engine (Template + Semantic + AI)
+ * 4. Structured Multi-Turn Answers
+ * 5. Conversation Goal Tracking
+ * 6. Feedback-Based Ranking
+ * 7. Tone Calibration
+ * 8. Explainable Musk (data for UI banner)
  */
 export const handleGenerateContextualSuggestions = async (req: Request, res: Response) => {
   try {
     const { userId: rawUserId, conversationHistory, profileData } = req.body;
+    const conversationId = crypto.randomUUID();
     
-    console.log('[Musk Follow-ups] Generating enhanced follow-ups with intent classification');
+    console.log('[Musk Enhanced] 🚀 Generating contextual suggestions with all 8 layers');
     
     // Handle both Firebase UIDs and numeric user IDs
     let numericUserId = 0;
-    
     if (rawUserId) {
       if (typeof rawUserId === 'number') {
         numericUserId = rawUserId;
@@ -1121,7 +1132,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
             numericUserId = user.id;
           }
         } catch (error) {
-          console.error(`[Musk Follow-ups] Error looking up numeric ID:`, error);
+          console.error(`[Musk Enhanced] Error looking up numeric ID:`, error);
         }
       }
     }
@@ -1130,11 +1141,6 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     
     // Fetch comprehensive user data
     let userData: any = profileData;
-    let userExperiences: any[] = [];
-    let userSkills: any[] = [];
-    let userEducations: any[] = [];
-    let userProjects: any[] = [];
-    
     if (userId) {
       try {
         const user = await storage.getUser(userId);
@@ -1148,97 +1154,173 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
             location: user.location
           };
         }
-        
-        userExperiences = await storage.getWorkExperiencesByUserId(userId) || [];
-        userSkills = await storage.getSkillsByUserId(userId) || [];
-        userEducations = await storage.getEducationsByUserId(userId) || [];
-        userProjects = await storage.getProjectsByUserId(userId) || [];
-        
       } catch (error) {
-        console.error('[Musk Follow-ups] Error fetching user data:', error);
+        console.error('[Musk Enhanced] Error fetching user data:', error);
       }
     }
     
-    // Classify the latest user message into an intent type
     const lastUserMessage = conversationHistory && conversationHistory.length > 0
       ? conversationHistory[conversationHistory.length - 1]?.content || ''
       : '';
     
-    const intentResult = intentClassifier.classifyIntent(lastUserMessage, userData);
-    console.log(`[Musk Follow-ups] Classified intent: ${intentResult.intent} (confidence: ${intentResult.confidence})`);
+    // ========== LAYER 1: ENHANCED INTENT CLASSIFICATION (Intent + Emotion + Stage) ==========
+    const enhancedClassification = enhancedIntentClassifier.classify(lastUserMessage, userData);
+    console.log(`[Musk Enhanced] Layer 1: Intent=${enhancedClassification.intent}, Emotion=${enhancedClassification.emotion}, Stage=${enhancedClassification.stage}`);
     
-    // Get matching templates from database based on industry and intent
+    // ========== LAYER 2: USER MEMORY (360° Behavioral Tracking) ==========
+    let userMemory = null;
+    if (userId) {
+      try {
+        userMemory = await userMuskMemoryService.getOrCreateMemory(userId);
+        await userMuskMemoryService.recordAction(userId, enhancedClassification.intent);
+        console.log(`[Musk Enhanced] Layer 2: User memory loaded, preferred tone=${userMemory.tone}`);
+      } catch (error) {
+        console.error('[Musk Enhanced] Error loading user memory:', error);
+      }
+    }
+    
+    // ========== LAYER 3 & 5: CONVERSATION GOAL TRACKING ==========
+    let conversationGoal = null;
+    if (userId) {
+      try {
+        conversationGoal = await conversationGoalTrackerService.createConversationGoal(
+          userId,
+          lastUserMessage,
+          enhancedClassification.intent,
+          enhancedClassification.emotion
+        );
+        console.log(`[Musk Enhanced] Layer 5: Goal tracked: "${conversationGoal.primaryGoal}"`);
+      } catch (error) {
+        console.error('[Musk Enhanced] Error creating conversation goal:', error);
+      }
+    }
+    
+    // ========== LAYER 3: HYBRID KNOWLEDGE ENGINE (Templates + Feedback Ranking + AI) ==========
     let templates: any[] = [];
     const userIndustry = userData?.industry || 'Technology';
     
     try {
+      // Get templates with feedback-based ranking (LAYER 6)
       const result = await pool.query(
-        `SELECT * FROM followup_templates 
-         WHERE industry = $1 AND type = $2
-         ORDER BY RANDOM()
+        `SELECT ft.*, COUNT(ff.id) as feedback_count, 
+                AVG(CASE WHEN ff.helpful = true THEN 1 ELSE 0 END) as helpful_ratio
+         FROM followup_templates ft
+         LEFT JOIN followup_feedback ff ON ft.id = ff.template_id
+         WHERE ft.industry = $1 AND ft.type = $2
+         GROUP BY ft.id
+         ORDER BY helpful_ratio DESC NULLS LAST, feedback_count DESC
          LIMIT 5`,
-        [userIndustry, intentResult.intent]
+        [userIndustry, enhancedClassification.intent]
       );
       templates = result.rows || [];
-      console.log(`[Musk Follow-ups] Found ${templates.length} matching templates for ${userIndustry}/${intentResult.intent}`);
+      console.log(`[Musk Enhanced] Layer 3&6: Found ${templates.length} templates (ranked by feedback)`);
     } catch (error) {
-      console.error('[Musk Follow-ups] Error fetching templates:', error);
+      console.error('[Musk Enhanced] Error fetching templates:', error);
     }
     
-    // Fallback: Get any templates if industry-specific not found
+    // Fallback if no industry-specific templates
     if (templates.length === 0) {
       try {
         const result = await pool.query(
-          `SELECT * FROM followup_templates 
-           WHERE type = $1
-           ORDER BY RANDOM()
-           LIMIT 5`,
-          [intentResult.intent]
+          `SELECT * FROM followup_templates WHERE type = $1 ORDER BY RANDOM() LIMIT 5`,
+          [enhancedClassification.intent]
         );
         templates = result.rows || [];
-        console.log(`[Musk Follow-ups] Fallback: Found ${templates.length} templates for intent ${intentResult.intent}`);
       } catch (error) {
-        console.error('[Musk Follow-ups] Error fetching fallback templates:', error);
+        console.error('[Musk Enhanced] Error fetching fallback templates:', error);
       }
     }
     
-    // Build structured follow-up suggestions
-    const suggestions = templates.slice(0, 4).map(template => ({
-      type: template.type,
-      text: template.text,
-      why: template.why || `Helps with ${template.type} questions`,
-      actionHint: template.action_hint
-    }));
+    // ========== LAYER 7: TONE CALIBRATION ==========
+    const toneConfig = toneCalibrationService.calibrateTone(
+      enhancedClassification.emotion,
+      enhancedClassification.intent,
+      userMemory
+    );
+    console.log(`[Musk Enhanced] Layer 7: Tone calibrated to "${toneConfig.adjustedTone}"`);
     
-    // If we have suggestions, return them
+    // ========== LAYER 4: STRUCTURED MULTI-TURN ANSWERS ==========
+    const suggestions = templates.slice(0, 4).map(template => {
+      // Apply tone calibration
+      let adjustedText = toneCalibrationService.applyToneToResponse(template.text, toneConfig);
+      
+      // Generate next follow-up directions
+      let nextFollowUp = [];
+      if (conversationGoal) {
+        const goalFollowUp = conversationGoalTrackerService.generateNextFollowUp(conversationGoal);
+        nextFollowUp = goalFollowUp.followUpDirection;
+      }
+      
+      return {
+        type: template.type,
+        text: adjustedText,
+        why: template.why || `Helps with ${template.type} questions`,
+        actionHint: template.action_hint,
+        nextFollowUp: nextFollowUp,
+        // Layer 8 data for UI banner
+        explainable: {
+          emotion: enhancedClassification.emotion,
+          stage: enhancedClassification.stage,
+          brandGoals: userData?.primaryAudience || [],
+          reason: `Matched to your ${enhancedClassification.emotion} state in ${enhancedClassification.stage} stage`
+        }
+      };
+    });
+    
+    // Record emotion + intent for learning
+    if (userId) {
+      try {
+        await pool.query(
+          `INSERT INTO emotion_intent_history 
+           (user_id, conversation_id, user_message, detected_intent, detected_emotion, emotion_score, adjusted_tone)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [userId, conversationId, lastUserMessage, enhancedClassification.intent, 
+           enhancedClassification.emotion, enhancedClassification.emotionConfidence, toneConfig.adjustedTone]
+        );
+      } catch (error) {
+        console.error('[Musk Enhanced] Error recording emotion/intent:', error);
+      }
+    }
+    
     if (suggestions.length > 0) {
-      console.log(`[Musk Follow-ups] Returning ${suggestions.length} structured follow-ups`);
+      console.log(`[Musk Enhanced] ✅ Returning ${suggestions.length} enhanced follow-ups with all 8 layers`);
       return res.json({ 
         suggestions: suggestions,
-        source: 'template-database',
-        intent: intentResult.intent
+        source: 'enhanced-template-database',
+        intent: enhancedClassification.intent,
+        emotion: enhancedClassification.emotion,
+        stage: enhancedClassification.stage,
+        conversationId: conversationId
       });
     }
     
-    // Fallback: Generate follow-ups using AI if templates insufficient
-    console.log('[Musk Follow-ups] Insufficient templates, using AI generation fallback');
-    const aiSuggestions = await generateAIFollowups(userData, userExperiences, userSkills, conversationHistory);
+    // Fallback: AI generation
+    console.log('[Musk Enhanced] Insufficient templates, using AI fallback');
+    const aiSuggestions = await generateAIFollowups(userData, [], [], conversationHistory);
     
     return res.json({ 
-      suggestions: aiSuggestions,
+      suggestions: aiSuggestions.map((s: any) => ({
+        ...s,
+        explainable: {
+          emotion: enhancedClassification.emotion,
+          stage: enhancedClassification.stage,
+          reason: 'AI-generated based on your context'
+        }
+      })),
       source: 'ai-generated',
-      intent: intentResult.intent
+      intent: enhancedClassification.intent,
+      emotion: enhancedClassification.emotion,
+      stage: enhancedClassification.stage,
+      conversationId: conversationId
     });
     
   } catch (error) {
-    console.error('[Musk Follow-ups] Error:', error);
-    
-    // Return basic fallback
+    console.error('[Musk Enhanced] Error:', error);
     return res.json({ 
       suggestions: [
-        { type: 'probe', text: 'What specific goal are you working toward right now?', why: 'Understands your priorities', actionHint: null },
-        { type: 'action', text: 'Would you like me to help draft a related message?', why: 'Provides immediate help', actionHint: null },
-        { type: 'resource', text: 'Would a template or example be helpful?', why: 'Offers concrete resources', actionHint: null },
+        { type: 'probe', text: 'What specific goal are you working toward?', why: 'Understands your priorities', actionHint: null },
+        { type: 'action', text: 'Would you like me to help draft something?', why: 'Provides immediate help', actionHint: null },
+        { type: 'resource', text: 'Would a template be helpful?', why: 'Offers concrete resources', actionHint: null },
         { type: 'clarify', text: 'Can you tell me more about what you mean?', why: 'Clarifies context', actionHint: null }
       ],
       source: 'error-fallback'

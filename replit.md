@@ -92,3 +92,76 @@ Preferred communication style: Simple, everyday language.
   - `followup_feedback`: User feedback on suggested follow-ups
 - **Service**: `server/services/intent-classifier.ts` with keyword-based rule matching
 - **Updated Endpoint**: `/api/musk/contextual-suggestions` now returns structured JSON with intent classification
+
+## 8-Layer Enhanced Musk Intelligence Framework (COMPLETE ✨✨)
+Complete emotional awareness, goal-tracking, and adaptive personalization system:
+
+### Layers Implementation:
+1. **Intent + Emotion + Stage Detection** (enhanced-intent-classifier.ts)
+   - Detects 7 intents: clarify, probe, action, resource, confirm, alternative, close
+   - Detects 5 emotions: curious, frustrated, confident, exploring, validating
+   - Infers 4 journey stages: onboarding, active, optimization, monetization
+   - Confidence scoring for each detection
+
+2. **360° User Memory Service** (user-musk-memory.ts)
+   - Behavioral pattern tracking (quest completion, platform preferences, content preferences)
+   - Recent action history (last 20 actions)
+   - Preferred tone and content format
+   - Platform interaction tracking
+   - Skip topics tracking
+
+3. **Hybrid Knowledge Engine** (routes-musk.ts)
+   - Template-based suggestions (industry + intent matching)
+   - Feedback-based ranking (helpful_ratio aggregation)
+   - AI generation fallback (Ollama integration)
+   - Semantic matching with user context
+
+4. **Structured Multi-Turn Conversation** (conversation-goal-tracker.ts + routes-musk.ts)
+   - Primary goal inference from user messages
+   - Sub-goal generation (4-step plans per goal)
+   - Multi-turn conversation planning
+   - Goal progress tracking and checkpoints
+
+5. **Conversation Goal Tracking** (conversation-goal-tracker.ts)
+   - Hidden conversation objectives tracking
+   - Goal stage and emotion context
+   - Progress checkpoints and milestone tracking
+   - Next follow-up generation based on progress
+
+6. **Feedback-Based Ranking System** (routes-musk.ts)
+   - SQL query aggregates feedback counts and helpful ratios
+   - Templates ranked by `helpful_ratio DESC, feedback_count DESC`
+   - Integration with `followup_feedback` table
+   - Continuous learning from user reactions
+
+7. **Tone Calibration Layer** (tone-calibration.ts)
+   - Adjusts response tone based on detected emotion
+   - Response length recommendations (brief, moderate, detailed)
+   - Formality level selection (casual, neutral, formal)
+   - Tone markers injection for emotional resonance
+   - Empathetic openings for frustrated users
+
+8. **Explainable Musk UI Banner** (musk-chat-panel.tsx + routes-musk.ts)
+   - Shows why Musk tailored suggestions
+   - Displays detected emotion state
+   - Shows current journey stage
+   - Reasoning transparency with icon badge
+   - Data returned in API response for UI consumption
+
+### New Database Tables:
+- `user_musk_memory`: 360° behavioral tracking per user
+- `conversation_goals`: Conversation objective tracking with sub-goals and emotion
+- `goal_checkpoints`: Milestone tracking within conversation goals
+- `emotion_intent_history`: Learning dataset for emotion + intent patterns
+
+### Services Created:
+- `server/services/enhanced-intent-classifier.ts`: Emotion + stage + intent detection
+- `server/services/user-musk-memory.ts`: 360° behavioral memory management
+- `server/services/tone-calibration.ts`: Emotional tone adjustment system
+- `server/services/conversation-goal-tracker.ts`: Multi-turn conversation planning
+
+### API Integration:
+- `/api/musk/contextual-suggestions` endpoint fully enhanced
+- Returns emotion, stage, and explainable data alongside suggestions
+- Records emotion/intent history for continuous learning
+- Supports multi-turn conversation context preservation

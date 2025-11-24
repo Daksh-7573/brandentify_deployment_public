@@ -36,6 +36,12 @@ type Message = {
   timestamp: Date;
   quickResponses?: string[];
   thinking?: boolean;
+  explainable?: {
+    emotion?: string;
+    stage?: string;
+    brandGoals?: string[];
+    reason?: string;
+  };
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
@@ -754,6 +760,30 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   ></div>
                 )}
                 
+                {/* Explainable Musk Banner (Layer 8) */}
+                {message.sender === 'musk' && message.explainable && (
+                  <div className="mt-3 p-2 rounded border-l-2 border-blue-400" style={{
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderLeft: '2px solid rgba(59, 130, 246, 0.5)'
+                  }}>
+                    <div className="flex items-start gap-2">
+                      <LightbulbIcon className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                      <div className="flex flex-col gap-1 text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                        <div className="font-medium">💡 Musk tailored this based on:</div>
+                        {message.explainable.emotion && (
+                          <div>Your <strong>{message.explainable.emotion}</strong> state</div>
+                        )}
+                        {message.explainable.stage && (
+                          <div>You're in the <strong>{message.explainable.stage}</strong> stage</div>
+                        )}
+                        {message.explainable.reason && (
+                          <div className="text-xs italic">{message.explainable.reason}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Quick responses */}
                 {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
                   <div className="mt-3 flex flex-col gap-1">

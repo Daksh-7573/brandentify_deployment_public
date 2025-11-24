@@ -2412,3 +2412,63 @@ export const insertFollowupFeedbackSchema = createInsertSchema(followupFeedback)
 
 export type FollowupFeedback = typeof followupFeedback.$inferSelect;
 export type InsertFollowupFeedback = z.infer<typeof insertFollowupFeedbackSchema>;
+
+// User Musk Memory - 360° behavioral tracking for personalization
+export const userMuskMemory = pgTable("user_musk_memory", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  behaviorPatterns: jsonb("behavior_patterns").default('{"questCompletion": 0, "platformPreferences": {}, "contentPreferences": [], "skippedTopics": []}'),
+  preferredPlatforms: text("preferred_platforms").array().default('[]'),
+  contentFormat: text("content_format"), // carousel, thread, single-post, video, article
+  tone: text("tone").default("neutral"), // friendly, professional, motivational, casual
+  recentActions: jsonb("recent_actions").default('[]'), // Last 20 actions
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Conversation Goals - Track hidden conversation objectives
+export const conversationGoals = pgTable("conversation_goals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  conversationId: text("conversation_id").notNull(), // UUID for this conversation thread
+  primaryGoal: text("primary_goal").notNull(), // e.g., "Create first personal brand post", "Finish portfolio"
+  subGoals: jsonb("sub_goals").default('[]'), // Array of {text, completed: bool}
+  stage: text("stage").default("onboarding"), // onboarding, active, optimization, monetization
+  emotion: text("emotion").default("neutral"), // curious, frustrated, confident, exploring, validating
+  emotionConfidence: integer("emotion_confidence").default(50), // 0-100
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Goal Checkpoints - Track progress within a conversation
+export const goalCheckpoints = pgTable("goal_checkpoints", {
+  id: serial("id").primaryKey(),
+  goalId: integer("goal_id").references(() => conversationGoals.id).notNull(),
+  checkpoint: text("checkpoint").notNull(), // Description of achieved milestone
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+// Emotion & Intent History - Track emotion + intent across messages for learning
+export const emotionIntentHistory = pgTable("emotion_intent_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  conversationId: text("conversation_id").notNull(),
+  userMessage: text("user_message").notNull(),
+  detectedIntent: text("detected_intent").notNull(), // clarify, probe, action, resource, confirm, alternative, close
+  detectedEmotion: text("detected_emotion").notNull(), // curious, frustrated, confident, exploring, validating
+  emotionScore: integer("emotion_score"), // 0-100 confidence
+  adjustedTone: text("adjusted_tone"), // The tone that was applied
+  responseQuality: integer("response_quality"), // 1-5, set by user feedback
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserMuskMemorySchema = createInsertSchema(userMuskMemory).omit({ id: true, updatedAt: true });
+export const insertConversationGoalSchema = createInsertSchema(conversationGoals).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertGoalCheckpointSchema = createInsertSchema(goalCheckpoints).omit({ id: true, completedAt: true });
+export const insertEmotionIntentHistorySchema = createInsertSchema(emotionIntentHistory).omit({ id: true, createdAt: true });
+
+export type UserMuskMemory = typeof userMuskMemory.$inferSelect;
+export type InsertUserMuskMemory = z.infer<typeof insertUserMuskMemorySchema>;
+export type ConversationGoal = typeof conversationGoals.$inferSelect;
+export type InsertConversationGoal = z.infer<typeof insertConversationGoalSchema>;
+export type GoalCheckpoint = typeof goalCheckpoints.$inferSelect;
+export type EmotionIntentHistory = typeof emotionIntentHistory.$inferSelect;
