@@ -46,7 +46,14 @@ export function registerReferralRoutes(app: Express) {
     try {
       const userId = (req as any).userId;
       
-      const result = await referralService.generateReferralLink(userId);
+      // Build the base URL from the request
+      const protocol = req.protocol || 'https';
+      const host = req.get('host') || 'brandentifier.replit.app';
+      const baseUrl = `${protocol}://${host}`;
+      
+      console.log('[Referral] Generating link with baseUrl:', baseUrl);
+      
+      const result = await referralService.generateReferralLink(userId, baseUrl);
       
       res.json({
         success: true,

@@ -41,11 +41,18 @@ const INITIAL_PORTFOLIOS = ['corporate-executive', 'scholar'];
 export class ReferralService {
   /**
    * Generate unique referral link for a user
+   * @param userId - The user ID
+   * @param baseUrl - The base URL (e.g., https://brandentifier.replit.app)
    */
-  async generateReferralLink(userId: number): Promise<{ code: string; link: string }> {
+  async generateReferralLink(userId: number, baseUrl?: string): Promise<{ code: string; link: string }> {
     const client = await pool.connect();
     
     try {
+      // Determine the base URL for the link
+      const appBaseUrl = baseUrl || process.env.REPLIT_DEV_DOMAIN || process.env.APP_BASE_URL || 'https://brandentifier.com';
+      // Ensure no trailing slash
+      const cleanBaseUrl = appBaseUrl.replace(/\/$/, '');
+      
       // Check if user already has a referral link
       const existing = await client.query(
         `SELECT unique_code FROM referral_links 
@@ -58,7 +65,7 @@ export class ReferralService {
         const code = existing.rows[0].unique_code;
         return {
           code,
-          link: `${process.env.REPLIT_DEV_DOMAIN || 'brandentifier.com'}/join/${code}`
+          link: `${cleanBaseUrl}/join/${code}`
         };
       }
       
@@ -74,7 +81,7 @@ export class ReferralService {
       
       return {
         code,
-        link: `${process.env.REPLIT_DEV_DOMAIN || 'brandentifier.com'}/join/${code}`
+        link: `${cleanBaseUrl}/join/${code}`
       };
     } finally {
       client.release();
