@@ -102,7 +102,9 @@ export class SmartQuestAllocator {
       console.log(`[SmartQuestAllocator] Available: ${availableCareerQuests.length} career, ${availableSocialQuests.length} social`);
 
       if (availableCareerQuests.length === 0 && availableSocialQuests.length === 0) {
-        console.log('[SmartQuestAllocator] No available quests - returning fallback');
+        console.log(`[SmartQuestAllocator] ⚠️ EMPTY QUEST POOL - User ${userId} (${userProfile?.name}) has NO available quests after brand goal filtering`);
+        console.log(`[SmartQuestAllocator] Profile focus: ${profileStatus.focusArea}, User goals: [${userGoals.join(', ')}]`);
+        console.log('[SmartQuestAllocator] Falling back to unrestricted quest pool');
         return await this.getFallbackAllocation(userId);
       }
 
@@ -402,11 +404,17 @@ export class SmartQuestAllocator {
       // STRICT: Only quests that match BOTH focus area AND Brand Goals
       finalAllowedTypes = focusAreaTypes.filter(type => brandGoalAllowedTypes.includes(type));
       console.log(`[SmartQuestAllocator] 🎯 Brand Goal filtering: ${brandGoalAllowedTypes.length} goal types × ${focusAreaTypes.length} focus types = ${finalAllowedTypes.length} allowed types`);
+      
+      // FALLBACK: If intersection is empty, use brand goal types as fallback (relax profile focus constraint)
+      if (finalAllowedTypes.length === 0) {
+        console.log(`[SmartQuestAllocator] ⚠️ No intersection found - using Brand Goal types as fallback`);
+        finalAllowedTypes = brandGoalAllowedTypes;
+      }
     }
     
-    // If no matching types after intersection, return empty
+    // If still no matching types, return empty
     if (finalAllowedTypes.length === 0) {
-      console.log('[SmartQuestAllocator] ❌ No quest types match both Brand Goals and focus area');
+      console.log('[SmartQuestAllocator] ❌ No quest types available for this user (checked both focus area and brand goals)');
       return [];
     }
     
@@ -468,10 +476,10 @@ export class SmartQuestAllocator {
       // Filter social quest types by brand goals
       allowedSocialTypes = socialQuestTypes.filter(type => brandGoalAllowedTypes.includes(type));
       
-      // If user has selected brand goals but none allow social quests, return empty
+      // If user has selected brand goals but none allow social quests, allow all as fallback
       if (allowedSocialTypes.length === 0) {
-        console.log('[SmartQuestAllocator] ❌ No social quest types allowed by Brand Goals');
-        return [];
+        console.log('[SmartQuestAllocator] ⚠️ No social quest types match Brand Goals - using all social quest types as fallback');
+        allowedSocialTypes = socialQuestTypes;
       }
     }
     

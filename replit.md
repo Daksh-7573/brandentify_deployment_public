@@ -175,3 +175,25 @@ Complete emotional awareness, goal-tracking, and adaptive personalization system
 - Returns emotion, stage, and explainable data alongside suggestions
 - Records emotion/intent history for continuous learning
 - Supports multi-turn conversation context preservation
+
+## Daily Quest Scheduler Investigation & Fix (FIXED ✨)
+- **Issue**: User 2 (Nishant Chopra) was silently being skipped by the daily quest scheduler despite all other users receiving quests
+- **Root Cause**: Overly strict brand goal filtering in SmartQuestAllocator
+  - User 2 has goal: "Position as authority in niche" (professional_1)
+  - Quest allocator required quests to match BOTH profile focus area AND brand goal types
+  - When intersection was empty, allocator would return 0 quests
+  - Daily scheduler's try-catch would silently fail, counting as error (not visible to user)
+- **Solution Implemented**:
+  1. **Smart Fallback Logic** (server/services/smart-quest-allocator.ts):
+     - If intersection of profile focus + brand goal types is empty, use brand goal types as fallback
+     - If still empty, use unrestricted fallback allocation
+  2. **Enhanced Logging**:
+     - Added diagnostic logs to show when quest pool filtering results in empty quests
+     - Better error tracking in daily quest scheduler
+  3. **Immediate Fix**:
+     - Manually assigned 3 quests to user 2 for 2025-11-25
+  4. **Prevention**:
+     - Modified `getAvailableCareerQuests()` and `getAvailableSocialQuests()` to have graceful fallbacks
+     - Social quest filtering now uses all social quest types if no matches with brand goals
+- **Files Modified**: `server/services/smart-quest-allocator.ts`, `server/services/daily-quest-scheduler.ts`
+- **Status**: ✅ Fixed and deployed with enhanced logging
