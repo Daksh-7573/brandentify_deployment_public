@@ -818,8 +818,26 @@ console.log("Phase 3 microservices architecture initialized");
   // console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
   console.log("⚠️  Musk Pulse automation system is DISABLED - no AI pulses will be generated");
 
-  // Start Timezone-Aware Quest Scheduler for personalized quest assignment
-  console.log("Starting Timezone-Aware Quest Scheduler system...");
+  // 🚀 START DAILY QUEST SCHEDULER (PRIMARY: Daily quest generation at 12:01 AM UTC)
+  console.log("========================================");
+  console.log("🚀 STARTING DAILY QUEST SCHEDULER SYSTEM");
+  console.log("========================================");
+  dailyQuestScheduler.startScheduler();
+  console.log("✅ Daily Quest Scheduler started - generating Career & Social quests at 12:01 AM UTC daily");
+  
+  // Run initial quest assignment on startup
+  (async () => {
+    try {
+      console.log("🔄 [STARTUP] Running initial quest assignment...");
+      const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
+      console.log(`🎉 [STARTUP] Quest assignment complete: ${bootResult.successfulAssignments} assigned, ${bootResult.expiredQuests} expired`);
+    } catch (bootError) {
+      console.error("❌ [STARTUP] Initial quest assignment failed:", bootError);
+    }
+  })();
+
+  // Start Timezone-Aware Quest Scheduler for personalized quest assignment (SECONDARY)
+  console.log("Starting Timezone-Aware Quest Scheduler system (backup)...");
   timezoneAwareQuestScheduler.startScheduler();
   console.log("✅ Timezone-Aware Quest Scheduler started - checking every 15 minutes for users due for quests");
   
