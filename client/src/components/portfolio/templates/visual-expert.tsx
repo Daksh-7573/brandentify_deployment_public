@@ -316,63 +316,66 @@ export default function VisualExpert({
 
       {/* Projects Section - Collections Style */}
       {sortedProjects.length > 0 && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Projects</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>Projects</h2>
 
             <div className="space-y-16">
               {sortedProjects.map((project, idx) => (
-                <div key={project.id} className="border-b border-gray-200 pb-12 last:border-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-400 font-mono">
+                <div key={project.id} className="border-b border-gray-200 pb-12 last:border-0 hover:bg-opacity-50 transition-colors">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                    <div className="md:col-span-1 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <span className="text-xl font-bold" style={{ color: accentColor }}>
                           {String(idx + 1).padStart(2, '0')}
                         </span>
-                        <h3 className="text-2xl font-bold uppercase tracking-wide">{project.title}</h3>
+                        <h3 className="text-2xl font-bold uppercase tracking-wide leading-tight">{project.title}</h3>
                       </div>
 
                       {project.description && (
-                        <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                        <p className="text-gray-700 leading-relaxed text-sm md:text-base">{project.description}</p>
                       )}
 
                       {project.startDate && (
-                        <p className="text-sm text-gray-500 uppercase tracking-wide">
+                        <p className="text-sm font-semibold" style={{ color: accentColor }}>
                           {new Date(project.startDate).getFullYear()}
                         </p>
                       )}
 
                       <Button
+                        className="group px-0 hover:bg-transparent text-sm uppercase tracking-wider font-medium"
+                        style={{ color: accentColor }}
                         variant="ghost"
-                        className="group px-0 hover:bg-transparent"
                         onClick={() => openProjectModal(project)}
                       >
-                        <span className="text-sm uppercase tracking-wider">View Details</span>
+                        <span>View Details</span>
                         <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      {project.thumbnailUrl && (
-                        <div className="aspect-square overflow-hidden bg-gray-100">
-                          <img
-                            src={project.thumbnailUrl}
-                            alt={project.title}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
-                            onClick={() => openProjectModal(project)}
-                          />
-                        </div>
-                      )}
-                      {project.mediaUrls && (typeof project.mediaUrls === 'string' ? JSON.parse(project.mediaUrls) : project.mediaUrls).slice(0, 3).map((url: string, i: number) => (
-                        <div key={i} className="aspect-square overflow-hidden bg-gray-100">
-                          <img
-                            src={url}
-                            alt={`${project.title} ${i + 2}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
-                            onClick={() => openProjectModal(project)}
-                          />
-                        </div>
-                      ))}
+                    <div className="md:col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {project.thumbnailUrl && (
+                          <div className="aspect-video overflow-hidden rounded-lg bg-gray-100 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                            <img
+                              src={project.thumbnailUrl}
+                              alt={project.title}
+                              className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              onClick={() => openProjectModal(project)}
+                            />
+                          </div>
+                        )}
+                        {project.mediaUrls && (typeof project.mediaUrls === 'string' ? JSON.parse(project.mediaUrls) : project.mediaUrls).slice(0, 2).map((url: string, i: number) => (
+                          <div key={i} className="aspect-video overflow-hidden rounded-lg bg-gray-100 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                            <img
+                              src={url}
+                              alt={`${project.title} ${i + 2}`}
+                              className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                              onClick={() => openProjectModal(project)}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -384,22 +387,43 @@ export default function VisualExpert({
 
       {/* Skills Section */}
       {sortedSkills.length > 0 && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Skills</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>Skills</h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {sortedSkills.map((skill) => (
-                <div key={skill.id} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Award className="w-5 h-5" />
-                    <h3 className="font-bold uppercase tracking-wide">{skill.name}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedSkills.map((skill) => {
+                const proficiencyMap = { 'expert': 4, 'advanced': 3, 'intermediate': 2, 'beginner': 1 };
+                const level = proficiencyMap[skill.level?.toLowerCase() as keyof typeof proficiencyMap] ?? 0;
+                
+                return (
+                  <div key={skill.id} className="p-6 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all bg-white">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${accentColor}15` }}>
+                        <Award className="w-5 h-5" style={{ color: accentColor }} />
+                      </div>
+                      <h3 className="font-bold uppercase tracking-wide text-black">{skill.name}</h3>
+                    </div>
+                    
+                    {skill.level && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: accentColor }}>{skill.level}</p>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map((i) => (
+                            <div
+                              key={i}
+                              className="h-2 flex-1 rounded-full transition-colors"
+                              style={{
+                                backgroundColor: i <= level ? accentColor : '#e5e7eb'
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {skill.level && (
-                    <p className="text-sm text-gray-500 uppercase tracking-wider">{skill.level}</p>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -407,25 +431,31 @@ export default function VisualExpert({
 
       {/* Education Section */}
       {sortedEducations.length > 0 && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Education</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>Education</h2>
 
-            <div className="space-y-8">
-              {sortedEducations.map((edu) => (
-                <div key={edu.id} className="border-b border-gray-200 pb-8 last:border-0">
-                  <div className="flex items-start gap-4">
-                    <GraduationCap className="w-6 h-6 mt-1" />
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold uppercase tracking-wide">{edu.degree}</h3>
-                      <p className="text-gray-600 mt-1">{edu.institution}</p>
-                      {edu.fieldOfStudy && (
-                        <p className="text-sm text-gray-500 mt-1">{edu.fieldOfStudy}</p>
-                      )}
-                      <p className="text-sm text-gray-500 mt-2">
-                        {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                      </p>
-                    </div>
+            <div className="relative space-y-8 pl-8">
+              {/* Timeline Line */}
+              <div className="absolute left-3 top-0 bottom-0 w-1" style={{ backgroundColor: `${accentColor}20` }}></div>
+
+              {sortedEducations.map((edu, idx) => (
+                <div key={edu.id} className="relative pb-8 last:pb-0">
+                  {/* Timeline Dot */}
+                  <div 
+                    className="absolute -left-5 top-1 w-6 h-6 rounded-full border-4 border-white shadow-md"
+                    style={{ backgroundColor: accentColor }}
+                  ></div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold uppercase tracking-wide text-black">{edu.degree}</h3>
+                    <p className="font-semibold text-gray-700">{edu.institution}</p>
+                    {edu.fieldOfStudy && (
+                      <p className="text-sm text-gray-600">{edu.fieldOfStudy}</p>
+                    )}
+                    <p className="text-sm font-medium" style={{ color: accentColor }}>
+                      {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -436,21 +466,31 @@ export default function VisualExpert({
 
       {/* Services Section */}
       {userServices && userServices.length > 0 && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Services</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>Services</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {userServices.map((service) => (
-                <Card key={service.id} className="border border-gray-200 hover:border-black transition-colors">
-                  <CardContent className="p-8">
-                    <h3 className="text-xl font-bold uppercase tracking-wide mb-3">{service.title}</h3>
-                    {service.description && (
-                      <p className="text-gray-700 leading-relaxed">{service.description}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+              {userServices.map((service, idx) => {
+                const icons = [Briefcase, Star, Award, GraduationCap, MapPin, Mail];
+                const Icon = icons[idx % icons.length];
+                
+                return (
+                  <Card key={service.id} className="border-2 hover:shadow-lg transition-all" style={{ borderColor: accentColor, borderOpacity: 0.2 }}>
+                    <CardContent className="p-8">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="p-3 rounded-lg" style={{ backgroundColor: `${accentColor}15` }}>
+                          <Icon className="w-6 h-6" style={{ color: accentColor }} />
+                        </div>
+                        <h3 className="text-xl font-bold uppercase tracking-wide text-black flex-1">{service.title}</h3>
+                      </div>
+                      {service.description && (
+                        <p className="text-gray-700 leading-relaxed text-sm md:text-base">{service.description}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>
