@@ -37,6 +37,7 @@ import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
 import CreativeBold from "@/components/portfolio/templates/creative-bold";
+import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -85,7 +86,7 @@ import { ShareModal } from "@/components/referral/share-modal";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "fashion-is-art", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
     "fashion-runway", "yoga-fitness-model"
@@ -518,6 +519,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Editorial/Minimalist, Coral Accent, Services-First
 ✔ Best For: Designers, Photographers, Marketers, Creative Professionals`,
       theme: "#FF6B35"
+    },
+    { 
+      id: "fashion-is-art", 
+      name: "Fashion is Art", 
+      description: `✔ Theme: Minimal Luxury, Editorial, High-Fashion
+✔ Best For: Fashion Models, Runway Models, Brand Ambassadors, Stylists`,
+      theme: "#1E88E5"
     },
     { 
       id: "dynamic-innovator", 

@@ -104,3 +104,10 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_object_storage:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+VITE_HMR_PROTOCOL = "wss"
+VITE_HMR_HOSTNAME = "localhost"
+VITE_HMR_PORT = "5000"
