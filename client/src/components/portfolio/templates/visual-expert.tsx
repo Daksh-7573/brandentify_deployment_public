@@ -126,6 +126,8 @@ export default function VisualExpert({
   
   // Accent color for visual enhancement
   const accentColor = "#2563eb"; // Professional blue
+  const accentLight = "#dbeafe"; // Light blue for backgrounds
+  const accentDark = "#1e40af"; // Dark blue for hover
 
   const sortedExperiences = [...userExperiences].sort((a, b) => {
     const aDate = a.endDate || '9999-12-31';
@@ -214,7 +216,8 @@ export default function VisualExpert({
               <div className="flex flex-wrap gap-3 pt-4">
                 <Button
                   size="lg"
-                  className="bg-black text-white hover:bg-gray-800 px-8 py-4 text-sm font-medium uppercase tracking-wide"
+                  className="text-white px-8 py-4 text-sm font-medium uppercase tracking-wide hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: accentColor }}
                   data-testid="button-connect"
                 >
                   <Mail className="w-4 h-4 mr-2" />
@@ -223,7 +226,10 @@ export default function VisualExpert({
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-sm font-medium uppercase tracking-wide"
+                  className="border-2 px-8 py-4 text-sm font-medium uppercase tracking-wide hover:text-white transition-colors"
+                  style={{ borderColor: accentColor, color: accentColor }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accentColor; e.currentTarget.style.color = 'white'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = accentColor; }}
                   data-testid="button-mentor"
                 >
                   <Star className="w-4 h-4 mr-2" />
@@ -237,38 +243,38 @@ export default function VisualExpert({
 
       {/* About Section - Editorial Style */}
       {(userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200" style={{ backgroundColor: accentLight + '10' }}>
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">About</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>About</h2>
 
-            <div className="space-y-6 max-w-4xl">
+            <div className="space-y-8 max-w-4xl">
               {userInfo.visionStatement && (
-                <div>
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Vision</h3>
+                <div className="pl-4 border-l-4" style={{ borderLeftColor: accentColor }}>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2" style={{ color: accentDark }}>Vision</h3>
                   <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
                 </div>
               )}
 
               {userInfo.missionStatement && (
-                <div>
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Mission</h3>
+                <div className="pl-4 border-l-4" style={{ borderLeftColor: accentColor }}>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2" style={{ color: accentDark }}>Mission</h3>
                   <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
                 </div>
               )}
 
               {userInfo.uniqueValueProposition && (
-                <div>
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2">Value Proposition</h3>
+                <div className="pl-4 border-l-4" style={{ borderLeftColor: accentColor }}>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2" style={{ color: accentDark }}>Value Proposition</h3>
                   <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
                 </div>
               )}
 
               {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-3">Core Values</h3>
+                <div className="pl-4 border-l-4" style={{ borderLeftColor: accentColor }}>
+                  <h3 className="text-lg font-bold uppercase tracking-wide mb-3" style={{ color: accentDark }}>Core Values</h3>
                   <div className="flex flex-wrap gap-2">
                     {userInfo.coreValues.map((value, idx) => (
-                      <Badge key={idx} variant="outline" className="border-black text-black px-3 py-1 text-sm">
+                      <Badge key={idx} className="px-3 py-1 text-sm font-medium" style={{ backgroundColor: accentColor, color: 'white', border: 'none' }}>
                         {value}
                       </Badge>
                     ))}
@@ -290,7 +296,7 @@ export default function VisualExpert({
               {sortedExperiences.map((exp, idx) => (
                 <Card key={exp.id} className="border-l-4 shadow-md hover:shadow-lg transition-shadow" style={{ borderLeftColor: accentColor }}>
                   <CardContent className="p-6">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-4" style={{ backgroundColor: accentColor, backgroundColor: `${accentColor}15` }}>
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-4" style={{ backgroundColor: `${accentColor}15` }}>
                       <Briefcase className="w-6 h-6" style={{ color: accentColor }} />
                     </div>
 
@@ -476,7 +482,7 @@ export default function VisualExpert({
                 const Icon = icons[idx % icons.length];
                 
                 return (
-                  <Card key={service.id} className="border-2 hover:shadow-lg transition-all" style={{ borderColor: accentColor, borderOpacity: 0.2 }}>
+                  <Card key={service.id} className="border-2 hover:shadow-lg transition-all" style={{ borderColor: `${accentColor}33` }}>
                     <CardContent className="p-8">
                       <div className="flex items-start gap-4 mb-4">
                         <div className="p-3 rounded-lg" style={{ backgroundColor: `${accentColor}15` }}>
@@ -497,20 +503,21 @@ export default function VisualExpert({
       )}
 
       {/* Final CTA Section */}
-      <section className="py-16 md:py-24 px-6 md:px-12">
+      <section className="py-16 md:py-24 px-6 md:px-12" style={{ backgroundColor: accentLight + '15' }}>
         <div className="max-w-7xl mx-auto text-center space-y-6">
-          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter" style={{ color: accentDark }}>
             Let's Connect
           </h2>
 
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">
             {userInfo.lookingFor || userInfo.whatIOffer || "Ready to collaborate and create something amazing together"}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3 pt-4">
+          <div className="flex flex-wrap justify-center gap-3 pt-6">
             <Button
               size="lg"
-              className="bg-black text-white hover:bg-gray-800 px-10 py-5 text-sm font-medium uppercase tracking-wide"
+              className="text-white px-10 py-5 text-sm font-medium uppercase tracking-wide hover:opacity-90 transition-opacity shadow-md"
+              style={{ backgroundColor: accentColor }}
               data-testid="button-connect-footer"
             >
               <Mail className="w-4 h-4 mr-2" />
@@ -519,7 +526,10 @@ export default function VisualExpert({
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-black text-black hover:bg-black hover:text-white px-10 py-5 text-sm font-medium uppercase tracking-wide"
+              className="border-2 px-10 py-5 text-sm font-medium uppercase tracking-wide transition-all"
+              style={{ borderColor: accentColor, color: accentColor }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accentColor; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = accentColor; }}
               data-testid="button-mentor-footer"
             >
               <Star className="w-4 h-4 mr-2" />
