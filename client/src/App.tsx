@@ -78,7 +78,6 @@ const CareerTools = lazy(() => import("@/pages/career-tools"));
 const RandomProfile = lazy(() => import("@/pages/random-profile"));
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const DesignerPortfolio = lazy(() => import("@/pages/designer-portfolio"));
-const CreativePortfolio = lazy(() => import("@/pages/creative-portfolio"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
@@ -317,9 +316,6 @@ function Router() {
             <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
-          <Route path="/portfolio/:userId">
-            {(params) => <CreativePortfolio userId={params.userId} />}
-          </Route>
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
           )} />
