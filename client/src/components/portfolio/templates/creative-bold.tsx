@@ -31,13 +31,40 @@ interface CreativeBoldProps {
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
     photoURL: string | null;
-    jobLevel?: string | null;
   };
-  userSkills: Skill[];
-  userExperiences: WorkExperience[];
-  userProjects: Project[];
-  userEducations?: Education[];
-  userServices?: Service[];
+  userSkills: Array<{ id: number; name: string; level?: string | null }>;
+  userExperiences: Array<{
+    id: number;
+    title: string;
+    company: string;
+    startDate: string;
+    endDate?: string | null;
+    description?: string | null;
+  }>;
+  userProjects: Array<{
+    id: number;
+    title: string;
+    description: string;
+    link?: string | null;
+    thumbnailUrl?: string | null;
+    mediaUrls?: string[];
+    startDate?: string | null;
+    projectUrl?: string | null;
+  }>;
+  userEducations?: Array<{
+    id: number;
+    institution: string;
+    degree: string;
+    fieldOfStudy?: string | null;
+    startDate: string;
+    endDate?: string | null;
+  }>;
+  userServices?: Array<{
+    id: number;
+    title: string;
+    description?: string | null;
+    icon?: string | null;
+  }>;
   currentUserId?: number;
 }
 
