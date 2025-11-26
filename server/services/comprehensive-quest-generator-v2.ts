@@ -111,9 +111,10 @@ export class ComprehensiveQuestGeneratorV2 {
     // Check if this field is already satisfied (filled AND aligned with brand goals)
     const fieldAlignment = profileCompleteness.fieldAlignments.find(f => f.field === targetField);
     
-    if (fieldAlignment?.status === 'satisfied') {
-      console.log(`[QuestGenV2] Skipping quest for ${targetField} - field is already satisfied (filled and aligned)`);
-      return null; // Skip this quest - field is good
+    // If satisfied, ask them to IMPROVE/REFINE instead of skipping
+    const isRefinementQuest = fieldAlignment?.status === 'satisfied';
+    if (isRefinementQuest) {
+      console.log(`[QuestGenV2] Generating REFINEMENT quest for ${targetField} - user's field is satisfied, ask to improve`);
     }
     
     const name = userProfile.name || 'professional';
@@ -132,7 +133,8 @@ export class ComprehensiveQuestGeneratorV2 {
       : '';
     
     // Build prompt that ENFORCES text field constraints
-    const prompt = `You are Musk, a career strategist. Generate a quest for ${name} to complete their Brandentifier profile.
+    const questAction = isRefinementQuest ? 'IMPROVE & REFINE' : (fieldAlignment?.status === 'misaligned' ? 'UPDATE' : 'fill');
+    const prompt = `You are Musk, a career strategist. Generate a quest for ${name} to ${isRefinementQuest ? 'refine their existing' : 'complete their'} Brandentifier profile.
 
 PROFILE:
 - Name: ${name}
@@ -144,9 +146,9 @@ PROFILE:
 
 QUEST TASK: ${activity.completionMethod}
 CHARACTER LIMIT: ${activity.characterLimit || 'N/A'}
-PLATFORM LOCATION: ${activity.platformFeature}${misalignmentContext}
+PLATFORM LOCATION: ${activity.platformFeature}${isRefinementQuest ? `\n\nCURRENT STATUS: User already has content here. Ask them to ENHANCE it, add more detail, or make it more compelling for their target audience.` : ''}${misalignmentContext}
 
-Generate a quest that asks them to ${fieldAlignment?.status === 'misaligned' ? 'UPDATE' : 'fill'} this profile field. Return ONLY valid JSON:
+Generate a quest that asks them to ${questAction} this profile field. Return ONLY valid JSON:
 
 {
   "personalizedTitle": "Craft Your ${activity.targetAction.replace('add_', '').replace('_', ' ').toUpperCase()}",
