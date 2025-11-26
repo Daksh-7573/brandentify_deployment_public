@@ -513,11 +513,11 @@ export default function PortfolioBuilder() {
       theme: "#6C63FF"
     },
     { 
-      id: "visual-expert", 
-      name: "The Visual Expert", 
-      description: `✔ Theme: Image-First, Creative & Bold
-✔ Best For: Designers, Photographers, Marketers`,
-      theme: "#F8C471"
+      id: "creative-bold", 
+      name: "The Creative Bold", 
+      description: `✔ Theme: Editorial/Minimalist, Coral Accent, Services-First
+✔ Best For: Designers, Photographers, Marketers, Creative Professionals`,
+      theme: "#FF6B35"
     },
     { 
       id: "dynamic-innovator", 
@@ -713,7 +713,7 @@ export default function PortfolioBuilder() {
               ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
               : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
             customizationOptions: {
-              theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
+              theme: selectedLayout === 'creative-bold' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
               showContact: true
             },
             featuredProjects: projectsData?.map((project: Project) => project.id) || [],
@@ -1045,9 +1045,9 @@ export default function PortfolioBuilder() {
               </>
             )}
             
-            {form.watch("layout") === "visual-expert" && (
+            {form.watch("layout") === "creative-bold" && (
               <>
-                {console.log("Visual Expert Preview - Complete data check:", {
+                {console.log("Creative Bold Preview - Complete data check:", {
                   whatIOfferValue,
                   userDataWhatIOffer: userData?.whatIOffer,
                   finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
@@ -1063,27 +1063,68 @@ export default function PortfolioBuilder() {
                   educationsData: educations,
                   servicesData: services
                 })}
-                <VisualExpert
-                  userInfo={{
-                    id: userData?.id,
-                    name: userData?.name || user?.name || '',
-                    email: userData?.email || user?.email || null,
-                    title: userData?.title || null,
-                    aboutMe: userData?.aboutMe || null,
-                    location: userData?.location || null,
-                    industry: userData?.industry || null,
-                    domain: userData?.domain || null,
-                    lookingFor: userData?.lookingFor || null,
-                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                    photoURL: userData?.photoURL || user?.photoURL || null,
-                    jobLevel: userData?.jobLevel || null
-                  }}
-                  userSkills={skills || []}
-                  userExperiences={experiences || []}
-                  userProjects={projects || []}
-                  userEducations={educations || []}
-                  userServices={services || []}
-                />
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <CreativeBold
+                      userInfo={{
+                        id: userData?.id,
+                        name: userData?.name || user?.name || '',
+                        email: userData?.email || user?.email || null,
+                        title: userData?.title || null,
+                        company: userData?.company || null,
+                        aboutMe: userData?.aboutMe || null,
+                        location: userData?.location || null,
+                        industry: userData?.industry || null,
+                        domain: userData?.domain || null,
+                        lookingFor: userData?.lookingFor || null,
+                        whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                        photoURL: userData?.photoURL || user?.photoURL || null,
+                        tagline: userData?.tagline || null,
+                        visionStatement: userData?.visionStatement || null,
+                        missionStatement: userData?.missionStatement || null,
+                        coreValues: userData?.coreValues || [],
+                        uniqueValueProposition: userData?.uniqueValueProposition || null
+                      }}
+                      userSkills={skills?.map(skill => ({
+                        id: skill.id,
+                        name: skill.name,
+                        level: skill.level || undefined
+                      })) || []}
+                      userExperiences={experiences?.map(exp => ({
+                        id: exp.id,
+                        title: exp.title,
+                        company: exp.company,
+                        startDate: exp.startDate,
+                        endDate: exp.endDate || undefined,
+                        description: exp.description || undefined
+                      })) || []}
+                      userProjects={projects?.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        description: p.description,
+                        thumbnailUrl: p.thumbnailUrl || undefined,
+                        mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
+                        startDate: p.startDate || undefined,
+                        projectUrl: p.projectUrl || undefined
+                      })) || []}
+                      userEducations={educations?.map(edu => ({
+                        id: edu.id,
+                        institution: edu.institution,
+                        degree: edu.degree,
+                        fieldOfStudy: edu.fieldOfStudy || undefined,
+                        startDate: edu.startDate,
+                        endDate: edu.endDate || undefined
+                      })) || []}
+                      userServices={services?.map(service => ({
+                        id: service.id,
+                        title: service.title,
+                        description: service.description || undefined,
+                        icon: undefined
+                      })) || []}
+                      currentUserId={userNumericId}
+                    />
+                  </CardContent>
+                </Card>
               </>
             )}
             
