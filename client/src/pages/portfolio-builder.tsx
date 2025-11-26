@@ -1071,7 +1071,6 @@ export default function PortfolioBuilder() {
                         name: userData?.name || user?.name || '',
                         email: userData?.email || user?.email || null,
                         title: userData?.title || null,
-                        company: userData?.company || null,
                         aboutMe: userData?.aboutMe || null,
                         location: userData?.location || null,
                         industry: userData?.industry || null,
@@ -1084,7 +1083,7 @@ export default function PortfolioBuilder() {
                         missionStatement: userData?.missionStatement || null,
                         coreValues: userData?.coreValues || [],
                         uniqueValueProposition: userData?.uniqueValueProposition || null
-                      }}
+                      } as any}
                       userSkills={skills?.map(skill => ({
                         id: skill.id,
                         name: skill.name,
@@ -1096,12 +1095,12 @@ export default function PortfolioBuilder() {
                         company: exp.company,
                         startDate: exp.startDate,
                         endDate: exp.endDate || undefined,
-                        description: exp.description || undefined
+                        description: exp.description || ''
                       })) || []}
                       userProjects={projects?.map(p => ({
                         id: p.id,
                         title: p.title,
-                        description: p.description,
+                        description: p.description || '',
                         thumbnailUrl: p.thumbnailUrl || undefined,
                         mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
                         startDate: p.startDate || undefined,
@@ -1118,7 +1117,7 @@ export default function PortfolioBuilder() {
                       userServices={services?.map(service => ({
                         id: service.id,
                         title: service.title,
-                        description: service.description || undefined,
+                        description: service.description || '',
                         icon: undefined
                       })) || []}
                       currentUserId={userNumericId}

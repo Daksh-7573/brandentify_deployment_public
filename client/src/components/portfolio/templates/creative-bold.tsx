@@ -245,12 +245,6 @@ export default function CreativeBold({
                 <p className="text-lg font-bold mt-2">{userInfo.domain}</p>
               </div>
             )}
-            {userInfo.jobLevel && (
-              <div className="text-center">
-                <p className="text-sm text-gray-600 uppercase tracking-wide">Level</p>
-                <p className="text-lg font-bold mt-2">{userInfo.jobLevel}</p>
-              </div>
-            )}
             {userInfo.email && (
               <div className="text-center">
                 <p className="text-sm text-gray-600 uppercase tracking-wide">Email</p>
@@ -299,11 +293,11 @@ export default function CreativeBold({
           <div className="max-w-6xl mx-auto">
             <motion.h2 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="text-5xl md:text-6xl font-black mb-12" style={{ color: coralColor }}>Projects</motion.h2>
             <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
-              {sortedProjects.map((project, idx) => {
+              {sortedProjects.map((project: any, idx) => {
                 const aspectRatios = ['aspect-square', 'aspect-video', 'aspect-[4/3]', 'aspect-[3/4]'];
                 const aspectClass = aspectRatios[idx % aspectRatios.length];
                 return (
-                  <motion.div key={project.id} whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }} className="relative group cursor-pointer rounded-lg overflow-hidden" onClick={() => { setSelectedProject(project); setIsProjectModalOpen(true); }}>
+                  <motion.div key={project.id} whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }} className="relative group cursor-pointer rounded-lg overflow-hidden" onClick={() => { setSelectedProject(project as any); setIsProjectModalOpen(true); }}>
                     <div className={`${aspectClass} overflow-hidden bg-gray-200 relative`}>
                       {project.thumbnailUrl && <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-cover" />}
                       <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} transition={{ duration: 0.3 }} className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: coralColor + '99' }}>
