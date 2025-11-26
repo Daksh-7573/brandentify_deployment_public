@@ -36,7 +36,7 @@ import { ArrowLeft } from "lucide-react";
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
-import VisualExpert from "@/components/portfolio/templates/visual-expert";
+import CreativeBold from "@/components/portfolio/templates/creative-bold";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -85,7 +85,7 @@ import { ShareModal } from "@/components/referral/share-modal";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
     "fashion-runway", "yoga-fitness-model"

@@ -1,6 +1,6 @@
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
-import VisualExpert from "@/components/portfolio/templates/visual-expert";
+import CreativeBold from "@/components/portfolio/templates/creative-bold";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -19,7 +19,7 @@ export type PortfolioLayoutKey =
   | "technical"
   | "executive"
   | "timeline-storyteller-2"
-  | "visual-expert"
+  | "creative-bold"
   | "corporate-executive"
   | "dynamic-innovator"
   | "freelancer-hub"
@@ -101,12 +101,12 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "freelancer_hub": "freelancer-hub",
   "designer_portfolio": "designer-portfolio",
   "photographer_portfolio": "photographer-portfolio",
-  "visual_expert": "visual-expert",
+  "creative_bold": "creative-bold",
   
   // Legacy aliases from brand-profile and random-profile switch statements
   "minimalist": "scholar",
   "timeline": "timeline-storyteller-2",
-  "visual": "visual-expert",
+  "creative": "creative-bold",
   "freelancer": "freelancer-hub",
   "dynamic": "dynamic-innovator",
   "corporate": "corporate-executive",
@@ -142,12 +142,12 @@ const AnimatedWrapper: React.FC<PortfolioTemplateProps> = (props) => {
 
 const templateRegistry: Record<string, TemplateComponent> = {
   "professional": CorporateExecutive as any,
-  "creative": VisualExpert as any,
+  "creative": CreativeBold as any,
   "minimal": Scholar as any,
   "technical": Scholar as any,
   "executive": CorporateExecutive as any,
   "timeline-storyteller-2": TimelineStoryteller2 as any,
-  "visual-expert": VisualExpert as any,
+  "creative-bold": CreativeBold as any,
   "corporate-executive": CorporateExecutive as any,
   "dynamic-innovator": DynamicInnovator as any,
   "freelancer-hub": FreelancerHub as any,
