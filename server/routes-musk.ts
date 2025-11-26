@@ -1245,10 +1245,10 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
       let adjustedText = toneCalibrationService.applyToneToResponse(template.text, toneConfig);
       
       // Generate next follow-up directions
-      let nextFollowUp = [];
+      let nextFollowUp: string[] = [];
       if (conversationGoal) {
         const goalFollowUp = conversationGoalTrackerService.generateNextFollowUp(conversationGoal);
-        nextFollowUp = goalFollowUp.followUpDirection;
+        nextFollowUp = goalFollowUp.followUpDirection || [];
       }
       
       return {

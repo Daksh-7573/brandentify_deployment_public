@@ -2418,7 +2418,7 @@ export const userMuskMemory = pgTable("user_musk_memory", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull().unique(),
   behaviorPatterns: jsonb("behavior_patterns").default('{"questCompletion": 0, "platformPreferences": {}, "contentPreferences": [], "skippedTopics": []}'),
-  preferredPlatforms: text("preferred_platforms").array().default('[]'),
+  preferredPlatforms: text("preferred_platforms").array(),
   contentFormat: text("content_format"), // carousel, thread, single-post, video, article
   tone: text("tone").default("neutral"), // friendly, professional, motivational, casual
   recentActions: jsonb("recent_actions").default('[]'), // Last 20 actions
