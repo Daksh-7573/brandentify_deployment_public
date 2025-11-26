@@ -123,6 +123,9 @@ export default function VisualExpert({
 }: VisualExpertProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // Accent color for visual enhancement
+  const accentColor = "#2563eb"; // Professional blue
 
   const sortedExperiences = [...userExperiences].sort((a, b) => {
     const aDate = a.endDate || '9999-12-31';
@@ -161,18 +164,21 @@ export default function VisualExpert({
   return (
     <div className="min-h-screen bg-white text-black">
       {/* Hero Section - Bold Typography with Photo */}
-      <section className="relative py-16 md:py-24 px-6 md:px-12 border-b border-gray-200">
+      <section className="relative py-16 md:py-24 px-6 md:px-12 border-b-2 border-gray-200">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
             {/* Left: Profile Photo */}
-            <div className="md:col-span-4">
+            <div className="md:col-span-4 flex justify-center">
               {userInfo.photoURL && (
-                <div className="aspect-square w-full max-w-md mx-auto overflow-hidden bg-gray-100">
-                  <img
-                    src={userInfo.photoURL}
-                    alt={userInfo.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative">
+                  <div className="absolute -inset-2" style={{ backgroundColor: accentColor, opacity: 0.1 }}></div>
+                  <div className="relative aspect-square w-full max-w-md mx-auto overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-2xl">
+                    <img
+                      src={userInfo.photoURL}
+                      alt={userInfo.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -276,30 +282,28 @@ export default function VisualExpert({
 
       {/* Experience Section - Grid Layout */}
       {sortedExperiences.length > 0 && (
-        <section className="py-12 md:py-20 px-6 md:px-12 border-b border-gray-200">
+        <section className="py-12 md:py-20 px-6 md:px-12 border-b-2 border-gray-200">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-10">Experience</h2>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight mb-12" style={{ color: accentColor }}>Experience</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {sortedExperiences.map((exp) => (
-                <Card key={exp.id} className="border-0 shadow-none group cursor-pointer">
-                  <CardContent className="p-0">
-                    <div className="aspect-square bg-gray-100 mb-4 overflow-hidden">
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Briefcase className="w-16 h-16 text-gray-300" />
-                      </div>
+              {sortedExperiences.map((exp, idx) => (
+                <Card key={exp.id} className="border-l-4 shadow-md hover:shadow-lg transition-shadow" style={{ borderLeftColor: accentColor }}>
+                  <CardContent className="p-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-4" style={{ backgroundColor: accentColor, backgroundColor: `${accentColor}15` }}>
+                      <Briefcase className="w-6 h-6" style={{ color: accentColor }} />
                     </div>
 
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-lg uppercase tracking-wide">{exp.title}</h3>
+                    <div className="space-y-3">
+                      <h3 className="font-bold text-lg uppercase tracking-wide text-black">{exp.title}</h3>
                       {exp.company && (
-                        <p className="text-sm text-gray-600 uppercase">{exp.company}</p>
+                        <p className="text-sm font-semibold text-gray-700">{exp.company}</p>
                       )}
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs font-medium" style={{ color: accentColor }}>
                         {new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
                       </p>
                       {exp.description && (
-                        <p className="text-sm text-gray-700 line-clamp-3 pt-2">{exp.description}</p>
+                        <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">{exp.description}</p>
                       )}
                     </div>
                   </CardContent>
