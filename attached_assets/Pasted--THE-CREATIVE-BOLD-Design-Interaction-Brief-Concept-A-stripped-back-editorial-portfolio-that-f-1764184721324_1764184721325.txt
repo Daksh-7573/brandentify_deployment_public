@@ -1,0 +1,498 @@
+— THE CREATIVE BOLD (Design & Interaction Brief)
+Concept
+
+A stripped-back editorial portfolio that foregrounds services, impact, and imagery. Minimal layout, bold typographic hierarchy, and a warm coral accent to create a friendly-but-authoritative look. Meant for designers, photographers, marketers, and other creatives who want a professional, commerce-ready presence.
+
+Visual Language
+
+Tone: Editorial, minimal, service-first, confidently creative
+
+White space: generous margins, breathing layout, centered content
+
+Accent: Coral for CTAs and highlights; monochrome imagery to let projects pop
+
+Color Palette
+
+Paper White (background): #FFFFFF
+
+Ink Black (primary text): #0C0C0C
+
+Mid Gray (muted text): #757575
+
+Coral Accent (primary): #FF6B5A (signature accent for CTAs / badges)
+
+Slate (cards / subtle backgrounds): #F4F6F8
+
+Gold Accent (sparingly): #E2B45F (used only for premium/status states)
+
+Typography
+
+Headings: GT America or Satoshi (clean geometric display)
+
+Subhead / UI: Inter (variable)
+
+Accents: Playfair Display for editorial quotes (optional)
+
+Iconography & Imagery
+
+Icons: single-color stroke icons (coral on hover)
+
+Photography: full-bleed project images, minimal crop; black & white thumbnail option toggle in UI to achieve editorial look
+
+Animation & Motion Principles
+
+Motion is minimal, purposeful, and soft:
+
+Fade + lift for cards (translateY(-6px), opacity anim)
+
+Micro-interaction for CTAs: coral glow + slight scale on hover (0.12s)
+
+Reveal-on-scroll: gentle fade + up (0.3s) with stagger
+
+Image hover: contrast(1.06) and subtle scale
+
+Hero intro: split-text reveal (words fade in sequentially)
+
+Loading state: discreet skeletons with shimmer using coral tint
+
+Accessibility & Performance Guidelines
+
+WCAG AA text contrast; respect prefers-reduced-motion
+
+Only two web fonts (Inter + GT) loaded as variable fonts where possible
+
+Images: srcset, lazy-loading, WebP/AVIF recommendation
+
+PART 2 — FULL PAGE STRUCTURE (Section-by-Section)
+
+Top-level: container max-width 1100–1200px, centered. Sections stacked vertical with clear anchor IDs for nav. Sticky minimal nav (logo + small CTAs).
+
+0. Site Header (sticky, minimal)
+
+Components: Logo (left), Nav links (center or hidden on mobile), CTAs (Book / Media Kit) right
+
+Behavior: Transparent at top, solid white on scroll with subtle shadow
+
+Data: none
+
+1. Hero — Service-First Intro
+
+Goal: Communicate who you are, what you offer, and direct visitors to book or explore services.
+
+Layout: Two columns (desktop) — Left: textual content; Right: key visual / dynamic card carousel.
+
+Data fields
+
+{
+  "name","primaryTitle","subTitle","shortIntro","heroServiceList":["Editorial Shoots","Brand Strategy",...],
+  "photoURL","ctaPrimary{label,href}","ctaSecondary","socialLinks"
+}
+
+
+Elements
+
+Headline: Name + role line (split reveal, editorial cadence)
+
+Short intro: 1–2 lines (value + service orientation)
+
+Service chips: horizontal pill list (clickable)
+
+Primary CTA (Book) — coral button
+
+Secondary CTA (Media Kit download)
+
+Behavior
+
+Clicking a service chip scrolls to Services or filters projects
+
+Hero visual: dynamic card (rotating work samples), gentle auto-advance, pause on hover
+
+2. Professional Branding (Tagline, About, What I Offer, Looking For)
+
+Goal: Deeper context about the artist's brand and offerings.
+
+Subsections
+
+Tagline (large)
+
+About Me (80–180 words), with Read more toggle
+
+What I Offer: service bullets with short outcomes (e.g., “Runway lookbooks — Attract show bookings”)
+
+Looking For: one-line CTA (e.g., “Looking for brand collaborations & castings”)
+
+Data
+tagline, aboutMe, whatIOffer[] (title, benefit), lookingFor
+
+3. Services (Service-First Core)
+
+Goal: Prominent, conversion-focused list of services.
+
+Layout
+
+Card grid (1–3 columns depending on screen)
+
+Each service card: title, 1-line outcome, starting price (optional), key deliverables, CTA “Book Service” / “Enquire”
+
+Data
+services[] = {id,title,description,deliverables[],priceRange,iconId}
+
+Behavior
+
+Book opens booking modal with prefilled serviceId
+
+Enquire sends project-specific contact form
+
+4. Highlights / Impact Strip (Quick Stats)
+
+Goal: At-a-glance credibility: campaigns, shows, publications, happy clients.
+
+Elements
+
+3–5 stat tiles (e.g., “120+ shoots”, “20 brands”, “Featured in X”)
+
+Small icon, number, micro-copy
+
+Data
+stats[] = {label,value,icon}
+
+5. Projects / Portfolio Gallery (Primary Visual Showcase)
+
+Goal: Show curated work; emphasize results & context.
+
+Layout
+
+Masonry-like grid or uniform cards
+
+Desktop: 3 columns; Tablet: 2; Mobile: 1
+
+Card content: large image, project title, category, year, outcome badge (optional)
+
+Interaction
+
+Click → Project modal (full gallery, story, objective, role, outcomes)
+
+Modal CTAs: “Add to Media Kit”, “Book project-style”
+
+Data
+projects[] = {id,title,thumbnailUrl,coverUrl,year,tags,description,mediaUrls[],projectUrl,client}
+
+6. Case Studies (Deep Dives)
+
+Goal: For service-sellers, 2–4 featured case studies with outcomes and process.
+
+Structure
+
+Alternating layout: image left/text right, then reverse
+
+Each case: Challenge → Approach → Outcome (metrics if available)
+
+Data
+caseStudies[] = {title,client,year,challenge,approach,results(media),cta}
+
+7. Skills & Tools
+
+Goal: Show craft & tools; visual, quick.
+
+Layout
+
+Horizontal bar list or icon grid with proficiency indicators (Novice→Expert)
+
+Tools tag cloud (e.g., Capture One, Lightroom, Figma)
+
+Data
+skills[] = {name,level,proficiencyPct}; tools[] = {name,icon}
+
+8. Experience / Career Timeline
+
+Layout
+
+Minimal vertical timeline: role, brand, dates, one-line highlight
+
+Expand for details (desktop hover / mobile accordion)
+
+Data
+experience[] = {title,company,startDate,endDate,location,shortDesc,keyAchievements[]}
+
+9. Education & Training
+
+Layout
+
+Compact list with degree, institution, dates, notable courses/certifications
+
+Data
+education[] = {degree,institution,field,startDate,endDate,notes[]}
+
+10. Testimonials & Clients
+
+Layout
+
+Carousel of short testimonials (quote + client name + role + logo)
+
+Optional verification badge
+
+Data
+testimonials[] = {quote,clientName,clientTitle,clientLogo,isVerified}
+
+11. Media Kit (Download Modal / Dynamic PDF)
+
+Goal: Compile hero + selected projects into a downloadable PDF media kit.
+
+Behavior
+
+User can generate PDF from profile fields + choose projects (max 6)
+
+Generated server-side or via client PDF builder
+
+Data
+Uses other profile fields
+
+12. Contact / Booking (Form)
+
+Fields
+name,email,phone,projectType(select),budget(optional),datePref, message, attachFiles
+
+Behavior
+
+Booking modal with available slots (if integrated)
+
+On submit: send to API/CRM + show success toast
+
+CTA also available as email link
+
+13. Footer (Minimal)
+
+Quick links, small bio, social icons, privacy & credits
+
+PART 3 — REACT COMPONENT PROP LIST (TypeScript)
+
+Below is a full set of TypeScript prop types for components used in The Creative Bold. Copy into types.ts or similar. Use these in your React/Next code.
+
+// types/creativeBold.ts
+
+// Shared types
+export type SocialLink = {
+  platform: string; // 'instagram' | 'linkedin' | etc
+  url: string;
+  label?: string;
+};
+
+export type MediaItem = {
+  url: string;
+  alt?: string;
+  type?: 'image' | 'video' | 'embed';
+  thumbnailUrl?: string;
+};
+
+// Header
+export type NavItem = {
+  id: string;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+};
+
+export type HeaderProps = {
+  logo?: { src: string; alt?: string } | null;
+  navItems?: NavItem[];
+  primaryCta?: { label: string; href?: string; onClick?: () => void };
+  secondaryCta?: { label: string; href?: string; onClick?: () => void } | null;
+  sticky?: boolean; // default true
+  className?: string;
+};
+
+// Hero
+export type HeroService = { id: string; title: string; description?: string };
+
+export type HeroData = {
+  name: string;
+  primaryTitle?: string;
+  subTitle?: string;
+  shortIntro?: string;
+  photoURL?: string;
+  services?: HeroService[];
+  socialLinks?: SocialLink[];
+  ctaPrimary?: { label: string; href?: string; onClick?: () => void };
+  ctaSecondary?: { label: string; href?: string; onClick?: () => void };
+};
+
+export type HeroProps = {
+  data: HeroData;
+  layout?: 'text-left' | 'centered-image' | 'split';
+  autoRotateSamples?: boolean; // rotates hero visual samples
+  className?: string;
+};
+
+// Branding section
+export type BrandingProps = {
+  tagline?: string;
+  aboutMe?: string;
+  whatIOffer?: { id: string; title: string; benefit?: string }[];
+  lookingFor?: string;
+  className?: string;
+};
+
+// Services
+export type ServiceItem = {
+  id: string | number;
+  title: string;
+  description?: string;
+  deliverables?: string[];
+  priceRange?: string;
+  iconId?: string;
+};
+
+export type ServicesProps = {
+  services: ServiceItem[];
+  columns?: number; // 1-3
+  onBook?: (serviceId: string | number) => void;
+  onEnquire?: (serviceId: string | number) => void;
+  className?: string;
+};
+
+// Stats / highlights
+export type StatItem = { id: string | number; label: string; value: string | number; iconId?: string };
+
+export type StatsStripProps = {
+  stats: StatItem[];
+  className?: string;
+};
+
+// Project card & grid
+export type ProjectItem = {
+  id: string | number;
+  title: string;
+  description?: string;
+  year?: number | string;
+  thumbnailUrl?: string;
+  coverUrl?: string;
+  tags?: string[];
+  client?: string;
+  media?: MediaItem[];
+  projectUrl?: string;
+};
+
+export type ProjectCardProps = {
+  project: ProjectItem;
+  onOpen?: (projectId: string | number) => void;
+  lazy?: boolean;
+  className?: string;
+};
+
+export type ProjectsGridProps = {
+  projects: ProjectItem[];
+  columns?: number;
+  onProjectSelect?: (projectId: string | number) => void;
+  showFilter?: boolean;
+  className?: string;
+};
+
+// Project modal
+export type ProjectModalProps = {
+  project?: ProjectItem | null;
+  open: boolean;
+  onClose: () => void;
+  onAddToMediaKit?: (projectId: string | number) => void;
+  onEnquire?: (projectId: string | number) => void;
+  className?: string;
+};
+
+// Case Studies
+export type CaseStudy = {
+  id: string | number;
+  title: string;
+  client?: string;
+  year?: number | string;
+  challenge?: string;
+  approach?: string;
+  results?: string;
+  media?: MediaItem[];
+  cta?: { label: string; onClick?: () => void; href?: string };
+};
+
+export type CaseStudiesProps = { studies: CaseStudy[]; className?: string };
+
+// Skills & Tools
+export type Skill = { id: string | number; name: string; level?: 'Beginner'|'Intermediate'|'Advanced'|'Expert'; percentage?: number };
+export type SkillsProps = { skills: Skill[]; columns?: number; className?: string };
+export type ToolsProps = { tools: { id:string; name:string; iconId?:string }[]; className?: string };
+
+// Timeline / Experience
+export type ExperienceEntry = {
+  id: string | number;
+  title: string;
+  company?: string;
+  startDate?: string;
+  endDate?: string | null;
+  location?: string;
+  summary?: string;
+  highlights?: string[];
+};
+
+export type TimelineProps = {
+  entries: ExperienceEntry[];
+  compact?: boolean;
+  onEntryClick?: (id: string | number) => void;
+  className?: string;
+};
+
+// Education
+export type EducationEntry = { id:string|number; degree:string; institution:string; fieldOfStudy?:string; startDate?:string; endDate?:string; notes?:string };
+export type EducationProps = { entries: EducationEntry[]; className?: string };
+
+// Testimonials
+export type Testimonial = { id: string | number; quote: string; clientName?: string; clientRole?: string; clientLogoUrl?: string; verified?: boolean };
+export type TestimonialsProps = { testimonials: Testimonial[]; className?: string };
+
+// Media Kit Generator
+export type MediaKitOptions = { includeProjects?: (string|number)[]; includeContact?: boolean; format?: 'pdf'|'png' };
+export type MediaKitGeneratorProps = {
+  profileId: string | number;
+  generate: (opts: MediaKitOptions) => Promise<{ url:string }>;
+  onComplete?: (res:{url:string}) => void;
+  className?: string;
+};
+
+// Contact / Booking
+export type ContactFormValues = {
+  name: string;
+  email: string;
+  phone?: string;
+  projectType?: string;
+  budget?: string;
+  datePref?: string;
+  message?: string;
+  attachments?: MediaItem[];
+};
+
+export type ContactFormProps = {
+  initial?: Partial<ContactFormValues>;
+  onSubmit: (values:ContactFormValues) => Promise<void> | void;
+  validate?: (values:ContactFormValues) => Record<string,string> | null;
+  submitLabel?: string;
+  showAttachments?: boolean;
+  className?: string;
+};
+
+// Footer
+export type FooterProps = {
+  shortBio?: string;
+  socialLinks?: SocialLink[];
+  copyright?: string;
+  className?: string;
+};
+
+// Utilities
+export type BadgeProps = { label: string; variant?: 'accent'|'muted'|'outline'; onClick?: ()=>void; className?: string };
+export type IconProps = { id: string; size?: number; title?: string; className?: string };
+export type ModalProps = { open: boolean; title?: string; onClose: ()=>void; size?: 'sm'|'md'|'lg'|{width:number,height?:number}; className?: string };
+
+Implementation Notes & Tips
+
+State & Data flow: keep presentation components stateless. Container components fetch profile JSON and build the HeroData, projects[], etc.
+
+Image optimization: use next/image or equivalent with srcset.
+
+Animations: implement reveal-on-scroll with IntersectionObserver + CSS transitions or Framer Motion. Provide prefers-reduced-motion fallback.
+
+Media Kit: generate server-side for reliability, or use a client PDF library for quick demos.

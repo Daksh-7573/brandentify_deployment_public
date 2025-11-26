@@ -1,0 +1,301 @@
+THE CREATIVE BOLD — COMPLETE DESIGN + STYLING + COLOR + PLACEMENT SPEC
+🎨 1. VISUAL DESIGN & STYLING SYSTEM
+🔹 Overall Theme
+
+Editorial, minimalist, modern.
+
+Large whitespace, high readability.
+
+Coral highlight color to create emotional warmth and creative energy.
+
+Card-based layout but VERY clean and non-techy.
+
+🔹 Color System
+
+Primary Colors
+
+Purpose	Color	HEX
+Background	Paper White	#FFFFFF
+Text Primary	Rich Black	#0C0C0C
+Text Secondary	Cool Gray	#575757
+Accent	Coral	#FF6B5A
+Soft Background	Porcelain	#F4F6F8
+Line Color	Mist Gray	#E5E7EB
+Premium Accent	Champagne Gold	#E2B45F
+Color Usage Rules
+
+Coral is used ONLY for:
+
+CTAs
+
+Active state chips
+
+Small accent lines (left border)
+
+Hover animations
+
+Gold is used for:
+
+Awards
+
+Premium badge
+
+Verified profile indicator
+
+Background remains white for a clean editorial aesthetic.
+
+✍️ 2. TYPOGRAPHY SYSTEM
+Heading Font
+
+GT America (Bold) or Satoshi Bold
+→ For modern editorial look
+→ Used for: Name, Section Titles, Service Titles
+
+Body Font
+
+Inter
+→ High readability
+→ Used for: About, Descriptions, Case Studies
+
+Optional Accent
+
+Playfair Display
+→ Only for quotes or hero emphasis line
+→ Very limited use
+
+🌬️ 3. ANIMATION STYLE GUIDELINES
+
+This template uses light, refined animations:
+
+Fade Up (+10px) for all sections when entering viewport
+
+Project Card Hover
+
+Slight lift: translateY(-6px)
+
+Subtle shadow: rgba(0,0,0,0.08)
+
+Image contrast +3%
+
+CTA Buttons
+
+Scale 1.03 on hover
+
+Coral glow shadow (soft)
+
+Hero Title Reveal
+
+Split text (each word fades in sequentially)
+
+Delay: 60ms between words
+
+Zero Neon / Zero Hacker Effects
+→ Clean, luxury, editorial only.
+
+📐 4. SECTION PLACEMENT + SPACING + LAYOUT
+
+Below is the exact page structure with spacing and layout philosophy.
+
+🟥 SECTION 1 — HERO (Service-first editorial hero)
+Layout
+
+Left: Text
+Right: Hero Image / Dynamic visual
+Two-column layout (50/50 split)
+
+Content Placement
+
+Name (H1)
+
+Primary Role / Title
+
+Short 1–2 line introduction
+
+List of Key Services (horizontal chips like “Brand Shoots”, “Design Direction”)
+
+CTA #1 (Coral): “Book a Project”
+
+CTA #2 (Outline): “Media Kit”
+
+Social Icons (last)
+
+Styling
+
+Hero image sits inside a soft rounded-corner box (#F4F6F8)
+
+Coral micro-line under the name
+
+🟧 SECTION 2 — BRAND IDENTITY BLOCK
+Structure
+
+Two-column editorial card with subtle background:
+
+Left column (40%): Tagline, Vision, Mission
+
+Right column (60%): About Me
+
+Styling
+
+Vision + Mission have a left coral border (4px solid #FF6B5A)
+
+Core values displayed as rounded badges
+
+🟨 SECTION 3 — WHAT I OFFER (Service-first focus)
+Layout
+
+Grid: 3 columns (desktop), 1–2 columns on mobile/tablet.
+
+Each Service Card contains:
+
+Icon (thin stroke, coral on hover)
+
+Large title (GT America)
+
+2-line benefit statement
+
+Optional pricing indicator
+
+CTA: “Book Service”
+
+Styling
+
+White cards with border 1px solid #EFEFEF
+
+Hover: slight shadow + coral line at top
+
+🟩 SECTION 4 — STATS STRIP (Visual Credibility)
+
+Horizontal strip across full width:
+
+3–5 statistics max
+
+Clean typography
+
+Small coral icons
+
+Examples:
+
+“120+ Campaigns”
+
+“23 Brands Worked With”
+
+“Featured in Vogue India”
+
+🟦 SECTION 5 — PROJECTS / PORTFOLIO GALLERY
+Layout
+
+Masonry (Pinterest-style) OR uniform grid (your choice)
+
+3 columns desktop → 2 tablet → 1 mobile
+
+Card Details
+
+Full-image card
+
+Title + Category appear on hover
+
+Soft coral underline animation
+
+Project Modal
+
+Full-screen white modal
+
+Large project imagery
+
+Story + Approach + Outcome
+
+🟪 SECTION 6 — CASE STUDIES (Optional)
+Layout
+
+Alternating blocks:
+
+Image left / text right
+
+Next block reversed
+
+Content
+
+Challenge → Approach → Results
+
+Coral highlight for key data points
+
+🟫 SECTION 7 — SKILLS & TOOLS
+Layout Options
+
+2-column layout:
+
+Skills list with bars
+
+Tools (icons) grid
+
+Bars
+
+Filled portion uses coral gradient
+
+Label on left, percentage on right
+
+⬜ SECTION 8 — EXPERIENCE TIMELINE
+Layout
+
+Left vertical line
+Entries placed on right side
+
+Styling
+
+Thin coral nodes on the line
+
+Node expands on hover
+
+⬛ SECTION 9 — EDUCATION
+Style
+
+Minimal cards with:
+
+Degree
+
+Institute
+
+Field
+
+Dates
+
+🟫 SECTION 10 — TESTIMONIALS (Carousel)
+
+2–3 testimonials visible at once
+
+Coral quotation mark icon
+
+Verified badge gold
+
+🟥 SECTION 11 — CONTACT / BOOKING
+Layout
+
+Split screen:
+Left: Contact introduction
+Right: Form
+
+Form fields:
+
+Name
+
+Email
+
+Project type
+
+Budget
+
+Message
+
+CTA: Coral Button “Send Request”
+
+🟦 SECTION 12 — FOOTER (Minimal)
+
+Small bio (1–2 lines)
+
+Social links
+
+Legal links
+
+🧱 PART 3 — COMPONENT PROP LIST (DEVELOPER-READY)
+
+Already delivered earlier — but I can also generate the “Creative Bold” version if you want it tailored exactly for this theme.
