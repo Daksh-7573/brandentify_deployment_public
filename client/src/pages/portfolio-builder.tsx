@@ -1135,6 +1135,80 @@ export default function PortfolioBuilder() {
               </>
             )}
             
+            {form.watch("layout") === "fashion-is-art" && (
+              <>
+                {console.log("Fashion is Art Preview - Complete data check:", {
+                  whatIOfferValue,
+                  userDataWhatIOffer: userData?.whatIOffer,
+                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  skillsCount: skills?.length || 0,
+                  experiencesCount: experiences?.length || 0,
+                  projectsCount: projects?.length || 0,
+                  educationsCount: educations?.length || 0,
+                  servicesCount: services?.length || 0
+                })}
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <FashionIsArt
+                      userInfo={{
+                        id: userData?.id,
+                        name: userData?.name || user?.name || '',
+                        email: userData?.email || user?.email || null,
+                        title: userData?.title || null,
+                        location: userData?.location || null,
+                        industry: userData?.industry || null,
+                        domain: userData?.domain || null,
+                        aboutMe: userData?.aboutMe || null,
+                        tagline: userData?.tagline || null,
+                        visionStatement: userData?.visionStatement || null,
+                        missionStatement: userData?.missionStatement || null,
+                        uniqueValueProposition: userData?.uniqueValueProposition || null,
+                        coreValues: userData?.coreValues || [],
+                        lookingFor: userData?.lookingFor || null,
+                        photoURL: userData?.photoURL || user?.photoURL || null
+                      }}
+                      userSkills={skills?.map(skill => ({
+                        id: skill.id,
+                        name: skill.name,
+                        level: skill.level || undefined
+                      })) || []}
+                      userExperiences={experiences?.map(exp => ({
+                        id: exp.id,
+                        title: exp.title,
+                        company: exp.company,
+                        startDate: exp.startDate,
+                        endDate: exp.endDate || undefined,
+                        description: exp.description || ''
+                      })) || []}
+                      userProjects={projects?.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        description: p.description || '',
+                        thumbnailUrl: p.thumbnailUrl || undefined,
+                        mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
+                        startDate: p.startDate || undefined,
+                        projectUrl: p.projectUrl || undefined
+                      })) || []}
+                      userEducations={educations?.map(edu => ({
+                        id: edu.id,
+                        institution: edu.institution,
+                        degree: edu.degree,
+                        fieldOfStudy: edu.fieldOfStudy || undefined,
+                        startDate: edu.startDate,
+                        endDate: edu.endDate || undefined
+                      })) || []}
+                      userServices={services?.map(service => ({
+                        id: service.id,
+                        title: service.title,
+                        description: service.description || ''
+                      })) || []}
+                      currentUserId={userNumericId}
+                    />
+                  </CardContent>
+                </Card>
+              </>
+            )}
+            
             {form.watch("layout") === "corporate-executive" && (
               <CorporateExecutive
                 userInfo={{
