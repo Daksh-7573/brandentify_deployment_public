@@ -1,0 +1,394 @@
+/*
+Fashion Runway — React Component Prop List
+
+File: components/props.md
+Type: code/react (component prop definitions + JSDoc style)
+
+This document lists React components for the Fashion Runway portfolio template and the detailed props for each component.
+Each component includes: prop name, Type, Required, Default, Description, Accessibility notes.
+
+Guidelines:
+- Use TypeScript prop types in your React components using these definitions.
+- Keep components small and composable.
+- Prefer controlled components for forms and callbacks.
+
+-----------------------------------------------------------------
+*/
+
+// -----------------------------
+// Shared Types
+// -----------------------------
+
+/**
+ * Basic contact link
+ */
+type SocialLink = {
+  platform: string; // e.g. 'instagram', 'linkedin'
+  url: string;
+  label?: string; // e.g. 'Instagram' (used for aria-labels)
+};
+
+/**
+ * Generic media item
+ */
+type MediaItem = {
+  url: string;
+  alt?: string;
+  type?: 'image' | 'video' | 'embed';
+  thumbnailUrl?: string;
+};
+
+// -----------------------------
+// Header / Navigation
+// -----------------------------
+
+/**
+ * HeaderNav props
+ */
+export type HeaderNavProps = {
+  logo?: { src: string; alt?: string } | null; // optional brand/logo
+  navItems: { id: string; label: string; href?: string; onClick?: () => void }[]; // required
+  primaryCta?: { label: string; onClick: () => void; href?: string; ariaLabel?: string } | null;
+  secondaryCtas?: { label: string; onClick?: () => void; href?: string; ariaLabel?: string }[];
+  sticky?: boolean; // default: true
+  onNavChange?: (id: string) => void; // invoked on click
+  className?: string;
+};
+
+// -----------------------------
+// Hero (Profile Intro)
+// -----------------------------
+
+/**
+ * PhotoCard props
+ */
+export type PhotoCardProps = {
+  photoUrl: string; // required - main portrait url
+  alt?: string; // alt text for image, required for accessibility if image present
+  shape?: 'circle' | 'rounded' | 'square'; // default: 'rounded'
+  size?: 'small' | 'medium' | 'large' | number; // default: 'large' (maps to pixel dims)
+  rimGradient?: string | null; // CSS gradient string for decorative rim
+  showScanner?: boolean; // default: false - toggles scan animation
+  onClick?: () => void; // optional (open modal)
+  className?: string;
+};
+
+/**
+ * HeroContent props
+ */
+export type HeroContentProps = {
+  name: string; // required
+  title?: string; // e.g. 'Runway Model' (optional)
+  tagline?: string; // short tagline, optional
+  shortBio?: string; // 1-2 line short intro
+  badges?: { label: string; ariaLabel?: string }[]; // small pills (location, job level, industry)
+  socialLinks?: SocialLink[]; // optional
+  ctas?: (
+    | { type: 'primary'; label: string; onClick: () => void; href?: string; ariaLabel?: string }
+    | { type: 'secondary'; label: string; onClick?: () => void; href?: string }
+  )[]; // CTA buttons, at least one recommended
+  className?: string;
+};
+
+/**
+ * Full Hero props
+ */
+export type HeroProps = {
+  photo: PhotoCardProps;
+  content: HeroContentProps;
+  layout?: 'left-photo' | 'right-photo' | 'centered'; // default: 'left-photo'
+  showFloatingCta?: boolean; // default: true
+  className?: string;
+};
+
+// -----------------------------
+// Professional Branding Section
+// -----------------------------
+
+export type TaglineCardProps = {
+  tagline: string; // required short line
+  className?: string;
+};
+
+export type AboutSectionProps = {
+  aboutHtml?: string; // optional HTML or markdown string (rendered safely)
+  aboutText?: string; // fallback plain text
+  truncateAt?: number; // number of chars before "Read more" appears
+  onExpand?: () => void; // callback when expanded
+  className?: string;
+};
+
+export type OfferItem = { title: string; description?: string };
+export type WhatIOfferProps = {
+  offers: OfferItem[]; // required
+  compact?: boolean; // default false — show as inline badges if true
+  className?: string;
+};
+
+export type LookingForProps = {
+  text: string; // e.g. "Castings, Brand Partnerships"
+  cta?: { label: string; onClick?: () => void; href?: string } | null;
+  className?: string;
+};
+
+// -----------------------------
+// Vision & Values
+// -----------------------------
+
+export type VisionValuesProps = {
+  visionStatement?: string;
+  missionStatement?: string;
+  uniqueValueProposition?: string;
+  coreValues?: string[]; // up to 5 recommended
+  className?: string;
+};
+
+// -----------------------------
+// Timeline / Experience
+// -----------------------------
+
+export type TimelineEntry = {
+  id: string | number;
+  title: string; // job title
+  company?: string;
+  startDate?: string; // ISO date string
+  endDate?: string | null; // null means present
+  location?: string;
+  description?: string; // short summary
+  responsibilities?: string[]; // bullet items
+  extendedHtml?: string; // optional detailed content rendered in expansion
+};
+
+export type TimelineProps = {
+  entries: TimelineEntry[]; // required, sorted by date desc by consumer
+  compact?: boolean; // default false
+  onEntryClick?: (entryId: string | number) => void; // expands entry or opens modal
+  className?: string;
+};
+
+// -----------------------------
+// Projects Grid & Card
+// -----------------------------
+
+export type ProjectItem = {
+  id: string | number;
+  title: string;
+  description?: string;
+  year?: number | string;
+  thumbnailUrl?: string;
+  media?: MediaItem[]; // gallery
+  projectUrl?: string; // external link
+  tags?: string[];
+};
+
+export type ProjectCardProps = {
+  project: ProjectItem; // required
+  onView?: (id: string | number) => void; // open modal
+  lazyLoad?: boolean; // default true
+  className?: string;
+};
+
+export type ProjectsGridProps = {
+  projects: ProjectItem[]; // required
+  columns?: number; // default 3
+  onProjectClick?: (id: string | number) => void;
+  showFilter?: boolean; // default false
+  className?: string;
+};
+
+export type ProjectModalProps = {
+  project: ProjectItem | null; // null means closed
+  open: boolean;
+  onClose: () => void;
+  onEnquire?: (projectId: string | number) => void;
+  onAddToMediaKit?: (projectId: string | number) => void;
+  className?: string;
+};
+
+// -----------------------------
+// Skills List & Skill Bar
+// -----------------------------
+
+export type Skill = {
+  id: string | number;
+  name: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
+  proficiencyPct?: number; // 0-100 optional
+};
+
+export type SkillBarProps = {
+  skill: Skill; // required
+  showLabel?: boolean; // default true
+  className?: string;
+};
+
+export type SkillsListProps = {
+  skills: Skill[]; // required
+  columns?: number; // default 2
+  animateOnEnter?: boolean; // default true animate bars
+  className?: string;
+};
+
+// -----------------------------
+// Education Section
+// -----------------------------
+
+export type EducationEntry = {
+  id: string | number;
+  degree: string;
+  institution: string;
+  fieldOfStudy?: string;
+  startDate?: string;
+  endDate?: string;
+  notes?: string;
+};
+
+export type EducationProps = {
+  entries: EducationEntry[]; // required
+  className?: string;
+};
+
+// -----------------------------
+// Services Section
+// -----------------------------
+
+export type ServiceItem = {
+  id: string | number;
+  title: string;
+  description?: string;
+  iconId?: string; // maps to icon library
+  priceRange?: string; // optional e.g. "INR 20k-40k"
+};
+
+export type ServicesGridProps = {
+  services: ServiceItem[]; // required
+  onBook?: (serviceId: string | number) => void; // booking callback
+  columns?: number; // default 3
+  className?: string;
+};
+
+export type ServiceCardProps = {
+  service: ServiceItem; // required
+  onBook?: (serviceId: string | number) => void;
+  className?: string;
+};
+
+// -----------------------------
+// Contact / Booking Form
+// -----------------------------
+
+export type ContactFormValues = {
+  name: string;
+  email: string;
+  projectType?: string;
+  message?: string;
+  date?: string; // optional ISO date for booking
+  attachments?: MediaItem[]; // optional file attachments
+};
+
+export type ContactFormProps = {
+  initialValues?: Partial<ContactFormValues>;
+  onSubmit: (values: ContactFormValues) => Promise<void> | void;
+  validate?: (values: ContactFormValues) => { [K in keyof ContactFormValues]?: string } | null;
+  submitLabel?: string; // default 'Send'
+  showAttachment?: boolean; // default true
+  className?: string;
+};
+
+export type BookingModalProps = {
+  open: boolean;
+  onClose: () => void;
+  onBook: (values: ContactFormValues) => Promise<void> | void;
+  availableSlots?: string[]; // pre-populated dates/time strings
+  className?: string;
+};
+
+// -----------------------------
+// Footer
+// -----------------------------
+
+export type FooterProps = {
+  description?: string; // small bio or legal
+  socialLinks?: SocialLink[];
+  copyrightNotice?: string;
+  className?: string;
+};
+
+// -----------------------------
+// Utilities & Small Components
+// -----------------------------
+
+export type BadgeProps = {
+  label: string;
+  variant?: 'primary' | 'muted' | 'outline'; // default 'primary'
+  onClick?: () => void;
+  ariaLabel?: string;
+  className?: string;
+};
+
+export type IconProps = {
+  id: string; // icon name
+  size?: number; // px, default 20
+  title?: string; // for accessibility
+  className?: string;
+};
+
+export type ModalProps = {
+  open: boolean;
+  title?: string;
+  children?: React.ReactNode;
+  onClose: () => void;
+  size?: 'small' | 'medium' | 'large' | { width: number; height?: number };
+  ariaLabel?: string;
+  className?: string;
+};
+
+export type ImageGalleryProps = {
+  items: MediaItem[];
+  startIndex?: number; // default 0
+  onClose?: () => void;
+  showThumbnails?: boolean; // default true
+  className?: string;
+};
+
+// -----------------------------
+// Example: Top-level Page Props
+// -----------------------------
+
+export type FashionRunwayPageProps = {
+  personalInfo: {
+    name: string;
+    photoURL: string;
+    email?: string;
+    title?: string;
+    company?: string;
+    location?: string;
+    jobLevel?: string;
+  };
+  professionalBranding?: {
+    tagline?: string;
+    aboutMe?: string;
+    industry?: string;
+    domain?: string;
+    whatIOffer?: OfferItem[];
+    lookingFor?: string;
+  };
+  visionValues?: VisionValuesProps;
+  workExperience?: TimelineEntry[];
+  projects?: ProjectItem[];
+  skills?: Skill[];
+  education?: EducationEntry[];
+  services?: ServiceItem[];
+  contact?: { email?: string; formEndpoint?: string };
+  socialLinks?: SocialLink[];
+  className?: string;
+};
+
+/*
+Implementation notes:
+- Use TypeScript and export these types from a shared `types.ts` so every component imports consistent props.
+- Keep presentation components (dumb) separate from container components (data fetching / state management).
+- Use aria-* attributes on interactive elements and ensure tab order is logical.
+
+End of component prop list.
+*/

@@ -10,6 +10,7 @@ import PhotographerPortfolio from "@/components/portfolio/templates/photographer
 import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape";
 import NatureCreative from "@/components/portfolio/templates/nature-creative";
 import FashionRunway from "@/components/portfolio/templates/fashion-runway";
+import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-model";
 
 export type PortfolioLayoutKey = 
@@ -30,6 +31,7 @@ export type PortfolioLayoutKey =
   | "pastel-dreamscape"
   | "nature-creative"
   | "fashion-runway"
+  | "fashion-is-art"
   | "yoga-fitness-model";
 
 export interface PortfolioTemplateProps {
@@ -158,6 +160,7 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "pastel-dreamscape": PastelDreamscape as any,
   "nature-creative": NatureCreative as any,
   "fashion-runway": FashionRunway as any,
+  "fashion-is-art": FashionIsArt as any,
   "yoga-fitness-model": YogaFitnessModel as any
 };
 

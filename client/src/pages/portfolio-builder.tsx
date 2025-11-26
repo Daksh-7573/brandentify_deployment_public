@@ -37,6 +37,7 @@ import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
 import CreativeBold from "@/components/portfolio/templates/creative-bold";
+import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -88,7 +89,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "yoga-fitness-model"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -574,6 +575,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: High-Fashion, Editorial, Minimal & Elegant
 ✔ Best For: Fashion Models, Runway Models, Editorial Models, Brand Ambassadors`,
       theme: "#000000"
+    },
+    { 
+      id: "fashion-is-art", 
+      name: "Fashion is Art", 
+      description: `✔ Theme: Editorial Luxury, Playfair Typography, Minimalist Elegance
+✔ Best For: Fashion Models, Designers, Photographers, Creative Professionals`,
+      theme: "#1E88E5"
     },
     { 
       id: "yoga-fitness-model", 
@@ -1127,6 +1135,69 @@ export default function PortfolioBuilder() {
               </>
             )}
             
+            {form.watch("layout") === "fashion-is-art" && (
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <FashionIsArt
+                    userInfo={{
+                      id: userData?.id,
+                      name: userData?.name || user?.name || '',
+                      email: userData?.email || user?.email || null,
+                      title: userData?.title || null,
+                      aboutMe: userData?.aboutMe || null,
+                      location: userData?.location || null,
+                      industry: userData?.industry || null,
+                      domain: userData?.domain || null,
+                      lookingFor: userData?.lookingFor || null,
+                      whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      tagline: userData?.tagline || null,
+                      visionStatement: userData?.visionStatement || null,
+                      missionStatement: userData?.missionStatement || null,
+                      coreValues: userData?.coreValues || [],
+                      uniqueValueProposition: userData?.uniqueValueProposition || null
+                    }}
+                    userSkills={skills?.map(skill => ({
+                      id: skill.id,
+                      name: skill.name,
+                      level: skill.level || undefined
+                    })) || []}
+                    userExperiences={experiences?.map(exp => ({
+                      id: exp.id,
+                      title: exp.title,
+                      company: exp.company,
+                      startDate: exp.startDate,
+                      endDate: exp.endDate || undefined,
+                      description: exp.description || ''
+                    })) || []}
+                    userProjects={projects?.map(p => ({
+                      id: p.id,
+                      title: p.title,
+                      description: p.description || '',
+                      thumbnailUrl: p.thumbnailUrl || undefined,
+                      mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
+                      startDate: p.startDate || undefined,
+                      projectUrl: p.projectUrl || undefined
+                    })) || []}
+                    userEducations={educations?.map(edu => ({
+                      id: edu.id,
+                      institution: edu.institution,
+                      degree: edu.degree,
+                      fieldOfStudy: edu.fieldOfStudy || undefined,
+                      startDate: edu.startDate,
+                      endDate: edu.endDate || undefined
+                    })) || []}
+                    userServices={services?.map(service => ({
+                      id: service.id,
+                      title: service.title,
+                      description: service.description || ''
+                    })) || []}
+                    currentUserId={userNumericId}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
             {form.watch("layout") === "corporate-executive" && (
               <CorporateExecutive
                 userInfo={{

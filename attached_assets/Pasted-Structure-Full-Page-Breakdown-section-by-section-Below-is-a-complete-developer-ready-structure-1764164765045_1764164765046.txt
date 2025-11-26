@@ -1,0 +1,414 @@
+Structure — Full Page Breakdown (section-by-section)
+
+Below is a complete, developer-ready structure for the Fashion Runway portfolio template. It covers every section, the component tree, required data fields, responsive layout rules, interaction notes, accessibility hints, and small Tailwind/HTML snippet examples you can hand to your Replit team or designer.
+
+Page-level layout (container)
+
+page
+
+max width: 1200px centered (mx-auto)
+
+global padding: px-6 (desktop), px-4 (mobile)
+
+vertical spacing between sections: py-20 desktop / py-12 mobile
+
+Sticky top navigation at top: 0 (transparent until scroll); includes brand logo and CTAs.
+
+1. Header / Navigation
+
+Purpose: quick access to sections + CTAs.
+
+Components
+
+Logo (left)
+
+Nav links: Home / About / Work / Projects / Skills / Experience / Education / Services / Contact
+
+Primary CTA: Book Me
+
+Secondary: Download Media Kit, Mentor
+
+Data fields
+
+none (static labels + route anchors)
+
+Behavior
+
+Click scrolls to section with scrollIntoView({ behavior: 'smooth' })
+
+Active tab highlights on scroll (IntersectionObserver)
+
+Accessibility
+
+nav has role="navigation", links have aria-label
+
+Snippet
+
+<header class="fixed top-0 w-full bg-transparent z-50">
+  <nav class="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-4">
+    <div class="flex items-center gap-6">
+      <a class="text-xl font-playfair">Brand</a>
+      <ul class="hidden lg:flex gap-4">
+        <li><a href="#about">About</a></li>
+        <!-- ... -->
+      </ul>
+    </div>
+    <div class="flex items-center gap-3">
+      <a class="hidden md:inline px-4 py-2 border rounded-full">Download Media Kit</a>
+      <a class="px-5 py-2 bg-[#1E88E5] text-white rounded-full">Book Me</a>
+    </div>
+  </nav>
+</header>
+
+2. Hero (Profile Intro)
+
+Purpose: immediate visual impact — large photo + name + tagline + primary CTAs.
+
+Components
+
+Photo card (left): image, shadow, subtle gradient rim, optional small scanner hover
+
+Hero content (right):
+
+Name (large serif)
+
+Title / Tagline
+
+Short bio (1–2 lines)
+
+Badges: Location, Job Level, Industry, Company
+
+CTA Buttons (Book Me, Download Media Kit, Mentor)
+
+Social links (IG, LinkedIn) small icons
+
+Data fields
+
+{
+  "name","photoURL","title","tagline","aboutShort",
+  "location","jobLevel","industry","company",
+  "socialLinks":[{"platform","url"}]
+}
+
+
+Behavior
+
+Image hover scale; CTA primary stands out; mobile stacks photo above content
+
+Lazy-load image with loading="lazy"
+
+Accessibility
+
+alt text alt="Portrait of {name}", buttons have aria-label
+
+Snippet
+
+<section id="hero" class="grid lg:grid-cols-2 items-center gap-10 py-24">
+  <!-- Photo -->
+  <div class="flex justify-center">
+    <img src="{{photoURL}}" alt="Portrait of {{name}}" class="w-[420px] h-[560px] object-cover rounded-xl shadow-lg" />
+  </div>
+  <!-- Content -->
+  <div>
+    <h1 class="font-playfair text-5xl">{{name}}</h1>
+    <p class="mt-3 text-lg text-gray-700">{{tagline}}</p>
+    <div class="mt-6 flex gap-3">
+      <a class="px-5 py-3 bg-[#1E88E5] text-white rounded-full">Book Me</a>
+      <a class="px-5 py-3 border border-[#1E88E5] text-[#1E88E5] rounded-full">Download Media Kit</a>
+    </div>
+  </div>
+</section>
+
+3. Professional Branding (Tagline, About, What I Offer, Looking For)
+
+Purpose: deeper personal brand context.
+
+Components
+
+Tagline (prominent)
+
+About Me (expandable)
+
+What I Offer (short bullets / chips)
+
+Looking For (CTA text + small button to edit contact intent)
+
+Data fields
+
+{ "tagline","aboutMe","whatIOffer": "string","lookingFor":"string" }
+
+
+Behavior
+
+About Me truncated to 160 chars with Read more to expand
+
+What I Offer displayed as badges/pills (map through array)
+
+Accessibility
+
+Ensure Read more is keyboard focusable
+
+4. Vision & Values
+
+Purpose: communicate long-term vision and values succinctly.
+
+Components
+
+Vision Statement (left blue border vertical)
+
+Mission Statement (same style)
+
+UVP (short highlighted card)
+
+Core Values (array of badges)
+
+Data fields
+
+{ "visionStatement","missionStatement","uniqueValueProposition","coreValues":["value1","value2"] }
+
+
+Behavior
+
+Cards with subtle hover lift; values clickable to filter projects by value (optional)
+
+Snippet
+
+<section id="vision" class="py-12">
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="p-6 border-l-4 border-blue-500 bg-white/70"> <h3>Vision</h3><p>{{visionStatement}}</p></div>
+    <div class="p-6 border-l-4 border-blue-500 bg-white/70"> <h3>Mission</h3><p>{{missionStatement}}</p></div>
+    <div class="p-6 bg-gray-50"> <h3>UVP</h3><p>{{uniqueValueProposition}}</p> </div>
+  </div>
+  <div class="mt-6 flex gap-2">
+    <!-- coreValues badges -->
+  </div>
+</section>
+
+5. Work Experience (Timeline)
+
+Purpose: show professional progression, roles, responsibilities.
+
+Components
+
+Vertical timeline with year nodes
+
+Each node: Job Title, Company, Dates, short description, key responsibilities (bulleted)
+
+CTA to expand details or view recommendations
+
+Data fields (array)
+
+[ { "title","company","startDate","endDate","location","description","keyResponsibilities":[] } ]
+
+
+Behavior
+
+Nodes expand on click to show more; mobile collapsible accordion
+
+Hover on desktop shows highlight glow
+
+Accessibility
+
+Use role="list" and aria-expanded for nodes
+
+Snippet
+
+<section id="experience" class="py-12">
+  <div class="relative">
+    <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 to-purple-400"></div>
+    <ul>
+      <li class="ml-12 mb-8"> <!-- node --> </li>
+    </ul>
+  </div>
+</section>
+
+6. Projects (Gallery + Expandable modal)
+
+Purpose: showcase best editorial shoots, campaigns, runway jobs.
+
+Components
+
+Masonry / grid gallery (responsive columns)
+
+Project card: thumbnail, title, year, tags
+
+On click: Project modal with full gallery, description, collaborators, project URL, CTA “Add to Media Kit” / “Enquire”
+
+Data fields (array)
+
+[ { "id","title","description","year","thumbnailUrl","mediaUrls":[],"projectUrl","tags":[] } ]
+
+
+Behavior
+
+Lazy-load images; open modal with keyboard support; swipe support on mobile
+
+Modal includes download image button and contact CTA prefilled with project reference
+
+Accessibility
+
+Modal traps focus; aria-modal="true"; close on Esc
+
+Snippet (card)
+
+<div class="group relative overflow-hidden rounded-md">
+  <img src="{{thumbnailUrl}}" alt="{{title}}" class="w-full h-72 object-cover" />
+  <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-end p-4">
+    <h3 class="text-white font-semibold">{{title}} • {{year}}</h3>
+  </div>
+</div>
+
+7. Skills (visual bars)
+
+Purpose: show craft & proficiency visually.
+
+Components
+
+List of skill chips with bar visualization (1–4 filled blocks or %)
+
+Option to show endorsements or short examples
+
+Data fields
+
+[{ "name","level","proficiencyPct" }]
+
+
+Behavior
+
+Animated fill on viewport enter
+
+Tooltip shows examples when hovered
+
+Accessibility
+
+Provide numeric label aria-label="Skill: Photography, 80 percent proficiency"
+
+8. Education (timeline)
+
+Purpose: academic credentials & training.
+
+Components
+
+Compact timeline similar to experience
+
+Each entry: Degree, Institution, FieldOfStudy, Dates, notes
+
+Data fields
+
+[ { "degree","institution","fieldOfStudy","startDate","endDate","skillsAcquired":[] } ]
+
+
+Behavior
+
+Collapse on mobile to conserve vertical space
+
+9. Services (what you offer)
+
+Purpose: sellable services for booking.
+
+Components
+
+Service cards: Title, short description, price range (optional), rotating icon (6 icons)
+
+CTA: Book Service (opens booking modal)
+
+Data fields
+
+[ { "title","description","iconId","priceRange" } ]
+
+
+Behavior
+
+Icon carousel auto-rotates small animation; card hover lifts
+
+10. Contact / Booking Form
+
+Purpose: convert visitors into leads.
+
+Components
+
+Contact card: Email, Phone (optional), Social links
+
+Booking form: Name, Email, Project Type (select), Message, File upload (portfolio), Date picker (optional)
+
+Small note: Response timeframe
+
+Data fields
+
+email, bookingForm fields map
+
+Behavior
+
+Form validates client-side, shows success toast and sends email / webhook to backend CRM
+
+Attachments restricted (max 10MB), file types jpg/png/pdf
+
+Accessibility
+
+Labels for all fields; aria-live for status messages
+
+11. Footer
+
+Purpose: legal info, credits, small sitemap.
+
+Components
+
+Small bio, social icons, copyright, privacy link
+
+Cross-section UX rules & shared components
+
+Card component: used in projects, services, values — consistent spacing, rounded corners, subtle shadow.
+
+Modal component: reusable for projects / contact / resume preview. Must trap focus.
+
+Badge/Pill: reusable for industries, tags, core values.
+
+Icons: SVG, single-color, accessible aria-hidden where decorative.
+
+Animations: keep subtle and respect prefers-reduced-motion.
+
+Responsive breakpoints:
+
+sm (< 640px) mobile single-column
+
+md (≥ 768px) tablet two-col where needed
+
+lg (≥ 1024px) desktop multi-column
+
+Data mapping summary (single JSON object)
+{
+  "personalInfo": {...},
+  "professionalBranding": {...},
+  "visionValues": {...},
+  "workExperience": [...],
+  "projects": [...],
+  "skills": [...],
+  "education": [...],
+  "services": [...],
+  "contact": {...},
+  "socialLinks":[...]
+}
+
+Small UX copy & length guidance
+
+Name: no longer than 3 words visible in hero
+
+Tagline: 6–12 words
+
+About Me: 80–160 words
+
+Project preview: 25–50 words
+
+Project detail modal: 150–300 words
+
+Service description: 20–40 words
+
+Final notes for devs/designers
+
+Use srcset and modern formats for images.
+
+Keep fonts to Playfair + Inter (or alternatives) to reduce load.
+
+Test keyboard-only navigation and screen readers.
+
+Provide a “Download Media Kit” generator that assembles hero + 3 projects into a PDF.
