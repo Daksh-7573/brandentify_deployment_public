@@ -1,7 +1,6 @@
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
 import CreativeBold from "@/components/portfolio/templates/creative-bold";
-import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -21,7 +20,6 @@ export type PortfolioLayoutKey =
   | "executive"
   | "timeline-storyteller-2"
   | "creative-bold"
-  | "fashion-is-art"
   | "corporate-executive"
   | "dynamic-innovator"
   | "freelancer-hub"
@@ -104,13 +102,11 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "designer_portfolio": "designer-portfolio",
   "photographer_portfolio": "photographer-portfolio",
   "creative_bold": "creative-bold",
-  "fashion_is_art": "fashion-is-art",
   
   // Legacy aliases from brand-profile and random-profile switch statements
   "minimalist": "scholar",
   "timeline": "timeline-storyteller-2",
   "creative": "creative-bold",
-  "fashion": "fashion-is-art",
   "freelancer": "freelancer-hub",
   "dynamic": "dynamic-innovator",
   "corporate": "corporate-executive",
@@ -152,7 +148,6 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "executive": CorporateExecutive as any,
   "timeline-storyteller-2": TimelineStoryteller2 as any,
   "creative-bold": CreativeBold as any,
-  "fashion-is-art": FashionIsArt as any,
   "corporate-executive": CorporateExecutive as any,
   "dynamic-innovator": DynamicInnovator as any,
   "freelancer-hub": FreelancerHub as any,

@@ -37,7 +37,6 @@ import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
 import CreativeBold from "@/components/portfolio/templates/creative-bold";
-import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
@@ -86,7 +85,7 @@ import { ShareModal } from "@/components/referral/share-modal";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "fashion-is-art", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
     "fashion-runway", "yoga-fitness-model"
@@ -519,13 +518,6 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Editorial/Minimalist, Coral Accent, Services-First
 ✔ Best For: Designers, Photographers, Marketers, Creative Professionals`,
       theme: "#FF6B35"
-    },
-    { 
-      id: "fashion-is-art", 
-      name: "Fashion is Art", 
-      description: `✔ Theme: Minimal Luxury, Editorial, High-Fashion
-✔ Best For: Fashion Models, Runway Models, Brand Ambassadors, Stylists`,
-      theme: "#1E88E5"
     },
     { 
       id: "dynamic-innovator", 
@@ -1127,80 +1119,6 @@ export default function PortfolioBuilder() {
                         title: service.title,
                         description: service.description || '',
                         icon: undefined
-                      })) || []}
-                      currentUserId={userNumericId}
-                    />
-                  </CardContent>
-                </Card>
-              </>
-            )}
-            
-            {form.watch("layout") === "fashion-is-art" && (
-              <>
-                {console.log("Fashion is Art Preview - Complete data check:", {
-                  whatIOfferValue,
-                  userDataWhatIOffer: userData?.whatIOffer,
-                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                  skillsCount: skills?.length || 0,
-                  experiencesCount: experiences?.length || 0,
-                  projectsCount: projects?.length || 0,
-                  educationsCount: educations?.length || 0,
-                  servicesCount: services?.length || 0
-                })}
-                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                  <CardContent className="p-0">
-                    <FashionIsArt
-                      userInfo={{
-                        id: userData?.id,
-                        name: userData?.name || user?.name || '',
-                        email: userData?.email || user?.email || null,
-                        title: userData?.title || null,
-                        location: userData?.location || null,
-                        industry: userData?.industry || null,
-                        domain: userData?.domain || null,
-                        aboutMe: userData?.aboutMe || null,
-                        tagline: userData?.tagline || null,
-                        visionStatement: userData?.visionStatement || null,
-                        missionStatement: userData?.missionStatement || null,
-                        uniqueValueProposition: userData?.uniqueValueProposition || null,
-                        coreValues: userData?.coreValues || [],
-                        lookingFor: userData?.lookingFor || null,
-                        photoURL: userData?.photoURL || user?.photoURL || null
-                      }}
-                      userSkills={skills?.map(skill => ({
-                        id: skill.id,
-                        name: skill.name,
-                        level: skill.level || undefined
-                      })) || []}
-                      userExperiences={experiences?.map(exp => ({
-                        id: exp.id,
-                        title: exp.title,
-                        company: exp.company,
-                        startDate: exp.startDate,
-                        endDate: exp.endDate || undefined,
-                        description: exp.description || ''
-                      })) || []}
-                      userProjects={projects?.map(p => ({
-                        id: p.id,
-                        title: p.title,
-                        description: p.description || '',
-                        thumbnailUrl: p.thumbnailUrl || undefined,
-                        mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
-                        startDate: p.startDate || undefined,
-                        projectUrl: p.projectUrl || undefined
-                      })) || []}
-                      userEducations={educations?.map(edu => ({
-                        id: edu.id,
-                        institution: edu.institution,
-                        degree: edu.degree,
-                        fieldOfStudy: edu.fieldOfStudy || undefined,
-                        startDate: edu.startDate,
-                        endDate: edu.endDate || undefined
-                      })) || []}
-                      userServices={services?.map(service => ({
-                        id: service.id,
-                        title: service.title,
-                        description: service.description || ''
                       })) || []}
                       currentUserId={userNumericId}
                     />
