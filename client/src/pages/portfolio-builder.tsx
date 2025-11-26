@@ -36,6 +36,7 @@ import { ArrowLeft } from "lucide-react";
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
+import CreativeBold from "@/components/portfolio/templates/creative-bold";
 import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -85,7 +86,7 @@ import { ShareModal } from "@/components/referral/share-modal";
 const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller-2", "corporate-executive", 
+    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
     "fashion-runway", "fashion-is-art", "yoga-fitness-model"
@@ -511,6 +512,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Interactive Timeline with Comprehensive Profile Display
 ✔ Best For: Storytellers & Professionals with Rich Career Histories`,
       theme: "#6C63FF"
+    },
+    { 
+      id: "creative-bold", 
+      name: "The Creative Bold", 
+      description: `✔ Theme: Editorial/Minimalist, Coral Accent, Services-First
+✔ Best For: Designers, Photographers, Marketers, Creative Professionals`,
+      theme: "#FF6B5A"
     },
     { 
       id: "dynamic-innovator", 
@@ -1043,6 +1051,64 @@ export default function PortfolioBuilder() {
                   userServices={services || []}
                 />
               </>
+            )}
+            
+            {form.watch("layout") === "creative-bold" && (
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <CreativeBold
+                    userInfo={{
+                      id: userData?.id,
+                      name: userData?.name || user?.name || '',
+                      email: userData?.email || user?.email || null,
+                      title: userData?.title || null,
+                      aboutMe: userData?.aboutMe || null,
+                      location: userData?.location || null,
+                      industry: userData?.industry || null,
+                      domain: userData?.domain || null,
+                      lookingFor: userData?.lookingFor || null,
+                      whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                      photoURL: userData?.photoURL || user?.photoURL || null,
+                      tagline: userData?.tagline || null
+                    }}
+                    userSkills={skills?.map(skill => ({
+                      id: skill.id,
+                      name: skill.name,
+                      level: skill.level || undefined
+                    })) || []}
+                    userExperiences={experiences?.map(exp => ({
+                      id: exp.id,
+                      title: exp.title,
+                      company: exp.company,
+                      startDate: exp.startDate,
+                      endDate: exp.endDate || undefined,
+                      description: exp.description || ''
+                    })) || []}
+                    userProjects={projects?.map(p => ({
+                      id: p.id,
+                      title: p.title,
+                      description: p.description || '',
+                      startDate: p.startDate || undefined,
+                      thumbnailUrl: p.thumbnailUrl || undefined,
+                      projectUrl: p.projectUrl || undefined
+                    })) || []}
+                    userEducations={educations?.map(edu => ({
+                      id: edu.id,
+                      institution: edu.institution,
+                      degree: edu.degree,
+                      fieldOfStudy: edu.fieldOfStudy || undefined,
+                      startDate: edu.startDate,
+                      endDate: edu.endDate || undefined
+                    })) || []}
+                    userServices={services?.map(service => ({
+                      id: service.id,
+                      title: service.title,
+                      description: service.description || ''
+                    })) || []}
+                    currentUserId={userNumericId}
+                  />
+                </CardContent>
+              </Card>
             )}
             
             {form.watch("layout") === "fashion-is-art" && (
