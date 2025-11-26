@@ -36,7 +36,6 @@ import { ArrowLeft } from "lucide-react";
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
 import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2";
-import CreativeBold from "@/components/portfolio/templates/creative-bold";
 import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -85,8 +84,8 @@ import { ShareModal } from "@/components/referral/share-modal";
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
   layout: z.enum([
-    "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
-    "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
+    "professional", "minimal", "technical", "executive", "minimalist_pro",
+    "minimalist-pro", "timeline-storyteller-2", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
     "fashion-runway", "fashion-is-art", "yoga-fitness-model"
@@ -514,13 +513,6 @@ export default function PortfolioBuilder() {
       theme: "#6C63FF"
     },
     { 
-      id: "creative-bold", 
-      name: "The Creative Bold", 
-      description: `✔ Theme: Editorial/Minimalist, Coral Accent, Services-First
-✔ Best For: Designers, Photographers, Marketers, Creative Professionals`,
-      theme: "#FF6B35"
-    },
-    { 
       id: "dynamic-innovator", 
       name: "The Dynamic Innovator", 
       description: `✔ Theme: Futuristic & High-Tech
@@ -721,7 +713,7 @@ export default function PortfolioBuilder() {
               ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
               : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
             customizationOptions: {
-              theme: selectedLayout === 'creative-bold' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
+              theme: selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
               showContact: true
             },
             featuredProjects: projectsData?.map((project: Project) => project.id) || [],
@@ -1050,88 +1042,6 @@ export default function PortfolioBuilder() {
                   userEducations={educations || []}
                   userServices={services || []}
                 />
-              </>
-            )}
-            
-            {form.watch("layout") === "creative-bold" && (
-              <>
-                {console.log("Creative Bold Preview - Complete data check:", {
-                  whatIOfferValue,
-                  userDataWhatIOffer: userData?.whatIOffer,
-                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                  aboutMe: userData?.aboutMe,
-                  skillsCount: skills?.length || 0,
-                  experiencesCount: experiences?.length || 0,
-                  projectsCount: projects?.length || 0,
-                  educationsCount: educations?.length || 0,
-                  servicesCount: services?.length || 0,
-                  skillsData: skills,
-                  experiencesData: experiences,
-                  projectsData: projects,
-                  educationsData: educations,
-                  servicesData: services
-                })}
-                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                  <CardContent className="p-0">
-                    <CreativeBold
-                      userInfo={{
-                        id: userData?.id,
-                        name: userData?.name || user?.name || '',
-                        email: userData?.email || user?.email || null,
-                        title: userData?.title || null,
-                        aboutMe: userData?.aboutMe || null,
-                        location: userData?.location || null,
-                        industry: userData?.industry || null,
-                        domain: userData?.domain || null,
-                        lookingFor: userData?.lookingFor || null,
-                        whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                        photoURL: userData?.photoURL || user?.photoURL || null,
-                        tagline: userData?.tagline || null,
-                        visionStatement: userData?.visionStatement || null,
-                        missionStatement: userData?.missionStatement || null,
-                        coreValues: userData?.coreValues || [],
-                        uniqueValueProposition: userData?.uniqueValueProposition || null
-                      } as any}
-                      userSkills={skills?.map(skill => ({
-                        id: skill.id,
-                        name: skill.name,
-                        level: skill.level || undefined
-                      })) || []}
-                      userExperiences={experiences?.map(exp => ({
-                        id: exp.id,
-                        title: exp.title,
-                        company: exp.company,
-                        startDate: exp.startDate,
-                        endDate: exp.endDate || undefined,
-                        description: exp.description || ''
-                      })) || []}
-                      userProjects={projects?.map(p => ({
-                        id: p.id,
-                        title: p.title,
-                        description: p.description || '',
-                        thumbnailUrl: p.thumbnailUrl || undefined,
-                        mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
-                        startDate: p.startDate || undefined,
-                        projectUrl: p.projectUrl || undefined
-                      })) || []}
-                      userEducations={educations?.map(edu => ({
-                        id: edu.id,
-                        institution: edu.institution,
-                        degree: edu.degree,
-                        fieldOfStudy: edu.fieldOfStudy || undefined,
-                        startDate: edu.startDate,
-                        endDate: edu.endDate || undefined
-                      })) || []}
-                      userServices={services?.map(service => ({
-                        id: service.id,
-                        title: service.title,
-                        description: service.description || '',
-                        icon: undefined
-                      })) || []}
-                      currentUserId={userNumericId}
-                    />
-                  </CardContent>
-                </Card>
               </>
             )}
             
