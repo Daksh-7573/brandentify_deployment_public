@@ -20,6 +20,10 @@ interface CreativeBoldProps {
     whatIOffer: string | null;
     photoURL: string | null;
     tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
   };
   userSkills?: Array<{ id: number; name: string; level?: string | null }>;
   userExperiences?: Array<{
@@ -179,7 +183,7 @@ export default function CreativeBold({
       </section>
 
       {/* BRAND IDENTITY */}
-      {userInfo.aboutMe && (
+      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
         <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
           <div className="max-w-[1200px] mx-auto">
             <motion.div
@@ -187,12 +191,45 @@ export default function CreativeBold({
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-8"
             >
               <h2 className="text-4xl font-bold" style={{ color: INK_BLACK }}>About</h2>
-              <p className="text-lg leading-relaxed max-w-3xl" style={{ color: COOL_GRAY }}>
-                {userInfo.aboutMe}
-              </p>
+              
+              {userInfo.aboutMe && (
+                <p className="text-lg leading-relaxed max-w-3xl" style={{ color: COOL_GRAY }}>
+                  {userInfo.aboutMe}
+                </p>
+              )}
+
+              {/* Vision, Mission, Values Grid */}
+              {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+                  {userInfo.visionStatement && (
+                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Vision</h3>
+                      <p style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Mission</h3>
+                      <p style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                    </div>
+                  )}
+                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                    <div>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-3" style={{ color: CORAL }}>Values</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {userInfo.coreValues.map((value, idx) => (
+                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }}>
+                            {value}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           </div>
         </section>

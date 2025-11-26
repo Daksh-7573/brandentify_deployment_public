@@ -1069,7 +1069,11 @@ export default function PortfolioBuilder() {
                       lookingFor: userData?.lookingFor || null,
                       whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
                       photoURL: userData?.photoURL || user?.photoURL || null,
-                      tagline: userData?.tagline || null
+                      tagline: userData?.tagline || null,
+                      visionStatement: userData?.visionStatement || null,
+                      missionStatement: userData?.missionStatement || null,
+                      coreValues: userData?.coreValues || [],
+                      uniqueValueProposition: userData?.uniqueValueProposition || null
                     }}
                     userSkills={skills?.map(skill => ({
                       id: skill.id,
