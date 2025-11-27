@@ -966,17 +966,18 @@ export default function PortfolioBuilder() {
         console.log("Preview step - Services data:", userServices, "Source:", portfolioPreviewData?.services ? "portfolioPreviewData" : services ? "services query" : "empty array");
         
         return (
-          <div className="space-y-8">
-            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+          <div className="space-y-8 overflow-y-auto max-h-[calc(100vh-300px)]">
+            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md sticky top-0 z-10 mb-8">
               <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
               <p className="text-white/70">
                 Review your AI-generated portfolio before publishing it to the world.
               </p>
             </div>
             
-            {/* Dynamic portfolio preview based on selected layout */}
-            {/* The Minimalist Pro */}
-            {form.watch("layout") === "minimalist-pro" && (
+            <div className="space-y-8">
+              {/* Dynamic portfolio preview based on selected layout */}
+              {/* The Minimalist Pro */}
+              {form.watch("layout") === "minimalist-pro" && (
               <>
                 {console.log("In MinimalistPro - Services data being passed:", userServices)}
                 {console.log("In MinimalistPro - Services check:", {
@@ -1631,26 +1632,27 @@ export default function PortfolioBuilder() {
               </div>
             )}
             
-            <div className="flex justify-between">
-              <Button 
-                variant="outline"
-                onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                className="flex items-center gap-2 bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back
-              </Button>
-              <Button 
-                onClick={handlePublish}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
-                disabled={portfolioMutation.isPending}
-              >
-                {portfolioMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-                {portfolioMutation.isPending ? "Publishing..." : "Publish Portfolio"}
-              </Button>
+              <div className="flex justify-between">
+                <Button 
+                  variant="outline"
+                  onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                  className="flex items-center gap-2 bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back
+                </Button>
+                <Button 
+                  onClick={handlePublish}
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
+                  disabled={portfolioMutation.isPending}
+                >
+                  {portfolioMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  {portfolioMutation.isPending ? "Publishing..." : "Publish Portfolio"}
+                </Button>
+              </div>
             </div>
           </div>
         );
