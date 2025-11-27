@@ -967,23 +967,11 @@ export default function PortfolioBuilder() {
         
         return (
           <div className="space-y-8">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
-                <p className="text-white/70">
-                  Review your AI-generated portfolio before publishing it to the world.
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                className="text-white hover:text-white hover:bg-white/20 bg-white/10 px-3 py-2 border border-white/20 flex items-center gap-2 flex-shrink-0"
-                data-testid="button-portfolio-back-to-layout"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back</span>
-              </Button>
+            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+              <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
+              <p className="text-white/70">
+                Review your AI-generated portfolio before publishing it to the world.
+              </p>
             </div>
             
             {/* Dynamic portfolio preview based on selected layout */}
@@ -1066,8 +1054,9 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "creative-bold" && (
-              <div className="relative overflow-hidden rounded-lg bg-white shadow-lg border border-gray-200" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                <CreativeBold
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <CreativeBold
                     userInfo={{
                       id: userData?.id,
                       name: userData?.name || user?.name || '',
@@ -1122,12 +1111,14 @@ export default function PortfolioBuilder() {
                     })) || []}
                     currentUserId={userNumericId}
                   />
-              </div>
+                </CardContent>
+              </Card>
             )}
             
             {form.watch("layout") === "fashion-is-art" && (
-              <div className="relative overflow-hidden rounded-lg bg-white shadow-lg border border-gray-200" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                <FashionIsArt
+              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                <CardContent className="p-0">
+                  <FashionIsArt
                     userInfo={{
                       id: userData?.id,
                       name: userData?.name || user?.name || '',
@@ -1183,7 +1174,8 @@ export default function PortfolioBuilder() {
                     })) || []}
                     currentUserId={userNumericId}
                   />
-              </div>
+                </CardContent>
+              </Card>
             )}
 
             {form.watch("layout") === "corporate-executive" && (
