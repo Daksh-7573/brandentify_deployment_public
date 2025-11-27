@@ -1795,7 +1795,6 @@ export default function PortfolioBuilder() {
                 />
               ))}
             </div>
-          </div>
           
           {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
             renderLoadingState()
