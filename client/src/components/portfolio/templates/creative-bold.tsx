@@ -115,69 +115,113 @@ export default function CreativeBold({
         </div>
       </motion.header>
 
-      {/* HERO - Service-First */}
+      {/* HERO - Service-First with Photo */}
       <section className="pt-32 pb-20 px-6 md:px-12">
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           >
-            {/* Name with coral underline */}
-            <div>
-              <h1 className="text-6xl md:text-7xl font-bold mb-2" style={{ color: INK_BLACK }}>
-                {userInfo.name}
-              </h1>
-              <div style={{ width: '60px', height: '4px', backgroundColor: CORAL }} />
-            </div>
-
-            {/* Title + tagline */}
-            {displayTitle && (
-              <p className="text-2xl font-light" style={{ color: COOL_GRAY }}>
-                {displayTitle}
-              </p>
+            {/* LEFT: Photo - Minimalist */}
+            {userInfo.photoURL && (
+              <motion.div
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex justify-center lg:justify-start order-2 lg:order-1"
+              >
+                <div className="relative">
+                  {/* Subtle gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B5A]/8 to-[#FF6B5A]/4 rounded-2xl blur-3xl" />
+                  <img
+                    src={userInfo.photoURL}
+                    alt={userInfo.name}
+                    className="relative w-full max-w-[380px] h-[500px] object-cover rounded-2xl shadow-xl"
+                  />
+                  {/* Subtle overlay accent */}
+                  <div className="absolute inset-0 rounded-2xl" style={{ border: `2px solid ${CORAL}`, opacity: 0.2 }} />
+                </div>
+              </motion.div>
             )}
-            {userInfo.tagline && (
-              <p className="text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
-                {userInfo.tagline}
-              </p>
-            )}
 
-            {/* Service chips */}
-            {userServices && userServices.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4">
-                {userServices.slice(0, 4).map(service => (
-                  <Badge 
-                    key={service.id} 
-                    style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                    className="text-sm font-medium"
-                  >
-                    {service.title}
-                  </Badge>
-                ))}
+            {/* RIGHT: Content */}
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ duration: 0.8 }}
+              className="space-y-8 order-1 lg:order-2"
+            >
+              {/* Name with coral underline */}
+              <div>
+                <h1 className="text-6xl md:text-7xl font-bold mb-2" style={{ color: INK_BLACK }}>
+                  {userInfo.name}
+                </h1>
+                <div style={{ width: '60px', height: '4px', backgroundColor: CORAL }} />
               </div>
-            )}
 
-            {/* CTAs */}
-            <div className="flex gap-3 pt-4">
-              {userInfo.email && (
+              {/* Title + tagline */}
+              {displayTitle && (
+                <p className="text-2xl font-light" style={{ color: COOL_GRAY }}>
+                  {displayTitle}
+                </p>
+              )}
+              {userInfo.tagline && (
+                <p className="text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
+                  {userInfo.tagline}
+                </p>
+              )}
+
+              {/* Service chips */}
+              {userServices && userServices.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {userServices.slice(0, 4).map(service => (
+                    <Badge 
+                      key={service.id} 
+                      style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
+                      className="text-sm font-medium"
+                    >
+                      {service.title}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Location & Industry badges */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {userInfo.location && (
+                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
+                    <MapPin className="w-3 h-3 mr-1" /> {userInfo.location}
+                  </Badge>
+                )}
+                {userInfo.industry && (
+                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
+                    {userInfo.industry}
+                  </Badge>
+                )}
+              </div>
+
+              {/* CTAs */}
+              <div className="flex gap-3 pt-4">
+                {userInfo.email && (
+                  <Button 
+                    size="lg"
+                    style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
+                    onClick={() => window.location.href = `mailto:${userInfo.email}`}
+                  >
+                    Book a Project
+                  </Button>
+                )}
                 <Button 
                   size="lg"
-                  style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                  onClick={() => window.location.href = `mailto:${userInfo.email}`}
+                  variant="outline"
+                  style={{ borderColor: INK_BLACK, color: INK_BLACK }}
                 >
-                  Book a Project
+                  Explore Work
                 </Button>
-              )}
-              <Button 
-                size="lg"
-                variant="outline"
-                style={{ borderColor: INK_BLACK, color: INK_BLACK }}
-              >
-                Explore Work
-              </Button>
-            </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
