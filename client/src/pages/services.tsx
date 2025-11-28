@@ -120,7 +120,12 @@ export default function ServicesPage() {
   };
   
   if (isLoading) {
-    return <ServicesPageSkeleton />;
+    return (
+      <div className="flex h-screen flex-col">
+        <Header />
+        <ServicesPageSkeleton />
+      </div>
+    );
   }
 
   return (

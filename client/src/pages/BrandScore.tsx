@@ -48,21 +48,13 @@ export default function BrandScore() {
 
   if (isLoading) {
     return (
-      <div 
-        className="flex h-screen flex-col responsive-background"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      <div>
         <Header />
-        <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
-          <div className="flex-1 overflow-auto w-full">
-            <div className="max-w-6xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
-              <Skeleton className="h-12 w-64 mb-6" />
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Skeleton className="h-96 lg:col-span-1" />
-                <Skeleton className="h-96 lg:col-span-2" />
-              </div>
-            </div>
+        <div className="p-8">
+          <Skeleton className="h-12 w-64 mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Skeleton className="h-96 lg:col-span-1" />
+            <Skeleton className="h-96 lg:col-span-2" />
           </div>
         </div>
       </div>

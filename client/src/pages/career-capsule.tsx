@@ -70,11 +70,6 @@ export default function CareerCapsulePage() {
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
   
-  // Loading state
-  if (isLoading) {
-    return <CareerCapsulePageSkeleton />;
-  }
-
   // Debug logging to understand the data structure
   console.log('Career Goals Data Structure:', JSON.stringify(goals, null, 2));
   

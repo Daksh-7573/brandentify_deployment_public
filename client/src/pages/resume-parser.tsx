@@ -85,16 +85,12 @@ export default function ResumeParserPage() {
     setExtractedData(null);
   };
   
-  // Loading state
-  if (isLoading) {
-    return <ResumeParserPageSkeleton />;
-  }
-
-  // If user is not logged in, show message
-  if (!user) {
-    return (
-      <>
-        <Header />
+  return (
+    <>
+      <Header />
+      {isLoading ? (
+        <ResumeParserPageSkeleton />
+      ) : !user ? (
         <div className="container mx-auto px-4 pt-24 max-w-4xl">
           <div className="text-center py-12">
             <h1 className="text-3xl font-bold mb-4">Drop & Define</h1>
@@ -103,38 +99,33 @@ export default function ResumeParserPage() {
             </p>
           </div>
         </div>
-      </>
-    );
-  }
-  
-  return (
-    <>
-      <Header />
-      <div className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {extractedData ? 'Review Your Profile' : 'Drop & Define'}
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            {extractedData 
-              ? 'Review the information extracted from your resume and decide what to include in your profile'
-              : 'Upload your resume and let Musk automatically build your professional profile'}
-          </p>
+      ) : (
+        <div className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              {extractedData ? 'Review Your Profile' : 'Drop & Define'}
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {extractedData 
+                ? 'Review the information extracted from your resume and decide what to include in your profile'
+                : 'Upload your resume and let Musk automatically build your professional profile'}
+            </p>
+          </div>
+          
+          {extractedData ? (
+            <ResumeMapping 
+              extractedData={extractedData}
+              onApproveMapping={handleApproveMapping}
+              onCancel={handleCancel}
+            />
+          ) : (
+            <ResumeDrop 
+              onResumeProcessed={handleResumeProcessed}
+              isLoading={isLoading}
+            />
+          )}
         </div>
-        
-        {extractedData ? (
-          <ResumeMapping 
-            extractedData={extractedData}
-            onApproveMapping={handleApproveMapping}
-            onCancel={handleCancel}
-          />
-        ) : (
-          <ResumeDrop 
-            onResumeProcessed={handleResumeProcessed}
-            isLoading={isLoading}
-          />
-        )}
-      </div>
+      )}
     </>
   );
 }
