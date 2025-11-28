@@ -174,12 +174,9 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
     }
   }, [isAuthenticated, isLoading, navigate]);
   
+  // Don't show loading skeleton here - pages handle their own loading with page-specific skeletons
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80">
-        <FeedSkeleton count={1} />
-      </div>
-    );
+    return null;
   }
   
   return isAuthenticated ? <Component /> : null;
@@ -223,7 +220,7 @@ function Router() {
       <Route path="/auth-test" component={() => {
         const AuthTest = lazy(() => import("@/pages/auth-test"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthTest />
           </Suspense>
         );
@@ -231,7 +228,7 @@ function Router() {
       <Route path="/simple-auth-test" component={() => {
         const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <SimpleAuthTest />
           </Suspense>
         );
@@ -239,7 +236,7 @@ function Router() {
       <Route path="/auth-popup-fix" component={() => {
         const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthPopupFix />
           </Suspense>
         );
@@ -247,7 +244,7 @@ function Router() {
       <Route path="/auth-flow-test" component={() => {
         const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthFlowTest />
           </Suspense>
         );
@@ -255,7 +252,7 @@ function Router() {
       <Route path="/auth-debug-detailed" component={() => {
         const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthDebugDetailed />
           </Suspense>
         );
@@ -263,7 +260,7 @@ function Router() {
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthEnhancedPopup />
           </Suspense>
         );
@@ -271,7 +268,7 @@ function Router() {
       <Route path="/auth-redirect-test" component={() => {
         const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthRedirectTest />
           </Suspense>
         );
@@ -279,7 +276,7 @@ function Router() {
       <Route path="/auth-direct-oauth" component={() => {
         const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthDirectOAuth />
           </Suspense>
         );
@@ -287,7 +284,7 @@ function Router() {
       <Route path="/auth-working-test" component={() => {
         const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
         return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <AuthWorkingTest />
           </Suspense>
         );
@@ -350,7 +347,7 @@ function Router() {
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
-          <Suspense fallback={<FeedSkeleton count={3} />}>
+          <Suspense fallback={<div />}>
             <FixedLoginPage />
           </Suspense>
         );
@@ -358,7 +355,7 @@ function Router() {
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
+          <Suspense fallback={<div />}>
             <DevAuthUtilityPage />
           </Suspense>
         );
@@ -378,7 +375,7 @@ function Router() {
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
+          <Suspense fallback={<div />}>
             <AuthDebugPage />
           </Suspense>
         );
@@ -386,7 +383,7 @@ function Router() {
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
+          <Suspense fallback={<div />}>
             <AuthPopupDebugPage />
           </Suspense>
         );
@@ -406,7 +403,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
-            <Suspense fallback={<FeedSkeleton count={3} />}>
+            <Suspense fallback={<div />}>
               <AICareerPage />
             </Suspense>
           );
@@ -520,7 +517,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminDashboardWithLayout = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminDashboard />
@@ -539,7 +536,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminUsersWithLayout = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminUsers />
@@ -559,7 +556,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContentWithLayout = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminContentNew />
@@ -577,7 +574,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -598,7 +595,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -618,7 +615,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminSettings = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <SettingsPage />
@@ -638,7 +635,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminRoles = () => (
-            <Suspense fallback={<FeedSkeleton count={2} />}>
+            <Suspense fallback={<div />}>
               <AdminCheck>
                 <AdminLayout>
                   <RolesManagement />
@@ -659,7 +656,7 @@ function Router() {
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <SharedCardPage userId={params.userId} />
           </Suspense>
         )}
@@ -686,7 +683,7 @@ function Router() {
       {/* Random profile link route */}
       <Route path="/r/:randomLink">
         {(params) => (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
+          <Suspense fallback={<div />}>
             <RandomProfile />
           </Suspense>
         )}
@@ -703,7 +700,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={<FeedSkeleton count={3} />}>
+        <Suspense fallback={<div />}>
           <Router />
           <GlobalMuskButton />
           {/* DomainHelper removed - Firebase disabled */}
