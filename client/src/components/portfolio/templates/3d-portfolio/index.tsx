@@ -156,6 +156,10 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     paragraph: userInfo.aboutMe || userInfo.uniqueValueProposition || undefined,
     whatIOffer: userInfo.whatIOffer || undefined,
     missionStatement: userInfo.missionStatement || undefined,
+    coreValues: userInfo.coreValues || undefined,
+    lookingFor: userInfo.lookingFor || undefined,
+    primaryAudience: userInfo.primaryAudience || undefined,
+    secondaryAudience: userInfo.secondaryAudience || undefined,
     primaryCta: { label: "Let's Talk", onClick: () => {
       document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
     }},

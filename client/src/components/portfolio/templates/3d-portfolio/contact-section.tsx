@@ -10,6 +10,8 @@ interface ContactSectionProps {
     location?: string;
     profileUrl?: string;
     linkedin?: string;
+    instagram?: string;
+    twitter?: string;
   };
   onSubmit?: (values: { name: string; email: string; message: string }) => Promise<void>;
   className?: string;
@@ -68,7 +70,8 @@ const ContactSection: React.FC<ContactSectionProps> = ({
     { icon: Mail, label: 'Email', value: contact.email, field: 'Email' },
     { icon: Phone, label: 'Phone', value: contact.phone, field: 'Phone' },
     { icon: MapPin, label: 'Location', value: contact.location, field: 'Location' },
-    { icon: Globe, label: 'Website', value: contact.profileUrl, field: 'Website' }
+    { icon: Globe, label: 'Website', value: contact.profileUrl, field: 'Website' },
+    { icon: Linkedin, label: 'LinkedIn', value: contact.linkedin, field: 'LinkedIn' }
   ].filter(item => item.value);
 
   return (

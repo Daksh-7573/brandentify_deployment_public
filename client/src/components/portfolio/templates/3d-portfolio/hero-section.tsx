@@ -13,6 +13,10 @@ interface HeroSectionProps {
     paragraph?: string;
     whatIOffer?: string;
     missionStatement?: string;
+    coreValues?: string[];
+    lookingFor?: string;
+    primaryAudience?: string[];
+    secondaryAudience?: string[];
     primaryCta?: { label: string; onClick?: () => void };
     secondaryCta?: { label: string; onClick?: () => void };
   };
@@ -171,6 +175,57 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     style={{ color: COLORS.coolGray }}
                   >
                     {heroCopy.whatIOffer}
+                  </p>
+                </div>
+              )}
+
+              {heroCopy.missionStatement && !isPreview && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    Mission
+                  </p>
+                  <p
+                    className="text-base leading-relaxed max-w-xl"
+                    style={{ color: COLORS.coolGray }}
+                  >
+                    {heroCopy.missionStatement}
+                  </p>
+                </div>
+              )}
+
+              {heroCopy.coreValues && heroCopy.coreValues.length > 0 && !isPreview && (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    Core Values
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {heroCopy.coreValues.map((value, i) => (
+                      <span
+                        key={`core-${i}`}
+                        className="px-3 py-1 rounded-full text-xs font-medium"
+                        style={{
+                          background: `${COLORS.electricBlue}20`,
+                          border: `1px solid ${COLORS.electricBlue}40`,
+                          color: COLORS.electricBlue
+                        }}
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {heroCopy.lookingFor && !isPreview && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    Looking For
+                  </p>
+                  <p
+                    className="text-base leading-relaxed max-w-xl"
+                    style={{ color: COLORS.coolGray }}
+                  >
+                    {heroCopy.lookingFor}
                   </p>
                 </div>
               )}
