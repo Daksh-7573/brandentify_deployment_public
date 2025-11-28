@@ -80,7 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             )}
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center w-full mt-12 lg:mt-20">
               <ThreeDCard
                 profile={profile}
                 width={cardWidth}
@@ -90,6 +90,41 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 onAction={onCardAction}
               />
             </div>
+            {heroCopy.coreValues && heroCopy.coreValues.length > 0 && !isPreview && (
+              <div className="space-y-3 mt-12 w-full">
+                <p className="text-sm font-semibold uppercase tracking-wider text-center" style={{ color: COLORS.silverGray }}>
+                  Core Values
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {heroCopy.coreValues.map((value, i) => (
+                    <span
+                      key={`core-${i}`}
+                      className="px-3 py-1 rounded-full text-xs font-medium"
+                      style={{
+                        background: `${COLORS.electricBlue}20`,
+                        border: `1px solid ${COLORS.electricBlue}40`,
+                        color: COLORS.electricBlue
+                      }}
+                    >
+                      {value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {heroCopy.lookingFor && !isPreview && (
+              <div className="space-y-2 mt-8 w-full text-center">
+                <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                  Looking For
+                </p>
+                <p
+                  className="text-base leading-relaxed max-w-xs mx-auto"
+                  style={{ color: COLORS.coolGray }}
+                >
+                  {heroCopy.lookingFor}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className={`${isPreview ? 'text-center' : 'space-y-8'}`}>
@@ -187,43 +222,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     style={{ color: COLORS.coolGray }}
                   >
                     {heroCopy.missionStatement}
-                  </p>
-                </div>
-              )}
-
-              {heroCopy.coreValues && heroCopy.coreValues.length > 0 && !isPreview && (
-                <div className="space-y-3">
-                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
-                    Core Values
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {heroCopy.coreValues.map((value, i) => (
-                      <span
-                        key={`core-${i}`}
-                        className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{
-                          background: `${COLORS.electricBlue}20`,
-                          border: `1px solid ${COLORS.electricBlue}40`,
-                          color: COLORS.electricBlue
-                        }}
-                      >
-                        {value}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {heroCopy.lookingFor && !isPreview && (
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
-                    Looking For
-                  </p>
-                  <p
-                    className="text-base leading-relaxed max-w-xl"
-                    style={{ color: COLORS.coolGray }}
-                  >
-                    {heroCopy.lookingFor}
                   </p>
                 </div>
               )}
