@@ -143,64 +143,6 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
         </div>
 
         <div className="absolute inset-0 p-6 pb-20 flex flex-col z-10">
-          <div className="flex justify-center mb-5" data-layer={DEPTH_MAP.layer5}>
-            <div className="relative w-28 h-28">
-              {showRings && (
-                <>
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      transform: "scale(1.15)",
-                      background: `conic-gradient(from 0deg, ${COLORS.electricBlue}, ${COLORS.neonPurple}, ${COLORS.mintGreen}, ${COLORS.electricBlue})`,
-                      filter: "blur(8px)",
-                      opacity: isHovered ? 0.8 : 0.5,
-                      animation: "spin 8s linear infinite"
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      transform: "scale(1.05)",
-                      boxShadow: `0 0 15px ${COLORS.electricBlue}60`,
-                      animation: "pulse 3s infinite alternate ease-in-out"
-                    }}
-                  />
-                </>
-              )}
-              <div
-                className="absolute inset-0 rounded-full overflow-hidden border-2"
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                  animation: enableTilt ? "float 5s infinite ease-in-out" : "none",
-                  boxShadow: `0 0 20px ${COLORS.electricBlue}40`
-                }}
-              >
-                {profile.photoUrl ? (
-                  <img
-                    src={profile.photoUrl}
-                    alt={profile.name}
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${profile.name}&background=1e293b&color=38bdf8`;
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${profile.name}&background=1e293b&color=38bdf8`}
-                    alt={profile.name}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 60%)",
-                    animation: "reflectionSweep 5s infinite ease-in-out"
-                  }}
-                />
-              </div>
-            </div>
-          </div>
 
           <div className="text-center mb-4" data-layer={DEPTH_MAP.layer4}>
             <h2
@@ -339,66 +281,6 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
               <MessageSquare className="h-4 w-4" />
               Let's Talk
             </button>
-          </div>
-
-          <div
-            className="absolute bottom-4 left-6 right-6"
-            data-layer={DEPTH_MAP.layer1}
-          >
-            <div
-              className="w-full rounded-md overflow-hidden transition-all duration-300"
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.charcoalBlack}90, ${COLORS.charcoalBlack}70)`,
-                backdropFilter: "blur(10px)",
-                border: `1px solid ${COLORS.electricBlue}30`,
-                boxShadow: contactExpanded ? `0 0 25px ${COLORS.electricBlue}30` : `0 0 15px ${COLORS.electricBlue}15`,
-                height: contactExpanded ? "auto" : "40px"
-              }}
-            >
-              <div
-                className="flex items-center justify-center px-4 py-2 cursor-pointer"
-                onClick={() => setContactExpanded(!contactExpanded)}
-                style={{ borderBottom: contactExpanded ? `1px solid ${COLORS.electricBlue}30` : "none" }}
-              >
-                <h3 className="text-sm font-medium" style={{ color: contactExpanded ? COLORS.electricBlue : COLORS.silverGray }}>
-                  Contact Information
-                </h3>
-              </div>
-              <div
-                className="px-4 py-2 space-y-2 text-center overflow-hidden transition-all duration-300"
-                style={{
-                  maxHeight: contactExpanded ? "200px" : "0px",
-                  opacity: contactExpanded ? 1 : 0,
-                  marginBottom: contactExpanded ? "5px" : "0px"
-                }}
-              >
-                {profile.contact?.email && (
-                  <div
-                    className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                    style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                    onClick={() => copyToClipboard(profile.contact!.email!, 'Email')}
-                  >
-                    {profile.contact.email}
-                  </div>
-                )}
-                {profile.contact?.phone && (
-                  <div
-                    className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                    style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                    onClick={() => copyToClipboard(profile.contact!.phone!, 'Phone')}
-                  >
-                    {profile.contact.phone}
-                  </div>
-                )}
-                <div
-                  className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                  style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                  onClick={() => copyToClipboard(profileLink, 'Profile link')}
-                >
-                  {profileLink}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

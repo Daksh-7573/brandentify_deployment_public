@@ -210,9 +210,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5" style={{ color: COLORS.electricBlue }} />
-            <span className="font-bold text-lg" style={{ color: COLORS.offWhite }}>
-              {userInfo.brandName || userInfo.name}
-            </span>
           </div>
           <div className="hidden md:flex items-center gap-6">
             {['About', 'Services', 'Projects', 'Experience', 'Contact'].map(item => (
@@ -226,17 +223,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
               </a>
             ))}
           </div>
-          <button
-            onClick={() => document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{
-              background: `linear-gradient(135deg, ${COLORS.electricBlue}, ${COLORS.neonPurple})`,
-              color: COLORS.offWhite
-            }}
-            data-testid="nav-book-btn"
-          >
-            Book
-          </button>
         </div>
       </nav>
 
