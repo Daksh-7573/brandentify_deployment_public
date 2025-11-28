@@ -92,6 +92,14 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     return entries;
   }, [userExperiences, userEducations]);
 
+  const goodAtSummary = useMemo(() => {
+    if (userSkills.length > 0) {
+      const topSkills = userSkills.slice(0, 6).map(s => s.skillName).join(', ');
+      return topSkills || undefined;
+    }
+    return undefined;
+  }, [userSkills]);
+
   const heroCopy = useMemo(() => ({
     heading: userInfo.tagline || `Hi, I'm ${userInfo.name}`,
     subheading: userInfo.title || undefined,
@@ -100,6 +108,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     visionStatement: userInfo.visionStatement || undefined,
     paragraph: userInfo.aboutMe || userInfo.uniqueValueProposition || undefined,
     whatIOffer: userInfo.whatIOffer || undefined,
+    goodAt: goodAtSummary,
     missionStatement: userInfo.missionStatement || undefined,
     coreValues: userInfo.coreValues || undefined,
     lookingFor: userInfo.lookingFor || undefined,
@@ -111,7 +120,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     secondaryCta: { label: "View Projects", onClick: () => {
       document.getElementById('projects-section')?.scrollIntoView({ behavior: 'smooth' });
     }}
-  }), [userInfo]);
+  }), [userInfo, goodAtSummary]);
 
   const contact = useMemo(() => ({
     email: userInfo.email || undefined,
@@ -164,7 +173,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
             <Sparkles className="h-5 w-5" style={{ color: COLORS.electricBlue }} />
           </div>
           <div className="hidden md:flex items-center gap-6">
-            {['About', 'Services', 'Projects', 'Experience', 'Contact'].map(item => (
+            {['About', 'Expertise', 'Projects', 'Experience', 'Contact'].map(item => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}-section`}
@@ -192,6 +201,41 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
             }}
           />
         </div>
+
+        {(heroCopy.goodAt || heroCopy.whatIOffer) && (
+          <div id="expertise-section" className="py-16 lg:py-24" style={{ background: `linear-gradient(135deg, ${COLORS.charcoalBlack} 0%, ${COLORS.deepCharcoal} 100%)` }}>
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {heroCopy.goodAt && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-3xl font-bold mb-2" style={{ color: COLORS.offWhite, fontFamily: "'Sora', 'Inter', sans-serif" }}>
+                        What I'm Good At
+                      </h3>
+                      <div className="h-1 w-16 rounded-full" style={{ background: `linear-gradient(90deg, ${COLORS.electricBlue}, ${COLORS.neonPurple})` }} />
+                    </div>
+                    <p className="text-lg leading-relaxed" style={{ color: COLORS.coolGray }}>
+                      {heroCopy.goodAt}
+                    </p>
+                  </div>
+                )}
+                {heroCopy.whatIOffer && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-3xl font-bold mb-2" style={{ color: COLORS.offWhite, fontFamily: "'Sora', 'Inter', sans-serif" }}>
+                        What I Offer
+                      </h3>
+                      <div className="h-1 w-16 rounded-full" style={{ background: `linear-gradient(90deg, ${COLORS.mintGreen}, ${COLORS.electricBlue})` }} />
+                    </div>
+                    <p className="text-lg leading-relaxed" style={{ color: COLORS.coolGray }}>
+                      {heroCopy.whatIOffer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {projects.length > 0 && (
           <div id="projects-section">
