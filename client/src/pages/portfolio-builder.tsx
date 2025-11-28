@@ -1211,28 +1211,46 @@ export default function PortfolioBuilder() {
             )}
 
             {form.watch("layout") === "corporate-executive" && (
-              <CorporateExecutive
-                userInfo={{
-                  name: userData?.name || user?.name || '',
-                  title: userData?.title || null,
-                  industry: userData?.industry || null,
-                  domain: userData?.domain || null,
-                  location: userData?.location || null,
-                  email: userData?.email || user?.email || null,
-                  photoURL: userData?.photoURL || user?.photoURL || null,
-                  lookingFor: userData?.lookingFor || null,
-                  jobLevel: userData?.jobLevel || null,
-                  aboutMe: userData?.aboutMe || ''
-                }}
-                userSkills={skills || []}
-                userExperiences={experiences || []}
-                userProjects={projects?.map(project => ({
-                  ...project,
-                  mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : []
-                })) || []}
-                userEducations={educations || []}
-                userServices={services || []}
-              />
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                    className="text-white/70 hover:text-white hover:bg-white/10"
+                    data-testid="button-back-portfolio"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                </div>
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <CorporateExecutive
+                      userInfo={{
+                        name: userData?.name || user?.name || '',
+                        title: userData?.title || null,
+                        industry: userData?.industry || null,
+                        domain: userData?.domain || null,
+                        location: userData?.location || null,
+                        email: userData?.email || user?.email || null,
+                        photoURL: userData?.photoURL || user?.photoURL || null,
+                        lookingFor: userData?.lookingFor || null,
+                        jobLevel: userData?.jobLevel || null,
+                        aboutMe: userData?.aboutMe || ''
+                      }}
+                      userSkills={skills || []}
+                      userExperiences={experiences || []}
+                      userProjects={projects?.map(project => ({
+                        ...project,
+                        mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : []
+                      })) || []}
+                      userEducations={educations || []}
+                      userServices={services || []}
+                    />
+                  </CardContent>
+                </Card>
+              </>
             )}
             
             {form.watch("layout") === "dynamic-innovator" && (
