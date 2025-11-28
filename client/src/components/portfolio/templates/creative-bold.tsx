@@ -56,6 +56,7 @@ interface CreativeBoldProps {
     description?: string | null;
   }>;
   currentUserId?: number;
+  isPreview?: boolean;
 }
 
 const CORAL = '#FF6B5A';
@@ -71,6 +72,7 @@ export default function CreativeBold({
   userProjects = [],
   userEducations = [],
   userServices = [],
+  isPreview = false
 }: CreativeBoldProps) {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,32 +93,34 @@ export default function CreativeBold({
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: PAPER_WHITE, color: INK_BLACK }}>
-      {/* STICKY HEADER */}
-      <motion.header 
-        initial={{ y: -100 }} 
-        animate={{ y: 0 }} 
-        transition={{ duration: 0.6 }}
-        className="fixed top-0 w-full z-50 transition-all"
-        style={{ backgroundColor: PAPER_WHITE, borderBottom: `1px solid #E5E7EB` }}
-      >
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold" style={{ color: INK_BLACK }}>{userInfo.name}</h2>
-          <div className="flex items-center gap-2">
-            {userInfo.email && (
-              <Button 
-                size="sm" 
-                style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                onClick={() => window.location.href = `mailto:${userInfo.email}`}
-              >
-                Book Me
-              </Button>
-            )}
+      {/* STICKY HEADER - Hidden in preview mode */}
+      {!isPreview && (
+        <motion.header 
+          initial={{ y: -100 }} 
+          animate={{ y: 0 }} 
+          transition={{ duration: 0.6 }}
+          className="fixed top-0 w-full z-50 transition-all"
+          style={{ backgroundColor: PAPER_WHITE, borderBottom: `1px solid #E5E7EB` }}
+        >
+          <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold" style={{ color: INK_BLACK }}>{userInfo.name}</h2>
+            <div className="flex items-center gap-2">
+              {userInfo.email && (
+                <Button 
+                  size="sm" 
+                  style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
+                  onClick={() => window.location.href = `mailto:${userInfo.email}`}
+                >
+                  Book Me
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.header>
+        </motion.header>
+      )}
 
       {/* HERO - Service-First with Photo */}
-      <section className="pt-32 pb-20 px-6 md:px-12">
+      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-6' : 'pt-32'}`}>
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 
