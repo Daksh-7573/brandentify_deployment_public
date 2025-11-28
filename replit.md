@@ -93,15 +93,25 @@ Preferred communication style: Simple, everyday language.
 - **Service**: `server/services/intent-classifier.ts` with keyword-based rule matching
 - **Updated Endpoint**: `/api/musk/contextual-suggestions` now returns structured JSON with intent classification
 
-## Referral System - Portfolio & Quest Share Links (FIXED ✨)
-- **Issue**: Share links (`/join/:code`) were generated but frontend route was missing
-- **Solution**: 
-  - Created `join-referral.tsx` page to handle `/join/:code` URLs
-  - Added referral code validation and storage in sessionStorage
-  - Enhanced auth context to process referrals automatically on signup
-  - Complete flow: Share Link → Validation → Signup → Auto Reward Processing
-- **Files**: `client/src/pages/join-referral.tsx`, `client/src/App.tsx`, `client/src/context/simple-auth-context.tsx`
-- **Status**: Fully functional on both dev and live sites
+## Referral System - Share-to-Unlock Mechanism (FIXED ✨✨)
+- **Issue**: Referral rewards were not being granted when users registered via share links
+- **Root Cause**: Referral processing was attempted client-side after login, but needed to happen server-side during user creation
+- **Solution (Nov 28, 2025)**:
+  1. **Backend Processing** (server/routes.ts):
+     - POST /api/users now processes referral codes during user creation
+     - Initializes default unlocks (2 quantum cards + 2 portfolios) for all new users
+     - Grants referral rewards atomically: 1 quantum card + 2 portfolios per conversion
+  2. **Frontend Integration** (client/src/components/auth/email-auth.tsx):
+     - Registration form passes referral code from sessionStorage in request body
+     - Clears referral code from sessionStorage after successful registration
+  3. **Backup Processing** (client/src/context/auth-context.tsx):
+     - signInWithEmail function also processes pending referral codes as backup
+- **Complete Flow**: Share Link → `/join/:code` validation → sessionStorage → Registration → Backend processes referral → Rewards granted
+- **Rewards Per Referral**: 1 random quantum card + 2 random portfolios (from locked templates)
+- **Default Unlocks**: All new users get 2 quantum cards (professional, quantum) + 2 portfolios (corporate-executive, scholar)
+- **Database Tables**: `referral_conversions`, `user_unlocks`
+- **Files**: `server/routes.ts`, `server/services/referral-service.ts`, `client/src/components/auth/email-auth.tsx`, `client/src/context/auth-context.tsx`
+- **Status**: ✅ Fully functional - Verified via database: User 2 → User 28 referral recorded, 3 rewards granted
 
 ## 8-Layer Enhanced Musk Intelligence Framework (COMPLETE ✨✨)
 Complete emotional awareness, goal-tracking, and adaptive personalization system:
