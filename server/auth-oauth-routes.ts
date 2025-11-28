@@ -738,15 +738,41 @@ export async function handleGoogleOAuthCallbackRoute(
       res.cookie("brandentifier_session", sessionToken, cookieOptions);
 
       console.log(
-        "✅ [SESSION-HANDOFF] Same domain - redirecting to auth-success for verification",
+        "✅ [SESSION-HANDOFF] Same domain - sending popup close response",
       );
 
-      // Redirect to /auth-success page which will:
-      // 1. Show loading spinner in popup
-      // 2. Verify session cookie with backend
-      // 3. Redirect parent to dashboard once verified
-      // 4. Auto-close popup
-      return res.redirect(303, "/auth-success");
+      // Serve a small HTML that notifies the opener and auto-closes the popup
+      return res.send(`
+        <html>
+          <head>
+            <title>Authentication Successful</title>
+            <script>
+              (function() {
+                try {
+                  // Redirect parent window to dashboard with fresh cookie
+                  if (window.opener) {
+                    window.opener.location = "/dashboard";
+                  }
+                } catch (err) {
+                  console.error("Popup redirect error", err);
+                }
+                
+                // Auto-close popup after 100ms to ensure parent redirect initiates
+                setTimeout(function() {
+                  try {
+                    window.close();
+                  } catch (err) {
+                    console.error("Popup close error", err);
+                  }
+                }, 100);
+              })();
+            </script>
+          </head>
+          <body>
+            <p>Authentication successful. Redirecting...</p>
+          </body>
+        </html>
+      `);
     }
   } catch (error: any) {
     console.error(
