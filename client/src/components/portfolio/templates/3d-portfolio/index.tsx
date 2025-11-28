@@ -44,6 +44,11 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     }
   }), [userInfo]);
 
+  const cardDimensions = useMemo(() => ({
+    width: isPreview ? 280 : 420,
+    height: isPreview ? 380 : 400
+  }), [isPreview]);
+
   const stats = useMemo(() => {
     const items = [];
     if (userExperiences.length > 0) {
@@ -182,6 +187,8 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
           services={services}
           enableTilt={false}
           isPreview={true}
+          cardWidth={cardDimensions.width}
+          cardHeight={cardDimensions.height}
         />
         {stats.length > 0 && <StatsStrip stats={stats} isPreview={true} />}
         {services.length > 0 && <ServicesGrid services={services} isPreview={true} />}
@@ -232,6 +239,8 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
             profile={cardProfile}
             heroCopy={heroCopy}
             services={services}
+            cardWidth={cardDimensions.width}
+            cardHeight={cardDimensions.height}
             onCardAction={(action) => {
               if (action === 'contact') {
                 document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -244,12 +253,18 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
 
         {services.length > 0 && (
           <div id="services-section">
-            <ServicesGrid 
-              services={services}
-              onBook={(id) => {
-                document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            />
+            <div className="py-16 lg:py-24" style={{ background: `linear-gradient(135deg, ${COLORS.charcoalBlack} 0%, ${COLORS.deepCharcoal} 100%)` }}>
+              <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-12">
+                <h2 className="text-3xl lg:text-4xl font-bold" style={{ color: COLORS.offWhite }}>What I Do</h2>
+                <p className="mt-2 text-lg" style={{ color: COLORS.coolGray }}>Services and expertise I offer</p>
+              </div>
+              <ServicesGrid 
+                services={services}
+                onBook={(id) => {
+                  document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              />
+            </div>
           </div>
         )}
 

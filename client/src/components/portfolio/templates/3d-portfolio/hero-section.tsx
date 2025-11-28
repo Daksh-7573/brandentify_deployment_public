@@ -20,6 +20,8 @@ interface HeroSectionProps {
   enableTilt?: boolean;
   onCardAction?: (action: 'copy' | 'download' | 'contact' | 'mentor') => void;
   isPreview?: boolean;
+  cardWidth?: number;
+  cardHeight?: number;
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({
@@ -28,10 +30,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   services = [],
   enableTilt = true,
   onCardAction,
-  isPreview = false
+  isPreview = false,
+  cardWidth: propCardWidth,
+  cardHeight: propCardHeight
 }) => {
-  const cardWidth = isPreview ? 280 : 420;
-  const cardHeight = isPreview ? 380 : 560;
+  const cardWidth = propCardWidth || (isPreview ? 280 : 420);
+  const cardHeight = propCardHeight || (isPreview ? 380 : 400);
 
   return (
     <section 
@@ -42,7 +46,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     >
       <div className={`max-w-7xl mx-auto ${isPreview ? 'px-3' : 'px-6 lg:px-8'}`}>
         <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-start`}>
-          <div className={`flex flex-col items-start ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
+          <div className={`flex flex-col items-center ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
             {!isPreview && profile.photoUrl && (
               <div className="mb-8">
                 <div className="relative w-64 h-64">
