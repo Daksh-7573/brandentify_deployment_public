@@ -968,6 +968,10 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+              <h1 className="text-3xl font-bold mb-1 text-white">Portfolio Builder</h1>
+              <p className="text-white/60 mb-6">
+                Create a personalized portfolio with Musk AI
+              </p>
               <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
               <p className="text-white/70">
                 Review your AI-generated portfolio before publishing it to the world.
@@ -1054,71 +1058,98 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "creative-bold" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <CreativeBold
-                    userInfo={{
-                      id: userData?.id,
-                      name: userData?.name || user?.name || '',
-                      email: userData?.email || user?.email || null,
-                      title: userData?.title || null,
-                      aboutMe: userData?.aboutMe || null,
-                      location: userData?.location || null,
-                      industry: userData?.industry || null,
-                      domain: userData?.domain || null,
-                      lookingFor: userData?.lookingFor || null,
-                      whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      tagline: userData?.tagline || null,
-                      visionStatement: userData?.visionStatement || null,
-                      missionStatement: userData?.missionStatement || null,
-                      coreValues: userData?.coreValues || [],
-                      uniqueValueProposition: userData?.uniqueValueProposition || null
-                    }}
-                    userSkills={skills?.map(skill => ({
-                      id: skill.id,
-                      name: skill.name,
-                      level: skill.level || undefined
-                    })) || []}
-                    userExperiences={experiences?.map(exp => ({
-                      id: exp.id,
-                      title: exp.title,
-                      company: exp.company,
-                      startDate: exp.startDate,
-                      endDate: exp.endDate || undefined,
-                      description: exp.description || ''
-                    })) || []}
-                    userProjects={projects?.map(p => ({
-                      id: p.id,
-                      title: p.title,
-                      description: p.description || '',
-                      startDate: p.startDate || undefined,
-                      thumbnailUrl: p.thumbnailUrl || undefined,
-                      projectUrl: p.projectUrl || undefined
-                    })) || []}
-                    userEducations={educations?.map(edu => ({
-                      id: edu.id,
-                      institution: edu.institution,
-                      degree: edu.degree,
-                      fieldOfStudy: edu.fieldOfStudy || undefined,
-                      startDate: edu.startDate,
-                      endDate: edu.endDate || undefined
-                    })) || []}
-                    userServices={services?.map(service => ({
-                      id: service.id,
-                      title: service.title,
-                      description: service.description || ''
-                    })) || []}
-                    currentUserId={userNumericId}
-                  />
-                </CardContent>
-              </Card>
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                    className="text-white/70 hover:text-white hover:bg-white/10"
+                    data-testid="button-back-portfolio"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                </div>
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <CreativeBold
+                      userInfo={{
+                        id: userData?.id,
+                        name: userData?.name || user?.name || '',
+                        email: userData?.email || user?.email || null,
+                        title: userData?.title || null,
+                        aboutMe: userData?.aboutMe || null,
+                        location: userData?.location || null,
+                        industry: userData?.industry || null,
+                        domain: userData?.domain || null,
+                        lookingFor: userData?.lookingFor || null,
+                        whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                        photoURL: userData?.photoURL || user?.photoURL || null,
+                        tagline: userData?.tagline || null,
+                        visionStatement: userData?.visionStatement || null,
+                        missionStatement: userData?.missionStatement || null,
+                        coreValues: userData?.coreValues || [],
+                        uniqueValueProposition: userData?.uniqueValueProposition || null
+                      }}
+                      userSkills={skills?.map(skill => ({
+                        id: skill.id,
+                        name: skill.name,
+                        level: skill.level || undefined
+                      })) || []}
+                      userExperiences={experiences?.map(exp => ({
+                        id: exp.id,
+                        title: exp.title,
+                        company: exp.company,
+                        startDate: exp.startDate,
+                        endDate: exp.endDate || undefined,
+                        description: exp.description || ''
+                      })) || []}
+                      userProjects={projects?.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        description: p.description || '',
+                        startDate: p.startDate || undefined,
+                        thumbnailUrl: p.thumbnailUrl || undefined,
+                        projectUrl: p.projectUrl || undefined
+                      })) || []}
+                      userEducations={educations?.map(edu => ({
+                        id: edu.id,
+                        institution: edu.institution,
+                        degree: edu.degree,
+                        fieldOfStudy: edu.fieldOfStudy || undefined,
+                        startDate: edu.startDate,
+                        endDate: edu.endDate || undefined
+                      })) || []}
+                      userServices={services?.map(service => ({
+                        id: service.id,
+                        title: service.title,
+                        description: service.description || ''
+                      })) || []}
+                      currentUserId={userNumericId}
+                    />
+                  </CardContent>
+                </Card>
+              </>
             )}
             
             {form.watch("layout") === "fashion-is-art" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <FashionIsArt
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                    className="text-white/70 hover:text-white hover:bg-white/10"
+                    data-testid="button-back-portfolio"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                </div>
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <FashionIsArt
                     userInfo={{
                       id: userData?.id,
                       name: userData?.name || user?.name || '',
@@ -1174,8 +1205,9 @@ export default function PortfolioBuilder() {
                     })) || []}
                     currentUserId={userNumericId}
                   />
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </>
             )}
 
             {form.watch("layout") === "corporate-executive" && (
