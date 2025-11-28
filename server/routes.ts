@@ -699,13 +699,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 24);
       
-      // Store the token in the email verification storage
-      await storage.createEmailVerification({
-        email: user.email,
-        token,
-        expiresAt
-      });
-      
       // Update the user with the verification token
       await storage.updateUser(user.id, {
         emailVerificationToken: token,
