@@ -28,42 +28,12 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
   const industryTags = profile.industryTags?.slice(0, 3) || [];
   const profileLink = `brandentifier.com/@${(profile.name || 'user').toLowerCase().replace(/\s+/g, '-')}`;
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!enableTilt || !cardRef.current) return;
-
-    setIsHovered(true);
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const relX = (e.clientX - centerX) / (rect.width / 2);
-    const relY = (e.clientY - centerY) / (rect.height / 2);
-
-    cancelAnimationFrame(rafRef.current!);
-    rafRef.current = requestAnimationFrame(() => {
-      setRotateY(relX * maxRotation);
-      setRotateX(relY * -maxRotation);
-
-      const layers = cardRef.current?.querySelectorAll('[data-layer]');
-      layers?.forEach(layer => {
-        const el = layer as HTMLElement;
-        const depth = parseFloat(el.getAttribute('data-layer') || "1");
-        const moveX = relX * depth * 8;
-        const moveY = relY * depth * 8;
-        el.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
-      });
-    });
-  }, [enableTilt, maxRotation]);
+  const handleMouseMove = useCallback(() => {
+    // Hover effect animation disabled
+  }, []);
 
   const handleMouseLeave = useCallback(() => {
-    cancelAnimationFrame(rafRef.current!);
-    setIsHovered(false);
-    setRotateX(0);
-    setRotateY(0);
-
-    const layers = cardRef.current?.querySelectorAll('[data-layer]');
-    layers?.forEach(layer => {
-      (layer as HTMLElement).style.transform = 'translate3d(0, 0, 0)';
-    });
+    // Hover effect animation disabled
   }, []);
 
   const copyToClipboard = (text: string, type: string) => {
@@ -96,11 +66,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
         className="w-full h-full rounded-2xl overflow-hidden relative cursor-pointer"
         style={{
           transformStyle: "preserve-3d",
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`,
-          transition: "transform 120ms ease-out",
-          boxShadow: isHovered
-            ? `0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 15px 2px ${COLORS.electricBlue}30`
-            : "0 10px 30px -5px rgba(0, 0, 0, 0.3)",
+          boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.3)",
         }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -143,77 +109,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
         </div>
 
         <div className="absolute inset-0 p-6 pb-20 flex flex-col z-10">
-          <div className="flex justify-center mb-5" data-layer={DEPTH_MAP.layer5}>
-            <div className="relative w-28 h-28">
-              {showRings && (
-                <>
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      transform: "scale(1.15)",
-                      background: `conic-gradient(from 0deg, ${COLORS.electricBlue}, ${COLORS.neonPurple}, ${COLORS.mintGreen}, ${COLORS.electricBlue})`,
-                      filter: "blur(8px)",
-                      opacity: isHovered ? 0.8 : 0.5,
-                      animation: "spin 8s linear infinite"
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      transform: "scale(1.05)",
-                      boxShadow: `0 0 15px ${COLORS.electricBlue}60`,
-                      animation: "pulse 3s infinite alternate ease-in-out"
-                    }}
-                  />
-                </>
-              )}
-              <div
-                className="absolute inset-0 rounded-full overflow-hidden border-2"
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                  animation: enableTilt ? "float 5s infinite ease-in-out" : "none",
-                  boxShadow: `0 0 20px ${COLORS.electricBlue}40`
-                }}
-              >
-                {profile.photoUrl ? (
-                  <img
-                    src={profile.photoUrl}
-                    alt={profile.name}
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${profile.name}&background=1e293b&color=38bdf8`;
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${profile.name}&background=1e293b&color=38bdf8`}
-                    alt={profile.name}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 60%)",
-                    animation: "reflectionSweep 5s infinite ease-in-out"
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
           <div className="text-center mb-4" data-layer={DEPTH_MAP.layer4}>
-            <h2
-              className="text-2xl font-bold mb-1"
-              style={{
-                fontFamily: "'Sora', 'Inter', sans-serif",
-                color: COLORS.offWhite,
-                letterSpacing: "0.02em",
-                textShadow: `0 0 10px ${COLORS.electricBlue}40, 0 0 20px ${COLORS.electricBlue}30`
-              }}
-            >
-              {profile.name}
-            </h2>
             {profile.title && (
               <div
                 className="inline-block px-4 py-1 rounded-md"
@@ -298,108 +194,6 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
           )}
 
           <div className="flex-grow" />
-
-          <div className="flex justify-center gap-3 mb-4" data-layer={DEPTH_MAP.layer1}>
-            <button
-              onClick={() => handleAction('mentor')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.electricBlue}, ${COLORS.neonPurple})`,
-                color: COLORS.offWhite,
-                boxShadow: `0 4px 15px ${COLORS.electricBlue}40`
-              }}
-              data-testid="btn-mentor"
-            >
-              <Users className="h-4 w-4" />
-              Mentor
-            </button>
-            <button
-              onClick={() => handleAction('download')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-              style={{
-                background: `${COLORS.charcoalBlack}90`,
-                border: `1px solid ${COLORS.electricBlue}50`,
-                color: COLORS.electricBlue
-              }}
-              data-testid="btn-resume"
-            >
-              <Download className="h-4 w-4" />
-              Resume
-            </button>
-            <button
-              onClick={() => handleAction('contact')}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-              style={{
-                background: `${COLORS.charcoalBlack}90`,
-                border: `1px solid ${COLORS.mintGreen}50`,
-                color: COLORS.mintGreen
-              }}
-              data-testid="btn-contact"
-            >
-              <MessageSquare className="h-4 w-4" />
-              Let's Talk
-            </button>
-          </div>
-
-          <div
-            className="absolute bottom-4 left-6 right-6"
-            data-layer={DEPTH_MAP.layer1}
-          >
-            <div
-              className="w-full rounded-md overflow-hidden transition-all duration-300"
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.charcoalBlack}90, ${COLORS.charcoalBlack}70)`,
-                backdropFilter: "blur(10px)",
-                border: `1px solid ${COLORS.electricBlue}30`,
-                boxShadow: contactExpanded ? `0 0 25px ${COLORS.electricBlue}30` : `0 0 15px ${COLORS.electricBlue}15`,
-                height: contactExpanded ? "auto" : "40px"
-              }}
-            >
-              <div
-                className="flex items-center justify-center px-4 py-2 cursor-pointer"
-                onClick={() => setContactExpanded(!contactExpanded)}
-                style={{ borderBottom: contactExpanded ? `1px solid ${COLORS.electricBlue}30` : "none" }}
-              >
-                <h3 className="text-sm font-medium" style={{ color: contactExpanded ? COLORS.electricBlue : COLORS.silverGray }}>
-                  Contact Information
-                </h3>
-              </div>
-              <div
-                className="px-4 py-2 space-y-2 text-center overflow-hidden transition-all duration-300"
-                style={{
-                  maxHeight: contactExpanded ? "200px" : "0px",
-                  opacity: contactExpanded ? 1 : 0,
-                  marginBottom: contactExpanded ? "5px" : "0px"
-                }}
-              >
-                {profile.contact?.email && (
-                  <div
-                    className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                    style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                    onClick={() => copyToClipboard(profile.contact!.email!, 'Email')}
-                  >
-                    {profile.contact.email}
-                  </div>
-                )}
-                {profile.contact?.phone && (
-                  <div
-                    className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                    style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                    onClick={() => copyToClipboard(profile.contact!.phone!, 'Phone')}
-                  >
-                    {profile.contact.phone}
-                  </div>
-                )}
-                <div
-                  className="text-sm cursor-pointer hover:underline transition-colors duration-200 pl-2 border-l-2"
-                  style={{ color: COLORS.coolGray, borderColor: `${COLORS.electricBlue}50` }}
-                  onClick={() => copyToClipboard(profileLink, 'Profile link')}
-                >
-                  {profileLink}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {copySuccess && (
