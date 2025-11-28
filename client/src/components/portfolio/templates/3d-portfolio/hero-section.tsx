@@ -41,47 +41,49 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       }}
     >
       <div className={`max-w-7xl mx-auto ${isPreview ? 'px-3' : 'px-6 lg:px-8'}`}>
-        {!isPreview && profile.photoUrl && (
-          <div className="flex justify-center mb-12">
-            <div className="relative w-64 h-64">
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: `conic-gradient(from 0deg, ${COLORS.electricBlue}, ${COLORS.neonPurple}, ${COLORS.mintGreen}, ${COLORS.electricBlue})`,
-                  filter: "blur(12px)",
-                  opacity: 0.6,
-                  animation: "spin 8s linear infinite"
-                }}
-              />
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  boxShadow: `0 0 25px ${COLORS.electricBlue}60`,
-                  animation: "pulse 3s infinite alternate ease-in-out"
-                }}
-              />
-              <img
-                src={profile.photoUrl}
-                alt={profile.name}
-                className="absolute inset-0 w-full h-full rounded-full object-cover border-4"
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                  boxShadow: `0 0 30px ${COLORS.electricBlue}40`
-                }}
+        <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-start`}>
+          <div className={`flex flex-col items-start ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
+            {!isPreview && profile.photoUrl && (
+              <div className="mb-8">
+                <div className="relative w-64 h-64">
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: `conic-gradient(from 0deg, ${COLORS.electricBlue}, ${COLORS.neonPurple}, ${COLORS.mintGreen}, ${COLORS.electricBlue})`,
+                      filter: "blur(12px)",
+                      opacity: 0.6,
+                      animation: "spin 8s linear infinite"
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      boxShadow: `0 0 25px ${COLORS.electricBlue}60`,
+                      animation: "pulse 3s infinite alternate ease-in-out"
+                    }}
+                  />
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.name}
+                    className="absolute inset-0 w-full h-full rounded-full object-cover border-4"
+                    style={{
+                      borderColor: "rgba(255, 255, 255, 0.2)",
+                      boxShadow: `0 0 30px ${COLORS.electricBlue}40`
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            <div className="flex justify-center w-full">
+              <ThreeDCard
+                profile={profile}
+                width={cardWidth}
+                height={cardHeight}
+                enableTilt={false}
+                maxRotation={0}
+                onAction={onCardAction}
               />
             </div>
-          </div>
-        )}
-        <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-center`}>
-          <div className={`flex justify-center ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
-            <ThreeDCard
-              profile={profile}
-              width={cardWidth}
-              height={cardHeight}
-              enableTilt={false}
-              maxRotation={0}
-              onAction={onCardAction}
-            />
           </div>
 
           <div className={`${isPreview ? 'text-center' : 'space-y-8'}`}>
