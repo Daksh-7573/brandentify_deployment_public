@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
-import Header from "@/components/layout/header";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 // Nowboard panel import
 // Removed Nowboard panel import as it's now integrated into quests
@@ -47,7 +46,6 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
 import PulseMenu from "@/components/industry-pulse/pulse-menu";
 import { CommentSection } from "@/components/pulse/comment-section";
@@ -1309,21 +1307,7 @@ export default function IndustryPulsePage() {
   };
 
   return (
-    <div 
-      className="flex h-screen flex-col responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
-      <div className="relative z-10 flex h-screen flex-col">
-        <Header />
-        <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
-        {/* Main content area */}
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6"> {/* Further reduced top margin to 3 (0.75rem) */}
+    <NeoGlassLayout className="mt-3 mx-3 sm:mx-6 w-full pt-16">
             <div className="flex gap-6">
               {/* Main content */}
               <div className="flex-1 max-w-4xl">
@@ -1548,10 +1532,6 @@ export default function IndustryPulsePage() {
                 <NowboardPanelSimple />
               </div>
             </div>
-          </NeoGlassLayout>
-        </div>
-      </div>
-      </div>
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
@@ -1638,6 +1618,6 @@ export default function IndustryPulsePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </NeoGlassLayout>
   );
 }
