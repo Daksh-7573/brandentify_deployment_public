@@ -99,6 +99,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     company: userInfo.industryTags?.[0] || undefined,
     visionStatement: userInfo.visionStatement || undefined,
     paragraph: userInfo.aboutMe || userInfo.uniqueValueProposition || undefined,
+    whatImGoodAt: userInfo.uniqueValueProposition || undefined,
     whatIOffer: userInfo.whatIOffer || undefined,
     missionStatement: userInfo.missionStatement || undefined,
     coreValues: userInfo.coreValues || undefined,

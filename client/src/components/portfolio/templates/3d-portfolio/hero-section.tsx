@@ -11,6 +11,7 @@ interface HeroSectionProps {
     company?: string;
     visionStatement?: string;
     paragraph?: string;
+    whatImGoodAt?: string;
     whatIOffer?: string;
     missionStatement?: string;
     coreValues?: string[];
@@ -196,6 +197,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 >
                   {heroCopy.paragraph}
                 </p>
+              )}
+
+              {heroCopy.whatImGoodAt && !isPreview && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    What I'm Good At
+                  </p>
+                  <p
+                    className="text-base leading-relaxed max-w-xl"
+                    style={{ color: COLORS.coolGray }}
+                  >
+                    {heroCopy.whatImGoodAt}
+                  </p>
+                </div>
               )}
 
               {heroCopy.whatIOffer && !isPreview && (
