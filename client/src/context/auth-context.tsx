@@ -221,6 +221,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
             console.log('[Auth Context] ✅ Auth state updated from popup callback');
+            
+            // Navigate to dashboard after session is confirmed
+            // Check if still on login/auth page before navigating
+            const currentPath = window.location.pathname;
+            if (currentPath === '/login' || currentPath === '/auth' || currentPath.includes('/join/')) {
+              console.log('[Auth Context] 🚀 Navigating to dashboard after auth confirmation');
+              setTimeout(() => {
+                window.location.href = '/dashboard';
+              }, 100); // Small delay to ensure state update completes
+            }
           }
         })
         .catch(error => {

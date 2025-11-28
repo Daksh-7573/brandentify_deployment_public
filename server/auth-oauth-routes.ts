@@ -741,7 +741,8 @@ export async function handleGoogleOAuthCallbackRoute(
         "✅ [SESSION-HANDOFF] Same domain - sending popup close response",
       );
 
-      // Serve a small HTML that notifies the opener and auto-closes the popup
+      // Serve a small HTML that notifies the opener via postMessage
+      // Parent window will navigate itself after receiving the signal
       return res.send(`
         <html>
           <head>
@@ -749,35 +750,34 @@ export async function handleGoogleOAuthCallbackRoute(
             <script>
               (function() {
                 try {
-                  // Signal parent that session is ready BEFORE redirecting
+                  // Signal parent that session is ready
+                  // Parent will check session and navigate itself
                   if (window.opener) {
-                    // Send postMessage to parent to trigger auth refresh
+                    // Send postMessage to parent to trigger auth refresh and navigation
                     window.opener.postMessage(
                       { type: 'session_ready', timestamp: Date.now() },
                       window.location.origin
                     );
                     console.log('📨 Sent session_ready postMessage to parent');
-                    
-                    // Redirect parent window to dashboard with fresh cookie
-                    window.opener.location = "/dashboard";
+                    // Parent will handle navigation after receiving this
                   }
                 } catch (err) {
-                  console.error("Popup redirect error", err);
+                  console.error("Popup postMessage error", err);
                 }
                 
-                // Auto-close popup after 800ms to ensure parent has time to navigate and receive cookie
+                // Auto-close popup after 1000ms to give parent time to receive postMessage and navigate
                 setTimeout(function() {
                   try {
                     window.close();
                   } catch (err) {
                     console.error("Popup close error", err);
                   }
-                }, 800);
+                }, 1000);
               })();
             </script>
           </head>
           <body>
-            <p>Authentication successful. Redirecting...</p>
+            <p>Authentication successful. You can close this window.</p>
           </body>
         </html>
       `);
