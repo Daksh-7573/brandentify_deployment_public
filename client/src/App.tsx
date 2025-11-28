@@ -11,6 +11,7 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { MuskLoadingShell } from "@/components/ui/musk-loading-shell";
+import { AppShell } from "@/components/layout/app-shell";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
@@ -164,7 +165,8 @@ const PageRedirect = ({ to }: { to: string }) => {
 };
 
 // Protected route component that checks if the user is authenticated
-function ProtectedRoute({ component: Component, fallback, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode }) {
+// Wraps all protected pages in AppShell for consistent layout
+function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode, noShell?: boolean }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, navigate] = useLocation();
   
@@ -175,9 +177,16 @@ function ProtectedRoute({ component: Component, fallback, ...rest }: { component
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Show loading animation during auth check
+  // Show loading animation during auth check (inside AppShell for consistent look)
   if (isLoading) {
-    return fallback ? <>{fallback}</> : <MuskLoadingShell />;
+    if (noShell) {
+      return fallback ? <>{fallback}</> : <MuskLoadingShell />;
+    }
+    return (
+      <AppShell>
+        {fallback ? <>{fallback}</> : <MuskLoadingShell />}
+      </AppShell>
+    );
   }
   
   // Only block if we've confirmed user is NOT authenticated
@@ -185,7 +194,16 @@ function ProtectedRoute({ component: Component, fallback, ...rest }: { component
     return null;
   }
   
-  return <Component />;
+  // Wrap page in AppShell for consistent header and background
+  if (noShell) {
+    return <Component />;
+  }
+  
+  return (
+    <AppShell>
+      <Component />
+    </AppShell>
+  );
 }
 
 function Router() {
