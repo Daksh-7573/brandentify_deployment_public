@@ -220,7 +220,21 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
-        return <ProtectedRoute path="/services" component={ManageServicesPage} />
+        return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
+      }} />
+
+      {/* Referral join link handler */}
+      <Route path="/join/:code">
+        {(params) => (
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div>Loading...</div></div>}>
+            <JoinReferralPage code={params.code} />
+          </Suspense>
+        )}
+      </Route>
+
+      {/* Services routes */}
+      <Route path="/services" component={() => (
+        <ProtectedRoute path="/services" component={ManageServicesPage} />
       )} />
       
       <Route path="/add-service" component={() => (
