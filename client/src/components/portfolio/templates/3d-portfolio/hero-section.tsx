@@ -50,7 +50,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-start`}>
           <div className={`flex flex-col items-center ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
             {!isPreview && profile.photoUrl && (
-              <div className="mb-8">
+              <div className="mb-2">
                 <div className="relative w-64 h-64">
                   <div
                     className="absolute inset-0 rounded-full"
@@ -80,7 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             )}
-            <div className="flex justify-center w-full mt-12 lg:mt-20">
+            <div className="flex justify-center w-full mt-2 lg:mt-4">
               <ThreeDCard
                 profile={profile}
                 width={cardWidth}
@@ -91,7 +91,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               />
             </div>
             {heroCopy.coreValues && heroCopy.coreValues.length > 0 && !isPreview && (
-              <div className="space-y-3 mt-12 w-full">
+              <div className="space-y-3 mt-8 w-full">
                 <p className="text-sm font-semibold uppercase tracking-wider text-center" style={{ color: COLORS.silverGray }}>
                   Core Values
                 </p>
