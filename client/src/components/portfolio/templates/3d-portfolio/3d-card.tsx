@@ -15,9 +15,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
   showRings = true,
   enableTilt = true,
   onAction,
-  className = "",
-  coreValues,
-  lookingFor
+  className = ""
 }) => {
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
@@ -238,33 +236,6 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
                 <MapPin className="h-3 w-3" style={{ color: COLORS.coolGray }} />
                 <span className="text-xs" style={{ color: COLORS.coolGray }}>{profile.location}</span>
               </div>
-            </div>
-          )}
-
-          {(coreValues && coreValues.length > 0 || lookingFor) && (
-            <div className="space-y-3 mb-4" data-layer={DEPTH_MAP.layer2}>
-              {coreValues && coreValues.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2">
-                  {coreValues.map((value, i) => (
-                    <span
-                      key={`core-${i}`}
-                      className="px-2 py-1 rounded text-xs font-medium"
-                      style={{
-                        background: `${COLORS.neonPurple}15`,
-                        border: `1px solid ${COLORS.neonPurple}40`,
-                        color: COLORS.neonPurple
-                      }}
-                    >
-                      {value}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {lookingFor && (
-                <p className="text-xs text-center font-medium" style={{ color: COLORS.mintGreen }}>
-                  {lookingFor}
-                </p>
-              )}
             </div>
           )}
 

@@ -34,8 +34,6 @@ export type ThreeDCardProps = {
   enableTilt?: boolean;
   onAction?: (action: 'copy' | 'download' | 'contact' | 'mentor', payload?: any) => void;
   className?: string;
-  coreValues?: string[];
-  lookingFor?: string;
 };
 
 export type ServiceItem = {

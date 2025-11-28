@@ -80,7 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             )}
-            <div className="flex justify-center w-full mt-8">
+            <div className="flex justify-center w-full">
               <ThreeDCard
                 profile={profile}
                 width={cardWidth}
@@ -88,8 +88,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 enableTilt={false}
                 maxRotation={0}
                 onAction={onCardAction}
-                coreValues={heroCopy.coreValues}
-                lookingFor={heroCopy.lookingFor}
               />
             </div>
           </div>
