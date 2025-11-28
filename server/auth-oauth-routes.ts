@@ -757,14 +757,14 @@ export async function handleGoogleOAuthCallbackRoute(
                   console.error("Popup redirect error", err);
                 }
                 
-                // Auto-close popup after 100ms to ensure parent redirect initiates
+                // Auto-close popup after 800ms to ensure parent has time to navigate and receive cookie
                 setTimeout(function() {
                   try {
                     window.close();
                   } catch (err) {
                     console.error("Popup close error", err);
                   }
-                }, 100);
+                }, 800);
               })();
             </script>
           </head>
