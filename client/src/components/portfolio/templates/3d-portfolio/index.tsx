@@ -92,14 +92,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     return entries;
   }, [userExperiences, userEducations]);
 
-  const goodAtSummary = useMemo(() => {
-    if (userSkills.length > 0) {
-      const topSkills = userSkills.slice(0, 6).map(s => s.skillName).join(', ');
-      return topSkills || undefined;
-    }
-    return undefined;
-  }, [userSkills]);
-
   const heroCopy = useMemo(() => ({
     heading: userInfo.tagline || `Hi, I'm ${userInfo.name}`,
     subheading: userInfo.title || undefined,
@@ -108,7 +100,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     visionStatement: userInfo.visionStatement || undefined,
     paragraph: userInfo.aboutMe || userInfo.uniqueValueProposition || undefined,
     whatIOffer: userInfo.whatIOffer || undefined,
-    goodAt: goodAtSummary,
+    goodAt: userInfo.uniqueValueProposition || undefined,
     missionStatement: userInfo.missionStatement || undefined,
     coreValues: userInfo.coreValues || undefined,
     lookingFor: userInfo.lookingFor || undefined,
@@ -120,7 +112,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     secondaryCta: { label: "View Projects", onClick: () => {
       document.getElementById('projects-section')?.scrollIntoView({ behavior: 'smooth' });
     }}
-  }), [userInfo, goodAtSummary]);
+  }), [userInfo]);
 
   const contact = useMemo(() => ({
     email: userInfo.email || undefined,
