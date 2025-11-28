@@ -251,15 +251,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         
-        // Monitor the popup for completion
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
-            setIsLoading(false);
-            // Check for authentication success
-            window.location.reload(); // Refresh to check auth state
-          }
-        }, 1000);
+        // Popup will handle redirect via callback - no need to monitor
+        // The callback redirects parent to /dashboard and auto-closes popup
+        setIsLoading(false);
         
         return;
         

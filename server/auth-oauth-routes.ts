@@ -741,7 +741,7 @@ export async function handleGoogleOAuthCallbackRoute(
         "✅ [SESSION-HANDOFF] Same domain - sending popup close response",
       );
 
-      // Serve a small HTML that notifies the opener and closes the popup
+      // Serve a small HTML that notifies the opener and auto-closes the popup
       return res.send(`
         <html>
           <head>
@@ -749,28 +749,27 @@ export async function handleGoogleOAuthCallbackRoute(
             <script>
               (function() {
                 try {
-                  // Notify parent window that login succeeded
+                  // Redirect parent window to dashboard with fresh cookie
                   if (window.opener) {
-                   window.opener.location = "/dashboard";
-                   window.close();
-        
-                    // window.opener.postMessage(
-                    //   { type: "oauth_success", provider: "google" },
-                    //   window.location.origin
-                    // );
-                    // Optionally, you can directly redirect parent:
-                    // window.opener.location = "/dashboard";
+                    window.opener.location = "/dashboard";
                   }
                 } catch (err) {
                   console.error("Popup redirect error", err);
                 }
-                // Close popup
-                // window.close();
+                
+                // Auto-close popup after 100ms to ensure parent redirect initiates
+                setTimeout(function() {
+                  try {
+                    window.close();
+                  } catch (err) {
+                    console.error("Popup close error", err);
+                  }
+                }, 100);
               })();
             </script>
           </head>
           <body>
-            <p>Authentication successful. You can close this window.</p>
+            <p>Authentication successful. Redirecting...</p>
           </body>
         </html>
       `);
