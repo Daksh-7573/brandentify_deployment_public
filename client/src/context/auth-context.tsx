@@ -251,9 +251,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         
-        // Popup will handle redirect via callback - no need to monitor
-        // The callback redirects parent to /dashboard and auto-closes popup
-        setIsLoading(false);
+        // Listen for postMessage from popup indicating successful authentication
+        const handlePostMessage = (event: MessageEvent) => {
+          // Verify the message came from same origin
+          if (event.origin !== window.location.origin) {
+            return;
+          }
+          
+          // Check if this is our oauth_success message
+          if (event.data?.type === "oauth_success" && event.data?.provider === "google") {
+            console.log("✅ Received oauth_success postMessage from popup");
+            setIsLoading(false);
+            
+            // Remove listener
+            window.removeEventListener("message", handlePostMessage);
+            
+            // Redirect directly to dashboard with fresh cookie
+            // Use setTimeout to ensure message is fully processed
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 50);
+          }
+        };
+        
+        // Listen for postMessage from popup
+        window.addEventListener("message", handlePostMessage);
+        
+        // Clean up listener after 30 seconds if no message received (timeout)
+        const timeoutId = setTimeout(() => {
+          window.removeEventListener("message", handlePostMessage);
+          setIsLoading(false);
+        }, 30000);
         
         return;
         
