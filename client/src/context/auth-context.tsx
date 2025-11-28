@@ -176,6 +176,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user]);
 
+  // Listen for postMessage from OAuth popup when session is ready
+  useEffect(() => {
+    const handleSessionReady = (event: MessageEvent) => {
+      // Only accept messages from same origin
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      
+      // Check for session_ready message from popup
+      if (event.data?.type === 'session_ready') {
+        console.log('[Auth Context] 📨 Received session_ready postMessage from popup');
+        
+        // Refresh session immediately when popup signals it's ready
+        fetch('/api/auth/session', {
+          method: 'GET',
+          credentials: 'include'
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Session refresh failed');
+          }
+        })
+        .then(sessionData => {
+          if (sessionData.success && sessionData.user) {
+            console.log('[Auth Context] ✅ Session refreshed after popup callback:', sessionData.user.email);
+            
+            const userData = sessionData.user;
+            const authUser = {
+              uid: userData.id.toString(),
+              ...userData,
+              photoURL: userData.photoURL || null
+            };
+            
+            setUser(authUser);
+            setIsLoading(false);
+            
+            // Update session storage
+            const sessionUserData = {
+              ...userData,
+              photoSource: userData.photoSource || 'unknown'
+            };
+            sessionStorage.setItem('brandentifier_user', JSON.stringify(sessionUserData));
+            console.log('[Auth Context] ✅ Auth state updated from popup callback');
+          }
+        })
+        .catch(error => {
+          console.error('[Auth Context] ❌ Failed to refresh session after popup:', error);
+        });
+      }
+    };
+
+    window.addEventListener('message', handleSessionReady);
+    
+    return () => {
+      window.removeEventListener('message', handleSessionReady);
+    };
+  }, []);
+
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {

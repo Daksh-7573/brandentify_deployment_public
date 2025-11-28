@@ -749,8 +749,16 @@ export async function handleGoogleOAuthCallbackRoute(
             <script>
               (function() {
                 try {
-                  // Redirect parent window to dashboard with fresh cookie
+                  // Signal parent that session is ready BEFORE redirecting
                   if (window.opener) {
+                    // Send postMessage to parent to trigger auth refresh
+                    window.opener.postMessage(
+                      { type: 'session_ready', timestamp: Date.now() },
+                      window.location.origin
+                    );
+                    console.log('📨 Sent session_ready postMessage to parent');
+                    
+                    // Redirect parent window to dashboard with fresh cookie
                     window.opener.location = "/dashboard";
                   }
                 } catch (err) {
