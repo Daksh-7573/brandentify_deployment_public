@@ -328,10 +328,7 @@ export default function CareerCapsulePage() {
         </div>
         
         {isLoading ? (
-          <NeoGlassSection className="flex flex-col items-center justify-center h-64 space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-            <p className="text-gray-300">Loading career goals...</p>
-          </NeoGlassSection>
+          <CareerCapsulePageSkeleton />
         ) : goals ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
             {/* Display all goals as an array - our backend now always returns an array */}

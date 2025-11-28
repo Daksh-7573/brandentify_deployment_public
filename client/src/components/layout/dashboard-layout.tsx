@@ -21,10 +21,8 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
     return null;
   }
 
-  // Loading state
-  if (isLoading) {
-    return <DashboardPageSkeleton />;
-  }
+  // Note: Pages handle their own loading states with page-specific skeletons
+  // Don't show wrapper skeleton here to avoid double skeleton flash
 
   return (
     <div 
