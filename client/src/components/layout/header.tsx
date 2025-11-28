@@ -157,7 +157,7 @@ export default function Header() {
   console.log('[HEADER PERFORMANCE] userId:', userId);
 
   return (
-    <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-[9999]">
+    <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-[9999] pointer-events-auto" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
