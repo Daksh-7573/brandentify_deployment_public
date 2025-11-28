@@ -23,8 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import { Service } from "@shared/schema";
 import { ReactNode } from "react";
-// Removed Sidebar import, using top navigation only
-import Header from "@/components/layout/header";
 import { ServicesPageSkeleton } from "@/components/ui/page-skeletons/services-skeleton";
 import {
   AlertDialog,
@@ -120,21 +118,12 @@ export default function ServicesPage() {
   };
   
   if (isLoading) {
-    return (
-      <div className="flex h-screen flex-col">
-        <Header />
-        <ServicesPageSkeleton />
-      </div>
-    );
+    return <ServicesPageSkeleton />;
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        
-        <div className="flex-1 overflow-auto">
-          <div className="container p-8 max-w-6xl mx-auto">
+    <div className="flex-1 overflow-auto pt-16">
+      <div className="container p-8 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight mb-2">My Services</h1>
@@ -167,9 +156,7 @@ export default function ServicesPage() {
               </Dialog>
             </div>
             
-            {isLoading ? (
-              <FeedSkeleton count={2} />
-            ) : services.length === 0 ? (
+            {services.length === 0 ? (
               <div className="text-center p-12 border rounded-lg border-dashed">
                 <h3 className="text-xl font-medium mb-2">No services added yet</h3>
                 <p className="text-muted-foreground mb-6">
@@ -308,8 +295,6 @@ export default function ServicesPage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </div>
-        </div>
       </div>
     </div>
   );

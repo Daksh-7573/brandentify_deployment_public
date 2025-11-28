@@ -12,8 +12,6 @@ import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import Header from "@/components/layout/header";
-import backgroundImage from '@assets/Brandentifier Landing_1751376023002.png';
 import { CareerCapsulePageSkeleton } from "@/components/ui/page-skeletons/career-capsule-skeleton";
 
 // Utility function to format dates
@@ -301,22 +299,8 @@ export default function CareerCapsulePage() {
   };
 
   return (
-    <div 
-      className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
-      <div className="relative z-10 w-full h-full overflow-auto">
-        <Header />
-        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
-          <div className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <NeoGlassLayout className="mt-3 mx-3 sm:mx-6 pt-16">
+      <div className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
           <button 
@@ -906,9 +890,7 @@ export default function CareerCapsulePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-          </div>
-        </NeoGlassLayout>
       </div>
-    </div>
+    </NeoGlassLayout>
   );
 }
