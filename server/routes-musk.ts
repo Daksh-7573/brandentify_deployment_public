@@ -1113,7 +1113,7 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
  */
 export const handleGenerateContextualSuggestions = async (req: Request, res: Response) => {
   try {
-    const { userId: rawUserId, conversationHistory, profileData } = req.body;
+    const { userId: rawUserId, conversationHistory, profileData, suggestedTemplateIds = [] } = req.body;
     const conversationId = crypto.randomUUID();
     
     console.log('[Musk Enhanced] 🚀 Generating contextual suggestions with all 8 layers');
@@ -1200,20 +1200,24 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     const userIndustry = userData?.industry || 'Technology';
     
     try {
-      // Get templates with feedback-based ranking (LAYER 6)
-      const result = await pool.query(
-        `SELECT ft.*, COUNT(ff.id) as feedback_count, 
+      // Get templates with feedback-based ranking (LAYER 6) - excluding previously suggested ones
+      const excludeClause = suggestedTemplateIds.length > 0 
+        ? `AND ft.id NOT IN (${suggestedTemplateIds.map((_, i) => `$${i + 3}`).join(',')})` 
+        : '';
+      
+      const query = `SELECT ft.*, COUNT(ff.id) as feedback_count, 
                 AVG(CASE WHEN ff.helpful = true THEN 1 ELSE 0 END) as helpful_ratio
          FROM followup_templates ft
          LEFT JOIN followup_feedback ff ON ft.id = ff.template_id
-         WHERE ft.industry = $1 AND ft.type = $2
+         WHERE ft.industry = $1 AND ft.type = $2 ${excludeClause}
          GROUP BY ft.id
          ORDER BY helpful_ratio DESC NULLS LAST, feedback_count DESC
-         LIMIT 5`,
-        [userIndustry, enhancedClassification.intent]
-      );
+         LIMIT 5`;
+      
+      const params = [userIndustry, enhancedClassification.intent, ...suggestedTemplateIds];
+      const result = await pool.query(query, params);
       templates = result.rows || [];
-      console.log(`[Musk Enhanced] Layer 3&6: Found ${templates.length} templates (ranked by feedback)`);
+      console.log(`[Musk Enhanced] Layer 3&6: Found ${templates.length} templates (ranked by feedback, excluding ${suggestedTemplateIds.length} previously suggested)`);
     } catch (error) {
       console.error('[Musk Enhanced] Error fetching templates:', error);
     }
@@ -1221,10 +1225,12 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     // Fallback if no industry-specific templates
     if (templates.length === 0) {
       try {
-        const result = await pool.query(
-          `SELECT * FROM followup_templates WHERE type = $1 ORDER BY RANDOM() LIMIT 5`,
-          [enhancedClassification.intent]
-        );
+        const excludeClause = suggestedTemplateIds.length > 0 
+          ? `AND id NOT IN (${suggestedTemplateIds.map((_, i) => `$${i + 2}`).join(',')})` 
+          : '';
+        const query = `SELECT * FROM followup_templates WHERE type = $1 ${excludeClause} ORDER BY RANDOM() LIMIT 5`;
+        const params = [enhancedClassification.intent, ...suggestedTemplateIds];
+        const result = await pool.query(query, params);
         templates = result.rows || [];
       } catch (error) {
         console.error('[Musk Enhanced] Error fetching fallback templates:', error);
@@ -1252,6 +1258,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
       }
       
       return {
+        template_id: template.id, // Include template ID so frontend can track it
         type: template.type,
         text: adjustedText,
         why: template.why || `Helps with ${template.type} questions`,

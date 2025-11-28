@@ -60,6 +60,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   // For generating personalized suggested questions
   const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
+  const [suggestedTemplateIds, setSuggestedTemplateIds] = useState<number[]>([]);
   const { user } = useAuth(); // Get current user data from auth context
   
   // Initialize with default welcome message (personalized questions will load)
@@ -143,6 +144,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         body: JSON.stringify({
           userId: user.id,
           conversationHistory: messages,
+          suggestedTemplateIds, // Pass previously suggested template IDs to avoid repeats
           profileData: userData ? {
             title: userData.title,
             industry: userData.industry,
@@ -155,15 +157,26 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       if (response.ok) {
         const data = await response.json();
-        const aiQuestions: SuggestedQuestion[] = data.suggestions.map((text: string, idx: number) => ({
-          id: `ai-${Date.now()}-${idx}`,
-          text,
+        const aiQuestions: SuggestedQuestion[] = data.suggestions.map((suggestion: any, idx: number) => ({
+          id: `ai-${suggestion.template_id || Date.now()}-${idx}`,
+          text: suggestion.text || suggestion,
           category: 'career',
           relevanceScore: 1.0,
           isNew: true
         }));
         
         setSuggestedQuestions(aiQuestions);
+        
+        // Track the template IDs that were just suggested
+        const newTemplateIds = data.suggestions
+          .map((suggestion: any) => suggestion.template_id)
+          .filter((id: any) => id !== undefined);
+        
+        if (newTemplateIds.length > 0) {
+          setSuggestedTemplateIds(prev => [...prev, ...newTemplateIds]);
+          console.log('[Musk Chat] Tracking suggested template IDs:', newTemplateIds);
+        }
+        
         console.log('[Musk Chat] Generated AI suggestions from:', data.source);
       } else {
         // Fallback to static questions if API fails
