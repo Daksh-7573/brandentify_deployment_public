@@ -113,7 +113,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
             overflow: "hidden"
           }}
         >
-          {Array.from({ length: particles.count }).map((_, i) => (
+          {Array.from({ length: particles.count || 15 }).map((_, i) => (
             <div
               key={i}
               className="absolute rounded-full"

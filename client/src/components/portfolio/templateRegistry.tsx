@@ -12,6 +12,7 @@ import NatureCreative from "@/components/portfolio/templates/nature-creative";
 import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 import FashionIsArt from "@/components/portfolio/templates/fashion-is-art";
 import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-model";
+import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -31,7 +32,8 @@ export type PortfolioLayoutKey =
   | "nature-creative"
   | "fashion-runway"
   | "fashion-is-art"
-  | "yoga-fitness-model";
+  | "yoga-fitness-model"
+  | "3d-portfolio";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -159,7 +161,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "nature-creative": NatureCreative as any,
   "fashion-runway": FashionRunway as any,
   "fashion-is-art": FashionIsArt as any,
-  "yoga-fitness-model": YogaFitnessModel as any
+  "yoga-fitness-model": YogaFitnessModel as any,
+  "3d-portfolio": ThreeDPortfolio as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {

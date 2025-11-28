@@ -49,6 +49,7 @@ import PastelDreamscape from "@/components/portfolio/templates/pastel-dreamscape
 import NatureCreative from "@/components/portfolio/templates/nature-creative";
 import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-model";
+import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,7 +90,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -589,6 +590,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Clean, Soulful, Earth Tones, Mindful Aesthetics, Parallax Effects
 ✔ Best For: Yoga Instructors, Fitness Models, Wellness Coaches, Mindfulness Professionals`,
       theme: "#9DC183"
+    },
+    { 
+      id: "3d-portfolio", 
+      name: "3D Immersive Portfolio", 
+      description: `✔ Theme: Tech-Luxury, 3D Interactive Card, Parallax Effects, Neon Accents
+✔ Best For: Tech Leaders, Innovators, Premium Personal Brands, Senior Professionals`,
+      theme: "#38bdf8"
     }
   ];
 
@@ -1621,6 +1629,41 @@ export default function PortfolioBuilder() {
                   userProjects={projects || []}
                   userEducations={educations || []}
                   userServices={services || []}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "3d-portfolio" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <ThreeDPortfolio
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                    jobLevel: userData?.jobLevel || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    brandName: userData?.brandName || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
+                  isPreview={false}
                 />
               </div>
             )}
