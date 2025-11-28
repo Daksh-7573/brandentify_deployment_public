@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, CheckCircle2 } from 'lucide-react';
-import { INDUSTRIES } from '@shared/constants';
 
 const LOOKING_FOR_OPTIONS = [
   { value: 'job_opportunities', label: 'Job Opportunities' },
@@ -18,6 +17,13 @@ const LOOKING_FOR_OPTIONS = [
   { value: 'learning', label: 'Learning' },
   { value: 'career_advice', label: 'Career Advice' },
   { value: 'business_partnerships', label: 'Business Partnerships' }
+];
+
+const INDUSTRIES = [
+  'Technology', 'Finance', 'Healthcare', 'Education', 'Manufacturing', 'Retail',
+  'Media & Entertainment', 'Telecommunications', 'Energy', 'Transportation',
+  'Hospitality', 'Real Estate', 'Construction', 'Agriculture', 'Automotive',
+  'Consulting', 'Law', 'Marketing', 'Design', 'Other'
 ];
 
 interface MandatoryFieldsModalProps {
