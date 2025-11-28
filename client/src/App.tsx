@@ -208,9 +208,7 @@ function Router() {
       <Route path="/nav-test" component={NavigationTest} />
       <Route path="/url-demo" component={URLInputDemo} />
       <Route path="/industry-pulse" component={() => (
-        <Suspense fallback={<DashboardPageSkeleton />}>
-          <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
-        </Suspense>
+        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       )} />
       <Route path="/pulse/:id" component={PulseDetail} />
       <Route path="/create-pulse" component={() => (
@@ -222,220 +220,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
-        return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
-      }} />
-      {/* Referral join link handler */}
-      <Route path="/join/:code">
-        {(params) => (
-          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div>Loading...</div></div>}>
-            <JoinReferralPage code={params.code} />
-          </Suspense>
-        )}
-      </Route>
-
-
-
-      <Route path="/auth-test" component={() => {
-        const AuthTest = lazy(() => import("@/pages/auth-test"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/simple-auth-test" component={() => {
-        const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <SimpleAuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-popup-fix" component={() => {
-        const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthPopupFix />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-flow-test" component={() => {
-        const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthFlowTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-debug-detailed" component={() => {
-        const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthDebugDetailed />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-enhanced-popup" component={() => {
-        const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthEnhancedPopup />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-redirect-test" component={() => {
-        const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthRedirectTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-direct-oauth" component={() => {
-        const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthDirectOAuth />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-working-test" component={() => {
-        const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthWorkingTest />
-          </Suspense>
-        );
-      }} />
-
-      <Route path="/auth-callback" component={AuthCallbackPage} />
-      <Route path="/_/auth/callback" component={AuthCallbackPage} />
-      <Route path="/auth/callback" component={AuthCallbackPage} />
-      
-      {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
-      <Route path="/search" component={SearchPage} />
-      <Route path="/brand-score" component={() => {
-        const BrandScore = lazy(() => import("@/pages/BrandScore"));
-        return (
-          <ProtectedRoute path="/brand-score" component={BrandScore} />
-        );
-      }} />
-      
-      {/* Tier 2: Secondary Routes (Load after 50ms) */}
-      {secondaryLoaded && (
-        <>
-          <Route path="/profile" component={() => (
-            <ProtectedRoute path="/profile" component={ProfileNeo} />
-          )} />
-          <Route path="/career-tools" component={() => (
-            <ProtectedRoute path="/career-tools" component={CareerTools} />
-          )} />
-          <Route path="/portfolio-builder" component={PortfolioBuilder} />
-          <Route path="/designer-portfolio" component={() => (
-            <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
-          )} />
-          <Route path="/pricing" component={PricingPage} />
-          <Route path="/upgrade" component={PricingPage} />
-          <Route path="/checkout" component={() => (
-            <ProtectedRoute path="/checkout" component={CheckoutPage} />
-          )} />
-          <Route path="/subscription-manage" component={() => (
-            <ProtectedRoute path="/subscription-manage" component={SubscriptionManagePage} />
-          )} />
-          <Route path="/subscription/manage" component={() => (
-            <ProtectedRoute path="/subscription/manage" component={SubscriptionManagePage} />
-          )} />
-          <Route path="/subscription/success" component={() => (
-            <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
-          )} />
-        </>
-      )}
-      
-      {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
-      {adminLoaded && (
-        <>
-          <Route path="/login" component={() => <PageRedirect to="/auth" />} />
-          <Route path="/auth-status" component={AuthStatusPage} />
-          <Route path="/dev-login" component={DevLoginPage} />
-          <Route path="/simple-login" component={SimpleLoginPage} />
-          <Route path="/reliable-login" component={ReliableLoginPage} />
-          <Route path="/universal-login" component={UniversalLoginPage} />
-          <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
-          <Route path="/easy-login" component={EasyLoginPage} />
-          <Route path="/fixed-login" component={() => {
-        const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <FixedLoginPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/dev-auth" component={() => {
-        const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <DevAuthUtilityPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-test" component={FirebaseAuthTest} />
-      <Route path="/google-auth-test" component={GoogleAuthTest} />
-      <Route path="/google-auth-debug" component={GoogleAuthDebug} />
-      <Route path="/auth-cleaner" component={AuthCleaner} />
-      <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
-      <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
-      <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
-      <Route path="/replit-login" component={ReplitDomainLogin} />
-      <Route path="/replit-redirect-auth" component={ReplitRedirectAuth} />
-      <Route path="/google-login" component={GoogleRedirectOnly} />
-      <Route path="/domain-debug" component={DomainDebug} />
-      <Route path="/replit-auth" component={FinalReplitAuth} />
-      <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthDebugPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-popup-debug" component={() => {
-        const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
-        return (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <AuthPopupDebugPage />
-          </Suspense>
-        );
-      }} />
-          <Route path="/verify-email" component={EmailVerification} />
-        </>
-      )}
-      
-      {/* Routes that should always be available */}
-      {/* Profile route - uses resolver to choose between BrandProfile and PublicProfile */}
-      <Route path="/@:identifier">
-        {(params) => <ProfileResolver identifier={params.identifier} />}
-      </Route>
-      
-      {/* Additional protected routes */}
-      <Route path="/ai-career" component={() => (
-        <ProtectedRoute path="/ai-career" component={() => {
-          const AICareerPage = lazy(() => import("@/pages/ai-career"));
-          return (
-            <Suspense fallback={<DashboardPageSkeleton />}>
-              <AICareerPage />
-            </Suspense>
-          );
-        }} />
-      )} />
-      
-      <Route path="/smart-connect" component={() => (
-        <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
-      )} />
-      
-      <Route path="/services" component={() => (
-        <Suspense fallback={<ServicesPageSkeleton />}>
-          <ProtectedRoute path="/services" component={ManageServicesPage} />
-        </Suspense>
+        return <ProtectedRoute path="/services" component={ManageServicesPage} />
       )} />
       
       <Route path="/add-service" component={() => (
@@ -444,9 +229,7 @@ function Router() {
       
       {/* Dashboard route - direct to Industry Pulse */}
       <Route path="/dashboard" component={() => (
-        <Suspense fallback={<DashboardPageSkeleton />}>
-          <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
-        </Suspense>
+        <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
       )} />
       
       <Route path="/news-sources" component={() => (
@@ -475,9 +258,7 @@ function Router() {
         <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
       </Route>
       <Route path="/career-capsule">
-        <Suspense fallback={<CareerCapsulePageSkeleton />}>
-          <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
-        </Suspense>
+        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
       {/* Quantum Card route - dedicated digital visiting card feature */}
       <Route path="/quantum-card">
@@ -502,9 +283,7 @@ function Router() {
       {/* Removed Test route for nowboard integration as it's now part of quests */}
       {/* Messaging feature */}
       <Route path="/messages">
-        <Suspense fallback={<ChatPageSkeleton />}>
-          <ProtectedRoute path="/messages" component={ChatPage} />
-        </Suspense>
+        <ProtectedRoute path="/messages" component={ChatPage} />
       </Route>
       {/* Connections management */}
       <Route path="/connections">
