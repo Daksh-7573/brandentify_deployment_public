@@ -1,5 +1,6 @@
 import { ThreeDCardProfile, COLORS } from "./types";
 import ThreeDCard from "./3d-card";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 interface HeroSectionProps {
   profile: ThreeDCardProfile;
@@ -40,44 +41,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       }}
     >
       <div className={`max-w-7xl mx-auto ${isPreview ? 'px-3' : 'px-6 lg:px-8'}`}>
-        {!isPreview && profile.photoUrl && (
-          <div className="flex justify-center mb-8 lg:mb-12">
-            <div className="relative w-40 h-40 lg:w-48 lg:h-48">
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: `conic-gradient(from 0deg, ${COLORS.electricBlue}, ${COLORS.neonPurple}, ${COLORS.mintGreen}, ${COLORS.electricBlue})`,
-                  filter: "blur(8px)",
-                  opacity: 0.6,
-                  animation: "spin 8s linear infinite"
-                }}
-              />
-              <div
-                className="absolute inset-0 rounded-full overflow-hidden border-2"
-                style={{
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                  boxShadow: `0 0 30px ${COLORS.electricBlue}40`
-                }}
-              >
-                <img
-                  src={profile.photoUrl}
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${profile.name}&background=1e293b&color=38bdf8&size=200`;
-                  }}
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.1) 55%, transparent 60%)",
-                    animation: "reflectionSweep 5s infinite ease-in-out"
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
         <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-center`}>
           <div className={`flex justify-center ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
             <ThreeDCard
@@ -92,6 +55,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
           <div className={`${isPreview ? 'text-center' : 'space-y-8'}`}>
             <div className={isPreview ? 'space-y-2' : 'space-y-6'}>
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <Sparkles className={`${isPreview ? 'h-4 w-4' : 'h-5 w-5'}`} style={{ color: COLORS.electricBlue }} />
+                <span 
+                  className={`${isPreview ? 'text-xs' : 'text-sm'} font-medium uppercase tracking-wider`}
+                  style={{ color: COLORS.electricBlue }}
+                >
+                  Premium Portfolio
+                </span>
+              </div>
+
               <h1
                 className={`font-bold ${isPreview ? 'text-lg' : 'text-4xl lg:text-5xl xl:text-6xl'} leading-tight`}
                 style={{ 
@@ -175,6 +148,63 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               )}
             </div>
+
+            {services.length > 0 && !isPreview && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                  What I Do
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {services.slice(0, 4).map((service, i) => (
+                    <div
+                      key={service.id}
+                      className="px-4 py-2 rounded-lg text-sm font-medium"
+                      style={{
+                        background: `${COLORS.charcoalBlack}90`,
+                        border: `1px solid ${[COLORS.electricBlue, COLORS.neonPurple, COLORS.mintGreen][i % 3]}40`,
+                        color: [COLORS.electricBlue, COLORS.neonPurple, COLORS.mintGreen][i % 3]
+                      }}
+                    >
+                      {service.title}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isPreview && (
+              <div className="flex flex-wrap gap-4">
+                {heroCopy.primaryCta && (
+                  <button
+                    onClick={heroCopy.primaryCta.onClick}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+                    style={{
+                      background: `linear-gradient(135deg, ${COLORS.electricBlue}, ${COLORS.neonPurple})`,
+                      color: COLORS.offWhite,
+                      boxShadow: `0 4px 20px ${COLORS.electricBlue}40`
+                    }}
+                    data-testid="hero-primary-cta"
+                  >
+                    {heroCopy.primaryCta.label}
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                )}
+                {heroCopy.secondaryCta && (
+                  <button
+                    onClick={heroCopy.secondaryCta.onClick}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                    style={{
+                      background: "transparent",
+                      border: `1px solid ${COLORS.electricBlue}50`,
+                      color: COLORS.electricBlue
+                    }}
+                    data-testid="hero-secondary-cta"
+                  >
+                    {heroCopy.secondaryCta.label}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
