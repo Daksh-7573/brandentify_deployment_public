@@ -30,8 +30,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   onCardAction,
   isPreview = false
 }) => {
-  const cardWidth = isPreview ? 280 : 340;
-  const cardHeight = isPreview ? 380 : 480;
+  const cardWidth = isPreview ? 280 : 420;
+  const cardHeight = isPreview ? 380 : 560;
 
   return (
     <section 
@@ -42,9 +42,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     >
       <div className={`max-w-7xl mx-auto ${isPreview ? 'px-3' : 'px-6 lg:px-8'}`}>
         <div className={`grid ${isPreview ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16'} items-start`}>
-          <div className={`flex flex-col items-center ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
+          <div className={`flex flex-col items-start ${isPreview ? '' : 'lg:sticky lg:top-24'}`}>
             {!isPreview && profile.photoUrl && (
-              <div className="mb-3">
+              <div className="mb-8">
                 <div className="relative w-64 h-64">
                   <div
                     className="absolute inset-0 rounded-full"
@@ -156,35 +156,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                   {heroCopy.paragraph}
                 </p>
               )}
+
+              {heroCopy.whatIOffer && !isPreview && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    What I Offer
+                  </p>
+                  <p
+                    className="text-base leading-relaxed max-w-xl"
+                    style={{ color: COLORS.coolGray }}
+                  >
+                    {heroCopy.whatIOffer}
+                  </p>
+                </div>
+              )}
             </div>
 
           </div>
         </div>
-
-        {heroCopy.whatIOffer && !isPreview && (
-          <div className="mt-16 lg:mt-24 pt-16 lg:pt-24 border-t" style={{ borderColor: `${COLORS.electricBlue}20` }}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              <div></div>
-              <div className="space-y-4">
-                <h2 
-                  className="text-3xl lg:text-4xl font-bold"
-                  style={{ 
-                    fontFamily: "'Sora', 'Inter', sans-serif",
-                    color: COLORS.offWhite 
-                  }}
-                >
-                  What I Do
-                </h2>
-                <p
-                  className="text-lg leading-relaxed"
-                  style={{ color: COLORS.coolGray }}
-                >
-                  {heroCopy.whatIOffer}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
