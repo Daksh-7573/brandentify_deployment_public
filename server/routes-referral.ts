@@ -120,7 +120,17 @@ export function registerReferralRoutes(app: Express) {
     try {
       const userId = (req as any).userId;
       
-      const status = await referralService.getAvailabilityStatus(userId);
+      // Fetch user's subscription tier from database
+      const userResult = await (require("../db")).pool.query(
+        `SELECT subscription_tier FROM users WHERE id = $1`,
+        [userId]
+      );
+      
+      const subscriptionTier = userResult.rows.length > 0 
+        ? userResult.rows[0].subscription_tier || 'free'
+        : 'free';
+      
+      const status = await referralService.getAvailabilityStatus(userId, subscriptionTier);
       
       res.json({
         success: true,

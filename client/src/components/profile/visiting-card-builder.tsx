@@ -78,6 +78,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
 
   // Handle tab change
   const handleTabChange = (value: string) => {
+    // Premium users bypass all restrictions
+    if (isPremium) {
+      setActiveTab(value);
+      setIsFinalized(value === userData.visitingCardType);
+      onCardTypeSelect(value);
+      return;
+    }
+    
+    // Free tier: check subscription access
     if (!canAccessCard(value)) {
       toast({
         title: "Premium Feature",
@@ -86,6 +95,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       });
       return;
     }
+    
+    // Free tier: check referral unlock status
     if (isCardLocked(value)) {
       setShowShareModal(true);
       toast({
@@ -95,6 +106,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       });
       return;
     }
+    
     setActiveTab(value);
     setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);

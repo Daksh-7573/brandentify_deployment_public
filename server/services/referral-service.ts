@@ -341,8 +341,10 @@ export class ReferralService {
   
   /**
    * Get all available and locked items for a user
+   * @param userId - The user ID
+   * @param subscriptionTier - The user's subscription tier ('free' or 'premium')
    */
-  async getAvailabilityStatus(userId: number): Promise<{
+  async getAvailabilityStatus(userId: number, subscriptionTier: string = 'free'): Promise<{
     quantumCards: { id: string; name: string; locked: boolean }[];
     portfolios: { id: string; name: string; locked: boolean }[];
     progress: {
@@ -354,6 +356,7 @@ export class ReferralService {
     };
   }> {
     const unlocks = await this.getUserUnlocks(userId);
+    const isPremium = subscriptionTier === 'premium';
     
     // Map IDs to display names
     const cardNames: Record<string, string> = {
@@ -382,16 +385,18 @@ export class ReferralService {
       'yoga-fitness-model': 'Yoga & Fitness Model'
     };
     
+    // For premium users: all items are unlocked (not locked)
+    // For free users: use referral unlock status
     const quantumCards = QUANTUM_CARDS.map(id => ({
       id,
       name: cardNames[id] || id,
-      locked: !unlocks.quantumCards.includes(id)
+      locked: isPremium ? false : !unlocks.quantumCards.includes(id)
     }));
     
     const portfolios = PORTFOLIO_LAYOUTS.map(id => ({
       id,
       name: portfolioNames[id] || id,
-      locked: !unlocks.portfolios.includes(id)
+      locked: isPremium ? false : !unlocks.portfolios.includes(id)
     }));
     
     return {
@@ -399,9 +404,9 @@ export class ReferralService {
       portfolios,
       progress: {
         totalReferrals: unlocks.totalReferrals,
-        unlockedCards: unlocks.quantumCards.length,
+        unlockedCards: isPremium ? QUANTUM_CARDS.length : unlocks.quantumCards.length,
         totalCards: QUANTUM_CARDS.length,
-        unlockedPortfolios: unlocks.portfolios.length,
+        unlockedPortfolios: isPremium ? PORTFOLIO_LAYOUTS.length : unlocks.portfolios.length,
         totalPortfolios: PORTFOLIO_LAYOUTS.length
       }
     };
