@@ -1,5 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Header from "@/components/layout/header";
+import { MandatoryFieldsModal } from "@/components/onboarding/mandatory-fields-modal";
+import { useAuth } from "@/hooks/use-auth";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 interface AppShellProps {
@@ -9,6 +11,46 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, hideHeader = false, className = "" }: AppShellProps) {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState<any>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if mandatory fields are filled
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const checkMandatoryFields = async () => {
+      try {
+        const response = await fetch(`/api/users/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUserData(data);
+
+          // Show onboarding if any mandatory field is missing
+          const isMissingMandatoryField = !data.title || !data.industry || !data.location || !data.lookingFor;
+          
+          if (isMissingMandatoryField) {
+            // Check if user has already dismissed onboarding (stored in localStorage)
+            const dismissedOnboarding = localStorage.getItem(`onboarding_dismissed_${user.id}`);
+            if (!dismissedOnboarding) {
+              setShowOnboarding(true);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking mandatory fields:', error);
+      }
+    };
+
+    checkMandatoryFields();
+  }, [user?.id]);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    // Store that onboarding was completed for this user
+    localStorage.setItem(`onboarding_dismissed_${user?.id}`, 'true');
+  };
+
   console.log('[AppShell] Rendering with hideHeader:', hideHeader);
   return (
     <div 
@@ -34,6 +76,13 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
           {children}
         </main>
       </div>
+
+      {/* Onboarding Modal - Shows when mandatory fields are missing */}
+      <MandatoryFieldsModal
+        isOpen={showOnboarding}
+        userData={userData}
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 }
