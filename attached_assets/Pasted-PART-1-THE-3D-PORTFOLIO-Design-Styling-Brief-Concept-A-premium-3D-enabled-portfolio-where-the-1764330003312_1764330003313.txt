@@ -1,0 +1,509 @@
+PART 1 — THE 3D PORTFOLIO (Design & Styling Brief)
+Concept
+
+A premium 3D-enabled portfolio where the profile IS the product: immersive, tactile, and interactive. The page centers on a persistent 3D profile card (“3D Card”) that anchors the page while the rest of the site sections sit around it. The card invites micro-interactions (tilt, parallax, hover rings) while the site remains readable and accessible.
+
+Visual Tone
+
+Tech-luxury, tactile, modern.
+
+Night-mode primary (charcoal background) with neon accents.
+
+Focus on depth, soft glows, and elegant motion.
+
+Color System (final)
+
+Use the quantum palette you supplied — consistent across components.
+
+Role	Color	HEX / rgba
+Primary Accent (electric)	Electric Blue	#38bdf8
+Secondary Accent	Neon Purple	#c084fc
+Tertiary Accent	Mint Green	#10b981
+Background (base)	Charcoal Black	#0f1724 (or #1e293b as provided)
+Surface / Cards	Silver Gray	#cbd5e1 (use with low opacity)
+Text Primary	Off-white	#F8FAFC
+Muted Text	Cool Gray	#94A3B8
+Subtle Grid	Electric Blue low-opacity	rgba(56,189,248,0.06)
+
+Usage
+
+Electric Blue = primary interactive color (CTAs, copy success, glow).
+
+Neon Purple = accent borders, secondary badges.
+
+Mint = success states and small badges.
+
+Charcoal Black = full-screen background, makes neon pop.
+
+Typography
+
+Headings: Sora (or Inter Display heavier weight) — bold, slightly rounded.
+
+Body: Inter — readable UI copy.
+
+Mono accents: JetBrains Mono for small code-like chips.
+
+Sizes:
+
+Hero Name on card: 28px (2xl)
+
+Section headings: 22–28px
+
+Body: 14–16px
+
+Micro: 12px
+
+Motion System & Performance Rules
+
+Respect prefers-reduced-motion: reduce tilt amplitude and remove non-essential animations.
+
+Limit long-running GPU-heavy effects. Use will-change: transform sparingly and avoid animating box-shadow too many layers.
+
+Use CSS transforms and opacity for smooth GPU-accelerated animations.
+
+PART 2 — PAGE STRUCTURE & PER-SECTION UX (Full site blueprint)
+
+High level: single-page layout with anchor navigation. The 3D Card floats at the top-left of the viewport on desktop and becomes a stacked hero on mobile. Page content scrolls; card remains sticky/anchored with subtle parallax relative to page scroll.
+
+Global container: max-width: 1300px; margin: 0 auto; padding: 32px.
+
+Z-index: card is mid-high so hovering keeps it visually above nearby content (z: 30+ depending on elements).
+
+Global Layout Map (visual order)
+
+Top Nav (sticky)
+
+Hero / 3D Card Section (card left, hero copy right)
+
+Quick Stats Strip (below hero)
+
+Services (grid)
+
+Projects / Portfolio (masonry)
+
+Case Studies (deep-dive)
+
+Skills & Tools
+
+Experience & Education (timeline)
+
+Testimonials & Press
+
+Contact / Booking + Media Kit generator
+
+Footer
+
+I’ll now describe each section with component-level UI & animation details.
+
+1) Top Navigation
+
+Minimal: logo left, anchors middle, small CTA (“Book”) right.
+
+On scroll: nav background fades to rgba(15,23,36,0.85) with subtle blur.
+
+Interaction: active link highlights with electric-blue underline and micro-fade.
+
+2) Hero + 3D Card (centerpiece)
+
+Layout (Desktop)
+
+Grid with two columns: left column (3D Card) fixed width 420px; right column (hero copy) fluid.
+
+The 3D Card is sticky (position: sticky; top: 72px) so it moves slowly with scroll.
+
+3D Card — UX summary (core interactions)
+
+MouseMove driven tilt: calculate rotX & rotY relative to card center (formulas below).
+
+Parallax layers (data-layer depth 1–5) move independently with translate3d.
+
+Hover: intensify glow & box-shadow; show profile rings and particle opacity increase.
+
+Click on card CTA buttons: expand mini-actions (copy link, download resume, contact).
+
+Tilt math (implement in JS):
+
+const maxRot = 10;
+const cardCenter = {x: rect.left + rect.width/2, y: rect.top + rect.height/2};
+const relX = (mouseX - cardCenter.x) / (rect.width / 2); // -1 to 1
+const relY = (mouseY - cardCenter.y) / (rect.height / 2); // -1 to 1
+rotY = relX * maxRot; // horizontal movement rotates Y
+rotX = relY * -maxRot; // vertical movement inverted for natural perspective
+
+
+Apply CSS:
+transform: rotateX(rotXdeg) rotateY(rotYdeg) translateZ(0);
+
+Parallax formula per layer:
+translate3d(moveX = relX * depth * 8, moveY = relY * depth * 8, 0)
+
+Depth mapping:
+
+Layer 5 (furthest) depth 0.25
+
+Layer 4 depth 0.5
+
+Layer 3 depth 0.9
+
+Layer 2 depth 1.4
+
+Layer 1 (closest) depth 2.2
+
+Profile picture
+
+Dual rings: outer spin (8s), inner pulse (3s), float (5s).
+
+Reflection sweep: CSS gradient overlay sliding diagonally.
+
+3D Card parts
+
+Top: profile image + glow rings (layer with translateZ)
+
+Middle: Name + Title (layer)
+
+Lower: company badge, location badge, industry tags (small chips)
+
+Bottom: quick actions (Mentor, Resume, Let's Talk) — primary style: electric-blue button.
+
+Card Idle & Hover
+
+Idle: soft shadow 0 10px 30px rgba(0,0,0,0.3); neon inset inset 0 0 0 1px rgba(56,189,248,0.18).
+
+Hover: shadow increases 0 25px 50px, glow increases, rings opacity up, particle opacity up.
+
+Accessibility
+
+Allow keyboard focus to toggle hover state (on focus, apply same visual state).
+
+Provide alt text and a textual fallback area for critical info.
+
+3) Quick Stats Strip
+
+3–4 stat tiles (animated counters).
+
+Appear with fade-up on scroll.
+
+Background: slightly translucent panel with grid overlay faint.
+
+4) Services
+
+3-column grid with service cards.
+
+Each card: icon (layered), title, impact line, CTA “Book”.
+
+Hover: card lifts and shows neon edge line at top.
+
+5) Projects / Portfolio
+
+Masonry grid or uniform squares (designer choice).
+
+Project tile: big image, subtle overlay shows title and tags on hover; clicking opens project modal with gallery.
+
+Modal: shows large project images, description, role, tags, “Use as Media Kit” button.
+
+Project tile animation
+
+Staggered reveal; hover scale + slight saturation increase.
+
+6) Case Studies
+
+Alternating image/text rows with electric-blue statistics callouts (big numbers).
+
+On desktop, image slides slightly (<30px) as user scrolls (parallax).
+
+7) Skills & Tools
+
+Horizontal skill bars using electric-blue fill.
+
+Tool icons in a rounded grid; hover gives small glow.
+
+8) Experience / Education
+
+Vertical timeline with nodes; nodes have neon ring glow and slide-in animation.
+
+Clicking a role expands details inline.
+
+9) Testimonials & Press
+
+Carousel with client photos/logos and quote cards; verified tick in mint green for trusted clients.
+
+10) Contact / Booking
+
+Two-column: left messaging, right form.
+
+The 3D Card CTA “Let’s Talk” opens the contact modal (prefilled with context option).
+
+Form: includes attach resume; copy-to-clipboard on profile link; success toast with electric-blue background & optional sound.
+
+11) Footer
+
+Minimal links, social, small copy.
+
+Global micro-interactions & sounds
+
+Copy action = toast + optional ping sound (user toggled).
+
+Buttons use micro-lift; long-press on mobile triggers contextual menu.
+
+Particles / Background & grid
+
+Use performant canvas/particle engine or CSS for 15 lightweight particles with transform animations; prefer CSS for low count and small size.
+
+Linear gradient background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%).
+
+Subtle grid overlay tiled with background-size: 40px 40px and opacity: 0.04.
+
+Responsiveness rules
+
+Desktop: 3D Card sticky left of hero, 420px width.
+
+Tablet: 3D Card centered above hero copy, slightly smaller 320px, tilt reduced to maxRot=6.
+
+Mobile: 3D Card full-width block stacked above hero copy, tilt disabled (use subtle float animations only). Parallax disabled or reduced.
+
+PART 3 — DEVELOPER: Component Prop List (TypeScript)
+
+Below are typed props for each React component you’ll need. Use these in a types.ts file. I include important behaviors like callbacks and animation toggles.
+
+// types/threeDPortfolio.ts
+
+// Shared tiny types
+export type SocialLink = { platform: string; url: string; label?: string };
+export type MediaItem = { url: string; alt?: string; thumbnailUrl?: string; type?: 'image'|'video'|'embed' };
+
+// 3D Card specific
+export type CardLayer = {
+  id: string;
+  depth: number; // 0.25 .. 2.2
+  contentType?: 'image'|'text'|'badge'|'button'|'icon';
+  html?: string; // optional HTML fallback or text
+  className?: string;
+};
+
+export type ThreeDCardProfile = {
+  id: string | number;
+  name: string;
+  title?: string;
+  photoUrl?: string;
+  location?: string;
+  company?: string;
+  industryTags?: string[]; // up to 3
+  contact?: { email?: string; phone?: string; profileUrl?: string };
+  stats?: { label: string; value: string }[];
+  socialLinks?: SocialLink[];
+};
+
+export type ThreeDCardProps = {
+  profile: ThreeDCardProfile;
+  width?: number; // px default 420
+  height?: number; // px default 560
+  perspective?: number; // default 1200
+  maxRotation?: number; // degrees default 10
+  parallaxDepths?: number[]; // override mapping
+  particles?: { count?: number; color?: string };
+  showRings?: boolean;
+  enableTilt?: boolean; // allow disabling for mobile or reduced motion
+  onAction?: (action: 'copy'|'download'|'contact'|'mentor', payload?: any) => void;
+  className?: string;
+};
+
+// Hero / Page components
+export type HeroProps = {
+  profileCard: ThreeDCardProps; // pass in configured card props
+  heroCopy: {
+    heading: string;
+    subheading?: string;
+    paragraph?: string;
+    services?: { id: string; title: string; description?: string }[];
+    primaryCta?: { label: string; onClick?: () => void; href?: string };
+    secondaryCta?: { label: string; onClick?: () => void; href?: string };
+  };
+  layout?: 'card-left'|'card-top';
+  className?: string;
+};
+
+// Services
+export type ServiceItem = {
+  id: string | number;
+  title: string;
+  description?: string;
+  deliverables?: string[];
+  priceRange?: string;
+  iconId?: string;
+};
+export type ServicesProps = {
+  services: ServiceItem[];
+  columns?: 1|2|3;
+  onBook?: (serviceId: string|number) => void;
+  className?: string;
+};
+
+// Project / Gallery types
+export type ProjectItem = {
+  id: string | number;
+  title: string;
+  year?: number|string;
+  coverUrl: string;
+  thumbnails?: string[];
+  description?: string;
+  tags?: string[];
+  client?: string;
+  outcomes?: string[]; // bullet points
+};
+export type ProjectsGridProps = {
+  projects: ProjectItem[];
+  masonry?: boolean;
+  columns?: number;
+  onOpenProject?: (projectId: string|number) => void;
+  lazyLoad?: boolean;
+  className?: string;
+};
+export type ProjectModalProps = {
+  project?: ProjectItem | null;
+  open: boolean;
+  onClose: () => void;
+  onAddToMediaKit?: (projectId: string|number) => void;
+  className?: string;
+};
+
+// Case studies
+export type CaseStudy = {
+  id: string | number;
+  title: string;
+  client?: string;
+  year?: string|number;
+  challenge?: string;
+  approach?: string;
+  results?: string;
+  media?: MediaItem[];
+  metrics?: { label: string; value: string }[];
+};
+export type CaseStudiesProps = { studies: CaseStudy[]; className?: string };
+
+// Skills & Tools
+export type Skill = { id: string|number; name: string; level?: 'Beginner'|'Intermediate'|'Advanced'|'Expert'; proficiency?: number };
+export type SkillsProps = { skills: Skill[]; className?: string };
+export type Tool = { id: string|number; name: string; iconId?: string };
+export type ToolsProps = { tools: Tool[]; className?: string };
+
+// Timeline / Experience / Education
+export type TimelineEntry = {
+  id: string|number;
+  title: string;
+  company?: string;
+  startDate?: string;
+  endDate?: string | null;
+  location?: string;
+  shortDesc?: string;
+  highlights?: string[];
+};
+export type TimelineProps = { entries: TimelineEntry[]; compact?: boolean; className?: string };
+
+// Testimonials
+export type Testimonial = { id: string|number; quote: string; author: string; role?: string; avatarUrl?: string; verified?: boolean };
+export type TestimonialsProps = { testimonials: Testimonial[]; className?: string };
+
+// Contact form & Media Kit
+export type ContactFormValues = {
+  name: string;
+  email: string;
+  phone?: string;
+  projectType?: string;
+  budget?: string;
+  datePref?: string;
+  message?: string;
+  attachments?: MediaItem[];
+};
+export type ContactFormProps = {
+  initial?: Partial<ContactFormValues>;
+  onSubmit: (values: ContactFormValues) => Promise<void> | void;
+  validate?: (values: ContactFormValues) => Record<string,string> | null;
+  submitLabel?: string;
+  className?: string;
+};
+export type MediaKitGeneratorProps = {
+  profileId: string | number;
+  generate: (opts: { projectIds?: (string|number)[]; includeContact?: boolean; format?: 'pdf'|'png' }) => Promise<{ url: string }>;
+  className?: string;
+};
+
+// UI primitives
+export type ButtonProps = { label: string; onClick?: () => void; variant?: 'primary'|'ghost'|'outline'|'danger'; size?: 'sm'|'md'|'lg'; disabled?: boolean; ariaLabel?: string; className?: string };
+export type BadgeProps = { text: string; color?: string; variant?: 'solid'|'outline'; className?: string };
+export type IconProps = { id: string; size?: number; title?: string; className?: string };
+export type ModalProps = { open: boolean; title?: string; onClose: () => void; size?: 'sm'|'md'|'lg'|{width:number}; className?: string };
+
+// Page-level props
+export type ThreeDPortfolioPageProps = {
+  profile: ThreeDCardProfile;
+  hero: HeroProps['heroCopy'];
+  services: ServiceItem[];
+  stats?: { id:string|number; label:string; value:string }[];
+  projects: ProjectItem[];
+  caseStudies?: CaseStudy[];
+  skills?: Skill[];
+  tools?: Tool[];
+  experience?: TimelineEntry[];
+  education?: TimelineEntry[]; // reuse timeline entry shape
+  testimonials?: Testimonial[];
+  contactConfig?: { email?:string; formEndpoint?: string };
+  layoutOptions?: { showCardSticky?: boolean; enableParticles?: boolean; reducedMotion?: boolean };
+  className?: string;
+};
+
+Implementation Hints & Developer Notes
+
+3D interactions: implement tilt/transform with a requestAnimationFrame loop and damping for smooth return-to-zero behavior. Debounce mousemove to ~60fps. Use CSS variables to feed transforms into styles for smoother reflow.
+
+Parallax layers: render as absolutely positioned children inside the card container; move them with transform: translate3d(...).
+
+Particles: use CSS for small count; move to Canvas/WebGL for high counts.
+
+Accessibility: provide non-3D fallback: when prefers-reduced-motion or keyboard-only, show static card with subtle hover states (no tilt).
+
+Performance: use will-change: transform, opacity for animated elements; remove box-shadow animations on mobile if perf suffers.
+
+Testing: verify tilt math on touch devices (map touchmove to lower amplitude) and reduce parallax depth on smaller screens.
+
+Analytics: instrument CTA clicks and onAction events, copy-to-clipboard counts, project modal opens.
+
+Quick Code Snippet — card transform (implementation pattern)
+// pseudo-code
+let rafId;
+const card = document.querySelector('.three-d-card');
+card.addEventListener('mousemove', onMove);
+card.addEventListener('mouseleave', onLeave);
+
+function onMove(e) {
+  const rect = card.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  const relX = (e.clientX - cx) / (rect.width/2);
+  const relY = (e.clientY - cy) / (rect.height/2);
+  const rotY = relX * maxRot;
+  const rotX = relY * -maxRot;
+  // use rAF to update css variables
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(() => {
+    card.style.setProperty('--rotX', `${rotX}deg`);
+    card.style.setProperty('--rotY', `${rotY}deg`);
+    // parallax children update similarly based on depth
+  });
+}
+
+function onLeave() {
+  cancelAnimationFrame(rafId);
+  card.style.setProperty('--rotX', `0deg`);
+  card.style.setProperty('--rotY', `0deg`);
+  // reset parallax layers
+}
+
+
+CSS:
+
+.three-d-card {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transform: rotateX(var(--rotX, 0)) rotateY(var(--rotY, 0));
+  transition: transform 120ms ease-out;
+}
