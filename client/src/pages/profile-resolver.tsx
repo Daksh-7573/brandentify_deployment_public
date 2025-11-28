@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import PublicProfile from "./public-profile";
 import BrandProfile from "./brand-profile";
 import { apiRequest } from "@/lib/queryClient";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { SearchPageSkeleton } from "@/components/ui/page-skeletons/search-skeleton";
 
 interface UserData {
   id: number;
@@ -35,7 +35,7 @@ export default function ProfileResolver({ identifier }: ProfileResolverProps) {
   });
 
   if (isLoading) {
-    return <FeedSkeleton count={2} />;
+    return <SearchPageSkeleton />;
   }
 
   if (error || !userData) {

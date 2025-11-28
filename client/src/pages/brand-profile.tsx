@@ -11,6 +11,7 @@ import {
   getPortfolioTemplate, 
   buildPortfolioTemplateProps 
 } from "@/components/portfolio/templateRegistry";
+import { ProfilePageSkeleton } from "@/components/ui/page-skeletons/profile-skeleton";
 
 interface UserData {
   id: number;
@@ -126,6 +127,11 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     enabled: !!userData?.id,
     retry: false
   });
+
+  // Loading state
+  if (isUserLoading || isSkillsLoading || isExperiencesLoading || isProjectsLoading || isEducationsLoading || isServicesLoading || isPortfolioDataLoading) {
+    return <ProfilePageSkeleton />;
+  }
 
   // Debug logging for portfolio data
   console.log("Brand profile debug:");

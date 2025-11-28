@@ -25,7 +25,7 @@ import { Service } from "@shared/schema";
 import { ReactNode } from "react";
 // Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { ServicesPageSkeleton } from "@/components/ui/page-skeletons/services-skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,6 +119,10 @@ export default function ServicesPage() {
     );
   };
   
+  if (isLoading) {
+    return <ServicesPageSkeleton />;
+  }
+
   return (
     <div className="flex h-screen flex-col">
       <Header />

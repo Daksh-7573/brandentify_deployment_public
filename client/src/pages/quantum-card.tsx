@@ -15,7 +15,7 @@ import {
 import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
 import { useState } from "react";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { PortfolioPageSkeleton } from "@/components/ui/page-skeletons/portfolio-skeleton";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -38,7 +38,7 @@ export default function QuantumCardPage() {
   });
 
   if (isLoading) {
-    return <FeedSkeleton count={2} />;
+    return <PortfolioPageSkeleton />;
   }
 
   if (!userData) {

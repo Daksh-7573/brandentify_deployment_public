@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Send, Filter, Users, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { MessagingPageSkeleton } from "@/components/ui/page-skeletons/messaging-skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Storage key for active tab persistence

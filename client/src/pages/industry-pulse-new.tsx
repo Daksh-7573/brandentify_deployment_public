@@ -59,7 +59,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { CreatePulsePageSkeleton } from "@/components/ui/page-skeletons/create-pulse-skeleton";
 import { SearchableUserSelect } from "@/components/share/searchable-user-select";
 import { SocialShareButtons } from "@/components/share/social-share-buttons";
 import { PremiumBadge } from "@/components/ui/premium-badge";
@@ -1360,7 +1360,7 @@ export default function IndustryPulsePage() {
                   />
                   
                   {isLoading ? (
-                    <FeedSkeleton count={2} />
+                    <CreatePulsePageSkeleton />
                   ) : filteredPulses.length === 0 ? (
                     <NeoGlassSection>
                       <div className="flex flex-col items-center justify-center py-10">

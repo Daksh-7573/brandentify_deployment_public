@@ -14,6 +14,7 @@ import { queryClient } from "@/lib/queryClient";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
 import backgroundImage from '@assets/Brandentifier Landing_1751376023002.png';
+import { CareerCapsulePageSkeleton } from "@/components/ui/page-skeletons/career-capsule-skeleton";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -69,6 +70,11 @@ export default function CareerCapsulePage() {
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
   
+  // Loading state
+  if (isLoading) {
+    return <CareerCapsulePageSkeleton />;
+  }
+
   // Debug logging to understand the data structure
   console.log('Career Goals Data Structure:', JSON.stringify(goals, null, 2));
   

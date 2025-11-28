@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { ProfilePageSkeleton } from "@/components/ui/page-skeletons/profile-skeleton";
 
 // Import portfolio templates
 import { 
@@ -257,7 +257,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Loading state
   if (isUserLoading || isPortfolioLoading) {
-    return <FeedSkeleton count={2} />;
+    return <ProfilePageSkeleton />;
   }
   
   // Render the appropriate portfolio template based on user's selected layout

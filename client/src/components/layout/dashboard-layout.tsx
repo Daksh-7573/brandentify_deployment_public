@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { DashboardPageSkeleton } from "@/components/ui/page-skeletons/dashboard-skeleton";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -23,11 +23,7 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80">
-        <FeedSkeleton count={1} />
-      </div>
-    );
+    return <DashboardPageSkeleton />;
   }
 
   return (

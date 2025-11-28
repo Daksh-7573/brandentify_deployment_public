@@ -5,6 +5,7 @@ import { ResumeMapping } from '@/components/resume-parser/ResumeMapping';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/layout/header';
 import { useLocation } from 'wouter';
+import { ResumeParserPageSkeleton } from '@/components/ui/page-skeletons/resume-parser-skeleton';
 
 export default function ResumeParserPage() {
   const { user } = useAuth();
@@ -84,6 +85,11 @@ export default function ResumeParserPage() {
     setExtractedData(null);
   };
   
+  // Loading state
+  if (isLoading) {
+    return <ResumeParserPageSkeleton />;
+  }
+
   // If user is not logged in, show message
   if (!user) {
     return (
