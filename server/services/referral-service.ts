@@ -162,6 +162,24 @@ export class ReferralService {
       
       console.log(`[Referral] User ${referrerId} referred user ${newUserId} - rewards granted`);
       
+      // Create notification for the referrer
+      try {
+        const { createNotification } = await import('./notification-service');
+        const newUserData = await pool.query('SELECT name FROM users WHERE id = $1', [newUserId]);
+        const newUserName = newUserData.rows[0]?.name || 'Someone';
+        
+        await createNotification({
+          userId: referrerId,
+          type: 'success' as const,
+          category: 'referral_signup' as const,
+          title: 'Referral Reward Unlocked!',
+          message: `${newUserName} signed up using your link and you've earned 1 Quantum Card + 2 Premium Portfolios!`
+        });
+      } catch (notificationError) {
+        console.error('[Referral] Error creating notification:', notificationError);
+        // Don't fail the referral if notification fails
+      }
+      
       return true;
     } catch (error) {
       await client.query('ROLLBACK');
