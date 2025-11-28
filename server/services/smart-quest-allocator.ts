@@ -362,9 +362,8 @@ export class SmartQuestAllocator {
 
   /**
    * Get available career quests (not yet assigned today)
-   * STRICTLY filtered by:
-   * 1. Profile focus (profile-building vs pulse-creation)
-   * 2. Selected Brand Goals (ONLY matching quest types)
+   * FIXED: Use Brand Goals as PRIMARY filter, profile focus as PREFERENCE (not strict filter)
+   * This ensures career quests are always allocated regardless of profile completion status
    */
   private async getAvailableCareerQuests(
     userId: number, 
@@ -384,39 +383,37 @@ export class SmartQuestAllocator {
     
     const assignedIds = todayAssigned.map(q => q.questDefId);
     
-    // Step 1: Define quest types based on focus area
-    const profileBuildingTypes = ['profile_update', 'resume', 'portfolio', 'learning', 'exploration', 'networking', 'engagement'];
-    const pulseFocusedTypes = ['pulse_creation', 'visibility', 'networking', 'engagement'];
+    // Step 1: ALL possible career quest types (comprehensive list)
+    const allCareerQuestTypes = [
+      'profile_update', 'resume', 'portfolio', 'learning', 'exploration', 
+      'networking', 'engagement', 'pulse_creation', 'visibility'
+    ];
     
-    const focusAreaTypes = focusArea === 'profile' ? profileBuildingTypes : pulseFocusedTypes;
-    
-    // Step 2: Get quest types allowed by Brand Goals (STRICT FILTERING)
+    // Step 2: Get quest types allowed by Brand Goals (PRIMARY FILTER)
     const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
     
-    // Step 3: Intersect both - quest must match BOTH focus area AND Brand Goals
+    // Step 3: Use brand goal types as primary, or all types if no goals selected
     let finalAllowedTypes: string[];
     
     if (userGoals.length === 0) {
-      // No Brand Goals selected - use only focus area types (fallback)
-      console.log('[SmartQuestAllocator] ⚠️ No Brand Goals selected - using focus area types only');
-      finalAllowedTypes = focusAreaTypes;
+      // No Brand Goals selected - use all career quest types
+      console.log('[SmartQuestAllocator] ⚠️ No Brand Goals selected - using all career quest types');
+      finalAllowedTypes = allCareerQuestTypes;
     } else {
-      // STRICT: Only quests that match BOTH focus area AND Brand Goals
-      finalAllowedTypes = focusAreaTypes.filter(type => brandGoalAllowedTypes.includes(type));
-      console.log(`[SmartQuestAllocator] 🎯 Brand Goal filtering: ${brandGoalAllowedTypes.length} goal types × ${focusAreaTypes.length} focus types = ${finalAllowedTypes.length} allowed types`);
+      // Filter by brand goals - career quest types only (exclude social_quest, social_post)
+      finalAllowedTypes = brandGoalAllowedTypes.filter(type => 
+        allCareerQuestTypes.includes(type)
+      );
+      console.log(`[SmartQuestAllocator] 🎯 Brand Goal career types: ${finalAllowedTypes.length} types (${finalAllowedTypes.join(', ')})`);
       
-      // FALLBACK: If intersection is empty, use brand goal types as fallback (relax profile focus constraint)
+      // FALLBACK: If no career types from brand goals, use all career types
       if (finalAllowedTypes.length === 0) {
-        console.log(`[SmartQuestAllocator] ⚠️ No intersection found - using Brand Goal types as fallback`);
-        finalAllowedTypes = brandGoalAllowedTypes;
+        console.log(`[SmartQuestAllocator] ⚠️ No career types in Brand Goals - using all career quest types as fallback`);
+        finalAllowedTypes = allCareerQuestTypes;
       }
     }
     
-    // If still no matching types, return empty
-    if (finalAllowedTypes.length === 0) {
-      console.log('[SmartQuestAllocator] ❌ No quest types available for this user (checked both focus area and brand goals)');
-      return [];
-    }
+    console.log(`[SmartQuestAllocator] ✅ Final career quest types: [${finalAllowedTypes.join(', ')}]`);
     
     // Get career quests not assigned today, filtered by final allowed types (ACTIVE ONLY)
     const careerQuestsQuery = assignedIds.length > 0
