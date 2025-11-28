@@ -453,8 +453,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log("Phone sign-in not implemented");
   };
 
-  const signInWithEmail = (user: User) => {
-    console.log("Email sign-in not implemented");
+  const signInWithEmail = (userData: User) => {
+    console.log("[Auth Context] Email sign-in:", userData.email);
+    
+    // Map User to AuthUser type
+    const authUser: AuthUser = {
+      uid: userData.firebaseUid || userData.googleId || String(userData.id),
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+      name: userData.name,
+      photoURL: userData.photoURL || null,
+      title: userData.title || undefined,
+      location: userData.location || undefined,
+    };
+    
+    // Set the user in state
+    setUser(authUser);
+    setIsLoading(false);
+    
+    // Store in sessionStorage
+    sessionStorage.setItem('brandentifier_user', JSON.stringify(authUser));
+    
+    // Check for pending referral code (backup - should be processed during registration)
+    const referralCode = sessionStorage.getItem('referral_code');
+    if (referralCode && userData.id) {
+      console.log('[Auth Context] Processing pending referral code on login:', referralCode);
+      
+      // Process referral asynchronously (don't block the login)
+      fetch('/api/referral/process-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referralCode,
+          newUserId: userData.id
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('[Auth Context] Referral processed successfully');
+          sessionStorage.removeItem('referral_code');
+        } else {
+          console.warn('[Auth Context] Failed to process referral on login');
+        }
+      })
+      .catch(error => {
+        console.error('[Auth Context] Error processing referral on login:', error);
+      });
+    }
   };
 
   return (

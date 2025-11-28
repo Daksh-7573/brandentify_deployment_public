@@ -50,6 +50,7 @@ import { registerCareerIntelligenceRoutes } from "./routes-career-intelligence";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
 import { registerReferralRoutes } from "./routes-referral";
+import { referralService } from "./services/referral-service";
 import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
@@ -664,6 +665,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("[POST /users] Creating user with data:", userData_withVerificationFlag);
       const user = await storage.createUser(userData_withVerificationFlag);
+      
+      // Initialize default unlocks for the new user (free templates)
+      try {
+        await referralService.initializeDefaultUnlocks(user.id);
+        console.log(`[POST /users] Initialized default unlocks for user ${user.id}`);
+      } catch (unlockError) {
+        console.error("[POST /users] Error initializing default unlocks:", unlockError);
+        // Don't fail user creation if unlocks fail
+      }
+      
+      // Process referral code if provided
+      const referralCode = req.body.referralCode;
+      if (referralCode) {
+        try {
+          console.log(`[POST /users] Processing referral code: ${referralCode} for user ${user.id}`);
+          const referralSuccess = await referralService.processReferralSignup(referralCode, user.id);
+          if (referralSuccess) {
+            console.log(`[POST /users] Referral processed successfully for user ${user.id}`);
+          } else {
+            console.log(`[POST /users] Referral code invalid or already used: ${referralCode}`);
+          }
+        } catch (referralError) {
+          console.error("[POST /users] Error processing referral:", referralError);
+          // Don't fail user creation if referral processing fails
+        }
+      }
       
       // Generate a random verification token
       const token = crypto.randomBytes(32).toString('hex');

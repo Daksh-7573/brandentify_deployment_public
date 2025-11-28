@@ -175,6 +175,9 @@ export function EmailAuth() {
       setIsSubmitting(true);
       setError("");
       
+      // Check for pending referral code in sessionStorage
+      const referralCode = sessionStorage.getItem("referral_code");
+      
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {
@@ -186,6 +189,7 @@ export function EmailAuth() {
           password: values.password,
           username: values.email.split("@")[0], // Generate a username from email
           profileCompleted: 40, // Set higher completion percentage for email signups
+          referralCode: referralCode || undefined, // Pass referral code if present
         }),
       });
       
@@ -200,6 +204,12 @@ export function EmailAuth() {
       const userData = responseData.user;
       
       console.log("Registration successful:", userData);
+      
+      // Clear referral code from sessionStorage after successful registration
+      if (referralCode) {
+        sessionStorage.removeItem("referral_code");
+        console.log("[Referral] Cleared referral code from sessionStorage after registration");
+      }
       
       // Log email preview or verification token for development
       if (responseData.emailPreview) {
