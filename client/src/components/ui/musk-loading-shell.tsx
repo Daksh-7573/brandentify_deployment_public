@@ -1,37 +1,31 @@
-import muskAnimationPath from "@assets/Contact Candour (1)_1764368703420.gif";
+import bannerAnimationPath from "@assets/Banner AI Blockchain_1764369150391.gif";
 
 interface MuskLoadingShellProps {
-  message?: string;
   className?: string;
 }
 
-export function MuskLoadingShell({ message = "Loading...", className = "" }: MuskLoadingShellProps) {
+export function MuskLoadingShell({ className = "" }: MuskLoadingShellProps) {
   return (
     <div className={`min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95 ${className}`}>
-      <div className="flex flex-col items-center space-y-6">
-        <div className="relative">
-          <img 
-            src={muskAnimationPath} 
-            alt="Loading..." 
-            className="w-32 h-32 object-contain rounded-full"
-          />
-          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500/20 to-cyan-500/20 animate-pulse" />
-        </div>
-        <p className="text-white/70 text-sm font-medium animate-pulse">{message}</p>
+      <div className="flex flex-col items-center">
+        <img 
+          src={bannerAnimationPath} 
+          alt="" 
+          className="w-48 h-48 object-contain"
+        />
       </div>
     </div>
   );
 }
 
-export function MuskLoadingCompact({ message }: { message?: string }) {
+export function MuskLoadingCompact() {
   return (
-    <div className="flex flex-col items-center justify-center p-8 space-y-4">
+    <div className="flex flex-col items-center justify-center p-8">
       <img 
-        src={muskAnimationPath} 
-        alt="Loading..." 
-        className="w-20 h-20 object-contain rounded-full"
+        src={bannerAnimationPath} 
+        alt="" 
+        className="w-24 h-24 object-contain"
       />
-      {message && <p className="text-white/60 text-xs">{message}</p>}
     </div>
   );
 }

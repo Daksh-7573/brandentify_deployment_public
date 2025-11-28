@@ -175,9 +175,9 @@ function ProtectedRoute({ component: Component, fallback, ...rest }: { component
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Show Musk loading animation during auth check
+  // Show loading animation during auth check
   if (isLoading) {
-    return fallback ? <>{fallback}</> : <MuskLoadingShell message="Verifying access..." />;
+    return fallback ? <>{fallback}</> : <MuskLoadingShell />;
   }
   
   // Only block if we've confirmed user is NOT authenticated
