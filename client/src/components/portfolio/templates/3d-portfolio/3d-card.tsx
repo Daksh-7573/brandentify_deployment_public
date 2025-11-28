@@ -142,7 +142,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
           />
         </div>
 
-        <div className="absolute inset-0 p-6 pb-20 flex flex-col z-10">
+        <div className="absolute inset-0 p-6 pb-6 flex flex-col z-10">
 
           <div className="text-center mb-4" data-layer={DEPTH_MAP.layer4}>
             <h2
@@ -241,7 +241,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
 
           <div className="flex-grow" />
 
-          <div className="flex justify-center gap-3 mb-4" data-layer={DEPTH_MAP.layer1}>
+          <div className="flex justify-center gap-3 mb-0" data-layer={DEPTH_MAP.layer1}>
             <button
               onClick={() => handleAction('mentor')}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"

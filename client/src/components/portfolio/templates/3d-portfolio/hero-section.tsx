@@ -80,7 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
             )}
-            <div className="flex justify-center w-full mt-2 lg:mt-4">
+            <div className="flex justify-center w-full mt-8 lg:mt-12">
               <ThreeDCard
                 profile={profile}
                 width={cardWidth}
