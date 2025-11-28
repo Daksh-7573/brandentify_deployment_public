@@ -174,12 +174,13 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Don't show loading skeleton here - pages handle their own loading with page-specific skeletons
-  if (isLoading) {
+  // Render component immediately - it will show page-specific skeleton during data loading
+  // Only block if we've confirmed user is NOT authenticated
+  if (!isLoading && !isAuthenticated) {
     return null;
   }
   
-  return isAuthenticated ? <Component /> : null;
+  return <Component />;
 }
 
 function Router() {
