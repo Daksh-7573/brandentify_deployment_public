@@ -200,46 +200,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
         background: `linear-gradient(135deg, ${COLORS.charcoalBlack} 0%, ${COLORS.deepCharcoal} 100%)` 
       }}
     >
-      <nav 
-        className="sticky top-0 z-50 backdrop-blur-md"
-        style={{ 
-          background: `rgba(15, 23, 36, 0.85)`,
-          borderBottom: `1px solid ${COLORS.electricBlue}20`
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5" style={{ color: COLORS.electricBlue }} />
-            <span className="font-bold text-lg" style={{ color: COLORS.offWhite }}>
-              {userInfo.brandName || userInfo.name}
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-6">
-            {['About', 'Services', 'Projects', 'Experience', 'Contact'].map(item => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}-section`}
-                className="text-sm font-medium transition-colors hover:text-white"
-                style={{ color: COLORS.coolGray }}
-              >
-                {item}
-              </a>
-            ))}
-          </div>
-          <button
-            onClick={() => document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{
-              background: `linear-gradient(135deg, ${COLORS.electricBlue}, ${COLORS.neonPurple})`,
-              color: COLORS.offWhite
-            }}
-            data-testid="nav-book-btn"
-          >
-            Book
-          </button>
-        </div>
-      </nav>
-
       <main>
         <div id="about-section">
           <HeroSection
@@ -255,6 +215,36 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
         </div>
 
         {stats.length > 0 && <StatsStrip stats={stats} />}
+
+        {/* What I Do Section */}
+        {heroCopy.whatIOffer && (
+          <section 
+            className="py-16 lg:py-24 px-6 lg:px-8"
+            style={{
+              background: `linear-gradient(180deg, ${COLORS.charcoalBlack}80 0%, ${COLORS.deepCharcoal}80 100%)`
+            }}
+          >
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center space-y-6">
+                <h2
+                  className="text-3xl lg:text-4xl font-bold"
+                  style={{
+                    fontFamily: "'Sora', 'Inter', sans-serif",
+                    color: COLORS.offWhite
+                  }}
+                >
+                  What I Offer
+                </h2>
+                <p
+                  className="text-lg leading-relaxed"
+                  style={{ color: COLORS.coolGray }}
+                >
+                  {heroCopy.whatIOffer}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
 
         {services.length > 0 && (
           <div id="services-section">
