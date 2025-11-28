@@ -20,7 +20,6 @@ interface HeroSectionProps {
     primaryCta?: { label: string; onClick?: () => void };
     secondaryCta?: { label: string; onClick?: () => void };
   };
-  services?: { id: string | number; title: string; description?: string }[];
   enableTilt?: boolean;
   onCardAction?: (action: 'copy' | 'download' | 'contact' | 'mentor') => void;
   isPreview?: boolean;
@@ -31,7 +30,6 @@ interface HeroSectionProps {
 const HeroSection: React.FC<HeroSectionProps> = ({
   profile,
   heroCopy,
-  services = [],
   enableTilt = true,
   onCardAction,
   isPreview = false,

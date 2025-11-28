@@ -1,11 +1,8 @@
 import { useMemo } from "react";
 import { PortfolioTemplateProps } from "../../templateRegistry";
-import { ThreeDCardProfile, ServiceItem, ProjectItem, Skill, Tool, TimelineEntry, COLORS } from "./types";
+import { ThreeDCardProfile, ProjectItem, TimelineEntry, COLORS } from "./types";
 import HeroSection from "./hero-section";
-import StatsStrip from "./stats-strip";
-import ServicesGrid from "./services-grid";
 import ProjectsGrid from "./projects-grid";
-import SkillsSection from "./skills-section";
 import TimelineSection from "./timeline-section";
 import ContactSection from "./contact-section";
 import { Sparkles } from "lucide-react";
@@ -49,36 +46,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     height: isPreview ? 380 : 400
   }), [isPreview]);
 
-  const stats = useMemo(() => {
-    const items = [];
-    if (userExperiences.length > 0) {
-      const years = userExperiences.reduce((acc, exp) => {
-        const start = exp.startDate ? new Date(exp.startDate) : new Date();
-        const end = exp.endDate ? new Date(exp.endDate) : new Date();
-        return acc + ((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365));
-      }, 0);
-      items.push({ id: '1', label: 'Years Experience', value: `${Math.round(years)}+`, icon: 'briefcase' });
-    }
-    if (userProjects.length > 0) {
-      items.push({ id: '2', label: 'Projects Completed', value: `${userProjects.length}+`, icon: 'target' });
-    }
-    if (userSkills.length > 0) {
-      items.push({ id: '3', label: 'Skills', value: `${userSkills.length}`, icon: 'star' });
-    }
-    if (userServices.length > 0) {
-      items.push({ id: '4', label: 'Services Offered', value: `${userServices.length}`, icon: 'users' });
-    }
-    return items.slice(0, 4);
-  }, [userExperiences, userProjects, userSkills, userServices]);
-
-  const services: ServiceItem[] = useMemo(() => 
-    userServices.map(s => ({
-      id: s.id,
-      title: s.title,
-      description: s.description || undefined,
-      category: (s as any).category || 'other'
-    }))
-  , [userServices]);
 
   const projects: ProjectItem[] = useMemo(() =>
     userProjects.map(p => ({
@@ -92,28 +59,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     }))
   , [userProjects]);
 
-  const skills: Skill[] = useMemo(() =>
-    userSkills.map(s => ({
-      id: s.id,
-      name: s.skillName,
-      level: (s.proficiencyLevel as Skill['level']) || 'Intermediate',
-      proficiency: s.proficiencyLevel === 'Expert' ? 95 :
-                   s.proficiencyLevel === 'Advanced' ? 80 :
-                   s.proficiencyLevel === 'Intermediate' ? 60 : 40
-    }))
-  , [userSkills]);
-
-  const tools: Tool[] = useMemo(() => {
-    const uniqueTools = new Set<string>();
-    userProjects.forEach(p => {
-      (p.technologies || []).forEach(t => uniqueTools.add(t));
-    });
-    return Array.from(uniqueTools).slice(0, 12).map((name, i) => ({
-      id: `tool-${i}`,
-      name,
-      iconId: 'code'
-    }));
-  }, [userProjects]);
 
   const timeline: TimelineEntry[] = useMemo(() => {
     const entries: TimelineEntry[] = [];
@@ -188,16 +133,12 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
         <HeroSection
           profile={cardProfile}
           heroCopy={heroCopy}
-          services={services}
           enableTilt={false}
           isPreview={true}
           cardWidth={cardDimensions.width}
           cardHeight={cardDimensions.height}
         />
-        {stats.length > 0 && <StatsStrip stats={stats} isPreview={true} />}
-        {services.length > 0 && <ServicesGrid services={services} isPreview={true} />}
         {projects.length > 0 && <ProjectsGrid projects={projects} isPreview={true} />}
-        {skills.length > 0 && <SkillsSection skills={skills} tools={tools} isPreview={true} />}
         {timeline.length > 0 && <TimelineSection entries={timeline} isPreview={true} />}
         <ContactSection contact={contact} isPreview={true} />
       </div>
@@ -242,7 +183,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
           <HeroSection
             profile={cardProfile}
             heroCopy={heroCopy}
-            services={services}
             cardWidth={cardDimensions.width}
             cardHeight={cardDimensions.height}
             onCardAction={(action) => {
@@ -253,34 +193,9 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
           />
         </div>
 
-        {stats.length > 0 && <StatsStrip stats={stats} />}
-
-        {services.length > 0 && (
-          <div id="services-section">
-            <div className="py-16 lg:py-24" style={{ background: `linear-gradient(135deg, ${COLORS.charcoalBlack} 0%, ${COLORS.deepCharcoal} 100%)` }}>
-              <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-12">
-                <h2 className="text-3xl lg:text-4xl font-bold" style={{ color: COLORS.offWhite }}>What I Do</h2>
-                <p className="mt-2 text-lg" style={{ color: COLORS.coolGray }}>Services and expertise I offer</p>
-              </div>
-              <ServicesGrid 
-                services={services}
-                onBook={(id) => {
-                  document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              />
-            </div>
-          </div>
-        )}
-
         {projects.length > 0 && (
           <div id="projects-section">
             <ProjectsGrid projects={projects} columns={3} />
-          </div>
-        )}
-
-        {skills.length > 0 && (
-          <div id="skills-section">
-            <SkillsSection skills={skills} tools={tools} />
           </div>
         )}
 
