@@ -170,6 +170,8 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   const { isAuthenticated, isLoading } = useAuth();
   const [_, navigate] = useLocation();
   
+  console.log('[ProtectedRoute]', rest.path, { isAuthenticated, isLoading, noShell });
+  
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       console.log('User not authenticated, redirecting to auth page');
@@ -179,6 +181,7 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   
   // Show loading animation during auth check (inside AppShell for consistent look)
   if (isLoading) {
+    console.log('[ProtectedRoute] Loading state for:', rest.path);
     if (noShell) {
       return fallback ? <>{fallback}</> : <MuskLoadingShell />;
     }
@@ -191,14 +194,17 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   
   // Only block if we've confirmed user is NOT authenticated
   if (!isAuthenticated) {
+    console.log('[ProtectedRoute] Not authenticated, returning null for:', rest.path);
     return null;
   }
   
   // Wrap page in AppShell for consistent header and background
   if (noShell) {
+    console.log('[ProtectedRoute] noShell=true, rendering without AppShell:', rest.path);
     return <Component />;
   }
   
+  console.log('[ProtectedRoute] Rendering with AppShell:', rest.path);
   return (
     <AppShell>
       <Component />
