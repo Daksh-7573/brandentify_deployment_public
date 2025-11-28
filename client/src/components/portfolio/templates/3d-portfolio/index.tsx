@@ -63,9 +63,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     if (userServices.length > 0) {
       items.push({ id: '4', label: 'Services Offered', value: `${userServices.length}`, icon: 'users' });
     }
-    if (items.length < 4) {
-      items.push({ id: '5', label: 'Client Satisfaction', value: '100%', icon: 'award' });
-    }
     return items.slice(0, 4);
   }, [userExperiences, userProjects, userSkills, userServices]);
 
@@ -148,7 +145,12 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
   const heroCopy = useMemo(() => ({
     heading: userInfo.tagline || `Hi, I'm ${userInfo.name}`,
     subheading: userInfo.title || undefined,
+    jobLevel: userInfo.jobLevel || undefined,
+    company: userInfo.industryTags?.[0] || undefined,
+    visionStatement: userInfo.visionStatement || undefined,
     paragraph: userInfo.aboutMe || userInfo.uniqueValueProposition || undefined,
+    whatIOffer: userInfo.whatIOffer || undefined,
+    missionStatement: userInfo.missionStatement || undefined,
     primaryCta: { label: "Let's Talk", onClick: () => {
       document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' });
     }},
@@ -159,6 +161,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
 
   const contact = useMemo(() => ({
     email: userInfo.email || undefined,
+    phone: (userInfo as any).phoneNumber || undefined,
     location: userInfo.location || undefined,
     profileUrl: userInfo.brandName 
       ? `brandentifier.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`

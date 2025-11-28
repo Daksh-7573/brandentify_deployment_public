@@ -7,7 +7,12 @@ interface HeroSectionProps {
   heroCopy: {
     heading?: string;
     subheading?: string;
+    jobLevel?: string;
+    company?: string;
+    visionStatement?: string;
     paragraph?: string;
+    whatIOffer?: string;
+    missionStatement?: string;
     primaryCta?: { label: string; onClick?: () => void };
     secondaryCta?: { label: string; onClick?: () => void };
   };
@@ -70,12 +75,53 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 {heroCopy.heading || `Hi, I'm ${profile.name}`}
               </h1>
 
-              {heroCopy.subheading && (
+              {(heroCopy.subheading || heroCopy.jobLevel || heroCopy.company) && !isPreview && (
+                <div className="space-y-2">
+                  {heroCopy.subheading && (
+                    <p
+                      className="text-xl lg:text-2xl font-medium"
+                      style={{ color: COLORS.electricBlue }}
+                    >
+                      {heroCopy.subheading}
+                    </p>
+                  )}
+                  {(heroCopy.jobLevel || heroCopy.company) && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {heroCopy.jobLevel && (
+                        <span 
+                          className="px-3 py-1 rounded-full text-sm font-medium"
+                          style={{
+                            background: `${COLORS.neonPurple}20`,
+                            border: `1px solid ${COLORS.neonPurple}40`,
+                            color: COLORS.neonPurple
+                          }}
+                        >
+                          {heroCopy.jobLevel}
+                        </span>
+                      )}
+                      {heroCopy.company && (
+                        <span 
+                          className="px-3 py-1 rounded-full text-sm font-medium"
+                          style={{
+                            background: `${COLORS.mintGreen}20`,
+                            border: `1px solid ${COLORS.mintGreen}40`,
+                            color: COLORS.mintGreen
+                          }}
+                        >
+                          {heroCopy.company}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {heroCopy.visionStatement && !isPreview && (
                 <p
-                  className={`${isPreview ? 'text-sm' : 'text-xl lg:text-2xl'} font-medium`}
-                  style={{ color: COLORS.electricBlue }}
+                  className="text-lg leading-relaxed max-w-xl italic"
+                  style={{ color: COLORS.coolGray }}
                 >
-                  {heroCopy.subheading}
+                  "{heroCopy.visionStatement}"
                 </p>
               )}
 
@@ -86,6 +132,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 >
                   {heroCopy.paragraph}
                 </p>
+              )}
+
+              {heroCopy.whatIOffer && !isPreview && (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
+                    What I Offer
+                  </p>
+                  <p
+                    className="text-base leading-relaxed max-w-xl"
+                    style={{ color: COLORS.coolGray }}
+                  >
+                    {heroCopy.whatIOffer}
+                  </p>
+                </div>
               )}
             </div>
 
