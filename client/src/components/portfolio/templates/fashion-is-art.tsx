@@ -57,6 +57,7 @@ interface FashionIsArtProps {
     description?: string | null;
   }>;
   currentUserId?: number;
+  isPreview?: boolean;
 }
 
 export default function FashionIsArt({
@@ -66,6 +67,7 @@ export default function FashionIsArt({
   userProjects = [],
   userEducations = [],
   userServices = [],
+  isPreview = false
 }: FashionIsArtProps) {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,31 +88,33 @@ export default function FashionIsArt({
 
   return (
     <div className="min-h-screen bg-white text-black" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* STICKY NAVIGATION */}
-      <motion.nav 
-        initial={{ y: -100 }} 
-        animate={{ y: 0 }} 
-        transition={{ duration: 0.8 }}
-        className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-black/5"
-      >
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{userInfo.name}</h2>
-          <div className="flex items-center gap-3">
-            {userInfo.email && (
-              <Button variant="ghost" size="sm" onClick={() => window.location.href = `mailto:${userInfo.email}`}>
-                Book Me
+      {/* STICKY NAVIGATION - Hidden in preview mode */}
+      {!isPreview && (
+        <motion.nav 
+          initial={{ y: -100 }} 
+          animate={{ y: 0 }} 
+          transition={{ duration: 0.8 }}
+          className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-black/5"
+        >
+          <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{userInfo.name}</h2>
+            <div className="flex items-center gap-3">
+              {userInfo.email && (
+                <Button variant="ghost" size="sm" onClick={() => window.location.href = `mailto:${userInfo.email}`}>
+                  Book Me
+                </Button>
+              )}
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-1" />
+                Media Kit
               </Button>
-            )}
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-1" />
-              Media Kit
-            </Button>
+            </div>
           </div>
-        </div>
-      </motion.nav>
+        </motion.nav>
+      )}
 
       {/* HERO SECTION */}
-      <section className="pt-32 pb-20 px-6 md:px-12">
+      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-6' : 'pt-32'}`}>
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 
