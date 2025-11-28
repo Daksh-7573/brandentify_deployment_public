@@ -968,16 +968,6 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
-              <div className="flex items-center justify-between mb-3">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                  className="text-white/70 hover:text-white hover:bg-white/10"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" /> Back
-                </Button>
-              </div>
               <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
               <p className="text-white/70">
                 Review your AI-generated portfolio before publishing it to the world.
