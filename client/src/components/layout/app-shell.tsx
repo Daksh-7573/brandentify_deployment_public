@@ -9,7 +9,6 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, hideHeader = false, className = "" }: AppShellProps) {
-  console.log('[AppShell] Rendering with hideHeader:', hideHeader);
   return (
     <div 
       className="fixed inset-0 w-full h-full responsive-background"
