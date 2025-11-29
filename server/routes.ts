@@ -8714,15 +8714,54 @@ ${extractedText.substring(0, 5000)}
         return res.status(404).json({ error: "Career goal not found" });
       }
       
-      const milestones = await storage.getGoalMilestonesByGoalId(goalId);
+      let milestones: any[] = [];
+      
+      // If this is an AI-generated goal, fetch milestones from capsule structure
+      if (goal.isMuskGenerated) {
+        console.log(`[Goal Details] Fetching AI-generated milestones for goal ${goalId}`);
+        // Find the capsule associated with this goal (same ID or find by user/title)
+        const capsule = await storage.getCapsuleById(goalId);
+        if (capsule) {
+          console.log(`[Goal Details] Found capsule ${capsule.id} for goal ${goalId}`);
+          // Fetch years and tasks from capsule
+          const years = await storage.getCapsuleYearsByCapsuleId(capsule.id);
+          console.log(`[Goal Details] Found ${years.length} years in capsule`);
+          
+          // Convert capsule years/tasks to milestone format
+          for (const year of years) {
+            const tasks = await storage.getCapsuleTasksByYearId(year.id);
+            milestones.push({
+              id: year.id,
+              goalId: goalId,
+              year: year.year,
+              title: year.title,
+              description: year.description || year.milestone,
+              tasks: tasks,
+              status: tasks.every((t: any) => t.isCompleted) ? "completed" : "in_progress",
+              progress: tasks.length > 0 ? Math.floor((tasks.filter((t: any) => t.isCompleted).length / tasks.length) * 100) : 0
+            });
+          }
+          console.log(`[Goal Details] Converted ${milestones.length} capsule years to milestones`);
+        } else {
+          console.log(`[Goal Details] No capsule found for AI-generated goal ${goalId}`);
+        }
+      } else {
+        // For manually created goals, fetch from career_goal_milestones
+        milestones = await storage.getGoalMilestonesByGoalId(goalId);
+      }
+      
       const skills = await storage.getGoalSkillsByGoalId(goalId);
       const progressLogs = await storage.getGoalProgressLogsByGoalId(goalId);
       
-      // Calculate overall progress based on milestones and progress logs
+      // Calculate overall progress based on milestones
       let completedMilestones = 0;
+      let totalTasks = 0;
       milestones.forEach(milestone => {
         if (milestone.status === "completed") {
           completedMilestones++;
+        }
+        if (Array.isArray(milestone.tasks)) {
+          totalTasks += milestone.tasks.filter((t: any) => t.isCompleted).length;
         }
       });
       
