@@ -287,7 +287,19 @@ export default function Header() {
               <span>Create Pulse</span>
             </button>
             
-            {/* Settings Button removed as requested */}
+            {/* Musk Chat Icon */}
+            <div
+              className={`hidden sm:flex cursor-pointer relative transition-all duration-300 p-2 rounded-lg ${
+                isActive('/musk-chat') 
+                  ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 border border-white/20' 
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+              onClick={() => setLocation('/musk-chat')}
+              aria-label="Musk AI Chat"
+              data-testid="button-musk-chat"
+            >
+              <Bot className="h-5 w-5" />
+            </div>
             
             {/* Messages Icon */}
             <div
