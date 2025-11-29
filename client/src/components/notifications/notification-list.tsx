@@ -37,7 +37,7 @@ export default function NotificationList({
 }: NotificationListProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [activeTab, setActiveTab] = useState<'new' | 'read'>('new');
   const { toast } = useToast();
   
   // Fetch notifications
@@ -201,9 +201,9 @@ export default function NotificationList({
   };
   
   // Filter notifications based on active tab
-  const filteredNotifications = activeTab === 'all' 
-    ? notifications 
-    : notifications.filter(notification => !notification.isRead);
+  const filteredNotifications = activeTab === 'new' 
+    ? notifications.filter(notification => !notification.isRead)
+    : notifications.filter(notification => notification.isRead);
   
   // Get notification icon based on type
   const getNotificationIcon = (type: string) => {
@@ -270,29 +270,29 @@ export default function NotificationList({
       </div>
       
       <Tabs 
-        defaultValue="all" 
+        defaultValue="new" 
         className="w-full" 
         value={activeTab} 
-        onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}
+        onValueChange={(value) => setActiveTab(value as 'new' | 'read')}
       >
         <div className="border-b border-gray-800/20 px-2">
           <TabsList className="grid grid-cols-2 h-10 bg-spotify-glass-highlight">
             <TabsTrigger 
-              value="all" 
+              value="new" 
               className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white border-0"
             >
-              All
+              New
             </TabsTrigger>
             <TabsTrigger 
-              value="unread" 
+              value="read" 
               className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white border-0"
             >
-              Unread
+              Read
             </TabsTrigger>
           </TabsList>
         </div>
         
-        <TabsContent value="all" className="mt-0">
+        <TabsContent value="new" className="mt-0">
           <div className="overflow-y-auto max-h-[350px]">
             {loading ? (
               <div className="p-4 space-y-4">
@@ -310,95 +310,19 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={`p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors ${
-                    !notification.isRead ? 'bg-spotify-glass-highlight/40' : ''
-                  }`}
+                  className={`p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors bg-spotify-glass-highlight/40`}
+                  data-testid={`notification-item-new-${notification.id}`}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-spotify-white">{notification.title}</p>
-                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5">
+                      <p className="font-medium text-sm line-clamp-1 text-spotify-white" data-testid={`text-notification-title-${notification.id}`}>{notification.title}</p>
+                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5" data-testid={`text-notification-message-${notification.id}`}>
                         {notification.message}
                       </p>
-                      <p className="text-xs text-spotify-light-gray/70 mt-1">
-                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
-                      </p>
-                      {renderActionButtons(notification)}
-                    </div>
-                    <div className="flex gap-1 shrink-0">
-                      {!notification.isRead && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
-                          onClick={() => handleMarkAsRead(notification.id)}
-                          title="Mark as read"
-                        >
-                          <Check className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
-                        onClick={() => handleDelete(notification.id)}
-                        title="Delete notification"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
-                  <Bell className="h-6 w-6 text-spotify-light-gray" />
-                </div>
-                <h3 className="text-base font-medium text-spotify-white">No notifications</h3>
-                <p className="mt-1 text-sm text-spotify-light-gray">
-                  {activeTab === 'all' 
-                    ? "You don't have any notifications yet" 
-                    : "You don't have any unread notifications"}
-                </p>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="unread" className="mt-0">
-          <div className="overflow-y-auto max-h-[350px]">
-            {loading ? (
-              <div className="p-4 space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full bg-spotify-glass-highlight" />
-                    <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-full bg-spotify-glass-highlight" />
-                      <Skeleton className="h-3 w-3/4 bg-spotify-glass-highlight" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredNotifications.length > 0 ? (
-              filteredNotifications.map((notification) => (
-                <div 
-                  key={notification.id} 
-                  className="p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors bg-spotify-glass-highlight/40"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5">
-                      {getNotificationIcon(notification.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-spotify-white">{notification.title}</p>
-                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5">
-                        {notification.message}
-                      </p>
-                      <p className="text-xs text-spotify-light-gray/70 mt-1">
+                      <p className="text-xs text-spotify-light-gray/70 mt-1" data-testid={`text-notification-time-${notification.id}`}>
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                       {renderActionButtons(notification)}
@@ -410,6 +334,7 @@ export default function NotificationList({
                         className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
                         onClick={() => handleMarkAsRead(notification.id)}
                         title="Mark as read"
+                        data-testid={`button-mark-read-${notification.id}`}
                       >
                         <Check className="h-3.5 w-3.5" />
                       </Button>
@@ -419,6 +344,7 @@ export default function NotificationList({
                         className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
+                        data-testid={`button-delete-${notification.id}`}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -431,9 +357,73 @@ export default function NotificationList({
                 <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
                   <Bell className="h-6 w-6 text-spotify-light-gray" />
                 </div>
-                <h3 className="text-base font-medium text-spotify-white">No unread notifications</h3>
+                <h3 className="text-base font-medium text-spotify-white">No new notifications</h3>
                 <p className="mt-1 text-sm text-spotify-light-gray">
-                  All caught up! You've read all your notifications.
+                  You're all caught up!
+                </p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="read" className="mt-0">
+          <div className="overflow-y-auto max-h-[350px]">
+            {loading ? (
+              <div className="p-4 space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex gap-3">
+                    <Skeleton className="h-8 w-8 rounded-full bg-spotify-glass-highlight" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-full bg-spotify-glass-highlight" />
+                      <Skeleton className="h-3 w-3/4 bg-spotify-glass-highlight" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredNotifications.length > 0 ? (
+              filteredNotifications.map((notification) => (
+                <div 
+                  key={notification.id} 
+                  className="p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors"
+                  data-testid={`notification-item-read-${notification.id}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5">
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm line-clamp-1 text-spotify-white" data-testid={`text-notification-title-read-${notification.id}`}>{notification.title}</p>
+                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5" data-testid={`text-notification-message-read-${notification.id}`}>
+                        {notification.message}
+                      </p>
+                      <p className="text-xs text-spotify-light-gray/70 mt-1" data-testid={`text-notification-time-read-${notification.id}`}>
+                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                      </p>
+                      {renderActionButtons(notification)}
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
+                        onClick={() => handleDelete(notification.id)}
+                        title="Delete notification"
+                        data-testid={`button-delete-read-${notification.id}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-spotify-light-gray" />
+                </div>
+                <h3 className="text-base font-medium text-spotify-white">No read notifications</h3>
+                <p className="mt-1 text-sm text-spotify-light-gray">
+                  Your read notifications will appear here
                 </p>
               </div>
             )}

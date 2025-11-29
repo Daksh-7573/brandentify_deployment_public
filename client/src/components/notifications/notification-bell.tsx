@@ -14,10 +14,10 @@ interface NotificationBellProps {
 export function NotificationBell({ className = '' }: NotificationBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isDemoMode } = useAuth();
+  const { user } = useAuth();
   
   // Get the user ID for queries - use numeric ID from user object
-  const userId = isDemoMode ? 1 : (user?.id || user?.uid);
+  const userId = user?.id || user?.uid;
   
   // Fetch unread notification count
   const fetchUnreadCount = async () => {
