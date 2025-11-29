@@ -376,7 +376,7 @@ Respond with JSON format:
 
     try {
       // Use FREE VPS Ollama instead of expensive OpenAI
-      const response = await localAI.generateCompletion(prompt, 'musk-pulse-generation');
+      const response = await localAI.generateCompletion(prompt);
       
       // Parse JSON from response (Ollama doesn't have strict JSON mode, so extract it)
       const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -446,7 +446,7 @@ Respond with JSON format:
 
     try {
       // Use FREE VPS Ollama instead of expensive OpenAI
-      const response = await localAI.generateCompletion(prompt, 'musk-pulse-generation');
+      const response = await localAI.generateCompletion(prompt);
       
       // Parse JSON from response (Ollama doesn't have strict JSON mode, so extract it)
       const jsonMatch = response.match(/\{[\s\S]*\}/);

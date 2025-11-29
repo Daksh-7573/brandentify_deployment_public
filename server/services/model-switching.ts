@@ -248,7 +248,7 @@ async function generateWithOpenAI(message: string, context: any): Promise<string
   // Combine system and user prompts for Ollama
   const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
   
-  const response = await localAI.generateCompletion(fullPrompt, 'model-switching-retry');
+  const response = await localAI.generateCompletion(fullPrompt);
 
   return response || 'I apologize, but I encountered an issue generating a response.';
 }

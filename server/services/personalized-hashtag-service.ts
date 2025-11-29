@@ -71,7 +71,7 @@ export async function generatePersonalizedHashtags(options: HashtagSuggestionsOp
 ${prompt}`;
     
     // Call FREE VPS Ollama instead of expensive OpenAI
-    const rawResponse = await localAI.generateCompletion(fullPrompt, 'hashtag-generation');
+    const rawResponse = await localAI.generateCompletion(fullPrompt);
     
     if (!rawResponse) {
       return { 

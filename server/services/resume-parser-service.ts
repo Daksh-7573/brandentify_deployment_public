@@ -248,7 +248,7 @@ export async function parseResume(resumeText: string): Promise<any> {
     `;
 
     // Call FREE VPS Ollama instead of expensive OpenAI
-    const response = await localAI.generateCompletion(prompt, 'resume-parsing');
+    const response = await localAI.generateCompletion(prompt);
 
     if (!response) {
       throw new Error('No content in Ollama response');

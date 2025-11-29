@@ -62,7 +62,7 @@ Suggest 5-10 professional job titles that match this partial input: "${input}". 
 Return format: { "suggestions": ["Title 1", "Title 2", ...] }`;
     
     // Make FREE VPS Ollama request
-    const response = await localAI.generateCompletion(prompt, 'job-title-suggestions');
+    const response = await localAI.generateCompletion(prompt);
     
     // Extract and parse the suggestions
     const jsonMatch = response.match(/\{[\s\S]*\}/);

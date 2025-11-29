@@ -406,7 +406,7 @@ For each year's milestones, include specific courses, books, and development act
     const fullPrompt = `${systemPrompt}\n\n${enhancedContext}`;
     
     // Call FREE VPS Ollama instead of expensive OpenAI
-    aiResponse = await localAI.generateCompletion(fullPrompt, 'career-milestone-generation');
+    aiResponse = await localAI.generateCompletion(fullPrompt);
 
     // Parse the response as JSON
     let milestones;

@@ -124,7 +124,7 @@ Return only the rewritten message, nothing else.
 `;
 
     // Call FREE VPS Ollama instead of expensive OpenAI
-    const response = await localAI.generateCompletion(resolutionPrompt, 'reference-resolution');
+    const response = await localAI.generateCompletion(resolutionPrompt);
 
     const rewrittenMessage = response.trim();
     
