@@ -234,6 +234,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Logout
   const logout = async () => {
     try {
+      // Clear browser history to prevent "page not found" error when clicking back after logout
+      window.history.replaceState({}, '', '/auth');
+      
+      const { auth } = await import('@/lib/firebase');
       await signOut(auth);
       console.log("User signed out successfully");
     } catch (error) {
