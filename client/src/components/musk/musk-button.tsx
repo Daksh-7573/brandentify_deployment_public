@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { BrainCircuit } from 'lucide-react';
 import MuskChatPanel from '@/components/musk/musk-chat-panel';
+import muskLogoGif from '@assets/Bold Modern Minimalist Gradient Technology Business Logo  (4)_1764375749890.gif';
 
 type MuskButtonProps = {
   className?: string;
@@ -72,10 +72,14 @@ export default function MuskButton({
           >
             <Button
               size="lg"
-              className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white"
+              className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white p-0 flex items-center justify-center overflow-hidden"
               onClick={() => setIsOpen(true)}
             >
-              <BrainCircuit className="h-8 w-8" />
+              <img 
+                src={muskLogoGif} 
+                alt="Musk Chat" 
+                className="h-10 w-10 object-cover"
+              />
               <motion.span
                 className="absolute inset-0 rounded-full bg-primary/20"
                 variants={pulseAnimation}
