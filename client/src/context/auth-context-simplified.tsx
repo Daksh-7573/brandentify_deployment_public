@@ -1,21 +1,18 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser } from "firebase/auth";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut, User as FirebaseUser, Auth } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from "@/lib/queryClient";
 
-// Import Firebase auth and provider at module level to avoid scope issues
-let authInstance: any = null;
-let googleProviderInstance: any = null;
+// Firebase instance references - using useRef pattern via module-level storage
+let firebaseInitPromise: Promise<{ auth: Auth; googleProvider: any }> | null = null;
 
-// Initialize Firebase auth and provider
+// Initialize Firebase once and cache the promise
 const initializeFirebase = async () => {
-  if (!authInstance) {
-    const { auth, googleProvider } = await import('@/lib/firebase');
-    authInstance = auth;
-    googleProviderInstance = googleProvider;
+  if (!firebaseInitPromise) {
+    firebaseInitPromise = import('@/lib/firebase');
   }
-  return { auth: authInstance, googleProvider: googleProviderInstance };
+  return firebaseInitPromise;
 };
 
 interface User {
@@ -35,7 +32,7 @@ interface AuthContextType {
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (phoneNumber: string) => Promise<void>;
-  logout: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -44,13 +41,19 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   signInWithGoogle: async () => {},
   signInWithPhone: async () => {},
-  logout: async () => {},
+  signOut: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  
+  // Track if component is mounted to prevent state updates on unmounted component
+  const isMountedRef = useRef(true);
+  
+  // Track logout state to prevent race conditions
+  const isLoggingOutRef = useRef(false);
 
   // Create or update user in backend
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
@@ -155,36 +158,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { auth } = await initializeFirebase();
         
         unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          // Don't process if logging out
+          if (isLoggingOutRef.current) {
+            console.log("Auth state changed during logout, skipping processing");
+            return;
+          }
+          
           console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
           
           if (firebaseUser) {
             try {
-              // Only process if we don't already have this user
-              if (!user || user.uid !== firebaseUser.uid) {
-                console.log("Processing new user:", firebaseUser.uid);
-                
-                // Create/update user in backend first
-                await createOrUpdateUserInBackend(firebaseUser);
-                
-                // Get Google provider data for email
-                const googleProvider = firebaseUser.providerData?.find(
-                  provider => provider.providerId === "google.com"
-                );
-                const userEmail = googleProvider?.email || firebaseUser.email;
-                
-                // Fetch complete user data from backend
-                const userData = await fetchUserData(firebaseUser.uid, userEmail);
-                
+              console.log("Processing new user:", firebaseUser.uid);
+              
+              // Create/update user in backend first
+              await createOrUpdateUserInBackend(firebaseUser);
+              
+              // Get Google provider data for email
+              const googleProvider = firebaseUser.providerData?.find(
+                provider => provider.providerId === "google.com"
+              );
+              const userEmail = googleProvider?.email || firebaseUser.email;
+              
+              // Fetch complete user data from backend
+              const userData = await fetchUserData(firebaseUser.uid, userEmail);
+              
+              if (isMountedRef.current) {
                 if (userData) {
                   console.log("Setting user state with backend data");
                   setUser(userData);
-                  
-                  if (!user) {
-                    toast({
-                      title: "Signed in successfully",
-                      description: `Welcome ${userData.name || userData.email}!`,
-                    });
-                  }
+                  toast({
+                    title: "Signed in successfully",
+                    description: `Welcome ${userData.name || userData.email}!`,
+                  });
                 } else {
                   // Fallback user if backend fails
                   console.log("Using fallback user data");
@@ -198,21 +203,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   };
                   
                   setUser(fallbackUser);
-                  
-                  if (!user) {
-                    toast({
-                      title: "Signed in successfully", 
-                      description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
-                    });
-                  }
+                  toast({
+                    title: "Signed in successfully", 
+                    description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
+                  });
                 }
               }
             } catch (error) {
               console.error("Error processing auth state change:", error);
             }
           } else {
-            // User signed out - clear everything
-            if (user) {
+            // User signed out
+            if (isMountedRef.current && user) {
               console.log("User signed out - clearing state");
               setUser(null);
               clearAllCaches();
@@ -223,27 +225,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           }
           
-          setIsLoading(false);
+          if (isMountedRef.current) {
+            setIsLoading(false);
+          }
         });
       } catch (error) {
         console.error("Error setting up auth listener:", error);
-        setIsLoading(false);
+        if (isMountedRef.current) {
+          setIsLoading(false);
+        }
       }
     };
 
     setupAuthListener();
 
     return () => {
+      isMountedRef.current = false;
       if (unsubscribe) {
         unsubscribe();
       }
     };
   }, []); // Empty dependency array - setup only once on mount
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Simplified Google sign-in
   const signInWithGoogle = async () => {
     try {
-      setIsLoading(true);
+      if (isMountedRef.current) {
+        setIsLoading(true);
+      }
       console.log("Starting Google sign-in");
       
       const { auth, googleProvider } = await initializeFirebase();
@@ -279,7 +295,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive",
       });
       
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -292,49 +310,66 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Complete logout with proper sequencing
-  const logout = async () => {
+  // Complete logout with proper sequencing and race condition prevention
+  const signOut = async () => {
+    // Prevent multiple simultaneous logouts
+    if (isLoggingOutRef.current) {
+      console.log("Logout already in progress, skipping duplicate request");
+      return;
+    }
+    
+    isLoggingOutRef.current = true;
+    
     try {
       console.log("Starting logout process");
-      setIsLoading(true);
+      if (isMountedRef.current) {
+        setIsLoading(true);
+      }
       
       const { auth } = await initializeFirebase();
       
       // Step 1: Sign out from Firebase
-      await signOut(auth);
+      await firebaseSignOut(auth);
       console.log("Firebase sign out completed");
       
       // Step 2: Clear all caches immediately after Firebase signout
       clearAllCaches();
       
       // Step 3: Update UI state to reflect logout
-      setUser(null);
-      console.log("User state cleared");
+      if (isMountedRef.current) {
+        setUser(null);
+        console.log("User state cleared");
+      }
       
       // Step 4: Clear browser history to prevent back button issues
-      // Use a small delay to ensure state updates process
-      setTimeout(() => {
-        window.history.replaceState({}, '', '/auth');
-        console.log("Browser history cleared, redirecting to auth");
+      window.history.replaceState({}, '', '/auth');
+      console.log("Browser history cleared, redirecting to auth");
+      
+      if (isMountedRef.current) {
         setIsLoading(false);
-      }, 100);
+      }
       
     } catch (error) {
       console.error("Error during logout:", error);
       
       // Even if logout fails, clear the user state for security
-      setUser(null);
-      clearAllCaches();
+      if (isMountedRef.current) {
+        setUser(null);
+        clearAllCaches();
+        setIsLoading(false);
+      }
       
       // Still try to redirect to auth page
       window.history.replaceState({}, '', '/auth');
-      setIsLoading(false);
       
       toast({
         title: "Logout Error",
         description: "You've been signed out, but there was an issue. Please refresh if needed.",
         variant: "destructive",
       });
+    } finally {
+      // Reset logout flag
+      isLoggingOutRef.current = false;
     }
   };
 
@@ -346,7 +381,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         signInWithGoogle,
         signInWithPhone,
-        logout,
+        signOut,
       }}
     >
       {children}
