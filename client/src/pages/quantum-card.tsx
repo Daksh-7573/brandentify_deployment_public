@@ -5,7 +5,7 @@ import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, Lock, Crown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -16,6 +16,7 @@ import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
 import { useState } from "react";
 import { PortfolioPageSkeleton } from "@/components/ui/page-skeletons/portfolio-skeleton";
+import { PremiumBadge } from "@/components/ui/premium-badge";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -74,7 +75,7 @@ export default function QuantumCardPage() {
                 Create and customize your professional digital visiting card
               </p>
             </div>
-            <div className="flex items-center gap-4 mt-4 md:mt-0">
+            <div className="flex items-center gap-3 mt-4 md:mt-0">
               <Button
                 onClick={() => navigate("/profile")}
                 variant="outline"
@@ -83,6 +84,22 @@ export default function QuantumCardPage() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
               </Button>
+              
+              {/* Premium Button */}
+              {(userData as any)?.subscriptionTier === 'premium' ? (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-400/20 to-orange-500/20 border border-yellow-400/30">
+                  <PremiumBadge size="sm" showTooltip={false} />
+                  <span className="text-xs font-medium text-yellow-400">Premium</span>
+                </div>
+              ) : (
+                <button 
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-yellow-500/30 transition-all hover:scale-105"
+                  onClick={() => navigate('/pricing')}
+                >
+                  <Crown className="h-4 w-4" />
+                  <span>Upgrade</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
