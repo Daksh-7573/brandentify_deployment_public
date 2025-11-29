@@ -1,6 +1,6 @@
-// Re-export the useAuth hook from the main auth context that validates server sessions
+// Re-export the useAuth hook from the main server-session auth context
 import { useContext } from 'react';
-import { AuthContext } from '../context/auth-context';
+import { AuthContext } from '../context/simple-auth-context';
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

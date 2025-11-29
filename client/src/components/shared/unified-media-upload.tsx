@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface UnifiedMediaUploadProps {
   mediaUrls: string[];
@@ -21,7 +22,7 @@ export function UnifiedMediaUpload({
   mediaUrls,
   onMediaUpload,
   onRemoveMedia,
-  userId,
+  userId: propUserId,
   maxMediaCount = 10,
   maxImageCount = 5,
   maxVideoCount = 1,
@@ -29,7 +30,11 @@ export function UnifiedMediaUpload({
   videoMaxSize = 25 * 1024 * 1024,
 }: UnifiedMediaUploadProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const mediaInputRef = useRef<HTMLInputElement>(null);
+  
+  // Use prop userId if provided, otherwise get from auth context
+  const userId = propUserId ?? user?.id;
 
   const isVideoUrl = (url: string): boolean => {
     return url.toLowerCase().match(/\.(mp4|webm|mov|mkv|avi)$/i) !== null ||
@@ -171,16 +176,16 @@ export function UnifiedMediaUpload({
 
     if (validFiles.length === 0) return;
 
-    // Get user ID from prop or session storage as fallback
-    const userIdStr = userId?.toString() || sessionStorage.getItem("userId");
-    if (!userIdStr) {
+    // Get user ID from prop - no sessionStorage fallback for security
+    if (!userId) {
       toast({
-        title: "Authentication Error",
+        title: "Authentication Required",
         description: "Please log in to upload media.",
         variant: "destructive",
       });
       return;
     }
+    const userIdStr = userId.toString();
 
     try {
       const formData = new FormData();

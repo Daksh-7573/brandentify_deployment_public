@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, ReactNode, useRef, useContext } from "react";
+import { createContext, useState, useEffect, ReactNode, useRef, useContext, useCallback } from "react";
 import { queryClient } from "@/lib/queryClient";
 
 // Simple auth user type
@@ -8,8 +8,8 @@ type AuthUser = {
   email: string;
   name: string;
   photoURL?: string;
-  uid?: string; // Add Firebase UID for profile queries
-  profileCompleted?: number; // Profile completion percentage (0-100)
+  uid?: string;
+  profileCompleted?: number;
 };
 
 // Simple auth context type
@@ -18,7 +18,8 @@ type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   signIn: (user: AuthUser) => void;
-  signOut: () => void;
+  signOut: () => Promise<void>;
+  refreshSession: () => Promise<AuthUser | null>;
 };
 
 // Create the auth context
@@ -27,10 +28,11 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
   signIn: () => {},
-  signOut: () => {},
+  signOut: async () => {},
+  refreshSession: async () => null,
 });
 
-// Simple auth provider
+// Server-session based auth provider
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,165 +40,141 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSigningOutRef = useRef(false);
 
-  // Check authentication from server session (published domain) or sessionStorage (dev)
+  // Fetch session from server - this is the ONLY source of truth
+  const fetchServerSession = useCallback(async (): Promise<AuthUser | null> => {
+    try {
+      console.log('[Auth] Fetching session from server...');
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+
+      console.log('[Auth] Server session response:', {
+        status: response.status,
+        ok: response.ok,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Auth] Raw server response:', data);
+
+        // Handle both direct user object and wrapped {success, user} response
+        let userData: AuthUser | null = null;
+        if (data.success !== undefined && data.user) {
+          userData = data.user;
+          console.log('[Auth] Unwrapped user from server response');
+        } else if (data.id || data.email) {
+          userData = data;
+          console.log('[Auth] Direct user object from server');
+        }
+
+        if (userData) {
+          console.log('[Auth] Valid session found for:', userData.email);
+          return userData;
+        }
+      }
+
+      console.log('[Auth] No valid session found');
+      return null;
+    } catch (error) {
+      console.error('[Auth] Error fetching server session:', error);
+      return null;
+    }
+  }, []);
+
+  // Refresh session - callable from components
+  const refreshSession = useCallback(async (): Promise<AuthUser | null> => {
+    console.log('[Auth] Refreshing session...');
+    const userData = await fetchServerSession();
+    setUser(userData);
+    return userData;
+  }, [fetchServerSession]);
+
+  // Check authentication on mount - ALWAYS from server
   useEffect(() => {
-    console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
-    
-    // Failsafe timeout to prevent infinite loading - cleared when auth check completes
+    console.log('[Auth] Starting auth check');
+
+    // Failsafe timeout to prevent infinite loading
     timeoutRef.current = setTimeout(() => {
       if (loadingRef.current) {
-        console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
+        console.warn('[Auth] Failsafe timeout - forcing loading to false');
         setIsLoading(false);
         loadingRef.current = false;
       }
-    }, 3000); // 3 second maximum loading time
-    
+    }, 5000);
+
     const checkAuth = async () => {
-      console.log('AuthProvider: Running checkAuth');
-      
-      // Check if we're on published domain and should use server session
-      const hostname = window.location.hostname;
-      console.log('AuthProvider: Current hostname:', hostname);
-      const isPublishedDomain = hostname.includes('replit.app') || hostname.includes('replit.dev');
-      console.log('AuthProvider: Domain check result:', { hostname, isPublishedDomain });
-      
-      if (isPublishedDomain) {
-        console.log('AuthProvider: Replit domain detected, checking server session', hostname);
-        try {
-          console.log('AuthProvider: Fetching server session for published domain...');
-          const response = await fetch('/api/auth/session', {
-            method: 'GET',
-            credentials: 'include',
-            cache: 'no-store', // Never cache auth requests
-            headers: {
-              'Accept': 'application/json',
-            }
-          });
-          
-          console.log('AuthProvider: Server session response:', {
-            status: response.status,
-            ok: response.ok,
-            url: response.url
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            console.log('AuthProvider: Raw server response:', data);
-            
-            // Handle both direct user object and wrapped {success, user} response
-            let userData;
-            if (data.success !== undefined && data.user) {
-              // Wrapped response format: {success: true, user: {...}}
-              userData = data.user;
-              console.log('AuthProvider: Unwrapped user from server response');
-            } else if (data.id || data.email) {
-              // Direct user object format
-              userData = data;
-              console.log('AuthProvider: Direct user object from server');
-            } else {
-              console.warn('AuthProvider: Unexpected server response format:', data);
-              throw new Error('Invalid session response format');
-            }
-            
-            console.log('AuthProvider: Server session found for user:', userData.email);
-            setUser(userData);
-            // Store in sessionStorage for consistency
-            sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-            return;
-          } else {
-            console.log('AuthProvider: No server session found, status:', response.status);
-            // Don't clear sessionStorage - let it be checked as fallback
-          }
-        } catch (error) {
-          console.error('AuthProvider: Error checking server session:', error);
-          console.log('AuthProvider: Falling back to sessionStorage check');
-          // Fall back to sessionStorage check
-        }
-      }
-      
-      // Fallback to sessionStorage check (development or no server session)
-      console.log('AuthProvider: Checking sessionStorage');
-      console.log('AuthProvider: Current sessionStorage keys:', Object.keys(sessionStorage));
-      
       try {
-        const storedUser = sessionStorage.getItem('brandentifier_user');
-        console.log('AuthProvider: Raw stored data:', storedUser);
-        
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          console.log('AuthProvider: Parsed user data:', {
-            email: userData.email,
-            id: userData.id,
-            name: userData.name
-          });
-          setUser(userData);
-          console.log('AuthProvider: User state set, isAuthenticated should be true');
-        } else {
-          console.log('AuthProvider: No stored user found in sessionStorage');
-        }
+        const userData = await fetchServerSession();
+        setUser(userData);
       } catch (error) {
-        console.error('AuthProvider: Error checking stored auth:', error);
-        // Clear any corrupted data
-        sessionStorage.removeItem('brandentifier_user');
+        console.error('[Auth] Error during auth check:', error);
+        setUser(null);
       } finally {
-        console.log('AuthProvider: Setting isLoading to false from checkAuth');
+        console.log('[Auth] Auth check complete');
         setIsLoading(false);
         loadingRef.current = false;
         if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current); // Clear the failsafe timeout since auth check completed
+          clearTimeout(timeoutRef.current);
           timeoutRef.current = null;
         }
       }
     };
 
-    // Handle Google auth success event
-    const handleGoogleAuthSuccess = (event: Event) => {
+    // Handle Google auth success event (for OAuth callback)
+    const handleGoogleAuthSuccess = async (event: Event) => {
       const customEvent = event as CustomEvent<{ user: AuthUser }>;
       const { user: userData } = customEvent.detail;
-      console.log('Google auth success event received:', userData.email);
-      setUser(userData);
-      setIsLoading(false);
-      sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+      console.log('[Auth] Google auth success event received:', userData.email);
       
-      // Check if there's a pending referral code
-      const referralCode = sessionStorage.getItem('referral_code');
-      if (referralCode && userData.id) {
-        console.log('[Referral] Found pending referral code on Google auth success, processing...');
-        processReferral(userData.id, referralCode);
+      // Verify with server session after OAuth callback
+      const verifiedUser = await fetchServerSession();
+      if (verifiedUser) {
+        setUser(verifiedUser);
+        setIsLoading(false);
+        
+        // Process pending referral if exists
+        const referralCode = sessionStorage.getItem('referral_code');
+        if (referralCode && verifiedUser.id) {
+          console.log('[Referral] Found pending referral code, processing...');
+          processReferral(verifiedUser.id, referralCode);
+        }
       }
     };
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess);
-    
-    // Run auth check (async for server session support)
     checkAuth();
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess);
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current); // Clean up timeout on component unmount
+        clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
     };
-  }, []);
+  }, [fetchServerSession]);
 
   const processReferral = async (userId: number, referralCode: string) => {
     try {
       console.log('[Referral] Processing referral for user:', userId, 'code:', referralCode);
-      
+
       const response = await fetch('/api/referral/process-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           referralCode,
           newUserId: userId
         })
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log('[Referral] Referral processed successfully:', data);
-        // Clear the referral code from sessionStorage
         sessionStorage.removeItem('referral_code');
         return true;
       } else {
@@ -209,75 +187,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signIn = (userData: AuthUser) => {
-    console.log('Signing in user:', userData.email);
-    setUser(userData);
+  // Sign in - called after successful OAuth, verifies with server
+  const signIn = useCallback(async (userData: AuthUser) => {
+    console.log('[Auth] Sign in called for:', userData.email);
     
-    // Check if there's a pending referral code
-    const referralCode = sessionStorage.getItem('referral_code');
-    if (referralCode && userData.id) {
-      console.log('[Referral] Found pending referral code, processing...');
-      processReferral(userData.id, referralCode);
+    // Verify the session with the server
+    const verifiedUser = await fetchServerSession();
+    if (verifiedUser) {
+      setUser(verifiedUser);
+      
+      // Process pending referral
+      const referralCode = sessionStorage.getItem('referral_code');
+      if (referralCode && verifiedUser.id) {
+        console.log('[Referral] Found pending referral code, processing...');
+        processReferral(verifiedUser.id, referralCode);
+      }
+    } else {
+      console.warn('[Auth] Sign in failed - no valid server session');
+      setUser(null);
     }
     setIsLoading(false);
-    sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-  };
+  }, [fetchServerSession]);
 
-  const signOut = () => {
-    // Prevent multiple simultaneous logouts
+  // Sign out - calls server logout endpoint
+  const signOut = useCallback(async () => {
     if (isSigningOutRef.current) {
-      console.log('Logout already in progress, skipping duplicate request');
+      console.log('[Auth] Logout already in progress');
       return;
     }
-    
+
     isSigningOutRef.current = true;
-    
+
     try {
-      console.log('Starting logout process');
-      
-      // Step 1: Clear React Query cache
+      console.log('[Auth] Starting logout process');
+
+      // Call server logout endpoint to clear session cookie
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        console.log('[Auth] Server logout successful');
+      } catch (error) {
+        console.error('[Auth] Server logout error:', error);
+      }
+
+      // Clear React Query cache
       queryClient.clear();
-      console.log('React Query cache cleared');
-      
-      // Step 2: Clear sessionStorage auth data
-      console.log('Clearing sessionStorage');
-      sessionStorage.removeItem('brandentifier_user');
-      sessionStorage.removeItem('auth_return_url');
-      sessionStorage.removeItem('auth_timestamp');
-      sessionStorage.removeItem('auth_initiated');
+      console.log('[Auth] React Query cache cleared');
+
+      // Clear any client-side storage (for cleanup, not security)
       sessionStorage.removeItem('referral_code');
-      
-      // Step 3: Clear localStorage (except theme/language preferences)
-      const keysToKeep = ['theme', 'language'];
-      const allKeys = Object.keys(localStorage);
-      allKeys.forEach(key => {
-        if (!keysToKeep.includes(key)) {
-          localStorage.removeItem(key);
-        }
-      });
-      console.log('localStorage cleared (keeping theme and language)');
-      
-      // Step 4: Update UI state
+      sessionStorage.removeItem('auth_return_url');
+
+      // Update UI state
       setUser(null);
-      console.log('User state cleared');
-      
-      // Step 5: Clear browser history to prevent back button issues
-      window.history.replaceState({}, '', '/auth');
-      console.log('Browser history cleared');
-      
+      console.log('[Auth] User state cleared');
+
+      // Redirect to auth page
+      window.location.href = '/auth';
+
     } catch (error) {
-      console.error('Error during logout:', error);
-      
-      // Even if logout fails, clear the user state for security
+      console.error('[Auth] Error during logout:', error);
       setUser(null);
-      
-      // Still try to redirect to auth page
-      window.history.replaceState({}, '', '/auth');
+      window.location.href = '/auth';
     } finally {
-      // Reset logout flag
       isSigningOutRef.current = false;
     }
-  };
+  }, []);
 
   const contextValue: AuthContextType = {
     user,
@@ -285,10 +262,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     signIn,
     signOut,
+    refreshSession,
   };
-  
-  // Debug authentication state changes
-  console.log('AuthProvider: Current state:', {
+
+  console.log('[Auth] Current state:', {
     hasUser: !!user,
     isAuthenticated: !!user,
     isLoading,

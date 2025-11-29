@@ -4261,11 +4261,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No files uploaded" });
       }
       
-      // Get user ID and other metadata
-      const userId = req.body.userId;
+      // Validate session and get user ID from cookie (not form field for security)
+      let userId: number | null = null;
+      const sessionToken = req.cookies?.brandentifier_session;
+      
+      if (sessionToken) {
+        try {
+          const decoded = jwt.verify(sessionToken, process.env.JWT_SECRET || 'brandentifier-jwt-secret-key') as any;
+          if (decoded.userId) {
+            userId = decoded.userId;
+            console.log(`[POST /pulses/upload-media] Authenticated user from session: ${userId}`);
+          }
+        } catch (jwtError) {
+          console.warn(`[POST /pulses/upload-media] Invalid session token`);
+        }
+      }
+      
+      // Fallback to form field userId if session not available (for backwards compatibility)
+      // but log a warning - this should be removed once all clients are updated
+      if (!userId && req.body.userId) {
+        userId = parseInt(req.body.userId);
+        console.warn(`[POST /pulses/upload-media] Using form field userId (legacy): ${userId}`);
+      }
       
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(401).json({ message: "Authentication required. Please log in to upload media." });
       }
       
       // Arrays to store file information
