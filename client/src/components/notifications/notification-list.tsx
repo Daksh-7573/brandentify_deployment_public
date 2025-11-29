@@ -275,10 +275,20 @@ export default function NotificationList({
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'new' | 'read')}
       >
-        <div className="border-b border-gray-800/20 px-2">
-          <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="new">New</TabsTrigger>
-            <TabsTrigger value="read">Read</TabsTrigger>
+        <div className="px-3">
+          <TabsList className="grid grid-cols-2 w-full bg-transparent">
+            <TabsTrigger 
+              value="new"
+              className="text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:text-spotify-white data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 border-b-2 border-transparent text-spotify-light-gray hover:text-spotify-white transition-colors"
+            >
+              New
+            </TabsTrigger>
+            <TabsTrigger 
+              value="read"
+              className="text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:text-spotify-white data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 border-b-2 border-transparent text-spotify-light-gray hover:text-spotify-white transition-colors"
+            >
+              Read
+            </TabsTrigger>
           </TabsList>
         </div>
         
