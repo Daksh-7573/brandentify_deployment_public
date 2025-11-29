@@ -277,17 +277,17 @@ export default function NotificationList({
         onValueChange={(value) => setActiveTab(value as 'new' | 'read')}
       >
         <div className="px-3 pt-3">
-          <TabsList className="grid grid-cols-2 w-full bg-spotify-glass-highlight border-0 rounded-lg">
+          <TabsList className="!grid !grid-cols-2 !w-full !bg-spotify-glass-highlight !border-0 !rounded-lg !h-auto !p-1">
             <TabsTrigger 
               value="new" 
-              className="text-sm font-medium text-spotify-light-gray data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white rounded-md transition-all duration-200"
+              className="!text-sm !font-medium !text-spotify-light-gray !data-[state=active]:bg-spotify-glass-bg !data-[state=active]:text-spotify-white !rounded-sm !transition-all !duration-200"
               data-testid="tab-new-notifications"
             >
               New
             </TabsTrigger>
             <TabsTrigger 
               value="read" 
-              className="text-sm font-medium text-spotify-light-gray data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white rounded-md transition-all duration-200"
+              className="!text-sm !font-medium !text-spotify-light-gray !data-[state=active]:bg-spotify-glass-bg !data-[state=active]:text-spotify-white !rounded-sm !transition-all !duration-200"
               data-testid="tab-read-notifications"
             >
               Read

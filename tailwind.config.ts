@@ -13,6 +13,19 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // Spotify glass theme colors
+        "spotify-black": "#121212",
+        "spotify-dark-gray": "#181818",
+        "spotify-gray": "#282828",
+        "spotify-light-gray": "#b3b3b3",
+        "spotify-white": "#ffffff",
+        "spotify-green": "#1DB954",
+        "spotify-bright-green": "#1ED760",
+        "spotify-neon-green": "#4eff64",
+        "spotify-glass-bg": "rgba(18, 18, 18, 0.6)",
+        "spotify-glass-border": "rgba(255, 255, 255, 0.1)",
+        "spotify-glass-highlight": "rgba(255, 255, 255, 0.1)",
+        "spotify-glass-shadow": "rgba(0, 0, 0, 0.5)",
         // Earth tone colors for Yoga/Fitness template
         sage: {
           50: '#f6f8f4',
