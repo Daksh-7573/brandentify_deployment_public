@@ -423,9 +423,28 @@ For each year's milestones, include specific courses, books, and development act
       }
       
       // Extract JSON from response (may include extra text from both Ollama and OpenAI)
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/) || [];
+      // First, try to extract from markdown code blocks if present
+      let jsonText = aiResponse;
       
-      if (jsonMatch.length === 0) {
+      // Remove markdown code blocks (```json ... ``` or ``` ... ```)
+      const codeBlockMatch = aiResponse.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (codeBlockMatch) {
+        jsonText = codeBlockMatch[1].trim();
+        console.log('[Musk AI] Extracted JSON from markdown code block');
+      }
+      
+      // Try to match JSON object first
+      let jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+      
+      // If no object found, try to match JSON array
+      if (!jsonMatch) {
+        jsonMatch = jsonText.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          console.log('[Musk AI] Found JSON array in response');
+        }
+      }
+      
+      if (!jsonMatch) {
         console.error('[Musk AI] No JSON found in response:', aiResponse.substring(0, 500));
         return {
           success: false,
@@ -434,7 +453,7 @@ For each year's milestones, include specific courses, books, and development act
       }
       
       const parsedResponse = JSON.parse(jsonMatch[0]);
-      console.log(`[Musk AI] Parsed response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
+      console.log(`[Musk AI] Parsed response type: ${Array.isArray(parsedResponse) ? 'Array' : 'Object'}, structure: ${Array.isArray(parsedResponse) ? `Array[${parsedResponse.length}]` : JSON.stringify(Object.keys(parsedResponse))}`);
       
       // Handle different response formats
       if (Array.isArray(parsedResponse)) {
