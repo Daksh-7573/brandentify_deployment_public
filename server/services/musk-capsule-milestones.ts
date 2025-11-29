@@ -412,12 +412,29 @@ For each year's milestones, include specific courses, books, and development act
     let milestones;
     try {
       // Log the raw AI response for debugging
-      console.log(`[Musk AI] Raw AI response (truncated): ${aiResponse?.substring(0, 200)}...`);
+      console.log(`[Musk AI] Raw AI response (full): ${aiResponse}`);
       
-      // Extract JSON from Ollama's response (may include extra text)
-      const jsonMatch = aiResponse?.match(/\{[\s\S]*\}/) || ['{}'];
+      if (!aiResponse || aiResponse.trim() === '') {
+        console.error('[Musk AI] Empty response from AI');
+        return {
+          success: false,
+          message: "AI returned empty response"
+        };
+      }
+      
+      // Extract JSON from response (may include extra text from both Ollama and OpenAI)
+      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/) || [];
+      
+      if (jsonMatch.length === 0) {
+        console.error('[Musk AI] No JSON found in response:', aiResponse.substring(0, 500));
+        return {
+          success: false,
+          message: "No valid JSON found in AI response"
+        };
+      }
+      
       const parsedResponse = JSON.parse(jsonMatch[0]);
-      console.log(`[Musk AI] Parsed Ollama response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
+      console.log(`[Musk AI] Parsed response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
       
       // Handle different response formats
       if (Array.isArray(parsedResponse)) {
@@ -462,10 +479,11 @@ For each year's milestones, include specific courses, books, and development act
         years: milestones
       };
     } catch (error) {
-      console.error("Error parsing AI response:", error);
+      console.error("[Musk AI] Error parsing AI response:", error);
+      console.error("[Musk AI] Full AI response for debugging:", aiResponse?.substring(0, 1000));
       return {
         success: false,
-        message: "Failed to parse AI-generated milestones"
+        message: `Failed to parse AI-generated milestones: ${error instanceof Error ? error.message : 'Unknown error'}`
       };
     }
   } catch (error) {

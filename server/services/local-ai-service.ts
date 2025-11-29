@@ -287,7 +287,12 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
       
       if (this.fallbackToOpenAI && this.config.provider !== 'openai') {
         console.log('[Local AI] Falling back to OpenAI');
-        return await this.generateWithOpenAI(prompt);
+        try {
+          return await this.generateWithOpenAI(prompt);
+        } catch (openaiError) {
+          console.error('[Local AI] OpenAI fallback also failed:', openaiError);
+          throw new Error(`All AI providers failed. Original error: ${error}. OpenAI fallback error: ${openaiError}`);
+        }
       }
       
       throw error;
