@@ -255,14 +255,14 @@ export default function NotificationList({
   };
   
   return (
-    <div className="max-h-[450px] overflow-hidden flex flex-col text-white">
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <h3 className="font-semibold text-base text-white">Notifications</h3>
+    <div className="max-h-[450px] overflow-hidden flex flex-col text-spotify-white">
+      <div className="flex items-center justify-between p-3 border-b border-gray-800/20">
+        <h3 className="font-semibold text-base text-spotify-white">Notifications</h3>
         <Button 
           variant="ghost" 
           size="sm" 
           onClick={onMarkAllAsRead}
-          className="text-xs text-white/70 hover:text-white hover:bg-white/10"
+          className="text-xs text-spotify-light-gray hover:text-spotify-white hover:bg-spotify-glass-highlight"
           data-testid="button-mark-all-read"
         >
           <Check className="h-3.5 w-3.5 mr-1" />
@@ -277,17 +277,17 @@ export default function NotificationList({
         onValueChange={(value) => setActiveTab(value as 'new' | 'read')}
       >
         <div className="px-3 pt-3">
-          <TabsList className="grid grid-cols-2 w-full bg-white/5 border border-white/10 rounded-lg p-1 backdrop-blur-md">
+          <TabsList className="grid grid-cols-2 w-full bg-spotify-glass-highlight border-0 rounded-lg">
             <TabsTrigger 
               value="new" 
-              className="text-sm font-medium text-white/80 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-md transition-all duration-200 hover:text-white"
+              className="text-sm font-medium text-spotify-light-gray data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white rounded-md transition-all duration-200"
               data-testid="tab-new-notifications"
             >
               New
             </TabsTrigger>
             <TabsTrigger 
               value="read" 
-              className="text-sm font-medium text-white/80 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-md transition-all duration-200 hover:text-white"
+              className="text-sm font-medium text-spotify-light-gray data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white rounded-md transition-all duration-200"
               data-testid="tab-read-notifications"
             >
               Read
@@ -301,10 +301,10 @@ export default function NotificationList({
               <div className="p-4 space-y-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                    <Skeleton className="h-8 w-8 rounded-full bg-spotify-glass-highlight" />
                     <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-full bg-white/10" />
-                      <Skeleton className="h-3 w-3/4 bg-white/10" />
+                      <Skeleton className="h-4 w-full bg-spotify-glass-highlight" />
+                      <Skeleton className="h-3 w-3/4 bg-spotify-glass-highlight" />
                     </div>
                   </div>
                 ))}
@@ -313,7 +313,7 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={`p-3 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors bg-white/5`}
+                  className={`p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors bg-spotify-glass-highlight/40`}
                   data-testid={`notification-item-new-${notification.id}`}
                 >
                   <div className="flex items-start gap-3">
@@ -321,11 +321,11 @@ export default function NotificationList({
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-white" data-testid={`text-notification-title-${notification.id}`}>{notification.title}</p>
-                      <p className="text-sm text-white/70 line-clamp-2 mt-0.5" data-testid={`text-notification-message-${notification.id}`}>
+                      <p className="font-medium text-sm line-clamp-1 text-spotify-white" data-testid={`text-notification-title-${notification.id}`}>{notification.title}</p>
+                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5" data-testid={`text-notification-message-${notification.id}`}>
                         {notification.message}
                       </p>
-                      <p className="text-xs text-white/50 mt-1" data-testid={`text-notification-time-${notification.id}`}>
+                      <p className="text-xs text-spotify-light-gray/70 mt-1" data-testid={`text-notification-time-${notification.id}`}>
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                       {renderActionButtons(notification)}
@@ -334,7 +334,7 @@ export default function NotificationList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-white/10 text-white/70 hover:text-white"
+                        className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
                         onClick={() => handleMarkAsRead(notification.id)}
                         title="Mark as read"
                         data-testid={`button-mark-read-${notification.id}`}
@@ -344,7 +344,7 @@ export default function NotificationList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-white/10 text-white/70 hover:text-white"
+                        className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
                         data-testid={`button-delete-${notification.id}`}
@@ -357,11 +357,11 @@ export default function NotificationList({
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-white/10 p-3 rounded-full mb-3">
-                  <Bell className="h-6 w-6 text-white/60" />
+                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-spotify-light-gray" />
                 </div>
-                <h3 className="text-base font-medium text-white">No new notifications</h3>
-                <p className="mt-1 text-sm text-white/60">
+                <h3 className="text-base font-medium text-spotify-white">No new notifications</h3>
+                <p className="mt-1 text-sm text-spotify-light-gray">
                   You're all caught up!
                 </p>
               </div>
@@ -375,10 +375,10 @@ export default function NotificationList({
               <div className="p-4 space-y-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                    <Skeleton className="h-8 w-8 rounded-full bg-spotify-glass-highlight" />
                     <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-full bg-white/10" />
-                      <Skeleton className="h-3 w-3/4 bg-white/10" />
+                      <Skeleton className="h-4 w-full bg-spotify-glass-highlight" />
+                      <Skeleton className="h-3 w-3/4 bg-spotify-glass-highlight" />
                     </div>
                   </div>
                 ))}
@@ -387,7 +387,7 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className="p-3 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                  className="p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors"
                   data-testid={`notification-item-read-${notification.id}`}
                 >
                   <div className="flex items-start gap-3">
@@ -395,11 +395,11 @@ export default function NotificationList({
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-white" data-testid={`text-notification-title-read-${notification.id}`}>{notification.title}</p>
-                      <p className="text-sm text-white/70 line-clamp-2 mt-0.5" data-testid={`text-notification-message-read-${notification.id}`}>
+                      <p className="font-medium text-sm line-clamp-1 text-spotify-white" data-testid={`text-notification-title-read-${notification.id}`}>{notification.title}</p>
+                      <p className="text-sm text-spotify-light-gray line-clamp-2 mt-0.5" data-testid={`text-notification-message-read-${notification.id}`}>
                         {notification.message}
                       </p>
-                      <p className="text-xs text-white/50 mt-1" data-testid={`text-notification-time-read-${notification.id}`}>
+                      <p className="text-xs text-spotify-light-gray/70 mt-1" data-testid={`text-notification-time-read-${notification.id}`}>
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                       {renderActionButtons(notification)}
@@ -408,7 +408,7 @@ export default function NotificationList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-white/10 text-white/70 hover:text-white"
+                        className="h-7 w-7 rounded-full hover:bg-spotify-white/10 text-spotify-light-gray hover:text-spotify-white"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
                         data-testid={`button-delete-read-${notification.id}`}
@@ -421,11 +421,11 @@ export default function NotificationList({
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-white/10 p-3 rounded-full mb-3">
-                  <Bell className="h-6 w-6 text-white/60" />
+                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-spotify-light-gray" />
                 </div>
-                <h3 className="text-base font-medium text-white">No read notifications</h3>
-                <p className="mt-1 text-sm text-white/60">
+                <h3 className="text-base font-medium text-spotify-white">No read notifications</h3>
+                <p className="mt-1 text-sm text-spotify-light-gray">
                   Your read notifications will appear here
                 </p>
               </div>
