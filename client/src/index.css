@@ -791,6 +791,15 @@ input.smart-radar-input::placeholder {
   animation-delay: 1.5s;
 }
 
+/* Remove clickable styling from pulse card titles */
+.neo-glass-card h3,
+.neo-glass-card h4,
+[class*="CardTitle"] {
+  cursor: default !important;
+  pointer-events: auto !important;
+  user-select: text !important;
+}
+
 /* Slow pulse animations for Neo-Glass effects */
 @keyframes pulse-slow {
   0% { opacity: 0.3; transform: scale(0.97); }
