@@ -72,13 +72,14 @@ export default function MuskButton({
           >
             <Button
               size="lg"
-              className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white p-0 flex items-center justify-center overflow-hidden"
+              className="h-16 w-16 rounded-full shadow-xl border-4 border-white/80 bg-gradient-to-r from-primary to-purple-600 text-white p-0 flex items-center justify-center overflow-hidden relative"
               onClick={() => setIsOpen(true)}
             >
+              <div className="absolute inset-1 rounded-full bg-gradient-to-br from-blue-400/30 via-purple-400/20 to-transparent pointer-events-none" />
               <img 
                 src={muskLogoGif} 
                 alt="Musk Chat" 
-                className="h-10 w-10 object-cover"
+                className="h-12 w-12 object-cover relative z-10"
               />
               <motion.span
                 className="absolute inset-0 rounded-full bg-primary/20"
