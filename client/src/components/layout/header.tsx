@@ -158,113 +158,110 @@ export default function Header() {
 
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-[9999] pointer-events-auto" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Left Section */}
-          <div className="flex items-center gap-8">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center">
-              <div className="flex items-center">
-                <div
-                  className="flex items-center gap-1.5 cursor-pointer group"
-                  onClick={() => setLocation('/dashboard')}
-                >
-                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
-                    <span className="text-black font-bold text-lg">B</span>
-                  </div>
-                  <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
-                    Brandentifier
-                  </span>
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center h-16 gap-0">
+          {/* Logo Section */}
+          <div className="flex-shrink-0 flex items-center">
+            <div className="flex items-center">
+              <div
+                className="flex items-center gap-1.5 cursor-pointer group"
+                onClick={() => setLocation('/dashboard')}
+              >
+                <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                  <span className="text-black font-bold text-lg">B</span>
                 </div>
-                {userId === 1 && (
-                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
-                    Demo Mode
-                  </Badge>
-                )}
-              </div>
-            </div>
-            
-            {/* Main Navigation */}
-            <div className="hidden md:flex items-center gap-2">
-              {/* HERO: Brand Quests - Primary Feature */}
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-semibold px-3 py-2 h-auto relative ${
-                  isActive('/brand-quests') || isActive('/career-quests')
-                    ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 neo-glass-nav-item active shadow-lg border border-white/20' 
-                    : 'text-white/90 hover:text-white hover:bg-white/10 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/brand-quests')}
-              >
-                <Trophy className="h-5 w-5" />
-                <span>Brand Quests</span>
-                {/* AI-Powered badge */}
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  AI
+                <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                  Brandentifier
                 </span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/industry-pulse') 
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/industry-pulse')}
-              >
-                <Home className="h-4 w-4" />
-                <span>Industry Pulse</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/search') 
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/search')}
-              >
-                <Search className="h-4 w-4" />
-                <span>Discover & Connect</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/radar') 
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/radar')}
-              >
-                <MapPin className="h-4 w-4" />
-                <span>Smart Radar</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/career-capsule') 
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/career-capsule')}
-              >
-                <Flag className="h-4 w-4" />
-                <span>Career Capsule</span>
-              </Button>
+              </div>
+              {userId === 1 && (
+                <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
+                  Demo Mode
+                </Badge>
+              )}
             </div>
           </div>
           
-          {/* Right Section */}
-          <div className="flex items-center gap-3">
+          {/* Main Navigation - Centered */}
+          <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-6">
+            {/* HERO: Brand Quests - Primary Feature */}
+            <Button
+              variant="ghost"
+              size="sm" 
+              className={`flex items-center gap-2 font-semibold px-3 py-2 h-auto relative ${
+                isActive('/brand-quests') || isActive('/career-quests')
+                  ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 neo-glass-nav-item active shadow-lg border border-white/20' 
+                  : 'text-white/90 hover:text-white hover:bg-white/10 neo-glass-nav-item'
+              }`}
+              onClick={() => setLocation('/brand-quests')}
+            >
+              <Trophy className="h-5 w-5" />
+              <span>Brand Quests</span>
+              {/* AI-Powered badge */}
+              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                AI
+              </span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                isActive('/industry-pulse') 
+                  ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                  : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
+              }`}
+              onClick={() => setLocation('/industry-pulse')}
+            >
+              <Home className="h-4 w-4" />
+              <span>Industry Pulse</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                isActive('/search') 
+                  ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                  : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
+              }`}
+              onClick={() => setLocation('/search')}
+            >
+              <Search className="h-4 w-4" />
+              <span>Discover & Connect</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm" 
+              className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                isActive('/radar') 
+                  ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                  : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
+              }`}
+              onClick={() => setLocation('/radar')}
+            >
+              <MapPin className="h-4 w-4" />
+              <span>Smart Radar</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm" 
+              className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                isActive('/career-capsule') 
+                  ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                  : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
+              }`}
+              onClick={() => setLocation('/career-capsule')}
+            >
+              <Flag className="h-4 w-4" />
+              <span>Career Capsule</span>
+            </Button>
+          </div>
+          
+          {/* Right Section - Buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
             {/* Mobile menu button */}
             <Button
               variant="ghost"
