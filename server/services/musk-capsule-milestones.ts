@@ -434,15 +434,20 @@ For each year's milestones, include specific courses, books, and development act
         console.log('[Musk AI] Extracted JSON from markdown code block');
       }
       
-      // Try to match JSON object first
-      let jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+      // Decode HTML entities that AI sometimes generates
+      jsonText = jsonText
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
       
-      // If no object found, try to match JSON array
+      // Try to match JSON array first (most common format)
+      let jsonMatch = jsonText.match(/\[[\s\S]*\]/);
+      
+      // If no array found, try to match JSON object
       if (!jsonMatch) {
-        jsonMatch = jsonText.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          console.log('[Musk AI] Found JSON array in response');
-        }
+        jsonMatch = jsonText.match(/\{[\s\S]*\}/);
       }
       
       if (!jsonMatch) {
@@ -453,7 +458,35 @@ For each year's milestones, include specific courses, books, and development act
         };
       }
       
-      const parsedResponse = JSON.parse(jsonMatch[0]);
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(jsonMatch[0]);
+      } catch (parseError) {
+        // JSON is likely truncated - try to repair it
+        console.log('[Musk AI] Initial parse failed, attempting to repair truncated JSON...');
+        
+        let repairedJson = jsonMatch[0];
+        
+        // Try to find complete year objects in a truncated array
+        // Match all complete year objects: {"year": N, ... }
+        const yearObjectRegex = /\{\s*"year"\s*:\s*\d+[\s\S]*?"tasks"\s*:\s*\[[\s\S]*?\]\s*\}/g;
+        const completeYears = repairedJson.match(yearObjectRegex);
+        
+        if (completeYears && completeYears.length > 0) {
+          // Reconstruct array from complete year objects only
+          repairedJson = '[' + completeYears.join(',') + ']';
+          console.log(`[Musk AI] Recovered ${completeYears.length} complete year objects from truncated response`);
+          
+          try {
+            parsedResponse = JSON.parse(repairedJson);
+          } catch (repairError) {
+            console.error('[Musk AI] Repair attempt failed:', repairError);
+            throw parseError; // Re-throw original error
+          }
+        } else {
+          throw parseError; // Re-throw original error
+        }
+      }
       console.log(`[Musk AI] Parsed response type: ${Array.isArray(parsedResponse) ? 'Array' : 'Object'}, structure: ${Array.isArray(parsedResponse) ? `Array[${parsedResponse.length}]` : JSON.stringify(Object.keys(parsedResponse))}`);
       
       // Handle different response formats
