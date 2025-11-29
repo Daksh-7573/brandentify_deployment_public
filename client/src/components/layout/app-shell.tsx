@@ -29,12 +29,26 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
           // Show onboarding if any mandatory field is missing
           const isMissingMandatoryField = !data.title || !data.industry || !data.location || !data.lookingFor;
           
+          console.log('[Onboarding Check]', {
+            userId: user.id,
+            title: data.title,
+            industry: data.industry,
+            location: data.location,
+            lookingFor: data.lookingFor,
+            isMissingMandatoryField
+          });
+          
           if (isMissingMandatoryField) {
             // Check if user has already dismissed onboarding (stored in localStorage)
             const dismissedOnboarding = localStorage.getItem(`onboarding_dismissed_${user.id}`);
             if (!dismissedOnboarding) {
+              console.log('[Onboarding] Showing onboarding modal for user', user.id);
               setShowOnboarding(true);
+            } else {
+              console.log('[Onboarding] User has dismissed onboarding, not showing');
             }
+          } else {
+            console.log('[Onboarding] All mandatory fields present, no onboarding needed');
           }
         }
       } catch (error) {

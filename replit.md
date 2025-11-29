@@ -1,7 +1,7 @@
 # Brandentifier - AI-Powered Career Development Platform
 
 ## Overview
-Brandentifier is an AI-driven career development platform designed to help users build their professional brand, track career progress, and receive personalized guidance. It incorporates an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform utilizes local AI infrastructure to optimize costs while providing comprehensive insights and support for professional growth. Its business vision includes a free and premium subscription model to cater to a broad user base, aiming for significant market potential in the career development sector by offering advanced AI capabilities for personal branding.
+Brandentifier is an AI-driven career development platform that helps users build their professional brand, track career progress, and receive personalized guidance. It features an AI assistant, professional networking tools, and a personalized quest system for career development, social media engagement, and brand building. The platform utilizes local AI infrastructure for cost optimization and offers a free and premium subscription model, aiming to capture significant market share in the career development sector through advanced AI capabilities for personal branding.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -9,7 +9,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 ### Frontend
 - **Framework**: React with TypeScript, Vite
-- **UI/Styling**: Radix UI, Tailwind CSS with glassmorphic design, consistent spacing, skeleton loading, dark theme, global background image.
+- **UI/Styling**: Radix UI, Tailwind CSS (glassmorphic design, consistent spacing, skeleton loading, dark theme, global background image)
 - **State Management**: TanStack React Query
 - **Forms**: React Hook Form with Zod
 
@@ -18,193 +18,38 @@ Preferred communication style: Simple, everyday language.
 - **Language**: TypeScript with ESM
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: JWT-based with bcrypt
-- **File Upload**: Replit App Storage (GCS-backed, CDN-delivered)
-- **Object Storage**: Public visibility with owner-based ACLs.
+- **File Upload & Object Storage**: Replit App Storage (GCS-backed, CDN-delivered) with public visibility and owner-based ACLs.
 
 ### AI Infrastructure
-- **Primary AI Provider**: VPS Ollama (Llama 3.2:1b) for cost-effective operation.
-- **Fallback AI Provider**: Optional OpenAI for critical operations.
-- **Caching**: Redis-based response caching.
-- **Security**: AI prompt injection protection, content moderation.
-- **Core AI Features**: Resume Analysis, Career Insights, Hashtag Suggestions, Predictive Modeling, Cross-User Intelligence, Emotional Intelligence, Cohort-Based Recommendations.
-- **AI Personalization**: Dynamic Persona Switching (Mentor, Strategist, Coach), Proactive Suggestion Engine, Learning Pattern Recognition, Conversation Memory with context-aware responses, and utilization of user profile data for enhanced chat responses.
+- **Primary AI Provider**: VPS Ollama (Llama 3.2:1b)
+- **Fallback AI Provider**: Optional OpenAI
+- **Caching**: Redis-based response caching
+- **Security**: AI prompt injection protection, content moderation
+- **Core AI Features**: Resume Analysis, Career Insights, Hashtag Suggestions, Predictive Modeling, Cross-User Intelligence, Emotional Intelligence, Cohort-Based Recommendations, Dynamic Persona Switching, Proactive Suggestion Engine, Learning Pattern Recognition, Conversation Memory.
+- **Enhanced Musk Intelligence Framework**: 8-layer system for emotional awareness, goal-tracking, and adaptive personalization, including Intent + Emotion + Stage Detection, 360° User Memory Service, Hybrid Knowledge Engine, Structured Multi-Turn Conversation, Conversation Goal Tracking, Feedback-Based Ranking, Tone Calibration, and Explainable Musk UI Banner.
 
 ### Key Components
-- **User Management**: Comprehensive profiles, secure JWT authentication, gamified profile building.
-- **Content Management**: Pulses, Project Showcase, Nowboard (opportunity discovery), Career Goals.
-- **Quest Generation System (V2)**: AI-powered system (using Ollama) generating personalized career and social media quests with structured metadata.
-- **Career Intelligence Suite (Phase 1)**: AI-powered tools including Resume Scorer (analysis, fixes) and Job Description Matcher (match score, skill gaps, salary estimates).
-- **Portfolio and Card Templates**: Multiple professional portfolio templates (e.g., Corporate Executive, Scholar) and visiting card templates (Professional, Quantum Tech).
-- **Gamification**: AI-generated, impact-weighted, audience-driven Brand Quests, XP System, Badges, Progress Tracking.
+- **User Management**: Comprehensive profiles, secure authentication, gamified profile building, persistent onboarding for mandatory fields.
+- **Content Management**: Pulses, Project Showcase, Nowboard, Career Goals.
+- **Quest Generation System (V2)**: AI-powered personalized career and social media quests with structured metadata and automated daily assignment.
+- **Career Intelligence Suite**: AI-powered Resume Scorer and Job Description Matcher.
+- **Portfolio and Card Templates**: Multiple professional portfolio and visiting card templates.
+- **Gamification**: AI-generated, impact-weighted Brand Quests, XP System, Badges, Progress Tracking.
 - **Content Moderation**: Democratic flagging and AI-powered auto-deletion.
 - **Deployment**: Docker, Kubernetes, Nginx, Redis, PostgreSQL (Neon serverless).
-- **Subscription System**: Free and Premium tiers with tier-aware feature access control, Razorpay integration (for India), and dedicated subscription management pages.
-
-### Feature Specifications
-- **Quest System**: Quests include structured metadata for deliverables, quantity, platform, and guidance. Features internal platform engagement integration, audience-based platform selection, and brand goal alignment. Assigns 1-4 daily quests based on impact values, respecting a 60-minute daily time cap.
+- **Subscription System**: Free and Premium tiers with feature access control and Razorpay integration.
+- **Referral System**: Share-to-unlock mechanism with server-side processing for referral rewards during user creation.
 - **Intelligent Hashtag Generator**: 6-layer system for context-aware, audience-targeted hashtag suggestions.
-- **Automated Quest Generation**: Robust three-layer failsafe system for daily quest auto-assignment.
-- **Trend Intelligence System**: Real-time market trend ingestion with caching, industry/domain-specific tracking, AI-powered dynamic quest narrative generation, and full integration with quest personalization.
-- **Feed Ranking System**: Time-decay algorithm and AI-powered personalization (using Ollama) for the Industry Pulse feed, incorporating user profile, interests, and engagement history with diversity filters.
-- **Profile URL Standardization**: Uses `/@brandname` format for clean, memorable profile URLs with fallback to `/@username`.
-
-## Subscription System (NEW ✨)
-- **Free Tier**: ₹0 (10 reactions/day, 5 AI chats/month, 2 templates, social quests disabled)
-- **Premium Tier**: ₹799/month or ₹7,999/year (20 reactions/day, unlimited AI, all features)
-- **UI Pages Built**: Pricing (/pricing), Checkout (/checkout), Subscription Management (/subscription-manage)
-- **Backend Endpoints**: Fully implemented subscription status, checkout, verify, and cancel endpoints
-- **Payment Status**: Ready for Razorpay integration (final step)
-- **Feature Gating**: All 14 premium features properly gated with feature-access system
+- **Trend Intelligence System**: Real-time market trend ingestion and AI-powered dynamic quest narrative generation.
+- **Feed Ranking System**: Time-decay algorithm and AI-powered personalization for the Industry Pulse feed.
+- **Profile URL Standardization**: `/@brandname` format with fallback to `/@username`.
 
 ## External Dependencies
-### Core Infrastructure
 - **Database**: PostgreSQL (Neon serverless)
 - **Caching**: Redis
 - **File Storage**: Replit App Storage (GCS-backed with CDN)
-
-### AI Services
-- **Primary**: Ollama
-- **Fallback**: OpenAI GPT-4
-- **Alternative Support**: LM Studio, Hugging Face
-
-### Third-Party Integrations
+- **AI Services**: Ollama, OpenAI GPT-4, LM Studio, Hugging Face
 - **Email**: SendGrid
 - **Authentication**: JWT, bcrypt
-- **Payment Gateway**: Razorpay (for subscription management) - READY FOR INTEGRATION
+- **Payment Gateway**: Razorpay
 - **File Processing**: Advanced PDF parsing
-
-## Automated Testing Suite (NEW ✨)
-- **Quick Test**: `./scripts/quick-test.sh` - 24 essential endpoints (95% pass rate, ~30 seconds)
-- **Comprehensive Suite**: `./scripts/test-suite.sh` - 40+ endpoints, 10 sections
-- **Reaction Tests**: `./scripts/test-reactions.sh` - 10 dedicated reaction feature tests
-- **Pre-Deployment Check**: `./scripts/pre-deployment-check.sh` - Full validation
-- **Coverage**: User auth, Feed, Reactions (insightful/misinformed), Subscriptions, Career Tools, Services, Portfolio, Messaging, Notifications
-- **Documentation**: See `AUTOMATED_TESTING_GUIDE.md` for complete guide
-
-## Enhanced Musk Follow-up System (ENHANCED ✨)
-- **Intent Classification**: 7-type intent classifier (clarify, probe, action, resource, confirm, alternative, close)
-- **Template Database**: 22+ pre-written industry-specific templates (Technology, Finance, Healthcare, Marketing, Design, Education, Sales)
-- **Structured Output**: JSON format with `{type, text, why, actionHint}` for better UX
-- **Hybrid Generation**: Blends template-based and AI generation with Ollama fallback
-- **Feedback Tracking**: `followup_feedback` table to track user reactions for model improvement
-- **Database Tables**: 
-  - `followup_templates`: Industry + Intent-specific templates (22 seeded)
-  - `followup_feedback`: User feedback on suggested follow-ups
-- **Service**: `server/services/intent-classifier.ts` with keyword-based rule matching
-- **Updated Endpoint**: `/api/musk/contextual-suggestions` now returns structured JSON with intent classification
-
-## Referral System - Share-to-Unlock Mechanism (FIXED ✨✨)
-- **Issue**: Referral rewards were not being granted when users registered via share links
-- **Root Cause**: Referral processing was attempted client-side after login, but needed to happen server-side during user creation
-- **Solution (Nov 28, 2025)**:
-  1. **Backend Processing** (server/routes.ts):
-     - POST /api/users now processes referral codes during user creation
-     - Initializes default unlocks (2 quantum cards + 2 portfolios) for all new users
-     - Grants referral rewards atomically: 1 quantum card + 2 portfolios per conversion
-  2. **Frontend Integration** (client/src/components/auth/email-auth.tsx):
-     - Registration form passes referral code from sessionStorage in request body
-     - Clears referral code from sessionStorage after successful registration
-  3. **Backup Processing** (client/src/context/auth-context.tsx):
-     - signInWithEmail function also processes pending referral codes as backup
-- **Complete Flow**: Share Link → `/join/:code` validation → sessionStorage → Registration → Backend processes referral → Rewards granted
-- **Rewards Per Referral**: 1 random quantum card + 2 random portfolios (from locked templates)
-- **Default Unlocks**: All new users get 2 quantum cards (professional, quantum) + 2 portfolios (corporate-executive, scholar)
-- **Database Tables**: `referral_conversions`, `user_unlocks`
-- **Files**: `server/routes.ts`, `server/services/referral-service.ts`, `client/src/components/auth/email-auth.tsx`, `client/src/context/auth-context.tsx`
-- **Status**: ✅ Fully functional - Verified via database: User 2 → User 28 referral recorded, 3 rewards granted
-
-## 8-Layer Enhanced Musk Intelligence Framework (COMPLETE ✨✨)
-Complete emotional awareness, goal-tracking, and adaptive personalization system:
-
-### Layers Implementation:
-1. **Intent + Emotion + Stage Detection** (enhanced-intent-classifier.ts)
-   - Detects 7 intents: clarify, probe, action, resource, confirm, alternative, close
-   - Detects 5 emotions: curious, frustrated, confident, exploring, validating
-   - Infers 4 journey stages: onboarding, active, optimization, monetization
-   - Confidence scoring for each detection
-
-2. **360° User Memory Service** (user-musk-memory.ts)
-   - Behavioral pattern tracking (quest completion, platform preferences, content preferences)
-   - Recent action history (last 20 actions)
-   - Preferred tone and content format
-   - Platform interaction tracking
-   - Skip topics tracking
-
-3. **Hybrid Knowledge Engine** (routes-musk.ts)
-   - Template-based suggestions (industry + intent matching)
-   - Feedback-based ranking (helpful_ratio aggregation)
-   - AI generation fallback (Ollama integration)
-   - Semantic matching with user context
-
-4. **Structured Multi-Turn Conversation** (conversation-goal-tracker.ts + routes-musk.ts)
-   - Primary goal inference from user messages
-   - Sub-goal generation (4-step plans per goal)
-   - Multi-turn conversation planning
-   - Goal progress tracking and checkpoints
-
-5. **Conversation Goal Tracking** (conversation-goal-tracker.ts)
-   - Hidden conversation objectives tracking
-   - Goal stage and emotion context
-   - Progress checkpoints and milestone tracking
-   - Next follow-up generation based on progress
-
-6. **Feedback-Based Ranking System** (routes-musk.ts)
-   - SQL query aggregates feedback counts and helpful ratios
-   - Templates ranked by `helpful_ratio DESC, feedback_count DESC`
-   - Integration with `followup_feedback` table
-   - Continuous learning from user reactions
-
-7. **Tone Calibration Layer** (tone-calibration.ts)
-   - Adjusts response tone based on detected emotion
-   - Response length recommendations (brief, moderate, detailed)
-   - Formality level selection (casual, neutral, formal)
-   - Tone markers injection for emotional resonance
-   - Empathetic openings for frustrated users
-
-8. **Explainable Musk UI Banner** (musk-chat-panel.tsx + routes-musk.ts)
-   - Shows why Musk tailored suggestions
-   - Displays detected emotion state
-   - Shows current journey stage
-   - Reasoning transparency with icon badge
-   - Data returned in API response for UI consumption
-
-### New Database Tables:
-- `user_musk_memory`: 360° behavioral tracking per user
-- `conversation_goals`: Conversation objective tracking with sub-goals and emotion
-- `goal_checkpoints`: Milestone tracking within conversation goals
-- `emotion_intent_history`: Learning dataset for emotion + intent patterns
-
-### Services Created:
-- `server/services/enhanced-intent-classifier.ts`: Emotion + stage + intent detection
-- `server/services/user-musk-memory.ts`: 360° behavioral memory management
-- `server/services/tone-calibration.ts`: Emotional tone adjustment system
-- `server/services/conversation-goal-tracker.ts`: Multi-turn conversation planning
-
-### API Integration:
-- `/api/musk/contextual-suggestions` endpoint fully enhanced
-- Returns emotion, stage, and explainable data alongside suggestions
-- Records emotion/intent history for continuous learning
-- Supports multi-turn conversation context preservation
-
-## Daily Quest Scheduler Investigation & Fix (FIXED ✨✨)
-- **Issue**: Users with complete profiles (focus='pulse') couldn't receive career quests like portfolio, resume, and learning
-- **Root Cause**: Overly restrictive `pulseFocusedTypes` array in SmartQuestAllocator
-  - Users with complete profiles got focus='pulse' 
-  - `pulseFocusedTypes` only included: ['pulse_creation', 'visibility', 'networking', 'engagement']
-  - Career quest types like 'portfolio', 'resume', 'learning' were excluded from intersection
-  - This caused zero career quests to be available for allocation
-- **Solution Implemented (Nov 28, 2025)**:
-  1. **Removed Profile Focus Filtering** (server/services/smart-quest-allocator.ts):
-     - Brand Goals are now the PRIMARY filter for career quests
-     - Profile focus ('profile' vs 'pulse') no longer restricts quest types
-     - All career quest types available: profile_update, resume, portfolio, learning, exploration, networking, engagement, pulse_creation, visibility
-  2. **Comprehensive Fallback Logic**:
-     - If brand goal filtering returns no career types, use all career quest types
-     - Ensures every user can receive career quests regardless of profile completion status
-  3. **Enhanced Logging**:
-     - Clear logging of final career quest types selected
-     - Diagnostic output for debugging allocation issues
-- **Test Results**: User 2 (Nishant Chopra) now receives career quests successfully
-  - Career quest (profile_update) assigned on 2025-11-28 with AI-generated title
-- **Files Modified**: `server/services/smart-quest-allocator.ts`
-- **Status**: ✅ Fixed - Career quests working for all users regardless of profile completion
