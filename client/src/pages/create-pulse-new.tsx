@@ -12,6 +12,7 @@ import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft,
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
+import { UnifiedMediaUpload } from "@/components/shared/unified-media-upload";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
@@ -30,7 +31,6 @@ export default function CreatePulsePage() {
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
-  const [mediaType, setMediaType] = useState("image");
   const [pulseCategory, setPulseCategory] = useState("");
   const [pulseIndustry, setPulseIndustry] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
@@ -49,8 +49,6 @@ export default function CreatePulsePage() {
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [clientProfile, setClientProfile] = useState("");
-  const videoInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
@@ -218,13 +216,20 @@ export default function CreatePulsePage() {
       pulseData.pollOptions = validOptions;
     } 
     else if (pulseType === 'media-pulse') {
-      pulseData.mediaType = mediaType;
+      // Auto-detect media type from uploaded files
+      let detectedMediaType = 'image';
+      if (mediaUrls.length > 0) {
+        const isVideo = mediaUrls[0].toLowerCase().match(/\.(mp4|webm|mov|mkv)$/i);
+        detectedMediaType = isVideo ? 'video' : 'image';
+      }
+      
+      pulseData.mediaType = detectedMediaType;
       
       // Validate media uploads
       if (mediaUrls.length === 0) {
         toast({
           title: "Media Required",
-          description: `Please upload at least one ${mediaType === 'image' ? 'image' : 'video'} for your media pulse.`,
+          description: "Please upload at least one image or video for your media pulse.",
           variant: "destructive",
         });
         return;
@@ -324,168 +329,6 @@ export default function CreatePulsePage() {
     ));
   };
   
-  // Handle media upload (images and videos)
-  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    
-    // Convert FileList to Array for filtering
-    const filesArray = Array.from(files);
-    
-    // Check file count limit based on media type
-    if (mediaType === 'image') {
-      if (filesArray.length + uploadedFiles.length > 5) {
-        toast({
-          title: "Too Many Files",
-          description: "You can only upload up to 5 images.",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else if (mediaType === 'video') {
-      if (filesArray.length > 1) {
-        toast({
-          title: "Video Limit",
-          description: "You can only upload one video at a time.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-    
-    // Validate file types and sizes
-    const validFiles = filesArray.filter(file => {
-      if (mediaType === 'image') {
-        // Check image file type
-        if (!file.type.startsWith('image/')) {
-          toast({
-            title: "Invalid File Type",
-            description: `"${file.name}" is not an image file.`,
-            variant: "destructive",
-          });
-          return false;
-        }
-        
-        // Check image file size (20MB limit)
-        if (file.size > 20 * 1024 * 1024) {
-          toast({
-            title: "File Too Large",
-            description: `"${file.name}" exceeds the 20MB limit.`,
-            variant: "destructive",
-          });
-          return false;
-        }
-      } else if (mediaType === 'video') {
-        // Check video file type
-        if (!file.type.startsWith('video/')) {
-          toast({
-            title: "Invalid File Type",
-            description: `"${file.name}" is not a video file.`,
-            variant: "destructive",
-          });
-          return false;
-        }
-        
-        // Check video file size (25MB limit for 2 minutes)
-        if (file.size > 25 * 1024 * 1024) {
-          toast({
-            title: "File Too Large",
-            description: `"${file.name}" exceeds the 25MB limit. Please compress your video or reduce duration to 2 minutes.`,
-            variant: "destructive",
-          });
-          return false;
-        }
-      }
-      
-      return true;
-    });
-    
-    // Return if no valid files
-    if (validFiles.length === 0) return;
-    
-    try {
-      // Create FormData to send files to server
-      const formData = new FormData();
-      if (!user) {
-        throw new Error("User not logged in");
-      }
-      
-      formData.append("userId", user.id.toString());
-      validFiles.forEach(file => {
-        formData.append("media", file);
-      });
-      
-      // Show uploading toast
-      const fileType = mediaType === 'video' ? 'video' : 'images';
-      toast({
-        title: "Uploading",
-        description: `Uploading ${fileType} to the server...`,
-      });
-      
-      // Upload files to server
-      const response = await fetch('/api/pulses/upload-media', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        let errorMessage = `Server returned ${response.status}: ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch (parseError) {
-          console.warn("Could not parse error response:", parseError);
-        }
-        throw new Error(errorMessage);
-      }
-      
-      const data = await response.json();
-      console.log("Media upload successful:", data);
-      
-      // Update mediaUrls with server URLs
-      if (data.mediaUrls && data.mediaUrls.length > 0) {
-        setMediaUrls(data.mediaUrls);
-        setUploadedFiles(validFiles);
-        
-        toast({
-          title: "Upload Complete",
-          description: `${fileType.charAt(0).toUpperCase() + fileType.slice(1)} uploaded successfully`,
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading media:", error);
-      
-      // Clear any partial uploads on error
-      setMediaUrls([]);
-      setUploadedFiles([]);
-      
-      // Reset file inputs
-      if (imageInputRef.current) {
-        imageInputRef.current.value = '';
-      }
-      if (videoInputRef.current) {
-        videoInputRef.current.value = '';
-      }
-      
-      let errorMessage = "Failed to upload media";
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
-        errorMessage = String(error.message);
-      }
-      
-      toast({
-        title: "Upload Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
   
   const removeMedia = (index: number) => {
     const newUrls = [...mediaUrls];
