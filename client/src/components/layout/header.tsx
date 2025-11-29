@@ -159,9 +159,11 @@ export default function Header() {
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-[9999] pointer-events-auto" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
       <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center mr-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Left Section */}
+          <div className="flex items-center gap-8">
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center">
               <div className="flex items-center">
                 <div
                   className="flex items-center gap-1.5 cursor-pointer group"
@@ -183,12 +185,12 @@ export default function Header() {
             </div>
             
             {/* Main Navigation */}
-            <div className="hidden md:flex space-x-6">
+            <div className="hidden md:flex items-center gap-2">
               {/* HERO: Brand Quests - Primary Feature */}
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-semibold px-4 py-2 h-auto relative ${
+                className={`flex items-center gap-2 font-semibold px-3 py-2 h-auto relative ${
                   isActive('/brand-quests') || isActive('/career-quests')
                     ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 neo-glass-nav-item active shadow-lg border border-white/20' 
                     : 'text-white/90 hover:text-white hover:bg-white/10 neo-glass-nav-item'
@@ -258,26 +260,11 @@ export default function Header() {
                 <Flag className="h-4 w-4" />
                 <span>Career Capsule</span>
               </Button>
-              
-              {/* Privacy & Data Control - Hidden temporarily */}
-              {/* <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/privacy') 
-                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
-                }`}
-                onClick={() => setLocation('/privacy')}
-              >
-                <Shield className="h-4 w-4" />
-                <span>Privacy</span>
-              </Button> */}
-              
-              {/* Career Capsule feature added */}
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          
+          {/* Right Section */}
+          <div className="flex items-center gap-3">
             {/* Mobile menu button */}
             <Button
               variant="ghost"
