@@ -406,7 +406,8 @@ For each year's milestones, include specific courses, books, and development act
     const fullPrompt = `${systemPrompt}\n\n${enhancedContext}`;
     
     // Call FREE VPS Ollama instead of expensive OpenAI
-    aiResponse = await localAI.generateCompletion(fullPrompt);
+    // Use higher maxTokens (6000) for milestone generation as responses are typically longer
+    aiResponse = await localAI.generateCompletion(fullPrompt, undefined, 6000);
 
     // Parse the response as JSON
     let milestones;
