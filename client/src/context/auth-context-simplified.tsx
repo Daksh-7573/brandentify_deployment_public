@@ -1,7 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser, Auth, GoogleAuthProvider } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from '@/lib/queryClient';
+import { queryClient } from "@/lib/queryClient";
+
+// Import Firebase auth and provider at module level to avoid scope issues
+let authInstance: any = null;
+let googleProviderInstance: any = null;
+
+// Initialize Firebase auth and provider
+const initializeFirebase = async () => {
+  if (!authInstance) {
+    const { auth, googleProvider } = await import('@/lib/firebase');
+    authInstance = auth;
+    googleProviderInstance = googleProvider;
+  }
+  return { auth: authInstance, googleProvider: googleProviderInstance };
+};
 
 interface User {
   uid: string;
@@ -99,93 +114,139 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Setup auth state listener - simplified, single handler
-  useEffect(() => {
-    console.log("Setting up simplified auth state listener");
+  // Clear all cached data when user logs out
+  const clearAllCaches = () => {
+    console.log("Clearing all caches after logout");
     
-    // Import auth and googleProvider dynamically to avoid import issues
-    const setupAuth = async () => {
-      const { auth, googleProvider } = await import('@/lib/firebase');
-      
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-      
-      if (firebaseUser) {
-        try {
-          // Only process if we don't already have this user
-          if (!user || user.uid !== firebaseUser.uid) {
-            console.log("Processing new user:", firebaseUser.uid);
-            
-            // Create/update user in backend first
-            await createOrUpdateUserInBackend(firebaseUser);
-            
-            // Get Google provider data for email
-            const googleProvider = firebaseUser.providerData?.find(
-              provider => provider.providerId === "google.com"
-            );
-            const userEmail = googleProvider?.email || firebaseUser.email;
-            
-            // Fetch complete user data from backend
-            const userData = await fetchUserData(firebaseUser.uid, userEmail);
-            
-            if (userData) {
-              console.log("Setting user state with backend data");
-              setUser(userData);
-              
-              if (!user) {
-                toast({
-                  title: "Signed in successfully",
-                  description: `Welcome ${userData.name || userData.email}!`,
-                });
+    // Clear React Query cache
+    queryClient.clear();
+    
+    // Clear localStorage
+    try {
+      const keysToKeep = ['theme', 'language']; // Keep non-auth related settings
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(key => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.error("Error clearing localStorage:", error);
+    }
+    
+    // Clear sessionStorage
+    try {
+      sessionStorage.clear();
+    } catch (error) {
+      console.error("Error clearing sessionStorage:", error);
+    }
+    
+    console.log("Cache cleanup complete");
+  };
+
+  // Setup auth state listener - runs only once on component mount
+  useEffect(() => {
+    console.log("Setting up auth state listener");
+    let unsubscribe: (() => void) | null = null;
+
+    // Setup auth listener
+    const setupAuthListener = async () => {
+      try {
+        const { auth } = await initializeFirebase();
+        
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+          
+          if (firebaseUser) {
+            try {
+              // Only process if we don't already have this user
+              if (!user || user.uid !== firebaseUser.uid) {
+                console.log("Processing new user:", firebaseUser.uid);
+                
+                // Create/update user in backend first
+                await createOrUpdateUserInBackend(firebaseUser);
+                
+                // Get Google provider data for email
+                const googleProvider = firebaseUser.providerData?.find(
+                  provider => provider.providerId === "google.com"
+                );
+                const userEmail = googleProvider?.email || firebaseUser.email;
+                
+                // Fetch complete user data from backend
+                const userData = await fetchUserData(firebaseUser.uid, userEmail);
+                
+                if (userData) {
+                  console.log("Setting user state with backend data");
+                  setUser(userData);
+                  
+                  if (!user) {
+                    toast({
+                      title: "Signed in successfully",
+                      description: `Welcome ${userData.name || userData.email}!`,
+                    });
+                  }
+                } else {
+                  // Fallback user if backend fails
+                  console.log("Using fallback user data");
+                  const fallbackUser = {
+                    uid: firebaseUser.uid,
+                    id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+                    username: userEmail?.split('@')[0] || firebaseUser.uid.substring(0, 8),
+                    email: userEmail,
+                    name: googleProvider?.displayName || firebaseUser.displayName,
+                    photoURL: googleProvider?.photoURL || firebaseUser.photoURL
+                  };
+                  
+                  setUser(fallbackUser);
+                  
+                  if (!user) {
+                    toast({
+                      title: "Signed in successfully", 
+                      description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
+                    });
+                  }
+                }
               }
-            } else {
-              // Fallback user if backend fails
-              console.log("Using fallback user data");
-              const fallbackUser = {
-                uid: firebaseUser.uid,
-                id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                username: userEmail?.split('@')[0] || firebaseUser.uid.substring(0, 8),
-                email: userEmail,
-                name: googleProvider?.displayName || firebaseUser.displayName,
-                photoURL: googleProvider?.photoURL || firebaseUser.photoURL
-              };
-              
-              setUser(fallbackUser);
-              
-              if (!user) {
-                toast({
-                  title: "Signed in successfully", 
-                  description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
-                });
-              }
+            } catch (error) {
+              console.error("Error processing auth state change:", error);
+            }
+          } else {
+            // User signed out - clear everything
+            if (user) {
+              console.log("User signed out - clearing state");
+              setUser(null);
+              clearAllCaches();
+              toast({
+                title: "Signed out",
+                description: "You have been signed out successfully.",
+              });
             }
           }
-        } catch (error) {
-          console.error("Error processing auth state change:", error);
-        }
-      } else {
-        // User signed out
-        if (user) {
-          console.log("User signed out");
-          setUser(null);
-          toast({
-            title: "Signed out",
-            description: "You have been signed out successfully.",
-          });
-        }
+          
+          setIsLoading(false);
+        });
+      } catch (error) {
+        console.error("Error setting up auth listener:", error);
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
-  }, [user, toast]);
+    setupAuthListener();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []); // Empty dependency array - setup only once on mount
 
   // Simplified Google sign-in
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
       console.log("Starting Google sign-in");
+      
+      const { auth, googleProvider } = await initializeFirebase();
       
       try {
         // Try popup first
@@ -231,20 +292,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Logout
+  // Complete logout with proper sequencing
   const logout = async () => {
     try {
-      // Clear browser history to prevent "page not found" error when clicking back after logout
-      window.history.replaceState({}, '', '/auth');
+      console.log("Starting logout process");
+      setIsLoading(true);
       
-      const { auth } = await import('@/lib/firebase');
+      const { auth } = await initializeFirebase();
+      
+      // Step 1: Sign out from Firebase
       await signOut(auth);
-      console.log("User signed out successfully");
+      console.log("Firebase sign out completed");
+      
+      // Step 2: Clear all caches immediately after Firebase signout
+      clearAllCaches();
+      
+      // Step 3: Update UI state to reflect logout
+      setUser(null);
+      console.log("User state cleared");
+      
+      // Step 4: Clear browser history to prevent back button issues
+      // Use a small delay to ensure state updates process
+      setTimeout(() => {
+        window.history.replaceState({}, '', '/auth');
+        console.log("Browser history cleared, redirecting to auth");
+        setIsLoading(false);
+      }, 100);
+      
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error during logout:", error);
+      
+      // Even if logout fails, clear the user state for security
+      setUser(null);
+      clearAllCaches();
+      
+      // Still try to redirect to auth page
+      window.history.replaceState({}, '', '/auth');
+      setIsLoading(false);
+      
       toast({
-        title: "Error",
-        description: "There was a problem signing out.",
+        title: "Logout Error",
+        description: "You've been signed out, but there was an issue. Please refresh if needed.",
         variant: "destructive",
       });
     }
