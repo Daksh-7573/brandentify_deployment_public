@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, ReactNode, useRef } from "react";
+import { createContext, useState, useEffect, ReactNode, useRef, useContext } from "react";
+import { queryClient } from "@/lib/queryClient";
 
 // Simple auth user type
 type AuthUser = {
@@ -35,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const loadingRef = useRef(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSigningOutRef = useRef(false);
 
   // Check authentication from server session (published domain) or sessionStorage (dev)
   useEffect(() => {
@@ -148,8 +150,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Handle Google auth success event
-    const handleGoogleAuthSuccess = async (event: CustomEvent) => {
-      const { user: userData } = event.detail;
+    const handleGoogleAuthSuccess = (event: Event) => {
+      const customEvent = event as CustomEvent<{ user: AuthUser }>;
+      const { user: userData } = customEvent.detail;
       console.log('Google auth success event received:', userData.email);
       setUser(userData);
       setIsLoading(false);
@@ -159,17 +162,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const referralCode = sessionStorage.getItem('referral_code');
       if (referralCode && userData.id) {
         console.log('[Referral] Found pending referral code on Google auth success, processing...');
-        await processReferral(userData.id, referralCode);
+        processReferral(userData.id, referralCode);
       }
     };
 
-    window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+    window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess);
     
     // Run auth check (async for server session support)
     checkAuth();
 
     return () => {
-      window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+      window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current); // Clean up timeout on component unmount
         timeoutRef.current = null;
@@ -221,12 +224,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = () => {
-    console.log('Signing out user');
-    setUser(null);
-    sessionStorage.removeItem('brandentifier_user');
-    sessionStorage.removeItem('auth_return_url');
-    sessionStorage.removeItem('auth_timestamp');
-    sessionStorage.removeItem('auth_initiated');
+    // Prevent multiple simultaneous logouts
+    if (isSigningOutRef.current) {
+      console.log('Logout already in progress, skipping duplicate request');
+      return;
+    }
+    
+    isSigningOutRef.current = true;
+    
+    try {
+      console.log('Starting logout process');
+      
+      // Step 1: Clear React Query cache
+      queryClient.clear();
+      console.log('React Query cache cleared');
+      
+      // Step 2: Clear sessionStorage auth data
+      console.log('Clearing sessionStorage');
+      sessionStorage.removeItem('brandentifier_user');
+      sessionStorage.removeItem('auth_return_url');
+      sessionStorage.removeItem('auth_timestamp');
+      sessionStorage.removeItem('auth_initiated');
+      sessionStorage.removeItem('referral_code');
+      
+      // Step 3: Clear localStorage (except theme/language preferences)
+      const keysToKeep = ['theme', 'language'];
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach(key => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+      console.log('localStorage cleared (keeping theme and language)');
+      
+      // Step 4: Update UI state
+      setUser(null);
+      console.log('User state cleared');
+      
+      // Step 5: Clear browser history to prevent back button issues
+      window.history.replaceState({}, '', '/auth');
+      console.log('Browser history cleared');
+      
+    } catch (error) {
+      console.error('Error during logout:', error);
+      
+      // Even if logout fails, clear the user state for security
+      setUser(null);
+      
+      // Still try to redirect to auth page
+      window.history.replaceState({}, '', '/auth');
+    } finally {
+      // Reset logout flag
+      isSigningOutRef.current = false;
+    }
   };
 
   const contextValue: AuthContextType = {
@@ -251,3 +301,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+// Export useAuth hook
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
