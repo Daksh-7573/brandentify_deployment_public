@@ -319,7 +319,9 @@ function Router() {
       <Route path="/auth/callback" component={AuthCallbackPage} />
       
       {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
-      <Route path="/search" component={SearchPage} />
+      <Route path="/search" component={() => (
+        <ProtectedRoute path="/search" component={SearchPage} />
+      )} />
       <Route path="/brand-score" component={() => {
         const BrandScore = lazy(() => import("@/pages/BrandScore"));
         return (
@@ -336,7 +338,9 @@ function Router() {
           <Route path="/career-tools" component={() => (
             <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
-          <Route path="/portfolio-builder" component={PortfolioBuilder} />
+          <Route path="/portfolio-builder" component={() => (
+            <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
+          )} />
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
           )} />
@@ -514,12 +518,18 @@ function Router() {
       </Route>
       
       {/* Direct access to users for debugging */}
-      <Route path="/direct-users" component={DirectUsersPage} />
+      <Route path="/direct-users" component={() => (
+        <ProtectedRoute path="/direct-users" component={DirectUsersPage} noShell={false} />
+      )} />
       
       {/* Direct access to content for debugging */}
-      <Route path="/direct-content" component={DirectContentPage} />
+      <Route path="/direct-content" component={() => (
+        <ProtectedRoute path="/direct-content" component={DirectContentPage} noShell={false} />
+      )} />
       {/* Direct access to content management for debugging */}
-      <Route path="/direct-content-management" component={DirectContentManagementPage} />
+      <Route path="/direct-content-management" component={() => (
+        <ProtectedRoute path="/direct-content-management" component={DirectContentManagementPage} noShell={false} />
+      )} />
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
