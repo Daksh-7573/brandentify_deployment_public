@@ -332,16 +332,21 @@ export default function CreatePulsePage() {
   
   const removeMedia = (index: number) => {
     const newUrls = [...mediaUrls];
-    const newFiles = [...uploadedFiles];
-    
-    // Revoke the URL to prevent memory leaks
-    URL.revokeObjectURL(newUrls[index]);
-    
     newUrls.splice(index, 1);
-    newFiles.splice(index, 1);
-    
     setMediaUrls(newUrls);
-    setUploadedFiles(newFiles);
+    
+    // Also update uploadedFiles if tracking files
+    if (uploadedFiles.length > index) {
+      const newFiles = [...uploadedFiles];
+      newFiles.splice(index, 1);
+      setUploadedFiles(newFiles);
+    }
+  };
+
+  // Helper to detect if URL is a video
+  const isVideoUrl = (url: string): boolean => {
+    return url.toLowerCase().match(/\.(mp4|webm|mov|mkv|avi)$/i) !== null ||
+           url.includes('video');
   };
 
   // Function to add media URL
@@ -367,20 +372,52 @@ export default function CreatePulsePage() {
       return;
     }
 
-    // Check media type limit
-    if (mediaType === 'image' && mediaUrls.length >= 10) {
+    // Count existing media by type
+    let existingImages = 0;
+    let existingVideos = 0;
+    mediaUrls.forEach(url => {
+      if (isVideoUrl(url)) {
+        existingVideos++;
+      } else {
+        existingImages++;
+      }
+    });
+
+    const newIsVideo = isVideoUrl(mediaUrlInput);
+
+    // Check for type mixing
+    if (newIsVideo && existingImages > 0) {
       toast({
-        title: "Limit Reached",
-        description: "You can only add up to 10 images.",
+        title: "Cannot Mix Media Types",
+        description: "You already have images. Remove them first to add a video.",
         variant: "destructive",
       });
       return;
     }
 
-    if (mediaType === 'video' && mediaUrls.length >= 1) {
+    if (!newIsVideo && existingVideos > 0) {
       toast({
-        title: "Limit Reached", 
-        description: "You can only add one video.",
+        title: "Cannot Mix Media Types",
+        description: "You already have a video. Remove it first to add images.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check type-specific limits
+    if (newIsVideo && existingVideos >= 1) {
+      toast({
+        title: "Video Limit Reached",
+        description: "You can only add 1 video.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!newIsVideo && existingImages >= 5) {
+      toast({
+        title: "Image Limit Reached",
+        description: "You can only add up to 5 images.",
         variant: "destructive",
       });
       return;
@@ -392,7 +429,7 @@ export default function CreatePulsePage() {
     
     toast({
       title: "URL Added",
-      description: `${mediaType === 'image' ? 'Image' : 'Video'} URL added successfully.`,
+      description: "Media URL added successfully.",
     });
   };
 
@@ -445,17 +482,10 @@ export default function CreatePulsePage() {
                     onClick={() => setPulseType('media-pulse')}
                   >
                     <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center text-center">
-                      {mediaType === 'video' ? (
-                        <Video className={cn(
-                          "h-8 w-8 sm:h-10 sm:w-10 mb-2",
-                          pulseType === 'media-pulse' ? 'text-white' : 'text-white/70'
-                        )} />
-                      ) : (
-                        <Image className={cn(
-                          "h-8 w-8 sm:h-10 sm:w-10 mb-2",
-                          pulseType === 'media-pulse' ? 'text-white' : 'text-white/70'
-                        )} />
-                      )}
+                      <Image className={cn(
+                        "h-8 w-8 sm:h-10 sm:w-10 mb-2",
+                        pulseType === 'media-pulse' ? 'text-white' : 'text-white/70'
+                      )} />
                       <h3 className="font-medium text-sm sm:text-base">Insights</h3>
                       <p className="text-xs text-gray-300 mt-1">Images or video for your branding</p>
                     </CardContent>
@@ -659,119 +689,13 @@ export default function CreatePulsePage() {
                       <p className="text-xs text-gray-400">Upload images or videos to share your insights</p>
                     </div>
                     
-                    {/* Media Type Selection */}
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="space-y-1 sm:space-y-2">
-                        <Label className="text-white text-sm sm:text-base">Media Type</Label>
-                        <div className="flex gap-2 sm:gap-4">
-                          <button
-                            type="button"
-                            onClick={() => setMediaType('image')}
-                            className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
-                          >
-                            <Image className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                            Images
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setMediaType('video')}
-                            className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
-                          >
-                            <Video className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                            Video
-                          </button>
-                        </div>
-                      </div>
-
-                      {mediaType === 'image' ? (
-                        <div className="space-y-3 sm:space-y-4">
-                          <div className="space-y-1 sm:space-y-2">
-                            <Label htmlFor="insights-images" className="text-white text-sm sm:text-base">Upload Images</Label>
-                            <div className="flex flex-col space-y-1 sm:space-y-2">
-                              <Input
-                                ref={imageInputRef}
-                                id="insights-images"
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleMediaUpload}
-                                className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                style={{
-                                  lineHeight: '1.5',
-                                  display: 'flex',
-                                  alignItems: 'center'
-                                }}
-                              />
-                              <p className="text-xs text-gray-400">Select up to 5 images (max 20MB each)</p>
-                            </div>
-                          </div>
-                          
-                          {mediaUrls.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 sm:mt-4">
-                              {mediaUrls.map((url, index) => (
-                                <div key={index} className="relative group">
-                                  <img 
-                                    src={url} 
-                                    alt={`Preview ${index}`}
-                                    className="w-full aspect-video object-cover rounded-md border border-white/20" 
-                                  />
-                                  <button
-                                    type="button"
-                                    className="absolute top-2 right-2 h-6 w-6 neo-glass-button neo-glass-icon-button opacity-0 group-hover:opacity-100 transition-all"
-                                    onClick={() => removeMedia(index)}
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="space-y-3 sm:space-y-4">
-                          <div className="space-y-1 sm:space-y-2">
-                            <Label htmlFor="insights-video" className="text-white text-sm sm:text-base">Upload Video</Label>
-                            <div className="flex flex-col space-y-1 sm:space-y-2">
-                              <Input
-                                ref={videoInputRef}
-                                id="insights-video"
-                                type="file"
-                                accept="video/*"
-                                onChange={handleMediaUpload}
-                                className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                style={{
-                                  lineHeight: '1.5',
-                                  display: 'flex',
-                                  alignItems: 'center'
-                                }}
-                              />
-                              <p className="text-xs text-gray-400">Select video file (max 120 seconds, 25MB)</p>
-                            </div>
-                          </div>
-                          
-                          {mediaUrls.length > 0 && (
-                            <div className="mt-3 sm:mt-4">
-                              <div className="relative group border border-white/20 rounded-md overflow-hidden">
-                                <video
-                                  src={mediaUrls[0]}
-                                  controls
-                                  className="w-full aspect-video object-cover"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  onClick={() => removeMedia(0)}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <UnifiedMediaUpload
+                      mediaUrls={mediaUrls}
+                      onMediaUpload={setMediaUrls}
+                      onRemoveMedia={removeMedia}
+                      userId={user?.id}
+                      maxMediaCount={10}
+                    />
                   </div>
                 </NeoGlassSection>
               )}
@@ -955,119 +879,13 @@ export default function CreatePulsePage() {
                               <p className="text-xs text-gray-400">Upload images and videos to showcase your project</p>
                             </div>
                             
-                            {/* Media Type Selection */}
-                            <div className="space-y-3 sm:space-y-4">
-                              <div className="space-y-1 sm:space-y-2">
-                                <Label className="text-white text-sm sm:text-base">Media Type</Label>
-                                <div className="flex gap-2 sm:gap-4">
-                                  <button
-                                    type="button"
-                                    onClick={() => setMediaType('image')}
-                                    className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
-                                  >
-                                    <Image className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                                    Images
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => setMediaType('video')}
-                                    className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
-                                  >
-                                    <Video className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                                    Video
-                                  </button>
-                                </div>
-                              </div>
-
-                              {mediaType === 'image' ? (
-                                <div className="space-y-3 sm:space-y-4">
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="project-images" className="text-white text-sm sm:text-base">Upload Images</Label>
-                                    <div className="flex flex-col space-y-1 sm:space-y-2">
-                                      <Input
-                                        ref={imageInputRef}
-                                        id="project-images"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleMediaUpload}
-                                        className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                        style={{
-                                          lineHeight: '1.5',
-                                          display: 'flex',
-                                          alignItems: 'center'
-                                        }}
-                                      />
-                                      <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
-                                    </div>
-                                  </div>
-                                  
-                                  {mediaUrls.length > 0 && (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 sm:mt-4">
-                                      {mediaUrls.map((url, index) => (
-                                        <div key={index} className="relative group">
-                                          <img 
-                                            src={url} 
-                                            alt={`Preview ${index}`}
-                                            className="w-full aspect-video object-cover rounded-md border border-white/20" 
-                                          />
-                                          <button
-                                            type="button"
-                                            className="absolute top-2 right-2 h-6 w-6 neo-glass-button neo-glass-icon-button opacity-0 group-hover:opacity-100 transition-all"
-                                            onClick={() => removeMedia(index)}
-                                          >
-                                            <X className="h-3 w-3" />
-                                          </button>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              ) : (
-                                <div className="space-y-3 sm:space-y-4">
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="project-video" className="text-white text-sm sm:text-base">Upload Video</Label>
-                                    <div className="flex flex-col space-y-1 sm:space-y-2">
-                                      <Input
-                                        ref={videoInputRef}
-                                        id="project-video"
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={handleMediaUpload}
-                                        className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                        style={{
-                                          lineHeight: '1.5',
-                                          display: 'flex',
-                                          alignItems: 'center'
-                                        }}
-                                      />
-                                      <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
-                                    </div>
-                                  </div>
-                                  
-                                  {mediaUrls.length > 0 && (
-                                    <div className="mt-3 sm:mt-4">
-                                      <div className="relative group border border-white/20 rounded-md overflow-hidden">
-                                        <video
-                                          src={mediaUrls[0]}
-                                          controls
-                                          className="w-full aspect-video object-cover"
-                                        />
-                                        <Button
-                                          type="button"
-                                          variant="outline"
-                                          size="icon"
-                                          className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                                          onClick={() => removeMedia(0)}
-                                        >
-                                          <X className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
+                            <UnifiedMediaUpload
+                              mediaUrls={mediaUrls}
+                              onMediaUpload={setMediaUrls}
+                              onRemoveMedia={removeMedia}
+                              userId={user?.id}
+                              maxMediaCount={10}
+                            />
                           </div>
                         </TabsContent>
                         
