@@ -639,14 +639,14 @@ async function generateMuskResponse(message: string, context: any) {
 const resumeScorerService = new ResumeScorerService();
 
 export const handleResumeUpload = async (req: Request, res: Response) => {
-  console.log("Resume upload handler called - INTEGRATED VERSION");
-  console.log("Request body:", req.body);
-  console.log("Request files:", req.files ? Object.keys(req.files) : 'No files');
+  console.log("[Resume Upload] Handler called - INTEGRATED VERSION");
+  console.log("[Resume Upload] Request body:", req.body);
+  console.log("[Resume Upload] Request files:", req.files ? Object.keys(req.files) : 'No files');
   
   try {
     // Get user ID from request body
     const rawUserId = req.body.userId;
-    console.log(`Resume upload: Received rawUserId: ${rawUserId}`);
+    console.log(`[Resume Upload] Received rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
     
     let userId = 0;
     
@@ -654,38 +654,45 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     if (rawUserId) {
       if (typeof rawUserId === 'number') {
         userId = rawUserId;
-        console.log(`Resume upload: Using numeric userId directly: ${userId}`);
+        console.log(`[Resume Upload] Using numeric userId directly: ${userId}`);
       } else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
         userId = parseInt(rawUserId, 10);
-        console.log(`Resume upload: Converted numeric string "${rawUserId}" to number: ${userId}`);
+        console.log(`[Resume Upload] Converted numeric string "${rawUserId}" to number: ${userId}`);
       } else if (typeof rawUserId === 'string') {
         try {
+          console.log(`[Resume Upload] Looking up numeric ID for Firebase UID: ${rawUserId}`);
           const user = await storage.getUserByUsername(rawUserId);
           if (user) {
             userId = user.id;
-            console.log(`Resume upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+            console.log(`[Resume Upload] Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
+          } else {
+            console.log(`[Resume Upload] No user found for Firebase UID ${rawUserId}`);
           }
         } catch (userLookupError) {
-          console.error(`Resume upload: Error looking up user:`, userLookupError);
+          console.error(`[Resume Upload] Error looking up user:`, userLookupError);
         }
       }
     }
     
     // Check if file was uploaded
     if (!req.files || Object.keys(req.files).length === 0) {
-      console.log("No files uploaded");
+      console.log("[Resume Upload] ERROR: No files uploaded in request");
       return res.status(400).json({ error: "No resume file was uploaded" });
     }
     
-    // Get the uploaded file
-    const resumeFile = (req.files.file || req.files.resume) as any;
+    // Get the uploaded file - express-fileupload returns an array if single or object
+    let resumeFile = req.files.file as any;
+    if (!resumeFile) {
+      resumeFile = req.files.resume as any;
+    }
     
     if (!resumeFile) {
-      console.log("Resume file not found in request");
+      console.log("[Resume Upload] ERROR: Resume file not found in request");
+      console.log("[Resume Upload] Available files:", Object.keys(req.files || {}));
       return res.status(400).json({ error: "Resume file not found in the request" });
     }
     
-    console.log(`Processing file: ${resumeFile.name}`);
+    console.log(`[Resume Upload] Processing file: ${resumeFile.name}, size: ${resumeFile.size} bytes`);
     
     // Simple file validation - accept common resume formats
     const fileExt = resumeFile.name.split('.').pop()?.toLowerCase();
