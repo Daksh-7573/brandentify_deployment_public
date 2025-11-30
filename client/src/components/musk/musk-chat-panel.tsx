@@ -493,6 +493,16 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
       }
       
+      // Check if response contains an error
+      if (uploadResult.error) {
+        throw new Error(JSON.stringify({
+          error: uploadResult.error,
+          message: uploadResult.message,
+          suggestion: uploadResult.suggestion,
+          details: uploadResult.details
+        }));
+      }
+      
       // The result includes the analysis message directly
       const analyzeResult = {
         analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
@@ -563,15 +573,66 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     } catch (error) {
       console.error(`Error processing ${isResume ? 'resume' : 'pitch deck'}:`, error);
       
-      // Replace the thinking message with an error message
+      // Try to extract detailed error information from the response
+      let errorTitle = `Failed to analyze your ${isResume ? 'resume' : 'pitch deck'}`;
+      let errorDescription = isResume
+        ? "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format."
+        : "I'm sorry, I had trouble analyzing your pitch deck. Please make sure it's a valid PDF and try again.";
+      
+      let chatMessage = errorDescription;
+      
+      // Try to parse structured error response if available
+      if (error instanceof Error && error.message) {
+        try {
+          // Try to parse as JSON (for structured errors from backend)
+          const errorData = JSON.parse(error.message) as { error?: string; message?: string; suggestion?: string; details?: string };
+          if (errorData.message) {
+            errorDescription = errorData.message;
+            if (errorData.suggestion) {
+              chatMessage = `${errorData.message}\n\n💡 **Suggestion:** ${errorData.suggestion}`;
+            } else {
+              chatMessage = errorData.message;
+            }
+            
+            // Customize title based on error type
+            if (errorData.error === 'INVALID_FILE_TYPE') {
+              errorTitle = 'Unsupported File Type';
+            } else if (errorData.error === 'FILE_TOO_LARGE') {
+              errorTitle = 'File Size Exceeded';
+            } else if (errorData.error === 'TEXT_EXTRACTION_ERROR') {
+              errorTitle = 'Unable to Read File';
+            } else if (errorData.error === 'AI_SERVICE_ERROR') {
+              errorTitle = 'Service Temporarily Unavailable';
+            } else if (errorData.error === 'SERVICE_TIMEOUT') {
+              errorTitle = 'Processing Timeout';
+            }
+          }
+        } catch (parseError) {
+          // If JSON parsing fails, try extracting from plain error message
+          const msg = error.message.toLowerCase();
+          if (msg.includes('invalid file') || msg.includes('file type') || msg.includes('not allowed')) {
+            errorTitle = 'Unsupported File Type';
+            errorDescription = 'The file type you uploaded is not supported. Please upload: PDF, Word (.doc/.docx), Text (.txt), or RTF.';
+            chatMessage = errorDescription;
+          } else if (msg.includes('too large') || msg.includes('exceeds')) {
+            errorTitle = 'File Size Exceeded';
+            errorDescription = 'Your file is too large. Please upload a file smaller than 10MB.';
+            chatMessage = errorDescription;
+          } else if (msg.includes('text') || msg.includes('extract') || msg.includes('corrupted') || msg.includes('empty')) {
+            errorTitle = 'Unable to Read File';
+            errorDescription = 'Could not read the content of your file. Make sure it is a valid, readable document. Try converting it to PDF format.';
+            chatMessage = errorDescription;
+          }
+        }
+      }
+      
+      // Replace the thinking message with the detailed error message
       setMessages(prev => 
         prev.map(msg => 
           msg.id === thinkingMessage.id 
             ? {
                 id: 'error-' + Date.now(),
-                content: isResume
-                  ? "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format."
-                  : "I'm sorry, I had trouble analyzing your pitch deck. Please make sure it's a valid PDF and try again.",
+                content: chatMessage,
                 sender: 'musk',
                 timestamp: new Date()
               }
@@ -580,8 +641,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       );
       
       toast({
-        title: 'Processing Error',
-        description: `Failed to analyze your ${isResume ? 'resume' : 'pitch deck'}. Please try again.`,
+        title: errorTitle,
+        description: errorDescription,
         variant: 'destructive',
       });
     } finally {

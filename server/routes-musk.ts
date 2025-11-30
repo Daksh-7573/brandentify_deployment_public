@@ -694,12 +694,36 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     
     console.log(`[Resume Upload] Processing file: ${resumeFile.name}, size: ${resumeFile.size} bytes`);
     
-    // Simple file validation - accept common resume formats
+    // File validation - accept common resume formats
     const fileExt = resumeFile.name.split('.').pop()?.toLowerCase();
-    if (!['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(fileExt || '')) {
+    const allowedFormats = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
+    
+    if (!allowedFormats.includes(fileExt || '')) {
+      const fileType = fileExt ? fileExt.toUpperCase() : 'Unknown';
+      let helpMessage = `File type ".${fileExt}" is not supported.`;
+      
+      // Provide specific guidance based on file type
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExt || '')) {
+        helpMessage = `Image files (${fileType}) cannot be used as resumes. Please convert to PDF or Word document first.`;
+      } else if (['xls', 'xlsx'].includes(fileExt || '')) {
+        helpMessage = `Spreadsheet files (${fileType}) are not accepted. Please save as PDF or Word document.`;
+      }
+      
       return res.status(400).json({
-        error: "INVALID_FILE",
-        message: "File type not allowed. Please upload PDF, DOC, DOCX, TXT, or RTF files."
+        error: "INVALID_FILE_TYPE",
+        message: `${helpMessage} Supported formats: PDF, DOC, DOCX, TXT, RTF`,
+        allowedFormats: allowedFormats,
+        receivedFormat: fileExt
+      });
+    }
+    
+    // Check file size (max 10MB for resumes)
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    if (resumeFile.size > maxFileSize) {
+      return res.status(400).json({
+        error: "FILE_TOO_LARGE",
+        message: `File size (${(resumeFile.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum of 10MB. Please upload a smaller file.`,
+        maxSize: maxFileSize
       });
     }
     
@@ -733,14 +757,26 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
           : fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
       }
       
-      if (!resumeText || resumeText.trim().length < 50) {
-        throw new Error('Unable to extract text from document');
+      if (!resumeText || resumeText.trim().length < 20) {
+        throw new Error('Document appears to be empty or unreadable');
       }
     } catch (extractError) {
       console.error('Error extracting text:', extractError);
+      const errorMessage = extractError instanceof Error ? extractError.message : 'Unknown error';
+      
+      // Provide specific error messages based on extraction failure reason
+      let userMessage = 'Could not extract text from the file.';
+      if (errorMessage.includes('empty') || errorMessage.includes('unreadable')) {
+        userMessage = 'The document appears to be empty or corrupted. Please ensure it is a valid, readable document with actual content.';
+      } else if (errorMessage.includes('PDF')) {
+        userMessage = 'The PDF file appears to be corrupted or encrypted. Try converting it to a different format (e.g., Word document).';
+      }
+      
       return res.status(400).json({
         error: 'TEXT_EXTRACTION_FAILED',
-        message: 'Could not extract text from the file. Please ensure it is a valid, readable document.'
+        message: userMessage,
+        hint: 'Make sure your resume file is readable and contains actual text content (at least 20 characters)',
+        supportedFormats: 'PDF, Word (.doc, .docx), Text (.txt), RTF'
       });
     }
     
@@ -814,24 +850,36 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     }
     
     // Provide more specific error messages to help debugging
-    let errorMessage = "Unknown error occurred";
+    let errorType = "RESUME_PROCESSING_ERROR";
+    let errorMessage = "An unexpected error occurred while processing your resume.";
     let statusCode = 500;
+    let suggestion = "Please try again or contact support if the problem persists.";
     
     if (error instanceof Error) {
       if (error.message.includes('Resume analysis failed')) {
-        errorMessage = "Failed to analyze resume - AI service unavailable. Please try again later.";
+        errorType = "AI_SERVICE_ERROR";
+        errorMessage = "Unable to analyze resume - AI service is temporarily unavailable.";
         statusCode = 503;
-      } else if (error.message.includes('Unable to extract text')) {
-        errorMessage = "Could not extract text from document. Please ensure it's a valid, readable PDF or Word document.";
+        suggestion = "Please try again in a few moments. If this persists, your resume may be outside our supported format.";
+      } else if (error.message.includes('Unable to extract text') || error.message.includes('empty') || error.message.includes('unreadable')) {
+        errorType = "TEXT_EXTRACTION_ERROR";
+        errorMessage = "Could not read the content of your document. Make sure it's a valid, readable file with actual text.";
         statusCode = 400;
+        suggestion = "Try opening the file on your computer to verify it's not corrupted. You can also try converting it to PDF format.";
+      } else if (error.message.includes('retries failed')) {
+        errorType = "SERVICE_TIMEOUT";
+        errorMessage = "The analysis is taking too long. Please try a smaller or simpler resume file.";
+        statusCode = 504;
+        suggestion = "Try uploading a condensed version of your resume (1-2 pages) and try again.";
       } else {
         errorMessage = error.message;
       }
     }
     
     return res.status(statusCode).json({
-      error: "Failed to process resume upload",
+      error: errorType,
       message: errorMessage,
+      suggestion: suggestion,
       details: error instanceof Error ? error.message : "Unknown error"
     });
   }
