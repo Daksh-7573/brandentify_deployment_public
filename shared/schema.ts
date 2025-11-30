@@ -2502,3 +2502,70 @@ export const insertResumeContextCacheSchema = createInsertSchema(resumeContextCa
 
 export type ResumeContextCache = typeof resumeContextCache.$inferSelect;
 export type InsertResumeContextCache = z.infer<typeof insertResumeContextCacheSchema>;
+
+// ============================================
+// USER LEARNING PATTERNS - Phase 2.2
+// ============================================
+
+export const userLearningPatterns = pgTable("user_learning_patterns", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  preferences: jsonb("preferences").default('{"responseLength":"detailed","communicationStyle":"formal","focusAreas":[],"preferredTimeframes":"short_term"}'),
+  behaviorPatterns: jsonb("behavior_patterns").default('{"questionTypes":{},"topicFrequency":{},"engagementLevel":0.5,"responsePreferences":[]}'),
+  learningInsights: jsonb("learning_insights").default('{"careerStage":"mid","primaryGoals":[],"communicationPatterns":[],"preferredGuidanceStyle":"collaborative"}'),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  confidence: integer("confidence").default(10), // 0-100 scale (multiply by 0.01)
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ============================================
+// USER COHORTS - Phase 2.3
+// ============================================
+
+export const userCohorts = pgTable("user_cohorts", {
+  id: serial("id").primaryKey(),
+  cohortId: text("cohort_id").notNull().unique(), // e.g., "finance_senior", "tech_entry"
+  criteria: jsonb("criteria").default('{"industry":"general","roleLevel":"mid"}'),
+  patterns: jsonb("patterns").default('{"commonChallenges":[],"successfulStrategies":[],"preferredCommunicationStyle":"formal","typicalCareerPath":[],"skillDevelopmentPriorities":[]}'),
+  insights: jsonb("insights").default('{"averageResponseLength":"detailed","preferredTimeframes":"short_term","engagementPatterns":[],"successMetrics":[]}'),
+  sampleSize: integer("sample_size").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  confidence: integer("confidence").default(10), // 0-100 scale
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const cohortMembership = pgTable("cohort_membership", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  cohortId: text("cohort_id").notNull(),
+  joinedAt: timestamp("joined_at").defaultNow(),
+}, (table) => ({
+  uniqueMembership: unique().on(table.userId, table.cohortId),
+}));
+
+export const insertUserLearningPatternSchema = createInsertSchema(userLearningPatterns).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserCohortSchema = createInsertSchema(userCohorts).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCohortMembershipSchema = createInsertSchema(cohortMembership).omit({
+  id: true,
+  joinedAt: true,
+});
+
+export type UserLearningPattern = typeof userLearningPatterns.$inferSelect;
+export type InsertUserLearningPattern = z.infer<typeof insertUserLearningPatternSchema>;
+export type UserCohort = typeof userCohorts.$inferSelect;
+export type InsertUserCohort = z.infer<typeof insertUserCohortSchema>;
+export type CohortMembership = typeof cohortMembership.$inferSelect;

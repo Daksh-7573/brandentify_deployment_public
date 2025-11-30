@@ -1,37 +1,15 @@
 /**
- * Cross-User Intelligence - Phase 3
+ * Cross-User Intelligence - Phase 2.3
  * 
  * This service learns from aggregated user patterns to improve recommendations
  * for similar professionals while maintaining privacy and data security.
+ * 
+ * Now uses database-backed storage via cohortIntelligenceService
  */
 
-import { getPatternStats } from './learning-pattern-recognition';
+import { cohortIntelligenceService, UserCohort } from './cohort-intelligence-service';
 
-export interface UserCohort {
-  id: string;
-  criteria: {
-    industry: string;
-    roleLevel: 'entry' | 'mid' | 'senior' | 'executive';
-    careerStage: 'early' | 'growth' | 'transition' | 'leadership';
-    geography?: string;
-  };
-  patterns: {
-    commonChallenges: string[];
-    successfulStrategies: string[];
-    preferredCommunicationStyle: string;
-    typicalCareerPath: string[];
-    skillDevelopmentPriorities: string[];
-  };
-  insights: {
-    averageResponseLength: 'brief' | 'detailed' | 'comprehensive';
-    preferredTimeframes: 'immediate' | 'short_term' | 'long_term';
-    engagementPatterns: string[];
-    successMetrics: string[];
-  };
-  sampleSize: number;
-  lastUpdated: Date;
-  confidence: number;
-}
+export type { UserCohort } from './cohort-intelligence-service';
 
 export interface CrossUserRecommendation {
   id: string;
@@ -44,22 +22,18 @@ export interface CrossUserRecommendation {
   actionableSteps: string[];
 }
 
-// In-memory storage for cohort data
-const userCohorts = new Map<string, UserCohort>();
-const cohortMembership = new Map<string, string[]>(); // userId -> cohortIds
-
 /**
  * Generate cross-user intelligence recommendations
  */
-export function generateCrossUserRecommendations(
+export async function generateCrossUserRecommendations(
   userId: string,
   userProfile: any,
   userPatterns: any
-): CrossUserRecommendation[] {
+): Promise<CrossUserRecommendation[]> {
   console.log(`[Cross-User Intelligence] Generating recommendations for user ${userId}`);
   
   // Find relevant cohorts for this user
-  const relevantCohorts = findRelevantCohorts(userProfile, userPatterns);
+  const relevantCohorts = await cohortIntelligenceService.getUserCohorts(parseInt(userId));
   
   const recommendations: CrossUserRecommendation[] = [];
   
@@ -90,45 +64,25 @@ export function generateCrossUserRecommendations(
 /**
  * Update cohort data with new user patterns
  */
-export function updateCohortData(userId: string, userProfile: any, userPatterns: any): void {
+export async function updateCohortData(userId: string, userProfile: any, userPatterns: any): Promise<void> {
   if (!userProfile) return;
   
   const cohortIds = identifyUserCohorts(userProfile);
   
-  cohortIds.forEach(cohortId => {
-    let cohort = userCohorts.get(cohortId);
-    
-    if (!cohort) {
-      cohort = createNewCohort(cohortId, userProfile);
-      userCohorts.set(cohortId, cohort);
-    }
+  for (const cohortId of cohortIds) {
+    const cohort = await cohortIntelligenceService.getOrCreateCohort(cohortId, userProfile);
     
     // Update cohort patterns with new data
     updateCohortPatterns(cohort, userProfile, userPatterns);
     
-    // Track user membership
-    const userCohortList = cohortMembership.get(userId) || [];
-    if (!userCohortList.includes(cohortId)) {
-      cohortMembership.set(userId, [...userCohortList, cohortId]);
-    }
+    // Update cohort in database
+    await cohortIntelligenceService.updateCohort(cohortId, cohort);
     
-    cohort.lastUpdated = new Date();
-    userCohorts.set(cohortId, cohort);
-  });
+    // Add user to cohort membership
+    await cohortIntelligenceService.addUserToCohort(parseInt(userId), cohortId);
+  }
   
   console.log(`[Cross-User Intelligence] Updated cohort data for user ${userId}`);
-}
-
-/**
- * Find relevant cohorts for a user
- */
-function findRelevantCohorts(userProfile: any, userPatterns: any): UserCohort[] {
-  const cohortIds = identifyUserCohorts(userProfile);
-  
-  return cohortIds
-    .map(id => userCohorts.get(id))
-    .filter((cohort): cohort is UserCohort => cohort !== undefined && cohort.sampleSize >= 3)
-    .sort((a, b) => b.confidence - a.confidence);
 }
 
 /**
@@ -168,39 +122,6 @@ function identifyUserCohorts(userProfile: any): string[] {
   }
   
   return cohortIds;
-}
-
-/**
- * Create a new cohort
- */
-function createNewCohort(cohortId: string, userProfile: any): UserCohort {
-  const [part1, part2] = cohortId.split('_');
-  
-  return {
-    id: cohortId,
-    criteria: {
-      industry: userProfile.industry || 'general',
-      roleLevel: determineRoleLevel(userProfile.title),
-      careerStage: determineCareerStage(userProfile),
-      geography: extractRegion(userProfile.location)
-    },
-    patterns: {
-      commonChallenges: [],
-      successfulStrategies: [],
-      preferredCommunicationStyle: 'formal',
-      typicalCareerPath: [],
-      skillDevelopmentPriorities: []
-    },
-    insights: {
-      averageResponseLength: 'detailed',
-      preferredTimeframes: 'short_term',
-      engagementPatterns: [],
-      successMetrics: []
-    },
-    sampleSize: 0,
-    lastUpdated: new Date(),
-    confidence: 0.1
-  };
 }
 
 /**
@@ -443,7 +364,7 @@ function updateSkillPriorities(cohort: UserCohort, focusAreas: string[]): void {
 }
 
 /**
- * Get cross-user intelligence statistics
+ * Get cross-user intelligence statistics (placeholder - would query database)
  */
 export function getCrossUserStats(): {
   totalCohorts: number;
@@ -451,21 +372,11 @@ export function getCrossUserStats(): {
   averageCohortSize: number;
   mostActiveCohort: string;
 } {
-  const cohorts = Array.from(userCohorts.values());
-  const totalUsers = Array.from(cohortMembership.keys()).length;
-  
-  const averageCohortSize = cohorts.length > 0 
-    ? cohorts.reduce((sum, c) => sum + c.sampleSize, 0) / cohorts.length 
-    : 0;
-  
-  const mostActiveCohort = cohorts.length > 0 
-    ? cohorts.sort((a, b) => b.sampleSize - a.sampleSize)[0].id 
-    : 'none';
-  
+  // TODO: Query database for stats when needed
   return {
-    totalCohorts: cohorts.length,
-    totalUsers,
-    averageCohortSize: Math.round(averageCohortSize),
-    mostActiveCohort
+    totalCohorts: 0,
+    totalUsers: 0,
+    averageCohortSize: 0,
+    mostActiveCohort: 'none'
   };
 }

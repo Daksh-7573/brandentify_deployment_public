@@ -1,46 +1,23 @@
 /**
- * Learning Pattern Recognition - Phase 2
+ * Learning Pattern Recognition - Phase 2.2
  * 
  * This service analyzes user preferences and conversation patterns to personalize
  * responses and improve the AI's understanding of individual user needs.
  * 
- * Phase 2.2: Updated to use async conversation memory from database
+ * Now uses database-backed storage via learningPatternsService
  */
 
 import { getConversationMemory, getConversationMemorySync, ConversationMessage } from './conversation-memory';
+import { learningPatternsService, UserPattern } from './learning-patterns-service';
 
-export interface UserPattern {
-  userId: string;
-  preferences: {
-    responseLength: 'brief' | 'detailed' | 'comprehensive';
-    communicationStyle: 'formal' | 'casual' | 'technical';
-    focusAreas: string[];
-    preferredTimeframes: 'immediate' | 'short_term' | 'long_term';
-  };
-  behaviorPatterns: {
-    questionTypes: Record<string, number>;
-    topicFrequency: Record<string, number>;
-    engagementLevel: number;
-    responsePreferences: string[];
-  };
-  learningInsights: {
-    careerStage: 'entry' | 'mid' | 'senior' | 'executive' | 'transition';
-    primaryGoals: string[];
-    communicationPatterns: string[];
-    preferredGuidanceStyle: 'directive' | 'collaborative' | 'exploratory';
-  };
-  lastUpdated: Date;
-  confidence: number;
-}
-
-const userPatterns = new Map<string, UserPattern>();
+export type { UserPattern } from './learning-patterns-service';
 
 /**
  * Analyze user conversation patterns and update their profile (async version)
  */
 export async function analyzeUserPatterns(userId: string): Promise<UserPattern> {
   const conversationMemory = await getConversationMemory(userId);
-  let pattern = userPatterns.get(userId) || createDefaultPattern(userId);
+  let pattern = await learningPatternsService.getOrCreatePattern(parseInt(userId));
   
   if (!conversationMemory || conversationMemory.messages.length === 0) {
     return pattern;
@@ -60,7 +37,7 @@ export async function analyzeUserPatterns(userId: string): Promise<UserPattern> 
   pattern.lastUpdated = new Date();
   pattern.confidence = calculateConfidence(messages.length, userMessages.length);
   
-  userPatterns.set(userId, pattern);
+  await learningPatternsService.updatePattern(parseInt(userId), pattern);
   
   console.log(`[Learning Patterns] Updated pattern for user ${userId} with confidence ${pattern.confidence}`);
   
@@ -69,10 +46,35 @@ export async function analyzeUserPatterns(userId: string): Promise<UserPattern> 
 
 /**
  * Synchronous version using cache - use only when async is not possible
+ * Note: This is a fallback; async version should be preferred
  */
 export function analyzeUserPatternsSync(userId: string): UserPattern {
   const conversationMemory = getConversationMemorySync(userId);
-  let pattern = userPatterns.get(userId) || createDefaultPattern(userId);
+  
+  // Create default pattern for sync operation
+  let pattern: UserPattern = {
+    userId,
+    preferences: {
+      responseLength: 'detailed',
+      communicationStyle: 'formal',
+      focusAreas: [],
+      preferredTimeframes: 'short_term',
+    },
+    behaviorPatterns: {
+      questionTypes: {},
+      topicFrequency: {},
+      engagementLevel: 0.5,
+      responsePreferences: [],
+    },
+    learningInsights: {
+      careerStage: 'mid',
+      primaryGoals: [],
+      communicationPatterns: [],
+      preferredGuidanceStyle: 'collaborative',
+    },
+    lastUpdated: new Date(),
+    confidence: 0.1,
+  };
   
   if (!conversationMemory || conversationMemory.messages.length === 0) {
     return pattern;
@@ -92,39 +94,9 @@ export function analyzeUserPatternsSync(userId: string): UserPattern {
   pattern.lastUpdated = new Date();
   pattern.confidence = calculateConfidence(messages.length, userMessages.length);
   
-  userPatterns.set(userId, pattern);
-  
   return pattern;
 }
 
-/**
- * Create default pattern for new users
- */
-function createDefaultPattern(userId: string): UserPattern {
-  return {
-    userId,
-    preferences: {
-      responseLength: 'detailed',
-      communicationStyle: 'formal',
-      focusAreas: [],
-      preferredTimeframes: 'short_term'
-    },
-    behaviorPatterns: {
-      questionTypes: {},
-      topicFrequency: {},
-      engagementLevel: 0.5,
-      responsePreferences: []
-    },
-    learningInsights: {
-      careerStage: 'mid',
-      primaryGoals: [],
-      communicationPatterns: [],
-      preferredGuidanceStyle: 'collaborative'
-    },
-    lastUpdated: new Date(),
-    confidence: 0.1
-  };
-}
 
 /**
  * Analyze user's preferred response length based on their follow-ups
@@ -316,13 +288,13 @@ function calculateConfidence(totalMessages: number, userMessages: number): numbe
 /**
  * Get personalized response guidelines based on learned patterns
  */
-export function getPersonalizedGuidelines(userId: string): {
+export async function getPersonalizedGuidelines(userId: string): Promise<{
   responseLength: string;
   tone: string;
   focus: string[];
   approachStyle: string;
-} {
-  const pattern = userPatterns.get(userId);
+}> {
+  const pattern = await learningPatternsService.getOrCreatePattern(parseInt(userId));
   
   if (!pattern || pattern.confidence < 0.3) {
     return {
@@ -342,38 +314,18 @@ export function getPersonalizedGuidelines(userId: string): {
 }
 
 /**
- * Get user pattern statistics for monitoring
+ * Get user pattern statistics for monitoring (placeholder - would query database)
  */
 export function getPatternStats(): {
   totalUsers: number;
   averageConfidence: number;
   commonFocusAreas: Record<string, number>;
 } {
-  const patterns = Array.from(userPatterns.values());
-  
-  const totalUsers = patterns.length;
-  const averageConfidence = patterns.length > 0 
-    ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length 
-    : 0;
-  
-  const focusAreaCounts: Record<string, number> = {};
-  patterns.forEach(pattern => {
-    pattern.preferences.focusAreas.forEach(area => {
-      focusAreaCounts[area] = (focusAreaCounts[area] || 0) + 1;
-    });
-  });
-  
+  // TODO: Query database for stats when needed
   return {
-    totalUsers,
-    averageConfidence,
-    commonFocusAreas: focusAreaCounts
+    totalUsers: 0,
+    averageConfidence: 0,
+    commonFocusAreas: {}
   };
 }
 
-/**
- * Clear learning patterns for a user (useful for testing or privacy)
- */
-export function clearUserPatterns(userId: string): void {
-  userPatterns.delete(userId);
-  console.log(`[Learning Patterns] Cleared patterns for user ${userId}`);
-}
