@@ -73,6 +73,7 @@ import { UserContextBuilder } from "./services/user-context-builder.js";
 import { AIFeedRanker } from "./services/ai-feed-ranker.js";
 import { feedCache } from "./services/feed-cache.js";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute } from "./auth-oauth-routes";
+import { createNotification } from "./services/notification-service";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -4545,7 +4546,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const pulse = await storage.getPulse(newComment.pulseId);
         
         if (pulse && pulse.userId !== newComment.userId) {
-          const { createNotification } = await import('./services/notification-service');
           const commenterName = user?.name || 'Someone';
           const pulseTitle = pulse.title || pulse.content;
           
@@ -4558,10 +4558,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             isRead: false
           });
           
-          console.log(`[POST /pulse-comments] Notification created for pulse owner ${pulse.userId}`);
+          console.log(`[POST /pulse-comments] ✅ Notification created for pulse owner ${pulse.userId}`);
         }
       } catch (notifError) {
-        console.error('[POST /pulse-comments] Failed to create notification:', notifError);
+        console.error('[POST /pulse-comments] ❌ Failed to create notification:', {
+          error: notifError instanceof Error ? notifError.message : String(notifError),
+          pulseId: newComment.pulseId,
+          pulseOwnerId: (await storage.getPulse(newComment.pulseId))?.userId
+        });
         // Don't fail the comment if notification fails
       }
       
@@ -7542,7 +7546,6 @@ ${extractedText.substring(0, 5000)}
           
           // Only notify if someone else reacted (not self-reaction)
           if (pulseOwner.user_id !== userId) {
-            const { createNotification } = await import('./services/notification-service');
             const userResult = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
             const reactorName = userResult.rows[0]?.name || 'Someone';
             const pulseTitle = pulseResult.rows[0].title || pulseResult.rows[0].content;
@@ -7556,11 +7559,15 @@ ${extractedText.substring(0, 5000)}
               isRead: false
             });
             
-            console.log(`[POST /pulse-reactions] Notification created for pulse owner ${pulseOwner.user_id}`);
+            console.log(`[POST /pulse-reactions] ✅ Notification created for pulse owner ${pulseOwner.user_id}`);
           }
         }
       } catch (notifError) {
-        console.error('[POST /pulse-reactions] Failed to create notification:', notifError);
+        console.error('[POST /pulse-reactions] ❌ Failed to create notification:', {
+          error: notifError instanceof Error ? notifError.message : String(notifError),
+          pulseId: pulseId,
+          reactorUserId: userId
+        });
         // Don't fail the reaction if notification fails
       }
       

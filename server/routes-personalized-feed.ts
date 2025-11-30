@@ -10,6 +10,7 @@
 import { Router, Request, Response } from "express";
 import { storage } from "./storage";
 import { personalizedFeedService } from "./services/personalized-feed-service";
+import { createNotification } from "./services/notification-service";
 
 const router = Router();
 
@@ -161,6 +162,31 @@ router.post("/users/:followerId/follow/:followeeId", async (req: Request, res: R
     }
 
     const result = await storage.followUser(followerId, followeeId);
+    
+    // Create notification for the user being followed
+    try {
+      const follower = await storage.getUser(followerId);
+      const followerName = follower?.name || 'Someone';
+      
+      await createNotification({
+        userId: followeeId,
+        type: 'info',
+        category: 'new_follower',
+        title: 'New Follower',
+        message: `${followerName} started following you`,
+        isRead: false
+      });
+      
+      console.log(`[POST /follow] ✅ Notification created for user ${followeeId} - new follower: ${followerId}`);
+    } catch (notifError) {
+      console.error('[POST /follow] ❌ Failed to create follower notification:', {
+        error: notifError instanceof Error ? notifError.message : String(notifError),
+        followerId: followerId,
+        followeeId: followeeId
+      });
+      // Don't fail the follow if notification fails
+    }
+    
     res.json({ success: true, result });
   } catch (error) {
     console.error("[FollowUser] Error:", error);
