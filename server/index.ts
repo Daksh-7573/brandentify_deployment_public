@@ -573,9 +573,9 @@ app.use((req, res, next) => {
     return fileUpload({
       limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size
       useTempFiles: true,
-      tempFileDir: path.join(process.cwd(), 'tmp'),
+      tempFileDir: tmpDir, // Use the explicitly created tmp directory
       createParentPath: true,
-      debug: process.env.NODE_ENV === 'development',
+      debug: true, // Enable debug for ALL environments to track production issues
       abortOnLimit: true,
       safeFileNames: true,
       preserveExtension: true
@@ -616,16 +616,26 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 const projectDir = path.join(uploadsDir, 'projects');
 const mediaDir = path.join(uploadsDir, 'media');
+const tmpDir = path.join(process.cwd(), 'tmp');
 
-// Ensure directories exist
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-if (!fs.existsSync(projectDir)) {
-  fs.mkdirSync(projectDir, { recursive: true });
-}
-if (!fs.existsSync(mediaDir)) {
-  fs.mkdirSync(mediaDir, { recursive: true });
+// Ensure directories exist - CRITICAL for production file uploads
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  if (!fs.existsSync(projectDir)) {
+    fs.mkdirSync(projectDir, { recursive: true });
+  }
+  if (!fs.existsSync(mediaDir)) {
+    fs.mkdirSync(mediaDir, { recursive: true });
+  }
+  // CRITICAL: Explicitly create tmp directory for file uploads (fixes production issues)
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir, { recursive: true });
+    console.log(`✅ [STARTUP] Created tmp directory: ${tmpDir}`);
+  }
+} catch (err) {
+  console.error(`⚠️ [STARTUP] Error creating directories:`, err);
 }
 
 // Serve static files from public directory with proper MIME types

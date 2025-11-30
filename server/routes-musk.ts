@@ -733,35 +733,60 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       // express-fileupload with useTempFiles stores file in tempFilePath, not data
       const fs = await import('fs');
       
+      console.log(`[Resume Extract] File extension: ${fileExt}`);
+      console.log(`[Resume Extract] Resume file keys: ${Object.keys(resumeFile)}`);
+      console.log(`[Resume Extract] tempFilePath: ${resumeFile.tempFilePath}`);
+      console.log(`[Resume Extract] data buffer exists: ${!!resumeFile.data}`);
+      
       if (fileExt === 'pdf') {
-        console.log(`Resume file object keys: ${Object.keys(resumeFile)}`);
-        console.log(`tempFilePath: ${resumeFile.tempFilePath}`);
-        console.log(`data exists: ${!!resumeFile.data}`);
+        let pdfBuffer: Buffer;
         
-        const pdfBuffer = resumeFile.tempFilePath 
-          ? fs.readFileSync(resumeFile.tempFilePath)
-          : resumeFile.data;
+        // Try tempFilePath first (production-safe approach)
+        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
+          console.log(`[Resume Extract] Reading PDF from tempFilePath: ${resumeFile.tempFilePath}`);
+          pdfBuffer = fs.readFileSync(resumeFile.tempFilePath);
+        } else if (resumeFile.data) {
+          // Fallback to data buffer if temp file doesn't exist
+          console.log(`[Resume Extract] Temp file not found, using data buffer. Temp path was: ${resumeFile.tempFilePath}`);
+          pdfBuffer = resumeFile.data;
+        } else {
+          throw new Error('No PDF data available - temp file not created and no data buffer present');
+        }
         
-        console.log(`PDF buffer type: ${typeof pdfBuffer}, length: ${pdfBuffer?.length}`);
-        
+        console.log(`[Resume Extract] PDF buffer type: ${typeof pdfBuffer}, length: ${pdfBuffer?.length}`);
         resumeText = await extractTextFromPdf(pdfBuffer);
-        console.log(`Extracted ${resumeText.length} characters from PDF`);
+        console.log(`[Resume Extract] Extracted ${resumeText.length} characters from PDF`);
       } else if (fileExt === 'txt') {
-        resumeText = resumeFile.data 
-          ? resumeFile.data.toString('utf-8')
-          : fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
+        // For text files, try temp file first, then data buffer
+        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
+          console.log(`[Resume Extract] Reading TXT from tempFilePath`);
+          resumeText = fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
+        } else if (resumeFile.data) {
+          console.log(`[Resume Extract] Reading TXT from data buffer`);
+          resumeText = resumeFile.data.toString('utf-8');
+        } else {
+          throw new Error('No text file data available');
+        }
       } else {
-        // For DOC/DOCX, try basic extraction
-        resumeText = resumeFile.data 
-          ? resumeFile.data.toString('utf-8')
-          : fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
+        // For DOC/DOCX, try temp file first, then data buffer
+        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
+          console.log(`[Resume Extract] Reading ${fileExt} from tempFilePath`);
+          resumeText = fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
+        } else if (resumeFile.data) {
+          console.log(`[Resume Extract] Reading ${fileExt} from data buffer`);
+          resumeText = resumeFile.data.toString('utf-8');
+        } else {
+          throw new Error(`No ${fileExt} file data available`);
+        }
       }
       
+      console.log(`[Resume Extract] Final text length: ${resumeText?.length || 0} characters`);
+      
       if (!resumeText || resumeText.trim().length < 20) {
-        throw new Error('Document appears to be empty or unreadable');
+        throw new Error('Document appears to be empty or unreadable - extracted less than 20 characters');
       }
     } catch (extractError) {
-      console.error('Error extracting text:', extractError);
+      console.error('[Resume Extract] ERROR:', extractError);
       const errorMessage = extractError instanceof Error ? extractError.message : 'Unknown error';
       
       // Provide specific error messages based on extraction failure reason
@@ -770,13 +795,16 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
         userMessage = 'The document appears to be empty or corrupted. Please ensure it is a valid, readable document with actual content.';
       } else if (errorMessage.includes('PDF')) {
         userMessage = 'The PDF file appears to be corrupted or encrypted. Try converting it to a different format (e.g., Word document).';
+      } else if (errorMessage.includes('no data available') || errorMessage.includes('not created')) {
+        userMessage = 'The file could not be processed on the server. Please try uploading again or convert to a different format (PDF or Word).';
       }
       
       return res.status(400).json({
         error: 'TEXT_EXTRACTION_FAILED',
         message: userMessage,
         hint: 'Make sure your resume file is readable and contains actual text content (at least 20 characters)',
-        supportedFormats: 'PDF, Word (.doc, .docx), Text (.txt), RTF'
+        supportedFormats: 'PDF, Word (.doc, .docx), Text (.txt), RTF',
+        debug: process.env.NODE_ENV === 'development' ? { originalError: errorMessage } : undefined
       });
     }
     
