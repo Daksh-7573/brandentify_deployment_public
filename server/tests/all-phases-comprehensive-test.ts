@@ -7,8 +7,8 @@
 import { pool } from '../db';
 import { resumeContextService } from '../services/resume-context-service';
 import { 
-  addMessageToMemorySync, 
-  getRecentMessagesSync 
+  addMessageToMemory,
+  getRecentMessages
 } from '../services/conversation-memory';
 import * as learningPatterns from '../services/learning-patterns-service';
 import * as cohortIntelligence from '../services/cohort-intelligence-service';
@@ -83,9 +83,11 @@ async function testPhase2() {
   try {
     const testUserId = 1;
 
-    // Test 1: Conversation memory
-    addMessageToMemorySync(testUserId, 'user', 'Test message');
-    const recentMessages = getRecentMessagesSync(testUserId, 5);
+    // Test 1: Conversation memory (using async to ensure DB write completes)
+    const userId1Str = String(testUserId);
+    await addMessageToMemory(userId1Str, 'user', 'Comprehensive test message');
+    await sleep(100); // Brief delay to ensure DB commit
+    const recentMessages = await getRecentMessages(userId1Str, 5);
     if (recentMessages && recentMessages.length > 0) {
       logTest('2', 'Conversation Memory Storage', 'PASS', `${recentMessages.length} messages stored`);
     } else {
@@ -215,14 +217,15 @@ async function verifyNoFunctionalityBroken() {
 
     // Test 6: All critical tables exist
     const tablesCheck = await pool.query(`
-      SELECT COUNT(*) FROM information_schema.tables 
+      SELECT COUNT(*) as table_count FROM information_schema.tables 
       WHERE table_name IN ('users', 'resume_context_cache', 'chat_messages', 'user_learning_patterns', 'user_cohorts')
       AND table_schema = 'public'
     `);
-    if (tablesCheck.rows[0].count === 5) {
+    const tableCount = parseInt(tablesCheck.rows[0].table_count || '0', 10);
+    if (tableCount === 5) {
       logTest('FV', 'All Critical Tables', 'PASS', '5/5 essential tables present');
     } else {
-      logTest('FV', 'All Critical Tables', 'FAIL', `Only ${tablesCheck.rows[0].count}/5 tables found`);
+      logTest('FV', 'All Critical Tables', 'FAIL', `Only ${tableCount}/5 tables found`);
     }
 
   } catch (error) {
