@@ -22,8 +22,11 @@ Preferred communication style: Simple, everyday language.
 - **Phase 2.1 COMPLETED**: Conversation memory migrated from in-memory Map to PostgreSQL (`chat_messages` table)
   - Updated `server/services/conversation-memory.ts` with async database-backed storage using `chat_messages` table
   - Added sync fallback methods (`getRecentMessagesSync`, `getLastMuskResponseSync`, `getConversationMemorySync`) for services that can't await
+  - **Cache warm-up strategy**: Added `triggerCacheWarmUp()` and `warmUpUserCache()` functions to load from database on cache miss, resolving cold-start issues
+  - **Error propagation**: `addMessageToMemory()` now throws errors instead of silently swallowing them; `addMessageToMemorySync()` wrapper logs errors for monitoring
+  - **Retention policy**: Added `enforceRetentionPolicy()` that deletes old messages beyond MAX_MESSAGES_PER_USER (10), preventing unbounded DB growth
   - Updated dependent services to use sync versions: `emotional-intelligence.ts`, `predictive-career-modeling.ts`, `proactive-suggestion-engine.ts`, `dynamic-persona-engine.ts`, `reference-resolution.ts`, `learning-pattern-recognition.ts`, `follow-up-handler.ts`
-  - Aligned schema with actual database (uses `message` column not `content`)
+  - Fixed async/await issues in `enhanced-musk-intelligence.ts` for `analyzeUserPatterns`, `isFollowUpMessage`, `formatConversationForAI`
   - All conversation history now persists across app restarts in production
 
 ## System Architecture
