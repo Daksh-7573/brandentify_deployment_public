@@ -4151,7 +4151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check cache first (unless force refresh requested)
       if (!forceRefresh) {
-        const cachedResult = feedCache.get(userId);
+        const cachedResult = await feedCache.get(userId);
         if (cachedResult) {
           // Re-hydrate cached rankings with user data
           const cachedPulseIds = new Set(cachedResult.rankedPulseIds);
@@ -4192,7 +4192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const rankingResult = await aiRanker.rankFeedForUser(userId, pulses);
       
       // Cache the result
-      feedCache.set(userId, rankingResult);
+      await feedCache.set(userId, rankingResult);
       
       // Re-order pulses according to AI ranking
       const rankedPulses = rankingResult.rankedPulseIds
