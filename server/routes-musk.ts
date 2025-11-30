@@ -18,7 +18,7 @@ import { db, pool } from './db';
 import { followupTemplates } from '@shared/schema';
 import { resumeContextService } from './services/resume-context-service';
 
-// Initialize global variable for resume context storage and user interaction memory
+// Initialize global variable for resume context storage (legacy - migrated to database)
 declare global {
   var resumeContexts: {
     [userId: string]: {
@@ -30,114 +30,69 @@ declare global {
       fileName: string;
     }
   };
-  
-  var userInteractionMemory: {
-    [userId: string]: {
-      interactionCount: number;
-      messageHistory: Array<{
-        timestamp: Date;
-        message: string;
-        response: string;
-      }>;
-      communicationStyle: {
-        messageLength: 'short' | 'medium' | 'long';
-        formality: 'casual' | 'neutral' | 'formal';
-        detailLevel: 'low' | 'medium' | 'high';
-        technicalLevel: 'low' | 'medium' | 'high';
-        preferredTopics: string[];
-        preferredFormat: 'text-heavy' | 'balanced' | 'visual';
-        lastInteraction: Date;
-      };
-      topicPreferences: {
-        [topic: string]: number;
-      };
-      learningPreferences: {
-        [key: string]: any;
-      };
-    }
-  };
 }
 
 if (!global.resumeContexts) {
   global.resumeContexts = {};
 }
 
-// Initialize user interaction memory for Musk's adaptive learning capability
-if (!global.userInteractionMemory) {
-  global.userInteractionMemory = {};
-}
+// NOTE: User interaction memory is now stored in PostgreSQL via userMuskMemoryService
+// This ensures persistence across app restarts in production
 
-// Track and update user interaction patterns to enable adaptive learning
-function updateUserInteractionMemory(userId: string, message: string, response: string, context: any): void {
+// Track and update user interaction patterns - NOW USES DATABASE via userMuskMemoryService
+// This ensures persistence across app restarts in production
+async function updateUserInteractionMemory(userId: string, message: string, response: string, context: any): Promise<void> {
   try {
-    // Initialize memory for this user if it doesn't exist
-    if (!global.userInteractionMemory[userId]) {
-      global.userInteractionMemory[userId] = {
-        interactionCount: 0,
-        messageHistory: [],
-        communicationStyle: {
-          messageLength: 'medium',  // short, medium, long
-          formality: 'neutral',     // casual, neutral, formal
-          detailLevel: 'medium',    // low, medium, high
-          technicalLevel: 'medium', // low, medium, high
-          preferredTopics: [],
-          preferredFormat: 'balanced', // text-heavy, balanced, visual
-          lastInteraction: new Date()
-        },
-        topicPreferences: {},
-        learningPreferences: {}
-      };
+    const numericUserId = parseInt(userId, 10);
+    if (isNaN(numericUserId)) {
+      console.warn(`[updateUserInteractionMemory] Invalid userId: ${userId}`);
+      return;
+    }
+
+    // Increment interaction count in database
+    const interactionCount = await userMuskMemoryService.recordInteraction(numericUserId);
+    
+    // Analyze and update communication style
+    const communicationStyle = analyzeUserCommunicationStyle(message);
+    await userMuskMemoryService.updateCommunicationStyle(numericUserId, communicationStyle);
+    
+    // Analyze and record topic preferences  
+    const detectedTopics = analyzeTopicPreferences(message);
+    for (const topic of detectedTopics) {
+      await userMuskMemoryService.recordTopicPreference(numericUserId, topic);
     }
     
-    // Get the user's memory
-    const userMemory = global.userInteractionMemory[userId];
+    // Record this as a chat action
+    await userMuskMemoryService.recordAction(numericUserId, 'musk_chat', 'chat');
     
-    // Update interaction count
-    userMemory.interactionCount += 1;
-    
-    // Add message to history (limit to last 10 for memory efficiency)
-    userMemory.messageHistory.push({
-      timestamp: new Date(),
-      message: message,
-      response: response
-    });
-    
-    // Keep only the last 10 messages
-    if (userMemory.messageHistory.length > 10) {
-      userMemory.messageHistory = userMemory.messageHistory.slice(-10);
-    }
-    
-    // Analyze communication style
-    analyzeUserCommunicationStyle(userId, message, userMemory);
-    
-    // Analyze topic preferences
-    analyzeTopicPreferences(userId, message, userMemory);
-    
-    // Update last interaction time
-    if (userMemory.communicationStyle) {
-      userMemory.communicationStyle.lastInteraction = new Date();
-    }
-    
-    console.log(`Updated user interaction memory for user ${userId}, interaction count: ${userMemory.interactionCount}`);
+    console.log(`[updateUserInteractionMemory] Updated database-backed memory for user ${userId}, interaction count: ${interactionCount}`);
   } catch (error) {
-    console.error("Error updating user interaction memory:", error);
+    console.error("[updateUserInteractionMemory] Error updating user interaction memory:", error);
   }
 }
 
-// Analyze user's communication style to adapt responses
-function analyzeUserCommunicationStyle(userId: string, message: string, userMemory: any): void {
+// Analyze user's communication style to adapt responses - returns style object for database storage
+function analyzeUserCommunicationStyle(message: string): {
+  messageLength?: 'short' | 'medium' | 'long';
+  formality?: 'casual' | 'neutral' | 'formal';
+  detailLevel?: 'low' | 'medium' | 'high';
+  technicalLevel?: 'low' | 'medium' | 'high';
+  lastInteraction?: Date;
+} {
   try {
-    // Analyze message length (character count as a simple metric)
+    const style: any = { lastInteraction: new Date() };
+    
+    // Analyze message length
     const length = message.length;
     if (length < 50) {
-      userMemory.communicationStyle.messageLength = 'short';
+      style.messageLength = 'short';
     } else if (length > 200) {
-      userMemory.communicationStyle.messageLength = 'long';
+      style.messageLength = 'long';
     } else {
-      userMemory.communicationStyle.messageLength = 'medium';
+      style.messageLength = 'medium';
     }
     
-    // Analyze formality (very basic approach using certain markers)
+    // Analyze formality
     const casualMarkers = ['hey', 'btw', 'lol', 'haha', 'yeah', 'cool', 'awesome', 'gonna', 'wanna'];
     const formalMarkers = ['would you', 'could you', 'I would like', 'please', 'thank you', 'appreciate', 'sincerely'];
     
@@ -153,14 +108,14 @@ function analyzeUserCommunicationStyle(userId: string, message: string, userMemo
     });
     
     if (casualScore > formalScore) {
-      userMemory.communicationStyle.formality = 'casual';
+      style.formality = 'casual';
     } else if (formalScore > casualScore) {
-      userMemory.communicationStyle.formality = 'formal';
+      style.formality = 'formal';
     } else {
-      userMemory.communicationStyle.formality = 'neutral';
+      style.formality = 'neutral';
     }
     
-    // Analyze detail level (simple heuristic based on question words and complexity)
+    // Analyze detail level
     const detailMarkers = ['how', 'why', 'explain', 'detail', 'specifically', 'expand', 'elaborate'];
     let detailScore = 0;
     
@@ -168,17 +123,16 @@ function analyzeUserCommunicationStyle(userId: string, message: string, userMemo
       if (message.toLowerCase().includes(marker)) detailScore++;
     });
     
-    // Complexity can also be estimated by average word length and sentence count
     const words = message.split(' ');
     const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / words.length;
     const sentenceCount = (message.match(/[.!?]+/g) || []).length;
     
     if (detailScore > 2 || avgWordLength > 6 || sentenceCount > 3) {
-      userMemory.communicationStyle.detailLevel = 'high';
+      style.detailLevel = 'high';
     } else if (detailScore > 0 || avgWordLength > 4) {
-      userMemory.communicationStyle.detailLevel = 'medium';
+      style.detailLevel = 'medium';
     } else {
-      userMemory.communicationStyle.detailLevel = 'low';
+      style.detailLevel = 'low';
     }
     
     // Analyze technical level
@@ -190,22 +144,24 @@ function analyzeUserCommunicationStyle(userId: string, message: string, userMemo
     });
     
     if (techScore > 2) {
-      userMemory.communicationStyle.technicalLevel = 'high';
+      style.technicalLevel = 'high';
     } else if (techScore > 0) {
-      userMemory.communicationStyle.technicalLevel = 'medium';
+      style.technicalLevel = 'medium';
     } else {
-      userMemory.communicationStyle.technicalLevel = 'low';
+      style.technicalLevel = 'low';
     }
     
+    return style;
   } catch (error) {
-    console.error("Error analyzing user communication style:", error);
+    console.error("[analyzeUserCommunicationStyle] Error:", error);
+    return { lastInteraction: new Date() };
   }
 }
 
-// Analyze user's topic preferences
-function analyzeTopicPreferences(userId: string, message: string, userMemory: any): void {
+// Analyze user's topic preferences - returns array of detected topics for database storage
+function analyzeTopicPreferences(message: string): string[] {
   try {
-    const topicKeywords = {
+    const topicKeywords: Record<string, string[]> = {
       'resume': ['resume', 'cv', 'curriculum', 'experience', 'work history'],
       'career': ['career', 'job', 'profession', 'advancement', 'promotion', 'growth'],
       'skills': ['skills', 'abilities', 'competencies', 'expertise', 'learn', 'develop'],
@@ -216,23 +172,23 @@ function analyzeTopicPreferences(userId: string, message: string, userMemory: an
       'industry': ['industry', 'sector', 'field', 'niche', 'market']
     };
     
-    // Initialize topic preferences if they don't exist
-    if (!userMemory.topicPreferences) {
-      userMemory.topicPreferences = {};
-    }
+    const detectedTopics: string[] = [];
     
     // Check for topic keywords in the message
     Object.entries(topicKeywords).forEach(([topic, keywords]) => {
       keywords.forEach(keyword => {
         if (message.toLowerCase().includes(keyword.toLowerCase())) {
-          // Increment topic count or initialize it
-          userMemory.topicPreferences[topic] = (userMemory.topicPreferences[topic] || 0) + 1;
+          if (!detectedTopics.includes(topic)) {
+            detectedTopics.push(topic);
+          }
         }
       });
     });
     
+    return detectedTopics;
   } catch (error) {
-    console.error("Error analyzing topic preferences:", error);
+    console.error("[analyzeTopicPreferences] Error:", error);
+    return [];
   }
 }
 
@@ -343,15 +299,12 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     // Add session to context so it can be used to retrieve resume data
     enrichedContext.req = req;
     
-    // Initialize global storage for resume contexts and user interaction memory
+    // Initialize global storage for resume contexts (legacy fallback)
     if (!global.resumeContexts) {
       global.resumeContexts = {};
     }
     
-    // Initialize user interaction memory for adaptive learning
-    if (!global.userInteractionMemory) {
-      global.userInteractionMemory = {};
-    }
+    // NOTE: User interaction memory is now stored in PostgreSQL via userMuskMemoryService
     
     // Handle both Firebase UIDs and numeric user IDs
     let numericUserId = 0;
@@ -423,10 +376,15 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     if (userId) {
       enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
       
-      // Add user interaction memory to context if it exists
-      if (global.userInteractionMemory && global.userInteractionMemory[userIdStr]) {
-        enrichedContext.userMemory = global.userInteractionMemory[userIdStr];
-        console.log(`Found user interaction memory for user ${userId}`);
+      // Add user interaction memory from database to context
+      try {
+        const userMemory = await userMuskMemoryService.getInteractionMemory(userId);
+        if (userMemory && userMemory.interactionCount > 0) {
+          enrichedContext.userMemory = userMemory;
+          console.log(`[MuskChat] Found user interaction memory in database for user ${userId} (${userMemory.interactionCount} interactions)`);
+        }
+      } catch (err) {
+        console.warn(`[MuskChat] Could not load user memory from database:`, err);
       }
     }
     
@@ -439,8 +397,10 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       try {
         console.log('[Musk Chat] Attempting enhanced persona response');
         
-        // Gather conversation history from memory
-        const conversationHistory = global.userInteractionMemory?.[userId.toString()]?.messageHistory || [];
+        // Gather conversation history from database-backed memory (recent actions as proxy)
+        // Note: Full message history is now stored in chatMessages table, accessed by musk-memory-service
+        const recentActions = enrichedContext.userMemory?.recentActions || [];
+        const conversationHistory: Array<{message: string; response: string; timestamp: Date}> = [];
         
         // Get user data for enhanced processing
         const userProfile = enrichedContext.userData?.profile;
