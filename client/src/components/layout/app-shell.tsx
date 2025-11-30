@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import Header from "@/components/layout/header";
 import { MandatoryFieldsModal } from "@/components/onboarding/mandatory-fields-modal";
 import { useAuth } from "@/hooks/use-auth";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 interface AppShellProps {
   children: ReactNode;
@@ -14,6 +13,13 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
   const { user } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [bgLoaded, setBgLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setBgLoaded(true);
+    img.src = '/Brandentifier Landing_1751376023002.png';
+  }, []);
 
   // Check if mandatory fields are filled
   useEffect(() => {
@@ -70,10 +76,12 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
     <div 
       className="fixed inset-0 w-full h-full responsive-background"
       style={{ 
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: bgLoaded ? `url('/Brandentifier Landing_1751376023002.png')` : 'none',
+        backgroundColor: '#0a0a0f',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
+        transition: 'background-image 0.3s ease-in'
       }}
     >
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm" />

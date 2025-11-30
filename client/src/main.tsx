@@ -2,36 +2,15 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import SimpleApp from "./simple-app";
 import "./index.css";
+import "./styles/neo-glass-main.css";
+import "./styles/neo-glass-theme.css";
+import "./styles/neo-glass-spotify.css";
 
 // Note: Firebase removed - using custom OAuth only
 
 // Performance measurement
 const appStartTime = performance.now();
 console.log('[PERF] React app initialization started');
-
-// Lazy load non-critical CSS after first paint
-const loadNonCriticalCSS = () => {
-  if (document.readyState === 'complete') {
-    // Dynamically load heavy animation and theme CSS after paint
-    const styleSheets = [
-      './styles/neo-glass-main.css',
-      './styles/neo-glass-theme.css',
-      './styles/neo-glass-spotify.css',
-      './styles/neopastel.css'
-    ];
-    
-    styleSheets.forEach(sheet => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = sheet;
-      link.media = 'print';
-      link.onload = function() {
-        link.media = 'all';
-      };
-      document.head.appendChild(link);
-    });
-  }
-};
 
 // Remove HTML loader immediately when React app starts
 const loader = document.getElementById('app-loader');
@@ -55,13 +34,6 @@ const renderApp = () => {
   createRoot(document.getElementById("root")!).render(
     useSimpleApp ? <SimpleApp /> : <App />
   );
-  
-  // Load non-critical CSS after first paint
-  if (document.readyState === 'loading') {
-    document.addEventListener('load', loadNonCriticalCSS);
-  } else {
-    setTimeout(loadNonCriticalCSS, 100);
-  }
   
   // Report rendering time after React has mounted
   setTimeout(() => {

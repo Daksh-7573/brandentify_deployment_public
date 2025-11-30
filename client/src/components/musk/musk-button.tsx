@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import MuskChatPanel from '@/components/musk/musk-chat-panel';
-import muskLogoGif from '@assets/Bold Modern Minimalist Gradient Technology Business Logo  (4)_1764375749890.gif';
 
 type MuskButtonProps = {
   className?: string;
@@ -77,9 +76,11 @@ export default function MuskButton({
             >
               <div className="absolute inset-1 rounded-full bg-gradient-to-br from-blue-400/30 via-purple-400/20 to-transparent pointer-events-none" />
               <img 
-                src={muskLogoGif} 
+                src="/Bold Modern Minimalist Gradient Technology Business Logo  (4)_1764375749890.gif"
                 alt="Musk Chat" 
                 className="h-12 w-12 object-cover relative z-10"
+                loading="lazy"
+                decoding="async"
               />
               <motion.span
                 className="absolute inset-0 rounded-full bg-primary/20"

@@ -749,9 +749,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               }}
             >
               <img 
-                src={new URL('@assets/Contact Candour_1761062906599.gif', import.meta.url).href} 
+                src="/Contact Candour_1761062906599.gif"
                 alt="Musk AI" 
                 className="h-full w-full object-cover rounded-full"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div>

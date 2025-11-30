@@ -1,14 +1,9 @@
-/* Critical CSS only - rest deferred for performance */
+@import './styles/neopastel.css';
+@import './styles/lumos-animations.css';
 @import './styles/button-override.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Non-critical styles deferred to load after paint */
-@media (prefers-reduced-motion: no-preference) {
-  @import './styles/lumos-animations.css';
-  @import './styles/neopastel.css';
-}
 
 /* Remove white scrollbar globally */
 * {

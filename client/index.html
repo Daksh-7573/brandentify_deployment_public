@@ -35,24 +35,19 @@
   <!-- Enhanced Preconnect & DNS-Prefetch for Maximum Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://brandentifier-app.firebaseapp.com">
-  <link rel="preconnect" href="https://firebase.googleapis.com">
-  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
-  <link rel="preconnect" href="https://www.googleapis.com">
   <link rel="preconnect" href="https://accounts.google.com">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="preconnect" href="https://api.brandentifier.com">
   <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
-  <link rel="dns-prefetch" href="https://firebaseinstallations.googleapis.com">
-  <link rel="dns-prefetch" href="https://securetoken.googleapis.com">
   
   <!-- Critical Resource Preloading -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
   <link rel="preload" href="/src/main.tsx" as="script">
   <link rel="preload" href="/src/index.css" as="style">
-  <link rel="preload" href="/src/App.tsx" as="script">
   <link rel="modulepreload" href="/src/main.tsx">
-  <link rel="modulepreload" href="/src/App.tsx">
+  
+  <!-- Defer non-critical assets (background images) - loaded after first paint -->
+  <link rel="prefetch" href="/Brandentifier Landing_1751376023002.png" as="image" fetchpriority="low">
   
   <!-- Load fonts and styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
