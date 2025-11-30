@@ -75,7 +75,7 @@ router.get("/users/:userId/personalized-feed", async (req: Request, res: Respons
     
     res.json(feedResult);
   } catch (error) {
-    console.error("[PersonalizedFeed] Error generating feed:", error);
+    console.error("[PersonalizedFeed] Error generating feed:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -104,7 +104,7 @@ router.get("/users/:userId/hashtag-feed", async (req: Request, res: Response) =>
     const pulses = await storage.getPulsesByFollowedHashtags(userId);
     res.json(pulses);
   } catch (error) {
-    console.error("[HashtagFeed] Error:", error);
+    console.error("[HashtagFeed] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -140,7 +140,7 @@ router.get("/users/:userId/mentor-feed", async (req: Request, res: Response) => 
     const pulses = await storage.getPulsesByUserIds(userIds);
     res.json(pulses);
   } catch (error) {
-    console.error("[MentorFeed] Error:", error);
+    console.error("[MentorFeed] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -189,7 +189,7 @@ router.post("/users/:followerId/follow/:followeeId", async (req: Request, res: R
     
     res.json({ success: true, result });
   } catch (error) {
-    console.error("[FollowUser] Error:", error);
+    console.error("[FollowUser] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -209,7 +209,7 @@ router.delete("/users/:followerId/follow/:followeeId", async (req: Request, res:
     const success = await storage.unfollowUser(followerId, followeeId);
     res.json({ success });
   } catch (error) {
-    console.error("[UnfollowUser] Error:", error);
+    console.error("[UnfollowUser] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -229,7 +229,7 @@ router.get("/users/:followerId/following/:followeeId", async (req: Request, res:
     const isFollowing = await storage.isUserFollowing(followerId, followeeId);
     res.json({ isFollowing });
   } catch (error) {
-    console.error("[CheckFollowing] Error:", error);
+    console.error("[CheckFollowing] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -256,7 +256,7 @@ router.post("/engagements", async (req: Request, res: Response) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error("[TrackEngagement] Error:", error);
+    console.error("[TrackEngagement] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -274,7 +274,7 @@ router.get("/users/:userId/interests", async (req: Request, res: Response) => {
     const interests = await storage.getUserInterests(userId);
     res.json(interests);
   } catch (error) {
-    console.error("[GetUserInterests] Error:", error);
+    console.error("[GetUserInterests] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -292,7 +292,7 @@ router.get("/users/:userId/followed-hashtags", async (req: Request, res: Respons
     const hashtags = await storage.getFollowedHashtagsByUserId(userId);
     res.json(hashtags);
   } catch (error) {
-    console.error("[GetFollowedHashtags] Error:", error);
+    console.error("[GetFollowedHashtags] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -310,7 +310,7 @@ router.get("/users/:userId/followed-users", async (req: Request, res: Response) 
     const users = await storage.getFollowedUsersByUserId(userId);
     res.json(users);
   } catch (error) {
-    console.error("[GetFollowedUsers] Error:", error);
+    console.error("[GetFollowedUsers] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -375,7 +375,7 @@ router.get("/users/:userId/feed-analytics", async (req: Request, res: Response) 
       }
     });
   } catch (error) {
-    console.error("[FeedAnalytics] Error:", error);
+    console.error("[FeedAnalytics] Error:", error instanceof Error ? error.message : String(error));
     res.status(500).json({ message: "Internal server error" });
   }
 });
