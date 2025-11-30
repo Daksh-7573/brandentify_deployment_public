@@ -1,12 +1,14 @@
-@import './styles/neopastel.css';
-@import './styles/lumos-animations.css';
-@import './styles/neo-glass-main.css';
-@import './styles/neo-glass-theme.css';
-@import './styles/neo-glass-spotify.css';
-@import './styles/button-override.css'; /* Added our new button override styles */
+/* Critical CSS only - rest deferred for performance */
+@import './styles/button-override.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Non-critical styles deferred to load after paint */
+@media (prefers-reduced-motion: no-preference) {
+  @import './styles/lumos-animations.css';
+  @import './styles/neopastel.css';
+}
 
 /* Remove white scrollbar globally */
 * {
