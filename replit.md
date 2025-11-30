@@ -7,7 +7,7 @@ Brandentifier is an AI-driven career development platform that helps users build
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2024-11-30)
-### Testing/Production Parity - Phase 1 COMPLETE
+### Testing/Production Parity - Phase 1 & Phase 2.1 COMPLETE
 - **Phase 1.1 COMPLETED**: Resume contexts now use PostgreSQL (`resume_context_cache` table) instead of global variables
   - Created `server/services/resume-context-service.ts` for database-backed storage
   - Updated `server/routes-musk.ts` to use database for resume context with memory fallback
@@ -19,6 +19,12 @@ Preferred communication style: Simple, everyday language.
   - All user interaction preferences now persist across app restarts in production
 - **Phase 1.3 COMPLETED**: Feed cache migrated to Redis-backed caching using existing cacheService
   - Fixed async/await issues for `feedCache.get()` and `feedCache.set()` calls in routes.ts
+- **Phase 2.1 COMPLETED**: Conversation memory migrated from in-memory Map to PostgreSQL (`chat_messages` table)
+  - Updated `server/services/conversation-memory.ts` with async database-backed storage using `chat_messages` table
+  - Added sync fallback methods (`getRecentMessagesSync`, `getLastMuskResponseSync`, `getConversationMemorySync`) for services that can't await
+  - Updated dependent services to use sync versions: `emotional-intelligence.ts`, `predictive-career-modeling.ts`, `proactive-suggestion-engine.ts`, `dynamic-persona-engine.ts`, `reference-resolution.ts`, `learning-pattern-recognition.ts`, `follow-up-handler.ts`
+  - Aligned schema with actual database (uses `message` column not `content`)
+  - All conversation history now persists across app restarts in production
 
 ## System Architecture
 ### Frontend

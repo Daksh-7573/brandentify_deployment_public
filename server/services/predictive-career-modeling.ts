@@ -5,8 +5,8 @@
  * before users ask, using pattern analysis and industry trend forecasting.
  */
 
-import { analyzeUserPatterns } from './learning-pattern-recognition';
-import { getRecentMessages } from './conversation-memory';
+import { analyzeUserPatternsSync } from './learning-pattern-recognition';
+import { getRecentMessagesSync } from './conversation-memory';
 
 export interface CareerPrediction {
   id: string;
@@ -62,8 +62,8 @@ export function generatePredictiveInsights(
 ): PredictiveInsight {
   console.log(`[Predictive Modeling] Generating insights for user ${userId}`);
   
-  const userPatterns = analyzeUserPatterns(userId);
-  const recentMessages = getRecentMessages(userId, 10);
+  const userPatterns = analyzeUserPatternsSync(userId);
+  const recentMessages = getRecentMessagesSync(userId, 10);
   
   const predictions: CareerPrediction[] = [];
   

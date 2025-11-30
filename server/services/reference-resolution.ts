@@ -8,7 +8,7 @@
  * NOW USES FREE VPS OLLAMA!
  */
 
-import { getLastMuskResponse, getRecentMessages } from './conversation-memory';
+import { getLastMuskResponseSync, getRecentMessagesSync } from './conversation-memory';
 import { LocalAIService } from './local-ai-service';
 
 /**
@@ -63,7 +63,7 @@ export function isAmbiguouslyShort(message: string): boolean {
  * Rewrite a follow-up message by adding context from previous conversation
  */
 export function rewriteFollowUp(userId: string, userInput: string): string {
-  const lastMuskResponse = getLastMuskResponse(userId);
+  const lastMuskResponse = getLastMuskResponseSync(userId);
   
   if (!lastMuskResponse) {
     return userInput; // No previous context available
@@ -90,7 +90,7 @@ export async function enhancedReferenceResolution(
   userInput: string
 ): Promise<string> {
   try {
-    const recentMessages = getRecentMessages(userId, 4);
+    const recentMessages = getRecentMessagesSync(userId, 4);
     
     if (recentMessages.length === 0) {
       return userInput; // No context available
@@ -145,7 +145,7 @@ Return only the rewritten message, nothing else.
  * Generate clarification request for ambiguous input
  */
 export function generateClarificationRequest(userId: string, userInput: string): string {
-  const lastMuskResponse = getLastMuskResponse(userId);
+  const lastMuskResponse = getLastMuskResponseSync(userId);
   
   // Detect what specifically needs clarification
   const lowerInput = userInput.toLowerCase().trim();
@@ -175,7 +175,7 @@ export function generateClarificationRequest(userId: string, userInput: string):
  */
 export function shouldRequestClarification(userId: string, userInput: string): boolean {
   // Don't request clarification if there's no conversation history
-  const lastResponse = getLastMuskResponse(userId);
+  const lastResponse = getLastMuskResponseSync(userId);
   if (!lastResponse) {
     return false;
   }

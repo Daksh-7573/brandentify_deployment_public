@@ -5,7 +5,7 @@
  * based on conversation flow, user needs, and context analysis.
  */
 
-import { getRecentMessages, ConversationMessage } from './conversation-memory';
+import { getRecentMessagesSync, ConversationMessage } from './conversation-memory';
 
 export interface PersonaProfile {
   name: string;
@@ -103,7 +103,7 @@ export function analyzePersonaNeed(
   currentMessage: string, 
   userProfile?: any
 ): PersonaAnalysis {
-  const recentMessages = getRecentMessages(userId, 4);
+  const recentMessages = getRecentMessagesSync(userId, 4);
   const messageHistory = recentMessages.map(m => m.message.toLowerCase()).join(' ');
   const currentLower = currentMessage.toLowerCase();
   const combinedText = `${messageHistory} ${currentLower}`;
@@ -188,7 +188,7 @@ export function analyzeConversationFlow(userId: string): {
   currentTopic: string;
   conversationStage: 'opening' | 'exploration' | 'decision' | 'action';
 } {
-  const recentMessages = getRecentMessages(userId, 6);
+  const recentMessages = getRecentMessagesSync(userId, 6);
   
   if (recentMessages.length === 0) {
     return {

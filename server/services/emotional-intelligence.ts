@@ -5,7 +5,7 @@
  * capabilities to make Musk more empathetic and contextually aware.
  */
 
-import { getRecentMessages } from './conversation-memory';
+import { getRecentMessagesSync } from './conversation-memory';
 
 export interface EmotionalState {
   primary: 'positive' | 'negative' | 'neutral' | 'mixed';
@@ -82,7 +82,7 @@ const CAREER_EMOTIONAL_PATTERNS = {
 export function analyzeEmotionalContext(userId: string, currentMessage: string): EmotionalContext {
   console.log(`[Emotional Intelligence] Analyzing emotional context for user ${userId}`);
   
-  const recentMessages = getRecentMessages(userId, 5);
+  const recentMessages = getRecentMessagesSync(userId, 5);
   const allMessages = [...recentMessages.map(m => m.message), currentMessage];
   
   // Analyze current emotional state
@@ -393,7 +393,7 @@ function determineSupportNeeds(state: EmotionalState, triggers: string[]): strin
     }
   });
   
-  return [...new Set(needs)]; // Remove duplicates
+  return Array.from(new Set(needs)); // Remove duplicates
 }
 
 /**

@@ -5,7 +5,7 @@
  * and provides clarification when needed.
  */
 
-import { ConversationMemory, getConversationMemory, isFollowUpQuestion, needsClarification, expandFollowUpQuestion, generateClarificationPrompt } from './conversation-memory';
+import { ConversationMemory, getConversationMemory, isFollowUpMessage } from './conversation-memory';
 
 export interface FollowUpAnalysis {
   isFollowUp: boolean;
@@ -23,11 +23,92 @@ export interface ActiveGuidanceRequest {
   taskType: 'resume' | 'roadmap' | 'portfolio' | 'networking' | 'general';
 }
 
+function isFollowUpQuestion(message: string, memory: ConversationMemory | null): boolean {
+  if (!memory || memory.messages.length < 2) {
+    return false;
+  }
+
+  const vaguePhrases = [
+    'that', 'this', 'it', 'both', 'them', 'those', 'these',
+    'again', 'also', 'too', 'as well', 'like you said',
+    'what about', 'how about', 'and what', 'but what'
+  ];
+
+  const lowerMessage = message.toLowerCase().trim();
+  
+  const hasVagueTerms = vaguePhrases.some(phrase => 
+    lowerMessage.includes(phrase.toLowerCase())
+  );
+
+  const wordCount = message.trim().split(/\s+/).length;
+  const isShort = wordCount < 5;
+
+  const startsWithConnector = /^(and|but|or|so|also|what about|how about|what if)/i.test(lowerMessage);
+
+  return hasVagueTerms || (isShort && startsWithConnector);
+}
+
+function needsClarification(message: string): boolean {
+  const ambiguousPhrases = [
+    'what do you mean', 'how so', 'explain more',
+    'can you clarify', 'not sure', "don't understand"
+  ];
+  
+  const lowerMessage = message.toLowerCase().trim();
+  return ambiguousPhrases.some(phrase => lowerMessage.includes(phrase));
+}
+
+function expandFollowUpQuestion(message: string, memory: ConversationMemory | null): string {
+  if (!memory || memory.messages.length === 0) {
+    return message;
+  }
+
+  const lastMessages = memory.messages.slice(-4);
+  const lastTopic = extractTopicFromMessages(lastMessages);
+  
+  if (lastTopic) {
+    return `${message} (context: ${lastTopic})`;
+  }
+  
+  return message;
+}
+
+function extractTopicFromMessages(messages: any[]): string | null {
+  const topicPatterns = [
+    { pattern: /\b(resume|cv)\b/i, topic: 'resume' },
+    { pattern: /\b(portfolio|showcase)\b/i, topic: 'portfolio' },
+    { pattern: /\b(network|linkedin|connect)\b/i, topic: 'networking' },
+    { pattern: /\b(career|job|role)\b/i, topic: 'career' },
+    { pattern: /\b(skill|learn|course)\b/i, topic: 'skills' }
+  ];
+  
+  for (const msg of messages.reverse()) {
+    const content = msg.message || '';
+    for (const { pattern, topic } of topicPatterns) {
+      if (pattern.test(content)) {
+        return topic;
+      }
+    }
+  }
+  
+  return null;
+}
+
+function generateClarificationPrompt(message: string, memory: ConversationMemory | null): string {
+  const lastTopic = memory ? extractTopicFromMessages(memory.messages.slice(-4)) : null;
+  
+  if (lastTopic) {
+    return `I want to make sure I understand correctly. Are you asking about ${lastTopic}? Could you provide more details?`;
+  }
+  
+  return "Could you please clarify what you'd like to know more about?";
+}
+
 /**
  * Analyze message for follow-up patterns and context needs
  */
-export function analyzeFollowUpContext(message: string, userId: number): FollowUpAnalysis {
-  const memory = getConversationMemory(userId);
+export async function analyzeFollowUpContext(message: string, userId: number): Promise<FollowUpAnalysis> {
+  const memory = await getConversationMemory(userId.toString());
   const isFollowUp = isFollowUpQuestion(message, memory);
   const needsClarity = needsClarification(message);
   
@@ -38,7 +119,6 @@ export function analyzeFollowUpContext(message: string, userId: number): FollowU
     detectedReferences: []
   };
 
-  // Calculate confidence based on indicators
   let confidence = 0;
   
   if (isFollowUp) {
@@ -126,7 +206,6 @@ function generateActiveGuidancePrompt(taskType: string, requiredInfo: string[]):
 function extractReferences(message: string): string[] {
   const references: string[] = [];
   
-  // Common vague references
   const vaguePatterns = [
     /\b(that|it|this|one|them|those|these)\b/gi,
     /\b(both|either|also|too)\b/gi,
@@ -151,26 +230,22 @@ export function detectUserPreferences(message: string, previousInteractions: any
   preferredStyle: 'conversational' | 'structured' | 'bullet-points';
   preferredDepth: 'overview' | 'detailed' | 'comprehensive';
 } {
-  // Analyze message for preference indicators
   let preferredLength: 'short' | 'medium' | 'long' = 'medium';
   let preferredStyle: 'conversational' | 'structured' | 'bullet-points' = 'conversational';
   let preferredDepth: 'overview' | 'detailed' | 'comprehensive' = 'detailed';
 
-  // Length preferences
   if (/\b(brief|short|quick|summary)\b/i.test(message)) {
     preferredLength = 'short';
   } else if (/\b(detailed|comprehensive|thorough|complete)\b/i.test(message)) {
     preferredLength = 'long';
   }
 
-  // Style preferences
   if (/\b(list|bullet|points|steps)\b/i.test(message)) {
     preferredStyle = 'bullet-points';
   } else if (/\b(structure|organize|format)\b/i.test(message)) {
     preferredStyle = 'structured';
   }
 
-  // Depth preferences
   if (/\b(overview|high.?level|general)\b/i.test(message)) {
     preferredDepth = 'overview';
   } else if (/\b(deep|comprehensive|thorough|everything)\b/i.test(message)) {
@@ -183,15 +258,10 @@ export function detectUserPreferences(message: string, previousInteractions: any
 /**
  * Generate context-aware response prefix based on conversation history
  */
-export function generateContextAwarePrefix(message: string, memory: ConversationMemory): string {
-  const lastExchange = memory.exchanges.slice(-2); // Last user message and Musk response
-  
-  if (lastExchange.length < 2) return '';
+export async function generateContextAwarePrefix(message: string, userId: number): Promise<string> {
+  const memory = await getConversationMemory(userId.toString());
+  if (!memory || memory.messages.length < 2) return '';
 
-  const lastUserMessage = lastExchange.find(e => e.speaker === 'User')?.message || '';
-  const lastMuskMessage = lastExchange.find(e => e.speaker === 'Musk')?.message || '';
-
-  // Generate connecting phrases based on context
   if (isFollowUpQuestion(message, memory)) {
     if (/\b(both|either)\b/i.test(message)) {
       return "Building on our previous discussion, ";
@@ -210,23 +280,22 @@ export function generateContextAwarePrefix(message: string, memory: Conversation
 /**
  * Smart message rewriting for better context
  */
-export function rewriteMessageWithContext(message: string, memory: ConversationMemory): string {
+export async function rewriteMessageWithContext(message: string, userId: number): Promise<string> {
+  const memory = await getConversationMemory(userId.toString());
+  
   if (!isFollowUpQuestion(message, memory)) {
     return message;
   }
 
   const expandedMessage = expandFollowUpQuestion(message, memory);
-  const lastTopic = memory.lastTopic;
+  const lastTopic = memory ? extractTopicFromMessages(memory.messages.slice(-4)) : null;
   
-  // Enhance common patterns
   let rewritten = expandedMessage;
 
-  // Add context for comparative questions
   if (/\b(better|best|worse|prefer)\b/i.test(message) && lastTopic) {
     rewritten = `In the context of ${lastTopic}, ${rewritten.toLowerCase()}`;
   }
 
-  // Add context for decision questions
   if (/\b(should I|can I|would you)\b/i.test(message) && lastTopic) {
     rewritten = `For someone working on ${lastTopic}, ${rewritten.toLowerCase()}`;
   }
@@ -237,9 +306,10 @@ export function rewriteMessageWithContext(message: string, memory: ConversationM
 /**
  * Generate smart follow-up suggestions based on context
  */
-export function generateSmartFollowUps(message: string, memory: ConversationMemory): string[] {
+export async function generateSmartFollowUps(userId: number): Promise<string[]> {
+  const memory = await getConversationMemory(userId.toString());
   const suggestions: string[] = [];
-  const lastTopic = memory.lastTopic;
+  const lastTopic = memory ? extractTopicFromMessages(memory.messages.slice(-4)) : null;
 
   if (lastTopic === 'resume') {
     suggestions.push(

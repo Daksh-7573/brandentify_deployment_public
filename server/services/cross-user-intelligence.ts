@@ -127,8 +127,8 @@ function findRelevantCohorts(userProfile: any, userPatterns: any): UserCohort[] 
   
   return cohortIds
     .map(id => userCohorts.get(id))
-    .filter(cohort => cohort && cohort.sampleSize >= 3) // Minimum sample size for reliability
-    .sort((a, b) => b!.confidence - a!.confidence);
+    .filter((cohort): cohort is UserCohort => cohort !== undefined && cohort.sampleSize >= 3)
+    .sort((a, b) => b.confidence - a.confidence);
 }
 
 /**

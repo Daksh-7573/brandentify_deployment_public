@@ -5,7 +5,7 @@
  * based on user profile analysis, conversation patterns, and career intelligence.
  */
 
-import { getRecentMessages, ConversationMessage } from './conversation-memory';
+import { getRecentMessagesSync, ConversationMessage } from './conversation-memory';
 import { analyzePersonaNeed } from './dynamic-persona-engine';
 
 export interface ProactiveSuggestion {
@@ -35,7 +35,7 @@ export function generateProactiveSuggestions(
   userProfile: any,
   currentMessage?: string
 ): ProactiveInsight {
-  const recentMessages = getRecentMessages(userId, 5);
+  const recentMessages = getRecentMessagesSync(userId, 5);
   const suggestions: ProactiveSuggestion[] = [];
   
   // Analyze user profile completeness
@@ -275,7 +275,7 @@ function calculateConfidence(suggestions: ProactiveSuggestion[], userProfile: an
  * Generate time-sensitive suggestions based on patterns
  */
 export function generateTimeSensitiveSuggestions(userId: string): ProactiveSuggestion[] {
-  const recentMessages = getRecentMessages(userId, 10);
+  const recentMessages = getRecentMessagesSync(userId, 10);
   const suggestions: ProactiveSuggestion[] = [];
   
   // Check for extended conversation without action

@@ -14,9 +14,10 @@ import { LocalAIService } from './local-ai-service';
 import { generateProactiveInsights, ProactiveContext } from './proactive-engine';
 import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
 import { 
-  addMessageToMemory, 
+  addMessageToMemorySync,
   formatConversationForAI,
-  isFollowUpMessage 
+  isFollowUpMessage,
+  warmUpUserCache
 } from './conversation-memory';
 import { 
   enhancedReferenceResolution,
@@ -90,11 +91,14 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     console.log('[Enhanced Musk] Processing Phase 2 enhanced request for user:', request.userId);
     const userIdString = request.userId.toString();
     
-    // Phase 1: Add user message to conversation memory
-    addMessageToMemory(userIdString, 'user', request.message);
+    // Warm up conversation cache to ensure history is available
+    await warmUpUserCache(userIdString);
+    
+    // Phase 1: Add user message to conversation memory (fire-and-forget with logging)
+    addMessageToMemorySync(userIdString, 'user', request.message);
     
     // Phase 2: Analyze user patterns and update learning profile
-    const userPatterns = analyzeUserPatterns(userIdString);
+    const userPatterns = await analyzeUserPatterns(userIdString);
     const personalizedGuidelines = getPersonalizedGuidelines(userIdString);
     console.log(`[Enhanced Musk] User patterns analyzed with confidence: ${userPatterns.confidence}`);
     
@@ -111,8 +115,8 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       console.log('[Enhanced Musk] Requesting clarification for ambiguous input');
       const clarificationRequest = generateClarificationRequest(userIdString, request.message);
       
-      // Add clarification to memory
-      addMessageToMemory(userIdString, 'musk', clarificationRequest);
+      // Add clarification to memory (fire-and-forget)
+      addMessageToMemorySync(userIdString, 'musk', clarificationRequest);
       
       return {
         response: clarificationRequest,
@@ -132,7 +136,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 
     // Phase 1: Apply reference resolution for follow-up messages
     let processedMessage = request.message;
-    if (isFollowUpMessage(userIdString, request.message)) {
+    if (await isFollowUpMessage(userIdString, request.message)) {
       console.log('[Enhanced Musk] Detected follow-up message, applying reference resolution');
       processedMessage = await enhancedReferenceResolution(userIdString, request.message);
       console.log(`[Enhanced Musk] Message after reference resolution: "${processedMessage}"`);
@@ -175,7 +179,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     console.log('[Enhanced Musk] Context enriched with profile completeness:', enrichedContext.user.profileCompleteness.score + '%');
 
     // Step 2: Generate Phase 3 enhanced contextual response
-    const conversationContext = formatConversationForAI(userIdString, processedMessage);
+    const conversationContext = await formatConversationForAI(userIdString, processedMessage);
     const response = await generatePhase3EnhancedResponse(
       enrichedContext, 
       processedMessage, 
@@ -191,8 +195,8 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       userIdString
     );
 
-    // Phase 1: Add Musk response to conversation memory
-    addMessageToMemory(userIdString, 'musk', response, personaAnalysis.selectedPersona.name);
+    // Phase 1: Add Musk response to conversation memory (fire-and-forget)
+    addMessageToMemorySync(userIdString, 'musk', response, personaAnalysis.selectedPersona.name);
 
     // Step 3: Extract enhanced metadata for response tracking
     const metadata = {

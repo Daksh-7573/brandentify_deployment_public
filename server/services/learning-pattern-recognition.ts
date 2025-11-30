@@ -3,9 +3,11 @@
  * 
  * This service analyzes user preferences and conversation patterns to personalize
  * responses and improve the AI's understanding of individual user needs.
+ * 
+ * Phase 2.2: Updated to use async conversation memory from database
  */
 
-import { getConversationMemory, ConversationMessage } from './conversation-memory';
+import { getConversationMemory, getConversationMemorySync, ConversationMessage } from './conversation-memory';
 
 export interface UserPattern {
   userId: string;
@@ -31,14 +33,13 @@ export interface UserPattern {
   confidence: number;
 }
 
-// In-memory storage for user patterns
 const userPatterns = new Map<string, UserPattern>();
 
 /**
- * Analyze user conversation patterns and update their profile
+ * Analyze user conversation patterns and update their profile (async version)
  */
-export function analyzeUserPatterns(userId: string): UserPattern {
-  const conversationMemory = getConversationMemory(userId);
+export async function analyzeUserPatterns(userId: string): Promise<UserPattern> {
+  const conversationMemory = await getConversationMemory(userId);
   let pattern = userPatterns.get(userId) || createDefaultPattern(userId);
   
   if (!conversationMemory || conversationMemory.messages.length === 0) {
@@ -49,33 +50,49 @@ export function analyzeUserPatterns(userId: string): UserPattern {
   const userMessages = messages.filter(m => m.role === 'user');
   const muskMessages = messages.filter(m => m.role === 'musk');
 
-  // Analyze response length preferences
   pattern.preferences.responseLength = analyzeResponseLengthPreference(userMessages, muskMessages);
-  
-  // Analyze communication style
   pattern.preferences.communicationStyle = analyzeCommunicationStyle(userMessages);
-  
-  // Extract focus areas from conversation topics
   pattern.preferences.focusAreas = extractFocusAreas(userMessages);
-  
-  // Analyze question types and patterns
   pattern.behaviorPatterns.questionTypes = analyzeQuestionTypes(userMessages);
   pattern.behaviorPatterns.topicFrequency = analyzeTopicFrequency(userMessages);
-  
-  // Calculate engagement level
   pattern.behaviorPatterns.engagementLevel = calculateEngagementLevel(messages);
-  
-  // Determine career stage and goals
   pattern.learningInsights = analyzeLearningInsights(userMessages);
-  
-  // Update metadata
   pattern.lastUpdated = new Date();
   pattern.confidence = calculateConfidence(messages.length, userMessages.length);
   
-  // Store updated pattern
   userPatterns.set(userId, pattern);
   
   console.log(`[Learning Patterns] Updated pattern for user ${userId} with confidence ${pattern.confidence}`);
+  
+  return pattern;
+}
+
+/**
+ * Synchronous version using cache - use only when async is not possible
+ */
+export function analyzeUserPatternsSync(userId: string): UserPattern {
+  const conversationMemory = getConversationMemorySync(userId);
+  let pattern = userPatterns.get(userId) || createDefaultPattern(userId);
+  
+  if (!conversationMemory || conversationMemory.messages.length === 0) {
+    return pattern;
+  }
+
+  const messages = conversationMemory.messages;
+  const userMessages = messages.filter(m => m.role === 'user');
+  const muskMessages = messages.filter(m => m.role === 'musk');
+
+  pattern.preferences.responseLength = analyzeResponseLengthPreference(userMessages, muskMessages);
+  pattern.preferences.communicationStyle = analyzeCommunicationStyle(userMessages);
+  pattern.preferences.focusAreas = extractFocusAreas(userMessages);
+  pattern.behaviorPatterns.questionTypes = analyzeQuestionTypes(userMessages);
+  pattern.behaviorPatterns.topicFrequency = analyzeTopicFrequency(userMessages);
+  pattern.behaviorPatterns.engagementLevel = calculateEngagementLevel(messages);
+  pattern.learningInsights = analyzeLearningInsights(userMessages);
+  pattern.lastUpdated = new Date();
+  pattern.confidence = calculateConfidence(messages.length, userMessages.length);
+  
+  userPatterns.set(userId, pattern);
   
   return pattern;
 }
