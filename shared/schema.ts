@@ -2472,3 +2472,34 @@ export type ConversationGoal = typeof conversationGoals.$inferSelect;
 export type InsertConversationGoal = z.infer<typeof insertConversationGoalSchema>;
 export type GoalCheckpoint = typeof goalCheckpoints.$inferSelect;
 export type EmotionIntentHistory = typeof emotionIntentHistory.$inferSelect;
+
+// ============================================
+// RESUME CONTEXT CACHE - For persistent resume analysis storage
+// ============================================
+
+export const resumeContextCache = pgTable("resume_context_cache", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  resumeText: text("resume_text"), // Full extracted resume text
+  resumeTextPreview: text("resume_text_preview"), // First 1000 chars for reference
+  detectedRole: text("detected_role"), // Job role detected from resume
+  skills: text("skills").array().default([]), // Extracted skills
+  detectedIndustry: text("detected_industry"), // Industry detected from resume
+  uploadDate: timestamp("upload_date").defaultNow(),
+  fileName: text("file_name"),
+  fileSize: integer("file_size"), // Size in bytes
+  fileType: text("file_type"), // pdf, docx, txt, etc
+  expiresAt: timestamp("expires_at"), // Auto-delete after 30 days
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertResumeContextCacheSchema = createInsertSchema(resumeContextCache).omit({
+  id: true,
+  uploadDate: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type ResumeContextCache = typeof resumeContextCache.$inferSelect;
+export type InsertResumeContextCache = z.infer<typeof insertResumeContextCacheSchema>;
