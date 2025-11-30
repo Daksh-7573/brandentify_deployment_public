@@ -737,15 +737,37 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       });
     }
     
-    // Call Resume Scorer Service for real analysis
+    // Call Resume Scorer Service for real analysis with retry logic
     console.log(`Analyzing resume for user ${userId}...`);
     console.log(`[ROUTE DEBUG] Resume text length BEFORE analyzer: ${resumeText.length}`);
     console.log(`[ROUTE DEBUG] Resume text preview: "${resumeText.substring(0, 200)}..."`);
-    const analysisResult = await resumeScorerService.analyzeResume(
-      resumeText,
-      userId,
-      undefined // No target role specified
-    );
+    
+    let analysisResult;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        analysisResult = await resumeScorerService.analyzeResume(
+          resumeText,
+          userId,
+          undefined // No target role specified
+        );
+        console.log(`[Resume Analysis] Success on attempt ${retryCount + 1}`);
+        break;
+      } catch (analyzerError) {
+        retryCount++;
+        console.error(`[Resume Analysis] Attempt ${retryCount} failed:`, analyzerError);
+        
+        if (retryCount >= maxRetries) {
+          console.error(`[Resume Analysis] All ${maxRetries} retries failed`);
+          throw new Error(`Resume analysis failed after ${maxRetries} attempts: ${analyzerError instanceof Error ? analyzerError.message : 'Unknown error'}`);
+        }
+        
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+      }
+    }
     
     // Store context
     if (userId) {
@@ -778,12 +800,32 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     });
     
   } catch (error) {
-    console.error("Error processing resume upload:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+    console.error("[Resume Upload] ERROR - Full details:", error);
+    if (error instanceof Error) {
+      console.error("[Resume Upload] Error message:", error.message);
+      console.error("[Resume Upload] Error stack:", error.stack);
+    }
     
-    return res.status(500).json({
+    // Provide more specific error messages to help debugging
+    let errorMessage = "Unknown error occurred";
+    let statusCode = 500;
+    
+    if (error instanceof Error) {
+      if (error.message.includes('Resume analysis failed')) {
+        errorMessage = "Failed to analyze resume - AI service unavailable. Please try again later.";
+        statusCode = 503;
+      } else if (error.message.includes('Unable to extract text')) {
+        errorMessage = "Could not extract text from document. Please ensure it's a valid, readable PDF or Word document.";
+        statusCode = 400;
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
+    return res.status(statusCode).json({
       error: "Failed to process resume upload",
-      message: error instanceof Error ? error.message : "Unknown error occurred"
+      message: errorMessage,
+      details: error instanceof Error ? error.message : "Unknown error"
     });
   }
 };

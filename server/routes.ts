@@ -8042,12 +8042,13 @@ ${extractedText.substring(0, 5000)}
   });
 
   // Route for handling resume uploads for Musk AI analysis
-  apiRouter.post("/musk/resume-upload", async (req: Request, res: Response) => {
+  // Using multer upload middleware to handle multipart form data
+  apiRouter.post("/musk/resume-upload", upload.single('file'), async (req: Request, res: Response) => {
     await handleResumeUpload(req, res);
   });
   
   // Route for handling pitch deck uploads for Musk AI analysis
-  apiRouter.post("/musk/pitchdeck-upload", async (req: Request, res: Response) => {
+  apiRouter.post("/musk/pitchdeck-upload", upload.single('file'), async (req: Request, res: Response) => {
     await handlePitchDeckUpload(req, res);
   });
   
