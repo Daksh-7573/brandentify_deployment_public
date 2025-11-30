@@ -1,8 +1,15 @@
 import { localAIService } from "./local-ai-service";
+import { cacheService } from "./cache-service";
+import { createHash } from "crypto";
 
-// Cache for hashtag suggestions to minimize API calls
-const hashtagSuggestionCache = new Map<string, { suggestions: string[], timestamp: number }>();
-const HASHTAG_CACHE_TTL = 1000 * 60 * 60; // 1 hour
+// Cache TTL for hashtag suggestions (1 hour)
+const HASHTAG_CACHE_TTL = 60 * 60; // 1 hour in seconds (for Redis)
+
+// Generate a stable hash key for caching (avoids collisions from base64 truncation)
+function generateCacheKey(prefix: string, data: string): string {
+  const hash = createHash('sha256').update(data).digest('hex').slice(0, 32);
+  return `${prefix}:${hash}`;
+}
 
 /**
  * Generate career advice based on user profile information and specific advice type
@@ -203,10 +210,17 @@ export async function suggestHashtags(options: {
     contentContext: options.contentContext?.slice(0, 100) || '', // Use first 100 chars of context for cache key
   });
   
-  // Check cache to avoid unnecessary API calls
-  const cachedResult = hashtagSuggestionCache.get(cacheKey);
-  if (cachedResult && (Date.now() - cachedResult.timestamp < HASHTAG_CACHE_TTL)) {
-    return { hashtags: cachedResult.suggestions };
+  // Check Redis cache to avoid unnecessary API calls (production-ready)
+  // Using SHA-256 hash to avoid collisions from truncated base64
+  const redisCacheKey = generateCacheKey('hashtag_suggestions', cacheKey);
+  try {
+    const cachedResult = await cacheService.get(redisCacheKey);
+    if (cachedResult) {
+      const parsed = JSON.parse(cachedResult);
+      return { hashtags: parsed.suggestions };
+    }
+  } catch (e) {
+    // Cache miss or error, continue to generate
   }
   
   const count = options.count || 10;
@@ -247,11 +261,12 @@ Suggest ${count} hashtags that are:
       platform: "LinkedIn" // Default platform
     });
     
-    // Cache the results
-    hashtagSuggestionCache.set(cacheKey, {
-      suggestions: hashtags,
-      timestamp: Date.now()
-    });
+    // Cache the results in Redis (production-ready)
+    try {
+      await cacheService.set(redisCacheKey, JSON.stringify({ suggestions: hashtags }), HASHTAG_CACHE_TTL);
+    } catch (e) {
+      console.log('[OpenAI Service] Could not cache hashtag suggestions, continuing without cache');
+    }
     
     return { hashtags };
   } catch (error: unknown) {

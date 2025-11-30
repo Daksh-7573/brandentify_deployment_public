@@ -51,6 +51,7 @@ import {
   generateEmotionalResponseStrategy,
   enhancePromptWithEmotionalIntelligence 
 } from './emotional-intelligence';
+import { resumeContextService } from './resume-context-service';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -161,7 +162,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     console.log(`[Enhanced Musk] Generated ${predictiveInsights.predictions.length} predictive insights`);
     
     // Phase 3: Generate cross-user recommendations
-    const crossUserRecommendations = generateCrossUserRecommendations(userIdString, request.userProfile, userPatterns);
+    const crossUserRecommendations = await generateCrossUserRecommendations(userIdString, request.userProfile, userPatterns);
     console.log(`[Enhanced Musk] Generated ${crossUserRecommendations.length} cross-user recommendations`);
     
     // Step 1: Enrich user context with comprehensive data analysis
@@ -610,12 +611,19 @@ async function generateDynamicCareerAdvice(context: EnrichedContext, message: st
       profileSection += `\n\nNotable Projects:\n${projBullets}`;
     }
     
-    // Add resume highlights if available (passed as separate parameter)
-    if (userId && global.resumeContexts && global.resumeContexts[userId]) {
-      const resumeData = global.resumeContexts[userId];
-      if (resumeData.resumeText) {
-        const highlights = formatResumeHighlights(resumeData.resumeText);
-        profileSection += `\n\nResume Highlights:\n${highlights}`;
+    // Add resume highlights if available (from database-backed service)
+    if (userId) {
+      try {
+        const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+        if (!isNaN(userIdNum)) {
+          const resumeData = await resumeContextService.get(userIdNum);
+          if (resumeData?.resumeText) {
+            const highlights = formatResumeHighlights(resumeData.resumeText);
+            profileSection += `\n\nResume Highlights:\n${highlights}`;
+          }
+        }
+      } catch (error) {
+        console.log('[Enhanced Musk] Could not fetch resume context, continuing without it');
       }
     }
     
