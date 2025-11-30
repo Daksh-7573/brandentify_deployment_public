@@ -16,6 +16,7 @@ import { toneCalibrationService } from './services/tone-calibration';
 import { conversationGoalTrackerService } from './services/conversation-goal-tracker';
 import { db, pool } from './db';
 import { followupTemplates } from '@shared/schema';
+import { resumeContextService } from './services/resume-context-service';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -393,12 +394,30 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     // Use numeric user ID for all operations
     const userId = numericUserId;
     
-    // Check for resume context in global storage
+    // Check for resume context - first database, then fallback to global memory
     const userIdStr = userId.toString();
-    if (global.resumeContexts[userIdStr]) {
-      console.log(`Found resume context in global storage for user ${userId}`);
+    let hasResumeContext = false;
+    
+    // Try to get from database first (persistent storage)
+    const dbResumeContext = await resumeContextService.get(userId);
+    if (dbResumeContext) {
+      hasResumeContext = true;
+      console.log(`[MuskChat] Found resume context in database for user ${userId} (full text: ${dbResumeContext.resumeText?.length || 0} chars)`);
+      // Sync to global memory for backward compatibility - use full text if available, fallback to preview
+      global.resumeContexts = global.resumeContexts || {};
+      global.resumeContexts[userIdStr] = {
+        resumeText: dbResumeContext.resumeText || dbResumeContext.resumeTextPreview || '',
+        detectedRole: dbResumeContext.detectedRole || null,
+        skills: dbResumeContext.skills || [],
+        detectedIndustry: dbResumeContext.detectedIndustry || null,
+        uploadDate: dbResumeContext.uploadDate || '',
+        fileName: dbResumeContext.fileName || ''
+      };
+    } else if (global.resumeContexts && global.resumeContexts[userIdStr]) {
+      hasResumeContext = true;
+      console.log(`[MuskChat] Found resume context in memory for user ${userId}`);
     } else {
-      console.log(`No resume context found for user ${userId}`);
+      console.log(`[MuskChat] No resume context found for user ${userId}`);
     }
     
     if (userId) {
@@ -558,11 +577,29 @@ async function enrichContextWithUserData(userId: number, context?: any) {
     let enrichedContext = baseContext;
     const userIdStr = userId.toString();
     
-    // Check global storage for resume context
-    if (global.resumeContexts && global.resumeContexts[userIdStr]) {
-      const resumeContext = global.resumeContexts[userIdStr];
-      console.log(`Found global resume context for user ${userId}: `, resumeContext);
-      
+    // Check for resume context - try database first, then memory fallback
+    let resumeContext = null;
+    
+    // Try database first (persistent storage)
+    const dbResumeContext = await resumeContextService.get(userId);
+    if (dbResumeContext) {
+      // Use full text if available, fallback to preview for backward compatibility
+      resumeContext = {
+        resumeText: dbResumeContext.resumeText || dbResumeContext.resumeTextPreview || '',
+        detectedRole: dbResumeContext.detectedRole,
+        skills: dbResumeContext.skills || [],
+        detectedIndustry: dbResumeContext.detectedIndustry,
+        uploadDate: dbResumeContext.uploadDate || '',
+        fileName: dbResumeContext.fileName || ''
+      };
+      console.log(`[EnrichContext] Found resume context in database for user ${userId} (${dbResumeContext.resumeText?.length || 0} chars)`);
+    } else if (global.resumeContexts && global.resumeContexts[userIdStr]) {
+      // Fallback to memory
+      resumeContext = global.resumeContexts[userIdStr];
+      console.log(`[EnrichContext] Found resume context in memory for user ${userId}`);
+    }
+    
+    if (resumeContext) {
       enrichedContext = {
         ...baseContext,
         resumeData: resumeContext,
@@ -840,22 +877,44 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       }
     }
     
-    // Store context
+    // Store context in database for persistence across restarts
     if (userId) {
+      // Store in database (persistent) - this works in both testing and production
+      await resumeContextService.set(userId, {
+        resumeText: resumeText,
+        resumeTextPreview: resumeText.substring(0, 1000),
+        detectedRole: null,
+        skills: [],
+        detectedIndustry: null,
+        uploadDate: new Date().toISOString(),
+        fileName: resumeFile.name,
+        fileSize: resumeFile.size,
+        fileType: fileExt,
+      });
+      console.log(`[ResumeUpload] Stored resume context in database for user ${userId}`);
+      
+      // Also keep in memory for quick access during this session (backward compatible)
+      // Store full text in memory - database already has full text for persistence
       global.resumeContexts = global.resumeContexts || {};
       global.resumeContexts[userId.toString()] = {
-        resumeText: resumeText.substring(0, 1000), // Store preview
+        resumeText: resumeText,  // Full text for in-session use
         detectedRole: null,
         skills: [],
         detectedIndustry: null,
         uploadDate: new Date().toISOString(),
         fileName: resumeFile.name
       };
-      console.log(`Stored resume context for user ${userId}`);
+      console.log(`[ResumeUpload] Stored full resume text in memory (${resumeText.length} chars)`);
     }
     
     // Return analysis with scores
     console.log("Resume analysis completed successfully");
+    
+    // Ensure analysisResult is defined before accessing its properties
+    if (!analysisResult) {
+      throw new Error('Resume analysis failed: No analysis result returned');
+    }
+    
     return res.status(200).json({
       id: 'resume-analysis-' + Date.now(),
       success: true,
@@ -1327,7 +1386,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     try {
       // Get templates with feedback-based ranking (LAYER 6) - excluding previously suggested ones
       const excludeClause = suggestedTemplateIds.length > 0 
-        ? `AND ft.id NOT IN (${suggestedTemplateIds.map((_, i) => `$${i + 3}`).join(',')})` 
+        ? `AND ft.id NOT IN (${suggestedTemplateIds.map((_: number, i: number) => `$${i + 3}`).join(',')})` 
         : '';
       
       const query = `SELECT ft.*, COUNT(ff.id) as feedback_count, 
@@ -1351,7 +1410,7 @@ export const handleGenerateContextualSuggestions = async (req: Request, res: Res
     if (templates.length === 0) {
       try {
         const excludeClause = suggestedTemplateIds.length > 0 
-          ? `AND id NOT IN (${suggestedTemplateIds.map((_, i) => `$${i + 2}`).join(',')})` 
+          ? `AND id NOT IN (${suggestedTemplateIds.map((_: number, i: number) => `$${i + 2}`).join(',')})` 
           : '';
         const query = `SELECT * FROM followup_templates WHERE type = $1 ${excludeClause} ORDER BY RANDOM() LIMIT 5`;
         const params = [enhancedClassification.intent, ...suggestedTemplateIds];

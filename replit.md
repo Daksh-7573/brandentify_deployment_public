@@ -6,6 +6,14 @@ Brandentifier is an AI-driven career development platform that helps users build
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (2024-11-30)
+### Testing/Production Parity - Phase 1 Progress
+- **Phase 1.1 COMPLETED**: Resume contexts now use PostgreSQL (`resume_context_cache` table) instead of global variables
+  - Created `server/services/resume-context-service.ts` for database-backed storage
+  - Updated `server/routes-musk.ts` to use database for resume context with memory fallback
+  - This ensures resume data persists across app restarts in production
+- **Phase 1.3 COMPLETED**: Feed cache migrated to Redis-backed caching using existing cacheService
+
 ## System Architecture
 ### Frontend
 - **Framework**: React with TypeScript, Vite
