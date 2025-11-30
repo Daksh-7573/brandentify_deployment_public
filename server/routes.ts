@@ -5,7 +5,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { pool, db } from "./db";
 import { z } from "zod";
-import { eq, or } from "drizzle-orm";
+import { eq, or, and } from "drizzle-orm";
 import { cacheMiddleware, clearCache } from "./middleware/cache-middleware";
 import { getCachedUserData, setCachedUserData } from "./middleware/user-cache";
 import crypto from "crypto";
@@ -117,7 +117,10 @@ import {
   InsertNewsUserPreference,
   users,
   projects,
-  pulses
+  pulses,
+  userQuests,
+  questDefinitions,
+  brandGoals
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
@@ -274,7 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error(`🚨 [DB FINGERPRINT] Error:`, error);
       res.status(500).json({
         error: 'Database fingerprint error',
-        details: error.message,
+        details: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
       });
     }
@@ -3738,7 +3741,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If not found by username, try to find by randomProfileLink
       if (!targetUser) {
-        const allUsers = await storage.getUsers();
+        const allUsers = await storage.getAllUsers();
         targetUser = allUsers.find((u: any) => u.randomProfileLink === profileUrl);
       }
       
@@ -3835,7 +3838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If not found by username, try to find by randomProfileLink
       if (!targetUser) {
-        const allUsers = await storage.getUsers();
+        const allUsers = await storage.getAllUsers();
         targetUser = allUsers.find((u: any) => u.randomProfileLink === profileUrl);
       }
       
@@ -4543,7 +4546,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create notification for pulse owner (if not commenting on own pulse)
       try {
-        const pulse = await storage.getPulse(newComment.pulseId);
+        const pulse = await storage.getPulseById(newComment.pulseId);
         
         if (pulse && pulse.userId !== newComment.userId) {
           const commenterName = user?.name || 'Someone';
@@ -4564,7 +4567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('[POST /pulse-comments] ❌ Failed to create notification:', {
           error: notifError instanceof Error ? notifError.message : String(notifError),
           pulseId: newComment.pulseId,
-          pulseOwnerId: (await storage.getPulse(newComment.pulseId))?.userId
+          pulseOwnerId: (await storage.getPulseById(newComment.pulseId))?.userId
         });
         // Don't fail the comment if notification fails
       }
@@ -8728,7 +8731,7 @@ ${extractedText.substring(0, 5000)}
       if (goal.isMuskGenerated) {
         console.log(`[Goal Details] Fetching AI-generated milestones for goal ${goalId}`);
         // Find the capsule associated with this goal (same ID or find by user/title)
-        const capsule = await storage.getCapsuleById(goalId);
+        const capsule = await storage.getCareerCapsuleById(goalId);
         if (capsule) {
           console.log(`[Goal Details] Found capsule ${capsule.id} for goal ${goalId}`);
           // Fetch years and tasks from capsule
@@ -9561,7 +9564,7 @@ ${extractedText.substring(0, 5000)}
       console.error('[AI Quest Test] Error:', error);
       res.status(500).json({
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -9589,7 +9592,7 @@ ${extractedText.substring(0, 5000)}
       console.error('[Detailed Quest Test] Error:', error);
       res.status(500).json({
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -9610,13 +9613,13 @@ ${extractedText.substring(0, 5000)}
       }
 
       // Get user's brand goals
-      const [brandGoals] = await db
+      const [userBrandGoals] = await db
         .select()
-        .from(schema.brandGoals)
-        .where(eq(schema.brandGoals.userId, userId))
+        .from(brandGoals)
+        .where(eq(brandGoals.userId, userId))
         .limit(1);
       
-      const userGoals = brandGoals?.selectedGoals || [];
+      const userGoals = (userBrandGoals as any)?.selectedGoals || [];
 
       // Get active quests
       const activeQuests = await db
@@ -9686,7 +9689,7 @@ ${extractedText.substring(0, 5000)}
       console.error('[Quest Enhancement] Error:', error);
       res.status(500).json({
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -9711,7 +9714,7 @@ ${extractedText.substring(0, 5000)}
       const { intelligentHashtagGenerator } = await import('./services/intelligent-hashtag-generator');
       
       // Get user data
-      const user = await storage.getUserById(userId);
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({
           success: false,
