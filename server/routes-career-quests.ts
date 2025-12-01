@@ -1135,9 +1135,82 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // Get today's active social quests (note: will need to add definitions separately)
-        const dailyQuests = await storage.getCurrentDaySocialQuests(userId);
-        quests = dailyQuests.filter(isSocialQuest);
+        // Get today's active social quests WITH personalized generated data (same pattern as completed/missed)
+        const result = await pool.query(`
+          SELECT 
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            uq.year,
+            uq.assigned_date as "assignedDate",
+            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
+            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            qd.type as type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+            COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+            COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_career_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gcq ON true
+          LEFT JOIN LATERAL (
+            SELECT * FROM generated_social_quests
+            WHERE user_id = uq.user_id
+              AND quest_definition_id = uq.quest_definition_id
+              AND assigned_date = uq.assigned_date::text
+            ORDER BY id DESC
+            LIMIT 1
+          ) gsq ON true
+          WHERE uq.user_id = $1
+            AND uq.status = 'active'
+          ORDER BY uq.assigned_at DESC
+        `, [userId]);
+        
+        quests = result.rows.map(row => ({
+          ...row,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet
+          }
+        })).filter(isSocialQuest);
       } else if (bucket === 'completed') {
         // Get completed social quests WITH personalized generated data
         const result = await pool.query(`
