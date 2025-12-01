@@ -79,6 +79,7 @@ import {
   handleCareerRecommendations, 
   handleNearbyProfessionals 
 } from "./routes-decision-engine";
+import { objectStorageService } from "./services/object-storage-service";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -2874,27 +2875,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const file = Array.isArray(imageFile) ? imageFile[0] : imageFile;
           
           // Generate unique filename
-          const timestamp = Date.now() + i; // Add index to ensure uniqueness
+          const timestamp = Date.now() + i;
           const ext = path.extname(file.name);
           const filename = `project_${projectId}_image_${timestamp}${ext}`;
           
-          // Define upload path
-          const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
-          
-          // Move the file to the upload directory (using await with promises)
-          await new Promise<void>((resolve, reject) => {
-            file.mv(uploadPath, (err) => {
-              if (err) {
-                console.error(`[POST /projects/upload-media] File move error:`, err);
-                reject(err);
-              } else {
-                const fileUrl = getFileUrl(filename);
-                uploadedMediaUrls.push(fileUrl);
-                uploadedFileNames.push(filename);
-                resolve();
-              }
-            });
-          });
+          // Upload to object storage
+          const fileBuffer = file.data as Buffer;
+          const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'projects');
+          uploadedMediaUrls.push(cdnUrl);
+          uploadedFileNames.push(filename);
         }
       }
       
@@ -2908,23 +2897,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const ext = path.extname(file.name);
         const filename = `project_${projectId}_video_${timestamp}${ext}`;
         
-        // Define upload path
-        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'projects', filename);
-        
-        // Move the file to the upload directory
-        await new Promise<void>((resolve, reject) => {
-          file.mv(uploadPath, (err) => {
-            if (err) {
-              console.error(`[POST /projects/upload-media] Video file move error:`, err);
-              reject(err);
-            } else {
-              const fileUrl = getFileUrl(filename);
-              uploadedMediaUrls.push(fileUrl);
-              uploadedFileNames.push(filename);
-              resolve();
-            }
-          });
-        });
+        // Upload to object storage
+        const fileBuffer = file.data as Buffer;
+        const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'projects');
+        uploadedMediaUrls.push(cdnUrl);
+        uploadedFileNames.push(filename);
       }
       
       // Get the project and update the mediaUrls field
@@ -4352,28 +4329,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const file = mediaFiles[i];
           
           // Generate unique filename
-          const timestamp = Date.now() + i; // Add index to ensure uniqueness
+          const timestamp = Date.now() + i;
           const ext = path.extname(file.name);
           const filename = `media_${userId}_${timestamp}${ext}`;
           
-          // Define upload path
-          const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'media', filename);
-          
-          // Move the file to the upload directory
-          await new Promise<void>((resolve, reject) => {
-            file.mv(uploadPath, (err) => {
-              if (err) {
-                console.error(`[POST /pulses/upload-media] File move error:`, err);
-                reject(err);
-              } else {
-                const fileUrl = getFileUrl(filename, 'media');
-                uploadedMediaUrls.push(fileUrl);
-                uploadedFileNames.push(filename);
-                console.log(`[POST /pulses/upload-media] Successfully uploaded: ${filename}`);
-                resolve();
-              }
-            });
-          });
+          // Upload to object storage
+          const fileBuffer = file.data as Buffer;
+          const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'media');
+          uploadedMediaUrls.push(cdnUrl);
+          uploadedFileNames.push(filename);
         }
       } else if (mediaFiles) {
         // Handle single file
@@ -4390,24 +4354,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const ext = path.extname(file.name);
         const filename = `media_${userId}_${timestamp}${ext}`;
         
-        // Define upload path
-        const uploadPath = path.join(process.cwd(), 'public', 'uploads', 'media', filename);
-        
-        // Move the file to the upload directory
-        await new Promise<void>((resolve, reject) => {
-          file.mv(uploadPath, (err) => {
-            if (err) {
-              console.error(`[POST /pulses/upload-media] File move error:`, err);
-              reject(err);
-            } else {
-              const fileUrl = getFileUrl(filename, 'media');
-              uploadedMediaUrls.push(fileUrl);
-              uploadedFileNames.push(filename);
-              console.log(`[POST /pulses/upload-media] Successfully uploaded: ${filename}`);
-              resolve();
-            }
-          });
-        });
+        // Upload to object storage
+        const fileBuffer = file.data as Buffer;
+        const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'media');
+        uploadedMediaUrls.push(cdnUrl);
+        uploadedFileNames.push(filename);
       }
       
       console.log(`[POST /pulses/upload-media] Upload completed. URLs: ${uploadedMediaUrls.join(', ')}`);
