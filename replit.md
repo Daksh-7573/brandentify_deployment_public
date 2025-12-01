@@ -38,16 +38,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Comment Loading Performance Optimized ✅
 - **Skeleton Loaders**: Replaced spinning loader with smooth skeleton animations
-  - 2 skeleton placeholders pulse at the top while loading older comments
+  - 3 skeleton placeholders pulse while loading comments
   - Better visual feedback and perceived performance
-- **Infinite Scroll System**: Auto-loads more comments as you scroll up
-  - Loads 10 oldest comments initially for instant display
-  - Intersection Observer detects when you scroll to the top
-  - Automatically loads 10 more older comments when scrolling near top
-  - No button needed - seamless automatic loading
+- **Pagination System**: Loads 5 comments initially, then "Load more" button
   - Smooth scrolling with max-height container
-  - User position stays fixed while older comments load above
-- **Comment Order**: Oldest comments at top, newest at bottom (natural chronological order)
+  - Shows remaining count: "Load more comments (45 remaining)"
+  - Reduces initial load time significantly for pulses with many comments
 - **Result**: Can now handle 100+ comments smoothly without performance issues
 
 ## Previous Changes (2024-11-30)
