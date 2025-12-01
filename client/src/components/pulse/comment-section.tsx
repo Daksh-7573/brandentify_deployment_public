@@ -139,7 +139,6 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       }
 
       queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], updatedComments);
-      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
       toast({
         title: "Comment posted",
