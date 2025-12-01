@@ -4,10 +4,29 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, Send, Trash2, Loader2 } from "lucide-react";
+import { Send, Trash2, Loader2, ChevronDown } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+
+// Skeleton loader component
+function CommentSkeleton() {
+  return (
+    <div className="p-3 rounded-lg bg-white/5 border border-white/10 animate-pulse">
+      <div className="flex items-start gap-3">
+        <div className="h-8 w-8 rounded-full bg-white/10" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-24 bg-white/10 rounded" />
+          <div className="h-3 w-16 bg-white/10 rounded" />
+          <div className="space-y-1 mt-2">
+            <div className="h-3 w-full bg-white/10 rounded" />
+            <div className="h-3 w-5/6 bg-white/10 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface Comment {
   id: number;
@@ -32,11 +51,14 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { user } = useAuth();
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
+  const [displayedCount, setDisplayedCount] = useState(5); // Show 5 initially
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const COMMENTS_PER_LOAD = 5; // Load 5 at a time
 
   // Clear all caches on mount
   useEffect(() => {
     if (isExpanded) {
+      setDisplayedCount(5); // Reset pagination
       const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
       localStorage.removeItem(cacheKey);
       // Also invalidate React Query cache and refetch
@@ -59,6 +81,10 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       refetch();
     }
   }, [isExpanded, refetch]);
+
+  // Get currently displayed comments
+  const displayedComments = comments.slice(0, displayedCount);
+  const hasMore = displayedCount < comments.length;
 
   // Auto-scroll to latest comment when comments change
   useEffect(() => {
@@ -218,59 +244,76 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       {isExpanded && (
         <div className="mt-4 space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
           {/* Comments List */}
-          {isLoading ? (
-            <div className="flex justify-center py-4">
-              <Loader2 className="h-5 w-5 animate-spin text-white/70" />
+          {isLoading && comments.length === 0 ? (
+            <div className="space-y-3">
+              <CommentSkeleton />
+              <CommentSkeleton />
+              <CommentSkeleton />
             </div>
           ) : comments.length === 0 ? (
             <p className="text-center text-white/50 py-4 text-sm">
               No comments yet. Be the first to comment!
             </p>
           ) : (
-            <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
-              {comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-                  data-testid={`comment-${comment.id}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8 border border-white/20">
-                      {comment.user?.photoURL ? (
-                        <AvatarImage src={comment.user.photoURL} alt={comment.user.name} />
-                      ) : (
-                        <AvatarFallback className="bg-gradient-to-br from-purple-500/80 to-pink-500/80 text-white font-semibold">
-                          {comment.user?.name?.[0]?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white text-sm">
-                            {comment.user?.name || "Anonymous"}
-                          </p>
-                          <p className="text-xs text-white/50">
-                            {formatCommentDate(comment.createdAt)}
-                          </p>
-                        </div>
-                        {user?.id === comment.userId && (
-                          <button
-                            onClick={() => deleteCommentMutation.mutate(comment.id)}
-                            className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/20 transition-colors"
-                            data-testid={`button-delete-comment-${comment.id}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+            <div className="space-y-3">
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
+                {displayedComments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+                    data-testid={`comment-${comment.id}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-8 w-8 border border-white/20">
+                        {comment.user?.photoURL ? (
+                          <AvatarImage src={comment.user.photoURL} alt={comment.user.name} />
+                        ) : (
+                          <AvatarFallback className="bg-gradient-to-br from-purple-500/80 to-pink-500/80 text-white font-semibold">
+                            {comment.user?.name?.[0]?.toUpperCase() || "U"}
+                          </AvatarFallback>
                         )}
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-white text-sm">
+                              {comment.user?.name || "Anonymous"}
+                            </p>
+                            <p className="text-xs text-white/50">
+                              {formatCommentDate(comment.createdAt)}
+                            </p>
+                          </div>
+                          {user?.id === comment.userId && (
+                            <button
+                              onClick={() => deleteCommentMutation.mutate(comment.id)}
+                              className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-500/20 transition-colors"
+                              data-testid={`button-delete-comment-${comment.id}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                        <p className="mt-1 text-white/80 text-sm">{comment.content}</p>
                       </div>
-                      <p className="mt-1 text-white/80 text-sm">{comment.content}</p>
                     </div>
                   </div>
-                </div>
-              ))}
-              {/* Scroll anchor for auto-scroll to latest comment */}
-              <div ref={commentsEndRef} />
+                ))}
+                {/* Scroll anchor for auto-scroll to latest comment */}
+                <div ref={commentsEndRef} />
+              </div>
+
+              {/* Load More Button */}
+              {hasMore && (
+                <Button
+                  onClick={() => setDisplayedCount(prev => prev + COMMENTS_PER_LOAD)}
+                  variant="ghost"
+                  className="w-full text-white/60 hover:text-white hover:bg-white/10"
+                  data-testid="button-load-more-comments"
+                >
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                  Load more comments ({comments.length - displayedCount} remaining)
+                </Button>
+              )}
             </div>
           )}
 

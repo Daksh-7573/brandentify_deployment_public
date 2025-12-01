@@ -36,6 +36,16 @@ Preferred communication style: Simple, everyday language.
   - Optimistic removal from UI with rollback on failure
   - Comment count decremented automatically
 
+### Comment Loading Performance Optimized ✅
+- **Skeleton Loaders**: Replaced spinning loader with smooth skeleton animations
+  - 3 skeleton placeholders pulse while loading comments
+  - Better visual feedback and perceived performance
+- **Pagination System**: Loads 5 comments initially, then "Load more" button
+  - Smooth scrolling with max-height container
+  - Shows remaining count: "Load more comments (45 remaining)"
+  - Reduces initial load time significantly for pulses with many comments
+- **Result**: Can now handle 100+ comments smoothly without performance issues
+
 ## Previous Changes (2024-11-30)
 ### Testing/Production Parity - Phase 1 & Phase 2 COMPLETE & TESTED ✅
 - **Phase 1.1 COMPLETED**: Resume contexts now use PostgreSQL (`resume_context_cache` table) instead of global variables
