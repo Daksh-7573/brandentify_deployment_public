@@ -194,7 +194,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Flag dialog */}
       <Dialog open={showFlagDialog} onOpenChange={setShowFlagDialog}>
-        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-sm p-4 gap-3 max-h-[90vh] flex flex-col !top-1/2 !-translate-y-1/2 !left-1/2 !-translate-x-1/2 relative [&_button[type='button']]:!hidden">
+        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-sm p-4 gap-3 max-h-[90vh] flex flex-col !top-auto !translate-y-0 !left-1/2 !-translate-x-1/2 my-auto inset-y-0">
           <DialogHeader className="space-y-1 p-0">
             <DialogTitle className="text-white text-base font-semibold">Flag Pulse</DialogTitle>
             <DialogDescription className="text-white/70 text-xs">
@@ -247,18 +247,6 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
               {flagPulseMutation.isPending ? "Submitting..." : "Report"}
             </Button>
           </DialogFooter>
-          
-          {/* Custom close button at bottom right */}
-          <button
-            onClick={() => setShowFlagDialog(false)}
-            className="absolute bottom-4 right-4 p-1 rounded-sm opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-white/30"
-            aria-label="Close"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
         </DialogContent>
       </Dialog>
     </>
