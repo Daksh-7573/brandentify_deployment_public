@@ -241,7 +241,7 @@ export default function CreatePulsePage() {
       pulseData.mediaUrls = mediaUrls;
     }
     else if (pulseType === 'project') {
-      // For project pulses, create the project automatically
+      // For project pulses, only create project if checkbox is checked
       if (!pulseTitle.trim() || !pulseContent.trim() || !pulseIndustry) {
         toast({
           title: "Project Details Required",
@@ -251,110 +251,71 @@ export default function CreatePulsePage() {
         return;
       }
       
-      try {
-        // Create the project first
-        const projectData = {
-          userId: user.id,
-          title: pulseTitle,
-          description: pulseContent,
-          industry: pulseIndustry,
-          category: pulseCategory || null,
-          projectUrl: projectUrl || null,
-          startDate: new Date().toISOString().split('T')[0], // Today's date
-          mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
-        };
-        
-        const projectResponse = await apiRequest('POST', '/api/projects', projectData);
-        const createdProject = await projectResponse.json();
-        
-        // Set the created project ID for the pulse
-        pulseData.projectId = createdProject.id;
-        setSelectedProject(createdProject.id);
-        
-        toast({
-          title: "Project Created",
-          description: "Your project has been saved to your profile and will be featured in this pulse.",
-        });
-        
-      } catch (error: any) {
-        console.error("Error creating project:", error);
-        
-        // Extract the error message from the server response
-        let errorMessage = "Failed to create project. Please try again.";
-        if (error?.message) {
-          errorMessage = error.message;
-        } else if (typeof error === 'string') {
-          errorMessage = error;
-        }
-        
-        // Check if it's a project limit message
-        if (errorMessage.includes("Max 6 projects")) {
+      // Only create project if addToProfile checkbox is checked
+      if (addToProfile) {
+        try {
+          // Check project limit first
+          const projectsResponse = await apiRequest('GET', `/api/users/${user.id}/projects`);
+          const projects = await projectsResponse.json();
+          
+          if (projects && projects.length >= 6) {
+            toast({
+              title: "Project Limit Reached",
+              description: "You can only have 6 projects. Please remove one before adding another.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          // Create the project
+          const projectData = {
+            userId: user.id,
+            title: pulseTitle,
+            description: pulseContent,
+            industry: pulseIndustry,
+            category: pulseCategory || null,
+            projectUrl: projectUrl || null,
+            startDate: new Date().toISOString().split('T')[0],
+            mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
+          };
+          
+          const projectResponse = await apiRequest('POST', '/api/projects', projectData);
+          const createdProject = await projectResponse.json();
+          
+          // Set the created project ID for the pulse
+          pulseData.projectId = createdProject.id;
+          setSelectedProject(createdProject.id);
+          
           toast({
-            title: "Project Limit Reached",
-            description: errorMessage,
+            title: "Project Created",
+            description: "Your project has been saved to your profile.",
           });
-        } else {
-          toast({
-            title: "Error",
-            description: errorMessage,
-            variant: "destructive",
-          });
-        }
-        return;
-      }
-    }
-    
-    // If checkbox is checked and not a project pulse, create project
-    if (addToProfile && pulseType !== 'project') {
-      try {
-        // Check project limit first
-        const projectsResponse = await apiRequest('GET', `/api/users/${user.id}/projects`);
-        const projects = await projectsResponse.json();
-        
-        if (projects && projects.length >= 6) {
-          toast({
-            title: "Project Limit Reached",
-            description: "You can only have 6 projects. Please remove one before adding another.",
-            variant: "destructive",
-          });
+        } catch (error: any) {
+          console.error("Error creating project:", error);
+          
+          let errorMessage = "Failed to create project. Please try again.";
+          if (error?.message) {
+            errorMessage = error.message;
+          } else if (typeof error === 'string') {
+            errorMessage = error;
+          }
+          
+          if (errorMessage.includes("Max 6 projects")) {
+            toast({
+              title: "Project Limit Reached",
+              description: errorMessage,
+            });
+          } else {
+            toast({
+              title: "Error",
+              description: errorMessage,
+              variant: "destructive",
+            });
+          }
           return;
         }
-
-        // Create the project
-        const projectData = {
-          userId: user.id,
-          title: pulseTitle,
-          description: pulseContent,
-          industry: pulseIndustry,
-          category: pulseCategory || null,
-          projectUrl: null,
-          startDate: new Date().toISOString().split('T')[0],
-          mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
-        };
-        
-        const projectResponse = await apiRequest('POST', '/api/projects', projectData);
-        const createdProject = await projectResponse.json();
-        
-        // Link project to pulse
-        pulseData.projectId = createdProject.id;
-        
-        toast({
-          title: "Project Created",
-          description: "Your project has been saved to your profile.",
-        });
-      } catch (error: any) {
-        console.error("Error creating project:", error);
-        let errorMessage = "Failed to create project. The pulse will be created without adding to profile.";
-        if (error?.message?.includes("Max 6 projects")) {
-          errorMessage = "Project limit reached (max 6 projects).";
-        }
-        
-        toast({
-          title: "Note",
-          description: errorMessage,
-        });
-        // Continue with pulse creation anyway
       }
+      // If checkbox is unchecked, just create pulse (no project)
     }
 
     // Submit the pulse
@@ -760,7 +721,7 @@ export default function CreatePulsePage() {
               {pulseType === 'project' && (
                 <NeoGlassSection>
                   <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                    <TabsList className="mb-0 dark-tabs-list grid grid-cols-2 sm:grid-cols-4 w-full">
+                    <TabsList className="mb-0 dark-tabs-list grid grid-cols-2 sm:grid-cols-5 w-full">
                       <TabsTrigger 
                         value="details" 
                         className="dark-tabs-trigger text-xs sm:text-sm"
@@ -784,6 +745,12 @@ export default function CreatePulsePage() {
                         className="dark-tabs-trigger text-xs sm:text-sm"
                       >
                         Client
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="publish" 
+                        className="dark-tabs-trigger text-xs sm:text-sm"
+                      >
+                        Publish
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -1034,52 +1001,58 @@ export default function CreatePulsePage() {
                             )}
                           </div>
                         </TabsContent>
+                        
+                        <TabsContent value="publish" className="space-y-6 pt-6">
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label className="text-white">Add to Profile</Label>
+                              <p className="text-xs text-gray-400">
+                                Choose whether to add this project to your profile projects
+                              </p>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                              <Checkbox
+                                id="add-to-profile-project"
+                                checked={addToProfile}
+                                onCheckedChange={(checked) => setAddToProfile(checked as boolean)}
+                                className="border-white/30"
+                              />
+                              <div className="flex-1">
+                                <Label 
+                                  htmlFor="add-to-profile-project"
+                                  className="text-white text-sm cursor-pointer hover:text-white/80"
+                                >
+                                  Add to Profile Projects
+                                </Label>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  If unchecked, this will be published as a pulse only (not added to your profile)
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </TabsContent>
                   </Tabs>
                 </NeoGlassSection>
               )}
 
               <NeoGlassSection className="mb-8 sm:mb-12">
-                <div className="space-y-4">
-                  {/* Checkbox: Add to Profile as Project */}
-                  {pulseType !== 'project' && (
-                    <div className="flex items-center space-x-3">
-                      <Checkbox
-                        id="add-to-profile"
-                        checked={addToProfile}
-                        onCheckedChange={(checked) => setAddToProfile(checked as boolean)}
-                        className="border-white/30"
-                      />
-                      <div className="flex-1">
-                        <Label 
-                          htmlFor="add-to-profile"
-                          className="text-white text-sm cursor-pointer hover:text-white/80"
-                        >
-                          Add to Profile as Project
-                        </Label>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Automatically add this to your profile projects for better visibility
-                        </p>
-                      </div>
-                    </div>
+                <button 
+                  type="button"
+                  onClick={handleCreatePulse}
+                  disabled={createPulseMutation.isPending || hasWordLimitErrors()}
+                  className="neo-glass-button primary w-full sm:w-auto flex items-center justify-center gap-2 h-10 sm:h-12 text-sm sm:text-base px-4 sm:px-6"
+                  data-testid="button-publish-pulse"
+                >
+                  {createPulseMutation.isPending ? (
+                    <>
+                      <div className="animate-spin h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      <span>Publishing...</span>
+                    </>
+                  ) : (
+                    <span>Publish Pulse</span>
                   )}
-                  
-                  <button 
-                    type="button"
-                    onClick={handleCreatePulse}
-                    disabled={createPulseMutation.isPending || hasWordLimitErrors()}
-                    className="neo-glass-button primary w-full sm:w-auto flex items-center justify-center gap-2 h-10 sm:h-12 text-sm sm:text-base px-4 sm:px-6"
-                    data-testid="button-publish-pulse"
-                  >
-                    {createPulseMutation.isPending ? (
-                      <>
-                        <div className="animate-spin h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                        <span>Publishing...</span>
-                      </>
-                    ) : (
-                      <span>Publish Pulse</span>
-                    )}
-                  </button>
-                </div>
+                </button>
               </NeoGlassSection>
               </div>
             </NeoGlassLayout>
