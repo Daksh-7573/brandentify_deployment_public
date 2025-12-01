@@ -51,8 +51,8 @@ export const users = pgTable("users", {
   geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   // Personal branding fields
   tagline: text("tagline"), // Personal motto (max 80 characters)
-  visionStatement: text("vision_statement"), // Long-term vision (max 200 characters)
-  missionStatement: text("mission_statement"), // What user stands for (max 220 characters)
+  visionStatement: text("vision_statement"), // Long-term vision (max 120 characters)
+  missionStatement: text("mission_statement"), // What user stands for (max 120 characters)
   coreValues: text("core_values").array(), // 3-5 keywords (max 5 items)
   uniqueValueProposition: text("unique_value_proposition"), // What sets user apart (max 150 characters)
   primaryAudience: text("primary_audience").array(), // Main audience (max 5 items)
@@ -278,12 +278,12 @@ export const insertUserSchema = createInsertSchema(users)
       { message: "Tagline must be 80 characters or less" }
     ),
     visionStatement: z.string().nullable().optional().refine(
-      (val) => !val || val.length <= 200,
-      { message: "Vision Statement must be 200 characters or less" }
+      (val) => !val || val.length <= 120,
+      { message: "Vision Statement must be 120 characters or less" }
     ),
     missionStatement: z.string().nullable().optional().refine(
-      (val) => !val || val.length <= 220,
-      { message: "Mission Statement must be 220 characters or less" }
+      (val) => !val || val.length <= 120,
+      { message: "Mission Statement must be 120 characters or less" }
     ),
     uniqueValueProposition: z.string().nullable().optional().refine(
       (val) => !val || val.length <= 150,
