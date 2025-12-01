@@ -147,8 +147,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
               onClick={() => setShowDeleteDialog(true)} 
               className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-red-500/30"
               style={{ 
-                color: '#ff6b6b !important',
-                '--text-color': '#ff6b6b'
+                color: '#ff6b6b !important'
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" style={{ color: '#ff6b6b' }} />
@@ -159,8 +158,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
               onClick={() => setShowFlagDialog(true)}
               className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-white/20"
               style={{ 
-                color: '#ffffff !important',
-                '--text-color': '#ffffff'
+                color: '#ffffff !important'
               }}
             >
               <Flag className="mr-2 h-4 w-4" style={{ color: '#ffffff' }} />
@@ -196,26 +194,26 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Flag dialog */}
       <Dialog open={showFlagDialog} onOpenChange={setShowFlagDialog}>
-        <DialogContent className="neo-glass-panel border-0 text-white max-w-lg">
-          <DialogHeader>
+        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-md sm:max-w-lg md:max-w-xl overflow-visible">
+          <DialogHeader className="pb-2">
             <DialogTitle className="text-white text-lg font-semibold">Flag Pulse</DialogTitle>
             <DialogDescription className="text-white/70 text-sm">
               Help us understand why this content violates our community guidelines.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 mt-4">
+          <div className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto pr-4">
             <div>
               <Label className="text-white text-sm font-medium">Reason for flagging</Label>
-              <RadioGroup value={flagReason} onValueChange={setFlagReason} className="mt-3">
+              <RadioGroup value={flagReason} onValueChange={setFlagReason} className="mt-3 space-y-2">
                 {flagReasons.map((reason) => (
-                  <div key={reason.value} className="flex items-center space-x-3">
+                  <div key={reason.value} className="flex items-center space-x-3 p-2 rounded hover:bg-white/5 transition-colors">
                     <RadioGroupItem 
                       value={reason.value} 
                       id={reason.value} 
                       className="border-white/30 text-white data-[state=checked]:bg-white/20 data-[state=checked]:border-white"
                     />
-                    <Label htmlFor={reason.value} className="text-white/80 text-sm">{reason.label}</Label>
+                    <Label htmlFor={reason.value} className="text-white/80 text-sm cursor-pointer flex-1">{reason.label}</Label>
                   </div>
                 ))}
               </RadioGroup>
@@ -228,23 +226,23 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
                 placeholder="Provide any additional context that might help us review this content..."
                 value={flagDescription}
                 onChange={(e) => setFlagDescription(e.target.value)}
-                className="neo-glass-input mt-2 resize-none h-20"
+                className="neo-glass-input mt-2 resize-none h-20 bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 focus:border-white/20"
               />
             </div>
           </div>
           
-          <DialogFooter className="gap-2 mt-6">
+          <DialogFooter className="gap-2 mt-6 pt-4 border-t border-white/10">
             <Button 
               variant="outline" 
               onClick={() => setShowFlagDialog(false)}
-              className="neo-glass-button secondary"
+              className="neo-glass-button secondary bg-white/5 hover:bg-white/10 border border-white/10"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleFlag} 
               disabled={!flagReason || flagPulseMutation.isPending}
-              className="neo-glass-button"
+              className="neo-glass-button bg-blue-600 hover:bg-blue-700 text-white"
             >
               {flagPulseMutation.isPending ? "Submitting..." : "Submit Report"}
             </Button>
