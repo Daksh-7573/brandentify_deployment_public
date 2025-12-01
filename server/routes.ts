@@ -4648,8 +4648,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (notifError) {
         console.error('[POST /pulse-comments] ❌ Failed to create notification:', {
           error: notifError instanceof Error ? notifError.message : String(notifError),
-          pulseId: newComment.pulseId,
-          pulseOwnerId: (await storage.getPulseById(newComment.pulseId))?.userId
+          pulseId: newComment.pulseId
         });
         // Don't fail the comment if notification fails
       }
