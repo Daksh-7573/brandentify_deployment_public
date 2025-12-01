@@ -20,7 +20,7 @@ import { smartQuestAllocator } from './smart-quest-allocator';
 import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
 import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
 import { fromZonedTime } from 'date-fns-tz';
-import { addDays, startOfDay, setHours, setMinutes } from 'date-fns';
+import { addDays, startOfDay, setHours, setMinutes, setSeconds } from 'date-fns';
 
 class TimezoneAwareQuestScheduler {
   private isSchedulerActive = false;
@@ -160,7 +160,8 @@ class TimezoneAwareQuestScheduler {
   }
 
   /**
-   * Update user's nextQuestAssignmentTime to tomorrow at midnight in their timezone
+   * Update user's nextQuestAssignmentTime to tomorrow at 12:00:01 AM in their timezone
+   * This is 1 second after the quest expiration time (12:00:00 AM)
    */
   private async updateNextAssignmentTime(userId: number, timezone: string) {
     try {
@@ -180,25 +181,27 @@ class TimezoneAwareQuestScheduler {
   }
 
   /**
-   * Calculate the quest expiration time (user's local midnight at 12:00 AM)
-   * UPDATED: Now expires at 12:00 AM local time (not 12:01 AM)
-   * This creates a 1-second gap between expiration and 12:01 AM UTC generation for new quests
+   * Calculate the next quest generation time (user's local midnight + 1 second)
+   * UPDATED: New quests generate at 12:00:01 AM local time
+   * Old quests expire at 12:00 AM local time
+   * This creates a 1-second gap between expiration and generation in user's local timezone
    */
   private calculateNextMidnight(timezone: string): Date {
     try {
-      // Get tomorrow's date at 00:00 (midnight) in the user's timezone
+      // Get tomorrow's date at 00:00:01 (midnight + 1 second) in the user's timezone
       const tomorrow = addDays(new Date(), 1);
-      const tomorrowAtMidnight = setHours(setMinutes(startOfDay(tomorrow), 0), 0); // 00:00:00
+      const tomorrowAtMidnightPlusOne = setHours(setMinutes(setSeconds(startOfDay(tomorrow), 1), 0), 0); // 00:00:01
       
       // Convert this local time (in user's timezone) to UTC
-      const expirationTimeUTC = fromZonedTime(tomorrowAtMidnight, timezone);
+      const generationTimeUTC = fromZonedTime(tomorrowAtMidnightPlusOne, timezone);
       
-      console.log(`[TimezoneQuestScheduler] 🕐 Calculated quest expiration for timezone ${timezone}:`);
-      console.log(`  - Local time: 12:00 AM (00:00:00)`);
-      console.log(`  - UTC time: ${expirationTimeUTC.toISOString()}`);
-      console.log(`  - Purpose: Quests expire at this time, new ones generate at 12:01 AM UTC (1-second gap)`);
+      console.log(`[TimezoneQuestScheduler] 🕐 Calculated quest generation for timezone ${timezone}:`);
+      console.log(`  - Old quests expire: 12:00:00 AM local time`);
+      console.log(`  - New quests generate: 12:00:01 AM local time`);
+      console.log(`  - UTC time for generation: ${generationTimeUTC.toISOString()}`);
+      console.log(`  - Purpose: 1-second gap between expiration and generation (all in local timezone)`);
       
-      return expirationTimeUTC;
+      return generationTimeUTC;
       
     } catch (error) {
       console.error(`[TimezoneQuestScheduler] Error calculating quest expiration for timezone ${timezone}:`, error);

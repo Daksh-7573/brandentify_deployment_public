@@ -6,6 +6,20 @@ Brandentifier is an AI-driven career development platform designed to help users
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (2024-12-01)
+### Quest Timing Updated - Both Generation & Expiration in Local Timezone ✅
+- **Expiration Time**: 12:00 AM user's local timezone
+- **Generation Time**: 12:00:01 AM user's local timezone (1-second gap, also local)
+- **How It Works**:
+  - All quest timing now happens in the user's local timezone
+  - Old quests expire at 12:00:00 AM
+  - New quests generate at 12:00:01 AM (1-second gap for clean transitions)
+  - Timezone-aware scheduler checks every 15 minutes for users due for generation
+- **Implementation**: 
+  - Updated `calculateNextMidnight()` to calculate 12:00:01 AM local time
+  - Properly converts to UTC using date-fns-tz for scheduler comparison
+  - Added `setSeconds` import from date-fns for precise timing
+
 ## System Architecture
 ### Frontend
 - **Framework**: React with TypeScript, Vite
