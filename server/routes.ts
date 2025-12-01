@@ -3833,7 +3833,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User is already a client" });
       }
       
-      // Create pending client endorsement
+      // Create client endorsement (auto-approved)
       const endorsementData = {
         projectId,
         clientName: targetUser.name || "Client",
@@ -3842,7 +3842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         clientCompany: targetUser.company,
         profileLink: profileUrl,
         userId: targetUser.id,
-        approvalStatus: "Pending"
+        approvalStatus: "Approved"
       };
       
       const endorsement = await storage.createProjectEndorsement(endorsementData);
@@ -4488,7 +4488,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         rating: rating || null,
         profileLink,
         userId: null,
-        approvalStatus: "Pending"
+        approvalStatus: "Approved"
       };
       
       const saved = await db.insert(projectEndorsements).values(endorsementData).returning();

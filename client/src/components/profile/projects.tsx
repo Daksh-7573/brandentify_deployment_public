@@ -2142,9 +2142,9 @@ export default function Projects() {
                     <div className="space-y-4">
                       <h3 className="text-sm font-medium">Client Endorsements</h3>
                       
-                      {endorsements.filter(e => e.approvalStatus === 'Approved').length > 0 ? (
+                      {endorsements.length > 0 ? (
                         <div className="space-y-2">
-                          {endorsements.filter(e => e.approvalStatus === 'Approved').map((endorsement) => (
+                          {endorsements.map((endorsement) => (
                             <div key={endorsement.id} className="p-3 border rounded-lg">
                               <div className="flex items-center justify-between">
                                 <div>
@@ -2501,9 +2501,9 @@ export default function Projects() {
               </TabsContent>
               
               <TabsContent value="endorsements" className="space-y-6 mt-4">
-                {endorsements.filter(e => e.approvalStatus === 'Approved').length > 0 ? (
+                {endorsements.length > 0 ? (
                   <div className="space-y-4">
-                    {endorsements.filter(e => e.approvalStatus === 'Approved').map((endorsement) => (
+                    {endorsements.map((endorsement) => (
                       <div key={endorsement.id} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
