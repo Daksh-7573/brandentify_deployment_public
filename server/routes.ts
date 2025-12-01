@@ -4629,7 +4629,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create notification for pulse owner (if not commenting on own pulse)
       try {
-        const pulse = await storage.getPulseById(newComment.pulseId);
+        const pulseResult = await pool.query(
+          'SELECT id, user_id as "userId", title, content FROM pulses WHERE id = $1',
+          [newComment.pulseId]
+        );
+        const pulse = pulseResult.rows[0];
         
         if (pulse && pulse.userId !== newComment.userId) {
           const commenterName = user?.name || 'Someone';
@@ -4649,8 +4653,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (notifError) {
         console.error('[POST /pulse-comments] ❌ Failed to create notification:', {
           error: notifError instanceof Error ? notifError.message : String(notifError),
-          pulseId: newComment.pulseId,
-          pulseOwnerId: (await storage.getPulseById(newComment.pulseId))?.userId
+          pulseId: newComment.pulseId
         });
         // Don't fail the comment if notification fails
       }
