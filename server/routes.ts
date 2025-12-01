@@ -4618,9 +4618,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get the user data to return with the response
       const user = await storage.getUser(newComment.userId);
+      
+      // Map to camelCase for client consistency
       const commentWithUser = {
-        ...newComment,
+        id: newComment.id,
+        pulseId: newComment.pulseId,
+        userId: newComment.userId,
+        content: newComment.content,
+        createdAt: newComment.createdAt,
         user: user ? {
+          id: user.id,
           name: user.name,
           photoURL: user.photoURL
         } : undefined
