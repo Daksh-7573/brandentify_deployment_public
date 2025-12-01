@@ -118,6 +118,8 @@ import {
   InsertNewsUserPreference,
   users,
   projects,
+  projectCollaborators,
+  projectEndorsements,
   pulses,
   userQuests,
   questDefinitions,
