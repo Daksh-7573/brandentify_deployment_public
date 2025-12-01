@@ -49,8 +49,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { data: comments = [], isLoading, refetch } = useQuery<Comment[]>({
     queryKey: [`/api/pulses/${pulseId}/comments`],
     enabled: isExpanded,
-    staleTime: 60000, // Keep data fresh for 1 minute to avoid unnecessary refetches
-    gcTime: 300000, // Keep in cache for 5 minutes
+    staleTime: 0,
+    gcTime: 0,
   });
 
   // Force refetch when expanded
@@ -84,72 +84,16 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         content,
       });
     },
-    onMutate: async (content: string) => {
-      // Cancel ongoing refetches
-      await queryClient.cancelQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
-
-      // Get previous comments
-      const previousComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]) || [];
-
-      // Create optimistic comment
-      const optimisticComment: Comment = {
-        id: -1,
-        pulseId,
-        userId: user?.id || 0,
-        content,
-        createdAt: new Date(),
-        user: {
-          id: user?.id || 0,
-          name: user?.name || "You",
-          photoURL: user?.photoURL,
-        },
-      };
-
-      // Update query data with optimistic comment
-      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], [
-        ...previousComments,
-        optimisticComment,
-      ]);
-
-      return { previousComments };
-    },
-    onSuccess: (data) => {
-      // Get current comments from cache
-      const currentComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]) || [];
-
-      // Ensure data has user info, fallback to optimistic user if needed
-      const serverComment = data as Comment;
-      const serverCommentWithUser: Comment = {
-        ...serverComment,
-        user: serverComment.user || {
-          id: user?.id || 0,
-          name: user?.name || "You",
-          photoURL: user?.photoURL,
-        },
-      };
-
-      // Replace optimistic comment with real one from server
-      const updatedComments = currentComments.map((c) =>
-        c.id === -1 ? serverCommentWithUser : c
-      );
-
-      // Make sure the comment is in the list (in case it wasn't found by id === -1)
-      if (!updatedComments.some(c => c.id === serverCommentWithUser.id)) {
-        updatedComments.push(serverCommentWithUser);
-      }
-
-      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], updatedComments);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
       toast({
         title: "Comment posted",
         description: "Your comment has been added successfully.",
       });
     },
-    onError: (error, variables, context) => {
-      // Rollback to previous comments
-      if (context?.previousComments) {
-        queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], context.previousComments);
-      }
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to post comment. Please try again.",

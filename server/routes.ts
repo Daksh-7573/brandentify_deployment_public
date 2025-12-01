@@ -4614,20 +4614,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         UPDATE pulses 
         SET reach_score = (comments * 3) + insightful_count - misinformed_count
         WHERE id = $1
-      `, [(newComment as any).pulse_id]);
+      `, [newComment.pulseId]);
       
       // Get the user data to return with the response
-      const user = await storage.getUser((newComment as any).user_id);
-      
-      // Map to camelCase for client consistency
+      const user = await storage.getUser(newComment.userId);
       const commentWithUser = {
-        id: newComment.id,
-        pulseId: (newComment as any).pulse_id,
-        userId: (newComment as any).user_id,
-        content: newComment.content,
-        createdAt: (newComment as any).created_at,
+        ...newComment,
         user: user ? {
-          id: user.id,
           name: user.name,
           photoURL: user.photoURL
         } : undefined
@@ -4635,9 +4628,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create notification for pulse owner (if not commenting on own pulse)
       try {
-        const pulse = await storage.getPulseById((newComment as any).pulse_id);
+        const pulse = await storage.getPulseById(newComment.pulseId);
         
-        if (pulse && pulse.userId !== (newComment as any).user_id) {
+        if (pulse && pulse.userId !== newComment.userId) {
           const commenterName = user?.name || 'Someone';
           const pulseTitle = pulse.title || pulse.content;
           
@@ -4655,7 +4648,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (notifError) {
         console.error('[POST /pulse-comments] ❌ Failed to create notification:', {
           error: notifError instanceof Error ? notifError.message : String(notifError),
-          pulseId: newComment.pulseId
+          pulseId: newComment.pulseId,
+          pulseOwnerId: (await storage.getPulseById(newComment.pulseId))?.userId
         });
         // Don't fail the comment if notification fails
       }
