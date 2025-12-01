@@ -4614,18 +4614,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         UPDATE pulses 
         SET reach_score = (comments * 3) + insightful_count - misinformed_count
         WHERE id = $1
-      `, [newComment.pulseId]);
+      `, [(newComment as any).pulse_id]);
       
       // Get the user data to return with the response
-      const user = await storage.getUser(newComment.userId);
+      const user = await storage.getUser((newComment as any).user_id);
       
       // Map to camelCase for client consistency
       const commentWithUser = {
         id: newComment.id,
-        pulseId: newComment.pulseId,
-        userId: newComment.userId,
+        pulseId: (newComment as any).pulse_id,
+        userId: (newComment as any).user_id,
         content: newComment.content,
-        createdAt: newComment.createdAt,
+        createdAt: (newComment as any).created_at,
         user: user ? {
           id: user.id,
           name: user.name,
@@ -4635,9 +4635,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create notification for pulse owner (if not commenting on own pulse)
       try {
-        const pulse = await storage.getPulseById(newComment.pulseId);
+        const pulse = await storage.getPulseById((newComment as any).pulse_id);
         
-        if (pulse && pulse.userId !== newComment.userId) {
+        if (pulse && pulse.userId !== (newComment as any).user_id) {
           const commenterName = user?.name || 'Someone';
           const pulseTitle = pulse.title || pulse.content;
           
