@@ -7,6 +7,12 @@ Brandentifier is an AI-driven career development platform that helps users build
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2024-12-01)
+### Flag Popup Issue Fixed ✅
+- **Problem**: Flag dialog was clipped by parent Card's `overflow-hidden` class
+- **Solution**: Removed `overflow-hidden` from pulse card component
+- **Result**: Flag popup now opens properly without cutting off
+
+
 ### Approval System Removed for Better UX ✅
 - **Client Endorsements**: Changed from "Pending" approval to "Approved" on creation
   - Auto-approved endorsements are immediately visible on project cards

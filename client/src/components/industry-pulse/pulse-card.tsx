@@ -169,7 +169,7 @@ export default function PulseCard({
   };
   
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         {/* Header with user info and timestamp */}
         <div className="flex items-start gap-3">
