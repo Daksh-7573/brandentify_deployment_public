@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft, Briefcase, Award, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,6 +50,7 @@ export default function CreatePulsePage() {
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [clientProfile, setClientProfile] = useState("");
+  const [addToProfile, setAddToProfile] = useState(false);
 
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
@@ -77,6 +79,7 @@ export default function CreatePulsePage() {
       setActiveProjectTab('details');
       setTeamMembers([]);
       setClientProfile("");
+      setAddToProfile(false);
       
       // Invalidate pulse cache so user sees their new post
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
@@ -301,6 +304,59 @@ export default function CreatePulsePage() {
       }
     }
     
+    // If checkbox is checked and not a project pulse, create project
+    if (addToProfile && pulseType !== 'project') {
+      try {
+        // Check project limit first
+        const projectsResponse = await apiRequest('GET', `/api/users/${user.id}/projects`);
+        const projects = await projectsResponse.json();
+        
+        if (projects && projects.length >= 6) {
+          toast({
+            title: "Project Limit Reached",
+            description: "You can only have 6 projects. Please remove one before adding another.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Create the project
+        const projectData = {
+          userId: user.id,
+          title: pulseTitle,
+          description: pulseContent,
+          industry: pulseIndustry,
+          category: pulseCategory || null,
+          projectUrl: null,
+          startDate: new Date().toISOString().split('T')[0],
+          mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
+        };
+        
+        const projectResponse = await apiRequest('POST', '/api/projects', projectData);
+        const createdProject = await projectResponse.json();
+        
+        // Link project to pulse
+        pulseData.projectId = createdProject.id;
+        
+        toast({
+          title: "Project Created",
+          description: "Your project has been saved to your profile.",
+        });
+      } catch (error: any) {
+        console.error("Error creating project:", error);
+        let errorMessage = "Failed to create project. The pulse will be created without adding to profile.";
+        if (error?.message?.includes("Max 6 projects")) {
+          errorMessage = "Project limit reached (max 6 projects).";
+        }
+        
+        toast({
+          title: "Note",
+          description: errorMessage,
+        });
+        // Continue with pulse creation anyway
+      }
+    }
+
     // Submit the pulse
     try {
       await createPulseMutation.mutateAsync(pulseData as InsertPulse);
@@ -983,12 +1039,36 @@ export default function CreatePulsePage() {
               )}
 
               <NeoGlassSection className="mb-8 sm:mb-12">
-                <div className="pt-3 sm:pt-4">
+                <div className="space-y-4">
+                  {/* Checkbox: Add to Profile as Project */}
+                  {pulseType !== 'project' && (
+                    <div className="flex items-center space-x-3">
+                      <Checkbox
+                        id="add-to-profile"
+                        checked={addToProfile}
+                        onCheckedChange={(checked) => setAddToProfile(checked as boolean)}
+                        className="border-white/30"
+                      />
+                      <div className="flex-1">
+                        <Label 
+                          htmlFor="add-to-profile"
+                          className="text-white text-sm cursor-pointer hover:text-white/80"
+                        >
+                          Add to Profile as Project
+                        </Label>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Automatically add this to your profile projects for better visibility
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <button 
                     type="button"
                     onClick={handleCreatePulse}
                     disabled={createPulseMutation.isPending || hasWordLimitErrors()}
                     className="neo-glass-button primary w-full sm:w-auto flex items-center justify-center gap-2 h-10 sm:h-12 text-sm sm:text-base px-4 sm:px-6"
+                    data-testid="button-publish-pulse"
                   >
                     {createPulseMutation.isPending ? (
                       <>
