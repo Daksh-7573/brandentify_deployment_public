@@ -4609,10 +4609,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       feedCache.invalidate(commentData.userId);
       console.log(`[POST /pulse-comments] Invalidated feed cache for user ${commentData.userId}`);
       
-      // Recalculate reach_score: (comments × 3) + insightful - misinformed
+      // Increment comment count and recalculate reach_score: (comments × 3) + insightful - misinformed
       await pool.query(`
         UPDATE pulses 
-        SET reach_score = (comments * 3) + insightful_count - misinformed_count
+        SET comments = comments + 1,
+            reach_score = (comments + 1) * 3 + insightful_count - misinformed_count
         WHERE id = $1
       `, [newComment.pulseId]);
       
@@ -4693,11 +4694,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (deleted) {
         console.log(`[DELETE /pulse-comments/${commentId}] Comment deleted successfully`);
         
-        // Recalculate reach_score after comment deletion
+        // Decrement comment count and recalculate reach_score after comment deletion
         if (pulseId) {
           await pool.query(`
             UPDATE pulses 
-            SET reach_score = (comments * 3) + insightful_count - misinformed_count
+            SET comments = MAX(0, comments - 1),
+                reach_score = (MAX(0, comments - 1) * 3) + insightful_count - misinformed_count
             WHERE id = $1
           `, [pulseId]);
         }

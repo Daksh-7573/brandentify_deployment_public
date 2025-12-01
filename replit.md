@@ -16,6 +16,26 @@ Preferred communication style: Simple, everyday language.
   - Team member visibility improved for better collaboration display
   - Removed approval workflow complexity
 
+### Notifications Added for Project Selection ✅
+- **Team Member Notification**: When someone adds a user as team member
+  - Message: "[Project Owner] added you as a team member to '[Project Title]'"
+  - Category: `collaboration`
+- **Client Endorsement Notification**: When someone adds a user as client
+  - Message: "[Project Owner] added you as a client to '[Project Title]'"
+  - Category: `endorsement`
+
+### Comment Posting System Fixed ✅
+- **Issue 1 - Comments Count Not Updated**: Backend now increments `comments` field when comment is added
+  - Updated SQL query to `UPDATE pulses SET comments = comments + 1, reach_score = ...`
+  - Decrement on comment deletion with `comments = MAX(0, comments - 1)`
+- **Issue 2 - Missing Optimistic Updates**: Frontend now shows comments instantly
+  - Added `onMutate` hook to create optimistic comment before API response
+  - Temporary negative ID used for optimistic comments, replaced on success
+  - Rollback functionality if API call fails
+- **Issue 3 - Same for Delete**: Comments disappear immediately when deleted
+  - Optimistic removal from UI with rollback on failure
+  - Comment count decremented automatically
+
 ## Previous Changes (2024-11-30)
 ### Testing/Production Parity - Phase 1 & Phase 2 COMPLETE & TESTED ✅
 - **Phase 1.1 COMPLETED**: Resume contexts now use PostgreSQL (`resume_context_cache` table) instead of global variables

@@ -84,8 +84,47 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         content,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+    onMutate: async (content: string) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+      
+      // Snapshot the previous comments
+      const previousComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]);
+      
+      // Create optimistic comment
+      const optimisticComment: Comment = {
+        id: Math.floor(Math.random() * -1000000), // Temporary ID
+        pulseId,
+        userId: user?.id || 0,
+        content,
+        createdAt: new Date(),
+        user: user ? {
+          id: user.id,
+          name: user.name,
+          photoURL: user.photoURL,
+        } : undefined,
+      };
+      
+      // Update cache with optimistic comment
+      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], (old: Comment[] = []) => [
+        ...old,
+        optimisticComment,
+      ]);
+      
+      return { previousComments };
+    },
+    onSuccess: (newComment) => {
+      // Replace temporary optimistic comments with real ones
+      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], (old: Comment[] = []) => {
+        return old.map((comment) => {
+          // Replace optimistic comment with server response if IDs match on content
+          if (comment.id < 0 && comment.content === newComment.content && comment.userId === newComment.userId) {
+            return newComment;
+          }
+          return comment;
+        });
+      });
+      
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
       toast({
@@ -93,7 +132,12 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         description: "Your comment has been added successfully.",
       });
     },
-    onError: () => {
+    onError: (error, variables, context: any) => {
+      // Rollback to previous comments on error
+      if (context?.previousComments) {
+        queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], context.previousComments);
+      }
+      
       toast({
         title: "Error",
         description: "Failed to post comment. Please try again.",
@@ -109,15 +153,33 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         userId: user?.id,
       });
     },
+    onMutate: async (commentId: number) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+      
+      // Snapshot the previous comments
+      const previousComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]);
+      
+      // Update cache - remove the comment optimistically
+      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], (old: Comment[] = []) => {
+        return old.filter((comment) => comment.id !== commentId);
+      });
+      
+      return { previousComments };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       toast({
         title: "Comment deleted",
         description: "Your comment has been removed.",
       });
     },
-    onError: () => {
+    onError: (error, variables, context: any) => {
+      // Rollback to previous comments on error
+      if (context?.previousComments) {
+        queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], context.previousComments);
+      }
+      
       toast({
         title: "Error",
         description: "Failed to delete comment. Please try again.",
