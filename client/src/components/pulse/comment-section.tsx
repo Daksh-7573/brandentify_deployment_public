@@ -51,16 +51,15 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { user } = useAuth();
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
-  const [displayedCount, setDisplayedCount] = useState(5); // Show 5 newest initially
+  const [displayedCount, setDisplayedCount] = useState(10); // Show 10 newest initially
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const commentsEndRef = useRef<HTMLDivElement>(null);
   const topSentinelRef = useRef<HTMLDivElement>(null);
-  const COMMENTS_PER_LOAD = 5; // Load 5 at a time
+  const COMMENTS_PER_LOAD = 10; // Load 10 at a time
 
   // Clear all caches on mount
   useEffect(() => {
     if (isExpanded) {
-      setDisplayedCount(5); // Reset pagination
+      setDisplayedCount(10); // Reset pagination to show 10 initially
       setIsLoadingMore(false);
       const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
       localStorage.removeItem(cacheKey);
@@ -112,15 +111,6 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore, isLoading]);
 
-  // Auto-scroll to latest comment when comments change
-  useEffect(() => {
-    if (isExpanded && reversedComments.length > 0) {
-      setTimeout(() => {
-        commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 100);
-    }
-  }, [reversedComments, isExpanded]);
-
   // Debug: Log comment data
   console.log(`[CommentSection] Comments for pulse ${pulseId}:`, reversedComments);
   if (reversedComments.length > 0) {
@@ -129,12 +119,12 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
 
   // Create comment mutation
   const createCommentMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async (content: string): Promise<Comment> => {
       return apiRequest("POST", `/api/pulse-comments`, {
         pulseId,
         userId: user?.id,
         content,
-      });
+      }) as unknown as Promise<Comment>;
     },
     onMutate: async (content: string) => {
       // Cancel outgoing refetches
@@ -165,7 +155,7 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       
       return { previousComments };
     },
-    onSuccess: (newComment) => {
+    onSuccess: (newComment: Comment) => {
       // Replace temporary optimistic comments with real ones
       queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], (old: Comment[] = []) => {
         return old.map((comment) => {
@@ -335,8 +325,6 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                     </div>
                   </div>
                 ))}
-                {/* Scroll anchor for auto-scroll to latest comment */}
-                <div ref={commentsEndRef} />
               </div>
             </div>
           )}
