@@ -82,9 +82,10 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     }
   }, [isExpanded, refetch]);
 
-  // Get currently displayed comments
-  const displayedComments = comments.slice(0, displayedCount);
+  // Get currently displayed comments - show newest comments, load older ones from top
+  const displayedComments = comments.slice(Math.max(0, comments.length - displayedCount), comments.length);
   const hasMore = displayedCount < comments.length;
+  const remainingCount = comments.length - displayedCount;
 
   // Auto-scroll to latest comment when comments change
   useEffect(() => {
@@ -256,6 +257,29 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
             </p>
           ) : (
             <div className="space-y-3">
+              {/* Load More Button at Top */}
+              {hasMore && (
+                <Button
+                  onClick={() => setDisplayedCount(prev => prev + COMMENTS_PER_LOAD)}
+                  variant="ghost"
+                  className="w-full text-white/60 hover:text-white hover:bg-white/10"
+                  data-testid="button-load-more-comments"
+                >
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                  Load more comments ({remainingCount} remaining)
+                </Button>
+              )}
+
+              {/* Skeleton Loaders While Loading More Comments */}
+              {isLoading && displayedCount > comments.length && (
+                <div className="space-y-3">
+                  <CommentSkeleton />
+                  <CommentSkeleton />
+                  <CommentSkeleton />
+                </div>
+              )}
+
+              {/* Comments List */}
               <div className="max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
                 {displayedComments.map((comment) => (
                   <div
@@ -301,19 +325,6 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                 {/* Scroll anchor for auto-scroll to latest comment */}
                 <div ref={commentsEndRef} />
               </div>
-
-              {/* Load More Button */}
-              {hasMore && (
-                <Button
-                  onClick={() => setDisplayedCount(prev => prev + COMMENTS_PER_LOAD)}
-                  variant="ghost"
-                  className="w-full text-white/60 hover:text-white hover:bg-white/10"
-                  data-testid="button-load-more-comments"
-                >
-                  <ChevronDown className="h-4 w-4 mr-1" />
-                  Load more comments ({comments.length - displayedCount} remaining)
-                </Button>
-              )}
             </div>
           )}
 
