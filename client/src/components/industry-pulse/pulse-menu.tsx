@@ -41,18 +41,27 @@ interface PulseMenuProps {
 export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: PulseMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [flagReason, setFlagReason] = useState("");
   const [flagDescription, setFlagDescription] = useState("");
   
   // Check if user has already flagged this pulse
-  const { data: flagStatus } = useQuery({
+  const { data: flagStatus, refetch: refetchFlagStatus } = useQuery({
     queryKey: ['/api/pulses', pulseId, 'flag-status', currentUserId],
     queryFn: async () => {
       const res = await fetch(`/api/pulses/${pulseId}/flag-status/${currentUserId}`);
       return res.json();
     },
-    enabled: !showFlagDialog && !pulseCreatorId, // Only check if not the creator
+    enabled: !pulseCreatorId, // Enable for non-creators
   });
+  
+  // Refetch flag status when dropdown opens
+  const handleDropdownOpenChange = (open: boolean) => {
+    setShowDropdown(open);
+    if (open && !pulseCreatorId) {
+      refetchFlagStatus();
+    }
+  };
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -138,7 +147,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
   
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={showDropdown} onOpenChange={handleDropdownOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="ghost" 
@@ -177,7 +186,10 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem 
-              onClick={() => setShowFlagDialog(true)}
+              onClick={() => {
+                setShowFlagDialog(true);
+                setShowDropdown(false);
+              }}
               className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-white/20"
               style={{ 
                 color: '#ffffff !important'
