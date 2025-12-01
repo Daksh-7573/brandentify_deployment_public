@@ -49,8 +49,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { data: comments = [], isLoading, refetch } = useQuery<Comment[]>({
     queryKey: [`/api/pulses/${pulseId}/comments`],
     enabled: isExpanded,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 60000, // Keep data fresh for 1 minute to avoid unnecessary refetches
+    gcTime: 300000, // Keep in cache for 5 minutes
   });
 
   // Force refetch when expanded
@@ -139,13 +139,8 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       }
 
       queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], updatedComments);
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
-      
-      // Refetch to ensure fresh data with user info
-      setTimeout(() => {
-        refetch();
-      }, 100);
-      
       toast({
         title: "Comment posted",
         description: "Your comment has been added successfully.",
