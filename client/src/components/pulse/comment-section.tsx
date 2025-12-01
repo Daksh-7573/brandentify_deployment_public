@@ -84,10 +84,9 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     }
   }, [isExpanded, refetch]);
 
-  // Reverse comments (newest first) and get displayed ones
-  const reversedComments = [...allComments].reverse();
-  const displayedComments = reversedComments.slice(0, displayedCount);
-  const hasMore = displayedCount < reversedComments.length;
+  // Get displayed comments (oldest first at top, newest at bottom)
+  const displayedComments = allComments.slice(0, displayedCount);
+  const hasMore = displayedCount < allComments.length;
 
   // Intersection Observer for auto-loading older comments
   useEffect(() => {
@@ -112,9 +111,9 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   }, [hasMore, isLoadingMore, isLoading]);
 
   // Debug: Log comment data
-  console.log(`[CommentSection] Comments for pulse ${pulseId}:`, reversedComments);
-  if (reversedComments.length > 0) {
-    console.log(`[CommentSection] First comment user data:`, reversedComments[0].user);
+  console.log(`[CommentSection] Comments for pulse ${pulseId}:`, allComments);
+  if (allComments.length > 0) {
+    console.log(`[CommentSection] First comment user data:`, allComments[0].user);
   }
 
   // Create comment mutation
@@ -260,13 +259,13 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       {isExpanded && (
         <div className="mt-4 space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
           {/* Comments List */}
-          {isLoading && reversedComments.length === 0 ? (
+          {isLoading && allComments.length === 0 ? (
             <div className="space-y-3">
               <CommentSkeleton />
               <CommentSkeleton />
               <CommentSkeleton />
             </div>
-          ) : reversedComments.length === 0 ? (
+          ) : allComments.length === 0 ? (
             <p className="text-center text-white/50 py-4 text-sm">
               No comments yet. Be the first to comment!
             </p>
