@@ -8101,7 +8101,7 @@ ${extractedText.substring(0, 5000)}
       // Check if user has already flagged this pulse
       const existingFlag = await pool.query(`
         SELECT id FROM pulse_flags 
-        WHERE pulse_id = $1 AND reporter_id = $2
+        WHERE pulse_id = $1 AND flagged_by_user_id = $2
       `, [pulseId, userId]);
 
       if (existingFlag.rows.length > 0) {
@@ -8110,9 +8110,9 @@ ${extractedText.substring(0, 5000)}
 
       // Create the flag
       const flagResult = await pool.query(`
-        INSERT INTO pulse_flags (pulse_id, reporter_id, reason, description)
+        INSERT INTO pulse_flags (pulse_id, flagged_by_user_id, reason, details)
         VALUES ($1, $2, $3, $4)
-        RETURNING id, pulse_id as "pulseId", reporter_id as "reporterId", reason, description, status, created_at as "createdAt"
+        RETURNING id, pulse_id as "pulseId", flagged_by_user_id as "flaggedByUserId", reason, details, status, created_at as "createdAt"
       `, [pulseId, userId, reason, description]);
       
       const flag = flagResult.rows[0];

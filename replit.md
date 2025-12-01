@@ -7,6 +7,16 @@ Brandentifier is an AI-driven career development platform that helps users build
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2024-12-01)
+### Flag System Fixed ✅
+- **Root Cause**: Database schema mismatch - code expected column names that didn't exist
+- **Error**: `column "reporter_id" does not exist`
+- **Actual DB Columns**: `flagged_by_user_id`, `details`, `reviewed_by_user_id`, `review_notes`
+- **Expected in Code**: `reporter_id`, `description`, `reviewed_by`, `review_note`
+- **Solution**: 
+  - Updated `shared/schema.ts` to match actual database column names
+  - Updated `server/routes.ts` flag endpoint SQL queries to use correct columns
+  - Fixed both read and insert operations
+- **Result**: Flag system now works perfectly - users can report inappropriate pulses ✅
 ### Flag Popup UI Completely Fixed ✅
 - **Problem 1**: Flag dialog was clipped by parent Card's `overflow-hidden` class
   - **Solution**: Removed `overflow-hidden` from pulse card component

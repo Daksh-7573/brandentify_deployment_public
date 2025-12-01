@@ -693,12 +693,12 @@ export const pollVotes = pgTable("poll_votes", {
 export const pulseFlags = pgTable("pulse_flags", {
   id: serial("id").primaryKey(),
   pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
-  reporterId: integer("reporter_id").references(() => users.id).notNull(),
+  flaggedByUserId: integer("flagged_by_user_id").references(() => users.id).notNull(),
   reason: text("reason").notNull(), // Reason for flagging (inappropriate, spam, etc.)
-  description: text("description"), // Additional details from reporter
-  status: flagStatusEnum("status").default("pending"),
-  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed the flag
-  reviewNote: text("review_note"), // Note from admin during review
+  details: text("details"), // Additional details from reporter
+  status: text("status").default("pending"),
+  reviewedByUserId: integer("reviewed_by_user_id").references(() => users.id), // Admin who reviewed the flag
+  reviewNotes: text("review_notes"), // Note from admin during review
   createdAt: timestamp("created_at").defaultNow(),
   reviewedAt: timestamp("reviewed_at"),
 });
@@ -732,8 +732,8 @@ export const insertSubscriptionTransactionSchema = createInsertSchema(subscripti
 export const insertPulseFlagSchema = createInsertSchema(pulseFlags).omit({
   id: true,
   status: true,
-  reviewedBy: true,
-  reviewNote: true,
+  reviewedByUserId: true,
+  reviewNotes: true,
   createdAt: true,
   reviewedAt: true
 });
