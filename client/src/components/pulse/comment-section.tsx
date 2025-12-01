@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, Trash2, Loader2, ChevronDown } from "lucide-react";
+import { Send, Trash2, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -51,14 +51,17 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   const { user } = useAuth();
   const { toast } = useToast();
   const [commentText, setCommentText] = useState("");
-  const [displayedCount, setDisplayedCount] = useState(5); // Show 5 initially
+  const [displayedCount, setDisplayedCount] = useState(5); // Show 5 newest initially
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
   const COMMENTS_PER_LOAD = 5; // Load 5 at a time
 
   // Clear all caches on mount
   useEffect(() => {
     if (isExpanded) {
       setDisplayedCount(5); // Reset pagination
+      setIsLoadingMore(false);
       const cacheKey = `api_cache_/api/pulses/${pulseId}/comments`;
       localStorage.removeItem(cacheKey);
       // Also invalidate React Query cache and refetch
@@ -68,7 +71,7 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
   }, [pulseId, isExpanded]);
 
   // Fetch comments for this pulse - force fresh data
-  const { data: comments = [], isLoading, refetch } = useQuery<Comment[]>({
+  const { data: allComments = [], isLoading, refetch } = useQuery<Comment[]>({
     queryKey: [`/api/pulses/${pulseId}/comments`],
     enabled: isExpanded,
     staleTime: 0,
@@ -82,23 +85,46 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
     }
   }, [isExpanded, refetch]);
 
-  // Get currently displayed comments
-  const displayedComments = comments.slice(0, displayedCount);
-  const hasMore = displayedCount < comments.length;
+  // Reverse comments (newest first) and get displayed ones
+  const reversedComments = [...allComments].reverse();
+  const displayedComments = reversedComments.slice(0, displayedCount);
+  const hasMore = displayedCount < reversedComments.length;
+
+  // Intersection Observer for auto-loading older comments
+  useEffect(() => {
+    if (!topSentinelRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !isLoading) {
+          setIsLoadingMore(true);
+          // Simulate a small delay for better UX
+          setTimeout(() => {
+            setDisplayedCount((prev) => prev + COMMENTS_PER_LOAD);
+            setIsLoadingMore(false);
+          }, 300);
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    observer.observe(topSentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, isLoading]);
 
   // Auto-scroll to latest comment when comments change
   useEffect(() => {
-    if (isExpanded && comments.length > 0) {
+    if (isExpanded && reversedComments.length > 0) {
       setTimeout(() => {
         commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }, 100);
     }
-  }, [comments, isExpanded]);
+  }, [reversedComments, isExpanded]);
 
   // Debug: Log comment data
-  console.log(`[CommentSection] Comments for pulse ${pulseId}:`, comments);
-  if (comments.length > 0) {
-    console.log(`[CommentSection] First comment user data:`, comments[0].user);
+  console.log(`[CommentSection] Comments for pulse ${pulseId}:`, reversedComments);
+  if (reversedComments.length > 0) {
+    console.log(`[CommentSection] First comment user data:`, reversedComments[0].user);
   }
 
   // Create comment mutation
@@ -244,19 +270,30 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       {isExpanded && (
         <div className="mt-4 space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
           {/* Comments List */}
-          {isLoading && comments.length === 0 ? (
+          {isLoading && reversedComments.length === 0 ? (
             <div className="space-y-3">
               <CommentSkeleton />
               <CommentSkeleton />
               <CommentSkeleton />
             </div>
-          ) : comments.length === 0 ? (
+          ) : reversedComments.length === 0 ? (
             <p className="text-center text-white/50 py-4 text-sm">
               No comments yet. Be the first to comment!
             </p>
           ) : (
             <div className="space-y-3">
               <div className="max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
+                {/* Sentinel for auto-loading older comments */}
+                <div ref={topSentinelRef} />
+                
+                {/* Skeleton loaders while loading more comments */}
+                {isLoadingMore && (
+                  <>
+                    <CommentSkeleton />
+                    <CommentSkeleton />
+                  </>
+                )}
+
                 {displayedComments.map((comment) => (
                   <div
                     key={comment.id}
@@ -301,19 +338,6 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
                 {/* Scroll anchor for auto-scroll to latest comment */}
                 <div ref={commentsEndRef} />
               </div>
-
-              {/* Load More Button */}
-              {hasMore && (
-                <Button
-                  onClick={() => setDisplayedCount(prev => prev + COMMENTS_PER_LOAD)}
-                  variant="ghost"
-                  className="w-full text-white/60 hover:text-white hover:bg-white/10"
-                  data-testid="button-load-more-comments"
-                >
-                  <ChevronDown className="h-4 w-4 mr-1" />
-                  Load more comments ({comments.length - displayedCount} remaining)
-                </Button>
-              )}
             </div>
           )}
 
