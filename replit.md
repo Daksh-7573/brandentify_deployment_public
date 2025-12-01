@@ -7,16 +7,18 @@ Brandentifier is an AI-driven career development platform that helps users build
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2024-12-01)
-### Flag System Fixed ✅
-- **Root Cause**: Database schema mismatch - code expected column names that didn't exist
-- **Error**: `column "reporter_id" does not exist`
-- **Actual DB Columns**: `flagged_by_user_id`, `details`, `reviewed_by_user_id`, `review_notes`
-- **Expected in Code**: `reporter_id`, `description`, `reviewed_by`, `review_note`
-- **Solution**: 
-  - Updated `shared/schema.ts` to match actual database column names
-  - Updated `server/routes.ts` flag endpoint SQL queries to use correct columns
-  - Fixed both read and insert operations
-- **Result**: Flag system now works perfectly - users can report inappropriate pulses ✅
+### Flag System Fixed & Duplicate Prevention Added ✅
+- **Root Cause #1**: Database schema mismatch - code expected column names that didn't exist
+  - **Error**: `column "reporter_id" does not exist`
+  - **Actual DB Columns**: `flagged_by_user_id`, `details`, `reviewed_by_user_id`, `review_notes`
+  - **Solution**: Updated schema and routes to use correct column names
+- **Root Cause #2**: Users could flag same pulse multiple times (showed error instead of preventing)
+  - **Solution**: 
+    - Added GET `/api/pulses/:id/flag-status/:userId` endpoint to check if user already flagged
+    - Frontend now queries this on menu open
+    - Dropdown shows "Already flagged" (green, disabled) instead of "Flag Pulse" when user has flagged
+    - Prevents duplicate flags gracefully without error message
+- **Result**: Flag system works perfectly - users can report inappropriate pulses once per pulse ✅
 ### Flag Popup UI Completely Fixed ✅
 - **Problem 1**: Flag dialog was clipped by parent Card's `overflow-hidden` class
   - **Solution**: Removed `overflow-hidden` from pulse card component

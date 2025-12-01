@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MoreHorizontal, Trash2, Flag } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MoreHorizontal, Trash2, Flag, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,6 +43,16 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
   const [showFlagDialog, setShowFlagDialog] = useState(false);
   const [flagReason, setFlagReason] = useState("");
   const [flagDescription, setFlagDescription] = useState("");
+  
+  // Check if user has already flagged this pulse
+  const { data: flagStatus } = useQuery({
+    queryKey: ['/api/pulses', pulseId, 'flag-status', currentUserId],
+    queryFn: async () => {
+      const res = await fetch(`/api/pulses/${pulseId}/flag-status/${currentUserId}`);
+      return res.json();
+    },
+    enabled: !showFlagDialog && !pulseCreatorId, // Only check if not the creator
+  });
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -91,10 +101,11 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
       setFlagReason("");
       setFlagDescription("");
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMsg = error?.response?.status === 409 ? "You already flagged this pulse" : "There was an error reporting this content. Please try again.";
       toast({
         title: "Failed to flag pulse",
-        description: "There was an error reporting this content. Please try again.",
+        description: errorMsg,
         variant: "destructive",
       });
     },
@@ -152,6 +163,17 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
             >
               <Trash2 className="mr-2 h-4 w-4" style={{ color: '#ff6b6b' }} />
               <span style={{ color: '#ff6b6b' }}>Delete Pulse</span>
+            </DropdownMenuItem>
+          ) : flagStatus?.hasFlag ? (
+            <DropdownMenuItem 
+              disabled
+              className="rounded-md px-3 py-2 text-sm font-semibold flex items-center opacity-60"
+              style={{ 
+                color: '#4ade80 !important'
+              }}
+            >
+              <Check className="mr-2 h-4 w-4" style={{ color: '#4ade80' }} />
+              <span style={{ color: '#4ade80' }}>Already flagged</span>
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem 

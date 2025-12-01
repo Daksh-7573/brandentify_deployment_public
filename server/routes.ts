@@ -8074,6 +8074,28 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Check if user has already flagged this pulse
+  apiRouter.get("/pulses/:id/flag-status/:userId", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.id);
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(pulseId) || isNaN(userId)) {
+        return res.status(400).json({ hasFlag: false });
+      }
+
+      const result = await pool.query(`
+        SELECT id FROM pulse_flags 
+        WHERE pulse_id = $1 AND flagged_by_user_id = $2
+      `, [pulseId, userId]);
+
+      res.json({ hasFlag: result.rows.length > 0 });
+    } catch (error) {
+      console.error(`[GET /pulses/:id/flag-status] Error:`, error);
+      res.json({ hasFlag: false });
+    }
+  });
+
   apiRouter.post("/pulses/:id/flag", async (req: Request, res: Response) => {
     try {
       const pulseId = parseInt(req.params.id);
@@ -8105,7 +8127,7 @@ ${extractedText.substring(0, 5000)}
       `, [pulseId, userId]);
 
       if (existingFlag.rows.length > 0) {
-        return res.status(409).json({ message: "You have already flagged this pulse" });
+        return res.status(409).json({ message: "Already flagged" });
       }
 
       // Create the flag
