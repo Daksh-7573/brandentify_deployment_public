@@ -194,59 +194,61 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Flag dialog */}
       <Dialog open={showFlagDialog} onOpenChange={setShowFlagDialog}>
-        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-md sm:max-w-lg md:max-w-xl overflow-visible">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-white text-lg font-semibold">Flag Pulse</DialogTitle>
-            <DialogDescription className="text-white/70 text-sm">
-              Help us understand why this content violates our community guidelines.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto pr-4">
-            <div>
-              <Label className="text-white text-sm font-medium">Reason for flagging</Label>
-              <RadioGroup value={flagReason} onValueChange={setFlagReason} className="mt-3 space-y-2">
-                {flagReasons.map((reason) => (
-                  <div key={reason.value} className="flex items-center space-x-3 p-2 rounded hover:bg-white/5 transition-colors">
-                    <RadioGroupItem 
-                      value={reason.value} 
-                      id={reason.value} 
-                      className="border-white/30 text-white data-[state=checked]:bg-white/20 data-[state=checked]:border-white"
-                    />
-                    <Label htmlFor={reason.value} className="text-white/80 text-sm cursor-pointer flex-1">{reason.label}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
+        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-md sm:max-w-lg md:max-w-xl py-6 max-h-[95vh] overflow-y-auto">
+          <div className="space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-white text-lg font-semibold">Flag Pulse</DialogTitle>
+              <DialogDescription className="text-white/70 text-sm">
+                Help us understand why this content violates our community guidelines.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <Label className="text-white text-sm font-medium">Reason for flagging</Label>
+                <RadioGroup value={flagReason} onValueChange={setFlagReason} className="mt-3 space-y-2">
+                  {flagReasons.map((reason) => (
+                    <div key={reason.value} className="flex items-center space-x-3 p-2 rounded hover:bg-white/5 transition-colors">
+                      <RadioGroupItem 
+                        value={reason.value} 
+                        id={reason.value} 
+                        className="border-white/30 text-white data-[state=checked]:bg-white/20 data-[state=checked]:border-white"
+                      />
+                      <Label htmlFor={reason.value} className="text-white/80 text-sm cursor-pointer flex-1">{reason.label}</Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+              
+              <div>
+                <Label htmlFor="description" className="text-white text-sm font-medium">Additional details (optional)</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Provide any additional context that might help us review this content..."
+                  value={flagDescription}
+                  onChange={(e) => setFlagDescription(e.target.value)}
+                  className="neo-glass-input mt-2 resize-none h-20 bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 focus:border-white/20"
+                />
+              </div>
             </div>
             
-            <div>
-              <Label htmlFor="description" className="text-white text-sm font-medium">Additional details (optional)</Label>
-              <Textarea
-                id="description"
-                placeholder="Provide any additional context that might help us review this content..."
-                value={flagDescription}
-                onChange={(e) => setFlagDescription(e.target.value)}
-                className="neo-glass-input mt-2 resize-none h-20 bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:bg-white/10 focus:border-white/20"
-              />
-            </div>
+            <DialogFooter className="gap-2 pt-4 border-t border-white/10">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowFlagDialog(false)}
+                className="neo-glass-button secondary bg-white/5 hover:bg-white/10 border border-white/10"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleFlag} 
+                disabled={!flagReason || flagPulseMutation.isPending}
+                className="neo-glass-button bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {flagPulseMutation.isPending ? "Submitting..." : "Submit Report"}
+              </Button>
+            </DialogFooter>
           </div>
-          
-          <DialogFooter className="gap-2 mt-6 pt-4 border-t border-white/10">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowFlagDialog(false)}
-              className="neo-glass-button secondary bg-white/5 hover:bg-white/10 border border-white/10"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleFlag} 
-              disabled={!flagReason || flagPulseMutation.isPending}
-              className="neo-glass-button bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {flagPulseMutation.isPending ? "Submitting..." : "Submit Report"}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
