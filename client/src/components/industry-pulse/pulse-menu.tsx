@@ -194,7 +194,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Flag dialog */}
       <Dialog open={showFlagDialog} onOpenChange={setShowFlagDialog}>
-        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-sm p-4 gap-3 max-h-[85vh] flex flex-col !top-1/2 !-translate-y-1/2 !left-1/2 !-translate-x-1/2">
+        <DialogContent className="neo-glass-panel border border-white/10 text-white w-[90vw] max-w-sm p-4 gap-3 max-h-[90vh] flex flex-col !top-auto !translate-y-0 !left-1/2 !-translate-x-1/2 my-auto inset-y-0">
           <DialogHeader className="space-y-1 p-0">
             <DialogTitle className="text-white text-base font-semibold">Flag Pulse</DialogTitle>
             <DialogDescription className="text-white/70 text-xs">
