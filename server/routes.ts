@@ -4443,6 +4443,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "teamMembers must be an array" });
       }
       
+      // Get project details for notification
+      const project = await storage.getProjectById(projectId);
+      const projectOwner = project ? await storage.getUser(project.userId) : null;
+      
       const savedMembers = [];
       for (const member of teamMembers) {
         const collaboratorData = {
@@ -4455,6 +4459,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         const saved = await db.insert(projectCollaborators).values(collaboratorData).returning();
         savedMembers.push(saved[0]);
+        
+        // Try to find the user by brandentifier link and create notification
+        if (member.brandentifier || member.profileLink) {
+          const profileLink = member.brandentifier || member.profileLink;
+          const urlParts = profileLink.split('/');
+          const username = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+          
+          let targetUser = await storage.getUserByUsername(username);
+          if (targetUser) {
+            try {
+              const { createNotification } = await import('./services/notification-service');
+              await createNotification({
+                userId: targetUser.id,
+                type: 'info' as const,
+                category: 'collaboration' as const,
+                title: 'Team Collaboration',
+                message: `${projectOwner?.name || 'Someone'} added you as a team member to "${project?.title || 'a project'}"`,
+                metadata: JSON.stringify({ projectId, collaboratorId: saved[0].id }),
+                actionUrl: `/projects/${projectId}`,
+                isRead: false
+              });
+            } catch (notifError) {
+              console.error('[POST /projects/:projectId/team-members] Notification error:', notifError);
+            }
+          }
+        }
       }
       
       res.status(201).json(savedMembers);
@@ -4478,6 +4508,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "profileLink is required" });
       }
       
+      // Get project details for notification
+      const project = await storage.getProjectById(projectId);
+      const projectOwner = project ? await storage.getUser(project.userId) : null;
+      
+      // Try to find the user by profileLink
+      const urlParts = profileLink.split('/');
+      const username = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2];
+      let targetUser = await storage.getUserByUsername(username);
+      
       const endorsementData = {
         projectId,
         clientName: clientName || "Client",
@@ -4487,11 +4526,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: message || null,
         rating: rating || null,
         profileLink,
-        userId: null,
+        userId: targetUser ? targetUser.id : null,
         approvalStatus: "Approved"
       };
       
       const saved = await db.insert(projectEndorsements).values(endorsementData).returning();
+      
+      // Create notification for the client
+      if (targetUser) {
+        try {
+          const { createNotification } = await import('./services/notification-service');
+          await createNotification({
+            userId: targetUser.id,
+            type: 'info' as const,
+            category: 'endorsement' as const,
+            title: 'Client Endorsement',
+            message: `${projectOwner?.name || 'Someone'} added you as a client to "${project?.title || 'a project'}"`,
+            metadata: JSON.stringify({ projectId, endorsementId: saved[0].id }),
+            actionUrl: `/projects/${projectId}`,
+            isRead: false
+          });
+        } catch (notifError) {
+          console.error('[POST /projects/:projectId/client-endorsement] Notification error:', notifError);
+        }
+      }
+      
       res.status(201).json(saved[0]);
     } catch (error) {
       console.error("[POST /projects/:projectId/client-endorsement] Error:", error);
