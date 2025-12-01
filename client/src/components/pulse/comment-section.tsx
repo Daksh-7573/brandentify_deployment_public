@@ -84,8 +84,45 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         content,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+    onMutate: async (content: string) => {
+      // Cancel ongoing refetches
+      await queryClient.cancelQueries({ queryKey: [`/api/pulses/${pulseId}/comments`] });
+
+      // Get previous comments
+      const previousComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]) || [];
+
+      // Create optimistic comment
+      const optimisticComment: Comment = {
+        id: -1,
+        pulseId,
+        userId: user?.id || 0,
+        content,
+        createdAt: new Date(),
+        user: {
+          id: user?.id || 0,
+          name: user?.name || "You",
+          photoURL: user?.photoURL,
+        },
+      };
+
+      // Update query data with optimistic comment
+      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], [
+        ...previousComments,
+        optimisticComment,
+      ]);
+
+      return { previousComments };
+    },
+    onSuccess: (data) => {
+      // Get current comments from cache
+      const currentComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]) || [];
+
+      // Replace optimistic comment with real one from server
+      const updatedComments = currentComments.map((c) =>
+        c.id === -1 ? data : c
+      );
+
+      queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], updatedComments);
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
       toast({
@@ -93,7 +130,11 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
         description: "Your comment has been added successfully.",
       });
     },
-    onError: () => {
+    onError: (error, variables, context) => {
+      // Rollback to previous comments
+      if (context?.previousComments) {
+        queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], context.previousComments);
+      }
       toast({
         title: "Error",
         description: "Failed to post comment. Please try again.",
