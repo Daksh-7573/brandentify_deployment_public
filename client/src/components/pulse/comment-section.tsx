@@ -117,14 +117,35 @@ export function CommentSection({ pulseId, initialCommentCount = 0, isExpanded = 
       // Get current comments from cache
       const currentComments = queryClient.getQueryData<Comment[]>([`/api/pulses/${pulseId}/comments`]) || [];
 
+      // Ensure data has user info, fallback to optimistic user if needed
+      const serverComment = data as Comment;
+      const serverCommentWithUser: Comment = {
+        ...serverComment,
+        user: serverComment.user || {
+          id: user?.id || 0,
+          name: user?.name || "You",
+          photoURL: user?.photoURL,
+        },
+      };
+
       // Replace optimistic comment with real one from server
       const updatedComments = currentComments.map((c) =>
-        c.id === -1 ? data : c
+        c.id === -1 ? serverCommentWithUser : c
       );
 
+      // Make sure the comment is in the list (in case it wasn't found by id === -1)
+      if (!updatedComments.some(c => c.id === serverCommentWithUser.id)) {
+        updatedComments.push(serverCommentWithUser);
+      }
+
       queryClient.setQueryData([`/api/pulses/${pulseId}/comments`], updatedComments);
-      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
       setCommentText("");
+      
+      // Refetch to ensure fresh data with user info
+      setTimeout(() => {
+        refetch();
+      }, 100);
+      
       toast({
         title: "Comment posted",
         description: "Your comment has been added successfully.",
