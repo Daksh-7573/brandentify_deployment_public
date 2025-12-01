@@ -180,27 +180,28 @@ class TimezoneAwareQuestScheduler {
   }
 
   /**
-   * Calculate the next midnight in the given timezone
-   * FIXED: Now properly converts user's local midnight to UTC using date-fns-tz
+   * Calculate the quest expiration time (user's local midnight at 12:00 AM)
+   * UPDATED: Now expires at 12:00 AM local time (not 12:01 AM)
+   * This creates a 1-second gap between expiration and 12:01 AM UTC generation for new quests
    */
   private calculateNextMidnight(timezone: string): Date {
     try {
-      // Get tomorrow's date at 00:01 in the user's timezone
+      // Get tomorrow's date at 00:00 (midnight) in the user's timezone
       const tomorrow = addDays(new Date(), 1);
-      const tomorrowMidnight = startOfDay(tomorrow); // 00:00:00
-      const tomorrowMidnightPlusOne = setMinutes(setHours(tomorrowMidnight, 0), 1); // 00:01:00
+      const tomorrowAtMidnight = setHours(setMinutes(startOfDay(tomorrow), 0), 0); // 00:00:00
       
       // Convert this local time (in user's timezone) to UTC
-      const nextMidnightUTC = fromZonedTime(tomorrowMidnightPlusOne, timezone);
+      const expirationTimeUTC = fromZonedTime(tomorrowAtMidnight, timezone);
       
-      console.log(`[TimezoneQuestScheduler] 🕐 Calculated next midnight for timezone ${timezone}:`);
-      console.log(`  - Local time: ${tomorrowMidnightPlusOne.toISOString()} (as interpreted in ${timezone})`);
-      console.log(`  - UTC time: ${nextMidnightUTC.toISOString()}`);
+      console.log(`[TimezoneQuestScheduler] 🕐 Calculated quest expiration for timezone ${timezone}:`);
+      console.log(`  - Local time: 12:00 AM (00:00:00)`);
+      console.log(`  - UTC time: ${expirationTimeUTC.toISOString()}`);
+      console.log(`  - Purpose: Quests expire at this time, new ones generate at 12:01 AM UTC (1-second gap)`);
       
-      return nextMidnightUTC;
+      return expirationTimeUTC;
       
     } catch (error) {
-      console.error(`[TimezoneQuestScheduler] Error calculating next midnight for timezone ${timezone}:`, error);
+      console.error(`[TimezoneQuestScheduler] Error calculating quest expiration for timezone ${timezone}:`, error);
       // Fallback: 24 hours from now
       const fallback = new Date();
       fallback.setHours(fallback.getHours() + 24);
