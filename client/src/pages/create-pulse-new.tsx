@@ -286,6 +286,27 @@ export default function CreatePulsePage() {
           pulseData.projectId = createdProject.id;
           setSelectedProject(createdProject.id);
           
+          // Save team members if any
+          if (teamMembers.length > 0) {
+            try {
+              await apiRequest('POST', `/api/projects/${createdProject.id}/team-members`, { teamMembers });
+            } catch (teamError) {
+              console.error("Error saving team members:", teamError);
+            }
+          }
+          
+          // Save client endorsement if provided
+          if (clientProfile.trim()) {
+            try {
+              await apiRequest('POST', `/api/projects/${createdProject.id}/client-endorsement`, {
+                clientName: clientProfile,
+                profileLink: clientProfile
+              });
+            } catch (clientError) {
+              console.error("Error saving client endorsement:", clientError);
+            }
+          }
+          
           toast({
             title: "Project Created",
             description: "Your project has been saved to your profile.",

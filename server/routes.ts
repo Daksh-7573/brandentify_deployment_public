@@ -4426,7 +4426,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
-  
+
+  // POST /api/projects/:projectId/team-members - Save team members for a project
+  apiRouter.post("/projects/:projectId/team-members", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const { teamMembers } = req.body;
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ error: "Invalid projectId" });
+      }
+      
+      if (!Array.isArray(teamMembers)) {
+        return res.status(400).json({ error: "teamMembers must be an array" });
+      }
+      
+      const savedMembers = [];
+      for (const member of teamMembers) {
+        const collaboratorData = {
+          projectId,
+          name: member.name || member.role || "Team Member",
+          email: member.email || null,
+          role: member.role || "Collaborator",
+          profileLink: member.brandentifier || member.profileLink || "",
+          userId: null
+        };
+        const saved = await db.insert(projectCollaborators).values(collaboratorData).returning();
+        savedMembers.push(saved[0]);
+      }
+      
+      res.status(201).json(savedMembers);
+    } catch (error) {
+      console.error("[POST /projects/:projectId/team-members] Error:", error);
+      res.status(500).json({ error: "Failed to save team members" });
+    }
+  });
+
+  // POST /api/projects/:projectId/client-endorsement - Save client endorsement
+  apiRouter.post("/projects/:projectId/client-endorsement", async (req: Request, res: Response) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const { clientName, profileLink, clientTitle, clientCompany, message, rating } = req.body;
+      
+      if (isNaN(projectId)) {
+        return res.status(400).json({ error: "Invalid projectId" });
+      }
+      
+      if (!profileLink) {
+        return res.status(400).json({ error: "profileLink is required" });
+      }
+      
+      const endorsementData = {
+        projectId,
+        clientName: clientName || "Client",
+        clientEmail: null,
+        clientTitle: clientTitle || null,
+        clientCompany: clientCompany || null,
+        message: message || null,
+        rating: rating || null,
+        profileLink,
+        userId: null,
+        approvalStatus: "Pending"
+      };
+      
+      const saved = await db.insert(projectEndorsements).values(endorsementData).returning();
+      res.status(201).json(saved[0]);
+    } catch (error) {
+      console.error("[POST /projects/:projectId/client-endorsement] Error:", error);
+      res.status(500).json({ error: "Failed to save client endorsement" });
+    }
+  });
+
   // GET /api/pulses/:pulseId/comments - Get comments for a specific pulse
   apiRouter.get("/pulses/:pulseId/comments", async (req: Request, res: Response) => {
     try {

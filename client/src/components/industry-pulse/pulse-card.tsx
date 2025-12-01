@@ -6,6 +6,21 @@ import PulseEngagementButton from "./pulse-engagement-button";
 import PulseMenu from "./pulse-menu";
 import { formatFeedDate } from "@/hooks/feed";
 
+interface TeamMember {
+  name: string;
+  role: string;
+  photoURL?: string;
+  profileLink?: string;
+}
+
+interface ClientEndorsement {
+  clientName: string;
+  clientTitle?: string;
+  clientCompany?: string;
+  photoURL?: string;
+  profileLink?: string;
+}
+
 interface PulseCardProps {
   pulse: {
     id: number;
@@ -18,6 +33,7 @@ interface PulseCardProps {
     pollOptions?: string[];
     industry?: string | null;
     category?: string | null;
+    projectId?: number | null;
     createdAt: string | Date;
     insightfulCount: number;
     misinformedCount: number;
@@ -27,6 +43,8 @@ interface PulseCardProps {
       name: string | null;
       photoURL: string | null;
     };
+    teamMembers?: TeamMember[];
+    clientEndorsement?: ClientEndorsement;
   };
   userId: number;
   quotaData?: any;
@@ -202,6 +220,61 @@ export default function PulseCard({
               </div>
             )}
             
+            {/* Team Members Section */}
+            {pulse.teamMembers && pulse.teamMembers.length > 0 && (
+              <div className="mt-4 pt-3 border-t">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Team</p>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {pulse.teamMembers.map((member, idx) => (
+                    <a
+                      key={idx}
+                      href={member.profileLink ? `/${member.profileLink}` : '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity"
+                      title={`${member.name} - ${member.role}`}
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={member.photoURL || undefined} alt={member.name} />
+                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col gap-0">
+                        <span className="text-xs font-medium">{member.name}</span>
+                        <span className="text-xs text-muted-foreground">{member.role}</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Client Endorsement Section */}
+            {pulse.clientEndorsement && (
+              <div className="mt-4 pt-3 border-t">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Client</p>
+                <a
+                  href={pulse.clientEndorsement.profileLink ? `/${pulse.clientEndorsement.profileLink}` : '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={pulse.clientEndorsement.photoURL || undefined} alt={pulse.clientEndorsement.clientName} />
+                    <AvatarFallback>{pulse.clientEndorsement.clientName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium">{pulse.clientEndorsement.clientName}</span>
+                    {pulse.clientEndorsement.clientTitle && (
+                      <span className="text-xs text-muted-foreground">{pulse.clientEndorsement.clientTitle}</span>
+                    )}
+                    {pulse.clientEndorsement.clientCompany && (
+                      <span className="text-xs text-muted-foreground">{pulse.clientEndorsement.clientCompany}</span>
+                    )}
+                  </div>
+                </a>
+              </div>
+            )}
+
             {/* Engagement buttons */}
             <div className="flex flex-wrap gap-2 mt-4">
               <PulseEngagementButton 
