@@ -50,15 +50,18 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
     queryKey: ['/api/pulses', pulseId, 'flag-status', currentUserId],
     queryFn: async () => {
       const res = await fetch(`/api/pulses/${pulseId}/flag-status/${currentUserId}`);
-      return res.json();
+      const data = await res.json();
+      console.log(`[Flag Status Query] Pulse ${pulseId}, User ${currentUserId}: hasFlag=${data?.hasFlag}`);
+      return data;
     },
-    enabled: !pulseCreatorId, // Enable for non-creators
+    enabled: currentUserId !== pulseCreatorId, // Enable for non-creators
   });
   
   // Refetch flag status when dropdown opens
   const handleDropdownOpenChange = (open: boolean) => {
     setShowDropdown(open);
-    if (open && !pulseCreatorId) {
+    if (open && currentUserId !== pulseCreatorId) {
+      console.log(`[Flag Menu] Dropdown opened for pulse ${pulseId}, refetching flag status...`);
       refetchFlagStatus();
     }
   };
@@ -102,6 +105,8 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
       return res.json();
     },
     onSuccess: () => {
+      // Invalidate the flag status query so it refreshes
+      queryClient.invalidateQueries({ queryKey: ['/api/pulses', pulseId, 'flag-status', currentUserId] });
       toast({
         title: "Pulse flagged",
         description: "Thank you for reporting this content. We'll review it shortly.",
