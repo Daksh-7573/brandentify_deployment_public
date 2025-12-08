@@ -93,6 +93,7 @@
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.24",
     "lucide-react": "^0.453.0",
+    "markdown-pdf": "^11.0.0",
     "memoizee": "^0.4.17",
     "memorystore": "^1.6.7",
     "multer": "^2.0.1",

@@ -10443,6 +10443,92 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Documentation download endpoints
+  app.get('/api/docs/marketing', async (req: Request, res: Response) => {
+    try {
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_MARKETING_GUIDE.md');
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        res.setHeader('Content-Type', 'text/markdown');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Marketing_Guide.md"');
+        res.send(content);
+      } else {
+        res.status(404).json({ error: 'Marketing guide not found' });
+      }
+    } catch (error) {
+      console.error('Error serving marketing doc:', error);
+      res.status(500).json({ error: 'Failed to serve document' });
+    }
+  });
+
+  app.get('/api/docs/team', async (req: Request, res: Response) => {
+    try {
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_TEAM_REFERENCE.md');
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, 'utf-8');
+        res.setHeader('Content-Type', 'text/markdown');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Team_Reference.md"');
+        res.send(content);
+      } else {
+        res.status(404).json({ error: 'Team reference not found' });
+      }
+    } catch (error) {
+      console.error('Error serving team doc:', error);
+      res.status(500).json({ error: 'Failed to serve document' });
+    }
+  });
+
+  // PDF download endpoints using markdown-pdf
+  app.get('/api/docs/marketing/pdf', async (req: Request, res: Response) => {
+    try {
+      const markdownPdf = require('markdown-pdf');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_MARKETING_GUIDE.md');
+      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentifier_Marketing_Guide.pdf');
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'Marketing guide not found' });
+      }
+
+      markdownPdf().from(filePath).to(pdfPath, () => {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Marketing_Guide.pdf"');
+        const stream = fs.createReadStream(pdfPath);
+        stream.pipe(res);
+        stream.on('end', () => {
+          fs.unlinkSync(pdfPath); // Clean up
+        });
+      });
+    } catch (error) {
+      console.error('Error generating marketing PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
+
+  app.get('/api/docs/team/pdf', async (req: Request, res: Response) => {
+    try {
+      const markdownPdf = require('markdown-pdf');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_TEAM_REFERENCE.md');
+      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentifier_Team_Reference.pdf');
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'Team reference not found' });
+      }
+
+      markdownPdf().from(filePath).to(pdfPath, () => {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Team_Reference.pdf"');
+        const stream = fs.createReadStream(pdfPath);
+        stream.pipe(res);
+        stream.on('end', () => {
+          fs.unlinkSync(pdfPath); // Clean up
+        });
+      });
+    } catch (error) {
+      console.error('Error generating team PDF:', error);
+      res.status(500).json({ error: 'Failed to generate PDF' });
+    }
+  });
+
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
