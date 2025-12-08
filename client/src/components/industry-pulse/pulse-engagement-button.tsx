@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
-import { useState } from "react";
+import { queryClient } from "@/lib/queryClient";
+import { useCallback } from "react";
 
 interface PulseEngagementButtonProps {
   type: "insightful" | "misinformed" | "share" | "comment";
@@ -23,15 +24,19 @@ export default function PulseEngagementButton({
   className = "",
   onClick
 }: PulseEngagementButtonProps) {
-  // Local state for instant UI feedback (updated immediately on click)
-  const [localCountIncrement, setLocalCountIncrement] = useState(0);
-  
   // Get user's existing reaction status
   const { data: userReactionData } = useQuery<{ id: number; reactionType: string } | null>({
     queryKey: [`/api/pulses/${pulseId}/reactions/user/${userId}`],
     refetchOnWindowFocus: false
   });
   
+  // SUBSCRIBE to pulses feed to get instant cache updates
+  const { data: pulsesList } = useQuery<any[]>({
+    queryKey: ["/api/pulses"],
+    enabled: false, // Don't fetch - just subscribe to cache
+    staleTime: Infinity,
+  });
+
   // Check if this specific reaction type is active (not just any reaction)
   const userReactionId = (type === "insightful" || type === "misinformed") && 
                          userReactionData?.reactionType === type
@@ -40,8 +45,19 @@ export default function PulseEngagementButton({
   
   const isActive = !!userReactionId;
   
-  // Display count = prop count + any local pending increments
-  const displayCount = currentCount + localCountIncrement;
+  // Get count from cache if available, otherwise use prop
+  const displayCount = (() => {
+    if (pulsesList) {
+      const pulse = pulsesList.find(p => p.id === pulseId);
+      if (pulse) {
+        const countField = type === "insightful" ? "insightfulCount" : 
+                          type === "misinformed" ? "misinformedCount" : 
+                          "commentCount";
+        return pulse[countField] || currentCount;
+      }
+    }
+    return currentCount;
+  })();
   
   // Use the shared engagement hook
   const { handleEngagement, isLoading } = useFeedEngagement({
@@ -67,7 +83,7 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Label based on engagement type with local count
+  // Label based on engagement type
   const getLabel = () => {
     const count = formatEngagementCount(displayCount);
     
@@ -80,35 +96,41 @@ export default function PulseEngagementButton({
     }
   };
   
+  // Handle click with cache update BEFORE mutation
+  const handleClick = useCallback(() => {
+    if (onClick) {
+      onClick();
+      return;
+    }
+
+    if (type === "insightful" || type === "misinformed") {
+      // UPDATE CACHE IMMEDIATELY
+      console.log(`⚡ [${type}] Instant cache update for pulse ${pulseId}`);
+      const cachedPulses = queryClient.getQueryData<any[]>(["/api/pulses"]);
+      if (cachedPulses) {
+        const countField = type === "insightful" ? "insightfulCount" : "misinformedCount";
+        const updated = cachedPulses.map(p => {
+          if (p.id === pulseId) {
+            return { ...p, [countField]: p[countField] + 1 };
+          }
+          return p;
+        });
+        // This triggers re-render of button component instantly
+        queryClient.setQueryData(["/api/pulses"], updated);
+      }
+    }
+
+    // Call mutation AFTER cache update
+    handleEngagement(userReactionId);
+  }, [pulseId, type, userId, userReactionId, handleEngagement, onClick]);
+  
   return (
     <Button
       variant="ghost"
       size="sm"
       className={`h-8 rounded-full ${styles.textColor} ${styles.hoverBg} ${className}`}
       data-testid={`engagement-btn-${type}-${pulseId}`}
-      onClick={() => {
-        if (onClick) {
-          onClick();
-        } else {
-          const clickTime = Date.now();
-          console.log(`[${type}] Click at ${clickTime}, current count: ${currentCount}, increment: ${localCountIncrement}`);
-          
-          // For reactions only: update local state immediately for instant visual feedback
-          if (type === "insightful" || type === "misinformed") {
-            console.log(`[${type}] Setting local increment from ${localCountIncrement} to ${localCountIncrement + 1}`);
-            setLocalCountIncrement(prev => {
-              const newVal = prev + 1;
-              console.log(`[${type}] State callback - new increment: ${newVal}`);
-              return newVal;
-            });
-          }
-          
-          console.log(`[${type}] About to call handleEngagement`);
-          
-          // Call the engagement handler
-          handleEngagement(userReactionId);
-        }
-      }}
+      onClick={handleClick}
       disabled={isLoading}
     >
       <Icon />
