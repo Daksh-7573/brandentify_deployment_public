@@ -36,13 +36,34 @@ export default function PulseEngagementButton({
   
   const isActive = !!userReactionId;
   
+  // Subscribe to the pulses feed to get instant cache updates
+  const { data: pulsesList } = useQuery({
+    queryKey: ["/api/pulses"],
+    enabled: false, // Don't fetch, just subscribe to cache
+    staleTime: Infinity,
+  });
+
+  // Get the actual count from the feed data
+  const cachedCount = (() => {
+    if (pulsesList) {
+      const pulse = pulsesList.find((p: any) => p.id === pulseId);
+      if (pulse) {
+        const countField = type === "insightful" ? "insightfulCount" : 
+                          type === "misinformed" ? "misinformedCount" :
+                          type === "inspired" ? "inspiredCount" : "commentCount";
+        return pulse[countField] || currentCount;
+      }
+    }
+    return currentCount;
+  })();
+  
   // Use the shared engagement hook
   const { handleEngagement, isLoading } = useFeedEngagement({
     engagementType: type,
     userId,
     itemId: pulseId,
     apiEndpoint: "pulses",
-    currentCount,
+    currentCount: cachedCount,
     quotaData
   });
   
@@ -60,15 +81,15 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Label based on engagement type
+  // Label based on engagement type - use cachedCount to show instant updates
   const getLabel = () => {
-    const count = formatEngagementCount(currentCount);
+    const count = formatEngagementCount(cachedCount);
     
     switch (type) {
       case "insightful": return `${count} Insightful`;
       case "misinformed": return `${count} Misinformed`;
       case "share": return `${count} Share`;
-      case "comment": return `${count} ${currentCount === 1 ? 'Comment' : 'Comments'}`;
+      case "comment": return `${count} ${cachedCount === 1 ? 'Comment' : 'Comments'}`;
       default: return "";
     }
   };
