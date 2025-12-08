@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
-import { queryClient } from "@/lib/queryClient";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 interface PulseEngagementButtonProps {
   type: "insightful" | "misinformed" | "share" | "comment";
@@ -30,14 +29,18 @@ export default function PulseEngagementButton({
     refetchOnWindowFocus: false
   });
   
-  // SUBSCRIBE to pulses feed to get instant cache updates
+  // LISTEN TO THE EXACT SAME QUERY KEY THAT THE MUTATION UPDATES
+  // This is critical for instant updates - the mutation updates ["/api/pulses"]
+  // so this component must listen to ["/api/pulses"] to get the updates
   const { data: pulsesList } = useQuery<any[]>({
     queryKey: ["/api/pulses"],
-    enabled: false, // Don't fetch - just subscribe to cache
+    queryFn: () => [],  // Returns empty array as fallback
     staleTime: Infinity,
+    gcTime: Infinity,
+    // Don't disable - we need the query observer to listen to cache changes
   });
 
-  // Check if this specific reaction type is active (not just any reaction)
+  // Check if this specific reaction type is active
   const userReactionId = (type === "insightful" || type === "misinformed") && 
                          userReactionData?.reactionType === type
     ? userReactionData.id 
@@ -45,8 +48,8 @@ export default function PulseEngagementButton({
   
   const isActive = !!userReactionId;
   
-  // Get count from cache if available, otherwise use prop
-  const displayCount = (() => {
+  // Extract the count for this pulse from the cached list
+  const displayCount = useMemo(() => {
     if (pulsesList) {
       const pulse = pulsesList.find(p => p.id === pulseId);
       if (pulse) {
@@ -57,7 +60,7 @@ export default function PulseEngagementButton({
       }
     }
     return currentCount;
-  })();
+  }, [pulsesList, pulseId, type, currentCount]);
   
   // Use the shared engagement hook
   const { handleEngagement, isLoading } = useFeedEngagement({
@@ -96,33 +99,16 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Handle click with cache update BEFORE mutation
+  // Handle click - just call the mutation
   const handleClick = useCallback(() => {
     if (onClick) {
       onClick();
       return;
     }
-
-    if (type === "insightful" || type === "misinformed") {
-      // UPDATE CACHE IMMEDIATELY
-      console.log(`⚡ [${type}] Instant cache update for pulse ${pulseId}`);
-      const cachedPulses = queryClient.getQueryData<any[]>(["/api/pulses"]);
-      if (cachedPulses) {
-        const countField = type === "insightful" ? "insightfulCount" : "misinformedCount";
-        const updated = cachedPulses.map(p => {
-          if (p.id === pulseId) {
-            return { ...p, [countField]: p[countField] + 1 };
-          }
-          return p;
-        });
-        // This triggers re-render of button component instantly
-        queryClient.setQueryData(["/api/pulses"], updated);
-      }
-    }
-
-    // Call mutation AFTER cache update
+    // The mutation's onMutate callback will update the cache instantly
+    // This component is listening to ["/api/pulses"] so it will re-render immediately
     handleEngagement(userReactionId);
-  }, [pulseId, type, userId, userReactionId, handleEngagement, onClick]);
+  }, [type, userReactionId, handleEngagement, onClick]);
   
   return (
     <Button
