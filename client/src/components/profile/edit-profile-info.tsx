@@ -276,24 +276,36 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
                 />
               </div>
 
-              {/* What I Offer */}
-              <FormField
-                control={form.control}
-                name="whatIOffer"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>What I Offer</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Describe your skills, services, or what you can offer to others..."
-                        className="bg-white/50 min-h-[80px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* What I Offer - Premium Only */}
+              {userData.subscription_tier === 'premium' ? (
+                <FormField
+                  control={form.control}
+                  name="whatIOffer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What I Offer</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Describe your skills, services, or what you can offer to others..."
+                          className="bg-white/50 min-h-[80px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm mb-1">What I Offer</h4>
+                      <p className="text-xs text-muted-foreground">Upgrade to Premium to showcase your skills and services to potential clients and collaborators.</p>
+                    </div>
+                    <span className="inline-block px-3 py-1 text-xs font-semibold bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full ml-2">Premium</span>
+                  </div>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-3 pt-6">
