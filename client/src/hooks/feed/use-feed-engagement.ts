@@ -167,12 +167,11 @@ export function useFeedEngagement({
       }
     },
     onSuccess: () => {
-      // For pulse reactions, invalidate the main feed to ensure counts update immediately
+      // For pulse reactions, DO NOT refetch - optimistic update in onMutate is final
+      // This prevents the delay caused by server refetch
       if (engagementType === "insightful" || engagementType === "misinformed") {
-        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions/user/${userId}`] });
+        // Just show the success toast - don't refetch
+        // The optimistic update already happened in onMutate callback
       } else {
         // For other engagement types, invalidate as before
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });

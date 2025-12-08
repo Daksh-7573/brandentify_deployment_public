@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
-import { queryClient } from "@/lib/queryClient";
 
 interface PulseEngagementButtonProps {
   type: "insightful" | "misinformed" | "share" | "comment";
@@ -83,31 +82,7 @@ export default function PulseEngagementButton({
         if (onClick) {
           onClick();
         } else {
-          // For reactions, directly update the query cache BEFORE calling the handler
-          if (type === "insightful" || type === "misinformed") {
-            const countField = type === "insightful" ? "insightfulCount" : "misinformedCount";
-            
-            // Directly update the main pulses feed cache
-            const queryKey = ["/api/pulses"];
-            const cachedData = queryClient.getQueryData<any[]>(queryKey);
-            
-            if (cachedData) {
-              const updated = cachedData.map(item => {
-                if (item.id === pulseId) {
-                  return {
-                    ...item,
-                    [countField]: (item[countField] || 0) + 1
-                  };
-                }
-                return item;
-              });
-              
-              // Set the updated data immediately (synchronous)
-              queryClient.setQueryData(queryKey, updated);
-            }
-          }
-          
-          // Call the engagement handler
+          // Optimistic updates are handled in useFeedEngagement hook's onMutate callback
           handleEngagement(userReactionId);
         }
       }}
