@@ -1,0 +1,465 @@
+DEVELOPER HANDOFF DOCUMENT
+Project: Holographic 3D Portfolio Template
+System: Brandentifier
+Platform: Web (React, Tailwind, Framer Motion recommended)
+1. PROJECT GOALS
+
+Build a high-performance portfolio UI with:
+
+Holographic visuals
+
+3D interactions
+
+Smooth animations
+
+Robust data mapping
+
+Full responsiveness
+
+Accessibility compliance
+
+All sections must be dynamic and populated from user data.
+
+2. TECHNOLOGY STACK (RECOMMENDED)
+Layer	Tech
+Framework	React (TS)
+UI	Tailwind + CSS Variables
+Animation	Framer Motion
+3D & Parallax	Vanilla JS / React-Spring
+Icons	Lucide-React
+Layout	CSS Grid + Flex
+State	Props + Local derived state
+
+Do not use heavy 3D libraries (Three.js) — performance costs too high.
+
+3. GLOBAL STYLING & TOKENS
+3.1 Color Tokens
+:root {
+  --color-bg: rgba(10,10,30,0.8);
+  --color-bg-dark: #080a16;
+  
+  --color-cyan: #22d3ee;
+  --color-purple: #a78bfa;
+  --color-light-cyan: #a5f3fc;
+  --color-soft-pink: #f9a8d4;
+
+  --color-text: #ffffff;
+  --color-text-soft: #e2e8f0;
+}
+
+3.2 Shadow Tokens
+--shadow-base: 0 5px 20px rgba(34,211,238,0.15);
+--shadow-hover: 0 10px 35px rgba(34,211,238,0.35);
+
+3.3 Blur Token
+--glass-blur: blur(10px);
+
+3.4 Border Radius
+--radius-card: 20px;
+--radius-modal: 28px;
+
+4. GLOBAL LAYOUT RULES
+
+Sections have max-width: 1200px
+
+Centered with:
+
+margin: 0 auto;
+padding: 80px 24px;
+
+
+Spacing unit:
+
+Base: 8px
+
+Section gap: 64px
+
+5. COMPONENT ARCHITECTURE
+5.1 Root Layout
+<PortfolioLayout>
+  <HeroHeader />
+  <AboutSection />
+  <SkillsSection />
+  <ExperienceSection />
+  <EducationSection />
+  <ProjectsSection />
+  {premium && <ServicesSection />}
+  <Footer />
+</PortfolioLayout>
+
+6. COMPONENT SPECS (WITH PROPS)
+6.1 <HeroHeader />
+Props:
+interface HeroHeaderProps {
+  name: string;
+  title: string;
+  tagline?: string;
+  photoURL: string;
+  location?: string;
+  industry?: string;
+  domain?: string;
+}
+
+Features:
+
+Holographic gradient background
+
+Profile picture with rotating glow ring
+
+3 CTA buttons
+
+Mouse tracked radial glow
+
+Animations:
+
+Entrance fade/slide
+
+Hover lift on cards
+
+Looping ring rotation
+
+6.2 <AboutSection />
+
+Props:
+
+interface AboutProps {
+  aboutMe: string;
+  visionStatement?: string;
+  missionStatement?: string;
+  uniqueValueProposition?: string;
+  coreValues?: string[];
+  primaryAudience?: string[];
+  secondaryAudience?: string[];
+}
+
+
+Layout:
+
+2 columns
+
+Left (text)
+
+Right (badges)
+
+6.3 <SkillsSection />
+
+Props:
+
+interface SkillsSectionProps {
+  skills: SkillProps[];
+}
+
+
+Skill card:
+
+interface SkillProps {
+  id: string;
+  name: string;
+  proficiency: number;
+  category?: string;
+  yearsOfExperience?: number;
+}
+
+
+Behavior:
+
+Hover scale + glow
+
+Framer Motion staggered children
+
+6.4 <ExperienceSection />
+
+Props:
+
+interface ExperienceSectionProps {
+  experiences: ExperienceProps[];
+}
+
+
+Experience card:
+
+interface ExperienceProps {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  keyResponsibilities?: string[];
+}
+
+
+UI Behavior:
+
+Vertical timeline
+
+Animated nodes (pulse)
+
+Slide-in details on reveal
+
+6.5 <EducationSection />
+
+Props:
+
+interface EducationSectionProps {
+  education: EducationProps[];
+}
+
+
+UI Behavior:
+
+Same as experience, less emphasis
+
+6.6 <ProjectsSection />
+
+Props:
+
+interface ProjectsSectionProps {
+  projects: ProjectProps[];
+}
+
+
+Project card:
+
+interface ProjectProps {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  technologies: string[];
+  outcome: string;
+  mediaUrls?: string[];
+  externalUrl?: string;
+}
+
+
+UI Requirements:
+
+Grid (2–3 columns)
+
+Hover overlay
+
+“View Details” modal
+
+6.7 <ServicesSection />
+
+Props:
+
+interface ServicesSectionProps {
+  services: ServiceProps[];
+}
+
+
+Service:
+
+interface ServiceProps {
+  id: string;
+  title: string;
+  description: string;
+  priceInr?: number;
+  priceUsd?: number;
+  features?: string[];
+  imageUrl?: string;
+}
+
+
+UI:
+
+Pricing table
+
+Cards with glow borders
+
+CTA buttons
+
+7. ANIMATION SPECS
+
+Use Framer Motion
+
+7.1 Entrance Animations
+
+Fade-Up
+
+initial={{ y: 20, opacity: 0 }}
+whileInView={{ y: 0, opacity: 1 }}
+transition={{ delay: i * 0.1, duration: 0.4 }}
+
+7.2 Hover Card
+transition: 0.25s ease;
+transform: translateY(-4px) scale(1.02);
+box-shadow: var(--shadow-hover);
+
+7.3 Parallax Glow (Mouse Track)
+onMouseMove: (e) => {
+  const x = (e.pageX / width) * 100;
+  const y = (e.pageY / height) * 100;
+
+  element.style.background = 
+    `radial-gradient(circle at ${x}% ${y}%, rgba(34,211,238,0.25), transparent 80%)`;
+}
+
+7.4 Particle System (Background)
+
+Create 15–20 random dots
+
+Individual float animation
+
+Random delay + duration
+
+Don’t animate with JS — use CSS keyframes
+
+8. RESPONSIVENESS
+Element	Desktop	Tablet	Mobile
+Hero	2-col	1-col	1-col
+About	2-col	2-col	1-col
+Skills	3-col	2-col	1-col
+Projects	3-col	2-col	1-col
+
+Mobile Rules:
+
+Disable parallax
+
+Scale down glow
+
+Reduce animation intensity
+
+9. ACCESSIBILITY
+
+Respect prefers-reduced-motion
+
+Keyboard accessible modals
+
+Text contrast AA minimum
+
+Semantic HTML structure
+
+10. PERFORMANCE STRATEGY
+Required:
+
+Lazy load images
+
+Lazy mount heavy components
+
+Compress media
+
+GPU accelerated animations
+
+Prefer:
+
+transform, opacity
+
+
+Avoid:
+
+top, left, width
+
+11. API & DATA HANDLING
+Data Source:
+
+Passed via props or headless API
+
+Rendering strategy:
+
+Render lists as keyed maps
+
+Pagination not required
+
+Fallbacks for missing data
+
+Example:
+
+skills?.map(skill => (
+  <SkillCard key={skill.id} {...skill} />
+))
+
+12. UI STATES
+State	Required
+Loading	Skeleton
+Empty	Empty state message
+Error	Retry CTA
+Premium locked	Overlay + CTA
+13. FILE STRUCTURE (SUGGESTED)
+components/
+  Hero/
+  About/
+  Skills/
+  Experience/
+  Education/
+  Projects/
+  Services/
+  UI/
+    Card/
+    Modal/
+    Button/
+    Chip/
+hooks/
+utils/
+styles/
+
+14. DEV COMPLETION CRITERIA
+
+A feature is complete when:
+
+✔ It compiles with no warnings
+✔ Works on latest Chrome/Safari/Firefox
+✔ Works on iPhone + Android
+✔ All data fields render correctly
+✔ Animations meet timing spec
+✔ No layout shift/flashing
+✔ Lighthouse Perf ≥ 80
+✔ Lighthouse Accessibility ≥ 85
+
+15. TESTING REQUIREMENTS
+Functional:
+
+Modals open/close
+
+Buttons work
+
+Links copy correctly
+
+Usability:
+
+Content readable
+
+Animations smooth
+
+Performance:
+
+FPS stable during scroll
+
+No blocking scripts
+
+16. FUTURE EXPANSIONS
+
+Dark/Light mode
+
+Portfolio theming
+
+Export to PDF
+
+Custom layouts
+
+Social media metadata
+
+🧾 SUMMARY
+
+This design demands:
+
+Clean, scalable React architecture
+
+Performance-optimized animations
+
+Thoughtful responsive design
+
+Polished visuals
+
+The goal is to create a premium-feeling, interactive portfolio, powered by structured user data — not a static template.
+
+Developers must balance:
+
+High visual quality
+
+Smooth performance
+
+Accessibility
