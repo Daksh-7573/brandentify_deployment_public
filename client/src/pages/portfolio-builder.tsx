@@ -53,6 +53,8 @@ import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
 import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
 import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfolio";
+import FashionQuantumPortfolio from "@/components/portfolio/templates/fashion-quantum-portfolio";
+import FashionQuantumCard from "@/components/portfolio/templates/fashion-quantum-card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -93,7 +95,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum", "fashion-quantum-card"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -624,9 +626,16 @@ export default function PortfolioBuilder() {
     },
     { 
       id: "fashion-quantum", 
-      name: "Fashion Quantum", 
+      name: "Fashion Quantum Portfolio", 
       description: `✔ Theme: Vogue Editorial, Noir Black, Blush Pink, Champagne Glow, Glassmorphism, Film Grain
 ✔ Best For: Fashion Models, Photographers, Stylists, Influencers, Fashion Designers, MUAs`,
+      theme: "#050509"
+    },
+    { 
+      id: "fashion-quantum-card", 
+      name: "Fashion Quantum Card", 
+      description: `✔ Theme: Compact Identity Card, Editorial Noir, Blush Pink Accents, Champagne Highlights
+✔ Best For: Models, Stylists, Photographers, Fashion Influencers needing a quick-share identity card`,
       theme: "#050509"
     }
   ];
@@ -1795,6 +1804,62 @@ export default function PortfolioBuilder() {
                   userEducations={educations || []}
                   userServices={services as any || []}
                   isPremium={isPremium}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "fashion-quantum" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <FashionQuantumPortfolio
+                  user={{
+                    id: userData?.id,
+                    fullName: userData?.name || user?.name || '',
+                    brandName: userData?.brandName || null,
+                    currentRole: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    avatarUrl: userData?.photoURL || user?.photoURL || null,
+                    bio: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || [],
+                    instagramUrl: userData?.instagramUrl || null,
+                    linkedInUrl: userData?.linkedInUrl || null,
+                    websiteUrl: userData?.websiteUrl || null
+                  }}
+                  skills={skills || []}
+                  workExperiences={experiences || []}
+                  projects={projects as any || []}
+                  educations={educations || []}
+                  services={services as any || []}
+                  isPremium={isPremium}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "fashion-quantum-card" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative flex items-center justify-center py-8">
+                <FashionQuantumCard
+                  user={{
+                    id: userData?.id,
+                    fullName: userData?.name || user?.name || '',
+                    brandName: userData?.brandName || null,
+                    currentRole: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    avatarUrl: userData?.photoURL || user?.photoURL || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    instagramUrl: userData?.instagramUrl || null,
+                    websiteUrl: userData?.websiteUrl || null,
+                    height: userData?.height || null,
+                    yearsExperience: userData?.yearsExperience || null
+                  }}
+                  skills={skills || []}
                 />
               </div>
             )}
