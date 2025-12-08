@@ -51,6 +51,7 @@ import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-model";
 import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
+import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -91,7 +92,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -605,6 +606,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Holographic Cyan/Purple, Mouse-Tracked Gradients, Floating Particles, Glassmorphism
 ✔ Best For: Tech Innovators, AI/Blockchain Professionals, Futuristic Personal Brands, Quantum Computing Enthusiasts`,
       theme: "#22d3ee"
+    },
+    { 
+      id: "creative-quantum", 
+      name: "Creative Quantum", 
+      description: `✔ Theme: Dark Tech, Grid Overlay, Circuit SVG Patterns, Glassmorphism, Cyan/Purple/Blue Palette
+✔ Best For: Designers, Developers, Marketers, Creative Professionals, Tech Leaders`,
+      theme: "#0A0F2C"
     }
   ];
 
@@ -1697,6 +1705,40 @@ export default function PortfolioBuilder() {
                     coreValues: userData?.coreValues || [],
                     uniqueValueProposition: userData?.uniqueValueProposition || null,
                     primaryAudience: userData?.primaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects as any || []}
+                  userEducations={educations || []}
+                  userServices={services as any || []}
+                  isPremium={isPremium}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "creative-quantum" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <CreativeQuantum
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    jobLevel: userData?.jobLevel || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || [],
+                    resumeUrl: userData?.resumeUrl || null
                   }}
                   userSkills={skills || []}
                   userExperiences={experiences || []}
