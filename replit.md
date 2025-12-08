@@ -6,19 +6,28 @@ Brandentifier is an AI-driven career development platform designed to help users
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (2024-12-01)
-### Quest Timing Updated - Both Generation & Expiration in Local Timezone ✅
-- **Expiration Time**: 12:00 AM user's local timezone
-- **Generation Time**: 12:00:01 AM user's local timezone (1-second gap, also local)
-- **How It Works**:
-  - All quest timing now happens in the user's local timezone
-  - Old quests expire at 12:00:00 AM
-  - New quests generate at 12:00:01 AM (1-second gap for clean transitions)
-  - Timezone-aware scheduler checks every 15 minutes for users due for generation
-- **Implementation**: 
-  - Updated `calculateNextMidnight()` to calculate 12:00:01 AM local time
-  - Properly converts to UTC using date-fns-tz for scheduler comparison
-  - Added `setSeconds` import from date-fns for precise timing
+## Recent Changes (2024-12-08)
+### Daily Quest Generation System - NOW FULLY FUNCTIONAL ✅
+- **All Issues Fixed**:
+  1. **Timezone Missing Bug**: Users without timezone now default to UTC during initialization
+  2. **Quest Assignment Time Missing**: Added initialization to set `nextQuestAssignmentTime` for all users
+  3. **Missing API Endpoint**: Added `GET /api/users/:userId/quests` for frontend to fetch quests
+  4. **Quest Scheduler**: Runs every 15 minutes (timezone-aware) + daily at 12:01 AM UTC (global backup)
+
+- **How Quest Generation Works**:
+  - Users get quests assigned at 12:00:01 AM in their local timezone
+  - Old quests expire at 12:00:00 AM local time (1-second gap)
+  - Each user gets 1-4 quests daily based on engagement (Smart Quest Allocator)
+  - Mix of Career and Social quests tailored to user profile
+  - Timezone-aware scheduler checks every 15 minutes for due users
+  - Global scheduler at 12:01 AM UTC as safety backup
+
+- **Implementation Details**:
+  - `timezone-aware-quest-scheduler.ts`: Checks every 15 minutes, initializes missing timezone/nextQuestAssignmentTime
+  - `daily-quest-scheduler.ts`: Runs at 12:01 AM UTC daily to ensure coverage
+  - Both systems ensure no double-assignment (checks assignedDate in database)
+  - Quest generators: `comprehensive-quest-generator-v2.ts`, `social-quest-generator-v2.ts`
+  - Smart allocator determines optimal quest mix based on user behavior
 
 ## System Architecture
 ### Frontend

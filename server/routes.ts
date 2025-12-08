@@ -2507,6 +2507,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Brand Quests routes
+  apiRouter.get("/users/:userId/quests", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /users/:userId/quests] Request for quests with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      // Get user quests with definitions
+      const quests = await storage.getUserQuestsWithDefinitions(userId);
+      console.log(`[GET /users/:userId/quests] Found ${quests.length} quests for userId: ${userId}`);
+      res.json(quests);
+    } catch (error) {
+      console.error("[GET /users/:userId/quests] Error fetching quests:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Project routes
   apiRouter.get("/users/:userId/projects", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
