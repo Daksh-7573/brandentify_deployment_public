@@ -50,6 +50,7 @@ import NatureCreative from "@/components/portfolio/templates/nature-creative";
 import FashionRunway from "@/components/portfolio/templates/fashion-runway";
 import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-model";
 import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
+import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,7 +91,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -597,6 +598,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Tech-Luxury, 3D Interactive Card, Parallax Effects, Neon Accents
 ✔ Best For: Tech Leaders, Innovators, Premium Personal Brands, Senior Professionals`,
       theme: "#38bdf8"
+    },
+    { 
+      id: "holographic-neo", 
+      name: "Holographic Neo", 
+      description: `✔ Theme: Holographic Cyan/Purple, Mouse-Tracked Gradients, Floating Particles, Glassmorphism
+✔ Best For: Tech Innovators, AI/Blockchain Professionals, Futuristic Personal Brands, Quantum Computing Enthusiasts`,
+      theme: "#22d3ee"
     }
   ];
 
@@ -1664,6 +1672,38 @@ export default function PortfolioBuilder() {
                   userEducations={educations || []}
                   userServices={services || []}
                   isPreview={false}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "holographic-neo" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <HolographicNeo
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    jobLevel: userData?.jobLevel || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    primaryAudience: userData?.primaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects as any || []}
+                  userEducations={educations || []}
+                  userServices={services as any || []}
+                  isPremium={isPremium}
                 />
               </div>
             )}
