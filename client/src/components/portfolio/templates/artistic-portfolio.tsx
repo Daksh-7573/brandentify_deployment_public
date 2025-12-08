@@ -44,6 +44,18 @@ const artisticPalette = [colors.burgundy, colors.teal, colors.navy, colors.mint,
 
 const getArtisticColor = (index: number) => artisticPalette[index % artisticPalette.length];
 
+// Torn paper edge clip-paths for cards
+const tornEdgeClipPaths = {
+  card1: "polygon(2% 0%, 5% 1%, 8% 0%, 12% 2%, 15% 1%, 18% 0%, 22% 2%, 26% 1%, 30% 0%, 35% 1%, 40% 2%, 45% 0%, 50% 1%, 55% 2%, 60% 0%, 65% 1%, 70% 2%, 75% 0%, 80% 1%, 85% 2%, 90% 0%, 95% 1%, 98% 0%, 100% 2%, 100% 97%, 98% 98%, 95% 100%, 90% 99%, 85% 100%, 80% 98%, 75% 100%, 70% 99%, 65% 100%, 60% 98%, 55% 100%, 50% 99%, 45% 100%, 40% 98%, 35% 100%, 30% 99%, 25% 100%, 20% 98%, 15% 100%, 10% 99%, 5% 100%, 2% 98%, 0% 100%, 0% 2%)",
+  card2: "polygon(0% 3%, 3% 0%, 8% 2%, 14% 0%, 20% 1%, 26% 0%, 32% 2%, 38% 0%, 44% 1%, 50% 0%, 56% 2%, 62% 0%, 68% 1%, 74% 0%, 80% 2%, 86% 0%, 92% 1%, 97% 0%, 100% 3%, 100% 96%, 97% 100%, 92% 98%, 86% 100%, 80% 99%, 74% 100%, 68% 98%, 62% 100%, 56% 99%, 50% 100%, 44% 98%, 38% 100%, 32% 99%, 26% 100%, 20% 98%, 14% 100%, 8% 99%, 3% 100%, 0% 97%)",
+  card3: "polygon(1% 0%, 6% 2%, 11% 0%, 17% 1%, 23% 0%, 29% 2%, 35% 0%, 41% 1%, 47% 0%, 53% 2%, 59% 0%, 65% 1%, 71% 0%, 77% 2%, 83% 0%, 89% 1%, 95% 0%, 100% 1%, 100% 99%, 95% 100%, 89% 98%, 83% 100%, 77% 99%, 71% 100%, 65% 98%, 59% 100%, 53% 99%, 47% 100%, 41% 98%, 35% 100%, 29% 99%, 23% 100%, 17% 98%, 11% 100%, 6% 99%, 1% 100%, 0% 99%)",
+};
+
+const getTornEdge = (index: number) => {
+  const edges = Object.values(tornEdgeClipPaths);
+  return edges[index % edges.length];
+};
+
 // Paper texture SVG
 const paperTextureSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0.1" /></filter><rect width="100%" height="100%" filter="url(#noise)" opacity="0.08" /></svg>`;
 
@@ -391,10 +403,11 @@ export default function ArtisticPortfolio({
               {/* About Me Card - Exhibition label style */}
               {userInfo.aboutMe && (
                 <div 
-                  className="p-6 rounded-lg relative"
+                  className="p-6 relative"
                   style={{
                     backgroundColor: colors.canvas,
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                    clipPath: tornEdgeClipPaths.card1,
                   }}
                 >
                   {/* Pushpin */}
@@ -427,10 +440,11 @@ export default function ArtisticPortfolio({
               {/* Vision Card */}
               {userInfo.visionStatement && (
                 <div 
-                  className="p-5 rounded-lg relative"
+                  className="p-5 relative"
                   style={{
                     backgroundColor: colors.canvas,
                     borderLeft: `4px solid ${colors.teal}`,
+                    clipPath: tornEdgeClipPaths.card2,
                   }}
                 >
                   <h4 
@@ -446,10 +460,11 @@ export default function ArtisticPortfolio({
               {/* Mission Card */}
               {userInfo.missionStatement && (
                 <div 
-                  className="p-5 rounded-lg relative"
+                  className="p-5 relative"
                   style={{
                     backgroundColor: colors.canvas,
                     borderLeft: `4px solid ${colors.lilac}`,
+                    clipPath: tornEdgeClipPaths.card3,
                   }}
                 >
                   <h4 
@@ -468,10 +483,11 @@ export default function ArtisticPortfolio({
               {/* What Makes Me Different */}
               {userInfo.uniqueValueProposition && (
                 <div 
-                  className="p-6 rounded-lg"
+                  className="p-6"
                   style={{
                     backgroundColor: colors.canvas,
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                    clipPath: tornEdgeClipPaths.card1,
                   }}
                 >
                   <h3 
@@ -496,8 +512,11 @@ export default function ArtisticPortfolio({
               {/* Core Values - Paint chips */}
               {userInfo.coreValues && toStringArray(userInfo.coreValues).length > 0 && (
                 <div 
-                  className="p-5 rounded-lg"
-                  style={{ backgroundColor: colors.canvas }}
+                  className="p-5"
+                  style={{ 
+                    backgroundColor: colors.canvas,
+                    clipPath: tornEdgeClipPaths.card2,
+                  }}
                 >
                   <h4 
                     className="font-medium text-sm mb-3"
@@ -528,8 +547,11 @@ export default function ArtisticPortfolio({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {userInfo.primaryAudience && toStringArray(userInfo.primaryAudience).length > 0 && (
                   <div 
-                    className="p-4 rounded-lg"
-                    style={{ backgroundColor: colors.canvas }}
+                    className="p-4"
+                    style={{ 
+                      backgroundColor: colors.canvas,
+                      clipPath: tornEdgeClipPaths.card3,
+                    }}
                   >
                     <h4 
                       className="font-medium text-xs mb-2"
@@ -555,8 +577,11 @@ export default function ArtisticPortfolio({
                 )}
                 {userInfo.secondaryAudience && toStringArray(userInfo.secondaryAudience).length > 0 && (
                   <div 
-                    className="p-4 rounded-lg"
-                    style={{ backgroundColor: colors.canvas }}
+                    className="p-4"
+                    style={{ 
+                      backgroundColor: colors.canvas,
+                      clipPath: tornEdgeClipPaths.card1,
+                    }}
                   >
                     <h4 
                       className="font-medium text-xs mb-2"
@@ -584,8 +609,11 @@ export default function ArtisticPortfolio({
 
               {/* Looking For & Email */}
               <div 
-                className="p-4 rounded-lg flex flex-wrap gap-4 items-center justify-between"
-                style={{ backgroundColor: colors.canvas }}
+                className="p-4 flex flex-wrap gap-4 items-center justify-between"
+                style={{ 
+                  backgroundColor: colors.canvas,
+                  clipPath: tornEdgeClipPaths.card2,
+                }}
               >
                 {userInfo.lookingFor && (
                   <div className="flex items-center gap-2">
@@ -631,11 +659,12 @@ export default function ArtisticPortfolio({
                 return (
                   <div 
                     key={skill.id}
-                    className="p-4 rounded-lg transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg"
+                    className="p-4 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg"
                     style={{
                       backgroundColor: colors.canvas,
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                       borderTop: `3px solid ${color}`,
+                      clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.4s ease-out ${index * 0.05}s both`,
                     }}
                   >
@@ -691,10 +720,11 @@ export default function ArtisticPortfolio({
             </h2>
 
             <div 
-              className="p-8 rounded-lg relative"
+              className="p-8 relative"
               style={{
                 backgroundColor: colors.canvas,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                clipPath: tornEdgeClipPaths.card1,
               }}
             >
               {/* Timeline Line */}
@@ -847,11 +877,12 @@ export default function ArtisticPortfolio({
                 return (
                   <div 
                     key={edu.id}
-                    className="p-6 rounded-lg relative transition-all duration-300 hover:translate-x-1"
+                    className="p-6 relative transition-all duration-300 hover:translate-x-1"
                     style={{
                       backgroundColor: colors.canvas,
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                       borderLeft: `4px solid ${color}`,
+                      clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.4s ease-out ${index * 0.1}s both`,
                     }}
                   >
@@ -933,10 +964,11 @@ export default function ArtisticPortfolio({
                 return (
                   <div 
                     key={project.id}
-                    className="rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
+                    className="overflow-hidden group cursor-pointer transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
                     style={{
                       backgroundColor: colors.canvas,
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                      clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.5s ease-out ${index * 0.1}s both`,
                     }}
                     onClick={() => setSelectedProjectId(project.id)}
@@ -1055,11 +1087,12 @@ export default function ArtisticPortfolio({
                 return (
                   <div 
                     key={service.id}
-                    className="p-6 rounded-lg transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
+                    className="p-6 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
                     style={{
                       backgroundColor: colors.canvas,
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                       borderTop: `4px solid ${color}`,
+                      clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.5s ease-out ${index * 0.1}s both`,
                     }}
                   >
