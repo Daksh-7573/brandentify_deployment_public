@@ -224,12 +224,33 @@ class TimezoneAwareQuestScheduler {
    * Initialize nextQuestAssignmentTime for users who don't have it set
    * Run this once during migration
    * CRITICAL FIX: Only initialize users WITHOUT nextQuestAssignmentTime to avoid resetting on every restart
+   * UPDATED: Now also sets timezone to 'UTC' for users who don't have it
    */
   public async initializeUsersNextAssignmentTime() {
     try {
       console.log('[TimezoneQuestScheduler] 🔄 Initializing nextQuestAssignmentTime for users...');
       
-      // Find users without nextQuestAssignmentTime set (CRITICAL: avoid resetting on restart)
+      // STEP 1: Find users WITHOUT timezone and set it to UTC
+      const usersWithoutTimezone = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          timezone: users.timezone
+        })
+        .from(users)
+        .where(isNull(users.timezone));
+
+      console.log(`[TimezoneQuestScheduler] Found ${usersWithoutTimezone.length} users without timezone - setting to UTC`);
+      
+      for (const user of usersWithoutTimezone) {
+        await db
+          .update(users)
+          .set({ timezone: 'UTC' })
+          .where(eq(users.id, user.id));
+        console.log(`[TimezoneQuestScheduler] ✅ Set timezone UTC for user ${user.id} (${user.name})`);
+      }
+
+      // STEP 2: Find users without nextQuestAssignmentTime (now all users should have timezone)
       const uninitializedUsers = await db
         .select({
           id: users.id,
@@ -237,14 +258,9 @@ class TimezoneAwareQuestScheduler {
           timezone: users.timezone
         })
         .from(users)
-        .where(
-          and(
-            isNotNull(users.timezone),  // Only users with timezone set
-            isNull(users.nextQuestAssignmentTime)  // CRITICAL: Only uninitialized users
-          )
-        );
+        .where(isNull(users.nextQuestAssignmentTime));
 
-      console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize`);
+      console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize for quest assignment`);
 
       for (const user of uninitializedUsers) {
         const nextMidnight = this.calculateNextMidnight(user.timezone || 'UTC');
@@ -254,10 +270,10 @@ class TimezoneAwareQuestScheduler {
           .set({ nextQuestAssignmentTime: nextMidnight })
           .where(eq(users.id, user.id));
         
-        console.log(`[TimezoneQuestScheduler] ✅ Initialized user ${user.id} (${user.name}) - next assignment at ${nextMidnight.toISOString()}`);
+        console.log(`[TimezoneQuestScheduler] ✅ Initialized user ${user.id} (${user.name}) in timezone ${user.timezone} - next assignment at ${nextMidnight.toISOString()}`);
       }
 
-      console.log('[TimezoneQuestScheduler] 🎉 Initialization complete');
+      console.log('[TimezoneQuestScheduler] 🎉 Initialization complete - all users ready for daily quest generation');
       
     } catch (error) {
       console.error('[TimezoneQuestScheduler] Error initializing users:', error);
