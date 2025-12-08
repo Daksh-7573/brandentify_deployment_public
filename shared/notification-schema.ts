@@ -19,7 +19,8 @@ export type NotificationCategory =
   | 'api_error'             // API errors
   | 'team_member_request'   // When added as a team member to a project
   | 'client_request'        // When added as a client to a project
-  | 'project_tag';          // When tagged in a project (team member or client)
+  | 'project_tag'           // When tagged in a project (team member or client)
+  | 'referral_signup';      // When invited user signs up and referrer gets Quantum Card + Portfolios
 
 // Notification table schema
 export const notifications = pgTable('notifications', {
@@ -39,7 +40,8 @@ export const notifications = pgTable('notifications', {
       'api_error',
       'team_member_request',
       'client_request',
-      'project_tag'
+      'project_tag',
+      'referral_signup'
     ] 
   }).notNull(),
   title: text('title').notNull(),
