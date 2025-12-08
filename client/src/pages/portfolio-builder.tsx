@@ -621,6 +621,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Warm Parchment, Paper Textures, Organic Shapes, Paint Brush Effects, Earth Tones
 ✔ Best For: Artists, Designers, Writers, Photographers, Creative Directors, Gallery Curators`,
       theme: "#f9f7f0"
+    },
+    { 
+      id: "fashion-quantum", 
+      name: "Fashion Quantum", 
+      description: `✔ Theme: Vogue Editorial, Noir Black, Blush Pink, Champagne Glow, Glassmorphism, Film Grain
+✔ Best For: Fashion Models, Photographers, Stylists, Influencers, Fashion Designers, MUAs`,
+      theme: "#050509"
     }
   ];
 
