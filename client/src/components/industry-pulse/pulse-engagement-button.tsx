@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
@@ -22,6 +23,9 @@ export default function PulseEngagementButton({
   className = "",
   onClick
 }: PulseEngagementButtonProps) {
+  // Local optimistic state for instant UI updates
+  const [localCountDelta, setLocalCountDelta] = useState(0);
+  
   // Get user's existing reaction status
   const { data: userReactionData } = useQuery<{ id: number; reactionType: string } | null>({
     queryKey: [`/api/pulses/${pulseId}/reactions/user/${userId}`],
@@ -42,7 +46,7 @@ export default function PulseEngagementButton({
     userId,
     itemId: pulseId,
     apiEndpoint: "pulses",
-    currentCount,
+    currentCount: currentCount + localCountDelta,
     quotaData
   });
   
@@ -60,15 +64,16 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Label based on engagement type
+  // Label based on engagement type with local optimistic count
   const getLabel = () => {
-    const count = formatEngagementCount(currentCount);
+    const displayCount = currentCount + localCountDelta;
+    const count = formatEngagementCount(displayCount);
     
     switch (type) {
       case "insightful": return `${count} Insightful`;
       case "misinformed": return `${count} Misinformed`;
       case "share": return `${count} Share`;
-      case "comment": return `${count} ${currentCount === 1 ? 'Comment' : 'Comments'}`;
+      case "comment": return `${count} ${displayCount === 1 ? 'Comment' : 'Comments'}`;
       default: return "";
     }
   };
@@ -79,8 +84,22 @@ export default function PulseEngagementButton({
       size="sm"
       className={`h-8 rounded-full ${styles.textColor} ${styles.hoverBg} ${className}`}
       onClick={() => {
-        if (onClick) onClick();
-        else handleEngagement(userReactionId);
+        if (onClick) {
+          onClick();
+        } else {
+          // Immediately update local state for instant UI feedback
+          if (type === "insightful" || type === "misinformed") {
+            setLocalCountDelta(prev => prev + 1);
+          }
+          
+          // Call the engagement handler
+          handleEngagement(userReactionId);
+          
+          // Reset local delta after mutation completes (will be synced from server)
+          setTimeout(() => {
+            setLocalCountDelta(0);
+          }, 2000);
+        }
       }}
       disabled={isLoading}
     >
