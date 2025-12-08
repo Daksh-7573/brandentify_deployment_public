@@ -15,6 +15,7 @@ import YogaFitnessModel from "@/components/portfolio/templates/yoga-fitness-mode
 import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
 import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
+import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfolio";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -37,7 +38,8 @@ export type PortfolioLayoutKey =
   | "yoga-fitness-model"
   | "3d-portfolio"
   | "holographic-neo"
-  | "creative-quantum";
+  | "creative-quantum"
+  | "artistic-portfolio";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -119,7 +121,9 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "corporate": "corporate-executive",
   "executive": "corporate-executive",
   "holographic_neo": "holographic-neo",
-  "creative_quantum": "creative-quantum"
+  "creative_quantum": "creative-quantum",
+  "artistic_portfolio": "artistic-portfolio",
+  "artistic": "artistic-portfolio"
 };
 
 export function normalizeLayoutKey(layout: string | null | undefined): PortfolioLayoutKey {
@@ -170,7 +174,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "yoga-fitness-model": YogaFitnessModel as any,
   "3d-portfolio": ThreeDPortfolio as any,
   "holographic-neo": HolographicNeo as any,
-  "creative-quantum": CreativeQuantum as any
+  "creative-quantum": CreativeQuantum as any,
+  "artistic-portfolio": ArtisticPortfolio as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {
