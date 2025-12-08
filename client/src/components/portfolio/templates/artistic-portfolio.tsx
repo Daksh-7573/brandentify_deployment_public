@@ -44,16 +44,32 @@ const artisticPalette = [colors.burgundy, colors.teal, colors.navy, colors.mint,
 
 const getArtisticColor = (index: number) => artisticPalette[index % artisticPalette.length];
 
-// Torn paper edge clip-paths for cards
+// Torn paper edge clip-paths for cards - ALL FOUR SIDES with organic edges
 const tornEdgeClipPaths = {
-  card1: "polygon(2% 0%, 5% 1%, 8% 0%, 12% 2%, 15% 1%, 18% 0%, 22% 2%, 26% 1%, 30% 0%, 35% 1%, 40% 2%, 45% 0%, 50% 1%, 55% 2%, 60% 0%, 65% 1%, 70% 2%, 75% 0%, 80% 1%, 85% 2%, 90% 0%, 95% 1%, 98% 0%, 100% 2%, 100% 97%, 98% 98%, 95% 100%, 90% 99%, 85% 100%, 80% 98%, 75% 100%, 70% 99%, 65% 100%, 60% 98%, 55% 100%, 50% 99%, 45% 100%, 40% 98%, 35% 100%, 30% 99%, 25% 100%, 20% 98%, 15% 100%, 10% 99%, 5% 100%, 2% 98%, 0% 100%, 0% 2%)",
-  card2: "polygon(0% 3%, 3% 0%, 8% 2%, 14% 0%, 20% 1%, 26% 0%, 32% 2%, 38% 0%, 44% 1%, 50% 0%, 56% 2%, 62% 0%, 68% 1%, 74% 0%, 80% 2%, 86% 0%, 92% 1%, 97% 0%, 100% 3%, 100% 96%, 97% 100%, 92% 98%, 86% 100%, 80% 99%, 74% 100%, 68% 98%, 62% 100%, 56% 99%, 50% 100%, 44% 98%, 38% 100%, 32% 99%, 26% 100%, 20% 98%, 14% 100%, 8% 99%, 3% 100%, 0% 97%)",
-  card3: "polygon(1% 0%, 6% 2%, 11% 0%, 17% 1%, 23% 0%, 29% 2%, 35% 0%, 41% 1%, 47% 0%, 53% 2%, 59% 0%, 65% 1%, 71% 0%, 77% 2%, 83% 0%, 89% 1%, 95% 0%, 100% 1%, 100% 99%, 95% 100%, 89% 98%, 83% 100%, 77% 99%, 71% 100%, 65% 98%, 59% 100%, 53% 99%, 47% 100%, 41% 98%, 35% 100%, 29% 99%, 23% 100%, 17% 98%, 11% 100%, 6% 99%, 1% 100%, 0% 99%)",
+  card1: "polygon(2% 3%, 4% 1%, 7% 2%, 10% 0%, 14% 1%, 18% 2%, 22% 0%, 26% 1%, 30% 2%, 35% 0%, 40% 2%, 45% 1%, 50% 0%, 55% 2%, 60% 1%, 65% 0%, 70% 2%, 75% 1%, 80% 0%, 85% 2%, 90% 1%, 94% 0%, 97% 2%, 99% 4%, 100% 8%, 99% 12%, 100% 18%, 99% 24%, 100% 30%, 99% 36%, 100% 42%, 99% 48%, 100% 54%, 99% 60%, 100% 66%, 99% 72%, 100% 78%, 99% 84%, 100% 90%, 99% 95%, 97% 98%, 94% 100%, 90% 99%, 85% 100%, 80% 98%, 75% 100%, 70% 99%, 65% 100%, 60% 98%, 55% 100%, 50% 99%, 45% 100%, 40% 98%, 35% 100%, 30% 99%, 25% 100%, 20% 98%, 15% 100%, 10% 99%, 6% 100%, 3% 98%, 1% 96%, 0% 92%, 1% 86%, 0% 80%, 1% 74%, 0% 68%, 1% 62%, 0% 56%, 1% 50%, 0% 44%, 1% 38%, 0% 32%, 1% 26%, 0% 20%, 1% 14%, 0% 8%)",
+  card2: "polygon(3% 2%, 6% 0%, 10% 2%, 15% 0%, 20% 1%, 25% 0%, 30% 2%, 36% 0%, 42% 1%, 48% 0%, 54% 2%, 60% 0%, 66% 1%, 72% 0%, 78% 2%, 84% 0%, 90% 1%, 95% 0%, 98% 3%, 100% 7%, 99% 13%, 100% 20%, 99% 27%, 100% 34%, 99% 41%, 100% 48%, 99% 55%, 100% 62%, 99% 69%, 100% 76%, 99% 83%, 100% 90%, 98% 97%, 95% 100%, 90% 98%, 84% 100%, 78% 99%, 72% 100%, 66% 98%, 60% 100%, 54% 99%, 48% 100%, 42% 98%, 36% 100%, 30% 99%, 25% 100%, 20% 98%, 15% 100%, 10% 99%, 6% 100%, 3% 97%, 0% 93%, 1% 87%, 0% 80%, 1% 73%, 0% 66%, 1% 59%, 0% 52%, 1% 45%, 0% 38%, 1% 31%, 0% 24%, 1% 17%, 0% 10%)",
+  card3: "polygon(1% 4%, 5% 1%, 9% 3%, 14% 0%, 19% 2%, 24% 0%, 29% 2%, 34% 0%, 40% 2%, 46% 0%, 52% 1%, 58% 0%, 64% 2%, 70% 0%, 76% 1%, 82% 0%, 88% 2%, 93% 0%, 97% 3%, 100% 6%, 99% 11%, 100% 17%, 99% 23%, 100% 29%, 99% 35%, 100% 41%, 99% 47%, 100% 53%, 99% 59%, 100% 65%, 99% 71%, 100% 77%, 99% 83%, 100% 89%, 99% 94%, 97% 98%, 93% 100%, 88% 98%, 82% 100%, 76% 99%, 70% 100%, 64% 98%, 58% 100%, 52% 99%, 46% 100%, 40% 98%, 34% 100%, 29% 99%, 24% 100%, 19% 98%, 14% 100%, 9% 99%, 5% 100%, 1% 97%, 0% 94%, 1% 89%, 0% 83%, 1% 77%, 0% 71%, 1% 65%, 0% 59%, 1% 53%, 0% 47%, 1% 41%, 0% 35%, 1% 29%, 0% 23%, 1% 17%, 0% 11%)",
 };
 
 const getTornEdge = (index: number) => {
   const edges = Object.values(tornEdgeClipPaths);
   return edges[index % edges.length];
+};
+
+// Card background colors - soft pastel versions of the artistic palette
+const cardBackgrounds = [
+  { bg: "#f5e6e6", accent: colors.burgundy },  // soft burgundy
+  { bg: "#e6f2f2", accent: colors.teal },       // soft teal
+  { bg: "#e8ecef", accent: colors.navy },       // soft navy
+  { bg: "#e6f9f5", accent: colors.mint },       // soft mint
+  { bg: "#f0eaf5", accent: colors.lilac },      // soft lilac
+  { bg: "#f5ebe6", accent: colors.rust },       // soft rust
+  { bg: "#eef0f0", accent: colors.sage },       // soft sage
+];
+
+const getCardStyle = (index: number) => {
+  const style = cardBackgrounds[index % cardBackgrounds.length];
+  return style;
 };
 
 // Paper texture SVG
@@ -405,19 +421,11 @@ export default function ArtisticPortfolio({
                 <div 
                   className="p-6 relative"
                   style={{
-                    backgroundColor: colors.canvas,
+                    backgroundColor: cardBackgrounds[1].bg,
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                     clipPath: tornEdgeClipPaths.card1,
                   }}
                 >
-                  {/* Pushpin */}
-                  <div 
-                    className="absolute -top-2 right-6 w-4 h-4 rounded-full"
-                    style={{
-                      backgroundColor: colors.amber,
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                    }}
-                  />
                   <h3 
                     className="font-bold mb-3 flex items-center gap-2"
                     style={{ 
@@ -442,7 +450,7 @@ export default function ArtisticPortfolio({
                 <div 
                   className="p-5 relative"
                   style={{
-                    backgroundColor: colors.canvas,
+                    backgroundColor: cardBackgrounds[4].bg,
                     borderLeft: `4px solid ${colors.teal}`,
                     clipPath: tornEdgeClipPaths.card2,
                   }}
@@ -462,7 +470,7 @@ export default function ArtisticPortfolio({
                 <div 
                   className="p-5 relative"
                   style={{
-                    backgroundColor: colors.canvas,
+                    backgroundColor: cardBackgrounds[0].bg,
                     borderLeft: `4px solid ${colors.lilac}`,
                     clipPath: tornEdgeClipPaths.card3,
                   }}
@@ -485,7 +493,7 @@ export default function ArtisticPortfolio({
                 <div 
                   className="p-6"
                   style={{
-                    backgroundColor: colors.canvas,
+                    backgroundColor: cardBackgrounds[3].bg,
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                     clipPath: tornEdgeClipPaths.card1,
                   }}
@@ -514,7 +522,7 @@ export default function ArtisticPortfolio({
                 <div 
                   className="p-5"
                   style={{ 
-                    backgroundColor: colors.canvas,
+                    backgroundColor: cardBackgrounds[5].bg,
                     clipPath: tornEdgeClipPaths.card2,
                   }}
                 >
@@ -549,7 +557,7 @@ export default function ArtisticPortfolio({
                   <div 
                     className="p-4"
                     style={{ 
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardBackgrounds[2].bg,
                       clipPath: tornEdgeClipPaths.card3,
                     }}
                   >
@@ -579,7 +587,7 @@ export default function ArtisticPortfolio({
                   <div 
                     className="p-4"
                     style={{ 
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardBackgrounds[6].bg,
                       clipPath: tornEdgeClipPaths.card1,
                     }}
                   >
@@ -611,7 +619,7 @@ export default function ArtisticPortfolio({
               <div 
                 className="p-4 flex flex-wrap gap-4 items-center justify-between"
                 style={{ 
-                  backgroundColor: colors.canvas,
+                  backgroundColor: cardBackgrounds[1].bg,
                   clipPath: tornEdgeClipPaths.card2,
                 }}
               >
@@ -656,14 +664,15 @@ export default function ArtisticPortfolio({
               {userSkills.map((skill, index) => {
                 const proficiency = getProficiencyLevel(skill);
                 const color = getArtisticColor(index);
+                const cardStyle = getCardStyle(index);
                 return (
                   <div 
                     key={skill.id}
                     className="p-4 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg"
                     style={{
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardStyle.bg,
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                      borderTop: `3px solid ${color}`,
+                      borderTop: `3px solid ${cardStyle.accent}`,
                       clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.4s ease-out ${index * 0.05}s both`,
                     }}
@@ -722,7 +731,7 @@ export default function ArtisticPortfolio({
             <div 
               className="p-8 relative"
               style={{
-                backgroundColor: colors.canvas,
+                backgroundColor: cardBackgrounds[1].bg,
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                 clipPath: tornEdgeClipPaths.card1,
               }}
@@ -874,14 +883,15 @@ export default function ArtisticPortfolio({
             <div className="space-y-5">
               {sortedEducations.map((edu, index) => {
                 const color = getArtisticColor(index);
+                const cardStyle = getCardStyle(index);
                 return (
                   <div 
                     key={edu.id}
                     className="p-6 relative transition-all duration-300 hover:translate-x-1"
                     style={{
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardStyle.bg,
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                      borderLeft: `4px solid ${color}`,
+                      borderLeft: `4px solid ${cardStyle.accent}`,
                       clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.4s ease-out ${index * 0.1}s both`,
                     }}
@@ -961,12 +971,13 @@ export default function ArtisticPortfolio({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userProjects.map((project, index) => {
                 const color = getArtisticColor(index);
+                const cardStyle = getCardStyle(index);
                 return (
                   <div 
                     key={project.id}
                     className="overflow-hidden group cursor-pointer transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
                     style={{
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardStyle.bg,
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                       clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.5s ease-out ${index * 0.1}s both`,
@@ -994,7 +1005,7 @@ export default function ArtisticPortfolio({
                       <div 
                         className="absolute inset-0 transition-opacity duration-300"
                         style={{
-                          background: `linear-gradient(to top, ${colors.canvas} 0%, transparent 60%)`,
+                          background: `linear-gradient(to top, ${cardStyle.bg} 0%, transparent 60%)`,
                         }}
                       />
 
@@ -1084,14 +1095,15 @@ export default function ArtisticPortfolio({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userServices.filter(s => s.isActive !== false).map((service, index) => {
                 const color = getArtisticColor(index);
+                const cardStyle = getCardStyle(index);
                 return (
                   <div 
                     key={service.id}
                     className="p-6 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-xl"
                     style={{
-                      backgroundColor: colors.canvas,
+                      backgroundColor: cardStyle.bg,
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-                      borderTop: `4px solid ${color}`,
+                      borderTop: `4px solid ${cardStyle.accent}`,
                       clipPath: getTornEdge(index),
                       animation: `artisticFadeIn 0.5s ease-out ${index * 0.1}s both`,
                     }}
