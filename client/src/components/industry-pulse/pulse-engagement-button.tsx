@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
+import { useState } from "react";
 
 interface PulseEngagementButtonProps {
   type: "insightful" | "misinformed" | "share" | "comment";
@@ -22,6 +23,9 @@ export default function PulseEngagementButton({
   className = "",
   onClick
 }: PulseEngagementButtonProps) {
+  // Local state for instant UI feedback (updated immediately on click)
+  const [localCountIncrement, setLocalCountIncrement] = useState(0);
+  
   // Get user's existing reaction status
   const { data: userReactionData } = useQuery<{ id: number; reactionType: string } | null>({
     queryKey: [`/api/pulses/${pulseId}/reactions/user/${userId}`],
@@ -36,26 +40,8 @@ export default function PulseEngagementButton({
   
   const isActive = !!userReactionId;
   
-  // Subscribe to the pulses feed to get instant cache updates
-  const { data: pulsesList } = useQuery({
-    queryKey: ["/api/pulses"],
-    enabled: false, // Don't fetch, just subscribe to cache
-    staleTime: Infinity,
-  });
-
-  // Get the actual count from the feed data
-  const cachedCount = (() => {
-    if (pulsesList) {
-      const pulse = pulsesList.find((p: any) => p.id === pulseId);
-      if (pulse) {
-        const countField = type === "insightful" ? "insightfulCount" : 
-                          type === "misinformed" ? "misinformedCount" :
-                          type === "inspired" ? "inspiredCount" : "commentCount";
-        return pulse[countField] || currentCount;
-      }
-    }
-    return currentCount;
-  })();
+  // Display count = prop count + any local pending increments
+  const displayCount = currentCount + localCountIncrement;
   
   // Use the shared engagement hook
   const { handleEngagement, isLoading } = useFeedEngagement({
@@ -63,7 +49,7 @@ export default function PulseEngagementButton({
     userId,
     itemId: pulseId,
     apiEndpoint: "pulses",
-    currentCount: cachedCount,
+    currentCount: displayCount,
     quotaData
   });
   
@@ -81,15 +67,15 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Label based on engagement type - use cachedCount to show instant updates
+  // Label based on engagement type with local count
   const getLabel = () => {
-    const count = formatEngagementCount(cachedCount);
+    const count = formatEngagementCount(displayCount);
     
     switch (type) {
       case "insightful": return `${count} Insightful`;
       case "misinformed": return `${count} Misinformed`;
       case "share": return `${count} Share`;
-      case "comment": return `${count} ${cachedCount === 1 ? 'Comment' : 'Comments'}`;
+      case "comment": return `${count} ${displayCount === 1 ? 'Comment' : 'Comments'}`;
       default: return "";
     }
   };
@@ -103,8 +89,21 @@ export default function PulseEngagementButton({
         if (onClick) {
           onClick();
         } else {
-          // Optimistic updates are handled in useFeedEngagement hook's onMutate callback
+          // For reactions only: update local state immediately for instant visual feedback
+          if (type === "insightful" || type === "misinformed") {
+            setLocalCountIncrement(prev => prev + 1);
+          }
+          
+          // Call the engagement handler
           handleEngagement(userReactionId);
+          
+          // After a short delay, if still loading, reset (server will sync)
+          // This prevents the count from getting stuck if the request fails
+          setTimeout(() => {
+            if (!isLoading) {
+              setLocalCountIncrement(0);
+            }
+          }, 3000);
         }
       }}
       disabled={isLoading}
