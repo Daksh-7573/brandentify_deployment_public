@@ -167,8 +167,9 @@ export function useFeedEngagement({
       }
     },
     onSuccess: () => {
-      // For pulse reactions, invalidate reaction-specific queries but not the main feed
+      // For pulse reactions, invalidate the main feed to ensure counts update immediately
       if (engagementType === "insightful" || engagementType === "misinformed") {
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions/user/${userId}`] });
