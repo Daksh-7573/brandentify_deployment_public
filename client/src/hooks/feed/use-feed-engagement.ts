@@ -100,6 +100,33 @@ export function useFeedEngagement({
       return await res.json();
     },
     onMutate: async () => {
+      // For insightful/misinformed reactions, implement optimistic updates
+      if (engagementType === "insightful" || engagementType === "misinformed") {
+        // Cancel any outgoing refetches
+        await queryClient.cancelQueries({ queryKey: [`/api/${apiEndpoint}`] });
+        
+        // Snapshot the previous values
+        const previousItems = queryClient.getQueryData<any[]>([`/api/${apiEndpoint}`]);
+        
+        // Optimistically update the pulse count
+        if (previousItems) {
+          const countField = engagementType === "insightful" ? "insightfulCount" : "misinformedCount";
+          const newItems = previousItems.map(item => {
+            if (item.id === itemId) {
+              return {
+                ...item,
+                [countField]: (item[countField] || 0) + 1
+              };
+            }
+            return item;
+          });
+          
+          queryClient.setQueryData([`/api/${apiEndpoint}`], newItems);
+        }
+        
+        return { previousItems };
+      }
+      
       // For inspired actions, implement optimistic updates
       if (engagementType === "inspired") {
         // Cancel any outgoing refetches
@@ -145,24 +172,6 @@ export function useFeedEngagement({
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions/user/${userId}`] });
-        
-        // Update pulse count optimistically instead of refetching entire feed
-        const queryKey = [`/api/${apiEndpoint}`];
-        const previousData = queryClient.getQueryData<any[]>(queryKey);
-        
-        if (previousData) {
-          const updatedData = previousData.map(item => {
-            if (item.id === itemId) {
-              const countField = engagementType === "insightful" ? "insightfulCount" : "misinformedCount";
-              return {
-                ...item,
-                [countField]: (item[countField] || 0) + 1
-              };
-            }
-            return item;
-          });
-          queryClient.setQueryData(queryKey, updatedData);
-        }
       } else {
         // For other engagement types, invalidate as before
         queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
@@ -195,6 +204,16 @@ export function useFeedEngagement({
     onError: (error, _variables, context) => {
       // If 409 (already engaged), don't show error - this could be a duplicate click
       const isConflict = (error as any)?.status === 409;
+      
+      // For insightful/misinformed reactions, roll back optimistic updates on error
+      if ((engagementType === "insightful" || engagementType === "misinformed") && context) {
+        const { previousItems } = context as any;
+        
+        // Restore previous items data
+        if (previousItems) {
+          queryClient.setQueryData([`/api/${apiEndpoint}`], previousItems);
+        }
+      }
       
       // For inspired actions, roll back optimistic updates on error
       if (engagementType === "inspired" && context) {
