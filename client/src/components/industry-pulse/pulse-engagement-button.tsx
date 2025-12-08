@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
+import { queryClient } from "@/lib/queryClient";
 
 interface PulseEngagementButtonProps {
   type: "insightful" | "misinformed" | "share" | "comment";
@@ -23,9 +23,6 @@ export default function PulseEngagementButton({
   className = "",
   onClick
 }: PulseEngagementButtonProps) {
-  // Local optimistic state for instant UI updates
-  const [localCountDelta, setLocalCountDelta] = useState(0);
-  
   // Get user's existing reaction status
   const { data: userReactionData } = useQuery<{ id: number; reactionType: string } | null>({
     queryKey: [`/api/pulses/${pulseId}/reactions/user/${userId}`],
@@ -46,7 +43,7 @@ export default function PulseEngagementButton({
     userId,
     itemId: pulseId,
     apiEndpoint: "pulses",
-    currentCount: currentCount + localCountDelta,
+    currentCount,
     quotaData
   });
   
@@ -64,16 +61,15 @@ export default function PulseEngagementButton({
     }
   };
   
-  // Label based on engagement type with local optimistic count
+  // Label based on engagement type
   const getLabel = () => {
-    const displayCount = currentCount + localCountDelta;
-    const count = formatEngagementCount(displayCount);
+    const count = formatEngagementCount(currentCount);
     
     switch (type) {
       case "insightful": return `${count} Insightful`;
       case "misinformed": return `${count} Misinformed`;
       case "share": return `${count} Share`;
-      case "comment": return `${count} ${displayCount === 1 ? 'Comment' : 'Comments'}`;
+      case "comment": return `${count} ${currentCount === 1 ? 'Comment' : 'Comments'}`;
       default: return "";
     }
   };
@@ -87,18 +83,32 @@ export default function PulseEngagementButton({
         if (onClick) {
           onClick();
         } else {
-          // Immediately update local state for instant UI feedback
+          // For reactions, directly update the query cache BEFORE calling the handler
           if (type === "insightful" || type === "misinformed") {
-            setLocalCountDelta(prev => prev + 1);
+            const countField = type === "insightful" ? "insightfulCount" : "misinformedCount";
+            
+            // Directly update the main pulses feed cache
+            const queryKey = ["/api/pulses"];
+            const cachedData = queryClient.getQueryData<any[]>(queryKey);
+            
+            if (cachedData) {
+              const updated = cachedData.map(item => {
+                if (item.id === pulseId) {
+                  return {
+                    ...item,
+                    [countField]: (item[countField] || 0) + 1
+                  };
+                }
+                return item;
+              });
+              
+              // Set the updated data immediately (synchronous)
+              queryClient.setQueryData(queryKey, updated);
+            }
           }
           
           // Call the engagement handler
           handleEngagement(userReactionId);
-          
-          // Reset local delta after mutation completes (will be synced from server)
-          setTimeout(() => {
-            setLocalCountDelta(0);
-          }, 2000);
         }
       }}
       disabled={isLoading}
