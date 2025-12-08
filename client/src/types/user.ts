@@ -21,6 +21,8 @@ export interface UserData {
   profileCompleted?: boolean;
   visitingCardType?: string | null;
   createdAt?: Date | string | null;
+  // Subscription
+  subscription_tier?: 'free' | 'premium';
   // New branding fields
   tagline?: string | null;
   visionStatement?: string | null;
