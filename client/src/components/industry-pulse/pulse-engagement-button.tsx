@@ -85,25 +85,28 @@ export default function PulseEngagementButton({
       variant="ghost"
       size="sm"
       className={`h-8 rounded-full ${styles.textColor} ${styles.hoverBg} ${className}`}
+      data-testid={`engagement-btn-${type}-${pulseId}`}
       onClick={() => {
         if (onClick) {
           onClick();
         } else {
+          const clickTime = Date.now();
+          console.log(`[${type}] Click at ${clickTime}, current count: ${currentCount}, increment: ${localCountIncrement}`);
+          
           // For reactions only: update local state immediately for instant visual feedback
           if (type === "insightful" || type === "misinformed") {
-            setLocalCountIncrement(prev => prev + 1);
+            console.log(`[${type}] Setting local increment from ${localCountIncrement} to ${localCountIncrement + 1}`);
+            setLocalCountIncrement(prev => {
+              const newVal = prev + 1;
+              console.log(`[${type}] State callback - new increment: ${newVal}`);
+              return newVal;
+            });
           }
+          
+          console.log(`[${type}] About to call handleEngagement`);
           
           // Call the engagement handler
           handleEngagement(userReactionId);
-          
-          // After a short delay, if still loading, reset (server will sync)
-          // This prevents the count from getting stuck if the request fails
-          setTimeout(() => {
-            if (!isLoading) {
-              setLocalCountIncrement(0);
-            }
-          }, 3000);
         }
       }}
       disabled={isLoading}
