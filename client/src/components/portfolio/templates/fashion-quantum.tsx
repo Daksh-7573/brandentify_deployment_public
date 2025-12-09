@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   MapPin, Mail, Eye, Calendar, Check, Star, Camera, Scissors, 
   Target, Sparkles, ExternalLink, Heart, Award, Building2, 
   GraduationCap, Briefcase, User, X, ChevronRight, Instagram,
-  Globe, Phone
+  Globe, Phone, Download, Play, Pause, ArrowRight, Zap
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-// Fashion Quantum Color Palette
 const colors = {
   noirBlack: "#050509",
   runwayCharcoal: "#111118",
@@ -22,7 +21,6 @@ const colors = {
   white: "#FFFFFF",
 };
 
-// Helper to safely convert to string array
 const toStringArray = (value: unknown): string[] => {
   if (Array.isArray(value)) {
     return value.map(v => String(v)).filter(Boolean);
@@ -40,40 +38,64 @@ const toStringArray = (value: unknown): string[] => {
   return [];
 };
 
-// Film grain noise SVG for texture overlay
 const filmGrainSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter><rect width="100%" height="100%" filter="url(#noise)" opacity="0.07" /></svg>`;
 const filmGrainDataUrl = `url("data:image/svg+xml,${encodeURIComponent(filmGrainSvg)}")`;
 
-// CSS Keyframes as inline styles
 const keyframesStyle = `
   @keyframes softSweep {
     0% { transform: translateX(-120%); opacity: 0; }
-    10% { opacity: 0.25; }
-    50% { transform: translateX(0%); opacity: 0.35; }
+    10% { opacity: 0.3; }
+    50% { transform: translateX(0%); opacity: 0.4; }
     90% { opacity: 0; }
     100% { transform: translateX(120%); opacity: 0; }
   }
   
   @keyframes softGlow {
     0% { box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
-    50% { box-shadow: 0 28px 72px rgba(0,0,0,0.7); }
+    50% { box-shadow: 0 32px 80px rgba(0,0,0,0.75); }
     100% { box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
   }
   
   @keyframes underlineShimmer {
     0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    100% { background-position: 200% 50%; }
   }
   
   @keyframes fashionFadeIn {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes spotlightPulse {
-    0% { opacity: 0.15; }
-    50% { opacity: 0.25; }
-    100% { opacity: 0.15; }
+    0% { opacity: 0.12; }
+    50% { opacity: 0.22; }
+    100% { opacity: 0.12; }
+  }
+  
+  @keyframes pingCurrent {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+  }
+  
+  @keyframes floatIn {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  
+  @keyframes uvpGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes meterFill {
+    from { width: 0%; }
+    to { width: var(--fill-width); }
+  }
+  
+  @keyframes cardLift {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-8px) scale(1.02); }
   }
 `;
 
@@ -159,6 +181,59 @@ interface FashionQuantumProps {
   isPremium?: boolean;
 }
 
+const CircularMeter = ({ value, max = 5, size = 48, color = colors.blushPink }: { value: number; max?: number; size?: number; color?: string }) => {
+  const percentage = (value / max) * 100;
+  const strokeWidth = 3;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="rgba(245,243,238,0.1)"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-xs font-medium" style={{ color: colors.white }}>{value}</span>
+      </div>
+    </div>
+  );
+};
+
+const LinearMeter = ({ value, max = 5, color = colors.blushPink }: { value: number; max?: number; color?: string }) => {
+  const percentage = (value / max) * 100;
+  return (
+    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(245,243,238,0.1)' }}>
+      <div 
+        className="h-full rounded-full transition-all duration-1000 ease-out"
+        style={{ 
+          width: `${percentage}%`,
+          background: `linear-gradient(90deg, ${color}, ${colors.champagneGlow})`,
+        }}
+      />
+    </div>
+  );
+};
+
 export default function FashionQuantum({
   userInfo,
   userSkills = [],
@@ -171,15 +246,29 @@ export default function FashionQuantum({
 }: FashionQuantumProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
   const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  // Sort experiences by date (most recent first)
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        setMousePosition({
+          x: (e.clientX - rect.left - rect.width / 2) / 50,
+          y: (e.clientY - rect.top - rect.height / 2) / 50,
+        });
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const sortedExperiences = [...userExperiences].sort((a, b) => {
     const dateA = new Date(a.startDate || 0).getTime();
     const dateB = new Date(b.startDate || 0).getTime();
     return dateB - dateA;
   });
 
-  // Sort educations by year
   const sortedEducations = [...userEducations].sort((a, b) => {
     const yearA = a.endYear || a.startYear || 0;
     const yearB = b.endYear || b.startYear || 0;
@@ -188,7 +277,6 @@ export default function FashionQuantum({
 
   const selectedProject = userProjects.find(p => p.id === selectedProjectId);
 
-  // Format date helper
   const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return "";
     try {
@@ -199,7 +287,6 @@ export default function FashionQuantum({
     }
   };
 
-  // Get proficiency level
   const getProficiencyLevel = (skill: any): number => {
     if (typeof skill.proficiencyLevel === 'number') return skill.proficiencyLevel;
     if (typeof skill.proficiencyLevel === 'string') {
@@ -209,10 +296,13 @@ export default function FashionQuantum({
     return 3;
   };
 
-  // Fashion category chips
   const fashionCategories = userInfo.domain 
     ? userInfo.domain.split(',').map(s => s.trim()).filter(Boolean)
     : ['Fashion', 'Editorial'];
+
+  const scrollToProjects = () => {
+    document.getElementById('projects-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div 
@@ -225,64 +315,78 @@ export default function FashionQuantum({
     >
       <style>{keyframesStyle}</style>
 
-      {/* Film Grain Overlay */}
       <div 
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           backgroundImage: filmGrainDataUrl,
-          opacity: 0.08,
+          opacity: 0.06,
         }}
       />
 
-      {/* Spotlight Effect */}
       <div 
         className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
         style={{
-          background: `radial-gradient(circle at 20% 10%, rgba(253,243,217,0.18), transparent 60%)`,
+          background: `radial-gradient(circle at 20% 10%, rgba(253,243,217,0.15), transparent 55%)`,
           animation: 'spotlightPulse 8s ease-in-out infinite',
         }}
       />
 
-      {/* Main Container */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div 
+        className="fixed bottom-0 right-0 w-1/2 h-1/2 pointer-events-none z-0"
+        style={{
+          background: `radial-gradient(circle at 80% 90%, rgba(249,197,213,0.08), transparent 50%)`,
+        }}
+      />
 
-        {/* ==================== SECTION 1: HERO HEADER ==================== */}
-        <section className="mb-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+
+        <section className="mb-20" ref={heroRef}>
           <div 
-            className="relative rounded-2xl overflow-hidden p-6 sm:p-10"
+            className="relative rounded-3xl overflow-hidden p-6 sm:p-8 lg:p-12"
             style={{
-              background: `linear-gradient(135deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
-              border: `1px solid rgba(245,243,238,0.18)`,
-              backdropFilter: 'blur(16px)',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
-              animation: 'softGlow 8s linear infinite',
+              background: `linear-gradient(145deg, rgba(17,17,24,0.85), rgba(5,5,9,0.95))`,
+              border: `1px solid rgba(245,243,238,0.12)`,
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.7)',
+              animation: 'softGlow 10s linear infinite',
             }}
             data-testid="hero-section"
           >
-            {/* Left Edge Accent Bar */}
             <div 
-              className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full"
+              className="absolute left-0 top-8 bottom-8 w-1 rounded-full"
               style={{
-                background: `linear-gradient(180deg, ${colors.blushPink}, ${colors.champagneGlow})`,
+                background: `linear-gradient(180deg, ${colors.blushPink}, ${colors.champagneGlow}, ${colors.editorialNude})`,
               }}
             />
 
-            <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
-              {/* Hero Image Container */}
-              <div className="relative w-64 sm:w-72 lg:w-80 flex-shrink-0">
+            <div 
+              className="absolute -top-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
+              style={{
+                background: `radial-gradient(circle, rgba(249,197,213,0.12), transparent 70%)`,
+                filter: 'blur(40px)',
+              }}
+            />
+
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start">
+              <div 
+                className="relative w-64 sm:w-72 lg:w-80 flex-shrink-0"
+                style={{
+                  transform: `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0)`,
+                  transition: 'transform 0.3s ease-out',
+                }}
+              >
                 <div 
-                  className="relative overflow-hidden rounded-xl"
+                  className="relative overflow-hidden rounded-2xl group"
                   style={{
                     aspectRatio: '4/5',
-                    boxShadow: '0 18px 40px rgba(0,0,0,0.7)',
+                    boxShadow: '0 24px 60px rgba(0,0,0,0.8)',
                   }}
                 >
-                  {/* Image */}
                   {userInfo.photoURL ? (
                     <img 
                       src={userInfo.photoURL}
                       alt={userInfo.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       data-testid="hero-image"
                     />
                   ) : (
@@ -290,52 +394,55 @@ export default function FashionQuantum({
                       className="w-full h-full flex items-center justify-center"
                       style={{ backgroundColor: colors.runwayCharcoal }}
                     >
-                      <User className="w-24 h-24" style={{ color: colors.softBone, opacity: 0.3 }} />
+                      <User className="w-28 h-28" style={{ color: colors.softBone, opacity: 0.2 }} />
                     </div>
                   )}
 
-                  {/* Dark gradient overlay at bottom */}
                   <div 
                     className="absolute inset-0"
                     style={{
-                      background: 'linear-gradient(to top, rgba(5,5,9,0.55), transparent 60%)',
+                      background: 'linear-gradient(to top, rgba(5,5,9,0.6), transparent 50%)',
                     }}
                   />
 
-                  {/* Inner border */}
                   <div 
-                    className="absolute inset-0 rounded-xl pointer-events-none"
+                    className="absolute inset-0 rounded-2xl pointer-events-none"
                     style={{
-                      border: `1px solid rgba(245,243,238,0.25)`,
+                      border: `1px solid rgba(245,243,238,0.2)`,
+                      boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)',
                     }}
                   />
 
-                  {/* Soft Sweep Animation */}
                   <div 
-                    className="absolute top-0 bottom-0 w-8 pointer-events-none"
+                    className="absolute top-0 bottom-0 w-12 pointer-events-none"
                     style={{
-                      background: `linear-gradient(90deg, transparent, rgba(253,243,217,0.16), transparent)`,
-                      animation: 'softSweep 7s ease-in-out infinite',
-                      animationDelay: '2s',
+                      background: `linear-gradient(90deg, transparent, rgba(253,243,217,0.2), transparent)`,
+                      animation: 'softSweep 8s ease-in-out infinite',
                     }}
                   />
                 </div>
 
-                {/* Champagne Glow Behind Image */}
                 <div 
-                  className="absolute -inset-4 -z-10 rounded-2xl"
+                  className="absolute -inset-6 -z-10 rounded-3xl"
                   style={{
-                    background: `radial-gradient(ellipse at center, rgba(253,243,217,0.12), transparent 70%)`,
-                    filter: 'blur(20px)',
+                    background: `radial-gradient(ellipse at center, rgba(253,243,217,0.1), transparent 70%)`,
+                    filter: 'blur(30px)',
+                  }}
+                />
+
+                <div 
+                  className="absolute -bottom-3 -right-3 w-20 h-20 rounded-2xl -z-10"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.blushPink}20, ${colors.champagneGlow}20)`,
+                    transform: `translate3d(${-mousePosition.x * 0.5}px, ${-mousePosition.y * 0.5}px, 0)`,
+                    transition: 'transform 0.3s ease-out',
                   }}
                 />
               </div>
 
-              {/* Content */}
               <div className="flex-1 text-center lg:text-left">
-                {/* Name */}
                 <h1 
-                  className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2"
+                  className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3"
                   style={{ 
                     color: colors.white,
                     fontFamily: "'Playfair Display', Georgia, serif",
@@ -347,64 +454,62 @@ export default function FashionQuantum({
                   {userInfo.name}
                 </h1>
 
-                {/* Underline Shimmer */}
                 <div 
-                  className="h-[2px] w-16 lg:w-20 mx-auto lg:mx-0 mb-4"
+                  className="h-[2px] w-20 lg:w-24 mx-auto lg:mx-0 mb-5"
                   style={{
-                    background: `linear-gradient(90deg, ${colors.editorialNude}, ${colors.champagneGlow}, ${colors.editorialNude})`,
+                    background: `linear-gradient(90deg, ${colors.editorialNude}, ${colors.champagneGlow}, ${colors.blushPink}, ${colors.editorialNude})`,
                     backgroundSize: '200% 100%',
-                    animation: 'underlineShimmer 3s linear infinite',
+                    animation: 'underlineShimmer 4s linear infinite',
                   }}
                 />
 
-                {/* Title / Role */}
                 {userInfo.title && (
                   <p 
-                    className="text-xs sm:text-sm uppercase tracking-[0.18em] mb-6"
-                    style={{ color: 'rgba(255,255,255,0.75)' }}
+                    className="text-xs sm:text-sm uppercase tracking-[0.2em] mb-5"
+                    style={{ color: 'rgba(255,255,255,0.7)' }}
                     data-testid="hero-title"
                   >
                     {userInfo.title}
                   </p>
                 )}
 
-                {/* Tagline */}
                 {userInfo.tagline && (
                   <p 
-                    className="text-base sm:text-lg mb-6 max-w-md mx-auto lg:mx-0"
+                    className="text-lg sm:text-xl lg:text-2xl mb-7 max-w-lg mx-auto lg:mx-0"
                     style={{ 
                       color: 'rgba(255,255,255,0.85)',
                       fontStyle: 'italic',
+                      fontFamily: "'Playfair Display', Georgia, serif",
+                      lineHeight: 1.4,
                     }}
                   >
                     "{userInfo.tagline}"
                   </p>
                 )}
 
-                {/* Fashion Tags */}
                 <div className="flex flex-wrap gap-2 justify-center lg:justify-start mb-8">
                   {userInfo.location && (
                     <span 
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wide"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                       style={{
-                        background: 'rgba(245,243,238,0.06)',
-                        border: `1px solid rgba(245,243,238,0.35)`,
-                        color: 'rgba(255,255,255,0.8)',
+                        background: 'rgba(245,243,238,0.05)',
+                        border: `1px solid rgba(245,243,238,0.25)`,
+                        color: 'rgba(255,255,255,0.85)',
                       }}
                       data-testid="tag-location"
                     >
-                      <MapPin className="w-3 h-3" />
+                      <MapPin className="w-3.5 h-3.5" style={{ color: colors.blushPink }} />
                       {userInfo.location}
                     </span>
                   )}
                   {fashionCategories.slice(0, 4).map((cat, i) => (
                     <span 
                       key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5"
                       style={{
-                        background: i === 0 ? 'rgba(249,197,213,0.12)' : 'rgba(245,243,238,0.06)',
-                        border: i === 0 ? `1px solid ${colors.blushPink}` : `1px solid rgba(245,243,238,0.35)`,
-                        color: 'rgba(255,255,255,0.8)',
+                        background: i === 0 ? 'rgba(249,197,213,0.12)' : 'rgba(245,243,238,0.05)',
+                        border: i === 0 ? `1px solid ${colors.blushPink}` : `1px solid rgba(245,243,238,0.25)`,
+                        color: 'rgba(255,255,255,0.85)',
                       }}
                       data-testid={`tag-category-${i}`}
                     >
@@ -419,11 +524,11 @@ export default function FashionQuantum({
                   ))}
                   {userInfo.industry && (
                     <span 
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] sm:text-xs uppercase tracking-wide"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] sm:text-xs uppercase tracking-wider"
                       style={{
-                        background: 'rgba(245,243,238,0.06)',
-                        border: `1px solid rgba(245,243,238,0.35)`,
-                        color: 'rgba(255,255,255,0.8)',
+                        background: 'rgba(245,243,238,0.05)',
+                        border: `1px solid rgba(245,243,238,0.25)`,
+                        color: 'rgba(255,255,255,0.85)',
                       }}
                     >
                       {userInfo.industry}
@@ -431,43 +536,45 @@ export default function FashionQuantum({
                   )}
                 </div>
 
-                {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                   <button
-                    className="px-5 py-2.5 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5"
+                    onClick={scrollToProjects}
+                    className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
                       color: colors.noirBlack,
-                      boxShadow: '0 8px 24px rgba(249,197,213,0.25)',
+                      boxShadow: '0 12px 32px rgba(249,197,213,0.3)',
                     }}
                     data-testid="cta-view-portfolio"
                   >
+                    <Eye className="w-4 h-4 inline mr-2" />
                     View Portfolio
                   </button>
                   <button
                     onClick={() => setIsMentorshipDialogOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/10"
+                    className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
                     style={{
                       background: 'transparent',
-                      border: `1px solid rgba(245,243,238,0.45)`,
-                      color: 'rgba(255,255,255,0.9)',
+                      border: `1px solid rgba(245,243,238,0.4)`,
+                      color: 'rgba(255,255,255,0.95)',
                     }}
                     data-testid="cta-book-me"
                   >
+                    <Calendar className="w-4 h-4 inline mr-2" />
                     Book Me
                   </button>
                   {userInfo.email && (
                     <a
                       href={`mailto:${userInfo.email}`}
-                      className="px-5 py-2.5 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/10"
+                      className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
                       style={{
                         background: 'transparent',
-                        border: `1px solid rgba(245,243,238,0.45)`,
-                        color: 'rgba(255,255,255,0.9)',
+                        border: `1px solid rgba(245,243,238,0.4)`,
+                        color: 'rgba(255,255,255,0.95)',
                       }}
                       data-testid="cta-contact"
                     >
-                      <Mail className="w-3.5 h-3.5 inline mr-1.5" />
+                      <Mail className="w-4 h-4 inline mr-2" />
                       Contact
                     </a>
                   )}
@@ -477,15 +584,14 @@ export default function FashionQuantum({
           </div>
         </section>
 
-        {/* ==================== SECTION 2: ABOUT / SNAPSHOT ==================== */}
         {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition) && (
           <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out' }}
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out' }}
             data-testid="about-section"
           >
             <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -494,24 +600,23 @@ export default function FashionQuantum({
               About
             </h2>
             <div 
-              className="h-[2px] w-12 mx-auto mb-10"
+              className="h-[2px] w-16 mx-auto mb-12"
               style={{ background: `linear-gradient(90deg, ${colors.editorialNude}, ${colors.champagneGlow})` }}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column - Story */}
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              <div className="lg:col-span-3 space-y-6">
                 {userInfo.aboutMe && (
                   <div 
-                    className="p-6 rounded-xl"
+                    className="p-6 sm:p-8 rounded-2xl"
                     style={{
                       background: 'rgba(17,17,24,0.6)',
-                      border: `1px solid rgba(245,243,238,0.12)`,
-                      backdropFilter: 'blur(12px)',
+                      border: `1px solid rgba(245,243,238,0.1)`,
+                      backdropFilter: 'blur(16px)',
                     }}
                   >
                     <h3 
-                      className="text-lg font-semibold mb-3"
+                      className="text-xl font-semibold mb-4"
                       style={{ 
                         color: colors.white,
                         fontFamily: "'Playfair Display', Georgia, serif",
@@ -520,51 +625,64 @@ export default function FashionQuantum({
                       My Story
                     </h3>
                     <div 
-                      className="h-[1px] w-10 mb-4"
+                      className="h-[1px] w-12 mb-5"
                       style={{ background: colors.warmSand }}
                     />
-                    <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>
+                    <p className="leading-relaxed text-[15px]" style={{ color: 'rgba(255,255,255,0.85)' }}>
                       {userInfo.aboutMe}
                     </p>
                   </div>
                 )}
 
-                {/* Vision & Mission */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {userInfo.visionStatement && (
                     <div 
-                      className="p-5 rounded-lg"
+                      className="p-5 rounded-xl relative overflow-hidden"
                       style={{
                         background: 'rgba(17,17,24,0.5)',
-                        borderLeft: `3px solid ${colors.editorialNude}`,
+                        borderLeft: `4px solid ${colors.warmSand}`,
                       }}
                     >
+                      <div 
+                        className="absolute top-0 right-0 w-20 h-20 rounded-full -mr-10 -mt-10"
+                        style={{
+                          background: `radial-gradient(circle, ${colors.warmSand}15, transparent 70%)`,
+                        }}
+                      />
                       <h4 
-                        className="text-xs uppercase tracking-widest mb-2"
-                        style={{ color: colors.editorialNude }}
+                        className="text-[11px] uppercase tracking-[0.15em] mb-2 flex items-center gap-2"
+                        style={{ color: colors.warmSand }}
                       >
+                        <Eye className="w-3.5 h-3.5" />
                         Vision
                       </h4>
-                      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                      <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
                         {userInfo.visionStatement}
                       </p>
                     </div>
                   )}
                   {userInfo.missionStatement && (
                     <div 
-                      className="p-5 rounded-lg"
+                      className="p-5 rounded-xl relative overflow-hidden"
                       style={{
                         background: 'rgba(17,17,24,0.5)',
-                        borderLeft: `3px solid ${colors.blushPink}`,
+                        borderLeft: `4px solid ${colors.blushPink}`,
                       }}
                     >
+                      <div 
+                        className="absolute top-0 right-0 w-20 h-20 rounded-full -mr-10 -mt-10"
+                        style={{
+                          background: `radial-gradient(circle, ${colors.blushPink}15, transparent 70%)`,
+                        }}
+                      />
                       <h4 
-                        className="text-xs uppercase tracking-widest mb-2"
+                        className="text-[11px] uppercase tracking-[0.15em] mb-2 flex items-center gap-2"
                         style={{ color: colors.blushPink }}
                       >
+                        <Target className="w-3.5 h-3.5" />
                         Mission
                       </h4>
-                      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                      <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
                         {userInfo.missionStatement}
                       </p>
                     </div>
@@ -572,31 +690,36 @@ export default function FashionQuantum({
                 </div>
               </div>
 
-              {/* Right Column - Brand & Positioning */}
-              <div className="space-y-6">
+              <div className="lg:col-span-2 space-y-6">
                 {userInfo.uniqueValueProposition && (
                   <div 
-                    className="p-6 rounded-xl"
+                    className="p-6 rounded-2xl relative overflow-hidden"
                     style={{
-                      background: 'rgba(17,17,24,0.6)',
-                      border: `1px solid rgba(245,243,238,0.12)`,
-                      backdropFilter: 'blur(12px)',
+                      background: `linear-gradient(135deg, rgba(253,243,217,0.08), rgba(249,197,213,0.05))`,
+                      border: `1px solid rgba(253,243,217,0.2)`,
                     }}
                   >
-                    <h3 
-                      className="text-lg font-semibold mb-3"
-                      style={{ 
-                        color: colors.white,
-                        fontFamily: "'Playfair Display', Georgia, serif",
+                    <div 
+                      className="absolute inset-0 opacity-30"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, rgba(253,243,217,0.1), transparent)`,
+                        backgroundSize: '200% 100%',
+                        animation: 'uvpGlow 6s ease-in-out infinite',
                       }}
+                    />
+                    <h3 
+                      className="text-xs uppercase tracking-[0.15em] mb-3 flex items-center gap-2 relative z-10"
+                      style={{ color: colors.champagneGlow }}
                     >
+                      <Sparkles className="w-4 h-4" />
                       What Sets Me Apart
                     </h3>
                     <p 
-                      className="text-lg italic"
+                      className="text-lg lg:text-xl italic relative z-10"
                       style={{ 
-                        color: 'rgba(255,255,255,0.9)',
+                        color: colors.champagneGlow,
                         fontFamily: "'Playfair Display', Georgia, serif",
+                        lineHeight: 1.5,
                       }}
                     >
                       "{userInfo.uniqueValueProposition}"
@@ -604,11 +727,10 @@ export default function FashionQuantum({
                   </div>
                 )}
 
-                {/* Core Values */}
                 {userInfo.coreValues && toStringArray(userInfo.coreValues).length > 0 && (
                   <div>
                     <h4 
-                      className="text-xs uppercase tracking-widest mb-3"
+                      className="text-xs uppercase tracking-[0.15em] mb-4"
                       style={{ color: colors.warmSand }}
                     >
                       Core Values
@@ -617,13 +739,11 @@ export default function FashionQuantum({
                       {toStringArray(userInfo.coreValues).map((value, i) => (
                         <span 
                           key={i}
-                          className="px-3 py-1.5 rounded-full text-xs"
+                          className="px-4 py-2 rounded-full text-xs uppercase tracking-wide transition-all duration-300 hover:translate-x-1"
                           style={{
-                            background: i % 2 === 0 
-                              ? `rgba(249,197,213,0.15)` 
-                              : `rgba(217,185,155,0.15)`,
-                            border: `1px solid ${i % 2 === 0 ? colors.blushPink : colors.editorialNude}`,
-                            color: 'rgba(255,255,255,0.85)',
+                            background: 'transparent',
+                            border: `1px solid ${colors.softBone}`,
+                            color: 'rgba(255,255,255,0.9)',
                           }}
                         >
                           {value}
@@ -633,36 +753,50 @@ export default function FashionQuantum({
                   </div>
                 )}
 
-                {/* Audience */}
                 {userInfo.primaryAudience && toStringArray(userInfo.primaryAudience).length > 0 && (
                   <div 
-                    className="p-4 rounded-lg"
+                    className="p-4 rounded-xl"
                     style={{
                       background: 'rgba(17,17,24,0.4)',
                       borderTop: `1px solid rgba(245,243,238,0.08)`,
                     }}
                   >
                     <h4 
-                      className="text-xs uppercase tracking-widest mb-2"
+                      className="text-xs uppercase tracking-[0.15em] mb-2"
                       style={{ color: colors.inkGrey }}
                     >
                       Ideal For
                     </h4>
-                    <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>
-                      {toStringArray(userInfo.primaryAudience).join(', ')}
-                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {toStringArray(userInfo.primaryAudience).map((aud, i) => (
+                        <span 
+                          key={i}
+                          className="px-3 py-1 rounded-full text-xs"
+                          style={{
+                            background: `rgba(249,197,213,0.1)`,
+                            color: 'rgba(255,255,255,0.8)',
+                          }}
+                        >
+                          {aud}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {/* Looking For */}
                 {userInfo.lookingFor && (
-                  <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'rgba(17,17,24,0.4)' }}>
-                    <Target className="w-5 h-5 flex-shrink-0" style={{ color: colors.blushPink }} />
+                  <div className="flex items-start gap-4 p-4 rounded-xl" style={{ background: 'rgba(17,17,24,0.4)' }}>
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: `rgba(249,197,213,0.15)` }}
+                    >
+                      <Target className="w-5 h-5" style={{ color: colors.blushPink }} />
+                    </div>
                     <div>
-                      <span className="text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
+                      <span className="text-xs uppercase tracking-[0.15em]" style={{ color: colors.inkGrey }}>
                         Looking For
                       </span>
-                      <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px' }}>
+                      <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>
                         {userInfo.lookingFor}
                       </p>
                     </div>
@@ -673,15 +807,14 @@ export default function FashionQuantum({
           </section>
         )}
 
-        {/* ==================== SECTION 3: SKILLS / SPECIALTIES ==================== */}
         {userSkills.length > 0 && (
           <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out 0.1s both' }}
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out 0.1s both' }}
             data-testid="skills-section"
           >
             <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -690,54 +823,55 @@ export default function FashionQuantum({
               Specialties
             </h2>
             <div 
-              className="h-[2px] w-12 mx-auto mb-10"
+              className="h-[2px] w-16 mx-auto mb-12"
               style={{ background: `linear-gradient(90deg, ${colors.blushPink}, ${colors.champagneGlow})` }}
             />
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {userSkills.map((skill, index) => {
                 const level = getProficiencyLevel(skill);
                 const skillName = skill.skillName || skill.name || '';
+                const accentColors = [colors.blushPink, colors.editorialNude, colors.champagneGlow, colors.warmSand];
+                const accent = accentColors[index % accentColors.length];
+                
                 return (
                   <div 
                     key={skill.id}
-                    className="p-4 rounded-xl transition-all duration-200 hover:-translate-y-1 group"
+                    className="p-5 rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group"
                     style={{
-                      background: 'rgba(17,17,24,0.6)',
-                      borderTop: `2px solid ${index % 3 === 0 ? colors.blushPink : index % 3 === 1 ? colors.editorialNude : colors.champagneGlow}`,
-                      border: `1px solid rgba(245,243,238,0.1)`,
-                      animation: `fashionFadeIn 0.4s ease-out ${index * 0.05}s both`,
+                      background: 'rgba(255,255,255,0.02)',
+                      border: `1px solid rgba(245,243,238,0.08)`,
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                      animation: `floatIn 0.5s ease-out ${index * 0.05}s both`,
                     }}
                     data-testid={`skill-card-${skill.id}`}
                   >
-                    <h4 
-                      className="font-medium text-sm mb-2"
-                      style={{ color: colors.white }}
-                    >
-                      {skillName}
-                    </h4>
+                    <div className="flex justify-between items-start mb-3">
+                      <h4 
+                        className="font-medium text-sm"
+                        style={{ color: colors.white }}
+                      >
+                        {skillName}
+                      </h4>
+                      <CircularMeter value={level} color={accent} size={40} />
+                    </div>
+                    
                     {skill.category && (
                       <p 
-                        className="text-xs uppercase tracking-wide mb-3"
+                        className="text-[10px] uppercase tracking-widest mb-3"
                         style={{ color: colors.inkGrey }}
                       >
                         {skill.category}
                       </p>
                     )}
-                    {/* Dot rating system */}
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map(dot => (
-                        <span 
-                          key={dot}
-                          className="w-2 h-2 rounded-full transition-all duration-200"
-                          style={{
-                            backgroundColor: dot <= level 
-                              ? colors.champagneGlow 
-                              : 'rgba(245,243,238,0.15)',
-                          }}
-                        />
-                      ))}
-                    </div>
+                    
+                    <LinearMeter value={level} color={accent} />
+                    
+                    {skill.yearsOfExperience && (
+                      <p className="text-[11px] mt-3" style={{ color: colors.inkGrey }}>
+                        {skill.yearsOfExperience}+ years
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -745,15 +879,14 @@ export default function FashionQuantum({
           </section>
         )}
 
-        {/* ==================== SECTION 4: EXPERIENCE (BRANDS & CLIENTS) ==================== */}
         {sortedExperiences.length > 0 && (
           <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out 0.2s both' }}
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out 0.2s both' }}
             data-testid="experience-section"
           >
             <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -762,90 +895,235 @@ export default function FashionQuantum({
               Experience
             </h2>
             <div 
-              className="h-[2px] w-12 mx-auto mb-10"
+              className="h-[2px] w-16 mx-auto mb-12"
               style={{ background: `linear-gradient(90deg, ${colors.editorialNude}, ${colors.champagneGlow})` }}
             />
 
-            <div className="relative pl-8 sm:pl-12">
-              {/* Timeline Line */}
+            <div className="relative">
               <div 
-                className="absolute left-3 sm:left-5 top-0 bottom-0 w-[1px]"
+                className="absolute left-4 sm:left-6 top-0 bottom-0 w-[2px]"
                 style={{ 
-                  background: `linear-gradient(180deg, ${colors.blushPink}, ${colors.editorialNude}, transparent)` 
+                  background: `linear-gradient(180deg, ${colors.blushPink}, ${colors.editorialNude} 50%, transparent)`,
+                }}
+              />
+
+              <div className="space-y-8">
+                {sortedExperiences.map((exp, index) => {
+                  const isCurrent = exp.isCurrent || !exp.endDate;
+                  return (
+                    <div 
+                      key={exp.id}
+                      className="relative pl-12 sm:pl-16"
+                      style={{ animation: `floatIn 0.5s ease-out ${index * 0.1}s both` }}
+                      data-testid={`experience-${exp.id}`}
+                    >
+                      <div 
+                        className="absolute left-[10px] sm:left-[18px] top-6 w-4 h-4 rounded-full z-10"
+                        style={{
+                          backgroundColor: isCurrent ? colors.blushPink : colors.editorialNude,
+                          boxShadow: isCurrent ? `0 0 20px ${colors.blushPink}` : 'none',
+                          animation: isCurrent ? 'pingCurrent 2s ease-in-out infinite' : 'none',
+                        }}
+                      />
+
+                      {isCurrent && (
+                        <div 
+                          className="absolute left-[14px] sm:left-[22px] top-[28px] w-2 h-2 rounded-full"
+                          style={{
+                            backgroundColor: colors.champagneGlow,
+                          }}
+                        />
+                      )}
+
+                      <div className="absolute left-12 sm:left-16 top-0 text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
+                        {formatDate(exp.startDate)}
+                      </div>
+
+                      <div 
+                        className="mt-6 p-6 rounded-2xl transition-all duration-300 hover:translate-x-2"
+                        style={{
+                          background: 'rgba(17,17,24,0.6)',
+                          border: `1px solid rgba(245,243,238,0.1)`,
+                          borderLeft: isCurrent ? `3px solid ${colors.blushPink}` : `1px solid rgba(245,243,238,0.1)`,
+                          boxShadow: isCurrent ? `0 8px 32px rgba(249,197,213,0.1)` : '0 4px 20px rgba(0,0,0,0.2)',
+                        }}
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                          <div>
+                            <h3 
+                              className="text-lg sm:text-xl font-semibold"
+                              style={{ 
+                                color: colors.white,
+                                fontFamily: "'Playfair Display', Georgia, serif",
+                              }}
+                            >
+                              {exp.title}
+                            </h3>
+                            <p className="text-sm flex items-center gap-2" style={{ color: colors.warmSand }}>
+                              <Building2 className="w-3.5 h-3.5" />
+                              {exp.company}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            {isCurrent && (
+                              <span 
+                                className="inline-block px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-medium mb-1"
+                                style={{
+                                  background: `linear-gradient(135deg, ${colors.blushPink}30, ${colors.champagneGlow}30)`,
+                                  border: `1px solid ${colors.blushPink}50`,
+                                  color: colors.champagneGlow,
+                                }}
+                              >
+                                Present
+                              </span>
+                            )}
+                            {!isCurrent && exp.endDate && (
+                              <span className="text-xs" style={{ color: colors.inkGrey }}>
+                                – {formatDate(exp.endDate)}
+                              </span>
+                            )}
+                            {exp.location && (
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
+                                <MapPin className="w-3 h-3" />
+                                {exp.location}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {exp.description && (
+                          <p className="text-sm mt-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                            {exp.description}
+                          </p>
+                        )}
+
+                        {exp.achievements && toStringArray(exp.achievements).length > 0 && (
+                          <ul className="mt-4 space-y-2">
+                            {toStringArray(exp.achievements).slice(0, 3).map((achievement, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                                <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.blushPink }} />
+                                {achievement}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {exp.employmentType && (
+                          <span 
+                            className="inline-block mt-4 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider"
+                            style={{
+                              background: 'rgba(245,243,238,0.08)',
+                              color: colors.inkGrey,
+                            }}
+                          >
+                            {exp.employmentType}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {sortedEducations.length > 0 && (
+          <section 
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out 0.3s both' }}
+            data-testid="education-section"
+          >
+            <h2 
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
+              style={{ 
+                color: colors.white,
+                fontFamily: "'Playfair Display', Georgia, serif",
+              }}
+            >
+              Training & Education
+            </h2>
+            <div 
+              className="h-[2px] w-16 mx-auto mb-12"
+              style={{ background: `linear-gradient(90deg, ${colors.warmSand}, ${colors.champagneGlow})` }}
+            />
+
+            <div className="relative pl-8 sm:pl-12">
+              <div 
+                className="absolute left-2 sm:left-4 top-0 bottom-0 w-[1px]"
+                style={{ 
+                  background: `linear-gradient(180deg, ${colors.warmSand}, transparent)`,
                 }}
               />
 
               <div className="space-y-6">
-                {sortedExperiences.map((exp, index) => (
+                {sortedEducations.map((edu, index) => (
                   <div 
-                    key={exp.id}
-                    className="relative pl-6 sm:pl-8"
-                    style={{ animation: `fashionFadeIn 0.4s ease-out ${index * 0.1}s both` }}
-                    data-testid={`experience-${exp.id}`}
+                    key={edu.id}
+                    className="relative"
+                    style={{ animation: `floatIn 0.5s ease-out ${index * 0.1}s both` }}
+                    data-testid={`education-${edu.id}`}
                   >
-                    {/* Timeline Dot */}
                     <div 
-                      className="absolute -left-[5px] sm:-left-[7px] top-2 w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor: exp.isCurrent ? colors.blushPink : colors.editorialNude,
-                        boxShadow: exp.isCurrent ? `0 0 12px ${colors.blushPink}` : 'none',
-                      }}
+                      className="absolute -left-[22px] sm:-left-[30px] top-5 w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: colors.warmSand }}
                     />
 
-                    {/* Card */}
                     <div 
-                      className="p-5 rounded-xl transition-all duration-200 hover:translate-x-1"
+                      className="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1"
                       style={{
-                        background: 'rgba(17,17,24,0.6)',
-                        border: `1px solid rgba(245,243,238,0.1)`,
-                        borderLeft: exp.isCurrent ? `3px solid ${colors.blushPink}` : `1px solid rgba(245,243,238,0.1)`,
+                        background: 'rgba(17,17,24,0.5)',
+                        border: `1px solid rgba(245,243,238,0.08)`,
                       }}
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-                        <div>
-                          <h3 
-                            className="text-lg font-semibold"
-                            style={{ 
-                              color: colors.white,
-                              fontFamily: "'Playfair Display', Georgia, serif",
-                            }}
-                          >
-                            {exp.title}
-                          </h3>
-                          <p className="text-sm" style={{ color: colors.warmSand }}>
-                            {exp.company}
+                      <div className="flex flex-wrap justify-between items-start gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div 
+                              className="w-9 h-9 rounded-lg flex items-center justify-center"
+                              style={{ background: `rgba(217,185,155,0.15)` }}
+                            >
+                              <GraduationCap className="w-4.5 h-4.5" style={{ color: colors.editorialNude }} />
+                            </div>
+                            <h3 
+                              className="font-semibold text-base"
+                              style={{ color: colors.white }}
+                            >
+                              {edu.institution}
+                            </h3>
+                          </div>
+                          <p className="text-sm ml-12" style={{ color: colors.warmSand }}>
+                            {edu.degree}
+                            {edu.fieldOfStudy && <span className="opacity-80"> in {edu.fieldOfStudy}</span>}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <span 
-                            className="text-xs uppercase tracking-wide"
-                            style={{ color: colors.inkGrey }}
-                          >
-                            {formatDate(exp.startDate)} – {exp.isCurrent || !exp.endDate ? 'Present' : formatDate(exp.endDate)}
-                          </span>
-                          {exp.location && (
-                            <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
-                              <MapPin className="w-3 h-3" />
-                              {exp.location}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {exp.description && (
-                        <p className="text-sm mt-3" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                          {exp.description}
-                        </p>
-                      )}
-                      {exp.employmentType && (
                         <span 
-                          className="inline-block mt-3 px-2 py-0.5 rounded text-xs uppercase"
-                          style={{
-                            background: 'rgba(245,243,238,0.08)',
+                          className="text-xs uppercase tracking-widest px-3 py-1 rounded-full"
+                          style={{ 
                             color: colors.inkGrey,
+                            background: 'rgba(245,243,238,0.05)',
                           }}
                         >
-                          {exp.employmentType}
+                          {edu.startYear || ''}{edu.endYear ? ` – ${edu.endYear}` : ''}
                         </span>
+                      </div>
+
+                      {edu.skills && toStringArray(edu.skills).length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-4 ml-12">
+                          {toStringArray(edu.skills).slice(0, 5).map((skill, i) => (
+                            <span 
+                              key={i}
+                              className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider"
+                              style={{
+                                background: 'rgba(245,243,238,0.06)',
+                                border: `1px solid rgba(245,243,238,0.15)`,
+                                color: 'rgba(255,255,255,0.7)',
+                              }}
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -855,91 +1133,15 @@ export default function FashionQuantum({
           </section>
         )}
 
-        {/* ==================== SECTION 5: EDUCATION ==================== */}
-        {sortedEducations.length > 0 && (
-          <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out 0.3s both' }}
-            data-testid="education-section"
-          >
-            <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
-              style={{ 
-                color: colors.white,
-                fontFamily: "'Playfair Display', Georgia, serif",
-              }}
-            >
-              Training & Education
-            </h2>
-            <div 
-              className="h-[2px] w-12 mx-auto mb-10"
-              style={{ background: `linear-gradient(90deg, ${colors.warmSand}, ${colors.champagneGlow})` }}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {sortedEducations.map((edu, index) => (
-                <div 
-                  key={edu.id}
-                  className="p-5 rounded-xl transition-all duration-200 hover:-translate-y-1"
-                  style={{
-                    background: 'rgba(17,17,24,0.5)',
-                    border: `1px solid rgba(245,243,238,0.1)`,
-                    animation: `fashionFadeIn 0.4s ease-out ${index * 0.1}s both`,
-                  }}
-                  data-testid={`education-${edu.id}`}
-                >
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="flex-1">
-                      <h3 
-                        className="font-semibold flex items-center gap-2"
-                        style={{ color: colors.white }}
-                      >
-                        <GraduationCap className="w-4 h-4" style={{ color: colors.editorialNude }} />
-                        {edu.institution}
-                      </h3>
-                      <p className="text-sm mt-1" style={{ color: colors.warmSand }}>
-                        {edu.degree}
-                        {edu.fieldOfStudy && ` in ${edu.fieldOfStudy}`}
-                      </p>
-                    </div>
-                    <span 
-                      className="text-xs uppercase tracking-wide flex-shrink-0"
-                      style={{ color: colors.inkGrey }}
-                    >
-                      {edu.startYear || ''}{edu.endYear ? ` – ${edu.endYear}` : ''}
-                    </span>
-                  </div>
-                  {edu.skills && toStringArray(edu.skills).length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {toStringArray(edu.skills).slice(0, 4).map((skill, i) => (
-                        <span 
-                          key={i}
-                          className="px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(245,243,238,0.08)',
-                            color: 'rgba(255,255,255,0.7)',
-                          }}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ==================== SECTION 6: PROJECTS / LOOKBOOK ==================== */}
         {userProjects.length > 0 && (
           <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out 0.4s both' }}
+            id="projects-section"
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out 0.4s both' }}
             data-testid="projects-section"
           >
             <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -948,97 +1150,124 @@ export default function FashionQuantum({
               Portfolio
             </h2>
             <div 
-              className="h-[2px] w-12 mx-auto mb-10"
+              className="h-[2px] w-16 mx-auto mb-4"
               style={{ background: `linear-gradient(90deg, ${colors.blushPink}, ${colors.champagneGlow})` }}
             />
+            <p className="text-center text-sm mb-12" style={{ color: colors.inkGrey }}>
+              Click to view project details
+            </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {userProjects.map((project, index) => (
-                <div 
-                  key={project.id}
-                  className="group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-2"
-                  style={{
-                    aspectRatio: '4/5',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.4)',
-                    animation: `fashionFadeIn 0.5s ease-out ${index * 0.1}s both`,
-                  }}
-                  onClick={() => setSelectedProjectId(project.id)}
-                  data-testid={`project-${project.id}`}
-                >
-                  {/* Image */}
-                  {project.thumbnailUrl || (project.mediaUrls && project.mediaUrls[0]) ? (
-                    <img 
-                      src={project.thumbnailUrl || project.mediaUrls?.[0]}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div 
-                      className="w-full h-full flex items-center justify-center"
-                      style={{ backgroundColor: colors.runwayCharcoal }}
-                    >
-                      <Camera className="w-12 h-12" style={{ color: colors.softBone, opacity: 0.3 }} />
-                    </div>
-                  )}
-
-                  {/* Hover Overlay */}
+            <div 
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              }}
+            >
+              {userProjects.map((project, index) => {
+                const heights = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-square', 'aspect-[3/4]'];
+                const aspectClass = heights[index % heights.length];
+                
+                return (
                   <div 
-                    className="absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    key={project.id}
+                    className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:-translate-y-3 ${aspectClass}`}
                     style={{
-                      background: 'linear-gradient(to top, rgba(5,5,9,0.9), rgba(5,5,9,0.5) 50%, transparent)',
+                      boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
+                      animation: `floatIn 0.6s ease-out ${index * 0.08}s both`,
                     }}
+                    onClick={() => setSelectedProjectId(project.id)}
+                    data-testid={`project-${project.id}`}
                   >
-                    <h3 
-                      className="text-lg font-semibold mb-1"
-                      style={{ 
-                        color: colors.white,
-                        fontFamily: "'Playfair Display', Georgia, serif",
-                      }}
-                    >
-                      {project.title}
-                    </h3>
-                    {project.category && (
-                      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: colors.warmSand }}>
-                        {project.category}
-                      </p>
+                    {project.thumbnailUrl || (project.mediaUrls && project.mediaUrls[0]) ? (
+                      <img 
+                        src={project.thumbnailUrl || project.mediaUrls?.[0]}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div 
+                        className="w-full h-full flex items-center justify-center"
+                        style={{ backgroundColor: colors.runwayCharcoal }}
+                      >
+                        <Camera className="w-16 h-16" style={{ color: colors.softBone, opacity: 0.2 }} />
+                      </div>
                     )}
-                    <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4" style={{ color: colors.blushPink }} />
-                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                        View Details
-                      </span>
-                    </div>
-                  </div>
 
-                  {/* Category Badge */}
-                  {project.category && (
-                    <span 
-                      className="absolute top-3 left-3 px-2 py-1 rounded text-[10px] uppercase tracking-wide"
+                    <div 
+                      className="absolute inset-0 pointer-events-none"
                       style={{
-                        background: 'rgba(5,5,9,0.7)',
-                        border: `1px solid rgba(245,243,238,0.2)`,
-                        color: colors.softBone,
-                        backdropFilter: 'blur(8px)',
+                        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(5,5,9,0.4) 100%)',
+                      }}
+                    />
+
+                    <div 
+                      className="absolute inset-0 flex flex-col justify-end p-6 opacity-0 group-hover:opacity-100 transition-all duration-400"
+                      style={{
+                        background: 'linear-gradient(to top, rgba(5,5,9,0.95), rgba(5,5,9,0.6) 50%, transparent)',
                       }}
                     >
-                      {project.category}
-                    </span>
-                  )}
-                </div>
-              ))}
+                      <h3 
+                        className="text-xl font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400"
+                        style={{ 
+                          color: colors.white,
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                        }}
+                      >
+                        {project.title}
+                      </h3>
+                      {project.category && (
+                        <p 
+                          className="text-xs uppercase tracking-widest mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400 delay-75"
+                          style={{ color: colors.warmSand }}
+                        >
+                          {project.category}
+                        </p>
+                      )}
+                      <div 
+                        className="flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400 delay-100"
+                      >
+                        <span 
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs uppercase tracking-wider"
+                          style={{
+                            background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
+                            color: colors.noirBlack,
+                          }}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          View Story
+                        </span>
+                      </div>
+                    </div>
+
+                    {project.category && (
+                      <span 
+                        className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-medium"
+                        style={{
+                          background: 'rgba(5,5,9,0.75)',
+                          border: `1px solid rgba(245,243,238,0.2)`,
+                          color: colors.softBone,
+                          backdropFilter: 'blur(12px)',
+                        }}
+                      >
+                        {project.category}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
 
-        {/* ==================== SECTION 7: SERVICES (PREMIUM) ==================== */}
         {isPremium && userServices.length > 0 && (
           <section 
-            className="mb-16"
-            style={{ animation: 'fashionFadeIn 0.6s ease-out 0.5s both' }}
+            className="mb-20"
+            style={{ animation: 'floatIn 0.8s ease-out 0.5s both' }}
             data-testid="services-section"
           >
             <h2 
-              className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-center"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -1047,7 +1276,7 @@ export default function FashionQuantum({
               Services & Rates
             </h2>
             <div 
-              className="h-[2px] w-12 mx-auto mb-10"
+              className="h-[2px] w-16 mx-auto mb-12"
               style={{ background: `linear-gradient(90deg, ${colors.blushPink}, ${colors.editorialNude})` }}
             />
 
@@ -1055,27 +1284,33 @@ export default function FashionQuantum({
               {userServices.filter(s => s.isActive !== false).map((service, index) => (
                 <div 
                   key={service.id}
-                  className="p-6 rounded-xl transition-all duration-300 hover:-translate-y-2"
+                  className="p-6 rounded-2xl transition-all duration-400 hover:-translate-y-3 group relative overflow-hidden"
                   style={{
                     background: 'rgba(17,17,24,0.7)',
-                    border: `1px solid rgba(245,243,238,0.15)`,
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.3)',
-                    animation: `fashionFadeIn 0.5s ease-out ${index * 0.1}s both`,
+                    border: `1px solid rgba(245,243,238,0.12)`,
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.35)',
+                    animation: `floatIn 0.6s ease-out ${index * 0.1}s both`,
                   }}
                   data-testid={`service-${service.id}`}
                 >
-                  {/* Service Icon/Image */}
-                  <div className="mb-4">
+                  <div 
+                    className="absolute top-0 left-0 right-0 h-1 transition-all duration-300 group-hover:h-1.5"
+                    style={{
+                      background: `linear-gradient(90deg, ${colors.blushPink}, ${colors.editorialNude})`,
+                    }}
+                  />
+
+                  <div className="mb-5">
                     {service.imageUrl ? (
                       <img 
                         src={service.imageUrl}
                         alt={service.title}
-                        className="w-14 h-14 rounded-lg object-cover"
+                        className="w-16 h-16 rounded-xl object-cover"
                       />
                     ) : (
                       <div 
-                        className="w-14 h-14 rounded-lg flex items-center justify-center"
-                        style={{ background: `rgba(249,197,213,0.15)` }}
+                        className="w-16 h-16 rounded-xl flex items-center justify-center"
+                        style={{ background: `linear-gradient(135deg, ${colors.blushPink}20, ${colors.champagneGlow}20)` }}
                       >
                         <Sparkles className="w-7 h-7" style={{ color: colors.blushPink }} />
                       </div>
@@ -1083,7 +1318,7 @@ export default function FashionQuantum({
                   </div>
 
                   <h3 
-                    className="text-xl font-bold mb-1"
+                    className="text-xl font-bold mb-2"
                     style={{ 
                       color: colors.white,
                       fontFamily: "'Playfair Display', Georgia, serif",
@@ -1091,11 +1326,12 @@ export default function FashionQuantum({
                   >
                     {service.title}
                   </h3>
+                  
                   {service.category && (
                     <span 
-                      className="inline-block px-2 py-0.5 rounded text-xs uppercase tracking-wide mb-3"
+                      className="inline-block px-3 py-1 rounded-full text-[10px] uppercase tracking-widest mb-4"
                       style={{
-                        background: 'rgba(249,197,213,0.15)',
+                        background: 'rgba(249,197,213,0.12)',
                         color: colors.blushPink,
                       }}
                     >
@@ -1103,44 +1339,56 @@ export default function FashionQuantum({
                     </span>
                   )}
 
-                  {/* Pricing */}
-                  <div className="mb-4">
+                  <div 
+                    className="py-4 px-5 rounded-xl mb-5 -mx-1"
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
+                      border: `1px solid ${colors.blushPink}30`,
+                    }}
+                  >
                     {service.priceInr && (
                       <span 
-                        className="text-2xl font-bold"
-                        style={{ color: colors.champagneGlow }}
+                        className="text-3xl font-bold"
+                        style={{ 
+                          color: colors.champagneGlow,
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                        }}
                       >
-                        ₹{service.priceInr.toLocaleString()}
+                        ₹{Number(service.priceInr).toLocaleString()}
                         {service.isHourly && (
-                          <span className="text-sm font-normal" style={{ color: colors.inkGrey }}>/hr</span>
+                          <span className="text-sm font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
                         )}
                       </span>
                     )}
                     {service.priceUsd && (
-                      <span className="text-sm ml-2" style={{ color: colors.inkGrey }}>
-                        (${service.priceUsd}{service.isHourly ? '/hr' : ''})
+                      <span className="text-sm ml-3" style={{ color: colors.inkGrey }}>
+                        (${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''})
                       </span>
                     )}
                   </div>
 
                   {service.description && (
-                    <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
                       {service.description}
                     </p>
                   )}
 
-                  {/* Features */}
                   {(() => {
                     const features = toStringArray(service.features);
                     return features.length > 0 ? (
-                      <ul className="space-y-2 mb-5">
+                      <ul className="space-y-2.5 mb-6">
                         {features.slice(0, 5).map((feature, i) => (
                           <li 
                             key={i} 
-                            className="flex items-center gap-2 text-sm"
-                            style={{ color: 'rgba(255,255,255,0.8)' }}
+                            className="flex items-center gap-3 text-sm"
+                            style={{ color: 'rgba(255,255,255,0.85)' }}
                           >
-                            <Check className="w-4 h-4 flex-shrink-0" style={{ color: colors.blushPink }} />
+                            <div 
+                              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: `${colors.blushPink}20` }}
+                            >
+                              <Check className="w-3 h-3" style={{ color: colors.blushPink }} />
+                            </div>
                             <span>{String(feature)}</span>
                           </li>
                         ))}
@@ -1148,17 +1396,17 @@ export default function FashionQuantum({
                     ) : null;
                   })()}
 
-                  {/* CTA */}
                   <button 
                     onClick={() => setIsMentorshipDialogOpen(true)}
-                    className="w-full py-3 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5"
+                    className="w-full py-3.5 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
                       color: colors.noirBlack,
-                      boxShadow: '0 8px 24px rgba(249,197,213,0.2)',
+                      boxShadow: '0 8px 24px rgba(249,197,213,0.25)',
                     }}
                     data-testid={`service-cta-${service.id}`}
                   >
+                    <ArrowRight className="w-4 h-4 inline mr-2" />
                     Enquire Now
                   </button>
                 </div>
@@ -1167,31 +1415,78 @@ export default function FashionQuantum({
           </section>
         )}
 
-        {/* Footer */}
         <footer 
-          className="text-center py-8 mt-8"
+          className="text-center py-12"
           style={{ borderTop: `1px solid rgba(245,243,238,0.08)` }}
         >
-          <p className="text-sm" style={{ color: colors.inkGrey }}>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {userInfo.email && (
+              <a
+                href={`mailto:${userInfo.email}`}
+                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                style={{
+                  background: 'rgba(245,243,238,0.06)',
+                  border: `1px solid rgba(245,243,238,0.2)`,
+                }}
+                data-testid="footer-email"
+              >
+                <Mail className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
+              </a>
+            )}
+            <a
+              href="#"
+              className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              style={{
+                background: 'rgba(245,243,238,0.06)',
+                border: `1px solid rgba(245,243,238,0.2)`,
+              }}
+            >
+              <Instagram className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
+            </a>
+            <a
+              href="#"
+              className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              style={{
+                background: 'rgba(245,243,238,0.06)',
+                border: `1px solid rgba(245,243,238,0.2)`,
+              }}
+            >
+              <Globe className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
+            </a>
+          </div>
+          
+          <p 
+            className="text-lg mb-2"
+            style={{ 
+              color: colors.white,
+              fontFamily: "'Playfair Display', Georgia, serif",
+            }}
+          >
+            {userInfo.name}
+          </p>
+          <p className="text-sm mb-6" style={{ color: colors.inkGrey }}>
+            {userInfo.title || 'Creative Professional'}
+          </p>
+          
+          <p className="text-xs" style={{ color: 'rgba(156,163,175,0.6)' }}>
             Portfolio powered by <span style={{ color: colors.blushPink }}>Brandentifier</span>
           </p>
         </footer>
       </div>
 
-      {/* ==================== PROJECT DETAIL MODAL ==================== */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProjectId(null)}>
         <DialogContent 
           className="max-w-4xl max-h-[90vh] overflow-y-auto"
           style={{
-            background: `linear-gradient(135deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
-            border: `1px solid rgba(245,243,238,0.15)`,
+            background: `linear-gradient(145deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
+            border: `1px solid rgba(245,243,238,0.12)`,
           }}
         >
           {selectedProject && (
             <>
               <DialogHeader>
                 <DialogTitle 
-                  className="text-2xl"
+                  className="text-2xl lg:text-3xl"
                   style={{ 
                     color: colors.white,
                     fontFamily: "'Playfair Display', Georgia, serif",
@@ -1201,58 +1496,86 @@ export default function FashionQuantum({
                 </DialogTitle>
               </DialogHeader>
               
-              {/* Hero Image */}
               {(selectedProject.thumbnailUrl || (selectedProject.mediaUrls && selectedProject.mediaUrls[0])) && (
-                <div className="relative aspect-video rounded-lg overflow-hidden my-4">
+                <div className="relative aspect-video rounded-xl overflow-hidden my-6">
                   <img 
                     src={selectedProject.thumbnailUrl || selectedProject.mediaUrls?.[0]}
                     alt={selectedProject.title}
                     className="w-full h-full object-cover"
                   />
+                  <div 
+                    className="absolute inset-0"
+                    style={{
+                      background: 'radial-gradient(ellipse at center, transparent 60%, rgba(5,5,9,0.3) 100%)',
+                    }}
+                  />
                 </div>
               )}
 
-              {/* Details */}
-              <div className="space-y-4">
-                {selectedProject.category && (
-                  <div>
-                    <span className="text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
-                      Category
+              {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
+                  {selectedProject.mediaUrls.slice(1, 6).map((url, i) => (
+                    <img 
+                      key={i}
+                      src={url}
+                      alt={`${selectedProject.title} - ${i + 2}`}
+                      className="w-20 h-20 rounded-lg object-cover flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+                    />
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-5">
+                <div className="flex flex-wrap gap-3">
+                  {selectedProject.category && (
+                    <span 
+                      className="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest"
+                      style={{
+                        background: `${colors.blushPink}20`,
+                        border: `1px solid ${colors.blushPink}50`,
+                        color: colors.blushPink,
+                      }}
+                    >
+                      {selectedProject.category}
                     </span>
-                    <p style={{ color: colors.warmSand }}>{selectedProject.category}</p>
-                  </div>
-                )}
-                {selectedProject.industry && (
-                  <div>
-                    <span className="text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
-                      Industry
+                  )}
+                  {selectedProject.industry && (
+                    <span 
+                      className="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest"
+                      style={{
+                        background: 'rgba(245,243,238,0.08)',
+                        color: colors.warmSand,
+                      }}
+                    >
+                      {selectedProject.industry}
                     </span>
-                    <p style={{ color: colors.warmSand }}>{selectedProject.industry}</p>
-                  </div>
-                )}
+                  )}
+                </div>
+
                 {selectedProject.description && (
                   <div>
-                    <span className="text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
-                      About
+                    <span className="text-xs uppercase tracking-[0.15em] block mb-2" style={{ color: colors.inkGrey }}>
+                      About This Project
                     </span>
-                    <p style={{ color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>
+                    <p className="leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
                       {selectedProject.description}
                     </p>
                   </div>
                 )}
+
                 {selectedProject.projectUrl && (
                   <a
                     href={selectedProject.projectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
                       color: colors.noirBlack,
                     }}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    View Project
+                    View Full Project
                   </a>
                 )}
               </div>
@@ -1261,18 +1584,17 @@ export default function FashionQuantum({
         </DialogContent>
       </Dialog>
 
-      {/* ==================== MENTORSHIP/BOOKING DIALOG ==================== */}
       <Dialog open={isMentorshipDialogOpen} onOpenChange={setIsMentorshipDialogOpen}>
         <DialogContent 
           className="max-w-md"
           style={{
-            background: `linear-gradient(135deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
-            border: `1px solid rgba(245,243,238,0.15)`,
+            background: `linear-gradient(145deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
+            border: `1px solid rgba(245,243,238,0.12)`,
           }}
         >
           <DialogHeader>
             <DialogTitle 
-              className="text-xl"
+              className="text-2xl"
               style={{ 
                 color: colors.white,
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -1282,7 +1604,7 @@ export default function FashionQuantum({
             </DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="space-y-5 py-4">
             <p style={{ color: 'rgba(255,255,255,0.8)' }}>
               Interested in working with {userInfo.name}? Reach out directly:
             </p>
@@ -1290,25 +1612,26 @@ export default function FashionQuantum({
             {userInfo.email && (
               <a
                 href={`mailto:${userInfo.email}`}
-                className="flex items-center gap-3 p-4 rounded-lg transition-all duration-200 hover:bg-white/5"
-                style={{ border: `1px solid rgba(245,243,238,0.15)` }}
+                className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1"
+                style={{ border: `1px solid rgba(245,243,238,0.12)` }}
               >
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: 'rgba(249,197,213,0.15)' }}
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ background: `linear-gradient(135deg, ${colors.blushPink}20, ${colors.champagneGlow}20)` }}
                 >
                   <Mail className="w-5 h-5" style={{ color: colors.blushPink }} />
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide" style={{ color: colors.inkGrey }}>Email</p>
+                  <p className="text-xs uppercase tracking-[0.15em]" style={{ color: colors.inkGrey }}>Email</p>
                   <p style={{ color: colors.white }}>{userInfo.email}</p>
                 </div>
+                <ArrowRight className="w-5 h-5 ml-auto" style={{ color: colors.inkGrey }} />
               </a>
             )}
             
             <Button
               onClick={() => setIsMentorshipDialogOpen(false)}
-              className="w-full"
+              className="w-full h-12 rounded-full text-sm uppercase tracking-wider font-semibold"
               style={{
                 background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
                 color: colors.noirBlack,
