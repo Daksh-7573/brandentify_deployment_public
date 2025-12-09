@@ -1,0 +1,264 @@
+LIGHT GRAPHIC QUANTUM CARD — Design System (For Graphic Designers)
+
+Theme: Clean, editorial, minimal, tactile
+Tone: Scandinavian + Apple aesthetic
+Mood: Creative, breathable, modern, artistic
+
+🌈 1. COLOR PALETTE (LIGHT VERSION)
+
+Calm + editorial + artistic tones:
+
+Primary Accents
+Color	Hex	Usage
+Soft Magenta	#FF3FAE	Creative accent, gradients, highlight strokes
+Pastel Cyan	#60E6FF	Secondary accent, soft glow
+Warm Yellow	#FCD34D	Optional accent for highlights
+Artistic Coral	#FF8BA0	Decorative shapes, micro highlights
+Base Colors
+Color	Hex	Usage
+Porcelain White	#FAFAF9	Card base
+Soft Grey	#F2F2F2	Sections, dividers
+Aluminium	#D4D4D4	Borders, icons
+Deep Ink	#1A1A1A	Primary text
+Graphite	#3C3C3C	Secondary text
+Visual Vibe
+
+Soft shadows, editorial spacing, paper-like textures.
+
+🧩 2. UI ELEMENTS (LIGHT THEME)
+2.1 Card Container
+
+Rounded corners: 20px
+
+Background: #FAFAF9
+
+Border: 1px solid rgba(0,0,0,0.05)
+
+Soft Paper Shadow:
+
+box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+
+
+Hover shadow:
+
+box-shadow: 0 12px 50px rgba(0,0,0,0.12);
+transform: translateY(-4px);
+
+🖼 3. PROFILE IMAGE SECTION (LIGHT)
+Blob Shape (Light Artistic Blob)
+
+Smooth blob with pastel gradient:
+
+background: linear-gradient(135deg, #FFEAF4, #DFF8FF);
+
+
+Inner border:
+
+border: 3px solid rgba(255,63,174,0.25);
+
+
+Soft shadow:
+
+box-shadow: 0 4px 16px rgba(255,63,174,0.15);
+
+Blob Animation
+
+Soft morph:
+
+@keyframes blobMorphLight {
+  0% { border-radius: 40% 60% 55% 45% / 60% 40% 55% 45%; }
+  50% { border-radius: 50% 50% 45% 55% / 40% 60% 45% 55%; }
+  100% { border-radius: 40% 60% 55% 45% / 60% 40% 55% 45%; }
+}
+
+
+Duration: 10s
+
+Easing: ease-in-out
+
+Loop: infinite
+
+Opacity: 0.95
+
+Photo Treatment
+
+Light duotone (clean):
+
+filter: brightness(1.05) contrast(1.05);
+
+
+Hover:
+
+transform: scale(1.03);
+
+✨ 4. DECORATIVE ELEMENTS (LIGHT EDITORIAL STYLE)
+4.1 Halftone Dots (Pastel Dots)
+
+Positioned top-left or bottom-right
+
+Color: rgba(0,0,0,0.06) or #FF3FAE22
+
+4.2 Soft Painterly Brush Stroke
+
+SVG behind name
+
+Gradient: Coral → Soft Magenta
+
+4.3 Subtle Pastel Shapes
+
+Triangular or circular shapes with:
+
+background: rgba(255,63,174,0.08);
+filter: blur(20px);
+
+
+These give a designer portfolio vibe.
+
+📝 5. TYPOGRAPHY SYSTEM
+Fonts
+
+Header: "Sora", "Outfit", or "Inter Tight" (bold, editorial)
+
+Body: "Inter" or "General Sans"
+
+Accent labels: Uppercase letter spacing + thin weight
+
+Name
+font-size: 24–30px;
+font-weight: 700;
+letter-spacing: -0.5px;
+
+Title Strip
+
+Clean horizontal line or stroke behind text:
+
+background: linear-gradient(90deg, #FF3FAE, #60E6FF);
+height: 3px;
+width: 80px;
+border-radius: 2px;
+
+
+Slide-in animation (0.4s)
+
+🧬 6. ANIMATION SYSTEM (LIGHT VERSION)
+a) Blob Morph
+
+Soft, organic
+
+animation: blobMorphLight 10s ease-in-out infinite;
+
+b) Pastel Ink Pulse
+@keyframes pastelPulse {
+  0% { opacity: .3; transform: scale(.98); }
+  50% { opacity: .45; transform: scale(1); }
+  100% { opacity: .3; transform: scale(.98); }
+}
+
+c) Stroke Slide-In (Title)
+@keyframes strokeSlideIn {
+  from { width: 0; opacity: 0; }
+  to { width: 80px; opacity: 1; }
+}
+
+d) Chip Hover Micro Interaction
+transform: translateY(-2px);
+box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+
+e) Card Entrance
+
+Fade + slight upward motion:
+
+animation: fadeUp 0.5s ease-out;
+
+🎯 7. CHIP DESIGN (SKILLS, INDUSTRY, DOMAIN)
+Styles:
+
+Rounded full
+
+Background: #F2F2F2
+
+Border: 1px solid rgba(0,0,0,0.06)
+
+Text: #333
+
+Accent Chips:
+
+Industry: Coral chip
+
+Domain: Cyan chip
+
+Level: Soft yellow chip
+
+🎛 8. CTA BUTTONS (LIGHT PREMIUM)
+Primary CTA
+background: linear-gradient(90deg, #FF3FAE, #60E6FF);
+color: white;
+padding: 12px 20px;
+border-radius: 50px;
+
+Secondary CTA
+border: 2px solid #FF3FAE;
+color: #FF3FAE;
+background: white;
+
+Hover Transition
+transform: translateY(-3px);
+box-shadow: 0 10px 30px rgba(255,63,174,0.25);
+
+🧱 9. CONTENT LAYOUT STRUCTURE
+Section 1 — Header
+
+Profile blob left
+
+Name + title right
+
+Tagline below
+
+Decorative stroke behind name
+
+Section 2 — About Me Snapshot
+
+2-column glass card layout
+
+Vision + mission in side-by-side mini-cards
+
+Core values as chips
+
+Section 3 — Skills
+
+Soft cards, 3 or 4 columns
+
+Progress ring replaced with bar indicators (light theme)
+
+Section 4 — Work Experience (Timeline)
+
+Light vertical line in pastel grey
+
+Round nodes with pastel accents
+
+Cards floating left + right
+
+Section 5 — Education
+
+Similar to timeline, lighter palette
+
+Section 6 — Projects
+
+Large image grid
+
+Hover overlay: white fade + title reveal
+
+Section 7 — Services (Premium)
+
+Soft cards with pastel gradient top border
+
+Icons: thin line minimal icons
+
+🧾 10. SUMMARY — WHAT MAKES THIS LIGHT VERSION UNIQUE
+
+✔ Zero dark backgrounds — everything clean, white, editorial
+✔ Pastel CMYK-inspired accents give a design-industry feel
+✔ Artistic blob morph, soft strokes, halftone textures
+✔ Behance/Dribbble style minimal card
+✔ Adaptive animations — calm, soft, not distracting
+✔ Higher readability + better performance than the dark version
