@@ -383,7 +383,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {!isCardFree("artistic") && !isCardLocked("artistic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-1 mb-6 dark-tabs-list">
+              <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
                 <TabsTrigger 
                   value="quantum" 
                   className={`dark-tabs-trigger relative ${isCardLocked("quantum") ? "opacity-60" : ""}`}
@@ -392,6 +392,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {isCardLocked("quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Quantum Tech
                   {!isCardFree("quantum") && !isCardLocked("quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="fashion-quantum" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("fashion-quantum") ? "opacity-60" : ""}`}
+                  data-testid="tab-fashion-quantum"
+                >
+                  {isCardLocked("fashion-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Fashion Editorial
+                  {!isCardFree("fashion-quantum") && !isCardLocked("fashion-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               
