@@ -1,0 +1,492 @@
+FASHION QUANTUM PORTFOLIO TEMPLATE
+
+Complete UI/UX, Styling, Color & Animation Documentation
+(For models, fashion photographers, stylists, influencers, fashion designers)
+
+🎨 COLOR PALETTE (FASHION EDITORIAL THEME)
+
+Think Vogue / Harper’s Bazaar meets subtle neon.
+
+Color Name	Hex Code	Usage
+Noir Black	#050509	Primary background, deep base
+Runway Charcoal	#111118	Card background, overlays
+Soft Bone	#F5F3EE	Primary light text blocks, captions, borders
+Warm Sand	#E2D4C5	Accents, dividers, chips, subtle fills
+Blush Pink	#F9C5D5	Accent for CTAs, highlights, badges
+Editorial Nude	#D9B99B	Section accents, gradient blends
+Champagne Glow	#FDF3D9	Glow accents, soft highlights
+Deep Burgundy	#7A1F3D	Strong emphasis (headings, small details)
+Ink Grey	#9CA3AF	Secondary text
+White	#FFFFFF	Titles, clean contrast
+
+Text Use:
+
+Primary: #FFFFFF
+
+Secondary: rgba(255,255,255,0.85)
+
+Tertiary: rgba(255,255,255,0.65)
+
+Glow/Shadow Colors:
+
+Soft champagne glow: rgba(253,243,217,0.25)
+
+Blush glow: rgba(249,197,213,0.22)
+
+Noir shadow: rgba(0,0,0,0.45)
+
+✒ TYPOGRAPHY (EDITORIAL FEEL)
+
+Fonts (suggested):
+
+Display / Headline: Playfair Display or Cormorant Garamond
+
+Body / UI: Inter / Sora / system sans-serif
+
+Hierarchy:
+
+H1 (Name): Serif, large (28–36px), high contrast, tracking-tight
+
+H2 (Roles/Sections): Serif or Sans, 18–22px, uppercase or small caps
+
+Body: Sans, 14–16px, soft line-height (1.6)
+
+Labels/Chips: All caps, tracking-widest, 10–12px
+
+🧩 CORE UI/UX ELEMENTS
+1️⃣ HERO HEADER SECTION (FASHION PROFILE HERO)
+
+Purpose:
+Instantly say “I’m a fashion professional, not just a generic user.”
+
+Elements:
+
+Profile Image (Runway Portrait)
+
+Large, vertical-oriented or 1:1
+
+Framed with:
+
+Soft spotlight oval behind image (Champagne Glow → transparent)
+
+Thin border in Soft Bone / Nude
+
+Very subtle glass reflection overlay (top corner gradient)
+
+3-Layer Look (Fashion Version):
+
+Outer Glow: Champagne soft gradient, very low blur (not neon)
+
+Middle Ring: Thin ring in Warm Sand
+
+Inner Border: 1px Soft Bone/white line
+
+No harsh cyan/purple glows. This is soft, editorial light.
+
+Name & Title
+
+Name: Serif, large, white, slightly above center
+
+Underline or hairline rule in Warm Sand
+
+Title: e.g. “Fashion Model · Editorial · Runway” in small caps
+
+Fashion Tags (Chips)
+
+Chips for:
+
+Location (MapPin)
+
+Category (e.g., “Runway”, “Editorial”, “Commercial”)
+
+Agencies or “Independent”
+
+Style:
+
+Thin bordered pill (Soft Bone)
+
+Background: rgba(245,243,238,0.06)
+
+Text: Caps, mini tracking
+
+CTAs (3 Buttons)
+
+“View Portfolio” (primary)
+
+“Book Me” (secondary)
+
+“Download Comp Card” or “Download Resume”
+
+Button Styling:
+
+Primary: Blush Pink → Nude gradient, white text, soft glow
+
+Secondary: Outline style (Soft Bone border, transparent background)
+
+Hover:
+
+Slight lift: translateY(-2px)
+
+Box-shadow: champagne glow
+
+Slight brightening
+
+2️⃣ ABOUT / SNAPSHOT SECTION (FASHION STORY)
+
+Uses: AboutMe, Vision, Mission, UVP, Core Values, Audiences, Industry, Domain, LookingFor, Email
+
+Layout:
+
+Two-column magazine grid:
+
+Left: Story & Identity
+
+Right: Brand & Positioning
+
+Left Column:
+
+“About” block:
+
+Title: “About” or “My Story”
+
+Serif heading, hairline underline
+
+Body copy in light sans-serif
+
+Vision & Mission:
+
+Two small cards stacked horizontally or vertically
+
+Left border or top accent in Nude/Blush
+
+Short, 1–2 line statements
+
+Right Column:
+
+“Who I Am On Set”:
+
+Use UVP text, in slightly larger serif, italic possible
+
+Core Values:
+
+Small tags: “Professional”, “Creative”, “Reliable”, etc.
+
+Warm Sand/Blush tags, rounded
+
+Primary Audience:
+
+“Ideal for” – e.g. fashion brands, magazine editors, agencies
+
+LookingFor:
+
+Row with Target icon and text (e.g., “Looking for: Editorial & Runway work this season”)
+
+Email:
+
+Clean inline link with underlined style
+
+Visual Tone:
+Like a bio page in a magazine: lots of negative space, minimal but strong.
+
+3️⃣ SKILLS / SPECIALTIES SECTION (FASHION SKILLSET)
+
+This is less “coding skills” and more:
+
+For models:
+
+“Runway Walk”, “Editorial Posing”, “Commercial Smile”, “High Fashion Concepts”
+
+For photographers:
+
+“Editorial Photography”, “Lookbook Shoots”, “Retouching”, “Studio Lighting”
+
+For stylists:
+
+“Editorial Styling”, “Campaign Styling”, etc.
+
+Card Style:
+
+Tall, narrow cards
+
+Heading: skill name
+
+Subtext: category (e.g., “Runway”, “On-Camera”, “Studio”)
+
+Rating: use subtle dot or bar system, but NO gamified meters
+
+Visual:
+
+Very subtle gradient top border (Blush/Nude)
+
+Hover:
+
+Very light lift
+
+Accent border thickens from 1px → 2px
+
+4️⃣ EXPERIENCE SECTION (BRAND & CLIENTS)
+
+Timeline but editorial style:
+
+Vertical line offset to left
+
+Year labels (small caps) on timeline
+
+Cards for:
+
+Role: “Lead Model – Lakmé Fashion Week”
+
+Brand: e.g., “For: XYZ Designer”
+
+Type: Runway / Editorial / Campaign
+
+Location
+
+Description: 1–2 lines max
+
+Key: visible brands/logos (if allowed visually later)
+
+Styling:
+
+Cards with:
+
+Slight Champagne/Nude top border or corner accent
+
+Serif title, sans body
+
+Current / recent highlight:
+
+Thin highlight bar on card edge
+
+Slight glow or background emphasis
+
+5️⃣ EDUCATION SECTION (TRAINING & WORKSHOPS)
+
+For fashion industry, this becomes:
+
+Modeling schools
+
+Acting workshops
+
+Photography courses
+
+Styling diplomas
+
+Layout:
+
+Simple two-column list or mini-timeline
+
+Each row:
+
+Left: Institution, program
+
+Right: Year(s)
+
+Under: Key skills (chips)
+
+Style:
+
+Understated. Think “CV area” hidden behind aesthetic.
+
+6️⃣ PROJECTS / PORTFOLIO (LOOKBOOK)
+
+This is the key for fashion.
+
+Grid Layout:
+
+Masonry or symmetrical grid
+
+Large image-driven cards (editorial spreads, campaigns, runway shots)
+
+Card Content:
+
+On hover:
+
+Subtle dark overlay
+
+Show:
+
+Project title (e.g., “Editorial – Winter Noir”)
+
+Client (e.g., “Vogue India Test Shoot”)
+
+Role (Model / Photographer / Stylist / MUA)
+
+Small Eye icon “View Story”
+
+Modal / Detail View:
+
+Fullscreen overlay:
+
+Big hero image
+
+Carousel for extra shots
+
+Text:
+
+Title
+
+Role
+
+Brand/Client
+
+Location
+
+Year
+
+Short story / concept text
+
+Style:
+
+Black + Bone palette
+
+Thin lines
+
+Minimal chrome
+
+7️⃣ SERVICES SECTION (IF PREMIUM – BOOKING / RATE CARD)
+
+For:
+
+Photographers offering shoots
+
+Stylists offering services
+
+Coaches or mentors
+
+Card Layout:
+
+2–3 cards:
+
+Top: Service title
+
+Sub: Category (e.g., “1:1 Portfolio Building Session”)
+
+Pricing:
+
+Show INR, optional USD
+
+Features list:
+
+3–6 bullet points with Check icons
+
+CTA: “Enquire” or “Book Session”
+
+Visual:
+
+Slightly more contrast + color (Blush/Nude gradients)
+
+Still clean, minimal
+
+🎨 STYLING TECHNIQUES (FASHION VERSION)
+Glassmorphism
+
+Very subtle:
+
+backdrop-filter: blur(10–16px)
+
+background: rgba(5,5,9,0.72)
+
+border: 1px solid rgba(245,243,238,0.18)
+
+Gradients
+
+Backgrounds:
+
+linear-gradient(135deg, #050509, #111118)
+
+Accents:
+
+linear-gradient(135deg, #F9C5D5, #FDF3D9)
+
+Underlines / small bars:
+
+linear-gradient(90deg, #D9B99B, #FDF3D9)
+
+Borders
+
+Use Thin, elegant lines
+
+Colors:
+
+rgba(245,243,238,0.35) for edges
+
+#D9B99B / #F9C5D5 for accent edges
+
+Clip Paths & Shapes
+
+Rare; prefer:
+
+Soft rectangular cards
+
+Occasional angled accent bar or diagonal soft corner
+
+✨ ANIMATIONS (FASHION-FRIENDLY)
+
+Keep it slow, graceful, editorial.
+
+Hover lifts: translateY(-2px)
+
+Opacity fades: 200–300ms
+
+Shimmer on name or title: very gentle
+
+No bouncy or elastic animations
+
+Optional:
+
+Slow zoom on hero background image
+
+Slow parallax on background shapes
+
+🔲 BACKGROUND & DECORATIVE ELEMENTS
+
+Background:
+
+Deep black → charcoal gradient
+
+Very subtle noise texture (like film grain)
+
+Decorations:
+
+Thin vertical lines (columns) to mimic magazine margins
+
+Occasional soft gradient circles (light blobs)
+
+No heavy grids / circuits. We’re fashion editorial, not tech.
+
+📱 RESPONSIVE DESIGN
+
+Mobile:
+
+Single column
+
+Small margins
+
+Image-first: hero picture should dominate
+
+Tablet:
+
+2 columns where possible (About, Skills, Projects)
+
+Desktop:
+
+Full experience, lots of breathing room
+
+🔍 ICON USAGE (FASHION-APPROPRIATE)
+
+Use lucide-react, but:
+
+MapPin → location of base city
+
+Camera → for photographers
+
+Scissors / Shirt (if custom) → for stylists
+
+Star → featured work
+
+Eye → view project
+
+Calendar → show seasons/years
+
+Heart/Star → “featured” or “favorite”
