@@ -1,0 +1,337 @@
+Graphic Quantum Card — Animation & Element UI Details
+Quick card summary
+
+Purpose: high-impact visual identity card for graphic designers / illustrators
+
+Aspect ratio: Portrait ~3:4 (e.g., 360×480px or responsive scale)
+
+Visual language: CMYK-inspired accents, ink splashes, duotone image treatment, strong typographic poster layout
+
+Primary brand colors (used throughout):
+
+Electric Magenta: #FF2BC2
+
+Cyan Pop: #00E5FF
+
+Deep Yellow: #F6E05E
+
+Rich Black: #050505
+
+Graphite: #1A1A1A
+
+Off-White: #F7F7F7
+
+DOM / Element structure (recommended)
+<div class="gq-card">
+  <div class="gq-card__bg-grid" />                <!-- grid background layer -->
+  <div class="gq-card__ink-splash" />             <!-- animated ink splash -->
+  <div class="gq-card__blob">                     <!-- shape-morph container -->
+    <img class="gq-card__photo" src="..." alt="..."/>
+  </div>
+  <div class="gq-card__content">
+    <h1 class="gq-card__name">NAME</h1>
+    <div class="gq-card__title-strip">ROLE • TAG</div>
+    <p class="gq-card__tagline">Short tagline</p>
+    <div class="gq-card__chips">...chips...</div>
+    <div class="gq-card__stats">...stats...</div>
+    <div class="gq-card__ctas">...buttons...</div>
+  </div>
+  <svg class="gq-card__decor">...halftone / strokes...</svg>
+</div>
+
+Layering & z-index
+
+bg-grid z-0 (under everything; subtle)
+
+ink-splash z-5 (animating behind photo)
+
+blob + photo z-10 (profile focal)
+
+content z-20 (text & CTAs)
+
+decor z-30 (SVG strokes & halftone overlays)
+
+Visual elements & behaviors
+1) Background grid (.gq-card__bg-grid)
+
+Purpose: subtle motion backdrop that gives depth and consistent graphic rhythm.
+
+Implementation:
+
+repeating-linear-gradient or SVG pattern (40px grid)
+
+Opacity: 0.06–0.12
+
+Animation: gridMove (very slow 20–40s loop) to create parallax feel
+
+2) Ink splash (.gq-card__ink-splash)
+
+Purpose: lively graphic accent, CMYK color blob behind the portrait.
+
+Implementation:
+
+absolutely positioned SVG or canvas ink shape
+
+Fill: dual-tone (Magenta + Cyan) radial/mesh gradient
+
+Blend mode: mix-blend-mode: screen or overlay for richness
+
+Animation:
+
+inkPulse (scale & opacity)
+
+subtle shapeMorph (SVG path morph) for organic motion
+
+set pointer-events: none
+
+3) Blob / profile frame (.gq-card__blob)
+
+Purpose: organic container for image (non-rectangular, shape morph)
+
+Implementation:
+
+SVG clipPath or CSS mask-image for blob shape
+
+Border: 2px outer stroke in rgba(255,43,194,0.12) (magenta tint)
+
+Inner shadow: soft inset to simulate frame depth
+
+Animations:
+
+shapeMorph (slow 6–10s ease-in-out, loop)
+
+On hover: transform: scale(1.03) rotate(-0.6deg), transition 200–260ms
+
+Photo treatment:
+
+Default: slight desaturation + duotone overlay on :hover toggles full-color
+
+Implement duotone with CSS filters + SVG blend, or with two versions (optimized)
+
+4) Name block (.gq-card__name)
+
+Style: very bold, tight leading (poster type)
+
+Animations:
+
+nameEntrance on card mount: fade + upward translate (duration 420ms)
+
+Underline shimmer: underlineShimmer applied to pseudo-element ::after (3s linear infinite), low opacity
+
+5) Title strip (.gq-card__title-strip)
+
+Visual: horizontal bar that slides in from left like a print press
+
+Animation: stripSlide (duration 450ms, cubic-bezier(.2,.9,.2,1))
+
+Interactivity: hovering the card slightly offsets the strip translateX(4px) for subtle tactile effect
+
+6) Tagline & chips (.gq-card__tagline, .gq-card__chips)
+
+Chips are rectangular, sharp-edged, high-contrast labels
+
+Chips hover: translateY(-2px) + box-shadow using #00E5FF or #FF2BC2 glow
+
+Chips animation: small entrance staggeredFade when card mounts
+
+7) Decorative SVG (.gq-card__decor)
+
+Halftone dots, bold strokes, and slashes
+
+Animation: strokeDashoffset draw-in for first load (400–600ms)
+
+Keep as SVG for crispness
+
+8) CTA buttons
+
+Primary: filled in #FF2BC2 → #00E5FF gradient, white text, pill shape
+
+Secondary: outline with magenta stroke, transparent background
+
+Hover:
+
+translateY(-3px), box-shadow: 0 18px 36px rgba(0,229,255,0.18) for cyan accent or magenta depending on button
+
+small ripple or ink ripple effect on click (use pseudo-element expand + fade)
+
+Key CSS keyframes (copy–paste ready)
+/* 1. gridMove */
+@keyframes gridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+/* 2. inkPulse */
+@keyframes inkPulse {
+  0%   { transform: scale(0.98); opacity: 0.78; filter: blur(0.8px); }
+  50%  { transform: scale(1.05); opacity: 1; filter: blur(0.4px); }
+  100% { transform: scale(0.98); opacity: 0.78; filter: blur(0.8px); }
+}
+
+/* 3. shapeMorph (for blob SVG path) - use with SMIL or JS morph */
+@keyframes slowMorph {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-4px) rotate(-0.6deg) scale(1.02); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* 4. name underline shimmer */
+@keyframes underlineShimmer {
+  0% { background-position: -120% 0; }
+  100% { background-position: 120% 0; }
+}
+
+/* 5. strip slide in */
+@keyframes stripSlide {
+  0%   { transform: translateX(-18px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* 6. pulse for current status / small nodes */
+@keyframes smallPing {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+/* Example usage snippet */
+.gq-card__bg-grid { animation: gridMove 40s linear infinite; }
+.gq-card__ink-splash { animation: inkPulse 7s ease-in-out infinite; }
+.gq-card__blob { animation: slowMorph 10s ease-in-out infinite; }
+.gq-card__title-strip { animation: stripSlide 450ms cubic-bezier(.2,.9,.2,1) both; }
+.gq-card__name::after {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 64px;
+  background: linear-gradient(90deg, #00E5FF, #FF2BC2, #F6E05E);
+  background-size: 200% 100%;
+  animation: underlineShimmer 3s linear infinite;
+}
+
+Motion timings, easing & values (guidelines)
+
+Entrance gentle: duration 350–500ms, easing cubic-bezier(.2,.9,.2,1)
+
+Continuous organic loops: duration 6–12s, easing ease-in-out, low amplitude
+
+Hover micro-interactions: duration 150–260ms, easing ease-out
+
+Avoid animating layout (width/height); prefer transform/opacity only
+
+Hover & Focus states (accessibility-ready)
+
+Hover (desktop):
+
+.gq-card:hover => transform: translateY(-6px), box-shadow: 0 28px 80px rgba(0,0,0,0.6)
+
+.gq-card:hover .gq-card__blob => transform: scale(1.03) rotate(-0.6deg)
+
+.gq-card:hover .gq-card__title-strip => transform: translateX(4px)
+
+Focus (keyboard):
+
+apply visible outline: outline: 3px solid rgba(0,229,255,0.14) OR box-shadow with accessible contrast
+
+ensure buttons get :focus style identical to hover
+
+Image & Duotone implementation approaches
+
+Options:
+
+CSS + SVG Overlay: Use mix-blend-mode with a solid colored layer (Cyan/Magenta) + filter: grayscale(60%) and animate opacity on hover.
+
+Canvas / WebGL Duotone: for higher fidelity and performance on many images.
+
+Two-image swap: lightweight approach — show low-saturation by default and swap to full-color on hover (use loading="lazy").
+
+Prefer approach 1 for simplicity; approach 2 only if you need per-pixel control.
+
+Performance & dev tips
+
+Avoid expensive filter: blur() on large elements; keep blur radius small and use will-change: transform, opacity for animated items.
+
+Use prefers-reduced-motion to disable/scale-down continuous animations:
+
+@media (prefers-reduced-motion: reduce) {
+  .gq-card__ink-splash,
+  .gq-card__blob,
+  .gq-card__bg-grid { animation: none; }
+}
+
+
+Limit number of animated SVG particles (max 8–12) to reduce repaints.
+
+Use transform: translateZ(0) sparingly to hint GPU compositing where beneficial.
+
+Use IntersectionObserver to start heavy animations only when the card is in viewport.
+
+Accessibility notes
+
+Provide meaningful alt on img.
+
+Ensure color contrast: text must meet AA on background; use off-white for body copy #F7F7F7 on #050505.
+
+Provide aria-label on interactive icons and aria-expanded for any toggleable content.
+
+All CTAs must be reachable by keyboard => use <button> or <a> with proper keyboard handlers.
+
+Responsive adjustments
+
+Mobile (≤640px):
+
+Reduce blob size and disable complex morphing (avoid CPU)
+
+Make ink splash static or very slow
+
+Collapse chips into vertical list with horizontal scroll disabled
+
+Tablet:
+
+Moderate animations; reduce motion amplitude
+
+Desktop:
+
+Full animations enabled, parallax on mousemove (limited amplitude)
+
+Quick JS hooks (optional)
+
+Start/stop SVG morph via IntersectionObserver
+
+On .gq-card mousemove, calculate small parallax offsets for blob and decor:
+
+card.addEventListener('mousemove', e => {
+  const rect = card.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width - 0.5;
+  const y = (e.clientY - rect.top) / rect.height - 0.5;
+  blob.style.transform = `translate(${x * 6}px, ${y * 6}px) scale(1.02)`;
+});
+
+
+Debounce updates to 30-60fps using requestAnimationFrame.
+
+Small code example (card hover + minimal CSS)
+.gq-card {
+  position: relative;
+  width: 360px;
+  height: 480px;
+  background: linear-gradient(180deg,#050505,#1A1A1A);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.gq-card:hover { transform: translateY(-6px); box-shadow: 0 32px 90px rgba(0,0,0,0.7); }
+.gq-card__ink-splash {
+  position: absolute; inset: -15% -10% auto -10%;
+  width: 140%; height: 60%;
+  background: radial-gradient(circle at 25% 35%, rgba(255,43,194,0.18), rgba(0,229,255,0.06));
+  filter: blur(18px);
+  animation: inkPulse 7s ease-in-out infinite;
+  pointer-events: none;
+}
+.gq-card__blob { position: absolute; left: 18px; top: 18px; width: 46%; height: 52%;
+  border-radius: 40% 60% 48% 52% / 54% 40% 60% 46%;
+  overflow: hidden; transition: transform .25s ease; }
+.gq-card__photo { width: 100%; height: 100%; object-fit: cover; transform-origin: center; transition: transform .25s ease; }
+.gq-card:hover .gq-card__photo { transform: scale(1.03); }

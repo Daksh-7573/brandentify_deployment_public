@@ -1,0 +1,405 @@
+GRAPHIC DESIGN QUANTUM PORTFOLIO TEMPLATE
+(Unique Look, Graphical Aesthetic, Highly Visual, Non-Fashion, Non-Tech)
+1️⃣ CONCEPT OVERVIEW (NEW THEME)
+
+Theme Name: Graphic Quantum Grid
+Style: Modern Graphic Design × Motion × Neon Ink × Print Aesthetics
+Target:
+Graphic designers • Visual artists • Illustrators • UI/UX designers • Branding specialists
+
+Key Characteristics:
+
+Strong grid systems
+
+Bold typography
+
+Color-blocked sections
+
+Ink smear animations
+
+Halftone patterns
+
+Duotone gradients
+
+Rounded + sharp contrast shapes
+
+Minimal but artistic
+
+This looks NOTHING like fashion / tech quantum cards and gives a visual designer identity.
+
+2️⃣ COLOR PALETTE — GRAPHIC DESIGN EDITION
+
+Unlike fashion or tech cards, this uses high-vibrancy CMYK inspired tones.
+
+Role	Color	Hex
+Primary Accent 1	Electric Magenta	#FF2BC2
+Primary Accent 2	Cyan Pop	#00E5FF
+Secondary Accent	Deep Yellow	#F6E05E
+Neutral Dark	Rich Black FOGRA	#050505
+Neutral Medium	Graphite Grey	#1A1A1A
+Neutral Light	Off-White	#F7F7F7
+Ink Blue	#2D4FFF	
+Soft Glow	rgba(0,229,255,0.35)	
+
+Use Case:
+
+Neon strokes, text highlights, gridlines, motion elements → Magenta + Cyan
+
+Backgrounds → Rich Black or Graphite
+
+Typography highlights → Deep Yellow
+
+3️⃣ UI/UX ELEMENTS — COMPLETELY NEW
+⭐ 1. Hero Header — “Graphic Identity Board”
+
+Visual Style:
+
+Heavy use of asymmetric layout
+
+Name & title in bold typographic block
+
+Profile image inside a shape-morphing container (like an organic blob)
+
+Cyan ink splash animation behind the picture
+
+Magenta duotone gradient overlay on hover
+
+Elements:
+
+Dynamic grid background with thick & thin lines
+
+Name Block: Huge serif/sans hybrid display font
+
+Title Strip: Horizontal bar with sliding animation
+
+Tagline: Small uppercase micro-text with tracking
+
+Location / Industry Chips: Sharp rectangular pills
+
+Animations:
+
+Ink Splash Pulse (CSS keyframes)
+
+Grid Parallax
+
+Title strip slide-in (like print press movement)
+
+Name gradient shimmer
+
+⭐ 2. About Section — Editorial Layout
+
+Design:
+
+Left column: Designer’s manifesto
+
+Right column: Graphic-style vertical labels
+
+Vision
+
+Mission
+
+UVP
+
+Core Values
+
+Styling:
+
+Thick left border in magenta
+
+Vertical rotated text labels
+
+Halftone background texture (subtle)
+
+Interactions:
+
+Hover on each block → reveal small hand-drawn scribble underline
+
+⭐ 3. Skills Section — CMYK Skill Rings
+
+Each skill card includes:
+
+CMYK ring (Cyan / Magenta / Yellow / Black arcs)
+
+Skill name inside circular layout
+
+Years of experience in bottom label
+
+Category in micro-text
+
+Hover animation:
+
+Rotates 3 degrees
+
+Neon glow according to proficiency
+
+NEW: Dynamic CMYK Bar
+
+A bar divided into 4 colored segments
+
+Filled according to proficiency
+
+⭐ 4. Experience Section — Poster Timeline
+
+Style: Graphic design poster layout, asymmetric.
+Every experience card looks like a mini poster:
+
+Large company name typography
+
+Date range in vertical orientation
+
+Thick horizontal rule
+
+Black/white layout
+
+Key responsibilities appear as sticker-like chips
+
+Animations:
+
+Poster enters with “fold-out” animation
+
+Sticker chips pop-in
+
+⭐ 5. Education — Ticket / Label Style
+
+Each education entry looks like:
+
+A printed label
+
+Perforated edges
+
+Serial number style ID (education.id)
+
+Degree in bold condensed font
+
+Halftone pattern on background
+
+⭐ 6. Projects / Portfolio — Visual-first Grid
+
+Gallery Tech:
+
+Masonry grid
+
+Auto-generate duotone previews
+
+Hover overlays show:
+
+Role
+
+Category
+
+Tools used (icons!)
+
+Modal:
+
+Fullscreen
+
+Left: Description
+
+Right: Giant images
+
+Ink-splash transition animation when opening
+
+⭐ 7. Services / Rates — Premium Only
+
+Cards look like:
+
+Product packaging mockups
+
+Sharp CMYK color blocks
+
+Bold price typography
+
+Feature list appears as graphic bullet stripes
+
+CTA:
+Button with animated “ripple-ink” effect.
+
+4️⃣ ANIMATION SYSTEM — NEW & UNIQUE
+Keyframes
+1. inkPulse
+
+Ink grows & fades like liquid.
+
+@keyframes inkPulse {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.6; }
+}
+
+
+Used for:
+
+Behind profile pic
+
+Section dividers
+
+2. gridMove
+
+Slight parallax movement of grid.
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
+}
+
+3. posterReveal
+
+Poster folds open.
+
+4. duotoneHover
+
+Changes image to cyan/magenta duotone on hover.
+
+5. shapeMorph
+
+Profile pic background smoothly changes between blob shapes.
+
+5️⃣ FULL PORTFOLIO LAYOUT (APPLYING YOUR PROVIDED FIELDS)
+SECTION 1: HEADER
+
+Uses fields:
+name, photoURL, title, tagline, location
+
+Special display:
+
+Name as huge typographic poster headline
+
+Tagline inside micro-typographic strip
+
+Location in cyan stroked pill
+
+SECTION 2: ABOUT / SNAPSHOT
+
+Uses fields:
+aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues[], audiances, industry, domain, lookingFor, email
+
+Displayed as editorial split layout with rotated labels.
+
+SECTION 3: SKILLS
+
+Uses all skill fields but displayed as CMYK rings.
+
+SECTION 4: EXPERIENCE
+
+Mini poster design for each job.
+
+SECTION 5: EDUCATION
+
+Ticket / label style layout.
+
+SECTION 6: PROJECTS
+
+Masonry layout, CMYK hover colors.
+
+SECTION 7: SERVICES
+
+Graphic packaging layout, boxy, bold.
+
+6️⃣ COMPONENT PROP LIST (DEVELOPER HANDOFF)
+<GraphicHero />
+interface GraphicHeroProps {
+  name: string;
+  photoURL: string;
+  title: string;
+  tagline: string;
+  location: string;
+  industry: string;
+  domain: string;
+}
+
+<AboutSection />
+interface AboutProps {
+  aboutMe: string;
+  visionStatement: string;
+  missionStatement: string;
+  uniqueValueProposition: string;
+  coreValues: string[];
+  primaryAudience: string[];
+  secondaryAudience: string[];
+  industry: string;
+  domain: string;
+  lookingFor: string;
+  email: string;
+}
+
+<SkillCard />
+interface Skill {
+  id: string;
+  name: string;
+  proficiency: number; // 1–5
+  category: string;
+  yearsOfExperience: number;
+}
+
+<ExperienceCard />
+interface Experience {
+  id: string;
+  title: string;
+  company: string;
+  industry: string;
+  domain: string;
+  location: string;
+  startDate: string;
+  endDate?: string;
+  description: string;
+  keyResponsibilities: string[];
+}
+
+<EducationCard />
+interface Education {
+  id: string;
+  degree: string;
+  institution: string;
+  location: string;
+  fieldOfStudy: string;
+  industry: string;
+  startDate: string;
+  endDate?: string;
+  skillsAcquired: string[];
+}
+
+<ProjectCard />
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  technologies: string[];
+  outcome: string;
+  startDate: string;
+  endDate?: string;
+  mediaUrls: string[];
+  externalUrl?: string;
+  impact: string;
+  role: string;
+  teamSize: number;
+}
+
+<ServiceCard />
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  priceInr: number;
+  priceUsd: number;
+  isHourly: boolean;
+  features: string[];
+  imageUrl?: string;
+  order: number;
+  isActive: boolean;
+}
+
+7️⃣ WHAT MAKES THIS UNIQUE?
+
+✔ Entirely new visual language — NOT neon quantum, NOT fashion
+✔ Inspired by professional graphic design and print production
+✔ CMYK aesthetics — ideal for designers
+✔ Heavy focus on typography & layout
+✔ Ink & duotone motion effects
+✔ Grid-driven UI (used in real design agencies)
+✔ Poster-style experience cards
+✔ Label-style education cards
+✔ Dynamic blob morphing hero section
+
+This is a premium-level, portfolio-ready, creative design system.
