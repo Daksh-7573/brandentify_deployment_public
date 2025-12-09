@@ -105,14 +105,6 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
         }}
       />
 
-      {/* Left Edge Accent Bar */}
-      <div 
-        className="absolute left-0 top-[18px] bottom-[18px] w-[3px] rounded-full"
-        style={{
-          background: `linear-gradient(180deg, ${colors.blushPink}, ${colors.champagneGlow})`,
-        }}
-      />
-
       {/* Film Grain Texture */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.07]"
