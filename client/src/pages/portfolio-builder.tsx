@@ -53,6 +53,7 @@ import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
 import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
 import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfolio";
+import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -93,7 +94,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -621,6 +622,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Warm Parchment, Paper Textures, Organic Shapes, Paint Brush Effects, Earth Tones
 ✔ Best For: Artists, Designers, Writers, Photographers, Creative Directors, Gallery Curators`,
       theme: "#f9f7f0"
+    },
+    { 
+      id: "fashion-quantum", 
+      name: "Fashion Quantum", 
+      description: `✔ Theme: Noir Black, Blush Pink, Champagne Glow, Film Grain Overlay, Editorial Aesthetic
+✔ Best For: Fashion Designers, Models, Stylists, Beauty Professionals, Editorial Creatives`,
+      theme: "#050509"
     }
   ];
 
@@ -1781,6 +1789,41 @@ export default function PortfolioBuilder() {
                     primaryAudience: userData?.primaryAudience || [],
                     secondaryAudience: userData?.secondaryAudience || [],
                     resumeUrl: userData?.resumeUrl || null
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects as any || []}
+                  userEducations={educations || []}
+                  userServices={services as any || []}
+                  isPremium={isPremium}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "fashion-quantum" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <FashionQuantum
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    whatIOffer: userData?.whatIOffer || null,
+                    jobLevel: userData?.jobLevel || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    brandName: userData?.brandName || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
                   }}
                   userSkills={skills || []}
                   userExperiences={experiences || []}
