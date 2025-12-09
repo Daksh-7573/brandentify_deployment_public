@@ -347,6 +347,23 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     // Use numeric user ID for all operations
     const userId = numericUserId;
     
+    // Check AI chat quota for subscription enforcement (free users: 5/month, premium: unlimited)
+    if (userId) {
+      const quotaCheck = await storage.checkAiChatQuota(userId);
+      if (!quotaCheck.hasQuotaRemaining) {
+        return res.status(429).json({
+          error: "AI chat quota exceeded",
+          message: `You've used all ${quotaCheck.max} AI chat messages this month. Upgrade to Premium for unlimited access!`,
+          quotaInfo: {
+            used: quotaCheck.used,
+            max: quotaCheck.max,
+            remaining: quotaCheck.remaining,
+            subscriptionTier: quotaCheck.subscriptionTier
+          }
+        });
+      }
+    }
+    
     // Check for resume context - first database, then fallback to global memory
     const userIdStr = userId.toString();
     let hasResumeContext = false;
@@ -453,6 +470,9 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       if (userIdString) {
         updateUserInteractionMemory(userIdString, message, response, enrichedContext);
       }
+      
+      // Increment AI chat usage count for subscription tracking
+      await storage.incrementAiChatUsage(userId);
     }
     
     // Return the response with enhanced metadata
