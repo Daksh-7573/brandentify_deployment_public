@@ -1,0 +1,266 @@
+GRAPHIC QUANTUM PORTFOLIO TEMPLATE
+(Creative Professionals Edition — Minimal, Editorial, Pastel, High-End)
+🧭 STYLE + DESIGN PHILOSOPHY
+
+⚪ White, soft grey, pastel accents
+⚪ Editorial layout with asymmetry
+⚪ Tactile elements (paper textures, faint shadows)
+⚪ Pastel gradient micro-highlights
+⚪ Modern, agency-level art direction
+⚪ Soft animations—nothing loud or cyberpunk
+
+Target Look:
+✨ Apple.com × Behance × Vogue editorial layout
+✨ Clean grid, breathing space, airy visuals
+
+🔥 PORTFOLIO STRUCTURE (Completely Unique Layout)
+
+Below is the new, unique arrangement of all your fields — different from any other template.
+
+1️⃣ INTRO PANEL (Hero Section — Full Width)
+
+Layout Style:
+Large left-aligned editorial name block + right floating artistic blob portrait.
+
+Left Column:
+
+Name (large, editorial headline)
+
+Title (thin uppercase, small spacing)
+
+Tagline (italic handwritten-style; optional)
+
+Location chip (small pastel pill style)
+
+3 CTA buttons (stacked vertically):
+
+Hire Me
+
+Download Portfolio / Resume
+
+Let’s Talk
+
+Right Column:
+
+Blob-Morph Portrait (pastel cyan + magenta gradients)
+
+Light halftone texture underlay
+
+Soft shadow spreads
+
+Animation:
+
+Blob morphs slowly (10 sec loop)
+
+Name strokes slide in
+
+Photo floats 2px up/down subtly
+
+2️⃣ ABOUT SNAPSHOT (Magazine Spread Style)
+
+A two-page editorial spread look, unlike any other portfolio.
+
+Left Page Card:
+
+About Me (full 350 words)
+
+Unique Value Proposition (small pastel frame)
+
+Right Page Mini Cards (stacked):
+
+Vision Statement (cyan left border)
+
+Mission Statement (magenta left border)
+
+Looking For (thin uppercase label)
+
+Email contact line (with underline animation on hover)
+
+Behind the cards:
+
+Pastel geometric shapes
+
+Soft paper grain overlay
+
+3️⃣ CORE VALUES + AUDIENCE PANEL
+
+Placed in a horizontal carousel, not grid — VERY unique.
+
+Core Values (scrollable pills)
+
+Circular pastel badges with icons
+
+Gentle rotation hover effect
+
+Primary Audience Chips (Cyan)
+Secondary Audience Chips (Magenta)
+
+Arranged as overlapping tag clouds, not standard rows.
+
+4️⃣ SKILLS GALLERY (NEW CONCEPT)
+
+Instead of progress bars, rings, or chips —
+We use a Graphic Designer Portfolio "Skill Tile Wall".
+
+Each Skill Tile (unique design):
+
+Soft pastel rectangle
+
+Large initials in background (e.g., “UX”, “AI”, “BR”)
+
+Skill name
+
+Years of experience (tiny label)
+
+Proficiency shown via 4-dot rating system (minimalistic, non-gamified)
+
+Animation:
+
+Tiles stack in a masonry layout
+
+Hover lifts 3px
+
+Dots animate in sequential fade (100ms delay each)
+
+5️⃣ WORK EXPERIENCE (Editorial Timeline)
+
+Not a vertical line — new design:
+
+Zig-Zag Experience Path
+
+Each experience card alternates left/right with thin curved connector lines.
+
+Experience Card Includes:
+
+Company Name (bold serif)
+
+Title (uppercase thin text)
+
+Date Range
+
+Description (2-3 lines)
+
+Key responsibilities (simple bullet list)
+
+Hover:
+
+Card shifts slightly
+
+Soft yellow glow behind card
+
+Connector lines animate drawing on scroll.
+
+6️⃣ EDUCATION PANEL (Accordion Style — NEW)
+
+Each degree appears in a foldable accordion card.
+
+Card Includes:
+
+Degree
+
+Institution
+
+Dates
+
+Field of study
+
+Skills acquired (small tag list)
+
+Animation:
+
+Soft expand/collapse
+
+Pastel color border slides in from left
+
+7️⃣ PROJECT GALLERY (THE BIG DIFFERENTIATOR!)
+GRID STYLE:
+
+Modular, asymmetrical grid like Behance:
+
+Some items tall
+
+Some wide
+
+Some small squares
+
+Project Card Includes:
+
+Thumbnail
+
+Title (appears on hover)
+
+Category tag
+
+Soft-overlay pastel fade on hover
+
+Click → Opens full project modal
+
+Project Modal Includes:
+
+Full description
+
+Impact metrics
+
+Gallery slider
+
+Role, timeline, technologies
+
+This grid layout is the most unique of all templates.
+
+8️⃣ SERVICES SECTION (PREMIUM)
+
+Horizontal service cards with pastel top bars.
+
+Card contains:
+
+Service title
+
+Description
+
+Features list
+
+Pricing (INR + USD)
+
+CTA (“Work With Me”)
+
+Animation:
+
+Top pastel strip animates left-to-right on hover
+
+Card lifts lightly
+
+9️⃣ FINAL CONTACT PANEL (MAGAZINE FOOTER STYLE)
+
+Clean, elegant.
+
+Left side:
+
+Beautiful serif headline:
+“Let’s Create Something Exceptional.”
+
+Sub text:
+Available for collabs, commissions & creative partnerships.
+
+Right side:
+
+Email (interactive underline animation)
+
+Social icons (minimal, pastel hover)
+
+"Download Resume" pill
+
+Background: faint textured paper + pastel shadow blob.
+
+🟣 UNIQUE DESIGN ELEMENTS SUMMARY
+
+This portfolio uses these unique elements NOT found in any other templates:
+
+✔ Blob Morph Photo + Editorial Layout
+✔ Magazine-style two-page About Me
+✔ Zig-Zag Experience Timeline
+✔ Pastel Skill Tile Wall
+✔ Asymmetrical Behance-Style Project Grid
+✔ Accordion-Based Education
+✔ Pastel Tag Clouds for Values & Audience
+
+This template is soft, premium, artistic, and made for creative identities.

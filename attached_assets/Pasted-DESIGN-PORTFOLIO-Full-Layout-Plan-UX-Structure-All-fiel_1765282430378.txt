@@ -1,0 +1,348 @@
+DESIGN PORTFOLIO – Full Layout Plan + UX Structure
+(All fields included. All components unique. No repetition from other portfolio templates.)
+🎯 SECTION 1: HERO HEADER – “Artistic Identity Banner”
+
+A clean, editorial, magazine-cover inspired hero block.
+
+⭐ Unique Layout Concept
+
+Left side: Soft morphing pastel blob holding the photo
+
+Right side: Vertical stacked text like a fashion editorial
+
+Background: subtle paper texture
+
+Accent shapes: halftone dots + torn-paper overlays
+
+Fields Used:
+
+name
+
+photoURL
+
+title
+
+tagline
+
+location
+
+UI Elements:
+
+Name appears in large serif font (completely different typography style)
+
+Subtitle (Title) appears on horizontal brushstroke
+
+Location shown as a thin underline label
+
+Tagline appears on a delicate pastel banner
+
+Animations:
+
+Blob morphs every 10 seconds
+
+Brushstroke “paints in” with wipe animation
+
+Name has shimmer highlight on load
+
+Halftone dots fade in with stagger timing
+
+💼 SECTION 2: ABOUT ME — “Creative Profile Board”
+
+This is not a typical card layout.
+The structure is inspired by designer mood boards.
+
+⭐ Unique Layout Concept
+
+A collage-style grid with asymmetric blocks:
+
+One block = About Me text
+
+One block = Vision
+
+One block = Mission
+
+One block = UVP
+
+One block = Core Values in badges
+
+One block = Primary + Secondary audience
+
+One block = Looking For + Email strip
+
+The entire board resembles a Pinterest board meets creative studio wall.
+
+Fields Used:
+
+aboutMe
+
+visionStatement
+
+missionStatement
+
+uniqueValueProposition
+
+coreValues[]
+
+primaryAudience[]
+
+secondaryAudience[]
+
+industry
+
+domain
+
+lookingFor
+
+email
+
+UI Elements:
+
+Sticky notes, torn paper edges
+
+Minimal shadows (light / airy)
+
+Serif headings + sans body
+
+Pastel-toned section markers
+
+Animations:
+
+Each block fades upward with slight rotation (like placed cards)
+
+Sticky note “settles” with a micro wobble
+
+Core values pulse softly in pastel tones
+
+Email strip has a micro underline expand animation
+
+💻 SECTION 3: SKILLS — “Creative Bar Spectrum”
+⭐ Unique Layout Concept
+
+A horizontal color spectrum bar for each skill (replacing rings or badges).
+Looks like a designer tool slider—very creative-industry themed.
+
+Fields:
+
+skill name
+
+proficiency
+
+category
+
+yearsOfExperience
+
+UI:
+
+Bar gradient: Coral → Cyan (based on proficiency %)
+
+Small icon representing category
+
+Tooltip-style micro card showing:
+Years of experience
+
+Animations:
+
+Bars slide in from 0% to actual value
+
+Color gradient animates slowly left-right
+
+On hover: bar lifts 2px with soft glow
+
+🏢 SECTION 4: EXPERIENCE — “Editorial Timeline Spread”
+⭐ Unique Layout Concept
+
+A two-column magazine spread, not a simple vertical timeline.
+
+Left page = timeline line
+Right page = floating job cards
+
+Fields:
+
+title
+
+company
+
+location
+
+startDate → endDate
+
+description
+
+keyResponsibilities[]
+
+industry & domain badges
+
+UI:
+
+Clean black-on-white typography
+
+Thin light-grey timeline line
+
+Job cards use subtle drop shadow like print editorial spreads
+
+Responsibilities appear as tiny pastel bullets
+
+Animations:
+
+Timeline line draws itself
+
+Each job card slides in from the edge
+
+Responsibility bullets appear sequentially
+
+🎓 SECTION 5: EDUCATION — “Minimal Credential Strip”
+⭐ Unique Layout Concept
+
+Education shown as horizontal strips, like credentials on a resume footer.
+
+Fields:
+
+degree
+
+institution
+
+fieldOfStudy
+
+startDate
+
+endDate
+
+skillsAcquired[]
+
+UI:
+
+Course title → serif font
+
+Institution → uppercase letter-spacing
+
+Skills acquired shown as micro badges
+
+Divider lines are pastel gradient strokes
+
+Animations:
+
+Strips slide in alternating left/right
+
+Badges appear with pop animation
+
+🎯 SECTION 6: PROJECTS — “Gallery Scroll with UV Frame Hover”
+⭐ Unique Layout Concept
+
+A gallery grid with floating white frames.
+When hovered:
+
+the frame expands
+
+an UV-glow pastel border appears
+
+metadata fades in gently
+
+Fields:
+
+title
+
+description
+
+category
+
+technologies[]
+
+mediaUrls[]
+
+externalUrl
+
+impact
+
+role
+
+teamSize
+
+UI:
+
+Each project looks like a “dribbble shot”
+
+Soft shadow + lifted card effect
+
+Light border that becomes a colorful glow when hovered
+
+Animations:
+
+Frame expands from inside
+
+Caption reveals with upward fade
+
+Carousel inside modal is light, soft and minimal
+
+🛠️ SECTION 7: SERVICES (PREMIUM) — “Creative Service Tiles”
+⭐ Unique Layout Concept
+
+Square service tiles with:
+
+pastel diagonal gradient
+
+minimal icon
+
+service title in large serif font
+
+tiny feature list
+
+Fields:
+
+title
+
+description
+
+features[]
+
+priceInr / priceUsd
+
+category
+
+imageUrl
+
+UI:
+
+Editorial look both minimal & premium
+
+Price shown inside a soft circular badge
+
+CTA: “Let’s Collaborate” in pill button
+
+Animations:
+
+Tile lifts with soft shadow
+
+Gradient shifts slightly on hover
+
+Features tick one-by-one on reveal
+
+🧱 SECTION 8: FOOTER — “Artist Signature Block”
+
+Includes:
+
+Signature-style name
+
+Social icons in pastel
+
+Contact button
+
+🌟 WHAT MAKES THIS LIGHT PORTFOLIO UNIQUE
+
+Compared to the dark quantum templates:
+
+Area	Old Templates	New Light Version
+Theme	Futuristic, tech, neon	Clean, editorial, artistic
+Colors	dark navy, cyan, purple	pastel coral, cyan, yellow, white
+Layout	structured, tech-grid	collage, spread, magazine-style
+Shapes	holographic lines	blobs, brushstrokes, halftone dots
+Animations	sci-fi pulses	slow, soft, artistic motions
+Skills	rings, metrics	pastel progress spectrum bars
+Hero	neon glow card	magazine-cover header
+
+This portfolio will appeal to:
+✔ graphic designers
+✔ UI/UX designers
+✔ creative directors
+✔ illustrators
+✔ brand designers
+✔ photographers
