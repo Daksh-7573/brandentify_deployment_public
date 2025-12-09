@@ -308,6 +308,17 @@ export interface IStorage {
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   
+  // AI Chat Quota operations (Subscription enforcement)
+  checkAiChatQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  incrementAiChatUsage(userId: number): Promise<{ success: boolean; newCount: number }>;
+  resetMonthlyFeatureUsage(userId: number): Promise<boolean>;
+  
   // Poll Vote operations
   getPollVotesByPulseId(pulseId: number): Promise<PollVote[]>;
   getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined>;
@@ -1922,6 +1933,25 @@ export class MemStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return Array.from(this.users.values());
+  }
+
+  // AI Chat Quota operations - delegate to database storage
+  async checkAiChatQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    return storage.checkAiChatQuota(userId);
+  }
+
+  async incrementAiChatUsage(userId: number): Promise<{ success: boolean; newCount: number }> {
+    return storage.incrementAiChatUsage(userId);
+  }
+
+  async resetMonthlyFeatureUsage(userId: number): Promise<boolean> {
+    return storage.resetMonthlyFeatureUsage(userId);
   }
 
   // Resume operations
@@ -9439,6 +9469,155 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(users);
   }
 
+  // AI Chat Quota operations (Subscription enforcement)
+  async checkAiChatQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have unlimited access
+      if (isPremium) {
+        return { hasQuotaRemaining: true, remaining: Infinity, used: 0, max: Infinity, subscriptionTier };
+      }
+
+      // Free tier: 5 AI chat messages per month
+      const FREE_AI_CHAT_LIMIT = 5;
+      
+      // Parse the premiumFeaturesUsage JSON
+      let usage: { aiChatCount: number; lastResetDate: string | null } = { aiChatCount: 0, lastResetDate: null };
+      if (user.premiumFeaturesUsage) {
+        try {
+          usage = typeof user.premiumFeaturesUsage === 'string' 
+            ? JSON.parse(user.premiumFeaturesUsage) 
+            : user.premiumFeaturesUsage;
+        } catch (e) {
+          console.error('[checkAiChatQuota] Error parsing premiumFeaturesUsage:', e);
+        }
+      }
+
+      // Check if we need to reset monthly usage
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      if (usage.lastResetDate !== currentMonth) {
+        // Reset monthly usage
+        await this.resetMonthlyFeatureUsage(userId);
+        usage.aiChatCount = 0;
+      }
+
+      const used = usage.aiChatCount || 0;
+      const remaining = Math.max(0, FREE_AI_CHAT_LIMIT - used);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used,
+        max: FREE_AI_CHAT_LIMIT,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkAiChatQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
+  async incrementAiChatUsage(userId: number): Promise<{ success: boolean; newCount: number }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { success: false, newCount: 0 };
+      }
+
+      // Premium users don't need tracking
+      if (user.subscriptionTier === 'premium') {
+        return { success: true, newCount: 0 };
+      }
+
+      // Parse current usage
+      let usage: { aiChatCount: number; resumeAnalysisCount: number; insightfulCount: number; misinformedCount: number; lastResetDate: string | null } = {
+        aiChatCount: 0,
+        resumeAnalysisCount: 0,
+        insightfulCount: 0,
+        misinformedCount: 0,
+        lastResetDate: null
+      };
+      
+      if (user.premiumFeaturesUsage) {
+        try {
+          usage = typeof user.premiumFeaturesUsage === 'string' 
+            ? JSON.parse(user.premiumFeaturesUsage) 
+            : { ...usage, ...user.premiumFeaturesUsage };
+        } catch (e) {
+          console.error('[incrementAiChatUsage] Error parsing premiumFeaturesUsage:', e);
+        }
+      }
+
+      // Check and reset monthly if needed
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      if (usage.lastResetDate !== currentMonth) {
+        usage = {
+          aiChatCount: 0,
+          resumeAnalysisCount: 0,
+          insightfulCount: 0,
+          misinformedCount: 0,
+          lastResetDate: currentMonth
+        };
+      }
+
+      // Increment AI chat count
+      usage.aiChatCount = (usage.aiChatCount || 0) + 1;
+
+      // Update in database
+      await pool.query(
+        `UPDATE users SET premium_features_usage = $1 WHERE id = $2`,
+        [JSON.stringify(usage), userId]
+      );
+
+      console.log(`[incrementAiChatUsage] User ${userId} AI chat count: ${usage.aiChatCount}`);
+      return { success: true, newCount: usage.aiChatCount };
+    } catch (error) {
+      console.error('[incrementAiChatUsage] Error:', error);
+      return { success: false, newCount: 0 };
+    }
+  }
+
+  async resetMonthlyFeatureUsage(userId: number): Promise<boolean> {
+    try {
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      
+      const resetUsage = {
+        aiChatCount: 0,
+        resumeAnalysisCount: 0,
+        insightfulCount: 0,
+        misinformedCount: 0,
+        lastResetDate: currentMonth
+      };
+
+      await pool.query(
+        `UPDATE users SET premium_features_usage = $1 WHERE id = $2`,
+        [JSON.stringify(resetUsage), userId]
+      );
+
+      console.log(`[resetMonthlyFeatureUsage] Reset usage for user ${userId} for month ${currentMonth}`);
+      return true;
+    } catch (error) {
+      console.error('[resetMonthlyFeatureUsage] Error:', error);
+      return false;
+    }
+  }
+
   // Work Experience operations
   async getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]> {
     console.log(`[db.getWorkExperiencesByUserId] Looking for experiences with userId: ${userId}`);
@@ -13726,6 +13905,11 @@ export const storage = {
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
   createUser: (user: InsertUser) => dbStorage.createUser(user),
   updateUser: (id: number, userData: Partial<User>) => dbStorage.updateUser(id, userData),
+  
+  // AI Chat Quota methods (Subscription enforcement)
+  checkAiChatQuota: (userId: number) => dbStorage.checkAiChatQuota(userId),
+  incrementAiChatUsage: (userId: number) => dbStorage.incrementAiChatUsage(userId),
+  resetMonthlyFeatureUsage: (userId: number) => dbStorage.resetMonthlyFeatureUsage(userId),
   
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
