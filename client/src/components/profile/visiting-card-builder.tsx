@@ -20,6 +20,7 @@ const CARD_TYPES = [
   { id: "neoglow", name: "NeoGlow", description: "Dark mode design with electric neon elements" },
   { id: "creative", name: "Creative", description: "Colorful artistic layout" },
   { id: "artistic", name: "Artistic", description: "Hand-drawn watercolor style" },
+  { id: "fashion-quantum", name: "Fashion Editorial", description: "Runway/editorial style for models, photographers & stylists" },
 ];
 
 interface VisitingCardBuilderProps {
