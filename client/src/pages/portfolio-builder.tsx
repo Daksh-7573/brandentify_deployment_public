@@ -80,7 +80,7 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Loader2, Eye, ChevronRight, Check, Bot, 
   Mail, Linkedin, Instagram, Briefcase, Award, User,
-  Code, Github, Terminal, Lock, Gift
+  Code, Github, Terminal, Lock, Gift, ExternalLink
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
@@ -1016,10 +1016,32 @@ export default function PortfolioBuilder() {
         return (
           <div className="space-y-8">
             <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
-              <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
-              <p className="text-white/70">
-                Review your AI-generated portfolio before publishing it to the world.
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2 text-white">
+                    {layoutOptions.find(l => l.id === form.watch("layout"))?.name || "Portfolio Preview"}
+                  </h2>
+                  <p className="text-white/70">
+                    Review your AI-generated portfolio before publishing it to the world.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const brandName = userData?.brandName || userData?.username || userData?.name?.toLowerCase().replace(/\s+/g, '-');
+                    if (brandName) {
+                      window.open(`/@${brandName}`, '_blank');
+                    } else if (userNumericId) {
+                      window.open(`/portfolio/${userNumericId}`, '_blank');
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
+                  data-testid="button-fullscreen-preview"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View Full Screen
+                </Button>
+              </div>
             </div>
             
             {/* Dynamic portfolio preview based on selected layout */}
