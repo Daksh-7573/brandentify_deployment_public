@@ -629,6 +629,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Noir Black, Blush Pink, Champagne Glow, Film Grain Overlay, Editorial Aesthetic
 ✔ Best For: Fashion Designers, Models, Stylists, Beauty Professionals, Editorial Creatives`,
       theme: "#050509"
+    },
+    { 
+      id: "light-designer", 
+      name: "Light Designer Portfolio", 
+      description: `✔ Theme: Clean Editorial, Magazine-Style, Halftone Textures, Soft Pastels
+✔ Best For: Designers, Creative Directors, Brand Strategists, Visual Artists, Art Directors`,
+      theme: "#FF3FAE"
     }
   ];
 
