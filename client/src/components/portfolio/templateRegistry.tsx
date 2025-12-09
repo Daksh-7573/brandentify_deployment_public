@@ -16,8 +16,6 @@ import ThreeDPortfolio from "@/components/portfolio/templates/3d-portfolio";
 import HolographicNeo from "@/components/portfolio/templates/holographic-neo";
 import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
 import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfolio";
-import FashionQuantumPortfolio from "@/components/portfolio/templates/fashion-quantum-portfolio";
-import FashionQuantumCard from "@/components/portfolio/templates/fashion-quantum-card";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -41,9 +39,7 @@ export type PortfolioLayoutKey =
   | "3d-portfolio"
   | "holographic-neo"
   | "creative-quantum"
-  | "artistic-portfolio"
-  | "fashion-quantum"
-  | "fashion-quantum-card";
+  | "artistic-portfolio";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -127,11 +123,7 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "holographic_neo": "holographic-neo",
   "creative_quantum": "creative-quantum",
   "artistic_portfolio": "artistic-portfolio",
-  "artistic": "artistic-portfolio",
-  "fashion_quantum": "fashion-quantum",
-  "fashion-editorial": "fashion-quantum",
-  "fashion_quantum_card": "fashion-quantum-card",
-  "fashion-card": "fashion-quantum-card"
+  "artistic": "artistic-portfolio"
 };
 
 export function normalizeLayoutKey(layout: string | null | undefined): PortfolioLayoutKey {
@@ -183,9 +175,7 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "3d-portfolio": ThreeDPortfolio as any,
   "holographic-neo": HolographicNeo as any,
   "creative-quantum": CreativeQuantum as any,
-  "artistic-portfolio": ArtisticPortfolio as any,
-  "fashion-quantum": FashionQuantumPortfolio as any,
-  "fashion-quantum-card": FashionQuantumCard as any
+  "artistic-portfolio": ArtisticPortfolio as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {
