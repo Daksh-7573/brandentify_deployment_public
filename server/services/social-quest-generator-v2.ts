@@ -99,6 +99,74 @@ const PLATFORM_GUIDELINES = {
 export class SocialQuestGeneratorV2 {
   
   /**
+   * Generate multiple social quests for a user (called by timezone-aware scheduler)
+   * CRITICAL FIX: This method was missing, causing Social Quests not to generate daily
+   */
+  async generateQuestsForUser(
+    userId: number,
+    count: number,
+    category: string
+  ): Promise<any[]> {
+    
+    console.log(`[SocialQuestV2] Generating ${count} social quests for user ${userId}`);
+    
+    try {
+      // Get user profile to determine platforms
+      const [userProfile] = await db.select().from(users).where(eq(users.id, userId));
+      
+      if (!userProfile) {
+        console.error(`[SocialQuestV2] User ${userId} not found`);
+        return [];
+      }
+      
+      // Get social quest definitions (non-career quests)
+      const socialQuestDefs = await db
+        .select()
+        .from(questDefinitions)
+        .where(eq(questDefinitions.type, 'social'));
+      
+      if (socialQuestDefs.length === 0) {
+        console.warn(`[SocialQuestV2] No social quest definitions found`);
+        return [];
+      }
+      
+      const generatedQuests: any[] = [];
+      const platformsList = ['LinkedIn', 'Twitter', 'Instagram', 'YouTube', 'TikTok', 'Facebook', 'Medium', 'Pinterest'];
+      
+      // Generate requested number of social quests
+      for (let i = 0; i < Math.min(count, socialQuestDefs.length); i++) {
+        try {
+          const questDef = socialQuestDefs[i % socialQuestDefs.length];
+          // Rotate through platforms for variety
+          const platform = platformsList[i % platformsList.length];
+          
+          console.log(`[SocialQuestV2] Generating quest ${i + 1}/${count} for ${platform}`);
+          
+          // Generate individual social quest
+          const socialQuest = await this.generateSocialQuest(userId, questDef.id, platform);
+          generatedQuests.push({
+            ...socialQuest,
+            questDefinitionId: questDef.id,
+            category: 'social'
+          });
+          
+        } catch (questError) {
+          console.error(`[SocialQuestV2] Error generating quest ${i + 1}:`, questError);
+          // Continue with next quest instead of failing entirely
+          continue;
+        }
+      }
+      
+      console.log(`[SocialQuestV2] ✅ Generated ${generatedQuests.length} social quests for user ${userId}`);
+      return generatedQuests;
+      
+    } catch (error) {
+      console.error(`[SocialQuestV2] Fatal error in generateQuestsForUser:`, error);
+      return [];
+    }
+  }
+  
+  /**
    * Generate AI-powered social quest for a specific platform
    */
   async generateSocialQuest(
