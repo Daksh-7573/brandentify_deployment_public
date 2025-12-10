@@ -1,0 +1,125 @@
+UPDATED MODEL: CAREER QUESTS SHOULD INCLUDE PULSE POST TYPES
+
+Career Quests will now include 3 types of Pulse post suggestions:
+
+🔵 1. Profile-Based Pulse Posts
+
+These are posts generated based on missing or weak profile sections.
+
+Examples:
+
+If UVP is generic → Pulse: “This is what I uniquely do in my industry…”
+
+If industry/domain not clear → Pulse: “Here’s what I actually specialize in…”
+
+If About Me too short → Pulse: “My journey so far…”
+
+Sample Quest:
+Title: Clarify Your Expertise with a Pulse Post
+Description: Write a Pulse post that explains what you do, why you do it, and the value you bring.
+PulseType: Identity Post
+EstimatedTime: 15
+
+🟣 2. Authority Pulse Posts
+
+These help users prove their expertise inside the Brandentifier ecosystem.
+
+Types:
+
+Insight Post (share a lesson learned)
+
+Case Study Post (mini-project outcome)
+
+Tips Post (3 tips from your field)
+
+Opinion Post (your perspective on industry trend)
+
+Mistakes Post (things beginners get wrong)
+
+Behind-the-Scenes Post (your workflow)
+
+Sample Quest:
+Title: Publish an Authority Pulse Post
+Description: Share one insight or lesson from your industry. Keep it punchy and valuable.
+PulseType: Authority Post
+EstimatedTime: 20
+
+🔥 3. Opportunity Pulse Posts
+
+These posts help the user express what they are looking for.
+
+Examples:
+
+“I’m open for freelance projects”
+
+“I’m looking for collaboration partners”
+
+“I’m currently seeking roles in XYZ domain”
+
+“Here’s what I’m working on this week — open for networking”
+
+Sample Quest:
+Title: Share a Pulse About What You're Looking For
+Description: Tell your audience what kind of opportunities or collaborations you're open to.
+PulseType: Opportunity Post
+EstimatedTime: 10
+
+🎯 STRUCTURE: Every Career Quest That Mentions "Pulse" Should Include:
+
+PulseType (Identity / Authority / Opportunity)
+
+Template (a pre-written fill-in-the-blank)
+
+Tone (professional / friendly / bold / minimalist)
+
+Optional hashtags (only internal, not for external)
+
+MuskTip (motivational insight)
+
+🧠 HOW THE SYSTEM DECIDES WHICH PULSE TYPE TO SUGGEST
+
+Based on:
+
+1️⃣ Missing field → Identity Pulse
+2️⃣ Weak profile → Authority Pulse
+3️⃣ LookingFor is filled → Opportunity Pulse
+4️⃣ User is job-seeking → Authority + Opportunity
+5️⃣ User is freelancer → Authority + Case Study
+6️⃣ User is creator → Behind-the-scenes + Tips
+
+No UI changes needed — this is purely backend logic.
+
+🚀 SAMPLE IMPROVED CAREER QUEST WITH PULSE CONTENT
+{
+  "title": "Share a Pulse Showcasing Your Expertise",
+  "description": "Write a short insight about something you learned in your field. Keep it actionable.",
+  "pulseType": "Authority",
+  "template": "One thing I learned this week as a {{domain}} professional is...",
+  "muskTip": "Authority is built one insight at a time. Keep it simple, Nishant.",
+  "estimatedTime": 15
+}
+
+🎁 BONUS — 6 Pulse Templates for Career Quests (Copy-Paste Ready)
+1️⃣ Identity Post
+
+“I help {audience} achieve {result} through {domain expertise}. Here’s why I love what I do…”
+
+2️⃣ Value Post
+
+“Here are 3 things most beginners get wrong in {industry}…”
+
+3️⃣ Case Study Pulse
+
+“A recent project taught me something important… {describe impact}”
+
+4️⃣ Weekly Progress Pulse
+
+“This week I worked on {project}. My biggest learning was…”
+
+5️⃣ Behind-the-Scenes Pulse
+
+“This is how I approach my work in {domain}…”
+
+6️⃣ Opportunity Pulse
+
+“I’m currently open for {lookingFor}. If you're working on something exciting, let’s connect.”

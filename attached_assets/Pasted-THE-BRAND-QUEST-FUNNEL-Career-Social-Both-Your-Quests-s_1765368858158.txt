@@ -1,0 +1,359 @@
+THE BRAND QUEST FUNNEL (Career + Social Both)
+
+Your Quests should move users through this funnel:
+
+🔵 STAGE 1 — Identity Setup (Career)
+
+Goal: User becomes discoverable → Their brand foundation is complete.
+
+Quest types here:
+
+Complete UVP
+
+Write About Me
+
+Add Mission / Vision
+
+Add Core Values
+
+Add Industry, Domain, Audience
+
+Add Skills
+
+Add Work Experience
+
+Add Education
+
+Upload Portfolio Projects
+
+👉 Outcome: Profile score becomes ≥ 70%.
+
+🟣 STAGE 2 — Authority Building (Career + Social)
+
+Goal: User becomes credible → They prove their expertise.
+
+Career Quests:
+
+Create a Pulse on your expertise
+
+Add a case study
+
+Showcase a project outcome
+
+Add measurable impact
+
+Social Quests:
+
+Post value-based content on LinkedIn
+
+Share a carousel on Instagram
+
+Share an expert tip on TikTok
+
+Write a short thread on X
+
+👉 Outcome: They start ranking on Google + AI search (because they have consistent public output).
+
+🔥 STAGE 3 — Visibility Boost (Mostly Social)
+
+Goal: User becomes seen → right audience starts engaging.
+
+Quests:
+
+Engage with 10 niche creators
+
+Comment meaningfully on 5 industry posts
+
+Follow & tag relevant pages
+
+Create a trending short video
+
+Create a LinkedIn poll
+
+Collaborate with one creator
+
+Create a “value carousel” for IG / LinkedIn
+
+👉 Outcome: Their content reaches the right audience.
+
+🟩 STAGE 4 — Opportunity Activation (Career)
+
+Goal: Convert visibility → opportunity
+
+Quests:
+
+Message 3 professionals
+
+Update your “Looking For” to be more specific
+
+Add a Call-to-Action Pulse
+
+Showcase a behind-the-scenes
+
+Add a Service offering (premium users)
+
+👉 Outcome: They start getting leads, job DM’s, and referrals.
+
+🟡 STAGE 5 — Consistency Maintenance
+
+Goal: Build a content habit → sustainable personal brand
+
+Quests:
+
+Weekly Pulse
+
+Weekly LinkedIn post
+
+Weekly TikTok / short video
+
+Monthly Portfolio project update
+
+Engagement streak maintenance
+
+👉 Outcome: Long-term audience growth.
+
+🎯 HOW TO MAKE QUESTS SUPER USEFUL
+
+You keep the UI SAME.
+You increase intelligence behind the quests.
+
+We add:
+
+1️⃣ Personal Brand Score
+
+Profile completeness score
+
+Content strength score
+
+Visibility score
+
+Audience clarity score
+
+You don’t need UI changes — these scores only help your internal quest allocator.
+
+2️⃣ Intent Classifier (determines what the user needs next)
+
+Each user is tagged daily with:
+
+Identity Level: Incomplete / Basic / Solid
+
+Authority Level: Beginner / Intermediate / Expert
+
+Visibility Goal: Job / Clients / Followers
+
+Platform Strength: LinkedIn-first / Instagram-first / Video-first
+
+Industry Type: Creative, Tech, Business, Educational, etc.
+
+The Quest engine uses these tags to choose the right next step.
+
+3️⃣ Quest Sequencing
+
+Instead of giving random quests →
+Brand Quest will:
+
+✓ detect user’s weakest area
+✓ generate a quest that moves them forward
+
+Example:
+
+Weakness → No UVP
+Quest → Craft Your UVP
+
+Weakness → No social content
+Quest → Create your first LinkedIn post
+
+Weakness → No portfolio
+Quest → Upload your first case study
+
+Weakness → No engagement
+Quest → Leave 5 valuable comments
+
+It becomes a growth roadmap, not random tasks.
+
+🔁 CAREER QUEST ENGINE — IMPROVED LOGIC
+Step 1 — Check missing data
+
+If UVP missing → UVP quest
+If vision missing → Vision quest
+If skills incomplete → Skill quest
+If no portfolio → Project quest
+
+Step 2 — Improve weak fields
+
+If UVP is too generic → rewrite quest
+If About Me is too short → expand quest
+If job description unclear → improve clarity quest
+
+Step 3 — Build authority
+
+If user posted < 2 Pulses → Pulse creation quest
+If user has no measurable outcomes → “Add impact metrics” quest
+
+Step 4 — Networking
+
+If profile complete → introduce networking quests
+
+🌍 SOCIAL QUEST ENGINE — IMPROVED LOGIC
+Step 1 — Identify user’s best platform
+
+If user is designer → IG / Behance
+If user is business → LinkedIn
+If user is entertainer → TikTok / YT
+If user is writer → X
+
+Quest engine prioritizes the right platform.
+
+Step 2 — Platform rotation with intent
+
+For each platform, we add 8 content categories:
+
+Authority post
+
+Personal brand story
+
+Behind the scenes
+
+Value tip
+
+Case study
+
+Trend remix
+
+Tools you use
+
+Opinion piece
+
+The seed generator rotates these automatically.
+
+Step 3 — Tailored content ideas
+
+Based on their:
+
+Industry
+
+Domain
+
+Audience
+
+Looking For
+
+🔥 SEED GENERATOR — The MASTER ENGINE (Copy-Paste Ready)
+
+Paste into your backend.
+
+🎯 SEED QUEST GENERATOR FOR CAREER
+{
+  "career_seeds": [
+    {
+      "type": "profile_uvp",
+      "title": "Craft Your Unique Value Proposition",
+      "field": "uniqueValueProposition",
+      "description": "Write a 300–500 character UVP that clearly states who you help, how you help them, and why you're different.",
+      "xp": 30,
+      "time": 15
+    },
+    {
+      "type": "profile_about",
+      "field": "aboutMe",
+      "title": "Write Your Professional Summary",
+      "description": "Create a compelling About Me section with your experience, skills, and goals.",
+      "xp": 30,
+      "time": 20
+    },
+    {
+      "type": "pulse_authority",
+      "title": "Publish a Pulse Post Sharing Your Expertise",
+      "description": "Share a story, insight, or lesson from your field.",
+      "xp": 60,
+      "time": 25
+    },
+    {
+      "type": "portfolio_project",
+      "title": "Add a Portfolio Project",
+      "description": "Showcase a real project with details, images, and measurable impact.",
+      "xp": 70,
+      "time": 40
+    },
+    {
+      "type": "networking",
+      "title": "Connect With 5 Professionals",
+      "description": "Find people in your domain and introduce yourself.",
+      "xp": 20,
+      "time": 10
+    }
+  ]
+}
+
+🌍 SEED QUEST GENERATOR FOR SOCIAL
+{
+  "social_seeds": [
+    {
+      "platform": "LinkedIn",
+      "title": "Share a Professional Insight on LinkedIn",
+      "format": "Text post (800-1600 chars)",
+      "bestTime": "Tuesday–Thursday, 9am–1pm",
+      "xp": 50,
+      "time": 20,
+      "contentIdeas": [
+        "Share a lesson learned this week",
+        "Write about an industry problem and your perspective",
+        "Share a client or project win"
+      ]
+    },
+    {
+      "platform": "Instagram",
+      "title": "Design a Carousel on Instagram",
+      "format": "5–7 slide carousel",
+      "bestTime": "Weekdays 11am–3pm",
+      "xp": 50,
+      "time": 30,
+      "contentIdeas": [
+        "Before/After of your work",
+        "3 fast tips from your expertise",
+        "Aesthetic quote from your industry"
+      ]
+    },
+    {
+      "platform": "TikTok",
+      "title": "Record a 15–30s Quick Tip Video",
+      "bestTime": "Evenings 6pm–11pm",
+      "xp": 40,
+      "time": 15,
+      "contentIdeas": [
+        "1 skill beginners misunderstand",
+        "A hack that saves you time",
+        "A trend remix with your expertise"
+      ]
+    }
+  ]
+}
+
+🔥 HOW TO MAKE IT REACH THE RIGHT AUDIENCE
+✔ 1. Platform-First Targeting
+
+Creators → Instagram / TikTok
+Leaders → LinkedIn
+Educators → YouTube
+
+✔ 2. Intent Detection
+
+Goal: Job → LinkedIn quests
+Goal: Freelancing → Instagram + LinkedIn mix
+Goal: Influence → TikTok + Instagram
+
+✔ 3. Content Background Learning
+
+AI learns from:
+
+previous posts
+
+post type they engage with
+
+skills they list
+
+their industry language patterns
+
+✔ 4. Trend Awareness
+
+Each day's quest references real platform trends.
