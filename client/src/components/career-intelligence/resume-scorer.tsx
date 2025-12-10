@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useUser } from '@/hooks/use-user';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResumeScoreBreakdown {
   overall: number;
@@ -63,6 +64,7 @@ interface ResumeAnalysisResult {
 
 export default function ResumeScorer() {
   const { user } = useUser();
+  const { toast } = useToast();
   const [resumeText, setResumeText] = useState('');
   const [targetRole, setTargetRole] = useState('');
   const [currentResumeScoreId, setCurrentResumeScoreId] = useState<number | null>(null);
@@ -87,6 +89,9 @@ export default function ResumeScorer() {
         });
         
         if (!response.ok) {
+          if (response.status === 403) {
+            throw { status: 403, message: 'Your usage limit has been reached. Please upgrade to continue building your brand.' };
+          }
           const error = await response.json();
           throw new Error(error.error || 'Upload failed');
         }
@@ -94,17 +99,50 @@ export default function ResumeScorer() {
         return response.json();
       } else {
         // Paste text
-        const response = await apiRequest('POST', '/api/career-tools/analyze-resume', {
-          resumeText: data.resumeText,
-          userId: user?.id,
-          targetRole: data.targetRole || undefined
+        const response = await fetch('/api/career-tools/analyze-resume', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            resumeText: data.resumeText,
+            userId: user?.id,
+            targetRole: data.targetRole || undefined
+          })
         });
+        
+        if (!response.ok) {
+          if (response.status === 403) {
+            throw { status: 403, message: 'Your usage limit has been reached. Please upgrade to continue building your brand.' };
+          }
+          const error = await response.json();
+          throw new Error(error.message || 'Analysis failed');
+        }
+        
         return response.json();
       }
     },
     onSuccess: (data: ResumeAnalysisResult) => {
       setCurrentResumeScoreId(data.resumeScoreId);
       queryClient.invalidateQueries({ queryKey: ['/api/career-tools/resume-score', data.resumeScoreId] });
+      toast({
+        title: 'Analysis Complete',
+        description: 'Your resume has been analyzed successfully!',
+        variant: 'default'
+      });
+    },
+    onError: (error: any) => {
+      if (error.status === 403 || error.message?.includes('usage limit')) {
+        toast({
+          title: 'Usage Limit Reached',
+          description: 'Your usage limit has been reached. Please upgrade to continue building your brand.',
+          variant: 'destructive'
+        });
+      } else {
+        toast({
+          title: 'Analysis Failed',
+          description: error.message || 'Failed to analyze your resume. Please try again.',
+          variant: 'destructive'
+        });
+      }
     }
   });
 
