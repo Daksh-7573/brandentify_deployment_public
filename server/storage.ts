@@ -319,6 +319,47 @@ export interface IStorage {
   incrementAiChatUsage(userId: number): Promise<{ success: boolean; newCount: number }>;
   resetMonthlyFeatureUsage(userId: number): Promise<boolean>;
   
+  // Resume Analysis Quota operations
+  checkResumeAnalysisQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  incrementResumeAnalysisUsage(userId: number): Promise<{ success: boolean; newCount: number }>;
+  
+  // Career Capsule Quota operations
+  checkCareerCapsuleQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  
+  // Social Quest Access check
+  checkSocialQuestAccess(userId: number): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }>;
+  
+  // Template Access checks
+  checkPortfolioTemplateAccess(userId: number, templateId: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }>;
+  checkVisitingCardAccess(userId: number, cardType: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }>;
+  
+  // Hashtag suggestion limit
+  getHashtagLimit(userId: number): Promise<{ limit: number; subscriptionTier: string }>;
+  
   // Poll Vote operations
   getPollVotesByPulseId(pulseId: number): Promise<PollVote[]>;
   getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined>;
@@ -1952,6 +1993,63 @@ export class MemStorage implements IStorage {
 
   async resetMonthlyFeatureUsage(userId: number): Promise<boolean> {
     return storage.resetMonthlyFeatureUsage(userId);
+  }
+
+  // Resume Analysis Quota operations - delegate to database storage
+  async checkResumeAnalysisQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    return storage.checkResumeAnalysisQuota(userId);
+  }
+
+  async incrementResumeAnalysisUsage(userId: number): Promise<{ success: boolean; newCount: number }> {
+    return storage.incrementResumeAnalysisUsage(userId);
+  }
+
+  // Career Capsule Quota operations - delegate to database storage
+  async checkCareerCapsuleQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    return storage.checkCareerCapsuleQuota(userId);
+  }
+
+  // Social Quest Access check - delegate to database storage
+  async checkSocialQuestAccess(userId: number): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    return storage.checkSocialQuestAccess(userId);
+  }
+
+  // Template Access checks - delegate to database storage
+  async checkPortfolioTemplateAccess(userId: number, templateId: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    return storage.checkPortfolioTemplateAccess(userId, templateId);
+  }
+
+  async checkVisitingCardAccess(userId: number, cardType: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    return storage.checkVisitingCardAccess(userId, cardType);
+  }
+
+  // Hashtag suggestion limit - delegate to database storage
+  async getHashtagLimit(userId: number): Promise<{ limit: number; subscriptionTier: string }> {
+    return storage.getHashtagLimit(userId);
   }
 
   // Resume operations
@@ -9615,6 +9713,300 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('[resetMonthlyFeatureUsage] Error:', error);
       return false;
+    }
+  }
+
+  // Resume Analysis Quota operations
+  async checkResumeAnalysisQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have unlimited access
+      if (isPremium) {
+        return { hasQuotaRemaining: true, remaining: Infinity, used: 0, max: Infinity, subscriptionTier };
+      }
+
+      // Free tier: 1 resume analysis per month
+      const FREE_RESUME_ANALYSIS_LIMIT = 1;
+      
+      // Parse the premiumFeaturesUsage JSON
+      let usage: { resumeAnalysisCount: number; lastResetDate: string | null } = { resumeAnalysisCount: 0, lastResetDate: null };
+      if (user.premiumFeaturesUsage) {
+        try {
+          usage = typeof user.premiumFeaturesUsage === 'string' 
+            ? JSON.parse(user.premiumFeaturesUsage) 
+            : user.premiumFeaturesUsage;
+        } catch (e) {
+          console.error('[checkResumeAnalysisQuota] Error parsing premiumFeaturesUsage:', e);
+        }
+      }
+
+      // Check if we need to reset monthly usage
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      if (usage.lastResetDate !== currentMonth) {
+        await this.resetMonthlyFeatureUsage(userId);
+        usage.resumeAnalysisCount = 0;
+      }
+
+      const used = usage.resumeAnalysisCount || 0;
+      const remaining = Math.max(0, FREE_RESUME_ANALYSIS_LIMIT - used);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used,
+        max: FREE_RESUME_ANALYSIS_LIMIT,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkResumeAnalysisQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
+  async incrementResumeAnalysisUsage(userId: number): Promise<{ success: boolean; newCount: number }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { success: false, newCount: 0 };
+      }
+
+      // Premium users don't need tracking
+      if (user.subscriptionTier === 'premium') {
+        return { success: true, newCount: 0 };
+      }
+
+      // Parse current usage
+      let usage: { aiChatCount: number; resumeAnalysisCount: number; insightfulCount: number; misinformedCount: number; lastResetDate: string | null } = {
+        aiChatCount: 0,
+        resumeAnalysisCount: 0,
+        insightfulCount: 0,
+        misinformedCount: 0,
+        lastResetDate: null
+      };
+      
+      if (user.premiumFeaturesUsage) {
+        try {
+          usage = typeof user.premiumFeaturesUsage === 'string' 
+            ? JSON.parse(user.premiumFeaturesUsage) 
+            : { ...usage, ...user.premiumFeaturesUsage };
+        } catch (e) {
+          console.error('[incrementResumeAnalysisUsage] Error parsing premiumFeaturesUsage:', e);
+        }
+      }
+
+      // Check and reset monthly if needed
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      if (usage.lastResetDate !== currentMonth) {
+        usage = {
+          aiChatCount: 0,
+          resumeAnalysisCount: 0,
+          insightfulCount: 0,
+          misinformedCount: 0,
+          lastResetDate: currentMonth
+        };
+      }
+
+      // Increment resume analysis count
+      usage.resumeAnalysisCount = (usage.resumeAnalysisCount || 0) + 1;
+
+      // Update in database
+      await pool.query(
+        `UPDATE users SET premium_features_usage = $1 WHERE id = $2`,
+        [JSON.stringify(usage), userId]
+      );
+
+      console.log(`[incrementResumeAnalysisUsage] User ${userId} resume analysis count: ${usage.resumeAnalysisCount}`);
+      return { success: true, newCount: usage.resumeAnalysisCount };
+    } catch (error) {
+      console.error('[incrementResumeAnalysisUsage] Error:', error);
+      return { success: false, newCount: 0 };
+    }
+  }
+
+  // Career Capsule Quota operations
+  async checkCareerCapsuleQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have unlimited access
+      if (isPremium) {
+        return { hasQuotaRemaining: true, remaining: Infinity, used: 0, max: Infinity, subscriptionTier };
+      }
+
+      // Free tier: 1 career capsule allowed
+      const FREE_CAPSULE_LIMIT = 1;
+      
+      // Count existing career capsules for this user
+      const result = await pool.query(
+        `SELECT COUNT(*) as count FROM career_capsules WHERE user_id = $1`,
+        [userId]
+      );
+      const used = parseInt(result.rows[0]?.count || '0');
+      const remaining = Math.max(0, FREE_CAPSULE_LIMIT - used);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used,
+        max: FREE_CAPSULE_LIMIT,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkCareerCapsuleQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
+  // Social Quest Access check
+  async checkSocialQuestAccess(userId: number): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasAccess: false, subscriptionTier: 'free', message: 'User not found' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      if (isPremium) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      return {
+        hasAccess: false,
+        subscriptionTier,
+        message: 'Social media quests are only available for Premium members. Upgrade to unlock social quests!'
+      };
+    } catch (error) {
+      console.error('[checkSocialQuestAccess] Error:', error);
+      return { hasAccess: false, subscriptionTier: 'free', message: 'Error checking access' };
+    }
+  }
+
+  // Template Access checks
+  async checkPortfolioTemplateAccess(userId: number, templateId: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasAccess: false, subscriptionTier: 'free', message: 'User not found' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have access to all templates
+      if (isPremium) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      // Free templates
+      const FREE_PORTFOLIO_TEMPLATES = ['corporate-executive', 'scholar'];
+      
+      if (FREE_PORTFOLIO_TEMPLATES.includes(templateId)) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      return {
+        hasAccess: false,
+        subscriptionTier,
+        message: 'This template is only available for Premium members. Upgrade to unlock all premium templates!'
+      };
+    } catch (error) {
+      console.error('[checkPortfolioTemplateAccess] Error:', error);
+      return { hasAccess: false, subscriptionTier: 'free', message: 'Error checking access' };
+    }
+  }
+
+  async checkVisitingCardAccess(userId: number, cardType: string): Promise<{
+    hasAccess: boolean;
+    subscriptionTier: string;
+    message?: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasAccess: false, subscriptionTier: 'free', message: 'User not found' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have access to all card types
+      if (isPremium) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      // Free card types
+      const FREE_VISITING_CARD_TEMPLATES = ['professional', 'quantum-tech'];
+      
+      if (FREE_VISITING_CARD_TEMPLATES.includes(cardType)) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      return {
+        hasAccess: false,
+        subscriptionTier,
+        message: 'This visiting card design is only available for Premium members. Upgrade to unlock all premium designs!'
+      };
+    } catch (error) {
+      console.error('[checkVisitingCardAccess] Error:', error);
+      return { hasAccess: false, subscriptionTier: 'free', message: 'Error checking access' };
+    }
+  }
+
+  // Hashtag suggestion limit
+  async getHashtagLimit(userId: number): Promise<{ limit: number; subscriptionTier: string }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { limit: 3, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium: 10 hashtags per post, Free: 3 hashtags per post
+      const limit = isPremium ? 10 : 3;
+      
+      return { limit, subscriptionTier };
+    } catch (error) {
+      console.error('[getHashtagLimit] Error:', error);
+      return { limit: 3, subscriptionTier: 'free' };
     }
   }
 

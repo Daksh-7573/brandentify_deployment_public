@@ -901,8 +901,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Cache the result
       setCachedUserData(cacheKey, user);
       
+      // Add premium badge info to response
+      const userWithBadge = {
+        ...user,
+        isPremium: user.subscriptionTier === 'premium',
+        premiumBadge: user.subscriptionTier === 'premium' ? {
+          label: 'Premium',
+          style: 'gold'
+        } : null
+      };
+      
       console.log(`[GET /users/:id] Found user with numeric ID: ${user.id}`);
-      res.json(user);
+      res.json(userWithBadge);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -1547,11 +1557,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[PUT /users/:id] whatIOffer field detected in update: "${userData.whatIOffer}"`);
       }
       
-      let user;
-      let updatedUser;
-      
       // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
       const isFirebaseUid = idParam.length > 20 && /[^0-9]/.test(idParam);
+      
+      // SUBSCRIPTION ENFORCEMENT: Check visiting card access if user is trying to change it
+      if ('visitingCardType' in userData && userData.visitingCardType) {
+        // First, we need to get the user to check their subscription
+        let checkUserId: number | null = null;
+        
+        if (isFirebaseUid) {
+          const tempUser = await storage.getUserByUsername(idParam);
+          if (tempUser) checkUserId = tempUser.id;
+        } else {
+          checkUserId = parseInt(idParam);
+        }
+        
+        if (checkUserId && !isNaN(checkUserId)) {
+          const accessResult = await storage.checkVisitingCardAccess(checkUserId, userData.visitingCardType);
+          console.log(`[PUT /users/:id] Visiting card access check for ${userData.visitingCardType}:`, accessResult);
+          
+          if (!accessResult.hasAccess) {
+            return res.status(403).json({
+              message: accessResult.message || 'This visiting card design is only available for Premium members',
+              error: 'SUBSCRIPTION_REQUIRED',
+              subscriptionTier: accessResult.subscriptionTier,
+              visitingCardType: userData.visitingCardType,
+              upgradeMessage: 'Upgrade to Premium to unlock all visiting card designs!'
+            });
+          }
+        }
+      }
+      
+      let user;
+      let updatedUser;
       
       if (isFirebaseUid) {
         // If it looks like a Firebase UID, check by username
@@ -5169,6 +5207,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Either resume file data or resume text is required" });
       }
       
+      // SUBSCRIPTION ENFORCEMENT: Check resume analysis quota
+      if (userId) {
+        const quotaResult = await storage.checkResumeAnalysisQuota(userId);
+        console.log(`[Resume Analysis] User ${userId} quota check:`, quotaResult);
+        
+        if (!quotaResult.hasQuotaRemaining) {
+          return res.status(403).json({
+            message: 'Resume analysis limit reached',
+            error: 'SUBSCRIPTION_LIMIT_REACHED',
+            subscriptionTier: quotaResult.subscriptionTier,
+            used: quotaResult.used,
+            max: quotaResult.max,
+            upgradeMessage: 'You have reached your monthly resume analysis limit. Upgrade to Premium for unlimited analyses!'
+          });
+        }
+      }
+      
       // Check if this is a demo mode request (only if explicitly set to DEMO_MODE)
       const isDemoMode = resumeText === "DEMO_MODE";
       
@@ -5312,7 +5367,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // If userId is provided, save the analysis as a chat message
+      // If userId is provided, save the analysis and increment usage
       if (userId) {
         await storage.createChatMessage({
           userId,
@@ -5320,6 +5375,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: analysis,
           messageType: "resume_analysis"
         });
+        
+        // SUBSCRIPTION ENFORCEMENT: Increment resume analysis usage for free users
+        await storage.incrementResumeAnalysisUsage(userId);
       }
       
       return res.json({ analysis });
@@ -6350,6 +6408,7 @@ ${extractedText.substring(0, 5000)}
       console.log(`[POST /portfolios] Creating portfolio with data:`, req.body);
       
       // Check if we have a Firebase UID instead of numeric userId
+      let userId = req.body.userId;
       if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
         console.log(`[POST /portfolios] Received Firebase UID as userId: ${req.body.userId}`);
         
@@ -6360,9 +6419,27 @@ ${extractedText.substring(0, 5000)}
           console.log(`[POST /portfolios] Found matching user with ID: ${user.id}`);
           // Replace the Firebase UID with the numeric userId
           req.body.userId = user.id;
+          userId = user.id;
         } else {
           console.log(`[POST /portfolios] No matching user found for Firebase UID: ${req.body.userId}`);
           return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // SUBSCRIPTION ENFORCEMENT: Check portfolio template access
+      const templateId = req.body.layout || req.body.templateId;
+      if (templateId && userId) {
+        const accessResult = await storage.checkPortfolioTemplateAccess(userId, templateId);
+        console.log(`[POST /portfolios] Template access check for ${templateId}:`, accessResult);
+        
+        if (!accessResult.hasAccess) {
+          return res.status(403).json({
+            message: accessResult.message || 'This template is only available for Premium members',
+            error: 'SUBSCRIPTION_REQUIRED',
+            subscriptionTier: accessResult.subscriptionTier,
+            templateId,
+            upgradeMessage: 'Upgrade to Premium to unlock all portfolio templates!'
+          });
         }
       }
       
@@ -6423,6 +6500,24 @@ ${extractedText.substring(0, 5000)}
       }
       
       console.log(`[PUT /portfolios/:id] Updating portfolio with ID: ${portfolioId}`);
+      
+      // SUBSCRIPTION ENFORCEMENT: Check portfolio template access if layout is being changed
+      const templateId = req.body.layout || req.body.templateId;
+      const userId = req.body.userId;
+      if (templateId && userId) {
+        const accessResult = await storage.checkPortfolioTemplateAccess(userId, templateId);
+        console.log(`[PUT /portfolios/:id] Template access check for ${templateId}:`, accessResult);
+        
+        if (!accessResult.hasAccess) {
+          return res.status(403).json({
+            message: accessResult.message || 'This template is only available for Premium members',
+            error: 'SUBSCRIPTION_REQUIRED',
+            subscriptionTier: accessResult.subscriptionTier,
+            templateId,
+            upgradeMessage: 'Upgrade to Premium to unlock all portfolio templates!'
+          });
+        }
+      }
       
       // Find the portfolio first
       const portfolio = await storage.updatePortfolio(portfolioId, req.body);
@@ -8289,6 +8384,18 @@ ${extractedText.substring(0, 5000)}
         });
       }
 
+      // SUBSCRIPTION ENFORCEMENT: Check if user has access to social quests
+      const accessResult = await storage.checkSocialQuestAccess(userId);
+      if (!accessResult.hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: accessResult.message || 'Social quests are a Premium feature',
+          error: 'SUBSCRIPTION_REQUIRED',
+          subscriptionTier: accessResult.subscriptionTier,
+          upgradeMessage: 'Upgrade to Premium to unlock personalized social media quests!'
+        });
+      }
+
       const result = await personalizedQuestAssignment.assignPersonalizedSocialQuests(userId);
       
       console.log(`[Personalized Quest Assignment API] Assigned ${result.assignedQuests.length} quests for user ${userId}`);
@@ -8415,6 +8522,18 @@ ${extractedText.substring(0, 5000)}
         return res.status(400).json({
           success: false,
           message: 'Invalid user ID or quest ID'
+        });
+      }
+
+      // SUBSCRIPTION ENFORCEMENT: Check if user has access to social quests
+      const accessResult = await storage.checkSocialQuestAccess(userId);
+      if (!accessResult.hasAccess) {
+        return res.status(403).json({
+          success: false,
+          message: accessResult.message || 'Social quests are a Premium feature',
+          error: 'SUBSCRIPTION_REQUIRED',
+          subscriptionTier: accessResult.subscriptionTier,
+          upgradeMessage: 'Upgrade to Premium to unlock social quests!'
         });
       }
 

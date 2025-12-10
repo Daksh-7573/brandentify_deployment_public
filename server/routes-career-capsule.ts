@@ -158,6 +158,21 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
+    // SUBSCRIPTION ENFORCEMENT: Check career capsule quota
+    const quotaResult = await storage.checkCareerCapsuleQuota(userId);
+    console.log(`[Career Capsule] User ${userId} quota check:`, quotaResult);
+    
+    if (!quotaResult.hasQuotaRemaining) {
+      return res.status(403).json({
+        message: 'Career capsule limit reached',
+        error: 'SUBSCRIPTION_LIMIT_REACHED',
+        subscriptionTier: quotaResult.subscriptionTier,
+        used: quotaResult.used,
+        max: quotaResult.max,
+        upgradeMessage: 'You have reached your career capsule limit. Upgrade to Premium for unlimited career goals!'
+      });
+    }
+
     // Debug: Log the entire request body
     console.log('[Career Capsule] Raw request body:', JSON.stringify(req.body, null, 2));
     console.log('[Career Capsule] Title field value:', req.body.title);

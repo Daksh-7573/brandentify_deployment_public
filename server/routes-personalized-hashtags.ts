@@ -29,6 +29,21 @@ export function setupPersonalizedHashtagRoutes(app: express.Express) {
         count = 5
       } = req.body;
       
+      // SUBSCRIPTION ENFORCEMENT: Get hashtag limit based on subscription tier
+      let hashtagLimit = 3; // Default free tier limit
+      if (userId) {
+        try {
+          const limitResult = await storage.getHashtagLimit(userId);
+          hashtagLimit = limitResult.limit;
+          console.log(`[Personalized Hashtags] User ${userId} has hashtag limit of ${hashtagLimit} (${limitResult.subscriptionTier})`);
+        } catch (error) {
+          console.error(`Error getting hashtag limit for user ${userId}:`, error);
+        }
+      }
+      
+      // Enforce hashtag limit - cap the requested count to the user's limit
+      const actualCount = Math.min(count, hashtagLimit);
+      
       // Get user profile if userId is available
       let user = null;
       if (userId) {
@@ -40,18 +55,26 @@ export function setupPersonalizedHashtagRoutes(app: express.Express) {
         }
       }
       
-      // Generate personalized hashtags
+      // Generate personalized hashtags with enforced limit
       const result = await generatePersonalizedHashtags({
         industry,
         domain,
         questType,
         targetAction,
         contentContext,
-        count
+        count: actualCount
       }, user);
       
+      // Add subscription info to the response
+      const responseWithLimit = {
+        ...result,
+        hashtagLimit,
+        requestedCount: count,
+        actualCount
+      };
+      
       // Return the generated hashtags
-      return res.json(result);
+      return res.json(responseWithLimit);
     } catch (error) {
       console.error('Error generating personalized hashtags:', error);
       return res.status(500).json({ 
