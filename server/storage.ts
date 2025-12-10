@@ -10307,6 +10307,24 @@ export class DatabaseStorage implements IStorage {
     return result.rowCount > 0;
   }
 
+  // Chat Message operations
+  async getChatMessagesByUserId(userId: number): Promise<ChatMessage[]> {
+    return db.select().from(chatMessages).where(eq(chatMessages.userId, userId)).orderBy(chatMessages.timestamp);
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const [message] = await db.insert(chatMessages).values(insertMessage).returning();
+    return message;
+  }
+
+  async deleteChatMessagesByType(userId: number, messageType: string): Promise<number> {
+    const result = await db.delete(chatMessages)
+      .where(and(eq(chatMessages.userId, userId), eq(chatMessages.messageType, messageType)));
+    const deletedCount = result.rowCount ?? 0;
+    console.log(`[deleteChatMessagesByType] Deleted ${deletedCount} messages of type '${messageType}' for user ${userId}`);
+    return deletedCount;
+  }
+
   // Project operations
   async getProjectsByUserId(userId: number): Promise<Project[]> {
     console.log(`[db.getProjectsByUserId] Looking for projects with userId: ${userId}`);
@@ -14303,6 +14321,11 @@ export const storage = {
   incrementAiChatUsage: (userId: number) => dbStorage.incrementAiChatUsage(userId),
   resetMonthlyFeatureUsage: (userId: number) => dbStorage.resetMonthlyFeatureUsage(userId),
   
+  // Chat Message methods
+  getChatMessagesByUserId: (userId: number) => dbStorage.getChatMessagesByUserId(userId),
+  createChatMessage: (message: InsertChatMessage) => dbStorage.createChatMessage(message),
+  deleteChatMessagesByType: (userId: number, messageType: string) => dbStorage.deleteChatMessagesByType(userId, messageType),
+  
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
   createWorkExperience: (experience: InsertWorkExperience) => dbStorage.createWorkExperience(experience),
@@ -14646,5 +14669,16 @@ export const storage = {
   // Connection Request methods
   getConnectionRequestById: (id: number) => dbStorage.getConnectionRequestById(id),
   getConnectionRequestsBySenderId: (senderId: number) => dbStorage.getConnectionRequestsBySenderId(senderId),
-  getConnectionRequestsByReceiverId: (receiverId: number) => dbStorage.getConnectionRequestsByReceiverId(receiverId)
+  getConnectionRequestsByReceiverId: (receiverId: number) => dbStorage.getConnectionRequestsByReceiverId(receiverId),
+  
+  // Premium Feature Quota methods (Subscription enforcement)
+  checkResumeAnalysisQuota: (userId: number) => dbStorage.checkResumeAnalysisQuota(userId),
+  incrementResumeAnalysisUsage: (userId: number) => dbStorage.incrementResumeAnalysisUsage(userId),
+  checkCareerCapsuleQuota: (userId: number) => dbStorage.checkCareerCapsuleQuota(userId),
+  checkPortfolioTemplateAccess: (userId: number, templateId: string) => dbStorage.checkPortfolioTemplateAccess(userId, templateId),
+  checkVisitingCardAccess: (userId: number, cardType: string) => dbStorage.checkVisitingCardAccess(userId, cardType),
+  checkSocialQuestAccess: (userId: number) => dbStorage.checkSocialQuestAccess(userId),
+  checkHashtagSuggestionLimit: (userId: number) => dbStorage.checkHashtagSuggestionLimit(userId),
+  checkReactionQuota: (userId: number) => dbStorage.checkReactionQuota(userId),
+  incrementReactionUsage: (userId: number) => dbStorage.incrementReactionUsage(userId)
 } as IStorage;

@@ -4981,7 +4981,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[POST /chat-messages] Saving AI response to database`);
         const aiMessage = await storage.createChatMessage({
           userId: messageData.userId,
-          content: aiResponse,
+          message: aiResponse,
           sender: 'ai',
           messageType: 'career_advice'
         });
@@ -5092,7 +5092,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createChatMessage({
           userId,
           sender: "ai",
-          content: advice,
+          message: advice,
           messageType: "career_advice"
         });
         
@@ -5132,7 +5132,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createChatMessage({
         userId,
         sender: "ai",
-        content: advice,
+        message: advice,
         messageType: "career_advice"
       });
       
@@ -5180,7 +5180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.createChatMessage({
             userId: parseInt(reqUserId),
             sender: "ai",
-            content: fallbackAdvice,
+            message: fallbackAdvice,
             messageType: "career_advice"
           });
         }
@@ -5242,7 +5242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               await storage.createChatMessage({
                 userId,
                 sender: "ai",
-                content: sampleAnalysis,
+                message: sampleAnalysis,
                 messageType: "resume_analysis"
               });
             }
@@ -5372,7 +5372,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createChatMessage({
           userId,
           sender: "ai",
-          content: analysis,
+          message: analysis,
           messageType: "resume_analysis"
         });
         
@@ -5467,7 +5467,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createChatMessage({
         userId,
         sender: "ai",
-        content: recommendations,
+        message: recommendations,
         messageType: "networking_recommendations"
       });
       
@@ -5491,7 +5491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.createChatMessage({
         userId: userId,
         sender: "ai",
-        content: demoRecommendations,
+        message: demoRecommendations,
         messageType: "networking_recommendations"
       });
       
