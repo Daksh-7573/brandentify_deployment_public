@@ -357,6 +357,24 @@ export interface IStorage {
     message?: string;
   }>;
   
+  // Portfolio Count Quota operations
+  checkPortfolioCountQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  
+  // Visiting Card Count Quota operations
+  checkVisitingCardCountQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  
   // Hashtag suggestion limit
   getHashtagLimit(userId: number): Promise<{ limit: number; subscriptionTier: string }>;
   
@@ -9880,6 +9898,95 @@ export class DatabaseStorage implements IStorage {
       };
     } catch (error) {
       console.error('[checkCareerCapsuleQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
+  // Portfolio Count Quota operations
+  async checkPortfolioCountQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have unlimited access
+      if (isPremium) {
+        return { hasQuotaRemaining: true, remaining: Infinity, used: 0, max: Infinity, subscriptionTier };
+      }
+
+      // Free tier: 2 portfolios allowed
+      const FREE_PORTFOLIO_LIMIT = 2;
+      
+      // Count existing portfolios for this user
+      const result = await pool.query(
+        `SELECT COUNT(*) as count FROM portfolios WHERE user_id = $1`,
+        [userId]
+      );
+      const used = parseInt(result.rows[0]?.count || '0');
+      const remaining = Math.max(0, FREE_PORTFOLIO_LIMIT - used);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used,
+        max: FREE_PORTFOLIO_LIMIT,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkPortfolioCountQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
+  // Visiting Card Count Quota operations
+  async checkVisitingCardCountQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Premium users have unlimited access
+      if (isPremium) {
+        return { hasQuotaRemaining: true, remaining: Infinity, used: 0, max: Infinity, subscriptionTier };
+      }
+
+      // Free tier: 2 visiting card types allowed - count unique card types user has customized
+      const FREE_CARD_LIMIT = 2;
+      
+      // Count how many distinct visiting card types this user has (visitingCardType is a string field)
+      // We'll consider that if user has set visitingCardType, they're using it
+      const cardCount = user.visitingCardType ? 1 : 0;
+      const remaining = Math.max(0, FREE_CARD_LIMIT - cardCount);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used: cardCount,
+        max: FREE_CARD_LIMIT,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkVisitingCardCountQuota] Error:', error);
       return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
     }
   }

@@ -1573,6 +1573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         if (checkUserId && !isNaN(checkUserId)) {
+          // Check template access first
           const accessResult = await storage.checkVisitingCardAccess(checkUserId, userData.visitingCardType);
           console.log(`[PUT /users/:id] Visiting card access check for ${userData.visitingCardType}:`, accessResult);
           
@@ -1583,6 +1584,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
               subscriptionTier: accessResult.subscriptionTier,
               visitingCardType: userData.visitingCardType,
               upgradeMessage: 'Upgrade to Premium to unlock all visiting card designs!'
+            });
+          }
+          
+          // Check quota for free tier
+          const quotaResult = await storage.checkVisitingCardCountQuota(checkUserId);
+          console.log(`[PUT /users/:id] Visiting card quota check for user ${checkUserId}:`, quotaResult);
+          
+          if (!quotaResult.hasQuotaRemaining) {
+            return res.status(403).json({
+              message: 'Your usage limit has been reached. Please upgrade to continue building your brand.',
+              error: 'SUBSCRIPTION_LIMIT_REACHED',
+              subscriptionTier: quotaResult.subscriptionTier,
+              used: quotaResult.used,
+              max: quotaResult.max,
+              upgradeMessage: 'Upgrade to Premium for unlimited visiting card designs!'
             });
           }
         }
@@ -6439,6 +6455,23 @@ ${extractedText.substring(0, 5000)}
             subscriptionTier: accessResult.subscriptionTier,
             templateId,
             upgradeMessage: 'Upgrade to Premium to unlock all portfolio templates!'
+          });
+        }
+      }
+      
+      // SUBSCRIPTION ENFORCEMENT: Check portfolio count quota
+      if (userId) {
+        const quotaResult = await storage.checkPortfolioCountQuota(userId);
+        console.log(`[POST /portfolios] Portfolio count quota check for user ${userId}:`, quotaResult);
+        
+        if (!quotaResult.hasQuotaRemaining) {
+          return res.status(403).json({
+            message: 'Your usage limit has been reached. Please upgrade to continue building your brand.',
+            error: 'SUBSCRIPTION_LIMIT_REACHED',
+            subscriptionTier: quotaResult.subscriptionTier,
+            used: quotaResult.used,
+            max: quotaResult.max,
+            upgradeMessage: 'Upgrade to Premium for unlimited portfolios!'
           });
         }
       }
