@@ -1,12 +1,19 @@
 /**
- * Timezone-Aware Quest Scheduler
+ * Timezone-Aware Quest Scheduler - OPTIMIZED
  * 
  * Generates Brand Quests for users at midnight in their local timezone
  * instead of a single global UTC time.
  * 
+ * OPTIMIZATION (2024-12-10):
+ * - Changed from every 15 minutes to HOURLY checks (75% less server load)
+ * - Still captures all users due because nextQuestAssignmentTime is pre-calculated
+ * - Each user's quest generation time is stored in their timezone, so hourly check catches everyone due in that hour
+ * - Reduces DB queries from 96/day to 24/day
+ * 
  * Approach:
- * - Runs every 15 minutes
+ * - Runs every hour at :00 (e.g., 12:00, 1:00, 2:00, etc.)
  * - Checks which users are due for quest assignment (nextQuestAssignmentTime <= NOW)
+ * - Since each user's nextQuestAssignmentTime is their local midnight + 1 second, a once-per-hour check ensures we catch everyone
  * - Processes users in batches of 200 to prevent server overload
  * - Updates nextQuestAssignmentTime to +24 hours after assignment
  */
@@ -26,7 +33,7 @@ class TimezoneAwareQuestScheduler {
   private isSchedulerActive = false;
   private cronJob: cron.ScheduledTask | null = null;
   private readonly BATCH_SIZE = 200; // Process 200 users at a time
-  private readonly CHECK_INTERVAL = '*/15 * * * *'; // Every 15 minutes
+  private readonly CHECK_INTERVAL = '0 * * * *'; // Every hour at :00 (optimized from every 15 minutes)
 
   /**
    * Start the timezone-aware scheduler
@@ -45,7 +52,7 @@ class TimezoneAwareQuestScheduler {
     });
 
     this.isSchedulerActive = true;
-    console.log('[TimezoneQuestScheduler] ✅ Timezone-aware scheduler started (checks every 15 minutes)');
+    console.log('[TimezoneQuestScheduler] ✅ Timezone-aware scheduler started (hourly checks - optimized from every 15 min)');
   }
 
   public stopScheduler() {
@@ -62,7 +69,7 @@ class TimezoneAwareQuestScheduler {
    */
   private async checkAndAssignQuests() {
     try {
-      console.log('[TimezoneQuestScheduler] 🔍 Checking for users due for quest assignment...');
+      console.log('[TimezoneQuestScheduler] ⏰ [HOURLY CHECK] Checking for users due for quest assignment...');
       
       const now = new Date();
       

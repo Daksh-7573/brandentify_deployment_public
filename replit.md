@@ -7,12 +7,34 @@ Brandentifier is an AI-driven career development platform designed to help users
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2024-12-10)
+### Daily Quest Generation - FULLY FIXED & OPTIMIZED ✅
+**Both Career & Social Quests Now Generate Daily:**
+1. ✅ **Social Quest Generator Fixed** - Added missing `generateQuestsForUser()` method to `social-quest-generator-v2.ts`
+2. ✅ **Quest Scheduler Optimized** - Reduced server load by 75% (from 96 checks/day to 24 checks/day)
+   - Changed from every 15 minutes → **hourly checks (every :00)**
+   - Still captures all users because `nextQuestAssignmentTime` is pre-calculated in their timezone
+   - Eliminates unnecessary checks while maintaining accuracy
+
+**How It Works:**
+- **Career Quests**: Generate daily via AI-powered quest generator (V2) with profile alignment
+- **Social Quests**: Generate daily with platform rotation (LinkedIn, Twitter, Instagram, YouTube, TikTok, etc.)
+- **Timezone-Aware**: Each user's quests generate at their local midnight + 1 second (12:00:01 AM)
+- **Backup System**: Daily scheduler at 12:01 AM UTC ensures global coverage
+- **Smart Allocation**: 1-4 quests daily per user based on engagement level
+
+**Implementation Details:**
+- `timezone-aware-quest-scheduler.ts`: Hourly checks (`0 * * * *`), optimized from 15-min intervals
+- `daily-quest-scheduler.ts`: 12:01 AM UTC daily as backup + safety net
+- `comprehensive-quest-generator-v2.ts`: Career quests with profile completeness checking
+- `social-quest-generator-v2.ts`: Social quests with platform-specific content (NOW FIXED)
+- Smart Quest Allocator: Determines optimal mix based on user history
+
 ### Premium Feature Quota Enforcement - FULLY COMPLETE ✅
 **ALL 6 Premium Features Now Have Backend Enforcement:**
 1. ✅ **Career Capsule Quota** (Free: 1 total) - Enforced via `checkCareerCapsuleQuota()`
 2. ✅ **Hashtag Limit** (Free: 3/post) - Enforced via `getHashtagLimit()` 
-3. ✅ **Portfolio Template Quota** (Free: 2 max) - NEW: `checkPortfolioCountQuota()` added
-4. ✅ **Visiting Card Quota** (Free: 2 max) - NEW: `checkVisitingCardCountQuota()` added
+3. ✅ **Portfolio Template Quota** (Free: 2 max) - `checkPortfolioCountQuota()` added
+4. ✅ **Visiting Card Quota** (Free: 2 max) - `checkVisitingCardCountQuota()` added
 5. ✅ **Full Messaging System** - All DM endpoints working with connection validation
 6. ✅ **Referral Rewards System** - Complete share-to-unlock with processing logic
 
