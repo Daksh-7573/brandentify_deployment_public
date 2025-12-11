@@ -375,6 +375,15 @@ export interface IStorage {
     subscriptionTier: string;
   }>;
   
+  // Mentor Follow Quota operations (Free: 3, Premium: 6)
+  checkMentorFollowQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }>;
+  
   // Hashtag suggestion limit
   getHashtagLimit(userId: number): Promise<{ limit: number; subscriptionTier: string }>;
   
@@ -9991,6 +10000,51 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Mentor Follow Quota operations (Free: 3, Premium: 6)
+  async checkMentorFollowQuota(userId: number): Promise<{
+    hasQuotaRemaining: boolean;
+    remaining: number;
+    used: number;
+    max: number;
+    subscriptionTier: string;
+  }> {
+    try {
+      const user = await this.getUser(userId);
+      if (!user) {
+        return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+      }
+
+      const subscriptionTier = user.subscriptionTier || 'free';
+      const isPremium = subscriptionTier === 'premium';
+      
+      // Free tier: 3 mentors, Premium tier: 6 mentors
+      const FREE_MENTOR_LIMIT = 3;
+      const PREMIUM_MENTOR_LIMIT = 6;
+      const maxLimit = isPremium ? PREMIUM_MENTOR_LIMIT : FREE_MENTOR_LIMIT;
+      
+      // Count active mentor follows for this user (only active ones that haven't expired)
+      const result = await pool.query(
+        `SELECT COUNT(*) as count FROM user_follows 
+         WHERE follower_id = $1 AND is_active = true 
+         AND (expires_at IS NULL OR expires_at > NOW())`,
+        [userId]
+      );
+      const used = parseInt(result.rows[0]?.count || '0');
+      const remaining = Math.max(0, maxLimit - used);
+      
+      return {
+        hasQuotaRemaining: remaining > 0,
+        remaining,
+        used,
+        max: maxLimit,
+        subscriptionTier
+      };
+    } catch (error) {
+      console.error('[checkMentorFollowQuota] Error:', error);
+      return { hasQuotaRemaining: false, remaining: 0, used: 0, max: 0, subscriptionTier: 'free' };
+    }
+  }
+
   // Social Quest Access check
   async checkSocialQuestAccess(userId: number): Promise<{
     hasAccess: boolean;
@@ -14784,6 +14838,7 @@ export const storage = {
   checkCareerCapsuleQuota: (userId: number) => dbStorage.checkCareerCapsuleQuota(userId),
   checkPortfolioCountQuota: (userId: number) => dbStorage.checkPortfolioCountQuota(userId),
   checkVisitingCardCountQuota: (userId: number) => dbStorage.checkVisitingCardCountQuota(userId),
+  checkMentorFollowQuota: (userId: number) => dbStorage.checkMentorFollowQuota(userId),
   checkPortfolioTemplateAccess: (userId: number, templateId: string) => dbStorage.checkPortfolioTemplateAccess(userId, templateId),
   checkVisitingCardAccess: (userId: number, cardType: string) => dbStorage.checkVisitingCardAccess(userId, cardType),
   checkSocialQuestAccess: (userId: number) => dbStorage.checkSocialQuestAccess(userId),
