@@ -126,7 +126,24 @@ router.get("/my-mentors/:userId", async (req, res) => {
     }
 
     const mentors = await mentorService.getActiveMentors(userId);
-    res.json(mentors);
+    const mentorsWithDays = mentors.map((m: any) => {
+      const expiresAt = new Date(m.expires_at);
+      const now = new Date();
+      const daysRemaining = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return {
+        ...m,
+        mentor: {
+          id: m.mentor_user_id,
+          name: m.name,
+          username: m.username,
+          photoURL: m.photo_url,
+          headline: m.headline,
+          industry: m.industry
+        },
+        daysRemaining: Math.max(0, daysRemaining)
+      };
+    });
+    res.json({ mentors: mentorsWithDays });
   } catch (error) {
     console.error("[GET /mentor/my-mentors] Error:", error);
     res.status(500).json({ error: "Failed to get mentors" });
@@ -248,8 +265,8 @@ router.get("/rating/:mentorId", async (req, res) => {
       return res.status(400).json({ error: "Invalid mentor ID" });
     }
 
-    const rating = await mentorService.getMentorAverageRating(mentorId);
-    res.json(rating);
+    const { average, count } = await mentorService.getMentorAverageRating(mentorId);
+    res.json({ averageRating: average, totalReviews: count });
   } catch (error) {
     console.error("[GET /mentor/rating] Error:", error);
     res.status(500).json({ error: "Failed to get rating" });
@@ -289,7 +306,7 @@ router.get("/reviews/:mentorId", async (req, res) => {
     }
 
     const reviews = await mentorService.getMentorReviews(mentorId, limit);
-    res.json(reviews);
+    res.json({ reviews });
   } catch (error) {
     console.error("[GET /mentor/reviews] Error:", error);
     res.status(500).json({ error: "Failed to get reviews" });
