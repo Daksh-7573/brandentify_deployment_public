@@ -811,6 +811,21 @@ export const userFollows = pgTable("user_follows", {
   id: serial("id").primaryKey(),
   followerId: integer("follower_id").references(() => users.id).notNull(),
   followeeId: integer("followee_id").references(() => users.id).notNull(),
+  expiresAt: timestamp("expires_at"), // Mentorship expires after 30 days
+  conversationId: integer("conversation_id"), // DM conversation created on follow
+  isActive: boolean("is_active").default(true), // Whether mentorship is currently active
+  reminderSent: boolean("reminder_sent").default(false), // Whether 5-day reminder was sent
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Mentor reviews table - tracks ratings/reviews for mentors after mentorship ends
+export const mentorReviews = pgTable("mentor_reviews", {
+  id: serial("id").primaryKey(),
+  mentorId: integer("mentor_id").references(() => users.id).notNull(), // The mentor being reviewed
+  reviewerId: integer("reviewer_id").references(() => users.id).notNull(), // User who followed the mentor
+  followId: integer("follow_id").references(() => userFollows.id), // Reference to the follow relationship
+  rating: integer("rating").notNull(), // 1-5 star rating
+  comment: text("comment"), // Optional review comment
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -838,6 +853,13 @@ export const pulseEngagements = pgTable("pulse_engagements", {
 // Insert schemas for new tables
 export const insertUserFollowSchema = createInsertSchema(userFollows).omit({
   id: true,
+  isActive: true,
+  reminderSent: true,
+  createdAt: true
+});
+
+export const insertMentorReviewSchema = createInsertSchema(mentorReviews).omit({
+  id: true,
   createdAt: true
 });
 
@@ -855,6 +877,9 @@ export const insertPulseEngagementSchema = createInsertSchema(pulseEngagements).
 // Export types for new tables
 export type UserFollow = typeof userFollows.$inferSelect;
 export type InsertUserFollow = z.infer<typeof insertUserFollowSchema>;
+
+export type MentorReview = typeof mentorReviews.$inferSelect;
+export type InsertMentorReview = z.infer<typeof insertMentorReviewSchema>;
 
 export type UserInterest = typeof userInterests.$inferSelect;
 export type InsertUserInterest = z.infer<typeof insertUserInterestSchema>;
