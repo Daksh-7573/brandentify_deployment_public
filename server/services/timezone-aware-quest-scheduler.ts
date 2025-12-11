@@ -22,16 +22,17 @@ import cron from 'node-cron';
 import { storage } from '../storage';
 import { db } from '../db';
 import { users, userQuests } from '@shared/schema';
-import { and, lte, isNotNull, isNull, eq } from 'drizzle-orm';
-import { smartQuestAllocator } from './smart-quest-allocator';
-import { comprehensiveQuestGeneratorV2 } from './comprehensive-quest-generator-v2';
-import { socialQuestGeneratorV2 } from './social-quest-generator-v2';
+import { and, lte, isNotNull, isNull, eq, lt } from 'drizzle-orm';
 import { fromZonedTime } from 'date-fns-tz';
 import { addDays, startOfDay, setHours, setMinutes, setSeconds } from 'date-fns';
 
+// Import daily quest scheduler for actual quest assignment logic
+// This avoids code duplication and ensures consistency
+import { dailyQuestScheduler } from './daily-quest-scheduler';
+
 class TimezoneAwareQuestScheduler {
   private isSchedulerActive = false;
-  private cronJob: cron.ScheduledTask | null = null;
+  private cronJob: any = null; // Using 'any' to avoid cron type issues
   private readonly BATCH_SIZE = 200; // Process 200 users at a time
   private readonly CHECK_INTERVAL = '0 * * * *'; // Every hour at :00 (optimized from every 15 minutes)
 
@@ -101,8 +102,10 @@ class TimezoneAwareQuestScheduler {
       let errorCount = 0;
       let skippedCount = 0;
 
-      // Process each user
+      // Process each user with CRITICAL: finally block to always update timestamp
       for (const user of dueUsers) {
+        let questAssignmentAttempted = false;
+        
         try {
           // Check if user already has quests assigned today
           const todayDateString = this.getTodayDateString();
@@ -117,45 +120,43 @@ class TimezoneAwareQuestScheduler {
           if (existingTodayQuests.length > 0) {
             console.log(`[TimezoneQuestScheduler] ⏭️ Skipping user ${user.id} (${user.name}) - already has ${existingTodayQuests.length} quests today`);
             skippedCount++;
-            // Still update nextQuestAssignmentTime to tomorrow
-            await this.updateNextAssignmentTime(user.id, user.timezone || 'UTC');
+            // Note: finally block will still update nextQuestAssignmentTime
             continue;
           }
           
           console.log(`[TimezoneQuestScheduler] 🎯 Assigning quests for user ${user.id} (${user.name}) in ${user.timezone}`);
+          questAssignmentAttempted = true;
           
-          // Use Smart Quest Allocator to determine optimal quest quantity
-          const allocation = await smartQuestAllocator.allocateDailyQuests(user.id);
+          // CRITICAL: Delegate to daily quest scheduler for actual quest assignment
+          // This ensures consistent quest generation logic and avoids code duplication
+          const assignedQuests = await dailyQuestScheduler.triggerDailyAssignmentForUser(user.id);
           
-          console.log(`[TimezoneQuestScheduler] 📊 Allocation: ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social)`);
-          
-          // Generate career quests
-          if (allocation.careerQuests > 0) {
-            await comprehensiveQuestGeneratorV2.generateQuestsForUser(
-              user.id,
-              allocation.careerQuests,
-              'career'
-            );
-          }
-          
-          // Generate social quests
-          if (allocation.socialQuests > 0) {
-            await socialQuestGeneratorV2.generateQuestsForUser(
-              user.id,
-              allocation.socialQuests,
-              'social'
-            );
-          }
-          
-          // Update nextQuestAssignmentTime to tomorrow at midnight in user's timezone
-          await this.updateNextAssignmentTime(user.id, user.timezone || 'UTC');
+          console.log(`[TimezoneQuestScheduler] ✅ Assigned ${assignedQuests.length} quests for user ${user.id} (${user.name})`);
           
           successCount++;
-          console.log(`[TimezoneQuestScheduler] ✅ Quest assignment successful for user ${user.id}`);
           
         } catch (error) {
-          console.error(`[TimezoneQuestScheduler] ❌ Error assigning quests for user ${user.id}:`, error);
+          console.error(`[TimezoneQuestScheduler] ❌ Error assigning quests for user ${user.id} (${user.name}):`, error);
           errorCount++;
+          // Log detailed error for debugging
+          console.error(`[TimezoneQuestScheduler] 📋 Error details:`, {
+            userId: user.id,
+            userName: user.name,
+            timezone: user.timezone,
+            errorMessage: error instanceof Error ? error.message : String(error),
+            errorStack: error instanceof Error ? error.stack : undefined
+          });
+        } finally {
+          // CRITICAL: ALWAYS update nextQuestAssignmentTime to tomorrow
+          // This prevents users from getting stuck with stale timestamps
+          // even if quest generation fails
+          try {
+            await this.updateNextAssignmentTime(user.id, user.timezone || 'UTC');
+            console.log(`[TimezoneQuestScheduler] ⏰ Updated nextQuestAssignmentTime for user ${user.id} to tomorrow`);
+          } catch (updateError) {
+            console.error(`[TimezoneQuestScheduler] ⚠️ CRITICAL: Failed to update nextQuestAssignmentTime for user ${user.id}:`, updateError);
+            // Even if timestamp update fails, log it prominently for monitoring
+          }
         }
       }
 
@@ -284,6 +285,95 @@ class TimezoneAwareQuestScheduler {
       
     } catch (error) {
       console.error('[TimezoneQuestScheduler] Error initializing users:', error);
+    }
+  }
+
+  /**
+   * AUTO-HEAL: Detect and fix stuck users
+   * 
+   * A user is "stuck" if:
+   * 1. Their nextQuestAssignmentTime is more than 1 hour in the past
+   * 2. They have no quests assigned for today
+   * 
+   * This should run on every scheduler startup and periodically to catch edge cases.
+   * 
+   * CRITICAL: This prevents the bug where users get permanently stuck
+   * due to failed quest generation without timestamp update.
+   */
+  public async autoHealStuckUsers(): Promise<number> {
+    try {
+      console.log('[TimezoneQuestScheduler] 🔧 Running auto-heal check for stuck users...');
+      
+      const now = new Date();
+      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000); // 1 hour ago
+      const todayDateString = this.getTodayDateString();
+      
+      // Find users whose nextQuestAssignmentTime is > 1 hour in the past
+      // These are potentially stuck users
+      const potentiallyStuckUsers = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          timezone: users.timezone,
+          nextQuestAssignmentTime: users.nextQuestAssignmentTime
+        })
+        .from(users)
+        .where(
+          and(
+            isNotNull(users.nextQuestAssignmentTime),
+            lt(users.nextQuestAssignmentTime, oneHourAgo)
+          )
+        );
+      
+      if (potentiallyStuckUsers.length === 0) {
+        console.log('[TimezoneQuestScheduler] ✅ No potentially stuck users found');
+        return 0;
+      }
+      
+      console.log(`[TimezoneQuestScheduler] 🔍 Found ${potentiallyStuckUsers.length} users with stale timestamps, checking for stuck users...`);
+      
+      let healedCount = 0;
+      
+      for (const user of potentiallyStuckUsers) {
+        // Check if user has any quests assigned today
+        const todayQuests = await db
+          .select()
+          .from(userQuests)
+          .where(and(
+            eq(userQuests.userId, user.id),
+            eq(userQuests.assignedDate, todayDateString)
+          ));
+        
+        if (todayQuests.length === 0) {
+          // User is STUCK: stale timestamp + no quests today
+          console.log(`[TimezoneQuestScheduler] ⚠️ STUCK USER DETECTED: User ${user.id} (${user.name})`);
+          console.log(`  - nextQuestAssignmentTime: ${user.nextQuestAssignmentTime?.toISOString()}`);
+          console.log(`  - Today's quests: 0`);
+          console.log(`  - Action: Resetting timestamp to NOW to trigger immediate assignment`);
+          
+          // Fix: Set nextQuestAssignmentTime to NOW + 1 second
+          // The next hourly check will pick them up
+          await db
+            .update(users)
+            .set({ nextQuestAssignmentTime: new Date(now.getTime() + 1000) })
+            .where(eq(users.id, user.id));
+          
+          healedCount++;
+          console.log(`[TimezoneQuestScheduler] ✅ Healed user ${user.id} (${user.name}) - will get quests on next hourly check`);
+        }
+      }
+      
+      if (healedCount > 0) {
+        console.log(`[TimezoneQuestScheduler] 🎉 Auto-heal complete: Fixed ${healedCount} stuck users`);
+      } else {
+        console.log('[TimezoneQuestScheduler] ✅ No stuck users found (all users with stale timestamps have quests today)');
+      }
+      
+      return healedCount;
+      
+    } catch (error) {
+      console.error('[TimezoneQuestScheduler] ❌ Error in auto-heal check:', error);
+      return 0;
     }
   }
 }

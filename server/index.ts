@@ -857,6 +857,19 @@ console.log("Phase 3 microservices architecture initialized");
     .then(() => console.log("✅ User quest times initialized"))
     .catch((err) => console.error("❌ Failed to initialize user quest times:", err));
 
+  // AUTO-HEAL: Detect and fix stuck users on startup
+  // This catches any users who got stuck due to previous bugs
+  console.log("🔧 Running auto-heal check for stuck users...");
+  timezoneAwareQuestScheduler.autoHealStuckUsers()
+    .then((healedCount) => {
+      if (healedCount > 0) {
+        console.log(`✅ Auto-heal complete: Fixed ${healedCount} stuck users`);
+      } else {
+        console.log("✅ No stuck users found - all users healthy");
+      }
+    })
+    .catch((err) => console.error("❌ Auto-heal check failed:", err));
+
   // Start Trend Intelligence Refresh Scheduler for market trend tracking
   console.log("Starting Trend Intelligence Refresh Scheduler...");
   trendRefreshScheduler.startScheduler();
