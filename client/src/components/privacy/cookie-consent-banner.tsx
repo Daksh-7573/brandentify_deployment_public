@@ -111,7 +111,7 @@ const CookieConsentBanner: React.FC = () => {
         {!showDetails ? (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-sm">
+              <p className="text-sm text-white">
                 We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.
               </p>
             </div>
