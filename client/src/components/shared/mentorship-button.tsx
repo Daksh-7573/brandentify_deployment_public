@@ -58,6 +58,7 @@ export function MentorshipButton({
     isLoading,
     isSubmitting,
     canRequestMoreMentors,
+    canAcceptMoreMentees,
     followMentor,
     unfollowMentor,
     renewMentorship
@@ -105,17 +106,28 @@ export function MentorshipButton({
 
   return (
     <>
-      <Button
-        variant={currentVariant}
-        size={size}
-        onClick={handleButtonClick}
-        disabled={isLoading || isSubmitting}
-        className={className}
-        data-testid={isFollowing ? "button-following-mentor" : "button-follow-mentor"}
-      >
-        {actionIcon}
-        {actionButtonText}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={currentVariant}
+              size={size}
+              onClick={handleButtonClick}
+              disabled={isLoading || isSubmitting || (!isFollowing && !canAcceptMoreMentees)}
+              className={className}
+              data-testid={isFollowing ? "button-following-mentor" : "button-follow-mentor"}
+            >
+              {actionIcon}
+              {actionButtonText}
+            </Button>
+          </TooltipTrigger>
+          {!isFollowing && !canAcceptMoreMentees && (
+            <TooltipContent>
+              This mentor has reached their capacity of 100 mentees
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       {/* Mentorship Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

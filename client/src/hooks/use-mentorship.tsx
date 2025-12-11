@@ -54,6 +54,18 @@ export function useMentorship(userId: number, mentorId: number) {
     enabled: !!userId,
   });
 
+  // Query to check if mentor can accept more mentees (not at 100 capacity)
+  const { data: mentorCapacity, isLoading: capacityLoading } = useQuery({
+    queryKey: ['/api/mentor/can-accept', mentorId],
+    queryFn: async () => {
+      if (!mentorId) return { canAccept: true, currentCount: 0, maxCapacity: 100 };
+      const response = await fetch(`/api/mentor/can-accept/${mentorId}`);
+      if (!response.ok) return { canAccept: true, currentCount: 0, maxCapacity: 100 };
+      return response.json();
+    },
+    enabled: !!mentorId,
+  });
+
   // Mutation to follow a mentor (immediate, 30-day duration)
   const followMutation = useMutation({
     mutationFn: async () => {

@@ -53,6 +53,15 @@ export async function followAsMentor(
       };
     }
 
+    // Check if mentor has reached 100 mentees capacity
+    const mentorFollowerCount = await getMentorFollowerCount(mentorId);
+    if (mentorFollowerCount >= 100) {
+      return { 
+        success: false, 
+        message: "This mentor is no longer accepting new mentees. They have reached their maximum capacity of 100 mentees." 
+      };
+    }
+
     // Calculate expiry date (30 days from now)
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + MENTORSHIP_DURATION_DAYS);

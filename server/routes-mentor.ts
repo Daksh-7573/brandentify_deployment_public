@@ -151,6 +151,26 @@ router.get("/my-mentors/:userId", async (req, res) => {
 });
 
 /**
+ * GET /mentor/can-accept/:mentorId
+ * Check if mentor can accept new mentees (not at 100 capacity)
+ */
+router.get("/can-accept/:mentorId", async (req, res) => {
+  try {
+    const mentorId = parseInt(req.params.mentorId);
+    if (isNaN(mentorId)) {
+      return res.status(400).json({ error: "Invalid mentor ID" });
+    }
+
+    const count = await mentorService.getMentorFollowerCount(mentorId);
+    const canAccept = count < 100;
+    res.json({ canAccept, currentCount: count, maxCapacity: 100 });
+  } catch (error) {
+    console.error("[GET /mentor/can-accept] Error:", error);
+    res.status(500).json({ error: "Failed to check mentor capacity" });
+  }
+});
+
+/**
  * GET /mentor/follower-count/:mentorId
  * Get how many people follow this user as a mentor
  */
