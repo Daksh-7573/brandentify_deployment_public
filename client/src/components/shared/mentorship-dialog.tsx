@@ -1,6 +1,5 @@
-import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { FaUserGraduate } from 'react-icons/fa';
+import { Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MentorshipButton } from './mentorship-button';
 
@@ -23,13 +22,13 @@ export const MentorshipDialog: React.FC<MentorshipDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className={`sm:max-w-md ${className || ''}`}>
+      <DialogContent className={`sm:max-w-md bg-[rgba(18,18,18,0.95)] backdrop-blur-[15px] border-white/10 ${className || ''}`}>
         <DialogHeader>
-          <DialogTitle className="flex items-center">
-            <FaUserGraduate className="mr-2" />
-            Mentorship Connection
+          <DialogTitle className="flex items-center text-white">
+            <Users className="mr-2 h-5 w-5 text-primary" />
+            Mentor Connection
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-white/70">
             Connect with a mentor to accelerate your professional growth.
             Mentorships last for 30 days and can be renewed.
           </DialogDescription>
@@ -40,13 +39,13 @@ export const MentorshipDialog: React.FC<MentorshipDialogProps> = ({
             <MentorshipButton
               userId={userId}
               mentorId={mentorId}
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              buttonText="Request Mentorship"
+              className="w-full bg-primary hover:bg-primary/90"
+              buttonText="Follow as Mentor"
               showIcon={true}
             />
           ) : (
             <div className="text-center">
-              <p className="text-gray-600 mb-4">
+              <p className="text-white/70 mb-4">
                 Mentoring others is a great way to give back to the community and develop your own leadership skills.
               </p>
               <Button

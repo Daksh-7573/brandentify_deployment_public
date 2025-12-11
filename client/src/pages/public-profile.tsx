@@ -13,6 +13,7 @@ import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } f
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { ProfilePageSkeleton } from "@/components/ui/page-skeletons/profile-skeleton";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 
 // Import portfolio templates
 import { 
@@ -311,7 +312,17 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                 </Avatar>
                 
                 <div className="flex-1 space-y-2 text-center md:text-left">
-                  <h1 className="text-2xl font-bold">{userData?.name || userData?.username}</h1>
+                  <div className="flex flex-col md:flex-row md:items-center gap-3">
+                    <h1 className="text-2xl font-bold">{userData?.name || userData?.username}</h1>
+                    {userData?.id && user?.id && user.id !== userData.id && (
+                      <MentorshipButton 
+                        userId={user.id}
+                        mentorId={userData.id}
+                        size="sm"
+                        buttonText="Follow as Mentor"
+                      />
+                    )}
+                  </div>
                   
                   {userData?.title && (
                     <p className="text-lg text-muted-foreground">{userData.title}</p>

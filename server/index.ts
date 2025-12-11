@@ -26,6 +26,7 @@ import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
 import { timezoneAwareQuestScheduler } from "./services/timezone-aware-quest-scheduler";
 import { trendRefreshScheduler } from "./services/trend-intelligence/trend-refresh-scheduler";
 import { trendSpikeScheduler } from "./services/trend-intelligence/trend-spike-scheduler";
+import { initMentorScheduler } from "./services/mentor-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 import { logDatabaseStartupInfo } from "./db";
@@ -1021,6 +1022,10 @@ console.log("Phase 3 microservices architecture initialized");
     // muskPulseScheduler.start();
     // console.log('✅ Musk Pulse Scheduler started');
     console.log('⚠️  Musk Pulse Scheduler is DISABLED');
+    
+    // Start Mentor Scheduler (handles mentorship expiry reminders and auto-deactivation)
+    initMentorScheduler();
+    console.log('✅ Mentor Scheduler started');
   });
   
   server.on('error', (err) => {

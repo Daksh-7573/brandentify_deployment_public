@@ -4,48 +4,99 @@ import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface MentorshipStatus {
-  isPending: boolean;
-  isActive: boolean;
-  startDate: string | null;
-  endDate: string | null;
+  isFollowing: boolean;
+  followedAt: string | null;
+  expiresAt: string | null;
+  daysRemaining: number | null;
 }
 
-interface MentorshipStats {
-  activeMentorsCount: number;
-  activeMenteesCount: number;
-  pendingMentorRequestsCount: number;
-  pendingMenteeRequestsCount: number;
+interface MentorshipQuota {
+  current: number;
+  max: number;
+  remaining: number;
+  isPremium: boolean;
 }
 
-// This hook provides mentorship functionality that can be used across all templates
+/**
+ * Hook for managing mentor follow relationships
+ * Uses immediate-follow pattern (30-day duration, no approval required)
+ */
 export function useMentorship(userId: number, mentorId: number) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Query to get the current mentorship status between user and mentor
+  // Query to check if user is following this mentor
   const { data: mentorshipStatus, isLoading: statusLoading } = useQuery({
-    queryKey: ['/api/mentorship/status', userId, mentorId],
+    queryKey: ['/api/mentor/is-following', userId, mentorId],
+    queryFn: async () => {
+      if (!userId || !mentorId || userId === mentorId) {
+        return { isFollowing: false, followedAt: null, expiresAt: null, daysRemaining: null };
+      }
+      const response = await fetch(`/api/mentor/is-following/${userId}/${mentorId}`);
+      if (!response.ok) {
+        return { isFollowing: false, followedAt: null, expiresAt: null, daysRemaining: null };
+      }
+      return response.json();
+    },
     enabled: !!userId && !!mentorId && userId !== mentorId,
   });
 
-  // Query to get user's mentorship stats (active mentors/mentees, pending requests)
-  const { data: mentorshipStats, isLoading: statsLoading } = useQuery({
-    queryKey: ['/api/mentorship/stats', userId],
+  // Query to get user's mentor quota (how many more mentors they can follow)
+  const { data: mentorshipQuota, isLoading: quotaLoading } = useQuery({
+    queryKey: ['/api/mentor/quota', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const response = await fetch(`/api/mentor/quota/${userId}`);
+      if (!response.ok) return null;
+      return response.json();
+    },
     enabled: !!userId,
   });
 
-  // Mutation to request mentorship
-  const requestMutation = useMutation({
+  // Mutation to follow a mentor (immediate, 30-day duration)
+  const followMutation = useMutation({
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/request', {
-          method: 'POST',
-          body: JSON.stringify({
-            menteeId: userId,
-            mentorId: mentorId
-          })
+        const response = await apiRequest('POST', '/api/mentor/follow', {
+          followerId: userId,
+          mentorId: mentorId
+        });
+        return response;
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: 'Following as Mentor',
+        description: data?.message || 'You are now following this mentor. Check your messages!',
+        variant: 'default',
+      });
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/is-following', userId, mentorId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/quota', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/my-mentors', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Could not follow',
+        description: error.message || 'Failed to follow mentor. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Mutation to unfollow a mentor (end mentorship early)
+  const unfollowMutation = useMutation({
+    mutationFn: async () => {
+      setIsSubmitting(true);
+      try {
+        const response = await apiRequest('DELETE', '/api/mentor/unfollow', {
+          followerId: userId,
+          mentorId: mentorId
         });
         return response;
       } finally {
@@ -54,142 +105,32 @@ export function useMentorship(userId: number, mentorId: number) {
     },
     onSuccess: () => {
       toast({
-        title: 'Mentorship requested',
-        description: 'Your mentorship request has been sent successfully.',
+        title: 'Mentorship Ended',
+        description: 'You are no longer following this mentor.',
         variant: 'default',
       });
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/status', userId, mentorId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/stats', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/is-following', userId, mentorId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/quota', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/my-mentors', userId] });
     },
     onError: (error: any) => {
       toast({
-        title: 'Request failed',
-        description: error.message || 'Failed to request mentorship. Please try again.',
+        title: 'Could not unfollow',
+        description: error.message || 'Failed to end mentorship. Please try again.',
         variant: 'destructive',
       });
     }
   });
 
-  // Mutation to accept mentorship request
-  const acceptMutation = useMutation({
-    mutationFn: async () => {
-      setIsSubmitting(true);
-      try {
-        const response = await apiRequest('/api/mentorship/accept', {
-          method: 'POST',
-          body: JSON.stringify({
-            menteeId: userId,
-            mentorId: mentorId
-          })
-        });
-        return response;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Mentorship accepted',
-        description: 'You have successfully accepted the mentorship request.',
-        variant: 'default',
-      });
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/status', userId, mentorId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/stats', userId] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Action failed',
-        description: error.message || 'Failed to accept mentorship. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  });
-
-  // Mutation to decline mentorship request
-  const declineMutation = useMutation({
-    mutationFn: async () => {
-      setIsSubmitting(true);
-      try {
-        const response = await apiRequest('/api/mentorship/decline', {
-          method: 'POST',
-          body: JSON.stringify({
-            menteeId: userId,
-            mentorId: mentorId
-          })
-        });
-        return response;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Request declined',
-        description: 'You have declined the mentorship request.',
-        variant: 'default',
-      });
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/status', userId, mentorId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/stats', userId] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Action failed',
-        description: error.message || 'Failed to decline request. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  });
-
-  // Mutation to cancel mentorship
-  const cancelMutation = useMutation({
-    mutationFn: async () => {
-      setIsSubmitting(true);
-      try {
-        const response = await apiRequest('/api/mentorship/cancel', {
-          method: 'POST',
-          body: JSON.stringify({
-            menteeId: userId,
-            mentorId: mentorId
-          })
-        });
-        return response;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Mentorship cancelled',
-        description: 'The mentorship has been cancelled.',
-        variant: 'default',
-      });
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/status', userId, mentorId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/stats', userId] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Action failed',
-        description: error.message || 'Failed to cancel mentorship. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  });
-
-  // Mutation to renew mentorship
+  // Mutation to renew mentorship (extend for another 30 days)
   const renewMutation = useMutation({
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/renew', {
-          method: 'POST',
-          body: JSON.stringify({
-            menteeId: userId,
-            mentorId: mentorId
-          })
+        const response = await apiRequest('POST', '/api/mentor/renew', {
+          followerId: userId,
+          mentorId: mentorId
         });
         return response;
       } finally {
@@ -198,48 +139,53 @@ export function useMentorship(userId: number, mentorId: number) {
     },
     onSuccess: () => {
       toast({
-        title: 'Mentorship renewed',
-        description: 'The mentorship has been renewed for another 30 days.',
+        title: 'Mentorship Renewed',
+        description: 'The mentorship has been extended for another 30 days.',
         variant: 'default',
       });
       // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/status', userId, mentorId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/mentorship/stats', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/is-following', userId, mentorId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/mentor/quota', userId] });
     },
     onError: (error: any) => {
       toast({
-        title: 'Action failed',
+        title: 'Renewal Failed',
         description: error.message || 'Failed to renew mentorship. Please try again.',
         variant: 'destructive',
       });
     }
   });
 
-  // Check if user can request more mentors (limit is 5 active mentors)
-  const canRequestMoreMentors = 
-    mentorshipStats?.activeMentorsCount < 5 && 
-    mentorshipStats?.pendingMentorRequestsCount < 5;
-
-  // Check if user can accept more mentees (limit is 5 active mentees)
-  const canAcceptMoreMentees = 
-    mentorshipStats?.activeMenteesCount < 5;
+  // Check if user can follow more mentors (based on quota)
+  const canRequestMoreMentors = mentorshipQuota 
+    ? mentorshipQuota.remaining > 0 
+    : true; // Allow if quota not loaded yet
 
   return {
-    // Status and stats
+    // Status and quota
     mentorshipStatus: mentorshipStatus as MentorshipStatus,
-    mentorshipStats: mentorshipStats as MentorshipStats,
-    isLoading: statusLoading || statsLoading,
+    mentorshipStats: {
+      activeMentorsCount: mentorshipQuota?.current || 0,
+      maxMentors: mentorshipQuota?.max || 3,
+      remainingSlots: mentorshipQuota?.remaining || 0,
+      isPremium: mentorshipQuota?.isPremium || false
+    },
+    isLoading: statusLoading || quotaLoading,
     isSubmitting,
     
     // Capacity checks
     canRequestMoreMentors,
-    canAcceptMoreMentees,
+    canAcceptMoreMentees: true, // No mentee limit for mentors
     
-    // Actions
-    requestMentorship: requestMutation.mutate,
-    acceptMentorship: acceptMutation.mutate,
-    declineMentorship: declineMutation.mutate,
-    cancelMentorship: cancelMutation.mutate,
-    renewMentorship: renewMutation.mutate
+    // Actions (renamed for backwards compatibility)
+    requestMentorship: followMutation.mutate,    // Follow = immediate connection
+    acceptMentorship: () => {},                   // Not used in new model
+    declineMentorship: () => {},                  // Not used in new model
+    cancelMentorship: unfollowMutation.mutate,   // Unfollow = end mentorship
+    renewMentorship: renewMutation.mutate,
+    
+    // New direct action names
+    followMentor: followMutation.mutate,
+    unfollowMentor: unfollowMutation.mutate
   };
 }

@@ -9,9 +9,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { FaUserGraduate, FaUserCheck, FaUserClock, FaCalendarAlt, FaTimesCircle, FaRedoAlt } from 'react-icons/fa';
-import { format, parseISO, differenceInDays } from 'date-fns';
+import { FaUserGraduate, FaUserCheck, FaTimesCircle, FaRedoAlt, FaComments } from 'react-icons/fa';
+import { differenceInDays, parseISO } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Users, Clock } from 'lucide-react';
 
 interface MentorshipButtonProps {
   userId: number;
@@ -29,7 +30,7 @@ export function MentorshipButton({
   className = '',
   variant = 'default',
   size = 'default',
-  buttonText = 'Request Mentorship',
+  buttonText = 'Follow as Mentor',
   showIcon = true
 }: MentorshipButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -37,7 +38,6 @@ export function MentorshipButton({
   
   // Load current user ID from localStorage on client-side
   useEffect(() => {
-    // Try to get current user ID from localStorage
     try {
       const userJson = localStorage.getItem('currentUser');
       if (userJson) {
@@ -58,11 +58,8 @@ export function MentorshipButton({
     isLoading,
     isSubmitting,
     canRequestMoreMentors,
-    canAcceptMoreMentees,
-    requestMentorship,
-    acceptMentorship,
-    declineMentorship,
-    cancelMentorship,
+    followMentor,
+    unfollowMentor,
     renewMentorship
   } = useMentorship(actualUserId, mentorId);
 
@@ -73,48 +70,48 @@ export function MentorshipButton({
 
   // Calculate remaining days for active mentorships
   const getRemainingDays = () => {
-    if (mentorshipStatus?.endDate) {
+    if (mentorshipStatus?.expiresAt) {
       try {
-        const endDate = parseISO(mentorshipStatus.endDate);
+        const expiryDate = parseISO(mentorshipStatus.expiresAt);
         const today = new Date();
-        const days = differenceInDays(endDate, today);
+        const days = differenceInDays(expiryDate, today);
         return days >= 0 ? days : 0;
       } catch (error) {
-        return 0;
+        return mentorshipStatus.daysRemaining || 0;
       }
     }
-    return 0;
+    return mentorshipStatus?.daysRemaining || 0;
   };
   
   const remainingDays = getRemainingDays();
+  const isFollowing = mentorshipStatus?.isFollowing;
   
   // Determine button text and action based on mentorship status
   let actionButtonText = buttonText;
-  let buttonAction = () => setIsDialogOpen(true);
   let actionIcon = showIcon ? <FaUserGraduate className="mr-2" /> : null;
   let currentVariant = variant;
   
   if (isLoading) {
     actionButtonText = "Loading...";
-    buttonAction = () => {}; // Disable button while loading
-  } else if (mentorshipStatus?.isActive) {
-    actionButtonText = `Mentorship Active (${remainingDays} days)`;
+  } else if (isFollowing) {
+    actionButtonText = remainingDays > 0 ? `Following (${remainingDays}d)` : "Following";
     actionIcon = showIcon ? <FaUserCheck className="mr-2" /> : null;
     currentVariant = 'secondary';
-  } else if (mentorshipStatus?.isPending) {
-    actionButtonText = "Pending Request";
-    actionIcon = showIcon ? <FaUserClock className="mr-2" /> : null;
-    currentVariant = 'outline';
   }
+
+  const handleButtonClick = () => {
+    setIsDialogOpen(true);
+  };
 
   return (
     <>
       <Button
         variant={currentVariant}
         size={size}
-        onClick={buttonAction}
+        onClick={handleButtonClick}
         disabled={isLoading || isSubmitting}
         className={className}
+        data-testid={isFollowing ? "button-following-mentor" : "button-follow-mentor"}
       >
         {actionIcon}
         {actionButtonText}
@@ -122,133 +119,123 @@ export function MentorshipButton({
 
       {/* Mentorship Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-[rgba(18,18,18,0.95)] backdrop-blur-[15px] border-white/10">
           <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <FaUserGraduate className="mr-2" />
-              Mentorship Connection
+            <DialogTitle className="flex items-center text-white">
+              <Users className="mr-2 h-5 w-5 text-primary" />
+              Mentor Connection
             </DialogTitle>
-            <DialogDescription>
-              Connect with a mentor to accelerate your professional growth.
-              Mentorships last for 30 days and can be renewed.
+            <DialogDescription className="text-white/70">
+              {isFollowing 
+                ? "You are currently following this mentor."
+                : "Follow this user as your mentor for personalized guidance."
+              }
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
-            {/* Active Mentorship */}
-            {mentorshipStatus?.isActive && (
+            {/* Active Mentorship (Following) */}
+            {isFollowing && (
               <div className="space-y-4">
-                <div className="flex items-center text-green-600 font-medium">
+                <div className="flex items-center text-green-500 font-medium">
                   <FaUserCheck className="mr-2" />
                   Active Mentorship
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600">
-                  <FaCalendarAlt className="mr-2" />
-                  Started: {mentorshipStatus.startDate && format(parseISO(mentorshipStatus.startDate), 'MMM d, yyyy')}
+                <div className="flex items-center text-sm text-white/70">
+                  <Clock className="mr-2 h-4 w-4" />
+                  {remainingDays > 0 
+                    ? `${remainingDays} days remaining` 
+                    : "Expires soon"
+                  }
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600">
-                  <FaCalendarAlt className="mr-2" />
-                  Ends: {mentorshipStatus.endDate && format(parseISO(mentorshipStatus.endDate), 'MMM d, yyyy')}
-                  {` (${remainingDays} days remaining)`}
+                <div className="flex items-center text-sm text-white/70">
+                  <FaComments className="mr-2" />
+                  Chat is available in your messages
                 </div>
                 
-                <DialogFooter className="flex justify-between mt-4">
+                <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
                   <Button 
                     variant="outline" 
                     onClick={() => {
-                      cancelMentorship();
+                      unfollowMentor();
                       setIsDialogOpen(false);
                     }}
                     disabled={isSubmitting}
+                    className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                   >
                     <FaTimesCircle className="mr-2" />
                     End Mentorship
                   </Button>
                   
-                  <Button
-                    onClick={() => {
-                      renewMentorship();
-                      setIsDialogOpen(false);
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    <FaRedoAlt className="mr-2" />
-                    Renew for 30 Days
-                  </Button>
+                  {remainingDays <= 7 && (
+                    <Button
+                      onClick={() => {
+                        renewMentorship();
+                        setIsDialogOpen(false);
+                      }}
+                      disabled={isSubmitting}
+                    >
+                      <FaRedoAlt className="mr-2" />
+                      Renew for 30 Days
+                    </Button>
+                  )}
                 </DialogFooter>
               </div>
             )}
 
-            {/* Pending Request Sent by Current User */}
-            {mentorshipStatus?.isPending && (
+            {/* New Mentorship (Not Following) */}
+            {!isFollowing && (
               <div className="space-y-4">
-                <div className="flex items-center text-amber-600 font-medium">
-                  <FaUserClock className="mr-2" />
-                  Pending Mentorship Request
-                </div>
-                
-                <p className="text-sm text-gray-600">
-                  Your request is waiting for a response. You'll be notified when it's accepted.
-                </p>
-                
-                <DialogFooter>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      cancelMentorship();
-                      setIsDialogOpen(false);
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    <FaTimesCircle className="mr-2" />
-                    Cancel Request
-                  </Button>
-                </DialogFooter>
-              </div>
-            )}
-
-            {/* New Mentorship Request */}
-            {!mentorshipStatus?.isActive && !mentorshipStatus?.isPending && (
-              <div className="space-y-4">
-                <div className="flex items-center font-medium">
+                <div className="flex items-center font-medium text-white">
                   <FaUserGraduate className="mr-2" />
-                  Request Mentorship
+                  Follow as Mentor
                 </div>
                 
-                <p className="text-sm text-gray-600">
-                  Mentors can provide guidance, feedback, and support for your professional growth.
-                  You can have up to 5 active mentors at a time.
-                </p>
+                <div className="text-sm text-white/70 space-y-2">
+                  <p>When you follow someone as a mentor:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>A chat conversation opens between you</li>
+                    <li>The mentorship lasts for 30 days</li>
+                    <li>You'll receive a reminder before it expires</li>
+                    <li>You can end the mentorship anytime</li>
+                  </ul>
+                </div>
+
+                <div className="flex items-center text-sm text-white/70 mt-2">
+                  <Users className="mr-2 h-4 w-4" />
+                  {mentorshipStats?.remainingSlots} of {mentorshipStats?.maxMentors} mentor slots available
+                </div>
 
                 {!canRequestMoreMentors && (
-                  <div className="text-red-500 text-sm mt-2">
-                    You've reached the maximum limit of 5 mentors or pending requests.
-                    Please complete or cancel existing mentorships before requesting new ones.
+                  <div className="text-amber-400 text-sm mt-2 p-2 bg-amber-500/10 rounded">
+                    You've reached your mentor limit. 
+                    {!mentorshipStats?.isPremium && " Upgrade to Premium for more slots."}
                   </div>
                 )}
                 
-                <DialogFooter>
+                <DialogFooter className="mt-4">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
+                        <div className="w-full">
                           <Button 
                             onClick={() => {
-                              requestMentorship();
+                              followMentor();
                               setIsDialogOpen(false);
                             }}
                             disabled={isSubmitting || !canRequestMoreMentors}
+                            className="w-full"
                           >
                             <FaUserGraduate className="mr-2" />
-                            Send Request
+                            Follow as Mentor
                           </Button>
                         </div>
                       </TooltipTrigger>
                       {!canRequestMoreMentors && (
                         <TooltipContent>
-                          <p>You've reached the maximum limit of 5 mentors or pending requests</p>
+                          <p>You've reached your mentor limit</p>
                         </TooltipContent>
                       )}
                     </Tooltip>

@@ -33,6 +33,7 @@ import mentorshipRoutes from "./routes-mentorship";
 import connectionRoutes from "./routes-connection";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
+import mentorRoutes from "./routes-mentor";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import directAuthRoutes from "./routes-direct-auth";
@@ -8943,6 +8944,9 @@ ${extractedText.substring(0, 5000)}
 
   apiRouter.use('/messaging', messagingRoutes);
   console.log("Messaging routes loaded");
+  
+  apiRouter.use('/mentor', mentorRoutes);
+  console.log("Mentor routes loaded");
   
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
