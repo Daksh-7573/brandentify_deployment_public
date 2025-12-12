@@ -42,7 +42,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
   }, [prefersReducedMotion]);
 
   const colors = {
-    executiveGold: '#D4AF37',
+    executiveGold: '#7C3AED',
     royalBlack: '#0A0A0A',
     platinumSilver: '#C9CBCF',
     deepCharcoal: '#1A1A1A',
@@ -50,7 +50,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
     pureWhite: '#FFFFFF',
     softWhite: 'rgba(255,255,255,0.9)',
     mutedSilver: 'rgba(255,255,255,0.7)',
-    softGoldGlow: 'rgba(212,175,55,0.35)',
+    softGoldGlow: 'rgba(124,58,237,0.35)',
     platinumEdgeGlow: 'rgba(201,203,207,0.25)',
     navyShadow: 'rgba(15,26,46,0.5)',
   };
@@ -150,7 +150,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             
             {/* Profile image */}
             <img
-              src={userData.photoURL || `https://ui-avatars.com/api/?name=${userData.name}&background=0A0A0A&color=D4AF37`}
+              src={userData.photoURL || `https://ui-avatars.com/api/?name=${userData.name}&background=0A0A0A&color=7C3AED`}
               alt={userData.name}
               className="relative z-10 w-32 h-32 rounded-full object-cover border-2"
               style={{
@@ -159,7 +159,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
               }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = `https://ui-avatars.com/api/?name=${userData.name}&background=0A0A0A&color=D4AF37`;
+                target.src = `https://ui-avatars.com/api/?name=${userData.name}&background=0A0A0A&color=7C3AED`;
               }}
             />
           </div>
