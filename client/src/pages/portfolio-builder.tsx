@@ -57,6 +57,7 @@ import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import DesignerPortfolio from "@/components/portfolio/templates/designer-portfolio";
 import PhotographyCinematic from "@/components/portfolio/templates/photography-cinematic";
 import FitnessPortfolio from "@/components/portfolio/templates/fitness-portfolio";
+import CEOExecutivePortfolio from "@/components/portfolio/templates/ceo-executive-portfolio";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -97,7 +98,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum", "light-designer", "photography-cinematic", "fitness-portfolio"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum", "light-designer", "photography-cinematic", "fitness-portfolio", "ceo-executive"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -653,6 +654,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Energetic Wellness, Chakra Aura Effects, Breath Animations, Mind-Body-Motion
 ✔ Best For: Yoga Instructors, Fitness Coaches, Personal Trainers, Wellness Professionals, Physiotherapists`,
       theme: "#A3E635"
+    },
+    { 
+      id: "ceo-executive", 
+      name: "CEO Executive", 
+      description: `✔ Theme: Premium Authority, Rich Dark Purple, Dual Metal Rings, Signature Strip
+✔ Best For: C-Suite Executives, Board Members, Investors, Senior Leaders, Founders`,
+      theme: "#7C3AED"
     }
   ];
 
@@ -1949,6 +1957,37 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "fitness-portfolio" && (
               <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
                 <FitnessPortfolio
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects as any || []}
+                  userEducations={educations || []}
+                  userServices={services as any || []}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "ceo-executive" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <CEOExecutivePortfolio
                   userInfo={{
                     id: userData?.id,
                     name: userData?.name || user?.name || '',
