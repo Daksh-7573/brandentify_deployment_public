@@ -408,6 +408,17 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {!isCardFree("graphic-quantum") && !isCardLocked("graphic-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
+              <TabsList className="grid grid-cols-1 sm:grid-cols-2 mb-6 dark-tabs-list gap-2">
+                <TabsTrigger 
+                  value="photography" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("photography") ? "opacity-60" : ""}`}
+                  data-testid="tab-photography"
+                >
+                  {isCardLocked("photography") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Photography Cinematic
+                  {!isCardFree("photography") && !isCardLocked("photography") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
+                </TabsTrigger>
+              </TabsList>
               
               {/* Finalize card button section */}
               <div className="mt-6 neo-glass-card border border-white/10 p-6 rounded-lg">
