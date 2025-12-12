@@ -20,6 +20,7 @@ import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import DesignerPortfolio from "@/components/portfolio/templates/designer-portfolio";
 import PhotographyCinematic from "@/components/portfolio/templates/photography-cinematic";
 import FitnessPortfolio from "@/components/portfolio/templates/fitness-portfolio";
+import CEOExecutivePortfolio from "@/components/portfolio/templates/ceo-executive-portfolio";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -47,7 +48,8 @@ export type PortfolioLayoutKey =
   | "fashion-quantum"
   | "light-designer"
   | "photography-cinematic"
-  | "fitness-portfolio";
+  | "fitness-portfolio"
+  | "ceo-executive";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -193,7 +195,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "fashion-quantum": FashionQuantum as any,
   "light-designer": DesignerPortfolio as any,
   "photography-cinematic": PhotographyCinematic as any,
-  "fitness-portfolio": FitnessPortfolio as any
+  "fitness-portfolio": FitnessPortfolio as any,
+  "ceo-executive": CEOExecutivePortfolio as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {

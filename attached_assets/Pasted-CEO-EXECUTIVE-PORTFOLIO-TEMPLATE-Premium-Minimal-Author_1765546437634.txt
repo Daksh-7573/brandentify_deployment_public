@@ -1,0 +1,295 @@
+CEO EXECUTIVE PORTFOLIO TEMPLATE
+Premium • Minimal • Authority-Driven • Corporate Branding
+
+This portfolio is built to impress: investors, board members, analysts, founders, hiring committees.
+
+🎨 DESIGN & LAYOUT PHILOSOPHY (UNIQUE STRUCTURE)
+✔ Section placement is totally new
+✔ Hierarchy prioritizes leadership, achievements, impact
+✔ Components use CEO metal textures (gold, platinum, matte black)
+✔ Animations are slow, premium, subtle
+✔ No neon, no playful gradients, no tech circuitry
+🧩 SECTION 1 — HERO / EXECUTIVE PROFILE PANEL
+
+(Completely different layout from all other templates)
+
+Fields Used (Your Section 1 mapping)
+
+profile picture
+
+name
+
+title
+
+tagline
+
+location
+
+Unique CEO Layout
+
+🔥 Vertical Left Sidebar Module (NEW)
+Instead of centered hero like other templates:
+
+A tall executive sidebar on the left
+
+Matte black background
+
+Brushed gold border line on the right
+
+Profile photo as circular luxury frame with dual metal rings
+
+Name & Title placed below, not beside
+
+Tagline displayed as engraved gold text plate
+
+Right side = animated soft spotlight hero background.
+
+New Elements
+
+CEO Signature SVG appears under the title
+
+“Currently Leading” badge with subtle gold glow
+
+🧩 SECTION 2 — BOARDROOM SNAPSHOT (NEW SECTION NAME)
+
+Replaces traditional “About Me” but uses your fields
+
+Fields (from your Section 2)
+
+aboutMe
+
+visionStatement
+
+missionStatement
+
+uniqueValueProposition
+
+coreValues[]
+
+industry
+
+domain
+
+primaryAudience[]
+
+secondaryAudience[]
+
+lookingFor
+
+email
+
+CEO-Style Placement
+
+Everything is reorganized to look like a board deck:
+
+2.1 Executive Summary (AboutMe)
+
+Displayed like a chairman’s note section:
+
+Gold vertical bar on left
+
+Paragraph in serif font
+
+Soft platinum separators
+
+2.2 Vision–Mission Split Slab (Unique Layout)
+
+Two stone-like slabs side by side:
+
+Left slab: Vision (gold highlight bar)
+Right slab: Mission (silver highlight bar)
+
+Both animate via slow upward “rise effect”.
+
+2.3 Value Proposition Banner
+
+Placed as a full-width premium bar with a metallic gradient and embossed text.
+
+2.4 Core Values Pillars
+
+Instead of tags, you get Roman column-style blocks:
+
+5 pillars
+
+Each pillar rises slightly on hover
+
+Gold engraved icons
+
+2.5 Stakeholder Map (Huge Unique Feature)
+
+Uses:
+
+primaryAudience
+
+secondaryAudience
+
+Presented as a two-layer concentric circle diagram:
+
+Outer ring: secondary audience in platinum
+Inner circle: primary audience in gold
+
+Gentle rotation animation.
+
+2.6 Industry Panel
+
+A premium two-tier card:
+
+Top = Industry
+Bottom = Domain
+
+Each has a gold underline and gold micro-icon.
+
+2.7 Executive Intent Card (“Looking For”)
+
+Appears as:
+
+Gold bordered card
+
+Target icon
+
+Brief 1–2 line description
+
+2.8 Contact Strip
+
+Instead of an email link:
+
+A narrow, elegant strip with:
+
+📧 Email
+📍 Location
+🔗 LinkedIn / Website
+
+Tinted in platinum with soft shine animation on hover.
+
+🧩 SECTION 3 — LEADERSHIP CAPABILITIES (Skills)
+
+Fields used:
+id, name, proficiency, category, yearsOfExperience
+
+Completely New CEO Layout: “Leadership Weight Bars”
+
+Instead of skill circles/cards:
+
+Long horizontal bars with matte black → gold gradient fill
+
+Category labels placed above in small caps
+
+Years of experience shown as platinum micro-text on the right
+
+Proficiency visualized as weighted bar mass instead of ratings
+
+Hover = slight increase in glow + text embolden.
+
+🧩 SECTION 4 — CAREER TIMELINE (Experience)
+
+Fields:
+title, company, industry, domain, location, startDate, endDate, description, keyResponsibilities[]
+
+New CEO Layout: “Boardroom Timeline Rail”
+Unique Elements
+
+A singular long gold rail running vertically
+
+Each role hangs like a framed piece in a museum
+
+Gold peg + connector
+
+Each card is matte with gold text
+
+Every role card expands downward on click to reveal responsibilities
+
+Micro Animations
+
+Gold line pulses subtly at the current role
+
+Responsibility bullets fade in one at a time
+
+🧩 SECTION 5 — EDUCATION (University Blocks)
+
+Fields same as yours.
+
+New Layout Style: “Academic Crest Grid”
+
+Each education appears as:
+
+A square tile with a university crest-style layout
+
+Gold trim
+
+Degree displayed in big serif font
+
+Skills acquired shown as small engraved silver chips
+
+Hover = tile slightly lifts with soft shadow.
+
+🧩 SECTION 6 — PROJECTS (Executive Case Studies)
+
+Fields:
+title, description, technologies, outcome, externalUrl, mediaUrls, impact, role, teamSize
+
+New CEO Layout: “Case Study Files”
+
+Not thumbnails, not grids.
+
+Each project is a folder-like expandable strip:
+
+Left:
+
+Project title
+
+Category
+
+Role
+
+Right:
+
+Gold arrow icon
+
+On click → expands into a case study panel:
+
+Media slider at the top
+
+Impact metrics in gold numerical highlight
+
+Outcome summary
+
+Technologies in platinum pills
+
+This gives a McKinsey consulting deck vibe.
+
+🧩 SECTION 7 — SERVICES (Premium Only)
+
+Fields same as yours.
+
+New Layout Name: “Executive Advisory Suite”
+
+Services appear as luxury menu cards:
+
+Left gold border
+
+Service name in big serif font
+
+Bullet features as silver ticks
+
+Price in gold micro-text
+
+CTA button = “Request Consultation” (platinum button, gold outline)
+
+Hover = subtle gold shimmer passes across the border.
+
+🎨 OVERALL DESIGN SYSTEM SUMMARY
+This CEO portfolio differs because:
+
+✔ Sidebar hero instead of traditional top hero
+✔ Signature strip
+✔ Roman pillar values
+✔ Stakeholder concentric map
+✔ Leadership weight bars (instead of skill circles)
+✔ Hanging framed career timeline
+✔ Crest-style education blocks
+✔ Case study file expands
+✔ Luxury metal themes
+✔ Soft spotlight & matte textures
+✔ Zero neon or futuristic elements
+
+It is the most premium, authoritative, professional version so far.
