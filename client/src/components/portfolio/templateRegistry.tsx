@@ -18,6 +18,7 @@ import CreativeQuantum from "@/components/portfolio/templates/creative-quantum";
 import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfolio";
 import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import DesignerPortfolio from "@/components/portfolio/templates/designer-portfolio";
+import PhotographyCinematic from "@/components/portfolio/templates/photography-cinematic";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -43,7 +44,8 @@ export type PortfolioLayoutKey =
   | "creative-quantum"
   | "artistic-portfolio"
   | "fashion-quantum"
-  | "light-designer";
+  | "light-designer"
+  | "photography-cinematic";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -131,7 +133,9 @@ const layoutAliasMap: Record<string, PortfolioLayoutKey> = {
   "fashion_quantum": "fashion-quantum",
   "fashion-editorial": "fashion-quantum",
   "light_designer": "light-designer",
-  "designer_light": "light-designer"
+  "designer_light": "light-designer",
+  "photography_cinematic": "photography-cinematic",
+  "cinematic_photography": "photography-cinematic"
 };
 
 export function normalizeLayoutKey(layout: string | null | undefined): PortfolioLayoutKey {
@@ -185,7 +189,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "creative-quantum": CreativeQuantum as any,
   "artistic-portfolio": ArtisticPortfolio as any,
   "fashion-quantum": FashionQuantum as any,
-  "light-designer": DesignerPortfolio as any
+  "light-designer": DesignerPortfolio as any,
+  "photography-cinematic": PhotographyCinematic as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {
