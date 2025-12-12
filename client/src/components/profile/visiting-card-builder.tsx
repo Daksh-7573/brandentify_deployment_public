@@ -430,6 +430,17 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {!isCardFree("fitness-quantum") && !isCardLocked("fitness-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
+              <TabsList className="grid grid-cols-1 mb-6 dark-tabs-list">
+                <TabsTrigger 
+                  value="ceo-quantum" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("ceo-quantum") ? "opacity-60" : ""}`}
+                  data-testid="tab-ceo-quantum"
+                >
+                  {isCardLocked("ceo-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  CEO Executive
+                  {!isCardFree("ceo-quantum") && !isCardLocked("ceo-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
+                </TabsTrigger>
+              </TabsList>
               
               {/* Finalize card button section */}
               <div className="mt-6 neo-glass-card border border-white/10 p-6 rounded-lg">
