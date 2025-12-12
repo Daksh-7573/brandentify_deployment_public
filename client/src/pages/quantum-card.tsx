@@ -5,7 +5,7 @@ import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Lock, Crown, Zap, Camera } from "lucide-react";
+import { ArrowLeft, Lock, Crown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -17,7 +17,6 @@ import { UserData } from "@/types/user";
 import { useState } from "react";
 import { PortfolioPageSkeleton } from "@/components/ui/page-skeletons/portfolio-skeleton";
 import { PremiumBadge } from "@/components/ui/premium-badge";
-import PhotographyQuantumCard from "@/components/profile/cards/photography-quantum-card";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -26,7 +25,6 @@ export default function QuantumCardPage() {
   const [_, navigate] = useLocation();
   const queryClient = useQueryClient();
   const [showEditContactInfo, setShowEditContactInfo] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<'tech' | 'photography'>('tech');
   
   // Premium card access control using feature access system
   const canAccessCard = (cardType: string) => {
@@ -116,96 +114,46 @@ export default function QuantumCardPage() {
           </div>
         </NeoGlassSection>
 
-        {/* Quantum Card Theme Selector */}
-        <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible mb-6">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Choose Card Design</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Tech Theme */}
-              <button
-                onClick={() => setSelectedTemplate('tech')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  selectedTemplate === 'tech'
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Zap className={`w-6 h-6 ${selectedTemplate === 'tech' ? 'text-blue-400' : 'text-white/60'}`} />
-                  <div className="text-left">
-                    <h3 className="font-semibold text-white">Quantum Tech</h3>
-                    <p className="text-xs text-white/60">Futuristic holographic design</p>
-                  </div>
-                </div>
-              </button>
-
-              {/* Photography Theme */}
-              <button
-                onClick={() => setSelectedTemplate('photography')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  selectedTemplate === 'photography'
-                    ? 'border-orange-500 bg-orange-500/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Camera className={`w-6 h-6 ${selectedTemplate === 'photography' ? 'text-orange-400' : 'text-white/60'}`} />
-                  <div className="text-left">
-                    <h3 className="font-semibold text-white">Photography</h3>
-                    <p className="text-xs text-white/60">Cinematic light theme</p>
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
-        </NeoGlassSection>
-
-        {/* Quantum Card Preview Section */}
+        {/* Quantum Card Builder Section */}
         <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
           <div className="p-6">
-            {selectedTemplate === 'photography' ? (
-              <PhotographyQuantumCard userData={userData as any} isLoading={false} />
+            {!isPremium && (
+              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-yellow-400">Limited to 2 Free Card Designs</p>
+                    <p className="text-sm text-yellow-300/80 mt-1">Unlock all {7} premium card designs with Brandentifier Premium for ₹799/month</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {userData ? (
+              <VisitingCardBuilder
+                userData={userData as any}
+                selectedCardType={
+                  (userData as any)?.visitingCardType || "professional"
+                }
+                onCardTypeSelect={(cardType) => {
+                  const result = canAccessVisitingCard(cardType);
+                  if (!result.hasAccess) {
+                    toast({
+                      title: "Premium Feature",
+                      description: result.message || "This card design is only available for Premium members. Upgrade to unlock all card designs!",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
+                  console.log("Selected card type:", cardType);
+                }}
+                isPremium={isPremium}
+                canAccessCard={canAccessCard}
+                canAccessVisitingCard={canAccessVisitingCard}
+              />
             ) : (
-              <>
-                {!isPremium && (
-                  <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <Lock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-yellow-400">Limited to 2 Free Card Designs</p>
-                        <p className="text-sm text-yellow-300/80 mt-1">Unlock all {7} premium card designs with Brandentifier Premium for ₹799/month</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {userData ? (
-                  <VisitingCardBuilder
-                    userData={userData as any}
-                    selectedCardType={
-                      (userData as any)?.visitingCardType || "professional"
-                    }
-                    onCardTypeSelect={(cardType) => {
-                      const result = canAccessVisitingCard(cardType);
-                      if (!result.hasAccess) {
-                        toast({
-                          title: "Premium Feature",
-                          description: result.message || "This card design is only available for Premium members. Upgrade to unlock all card designs!",
-                          variant: "destructive"
-                        });
-                        return;
-                      }
-                      console.log("Selected card type:", cardType);
-                    }}
-                    isPremium={isPremium}
-                    canAccessCard={canAccessCard}
-                    canAccessVisitingCard={canAccessVisitingCard}
-                  />
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-white/70">Loading your quantum card...</p>
-                  </div>
-                )}
-              </>
+              <div className="text-center py-8">
+                <p className="text-white/70">Loading your quantum card...</p>
+              </div>
             )}
           </div>
         </NeoGlassSection>
