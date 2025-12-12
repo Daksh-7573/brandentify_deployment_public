@@ -1,0 +1,300 @@
+Fitness Portfolio — Product + UX Plan
+
+Unique, fitness-first portfolio layout built on the Fitness Quantum Card aesthetic. Designed to showcase trainers, yoga teachers, coaches, physiotherapists, and fitness entrepreneurs. Layout, content placement and interactions are intentionally different from other templates (photo-first or tech-first) — this is movement-first.
+
+Below you’ll find: section-by-section layout, field placements, UI patterns, animations, component mapping & props, responsive behaviour, content/asset specs, SEO & analytics notes, and developer/designer handoff highlights.
+
+1 — High-level concept
+
+Priority: Movement → Credibility → Conversion
+Visitors first see motion (short looping hero video or GIF of a workout/yoga pose), then immediate CTAs to book or view programs, then credibility (projects/case studies, certifications), then services/pricing.
+
+Tone: Energetic, trustworthy, human — clean UI with breath-animations and fitness metric visuals.
+
+Primary conversion goals: Book a session, request mentor, buy a program, download CV/resume/contact details.
+
+2 — Global layout & nav
+
+Top sticky nav (transparent over hero): Logo, Work/Programs, About, Certifications, Reviews, Contact, CTA (Book).
+
+Page grid: Desktop — 12-column; mobile — single column.
+
+Typography: Strong geometric for headings, friendly sans for body; high legibility.
+
+Colors & style: Use the Fitness Quantum Card palette (lime, orange, emerald, sky blue). Soft off-white backgrounds, energetic accents.
+
+3 — Section-by-section (fields + placement + UI rules)
+SECTION 1 — HERO / MOTION POSTER (fields used)
+
+photoURL, name, title, tagline, location, primaryAudience (show up to 2)
+
+Layout (desktop): Left = large autoplay muted hero-loop video or high-res image with motion overlay (60% width). Right = vertical card with profile photo (chakra aura), name, title badge, tagline, location, 3 CTAs: Book a Session, View Programs, Grab Resume.
+
+Unique element: Live mini-metrics under CTAs (e.g., Avg class rating ★4.9 • Students coached 1.2k • 9 yrs experience).
+
+Microcopy: One-line promise under tag line (UVP).
+
+Behavior: Hero has "Play demo" overlay to open full video modal. CTA "Book" scrolls to Services with pre-selected appointment purpose.
+
+Mobile: Hero video compressed to small loop top; profile card becomes collapsible under hero.
+
+SECTION 2 — QUICK PROOF STRIP (NEW & unique)
+
+Uses projects/impact & endorsements.
+
+Single horizontal strip with 4 quick credibility tiles: top KPI (e.g., “Avg client fat loss 6% in 8 weeks”), top brand logos (companies coached), badges (certified), social proof (IG followers).
+
+Purpose: Fast trust before reading long content.
+
+SECTION 3 — ABOUT & METHOD (fields)
+
+aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues[], primaryAudience[], secondaryAudience[], industry, domain, lookingFor, email
+
+Layout: Split “Bio + Method timeline”
+
+Left: aboutMe (short 3-paragraph storytelling with bold pull-quote of uniqueValueProposition).
+
+Right: Method Timeline — visual 4-step process (Assessment → Program design → Coaching → Results) with small icons and expected outcomes.
+
+Interactive: Hovering a step reveals a short video/gif demo (e.g., assessment clip).
+
+Contact micro-CTA: “Request free assessment” button linked to contact modal.
+
+SECTION 4 — SKILLS / SPECIALTIES (fields per skill)
+
+id, name, proficiency, category, yearsOfExperience
+
+Unique visualization: Aperture-style skill rings mapped to training attributes: Strength, Mobility, Conditioning, Rehab, Nutrition.
+
+Layout: Grid of 6–8 skill cards. Each card has ring gauge, top tag (category), and an example project link (projects using that skill).
+
+Behavior: Click a skill → filters Projects/Gallery to relevant items.
+
+SECTION 5 — EXPERIENCE & CAREER TIMELINE (fields)
+
+id, title, company, industry, domain, location, startDate, endDate, description, keyResponsibilities[]
+
+Representation: Vertical timeline styled as a training ladder; each node shows institution/brand, role, bullets. Include certification icons.
+
+Callout: Current position highlighted with animated “live” ping.
+
+SECTION 6 — EDUCATION & CERTIFICATIONS (fields)
+
+id, degree, institution, location, fieldOfStudy, startDate, endDate, skillsAcquired[]
+
+UI: Certificate cards with badge preview, view/verify button (for verified endorsements).
+
+Unique: Micro-accordion to show certificate details and verification token.
+
+SECTION 7 — PROJECTS (WORK / CASE STUDIES) (fields)
+
+id, title, description, category, technologies[], outcome, startDate, endDate, mediaUrls[], externalUrl, impact, role, teamSize
+
+Core idea: Workouts → Transformations → Events
+
+Layout (masonry with story overlay): Each project tile acts like a case-study:
+
+Thumbnail (image or video), title, short outcome (e.g., “12-week weight-loss cohort: -9% body fat”), tags (nutrition, HIIT, yoga).
+
+Hover: show short metrics and “View case study” CTA.
+
+Modal detail: image/video carousel, full story, methodology, measurable outcomes, client testimonial, CTAs to book similar program.
+
+Search/filter: By goal (weight-loss, mobility, strength), by duration (4/8/12 weeks), by audience.
+
+SECTION 8 — TRAINING PROGRAMS & SERVICES (Premium fields)
+
+id, title, description, category, priceInr, priceUsd, isHourly, features[], imageUrl, order, isActive
+
+Layout: SKU-style cards with pricing toggle (INR / USD).
+
+Each card shows: Program duration, main outcomes, features list, “Book” CTA, small video preview (30s).
+
+Compare: Multi-select compare drawer to compare 2–3 programs side-by-side.
+
+Booking flow: Quick-book modal to capture basic info + Schedule link for Calendly/Google Calendar integration.
+
+SECTION 9 — TESTIMONIALS & TRANSFORMATIONS
+
+Before/After carousel with slider overlay (interactive scrub).
+
+Video testimonials pinned with “Verified client” badge.
+
+Metric highlights: top success metrics (avg. % improvement).
+
+SECTION 10 — CONTACT / CALL-TO-ACTION BAR
+
+Sticky bottom bar on desktop with primary CTA Book A Free Assessment + small “Mentor” and “Grab Resume”.
+
+Contact form modal: short form + preselect service & optional attachment upload.
+
+SECTION 11 — FOOTER
+
+Social links (Instagram, YouTube), quick links, small privacy and contact info, newsletter signup (lead magnet: “7-day movement plan PDF”).
+
+4 — Animations & Motion System (fitness specific)
+
+Breath background: very subtle expand/contract on hero overlay (6s loop).
+
+Aperture skill rings: animate on load with staggered delays.
+
+Project tile hover: lift + warm rim glow + metadata fade-in (200–300ms).
+
+Before/After slider: scrub smoothly with pointer and keyboard.
+
+Book modal: slide from bottom (y-axis) with 280ms ease.
+
+Respect prefers-reduced-motion.
+
+5 — Interaction & Microcopy rules
+
+Action verbs: Book, Start, Try, Transform.
+
+Buttons: emphasize energy (e.g., “Start 8-week transformation”).
+
+Provide short contextual tooltips for metrics (e.g., “Flexibility measured via FMS score”).
+
+CTAs consistent and always visible: Book / Programs / Download.
+
+6 — Component list & Prop definitions (developer handoff)
+
+Top-level page components (React-friendly):
+
+FitnessPortfolioPage
+
+props: { profile, projects, skills, experiences, educations, services, testimonials }
+
+HeroMotionPoster
+
+props: { name, title, photoURL, heroVideoURL, tagline, location, kpis[] }
+
+QuickProofStrip
+
+props: { kpis: [{label, value}], logos: [url], badges: [text] }
+
+AboutMethod
+
+props: { aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues[], primaryAudience[], lookingFor }
+
+SkillRingGrid
+
+props: { skills: [{id, name, proficiency, category, yearsOfExperience}] }
+
+ExperienceTimeline
+
+props: { experiences: [{...}] }
+
+EducationCertGrid
+
+props: { educations: [{...}] }
+
+ProjectMasonry
+
+props: { projects: [{...}], onOpen(projectId) }
+
+ProjectModal
+
+props: { project, onClose }
+
+ServiceCardGrid
+
+props: { services: [{...}], currency, onBook }
+
+TestimonialsCarousel
+
+props: { testimonials: [{name, mediaUrl, quote, rating}] }
+
+StickyCTA
+
+props: { actions: [{id,label,actionType}], isVisible }
+
+BookingModal
+
+props: { defaultServiceId, onBookSubmit }
+
+Data contracts: Use field names you provided. All arrays optional; components handle empty states gracefully.
+
+7 — Accessibility & SEO
+
+Semantic headings (H1 name, H2 sections).
+
+alt on every image, captions for videos.
+
+Structured data: Person for profile, Course / Service for programs, CreativeWork for projects.
+
+Meta tags for hero video open graph.
+
+Keyboard nav for carousels, modals closable with ESC.
+
+Forms must have ARIA attributes and labels.
+
+8 — Performance & Assets
+
+Serve responsive images (srcset) and lazy-load offscreen images. Use WebP where possible.
+
+Hero video must be < 3–6 MB for mobile (use short loop 6–12s).
+
+Thumbnails 600px; project hero images 1600px.
+
+Use IntersectionObserver for animations and image loads.
+
+9 — Conversion & Growth features
+
+Lead magnet: 7-day plan PDF gated by email.
+
+Shareable program pages with UTM tracking.
+
+Referral badge for users who share and bring signups.
+
+Beta / early-bird offer banner for prelaunch marketing.
+
+10 — Designer handoff notes (Figma)
+
+Provide components for: Hero, KPI tile, Skill ring (variants 1–5), Project tile, Modal, Service card, Before/After slider.
+
+Tokens: spacing scale, colors, radius, shadow tokens.
+
+Motion prototypes: keyframe snippets for hero breath, ring fill, hover lifts.
+
+Exportable assets: SVG icons, video placeholders, sample photography.
+
+11 — Developer handoff notes
+
+Provide JSON fixtures for pages (profile + 6 sample projects + 6 skills + 3 services) for dev to seed the UI.
+
+Implement feature flags for premium features (services visibility toggled).
+
+Endpoints: /api/profile, /api/projects, /api/services, /api/book.
+
+Track analytics: events view_project, book_click, download_resume, contact_submit.
+
+Make components isolated and testable. Build storybook stories for each component.
+
+12 — Example sample content (short)
+
+Hero UVP:
+Name: Rohan Patel — Yoga & Mobility Coach
+Tagline: Strengthen the body. Calm the mind. Move with purpose.
+One-line UVP: “8-week mobility program for desk-workers — regain movement, reduce chronic pain.”
+
+Project example (short):
+Title: Corporate Mobility Program — 8 weeks
+Outcome: 75% employees reported reduced back pain; 30% improvement in desk mobility scores.
+Media: 6 images + 2 short demo clips.
+
+Service example:
+Title: 1:1 Mobility Coaching — 12 sessions
+PriceInr: 18,000
+Features: Personalized assessment, weekly check-ins, corrective exercise library, progress report.
+
+13 — Release / GTM suggestions (brief)
+
+Launch with 10 trainer case studies / local partnerships (studios in Ahmedabad).
+
+Run Instagram reels showing quick transformation clips + CTA to portfolio.
+
+Use community marketing: local fitness FB groups, Instagram casts, WhatsApp communities.
+
+Offer free 1:1 assessment to first 50 signups.
+
+Build a landing page highlighting the top 3 case studies and a short form to join beta.
