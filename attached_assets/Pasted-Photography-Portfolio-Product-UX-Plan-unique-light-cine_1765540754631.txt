@@ -1,0 +1,382 @@
+Photography Portfolio — Product & UX Plan (unique, light/cinematic theme)
+
+Below is a complete, build-ready Photography Portfolio plan based on the Photography Quantum visual system you approved. It’s intentionally different from other templates: editorial + cinematic layout, photography-first data surfaces (EXIF-like displays, film reel, contact-sheet). I include placement for every field you listed, component mapping, data-binding rules, animations, responsive behavior, accessibility notes, and suggestions for content sizes/assets.
+
+High-level goals
+
+Showcase photos first; profile and credibility second.
+
+Make projects feel like gallery exhibits (framing, EXIF metadata, story).
+
+Surface photographer skills as lens/gear strengths (credible + visual).
+
+Provide frictionless contact & premium service booking.
+
+Mobile-first interactions: swipeable galleries, lightweight animations.
+
+1. Global layout & scaffolding
+
+Page width: max-width: 1200px centered container.
+
+Underlay: subtle film-grain texture + soft vignette.
+
+Top-level navigation: sticky minimal bar (Logo, Work, About, Services, Contact).
+
+Primary CTAs (floating for mobile): Mentor, Grab Resume, Let's talk.
+
+2. Section-by-section plan (field placements & UI patterns)
+SECTION 1 — HERO / CINEMATIC POSTER (fields: name, photoURL, title, tagline, location)
+
+Purpose: instant visual identity — like a poster.
+
+Layout:
+
+Full-bleed hero with subtle blur hero-background using a selected project image (coverImage from Projects or photoURL), overlay gradient (golden hour).
+
+Left: vertical film-strip frame containing photoURL (profile portrait) — clickable opens profile card modal.
+
+Right (centered vertically): large name (cinematic serif) + subtitle title (small-caps) + tagline beneath.
+
+Bottom-right: micro info row with location (Map pin), 3 small chips (primary audience / industry / domain) for context.
+
+CTAs under name: Let's Talk (primary), Grab Resume (secondary), Portfolio tour (tertiary).
+
+UX notes:
+
+Hero image auto-crops to focal center using face-detection or focal point metadata.
+
+Lazy-load hero image, low-res -> high-res progressive.
+
+Accessibility:
+
+Provide alt for hero image.
+
+Ensure contrast for text over image (use gradient overlay).
+
+SECTION 2 — ABOUT ME / PROFESSIONAL SNAPSHOT (fields: aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues[], primaryAudience[], secondaryAudience[], industry, domain, lookingFor, email)
+
+Concept: Lightbox Contact Sheet — blocks arranged like a photographer’s desk.
+
+Layout & placements (unique):
+
+Left column (2/3 width): aboutMe as editorial paragraph with pull-quote showing uniqueValueProposition.
+
+Right column (1/3 width): stacked “cards”:
+
+Card 1: Vision (visionStatement) + Mission (missionStatement) with small iconography (sun / target).
+
+Card 2: Core Values — displayed as vertical badge stack (3–5), each badge with micro-interaction (hover shows one-line explanation).
+
+Card 3: Audiences — primaryAudience[] (list) and secondaryAudience[].
+
+Footer strip: lookingFor + email with one-click copy and mailto action.
+
+Micro-interaction:
+
+Hover on Value badge = soft paper flip revealing short example of value in practice.
+
+Click email = opens contact modal pre-filled.
+
+Data-binding:
+
+uniqueValueProposition appears as pull-quote (max 150 chars).
+
+aboutMe limited to 350 chars preview with “read more” expanded view.
+
+SECTION 3 — SKILLS (“Lens Strength” representation) (fields per skill: id, name, proficiency, category, yearsOfExperience)
+
+Concept: Lens / Gear Meter — visualized as camera lens rings + exposure slider.
+
+Layout:
+
+Grid of skill cards (responsive 1 → 2 → 3 columns).
+
+Each card:
+
+Left: circular lens ring (4 concentric rings). Inner ring label = name.
+
+Center: numeric proficiency (1–5) and yearsOfExperience.
+
+Bottom: category tag and tiny progress bar representing proficiency.
+
+Unique behavior:
+
+Hover: ring animates (light aperture pulse), small tooltip shows sample use-case (auto-generated from projects matching skill).
+
+Tapping on a skill filters Projects to those that used that skill (quick-scope).
+
+Data rules:
+
+Sort skills by proficiency desc, then yearsOfExperience.
+
+Show top 6 by default; “See all” expands.
+
+Accessibility:
+
+Each skill has role="button" and keyboard focus state, accessible label: “Skill: Lighting — Proficiency 5 of 5 — 8 years”.
+
+SECTION 4 — WORK EXPERIENCE (“Film Reel Timeline”) (fields: id, title, company, industry, domain, location, startDate, endDate, description, keyResponsibilities[])
+
+Concept: timeline as a scrolling filmstrip with perforated edges.
+
+Layout:
+
+Single column vertical; left side film-reel spine (visual), right side cards anchored to timeline nodes.
+
+Each node: small square frame with company logo; card (floating) shows title, company, location, date range, description, keyResponsibilities[] as mini bullets.
+
+Unique behaviors:
+
+On scroll into view, timeline node plays a 400ms “film-roll” animation.
+
+Clicking a company logo opens modal with richer case-studies (link to projects if relevant).
+
+Data mapping:
+
+Use startDate/endDate formatted MMM YYYY — if endDate null, show “Present” with animated ping.
+
+Admin note:
+
+Allow uploading company logo (optional). If missing, show typographic initial badge.
+
+SECTION 5 — EDUCATION (“Slide Strip Credentials”) (fields for each: id, degree, institution, location, fieldOfStudy, startDate, endDate, skillsAcquired[])
+
+Concept: thin horizontal slide rail — like camera negatives.
+
+Layout:
+
+Horizontal scroll rail (desktop shows 3, mobile 1) with slide cards:
+
+Title: degree + institution
+
+Subline: location + date
+
+Bottom badges: skillsAcquired[]
+
+UX:
+
+Keyboard and swipe navigation.
+
+Lazy load slides.
+
+Accessibility:
+
+Each slide aria-roledescription="education entry".
+
+SECTION 6 — PROJECTS / GALLERY (fields per project: id, title, description, category, technologies[], outcome, startDate, endDate, mediaUrls[], externalUrl, impact, role, teamSize)
+
+This is the crown — make it immersive.
+
+Core concept:
+
+Gallery Wall (masonry) where each project tile is a framed exhibit.
+
+Tile shows hero image, title, category tag.
+
+Hover/press: tile lifts with soft golden rim (golden hour frame) and reveals a compact metadata overlay including EXIF-like info: role, teamSize, startDate, impact.
+
+Project modal (lightbox) details:
+
+Full-screen carousel (keyboard, swipe).
+
+Left: large image; Right: details panel — title, description, technologies[] (as tools used), outcome and impact (quantified), externalUrl (case study), role, teamSize.
+
+EXIF panel: camera, lens, aperture, shutter (where available) — if not provided, auto-infer from technologies[] tags (e.g., "DSLR", "Mirrorless", "Drone").
+
+Interactivity:
+
+“Play Slideshow” button to auto-play project images (2s per image).
+
+“Add to Moodboard” (save to user collection) for logged-in users (future).
+
+Performance:
+
+Serve responsive images (srcset) and WebP.
+
+Use IntersectionObserver to lazy-load offscreen images.
+
+Data-binding rules:
+
+mediaUrls[] array: first item = project hero thumbnail; used for hero and modal order.
+
+outcome and impact must be concise; UI shows top metric (e.g., “Increased bookings by 34%”).
+
+SECTION 7 — SERVICES / WHAT I OFFER (Premium) (fields per service: id, title, description, category, priceInr, priceUsd, isHourly, features[], imageUrl, order, isActive)
+
+Concept: Rate sheet tiles — bookable, SKU-like.
+
+Layout:
+
+Grid of service tiles with top-left circular price badge (₹ or $).
+
+Each tile: title, one-line description, bullet features[], CTA “Book / Contact”.
+
+Secondary micro-copy shows category and isHourly badge.
+
+Unique features:
+
+Price toggle (INR / USD) control at top of section.
+
+“Compare” mode: select up to 3 services to open a comparison modal.
+
+Services can have optional imageUrl showing sample work.
+
+Booking flow:
+
+Click CTA opens booking modal with prefilled service info and “Message photographer” field.
+
+Integrate with email/Calendly later.
+
+Premium gating:
+
+Services editable/visible only for premium accounts (isActive flag controls visibility).
+
+FOOTER / CONTACT BAR
+
+Sticky minimal contact bar at bottom on desktop with Mentor, Grab Resume, Let's Talk buttons; on mobile floating circular CTA with expand to actions.
+
+Social links (Instagram, Behance), copyright, small site map.
+
+Small “Download vCard” button.
+
+3. Component mapping & props (developer handoff friendly)
+
+List of main React components (suggested) with props:
+
+HeroPoster
+
+props: { name, photoURL, title, tagline, location, coverImage }
+
+AboutContactBoard
+
+props: { aboutMe, visionStatement, missionStatement, uniqueValueProposition, coreValues, primaryAudience, secondaryAudience, industry, domain, lookingFor, email }
+
+SkillMeterCard
+
+props: { id, name, proficiency, category, yearsOfExperience, sampleProjects[] }
+
+FilmReelExperience
+
+props: { experiences[] } where each experience has fields listed earlier
+
+EducationStrip
+
+props: { educations[] }
+
+ProjectGallery
+
+props: { projects[], onOpenProject(projectId) }
+
+ProjectModal
+
+props: { project, onClose }
+
+ServicesGrid
+
+props: { services[], currency, onBook(serviceId) }
+
+StickyContactBar
+
+props: { actions: [{ id, label, type }] }
+
+Data contract: use the exact field names you provided. Example project.mediaUrls is an array of image URLs.
+
+4. Animations & micro-interactions (brief)
+
+Hero: light-leak sweep (8s loop), text mask reveal (0.6s).
+
+Blob portrait: subtle morph (10s).
+
+Skill ring: aperture pulse on hover (400ms).
+
+Project tile: lift + golden rim + metadata fade (200–300ms).
+
+Film reel: line draw on-scroll (SVG stroke-dashoffset).
+
+Modals: cinematic fade + scale (0.28s).
+
+Use prefers-reduced-motion to reduce/disable continuous loops.
+
+5. Responsive behavior & priorities
+
+Mobile first: single-column vertical flow:
+
+Hero (cropped), About (stacked), Projects (masonry single column), Skills (carousel), Experience (stacked), Services (accordion).
+
+Tablet: 2-column for About & Skills.
+
+Desktop: full layout as described.
+
+6. Image & asset recommendations
+
+Profile photo: 800×800 px (square); serve 400/800/1200 via srcset.
+
+Project hero images: 1600–2500 px wide; use WebP fallback.
+
+Thumbnails: 600 px width for tiles.
+
+Keep EXIF image metadata stripped from public images unless user opts in.
+
+7. Content & editorial guidelines (for users)
+
+aboutMe: 150–300 words; give context, signature style, and a short CTA.
+
+uniqueValueProposition: max 15–20 words; concise differentiator.
+
+visionStatement / missionStatement: 1–2 short lines each (max 120 chars).
+
+projects.description: include story + result; include one measurable outcome where possible.
+
+8. Backend & CMS mapping (quick)
+
+User table: map all profile fields.
+
+Projects table: mediaUrls stored in CDN; store thumbnailUrl.
+
+Skills table: reference userId.
+
+Services table: priceInr, priceUsd, isHourly, features[] JSON.
+
+Support fields for coverImage per project and focalPoint coordinates.
+
+9. Accessibility & SEO
+
+Semantic headings, alt text for all images.
+
+Structured data (schema.org Person + CreativeWork for projects).
+
+OpenGraph: generate OG:image from project hero or combined hero.
+
+Keyboard accessible modals and galleries (arrow keys, esc).
+
+10. Conversion & product features (marketing + growth)
+
+Add “Add to Moodboard” & shareable project URL for social.
+
+Beta early-user badge + invite-only mentor booking.
+
+Track CTA click-throughs (events): “Contact”, “Book Service”, “Download Resume”.
+
+Lightweight analytics: impressions on projects, clicks to contact — use to surface best projects to hero.
+
+11. Example content mapping (sample)
+
+Hero cover: projects[0].mediaUrls[0]
+
+Skills card for “Lighting” uses projects where technologies includes strobe, flash.
+
+Project modal shows impact as highlighted KPI (“Bookings +34%”)
+
+12. Deliverables checklist for implementation
+
+ Figma mockups: hero, about board, skill meter, project tile, project modal, services grid, sticky bar.
+
+ React component skeletons (see mapping).
+
+ Image responsive loader & lightbox carousel.
+
+ Accessibility pass & keyboard nav.
+
+ CMS endpoints to update every field.
+
+ Analytics hooks on CTA & project open.
