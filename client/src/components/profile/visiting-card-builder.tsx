@@ -378,7 +378,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {!isCardFree("artistic") && !isCardLocked("artistic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
+              <TabsList className="grid grid-cols-1 sm:grid-cols-3 mb-6 dark-tabs-list gap-2">
                 <TabsTrigger 
                   value="quantum" 
                   className={`dark-tabs-trigger relative ${isCardLocked("quantum") ? "opacity-60" : ""}`}
