@@ -19,6 +19,7 @@ import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfol
 import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import DesignerPortfolio from "@/components/portfolio/templates/designer-portfolio";
 import PhotographyCinematic from "@/components/portfolio/templates/photography-cinematic";
+import FitnessPortfolio from "@/components/portfolio/templates/fitness-portfolio";
 
 export type PortfolioLayoutKey = 
   | "professional"
@@ -45,7 +46,8 @@ export type PortfolioLayoutKey =
   | "artistic-portfolio"
   | "fashion-quantum"
   | "light-designer"
-  | "photography-cinematic";
+  | "photography-cinematic"
+  | "fitness-portfolio";
 
 export interface PortfolioTemplateProps {
   userInfo: {
@@ -190,7 +192,8 @@ const templateRegistry: Record<string, TemplateComponent> = {
   "artistic-portfolio": ArtisticPortfolio as any,
   "fashion-quantum": FashionQuantum as any,
   "light-designer": DesignerPortfolio as any,
-  "photography-cinematic": PhotographyCinematic as any
+  "photography-cinematic": PhotographyCinematic as any,
+  "fitness-portfolio": FitnessPortfolio as any
 };
 
 export function getPortfolioTemplate(layout: string | null | undefined): TemplateComponent {

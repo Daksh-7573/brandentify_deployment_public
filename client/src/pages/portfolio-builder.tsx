@@ -56,6 +56,7 @@ import ArtisticPortfolio from "@/components/portfolio/templates/artistic-portfol
 import FashionQuantum from "@/components/portfolio/templates/fashion-quantum";
 import DesignerPortfolio from "@/components/portfolio/templates/designer-portfolio";
 import PhotographyCinematic from "@/components/portfolio/templates/photography-cinematic";
+import FitnessPortfolio from "@/components/portfolio/templates/fitness-portfolio";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,7 +97,7 @@ const portfolioFormSchema = z.object({
     "minimalist-pro", "timeline-storyteller-2", "creative-bold", "corporate-executive", 
     "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar",
     "designer-portfolio", "photographer-portfolio", "pastel-dreamscape", "nature-creative",
-    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum", "light-designer", "photography-cinematic"
+    "fashion-runway", "fashion-is-art", "yoga-fitness-model", "3d-portfolio", "holographic-neo", "creative-quantum", "artistic-portfolio", "fashion-quantum", "light-designer", "photography-cinematic", "fitness-portfolio"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -645,6 +646,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Golden Hour Light, Film Grain, Cinematic Editorial, Lens Aperture Effects
 ✔ Best For: Photographers, Cinematographers, Videographers, Visual Storytellers, Creative Image Professionals`,
       theme: "#FBBF24"
+    },
+    { 
+      id: "fitness-portfolio", 
+      name: "Fitness Portfolio", 
+      description: `✔ Theme: Energetic Wellness, Chakra Aura Effects, Breath Animations, Mind-Body-Motion
+✔ Best For: Yoga Instructors, Fitness Coaches, Personal Trainers, Wellness Professionals, Physiotherapists`,
+      theme: "#A3E635"
     }
   ];
 
@@ -1910,6 +1918,37 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "photography-cinematic" && (
               <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
                 <PhotographyCinematic
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    title: userData?.title || null,
+                    email: userData?.email || user?.email || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null,
+                    primaryAudience: userData?.primaryAudience || [],
+                    secondaryAudience: userData?.secondaryAudience || []
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects as any || []}
+                  userEducations={educations || []}
+                  userServices={services as any || []}
+                />
+              </div>
+            )}
+
+            {form.watch("layout") === "fitness-portfolio" && (
+              <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+                <FitnessPortfolio
                   userInfo={{
                     id: userData?.id,
                     name: userData?.name || user?.name || '',
