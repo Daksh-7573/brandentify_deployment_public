@@ -41,14 +41,24 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   canAccessCard = () => true,
   canAccessVisitingCard,
 }) => {
+  // Ensure we always have a valid default card type
+  const defaultCardType = selectedCardType || "professional";
+  
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
+  const [activeTab, setActiveTab] = useState(defaultCardType);
   const [isSaving, setIsSaving] = useState(false);
-  const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
+  const [isFinalized, setIsFinalized] = useState(defaultCardType === userData.visitingCardType);
   const [isLoading, setIsLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const { toast } = useToast();
   const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
+  
+  // Sync activeTab when selectedCardType changes (e.g., when userData loads)
+  useEffect(() => {
+    const newCardType = selectedCardType || "professional";
+    setActiveTab(newCardType);
+    setIsFinalized(newCardType === userData.visitingCardType);
+  }, [selectedCardType, userData.visitingCardType]);
   
   // Check if a card is locked
   const isCardLocked = (cardId: string): boolean => {
