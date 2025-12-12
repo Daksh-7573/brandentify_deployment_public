@@ -120,50 +120,33 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
         {/* Divider line */}
         <div className="w-12 h-1 bg-gradient-to-r from-[#FBBF24] to-transparent mx-auto mb-6" />
 
-        {/* Contact Information - Caption strip style */}
-        <div className="grid grid-cols-2 gap-3 mb-6 text-xs">
+        {/* Contact Information - Single line caption strip style */}
+        <div className="flex flex-wrap items-center gap-2 mb-6 text-xs w-full">
           {userData.location && (
-            <div className="flex items-center gap-2 text-[#1C1C1C] px-3 py-2 bg-white/40 rounded-lg backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
               <MapPin className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
-              <span className="line-clamp-1">{userData.location}</span>
+              <span className="truncate text-xs">{userData.location}</span>
             </div>
           )}
 
           {userData.email && (
-            <div className="flex items-center gap-2 text-[#1C1C1C] px-3 py-2 bg-white/40 rounded-lg backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
               <Mail className="h-3.5 w-3.5 text-[#60A5FA] flex-shrink-0" />
-              <span className="line-clamp-1 text-xs">{userData.email}</span>
+              <span className="truncate text-xs">{userData.email}</span>
             </div>
           )}
 
           {userData.phoneNumber && (
-            <div className="flex items-center gap-2 text-[#1C1C1C] px-3 py-2 bg-white/40 rounded-lg backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
               <Phone className="h-3.5 w-3.5 text-[#B87333] flex-shrink-0" />
-              <span className="line-clamp-1">{userData.phoneNumber}</span>
+              <span className="truncate text-xs">{userData.phoneNumber}</span>
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-[#1C1C1C] px-3 py-2 bg-white/40 rounded-lg backdrop-blur-sm">
+          <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
             <Globe className="h-3.5 w-3.5 text-[#60A5FA] flex-shrink-0" />
-            <span className="line-clamp-1 text-xs">{profileLink}</span>
+            <span className="truncate text-xs">{profileLink}</span>
           </div>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex gap-3 mt-auto pt-2">
-          <button 
-            className="flex-1 px-4 py-2 bg-gradient-to-r from-[#FBBF24] to-[#FDBA74] text-[#0D0D0D] rounded-lg font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95"
-            title="Connect with photographer"
-          >
-            Let's Talk
-          </button>
-          
-          <button 
-            className="flex-1 px-4 py-2 border border-[#1C1C1C]/20 bg-white/60 backdrop-blur-sm text-[#0D0D0D] rounded-lg font-semibold text-sm transition-all duration-200 hover:bg-white/80 active:scale-95"
-            title="Download portfolio or resume"
-          >
-            Portfolio
-          </button>
         </div>
       </div>
 
