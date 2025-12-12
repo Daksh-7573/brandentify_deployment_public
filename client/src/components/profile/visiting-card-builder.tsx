@@ -20,6 +20,7 @@ const CARD_TYPES = [
   { id: "neoglow", name: "NeoGlow", description: "Dark mode design with electric neon elements" },
   { id: "creative", name: "Creative", description: "Colorful artistic layout" },
   { id: "artistic", name: "Artistic", description: "Hand-drawn watercolor style" },
+  { id: "fashion-quantum", name: "Fashion Editorial", description: "Runway/editorial style for models, photographers & stylists" },
   { id: "graphic-quantum", name: "Graphic Quantum", description: "CMYK-inspired design for graphic designers, illustrators & visual artists" },
 ];
 
@@ -392,6 +393,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {isCardLocked("quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Quantum Tech
                   {!isCardFree("quantum") && !isCardLocked("quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="fashion-quantum" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("fashion-quantum") ? "opacity-60" : ""}`}
+                  data-testid="tab-fashion-quantum"
+                >
+                  {isCardLocked("fashion-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Fashion Editorial
+                  {!isCardFree("fashion-quantum") && !isCardLocked("fashion-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="graphic-quantum" 

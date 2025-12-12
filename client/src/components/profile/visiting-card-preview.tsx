@@ -8,6 +8,7 @@ import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
 import QuantumCard from "./cards/quantum-card";
 import ProfessionalCardRenewed from "./cards/professional-card-renewed";
+import FashionQuantumCard from "./cards/fashion-quantum-card";
 import GraphicQuantumCard from "./cards/graphic-quantum-card";
 
 interface VisitingCardPreviewProps {
@@ -17,8 +18,8 @@ interface VisitingCardPreviewProps {
 }
 
 const CardWrapper: React.FC<{children: React.ReactNode, cardType?: string}> = ({children, cardType}) => {
-  // For quantum and graphic-quantum cards, use completely flexible height without any constraints
-  const isFlexibleCard = cardType === "quantum" || cardType === "graphic-quantum";
+  // For quantum, fashion-quantum, and graphic-quantum cards, use completely flexible height without any constraints
+  const isFlexibleCard = cardType === "quantum" || cardType === "fashion-quantum" || cardType === "graphic-quantum";
   
   return (
     <div className={`visiting-card-preview w-full ${isFlexibleCard ? '' : 'h-full aspect-[2/3.5]'}`}>
@@ -98,6 +99,18 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     return (
       <CardWrapper cardType="quantum">
         <QuantumCard 
+          userData={userData}
+          isLoading={isLoading}
+        />
+      </CardWrapper>
+    );
+  }
+  
+  // For fashion-quantum card style, use the specialized component
+  if (cardType === "fashion-quantum") {
+    return (
+      <CardWrapper cardType="fashion-quantum">
+        <FashionQuantumCard 
           userData={userData}
           isLoading={isLoading}
         />
