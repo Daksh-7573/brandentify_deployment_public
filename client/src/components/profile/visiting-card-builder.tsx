@@ -22,6 +22,7 @@ const CARD_TYPES = [
   { id: "artistic", name: "Artistic", description: "Hand-drawn watercolor style" },
   { id: "fashion-quantum", name: "Fashion Editorial", description: "Runway/editorial style for models, photographers & stylists" },
   { id: "graphic-quantum", name: "Graphic Quantum", description: "CMYK-inspired design for graphic designers, illustrators & visual artists" },
+  { id: "photography", name: "Photography Cinematic", description: "Cinematic light & dark fusion design for photographers and visual creators" },
 ];
 
 interface VisitingCardBuilderProps {
