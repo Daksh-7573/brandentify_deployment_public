@@ -23,6 +23,7 @@ const CARD_TYPES = [
   { id: "fashion-quantum", name: "Fashion Editorial", description: "Runway/editorial style for models, photographers & stylists" },
   { id: "graphic-quantum", name: "Graphic Quantum", description: "CMYK-inspired design for graphic designers, illustrators & visual artists" },
   { id: "photography", name: "Photography Cinematic", description: "Cinematic light & dark fusion design for photographers and visual creators" },
+  { id: "fitness-quantum", name: "Fitness Quantum", description: "Mind-body-motion design for yoga instructors, fitness coaches & wellness professionals" },
 ];
 
 interface VisitingCardBuilderProps {
@@ -417,6 +418,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                   {isCardLocked("photography") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Photography Cinematic
                   {!isCardFree("photography") && !isCardLocked("photography") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="fitness-quantum" 
+                  className={`dark-tabs-trigger relative ${isCardLocked("fitness-quantum") ? "opacity-60" : ""}`}
+                  data-testid="tab-fitness-quantum"
+                >
+                  {isCardLocked("fitness-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
+                  Fitness Quantum
+                  {!isCardFree("fitness-quantum") && !isCardLocked("fitness-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               

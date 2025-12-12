@@ -1,0 +1,319 @@
+FITNESS QUANTUM CARD — Full UI/UX, Styling & Animation Blueprint
+
+Theme: Mind–Body–Motion
+Vibe: Clean, energetic, wellness-driven, minimal with kinetic highlights
+Inspiration: Fitness trackers, vitals dashboards, chakra gradients, smooth yoga flows
+
+🎨 COLOR PALETTE (Fitness Edition)
+
+Completely different from tech/creative versions.
+
+Primary Colors
+Color	Hex	Use
+Energetic Lime	#A3E635	Primary accent, glows, highlights
+Vibrant Orange	#FB923C	Warm tone for power elements
+Deep Emerald	#065F46	Base accent, strong fitness tones
+Sky Blue	#38BDF8	Calm sections, breath animations
+Neutral Wellness Background
+Color	Hex	Use
+Off-White Mist	#F8F9FA	Main card background (soft wellness tone)
+Cool Grey	#E5E7EB	Neutral shadows + dividers
+Deep Charcoal	#1F2937	Text + strong typography
+Shadow Green	rgba(6,95,70,0.15)	Soft shadows and glows
+Gradient Systems
+Name	Colors	Usage
+Chakra Gradient	Lime → Orange → Sky Blue	Borders, rings, highlights
+Vital Flow Gradient	Emerald → Lime	Hover states
+Sunrise Energy	Orange → Light Yellow	Buttons, icons
+Breath Gradient	Blue → Transparent	Animated overlays
+🧩 UI/UX ELEMENTS (Fitness/Welness Theme)
+1. Card Layout Structure
+
+Card shape: rounded-3xl
+
+Aspect ratio: 1:1.6 vertical
+
+Background: light off-white + subtle textured paper + soft radial glow
+
+Border: 2px Chakra Gradient border
+
+Inside shadow: soft green shadow for grounding effect
+
+Outer shadow: warm orange glow on hover (represents energy activation)
+
+2. Profile Picture — Dynamic Aura Ring
+
+A unique animated ring inspired by chakra visualization + heartbeat monitors.
+
+Layers:
+
+Outer Aura Ring
+
+Pulses every 4 seconds (slow breath in/out)
+
+Gradient: Lime → Orange → Blue
+
+Blur: 8px
+
+Middle Vitals Ring
+
+Animated like a fitness tracker ring
+
+Smooth rotating gradient sweep
+
+Inner Breath Bubble
+
+Expands/contracts subtly
+
+Represents calm breathing
+
+Profile Image
+
+Soft rounded-full mask
+
+Drop-shadow with emerald tone
+
+3. Name + Title Section
+
+Name: bold charcoal text with slight tracking
+
+Title: small rounded badge:
+
+e.g., “Yoga Instructor”, “Fitness Coach”
+
+Background: Sunrise gradient
+
+Shadow: soft orange glow
+
+4. Info Chips (Location, Specialty, Experience Level)
+
+Each chip is styled like a fitness tracker stat badge.
+
+Chip Example:
+
+📍 Mumbai, India  
+🔥 Strength & Conditioning  
+🧘 8 Years Experience
+
+
+Chip UI:
+
+Rounded-full
+
+Background: #ffffff with subtle shadow
+
+Icon left-aligned
+
+Hover: tiny lift + glow
+
+Animated “pulse line” appears behind the chip for 300ms
+
+5. Wellness Metrics Strip (NEW — only for fitness card)
+
+This is unique to this card.
+Displays user’s "fitness identity" like a dashboard:
+
+Example metrics:
+
+🧘 Flexibility: 92
+
+💪 Strength: 88
+
+🫁 Breath Control: 95
+
+🏋️‍♂️ Training Level: Advanced
+
+UI:
+
+Horizontal strip under header
+
+Circular animated gauges
+
+Each gauge fills clockwise upon load
+
+Colors themed to chakra gradient
+
+Subtle tooltip on hover
+
+6. Contact Section (slide-down wellness panel)
+
+Appears when user taps "Connect".
+
+Panel has:
+
+Email
+
+Website
+
+Socials
+
+“Book a Session” CTA
+
+Calendar icon with pulse animation
+
+Animation:
+
+Slides down like yoga mat unrolling
+
+Soft easing (cubic-bezier(0.25, 1, 0.5, 1))
+
+✨ ANIMATION SYSTEM (Fitness Theme)
+
+All animations mimic breath, flow, and motion.
+
+1. Breath Animation (global subtle effect)
+@keyframes breathFlow {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.95; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+Applied to:
+
+Background aura
+
+Fitness stats section
+
+Subtle on card hover
+
+Duration: 6s infinite
+
+2. Chakra Pulse Glow
+
+Triggered on hover/tap:
+
+@keyframes chakraPulse {
+  0% { box-shadow: 0 0 0 rgba(163,230,53,0.3); }
+  70% { box-shadow: 0 0 22px rgba(251,146,60,0.5); }
+  100% { box-shadow: 0 0 0 rgba(56,189,248,0.3); }
+}
+
+3. Fitness Tracker Ring Rotation
+
+Used around profile & wellness meters.
+
+@keyframes trackerRotate {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+
+
+Duration: 8s linear infinite
+
+4. Card Interaction
+
+Hover lifts card by 6px
+
+Shadow shifts from soft green → energetic orange
+
+Background warms slightly
+
+Motion is subtle and premium
+
+5. Metric Gauge Fill Animation
+
+Simulates filling up a fitness ring.
+
+Technique:
+
+Stroke-dashoffset animation
+
+Duration: 1.4s
+
+Delay stagger for each metric: 0.1s
+
+🔲 BACKGROUND DECORATIVE ELEMENTS
+
+All subtle to keep wellness theme clean.
+
+Includes:
+
+Soft watercolor strokes (barely visible)
+
+Lotus geometry lines (3% opacity)
+
+Circular breath waves around the card
+
+Diagonal light streak (like sunlight entering a yoga studio)
+
+📱 RESPONSIVE DESIGN
+
+Mobile-focused:
+
+Portrait mode optimized
+
+Fitness metrics become swipeable
+
+Profile aura ring scales from 140px to 90px
+
+Contact panel goes full width
+
+🔍 ICONS (Fitness Set)
+
+Use lucide-react or custom:
+
+🧘 Yoga Pose
+
+🔥 Fire (strength)
+
+🫁 Lung capacity
+
+🧭 Compass (guidance)
+
+📅 Calendar
+
+📍 Location
+
+💬 Chat
+
+✨ Spark (improvement)
+
+🎯 FEATURES UNIQUE TO FITNESS CARD
+
+This card includes features NOT in any other Quantum Card:
+
+✓ Chakra Aura Ring
+✓ Fitness Metrics Dashboard
+✓ Breath-wave animations
+✓ Yoga mat slide-down contact panel
+✓ Energetic color shifts (rest vs activation)
+✓ Wellness geometric background
+🧵 QUANTUM CARD DATA MAPPING
+
+Fields displayed:
+
+Field	Display Style
+name	Large header
+photoURL	Chakra aura photo
+title	Sunrise gradient badge
+tagline	Below name small italic
+location	Chip
+industry / domain	“Specialty” chip
+lookingFor	Shown in Contact Panel
+email	Shown in Contact Panel
+Optional: show yearsOfExperience	Chip
+⚙️ COMPONENT PROP LIST (for developers)
+<FitnessQuantumCard />
+
+Props:
+
+{
+  name: string,
+  photoURL: string,
+  title: string,
+  tagline?: string,
+  location?: string,
+  industry?: string,
+  domain?: string,
+  yearsExperience?: number,
+  metrics?: {
+    flexibility?: number,
+    strength?: number,
+    breath?: number,
+    trainingLevel?: string,
+  },
+  email?: string,
+  socials?: { instagram?: string, youtube?: string },
+  onContactClick?: () => void
+}

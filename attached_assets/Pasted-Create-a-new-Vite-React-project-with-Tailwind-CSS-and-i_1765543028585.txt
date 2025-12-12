@@ -1,0 +1,556 @@
+Create a new Vite + React project with Tailwind CSS and include a production-ready "Fitness Quantum Card" component (Yoga/Gym theme). Use the files and contents below exactly. The app should run on the port configured by Replit. Provide an index page that shows a centered Fitness Quantum Card. Include accessibility and prefers-reduced-motion support.
+
+Files to create with exact content:
+
+package.json
+{
+  "name": "fitness-quantum-card",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.0.0"
+  }
+}
+
+index.html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fitness Quantum Card — Yoga & Gym</title>
+  </head>
+  <body class="antialiased bg-[#F8FBF8]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+tailwind.config.cjs
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        energeticLime: '#A3E635',
+        vibrantOrange: '#FB923C',
+        deepEmerald: '#065F46',
+        skyBlue: '#38BDF8',
+        offWhiteMist: '#F8F9FA',
+        coolGrey: '#E5E7EB',
+        deepCharcoal: '#1F2937'
+      },
+      keyframes: {
+        breathFlow: {
+          '0%': { transform: 'scale(1)', opacity: 1 },
+          '50%': { transform: 'scale(1.02)', opacity: 0.96 },
+          '100%': { transform: 'scale(1)', opacity: 1 }
+        },
+        chakraPulse: {
+          '0%': { boxShadow: '0 0 0 rgba(163,230,53,0.15)' },
+          '50%': { boxShadow: '0 0 18px rgba(251,146,60,0.28)' },
+          '100%': { boxShadow: '0 0 0 rgba(56,189,248,0.12)' }
+        },
+        trackerRotate: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        lightSweep: {
+          '0%': { transform: 'translateX(-120%)', opacity: 0 },
+          '50%': { transform: 'translateX(10%)', opacity: 0.45 },
+          '100%': { transform: 'translateX(120%)', opacity: 0 }
+        }
+      },
+      animation: {
+        breathFlow: 'breathFlow 6s ease-in-out infinite',
+        chakraPulse: 'chakraPulse 2.8s ease-in-out forwards',
+        trackerRotate: 'trackerRotate 8s linear infinite',
+        lightSweep: 'lightSweep 9s ease-in-out infinite'
+      },
+      boxShadow: {
+        'fitness-soft': '0 12px 34px rgba(6,95,70,0.06)',
+        'fitness-glow': '0 20px 60px rgba(163,230,53,0.12)'
+      }
+    }
+  },
+  plugins: []
+};
+
+postcss.config.cjs
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
+};
+
+src/main.jsx
+import React from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import "./index.css";
+
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens */
+:root{
+  --energetic-lime: #A3E635;
+  --vibrant-orange: #FB923C;
+  --deep-emerald: #065F46;
+  --sky-blue: #38BDF8;
+  --off-white: #F8F9FA;
+  --deep-charcoal: #1F2937;
+}
+
+/* Base body */
+body {
+  background: linear-gradient(180deg, var(--off-white) 0%, #F4FBF4 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card base */
+.fcard {
+  background: linear-gradient(180deg, #FFFFFF, #FAFEFB);
+  border-radius: 18px;
+  box-shadow: 0 12px 34px rgba(6,95,70,0.06);
+  border: 1px solid rgba(6,95,70,0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Aura rings around profile */
+.fcard__aura {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 20%, rgba(163,230,53,0.06), transparent 30%);
+  filter: blur(0.4px);
+}
+
+/* outer ring */
+.fcard__ring-outer {
+  position: absolute;
+  inset: -8px;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, var(--energetic-lime), var(--vibrant-orange), var(--sky-blue));
+  opacity: 0.14;
+  filter: blur(8px);
+  animation: breathFlow 6s ease-in-out infinite;
+}
+
+/* tracker ring */
+.fcard__ring-tracker {
+  position: absolute;
+  inset: 6px;
+  border-radius: 9999px;
+  border: 6px solid rgba(6,95,70,0.06);
+  box-shadow: 0 6px 18px rgba(6,95,70,0.04) inset;
+  transform-origin: center;
+  animation: trackerRotate 8s linear infinite;
+}
+
+/* profile image */
+.fcard__photo {
+  width: 116px;
+  height: 116px;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: block;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 10px 30px rgba(6,95,70,0.06);
+}
+
+/* header content */
+.fcard__header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* name style */
+.fcard__name {
+  font-weight: 700;
+  color: var(--deep-charcoal);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* title badge */
+.fcard__title-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--vibrant-orange), #FFD08A);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 8px 28px rgba(251,146,60,0.08);
+}
+
+/* tagline */
+.fcard__tagline {
+  color: rgba(31,41,55,0.8);
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+/* chips */
+.fchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  background: white;
+  border: 1px solid rgba(6,95,70,0.04);
+  color: rgba(31,41,55,0.8);
+  font-size: 0.85rem;
+}
+
+/* metrics gauge container */
+.metrics {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* gauge base */
+.gauge {
+  width: 84px;
+  height: 84px;
+  position: relative;
+}
+
+/* gauge svg style */
+.gauge svg { display: block; transform: rotate(-90deg); }
+.gauge .bg { stroke: #f0f7f2; stroke-width: 10; fill: none; }
+.gauge .fg { stroke-width: 10; stroke-linecap: round; stroke: url(#g1); transition: stroke-dashoffset 1.3s ease; }
+
+/* CTA */
+.fcta {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+.fcta--primary {
+  background: linear-gradient(90deg,var(--energetic-lime),var(--vibrant-orange));
+  color: white;
+  box-shadow: 0 14px 40px rgba(163,230,53,0.12);
+}
+.fcta--secondary {
+  background: white;
+  color: var(--deep-charcoal);
+  border: 1px solid rgba(6,95,70,0.06);
+}
+
+/* contact panel (unrolled mat) */
+.contact-panel {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,255,250,0.98));
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(6,95,70,0.06);
+  transform: translateY(98%);
+  transition: transform .36s cubic-bezier(.2,.9,.2,1);
+  will-change: transform;
+}
+.contact-panel.open { transform: translateY(0%); }
+
+/* light sweep decorative */
+.fcard__lightsweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(56,189,248,0), rgba(163,230,53,0.08), rgba(251,146,60,0));
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  animation: lightSweep 9s ease-in-out infinite;
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .fcard__ring-outer, .fcard__ring-tracker, .fcard__lightsweep { animation: none !important; }
+  .gauge .fg { transition: none !important; }
+}
+
+src/App.jsx
+import React from "react";
+import FitnessQuantumCard from "./components/FitnessQuantumCard";
+
+export default function App() {
+  const sampleProfile = {
+    name: "Rohan Patel",
+    photoURL: "/assets/yoga-sample.jpg",
+    title: "Yoga & Mobility Coach",
+    tagline: "Strengthen the body. Calm the mind. Move with purpose.",
+    location: "Ahmedabad, India",
+    industry: "Wellness",
+    domain: "Yoga, Mobility, Functional Training",
+    yearsExperience: 9,
+    metrics: {
+      flexibility: 92,
+      strength: 86,
+      breath: 95,
+      trainingLevel: "Advanced"
+    },
+    email: "rohan@yogawell.in",
+    socials: { instagram: "https://instagram.com/rohan.yoga" }
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center p-8 bg-[linear-gradient(180deg,#F8FBF8,#EFFBF0)]">
+      <div style={{ width: 920 }}>
+        <FitnessQuantumCard profile={sampleProfile} />
+      </div>
+    </main>
+  );
+}
+
+src/components/FitnessQuantumCard.jsx
+import React, { useState, useEffect, useRef } from "react";
+
+/**
+ * FitnessQuantumCard
+ * Props:
+ *  - profile: {
+ *      name, photoURL, title, tagline, location, industry, domain,
+ *      yearsExperience, metrics: {flexibility, strength, breath, trainingLevel},
+ *      email, socials
+ *    }
+ */
+
+export default function FitnessQuantumCard({ profile }) {
+  const [contactOpen, setContactOpen] = useState(false);
+  const { name, photoURL, title, tagline, location, yearsExperience = 0, metrics = {}, email, socials } = profile;
+  const { flexibility = 0, strength = 0, breath = 0, trainingLevel = "Intermediate" } = metrics;
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    // animate gauge stroke-dashoffset after mount
+    const gauges = cardRef.current?.querySelectorAll(".gauge .fg");
+    if (gauges) {
+      gauges.forEach((g) => {
+        const val = g.getAttribute("data-val");
+        const pct = Math.max(0, Math.min(100, Number(val)));
+        const circumference = 2 * Math.PI * 34; // r = 34
+        const offset = circumference - (pct / 100) * circumference;
+        g.style.strokeDasharray = `${circumference} ${circumference}`;
+        // small timeout to allow initial render
+        setTimeout(() => { g.style.strokeDashoffset = offset; }, 80);
+      });
+    }
+  }, []);
+
+  return (
+    <article ref={cardRef} className="fcard p-6 relative" role="region" aria-labelledby="fitness-card-title">
+      <div className="fcard__lightsweep" aria-hidden="true" />
+
+      <header className="fcard__header">
+        {/* Aura & profile */}
+        <div className="fcard__aura" aria-hidden="false" style={{ flex: "0 0 auto" }}>
+          <div className="fcard__ring-outer" aria-hidden="true" />
+          <div className="fcard__ring-tracker" aria-hidden="true" />
+          <img
+            src={photoURL}
+            alt={`${name} — profile`}
+            className="fcard__photo"
+            onError={(e) => (e.currentTarget.src = "/assets/fallback-avatar.png")}
+          />
+        </div>
+
+        {/* Name & meta */}
+        <div style={{ flex: "1 1 auto" }}>
+          <h1 id="fitness-card-title" className="fcard__name">{name}</h1>
+          <div className="mt-2 flex items-center gap-3">
+            <div className="fcard__title-badge">{title}</div>
+            <div className="fchip" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.2"></circle>
+              </svg>
+              <span>{yearsExperience} yrs</span>
+            </div>
+          </div>
+
+          <p className="fcard__tagline mt-4">{tagline}</p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <div className="fchip" title="Location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 12 6 12s6-6.75 6-12c0-3.314-2.686-6-6-6z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{location}</span>
+            </div>
+
+            <div className="fchip" title="Specialty">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20l9-5-9-5-9 5 9 5z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{profile.domain}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Metrics strip */}
+      <section className="mt-6 metrics" aria-labelledby="metrics-heading">
+        <h2 id="metrics-heading" className="sr-only">Fitness metrics</h2>
+
+        <MetricGauge label="Flexibility" value={flexibility} gradientId="g1" colorStart="#A3E635" colorEnd="#FB923C" />
+        <MetricGauge label="Strength" value={strength} gradientId="g2" colorStart="#FB923C" colorEnd="#38BDF8" />
+        <MetricGauge label="Breath" value={breath} gradientId="g3" colorStart="#38BDF8" colorEnd="#A3E635" />
+
+        <div className="ml-4 flex flex-col justify-center">
+          <div className="text-sm text-gray-700">Training</div>
+          <div className="text-lg font-semibold text-gray-900">{trainingLevel}</div>
+        </div>
+      </section>
+
+      {/* CTAs */}
+      <div className="mt-6 flex gap-3">
+        <button
+          className="fcta fcta--primary"
+          onClick={() => { setContactOpen((s) => !s); }}
+          aria-expanded={contactOpen}
+        >
+          {contactOpen ? "Close" : "Connect"}
+        </button>
+
+        <button
+          className="fcta fcta--secondary"
+          onClick={() => { window.open(`mailto:${email}`, "_blank"); }}
+        >
+          Email
+        </button>
+
+        <button className="fcta fcta--secondary" onClick={() => window.open(socials?.instagram || "#", "_blank")}>
+          Instagram
+        </button>
+      </div>
+
+      {/* Contact panel (Yoga mat unroll) */}
+      <div className={`contact-panel ${contactOpen ? "open" : ""}`} role="region" aria-hidden={!contactOpen}>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-600">Contact {name}</div>
+            <div className="text-base font-medium text-gray-900">{email}</div>
+          </div>
+
+          <div className="flex gap-3">
+            <button className="fcta fcta--primary" onClick={() => window.open(`mailto:${email}`, "_blank")}>Book Session</button>
+            <button className="fcta fcta--secondary" onClick={() => navigator.clipboard?.writeText(email)}>Copy Email</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* MetricGauge component inside same file for simplicity */
+function MetricGauge({ label, value = 0, gradientId = "g1", colorStart = "#A3E635", colorEnd = "#FB923C" }) {
+  const radius = 34;
+  const circumference = 2 * Math.PI * radius;
+  const pct = Math.max(0, Math.min(100, Number(value)));
+  const offset = circumference - (pct / 100) * circumference;
+
+  return (
+    <div className="gauge" role="img" aria-label={`${label} ${pct} percent`}>
+      <svg width="84" height="84" viewBox="0 0 84 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={colorStart} />
+            <stop offset="100%" stopColor={colorEnd} />
+          </linearGradient>
+        </defs>
+        <circle className="bg" cx="42" cy="42" r={radius} stroke="none" />
+        <circle className="fg" data-val={pct} cx="42" cy="42" r={radius} strokeDasharray={`${circumference} ${circumference}`} strokeDashoffset={circumference} stroke={`url(#${gradientId})`} fill="none" strokeLinecap="round" />
+      </svg>
+
+      <div className="mt-2 text-center">
+        <div className="text-sm font-medium text-gray-800">{label}</div>
+        <div className="text-xs text-gray-600">{pct}%</div>
+      </div>
+    </div>
+  );
+}
+
+src/assets
+
+Create a folder src/assets and add:
+
+yoga-sample.jpg — placeholder profile image (you can upload any portrait)
+
+fallback-avatar.png — small fallback avatar image
+
+(If running in Replit, upload images with those names into src/assets or replace the URLs in sampleProfile.)
+
+README.md
+# Fitness Quantum Card — Yoga & Gym Template
+
+## Setup
+1. Run `npm install`
+2. Run `npm run dev`
+3. Open the Vite dev URL shown by Replit
+
+## Notes
+- Main component: `src/components/FitnessQuantumCard.jsx`
+- Styling & keyframes: `src/index.css`
+- Replace images under `src/assets` with real photos
+- Animations respect `prefers-reduced-motion`
+- Accessibility: regions and aria labels included
+
+Run instructions (after Replit creates files)
+
+In Replit console run:
+
+npm install
+npm run dev
+
+
+Open the dev URL provided by Vite to view the Fitness Quantum Card demo.
+
+Final notes / QA checklist
+
+The prompt creates a single-page demo with the Fitness Quantum Card component.
+
+The card demonstrates aura rings, metric gauges, contact unroll panel, and accessible attributes.
+
+Animations are CSS-only and respect prefers-reduced-motion.
+
+The code is modular and ready to be extended into a full portfolio or integrated into your app.
