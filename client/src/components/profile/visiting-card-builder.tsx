@@ -24,6 +24,7 @@ const CARD_TYPES = [
   { id: "graphic-quantum", name: "Graphic Quantum", description: "CMYK-inspired design for graphic designers, illustrators & visual artists" },
   { id: "photography", name: "Photography Cinematic", description: "Cinematic light & dark fusion design for photographers and visual creators" },
   { id: "fitness-quantum", name: "Fitness Quantum", description: "Mind-body-motion design for yoga instructors, fitness coaches & wellness professionals" },
+  { id: "ceo-quantum", name: "CEO Executive", description: "Ultra-premium executive card with signature strip, achievements & leadership pillars" },
 ];
 
 interface VisitingCardBuilderProps {

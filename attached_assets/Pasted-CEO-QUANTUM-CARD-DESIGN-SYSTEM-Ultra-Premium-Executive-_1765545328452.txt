@@ -1,0 +1,293 @@
+CEO QUANTUM CARD DESIGN SYSTEM
+Ultra-Premium • Executive • Minimal Luxe • Authority-Driven
+🎨 COLOR PALETTE — CEO EDITION (Completely Different From Quantum Colors)
+
+Luxury palettes inspired by Fortune 500 executive branding:
+
+Primary Colors
+Color	Hex	Usage
+Executive Gold	#D4AF37	Accents, borders, glows (premium, subtle)
+Royal Black	#0A0A0A	Main background (rich matte black)
+Platinum Silver	#C9CBCF	Icons, micro text, separators
+Deep Charcoal	#1A1A1A	Card surfaces
+Rich Navy	#0F1A2E	Secondary background sections
+Text Colors
+Color	Hex
+Pure White	#FFFFFF
+Soft White 90%	rgba(255,255,255,0.9)
+Muted Silver 70%	rgba(255,255,255,0.7)
+Platinum 50%	rgba(255,255,255,0.5)
+Border / Glow Colors
+Glow Type	Color
+Soft Gold Glow	rgba(212,175,55,0.35)
+Platinum Edge Glow	rgba(201,203,207,0.25)
+Navy Shadow	rgba(15,26,46,0.5)
+Overall Style
+
+NO neon, NO bright gradients.
+
+Everything must feel expensive: matte, soft metallic, minimal.
+
+🧬 CEO CARD UI / UX ELEMENTS
+
+Completely different design philosophy:
+
+1️⃣ HERO HEADER — “Executive Presence Panel”
+
+Fields used: profile photo, name, title, location, company name (derived), tagline
+
+Profile Image Styling
+
+Circular frame
+
+Dual metal ring: brushed gold outer ring + platinum inner ring
+
+Slow 3s “executive shimmer sweep”
+
+Subtle depth emboss effect
+
+Name & Title Block
+
+Name: Large serif font, white with soft gold underline
+
+Title: CEO | Founder | Chairman in minimalist capsule
+
+Subtext: Company/Group name in muted silver
+
+Animated Executive Tagline
+
+Subtle typewriter but extremely slow and elegant, e.g.
+“Leading Innovation. Creating Impact. Inspiring Teams.”
+
+2️⃣ CEO SIGNATURE STRIP (Unique to this card)
+
+Under Hero section:
+
+Digital signature animation (SVG stroke drawing in 2 seconds)
+
+Shows signature + “Founder & Chief Executive Officer”
+
+Adds luxury brand feel
+
+🌀 3-Layer Parallax System for CEO Card
+
+Unlike tech/fashion cards:
+
+Layer 1 — Background Texture
+
+High-end matte grain
+
+Soft gold dust particles drifting gently (5% opacity)
+
+Layer 2 — Executive Lines
+
+Thin gold geometric lines forming CEO “frameworks”
+
+Very slow pan animation (40s)
+
+Layer 3 — Foreground Spotlight
+
+Subtle top spotlight glow
+
+Moves 1–2% on hover for luxurious motion
+
+✨ INTERACTION & ANIMATION SYSTEM
+Hover Tilt
+
+Extremely subtle (max 4° tilt)
+
+Shadows deepen in navy tones
+
+Gold border intensifies slightly
+
+Inner Gold Glow Animation
+
+Keyframes:
+
+0%   { box-shadow: 0 0 0px rgba(212,175,55,0.15); }
+50%  { box-shadow: 0 0 12px rgba(212,175,55,0.25); }
+100% { box-shadow: 0 0 0px rgba(212,175,55,0.15); }
+
+
+Used on:
+
+Title badge
+
+Contact buttons
+
+Signature strip
+
+Executive Scanline (Slow + Thin)
+
+Unlike neon scanlines, CEO version has:
+
+A thin platinum line sweeping down every 12 seconds
+
+Very faint
+
+Symbolizes clarity & focus
+
+🏛️ CONTENT ELEMENTS INSIDE THE CARD
+
+This quantum card shows ONLY essential CEO information (not portfolio):
+
+1. CEO Bio Snapshot
+
+Fields shown: name, title, industry, domain
+Style:
+
+2-line microbio
+
+Soft white text
+
+Gold-left border
+
+2. Key Achievements (Unique Section)
+
+3–4 achievement capsules:
+
+“18+ Years Leading Multinational Teams”
+
+“Scaled revenue from $5M → $120M”
+
+“Board Member: Global Strategy Council”
+
+Capsules have:
+
+Platinum borders
+
+Micro upward animation on hover
+
+3. Core Leadership Pillars
+
+Use CEO’s coreValues[] but represented differently:
+
+Four Pillars Layout:
+
+Vision
+
+Strategy
+
+People
+
+Execution
+
+Each has an icon + soft gold underline on hover.
+
+4. “Executive Network Links” Block
+
+Fields: email, externalUrl or LinkedIn, location
+
+Each link appears in gold micro-pill buttons.
+
+Hover → soft gold glow
+Click → copy-to-clipboard pulse
+
+👑 5. CEO Motto / Quote Plate
+
+Slot for tagline or vision:
+
+A horizontal plate with engraved metal style:
+
+“Great leaders create leaders, not followers.”
+
+Soft metal gradient
+
+Animated reflection
+
+Slow shimmer
+
+🔗 6. Contact & Scheduling
+
+Field: email
+
+“Request a Meeting” button
+
+Gold accent
+
+Small animated arrow
+
+Opens contact modal
+
+⚙️ STRUCTURE SUMMARY (VERY DIFFERENT FROM OTHER VERSIONS)
+
+The CEO Quantum Card flows like this:
+
+🔹 1. Executive Hero
+
+Profile image → Name → Title → Company → Tagline
+
+🔹 2. Signature Strip
+
+Animated CEO signature → designation highlight
+
+🔹 3. Leadership Snapshot
+
+Microbio → achievements → leadership pillars
+
+🔹 4. Executive Info
+
+Industry · Domain · Location (gold capsules)
+
+🔹 5. Motto / Vision Plate
+
+Engraved quote section
+
+🔹 6. Contact / Book a Meeting
+
+Premium CTA
+
+🛠️ DESIGN ELEMENTS (Different Than Any Portfolio)
+Metallic Gold Accents (Soft, Not Neon)
+
+Gold is always subtle, matte, premium — NOT flashy.
+
+No gradients except micro-reflection animations.
+Lots of breathing space
+
+Whitespace → luxury.
+
+Smooth, slow animations
+
+Because fast animations = consumer-grade
+Slow animations = premium executive feel
+
+🧩 COMPONENT PROP LIST (for developers)
+<CEOQuantumCard /> props:
+{
+  photoURL: string;
+  name: string;
+  title: string;
+  company?: string;
+  tagline?: string;
+  location?: string;
+
+  achievements?: string[];
+  coreValues?: string[];
+  industry?: string;
+  domain?: string;
+
+  email?: string;
+  externalUrl?: string; // LinkedIn, website
+  signatureSVG?: string; // optional custom signature
+
+  onContactClick?: () => void;
+}
+
+Sub-components
+
+<ExecutiveHero />
+
+<SignatureStrip />
+
+<LeadershipSnapshot />
+
+<AchievementCapsule />
+
+<LeadershipPillars />
+
+<EngravedQuotePlate />
+
+<ExecutiveLinks />
+
+<MeetingCTA />
