@@ -45,26 +45,10 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   const [activeTab, setActiveTab] = useState(selectedCardType || "professional");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const { toast } = useToast();
   const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
-  
-  // Set up a loading effect when first mounting the component
-  useEffect(() => {
-    // Start with loading state
-    setIsLoading(true);
-    
-    // Simulate progressive loading with a staged timeout
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // 1.5 seconds delay to simulate loading of profile details
-    
-    // Cleanup function to clear the timeout
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
   
   // Check if a card is locked
   const isCardLocked = (cardId: string): boolean => {
