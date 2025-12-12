@@ -31,7 +31,7 @@ router.post("/follow", async (req, res) => {
   } catch (error) {
     console.error("[POST /mentor/follow] Error:", error);
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: "Invalid request format" });
     }
     res.status(500).json({ error: "Failed to follow mentor" });
   }
@@ -72,12 +72,13 @@ router.post("/renew", async (req, res) => {
  */
 router.delete("/unfollow", async (req, res) => {
   try {
+    // DELETE requests use query parameters for compatibility
     const schema = z.object({
-      followerId: z.number(),
-      mentorId: z.number()
+      followerId: z.coerce.number(),
+      mentorId: z.coerce.number()
     });
 
-    const { followerId, mentorId } = schema.parse(req.body);
+    const { followerId, mentorId } = schema.parse(req.query);
 
     const result = await mentorService.unfollowMentor(followerId, mentorId);
 
@@ -89,7 +90,7 @@ router.delete("/unfollow", async (req, res) => {
   } catch (error) {
     console.error("[DELETE /mentor/unfollow] Error:", error);
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
+      return res.status(400).json({ error: "Invalid request format" });
     }
     res.status(500).json({ error: "Failed to unfollow mentor" });
   }

@@ -106,10 +106,7 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('DELETE', '/api/mentor/unfollow', {
-          followerId: userId,
-          mentorId: mentorId
-        });
+        const response = await apiRequest('DELETE', `/api/mentor/unfollow?followerId=${userId}&mentorId=${mentorId}`);
         return response;
       } finally {
         setIsSubmitting(false);
