@@ -2026,13 +2026,12 @@ export default function PortfolioBuilder() {
             )}
             
             <div className="flex justify-between">
-              <Button 
-                variant="outline"
+              <button
                 onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                className="flex items-center gap-2 bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
-              </Button>
+              </button>
               <Button 
                 onClick={handlePublish}
                 className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
@@ -2128,9 +2127,7 @@ export default function PortfolioBuilder() {
       <div className="flex-1 overflow-y-auto">
         <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 mb-6 relative z-10">
           <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 gap-4 text-center">
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => {
                 if (currentStep === STEPS.SELECT_LAYOUT) {
                   // If on first step, go back to profile
@@ -2140,11 +2137,11 @@ export default function PortfolioBuilder() {
                   setCurrentStep(currentStep - 1);
                 }
               }}
-              className="text-white hover:text-white hover:bg-white/20 bg-white/10 px-3 py-2 border border-white/20 flex items-center gap-2 self-start"
+              className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm self-start"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Back</span>
-            </Button>
+            </button>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
               <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
