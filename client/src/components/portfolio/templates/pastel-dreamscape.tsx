@@ -196,19 +196,30 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               whileHover={{ scale: 1.2, rotate: 10 }}
             >
-              <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/60 border-2 border-white/80 shadow-lg flex flex-col items-center justify-center p-4 text-center hover:bg-white/80 transition-all duration-300">
-                <span className="font-semibold text-sm text-gray-800 mb-1">{skill.name}</span>
-                <div className="text-xs text-gray-600">{skill.level}</div>
-                {skill.proficiency && (
-                  <div className="mt-2 w-full bg-gray-200 h-1 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-pink-400 to-purple-400"
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${skill.proficiency}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, delay: index * 0.1 }}
-                    />
+              <div className="w-36 h-36 rounded-full backdrop-blur-md bg-white/70 border-2 border-white/90 shadow-lg flex flex-col items-center justify-center p-4 text-center hover:bg-white/90 transition-all duration-300">
+                <span className="font-bold text-sm text-gray-800 mb-2 line-clamp-2">{skill.name}</span>
+                
+                <div className="flex items-center gap-1 mb-3">
+                  <span className="px-2 py-1 bg-gradient-to-r from-pink-200 to-purple-200 text-xs font-semibold text-gray-700 rounded-full">
+                    {skill.level}
+                  </span>
+                </div>
+                
+                {skill.proficiency ? (
+                  <div className="w-full">
+                    <div className="mb-1 w-full bg-gray-300 h-2 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-pink-400 to-purple-500"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.proficiency}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: index * 0.1 }}
+                      />
+                    </div>
+                    <div className="text-xs font-semibold text-gray-700">{skill.proficiency}%</div>
                   </div>
+                ) : (
+                  <div className="text-xs text-gray-600">Not rated</div>
                 )}
               </div>
             </motion.div>
