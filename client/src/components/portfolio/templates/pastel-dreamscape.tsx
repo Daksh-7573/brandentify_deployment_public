@@ -156,14 +156,20 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
 // Skill Petal Component (Radial Layout)
 function SkillPetals({ skills }: { skills: Skill[] }) {
   const displaySkills = skills.slice(0, 8);
-  const radius = 180;
+  const radius = 220;
+  const containerSize = 700;
   
   return (
-    <div className="relative w-full flex justify-center items-center py-16">
-      <div className="relative w-[500px] h-[500px] flex items-center justify-center">
+    <div className="relative w-full flex justify-center items-center py-20">
+      <div className="relative" style={{ width: containerSize, height: containerSize }}>
         {/* Center Circle */}
         <motion.div
-          className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
+          className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-20"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
           animate={{
             scale: [1, 1.1, 1],
             rotate: 360,
@@ -178,7 +184,7 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
 
         {/* Skill Petals in Radial Layout */}
         {displaySkills.map((skill, index) => {
-          const angle = (index * 360) / displaySkills.length;
+          const angle = (index * 360) / displaySkills.length - 90;
           const radian = (angle * Math.PI) / 180;
           const xPos = radius * Math.cos(radian);
           const yPos = radius * Math.sin(radian);
