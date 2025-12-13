@@ -1384,6 +1384,13 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
+                    tagline={userData?.tagline || undefined}
+                    visionStatement={userData?.visionStatement || undefined}
+                    missionStatement={userData?.missionStatement || undefined}
+                    coreValues={userData?.coreValues || undefined}
+                    uniqueValueProposition={userData?.uniqueValueProposition || undefined}
+                    primaryAudience={userData?.primaryAudience || undefined}
+                    secondaryAudience={userData?.secondaryAudience || undefined}
                     skills={skills || []}
                     services={services || []}
                     experiences={experiences || []}
@@ -1403,6 +1410,8 @@ export default function PortfolioBuilder() {
                       mediaUrls: p.mediaUrls || [],
                       updatedAt: p.updatedAt || new Date().toISOString()
                     })) || []}
+                    id={userData?.id}
+                    currentUserId={user?.id ? parseInt(user.id) : undefined}
                   />
                 </CardContent>
               </Card>

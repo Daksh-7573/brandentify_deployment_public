@@ -92,6 +92,13 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   email,
   aboutMe,
   whatIOffer,
+  tagline,
+  visionStatement,
+  missionStatement,
+  coreValues,
+  uniqueValueProposition,
+  primaryAudience,
+  secondaryAudience,
   id,
   currentUserId
 }) => {
