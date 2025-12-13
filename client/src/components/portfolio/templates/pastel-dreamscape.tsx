@@ -156,14 +156,14 @@ function GlassCard({ children, className = "", delay = 0 }: { children: React.Re
 // Skill Petal Component (Radial Layout)
 function SkillPetals({ skills }: { skills: Skill[] }) {
   const displaySkills = skills.slice(0, 8);
-  const radius = 220;
+  const radius = 180;
   
   return (
-    <div className="relative w-full h-[600px]">
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+    <div className="relative w-full flex justify-center items-center py-16">
+      <div className="relative w-[500px] h-[500px] flex items-center justify-center">
         {/* Center Circle */}
         <motion.div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
+          className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-10"
           animate={{
             scale: [1, 1.1, 1],
             rotate: 360,
@@ -176,38 +176,38 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
           <Star className="w-10 h-10 text-white" />
         </motion.div>
 
-        {/* Skill Petals */}
+        {/* Skill Petals in Radial Layout */}
         {displaySkills.map((skill, index) => {
-          const angle = -90 + (index * 360) / displaySkills.length;
+          const angle = (index * 360) / displaySkills.length;
           const radian = (angle * Math.PI) / 180;
-          const x = radius * Math.cos(radian);
-          const y = radius * Math.sin(radian);
+          const xPos = radius * Math.cos(radian);
+          const yPos = radius * Math.sin(radian);
 
           return (
             <motion.div
               key={skill.id}
-              className="absolute left-1/2 top-1/2"
+              className="absolute"
               style={{
-                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                left: `calc(50% + ${xPos}px)`,
+                top: `calc(50% + ${yPos}px)`,
+                transform: "translate(-50%, -50%)",
               }}
               initial={{ opacity: 0, scale: 0 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.2, rotate: 10 }}
+              whileHover={{ scale: 1.15 }}
             >
-              <div className="w-36 h-36 rounded-full backdrop-blur-md bg-white/70 border-2 border-white/90 shadow-lg flex flex-col items-center justify-center p-4 text-center hover:bg-white/90 transition-all duration-300">
-                <span className="font-bold text-sm text-gray-800 mb-2 line-clamp-2">{skill.name}</span>
+              <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/70 border-2 border-white/90 shadow-lg flex flex-col items-center justify-center p-3 text-center hover:bg-white/90 transition-all duration-300">
+                <span className="font-bold text-xs text-gray-800 mb-1 line-clamp-2">{skill.name}</span>
                 
-                <div className="flex items-center gap-1 mb-3">
-                  <span className="px-2 py-1 bg-gradient-to-r from-pink-200 to-purple-200 text-xs font-semibold text-gray-700 rounded-full">
-                    {skill.level}
-                  </span>
-                </div>
+                <span className="px-2 py-0.5 bg-gradient-to-r from-pink-200 to-purple-200 text-xs font-semibold text-gray-700 rounded-full mb-2">
+                  {skill.level}
+                </span>
                 
                 {skill.proficiency ? (
-                  <div className="w-full">
-                    <div className="mb-1 w-full bg-gray-300 h-2 rounded-full overflow-hidden">
+                  <div className="w-full flex flex-col items-center">
+                    <div className="w-20 bg-gray-300 h-1.5 rounded-full overflow-hidden mb-1">
                       <motion.div
                         className="h-full bg-gradient-to-r from-pink-400 to-purple-500"
                         initial={{ width: 0 }}
@@ -216,7 +216,7 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
                         transition={{ duration: 1, delay: index * 0.1 }}
                       />
                     </div>
-                    <div className="text-xs font-semibold text-gray-700">{skill.proficiency}%</div>
+                    <div className="text-xs font-bold text-gray-700">{skill.proficiency}%</div>
                   </div>
                 ) : (
                   <div className="text-xs text-gray-600">Not rated</div>
