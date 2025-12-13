@@ -160,8 +160,8 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
   const containerSize = 700;
   
   return (
-    <div className="relative w-full flex justify-center items-center py-20">
-      <div className="relative" style={{ width: containerSize, height: containerSize }}>
+    <div className="relative w-full flex justify-center items-center py-20 overflow-hidden">
+      <div className="relative mx-auto" style={{ width: containerSize, height: containerSize }}>
         {/* Center Circle */}
         <motion.div
           className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-pink-200 to-purple-300 flex items-center justify-center shadow-lg z-20"
