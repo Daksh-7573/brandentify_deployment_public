@@ -161,69 +161,75 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             {userData.title || "Executive"}
           </div>
 
-          {/* Company/Group name */}
-          {userData.industry && (
-            <p style={{ color: colors.mutedSilver }} className="text-sm tracking-wider mb-3">
-              {userData.industry}
-            </p>
-          )}
-
         </div>
 
-        {/* Professional Info Section */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          {userData.company && (
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-              style={{
-                background: colors.richNavy,
-                border: `1px solid ${colors.platinumEdgeGlow}`,
-                color: colors.softWhite,
-              }}
-            >
-              <Building2 size={14} style={{ color: colors.executiveGold }} />
-              <span>{userData.company}</span>
-            </div>
-          )}
+        {/* Professional Info Section - Grid Layout */}
+        <div className="space-y-2 mb-6 w-full">
+          {/* Row 1: Company and Location */}
+          <div className="flex gap-2 justify-center w-full">
+            {userData.company && (
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs flex-1"
+                style={{
+                  background: colors.richNavy,
+                  border: `1px solid ${colors.platinumEdgeGlow}`,
+                  color: colors.softWhite,
+                }}
+              >
+                <Building2 size={14} style={{ color: colors.executiveGold }} />
+                <span className="truncate">{userData.company}</span>
+              </div>
+            )}
 
-          {userData.industry && (
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-              style={{
-                background: colors.richNavy,
-                border: `1px solid ${colors.platinumEdgeGlow}`,
-                color: colors.softWhite,
-              }}
-            >
-              <Briefcase size={14} style={{ color: colors.executiveGold }} />
-              <span>{userData.industry}</span>
-            </div>
-          )}
+            {userData.location && (
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs flex-1"
+                style={{
+                  background: colors.richNavy,
+                  border: `1px solid ${colors.platinumEdgeGlow}`,
+                  color: colors.softWhite,
+                }}
+              >
+                <MapPin size={14} style={{ color: colors.executiveGold }} />
+                <span className="truncate">{userData.location}</span>
+              </div>
+            )}
+          </div>
 
-          {userData.domain && (
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-              style={{
-                background: colors.richNavy,
-                border: `1px solid ${colors.platinumEdgeGlow}`,
-                color: colors.softWhite,
-              }}
-            >
-              <Hash size={14} style={{ color: colors.executiveGold }} />
-              <span>{userData.domain}</span>
-            </div>
-          )}
+          {/* Row 2: Industry and Domain */}
+          <div className="flex gap-2 justify-center w-full">
+            {userData.industry && (
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs flex-1"
+                style={{
+                  background: colors.richNavy,
+                  border: `1px solid ${colors.platinumEdgeGlow}`,
+                  color: colors.softWhite,
+                }}
+              >
+                <Briefcase size={14} style={{ color: colors.executiveGold }} />
+                <span className="truncate">{userData.industry}</span>
+              </div>
+            )}
+
+            {userData.domain && (
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs flex-1"
+                style={{
+                  background: colors.richNavy,
+                  border: `1px solid ${colors.platinumEdgeGlow}`,
+                  color: colors.softWhite,
+                }}
+              >
+                <Hash size={14} style={{ color: colors.executiveGold }} />
+                <span className="truncate">{userData.domain}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Contact Section */}
         <div className="flex flex-col gap-2 mt-auto pt-4 border-t" style={{ borderColor: colors.platinumEdgeGlow }}>
-          {userData.location && (
-            <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: colors.mutedSilver }}>
-              <MapPin size={14} />
-              <span>{userData.location}</span>
-            </div>
-          )}
-
           {userData.email && (
             <button
               onClick={handleCopyEmail}
