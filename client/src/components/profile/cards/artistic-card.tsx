@@ -384,50 +384,34 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                   </div>
                 )}
                 
-                {/* Domain with Location underneath - Artistic palette style */}
+                {/* Domain with Location underneath - Same paint chip style as industry */}
                 <div className="space-y-1.5 mt-1">
                   {userData.domain && (
-                    <div 
-                      className="flex items-start gap-1"
-                      style={{
-                        transform: hoveredSection === 'domain' 
-                          ? 'translateY(-1px)' 
-                          : 'translateY(0)',
-                        transition: "transform 0.3s ease",
-                      }}
-                      onMouseEnter={() => setHoveredSection('domain')}
-                      onMouseLeave={() => setHoveredSection(null)}
-                    >
-                      {/* Domain icon */}
+                    <div className="flex flex-wrap gap-1.5">
                       <div 
-                        className="h-5 w-5 rounded-full flex items-center justify-center mt-0.5"
+                        className="inline-flex items-center gap-1 py-0.5 pl-1 pr-1.5 text-[10px] font-medium"
                         style={{
-                          backgroundColor: artisticColors.emerald,
-                          boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                          backgroundColor: `${artisticColors.emerald}25`,
+                          color: artisticColors.emerald,
+                          borderLeft: `2px solid ${artisticColors.emerald}`,
+                          borderRadius: "0 4px 4px 0",
+                          transform: `rotate(${randomOffset(-2, 2)}deg)`,
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                          opacity: hoveredSection === 'domain' ? 1 : 0.9,
+                          transition: "all 0.2s ease",
                         }}
+                        onMouseEnter={() => setHoveredSection('domain')}
+                        onMouseLeave={() => setHoveredSection(null)}
                       >
-                        <PenTool className="h-3 w-3 text-white" />
-                      </div>
-                      
-                      <div className="relative">
-                        {/* Artistic background */}
-                        <div 
-                          className="absolute inset-0 opacity-10"
-                          style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='%23${artisticColors.emerald.slice(1)}' opacity='0.5' /%3E%3Ccircle cx='30' cy='10' r='8' fill='%23${artisticColors.mint.slice(1)}' opacity='0.3' /%3E%3C/svg%3E")`,
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "cover",
-                          }}
-                        />
-                        
+                        <span className="mr-0.5 opacity-80">
+                          {getIndustryIcon(userData.domain)}
+                        </span>
                         <span 
-                          className="relative z-10 text-xs font-medium ml-1 capitalize"
                           style={{
-                            color: artisticColors.darkGray,
-                            fontFamily: "'Caveat', cursive",
+                            fontFamily: "'Sriracha', 'Caveat', cursive",
                           }}
                         >
-                          {userData.domain}
+                          #{userData.domain === "all" ? "Creative" : userData.domain}
                         </span>
                       </div>
                     </div>
