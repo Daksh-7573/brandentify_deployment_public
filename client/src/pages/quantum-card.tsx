@@ -85,21 +85,6 @@ export default function QuantumCardPage() {
                 Back to Profile
               </Button>
               
-              {/* Premium Button */}
-              {(userData as any)?.subscriptionTier === 'premium' ? (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-400/20 to-orange-500/20 border border-yellow-400/30">
-                  <PremiumBadge size="sm" showTooltip={false} />
-                  <span className="text-xs font-medium text-yellow-400">Premium</span>
-                </div>
-              ) : (
-                <button 
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold text-sm shadow-lg shadow-yellow-500/30 transition-all hover:scale-105"
-                  onClick={() => navigate('/pricing')}
-                >
-                  <Crown className="h-4 w-4" />
-                  <span>Upgrade</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -117,17 +102,6 @@ export default function QuantumCardPage() {
         {/* Quantum Card Builder Section */}
         <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
           <div className="p-6">
-            {!isPremium && (
-              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Lock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-yellow-400">Limited to 2 Free Card Designs</p>
-                    <p className="text-sm text-yellow-300/80 mt-1">Unlock all {7} premium card designs with Brandentifier Premium for ₹799/month</p>
-                  </div>
-                </div>
-              </div>
-            )}
             {userData ? (
               <VisitingCardBuilder
                 userData={userData as any}
@@ -135,15 +109,6 @@ export default function QuantumCardPage() {
                   (userData as any)?.visitingCardType || "professional"
                 }
                 onCardTypeSelect={(cardType) => {
-                  const result = canAccessVisitingCard(cardType);
-                  if (!result.hasAccess) {
-                    toast({
-                      title: "Premium Feature",
-                      description: result.message || "This card design is only available for Premium members. Upgrade to unlock all card designs!",
-                      variant: "destructive"
-                    });
-                    return;
-                  }
                   console.log("Selected card type:", cardType);
                 }}
                 isPremium={isPremium}

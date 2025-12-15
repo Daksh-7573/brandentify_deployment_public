@@ -63,49 +63,18 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     setIsFinalized(newCardType === userData.visitingCardType);
   }, [selectedCardType, userData.visitingCardType]);
   
-  // Check if a card is locked
+  // All cards are now unlocked (premium restrictions disabled)
   const isCardLocked = (cardId: string): boolean => {
-    if (!referralStatus) return false;
-    const card = referralStatus.quantumCards.find((c) => c.id === cardId);
-    return card?.locked ?? false;
+    return false;
   };
 
-  // Check if a card is free tier
+  // All cards are accessible (premium restrictions disabled)
   const isCardFree = (cardId: string): boolean => {
-    return FREE_VISITING_CARD_TEMPLATES.includes(cardId);
+    return true;
   };
 
-  // Handle tab change
+  // Handle tab change - all cards accessible
   const handleTabChange = (value: string) => {
-    // Premium users bypass all restrictions
-    if (isPremium) {
-      setActiveTab(value);
-      setIsFinalized(value === userData.visitingCardType);
-      onCardTypeSelect(value);
-      return;
-    }
-    
-    // Free tier: check subscription access
-    if (!canAccessCard(value)) {
-      toast({
-        title: "Premium Feature",
-        description: "This card design is only available for Premium members. Upgrade to unlock all card designs!",
-        variant: "default",
-      });
-      return;
-    }
-    
-    // Free tier: check referral unlock status
-    if (isCardLocked(value)) {
-      setShowShareModal(true);
-      toast({
-        title: "Card Locked",
-        description: "Share Brandentifier with friends to unlock this design!",
-        variant: "default",
-      });
-      return;
-    }
-    
     setActiveTab(value);
     setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);
