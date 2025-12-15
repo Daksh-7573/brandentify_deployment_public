@@ -6,7 +6,7 @@ import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CreditCard, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -92,21 +92,19 @@ export default function QuantumCardPage() {
 
         {/* Tabbed Content */}
         <Tabs defaultValue="card-design" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 border border-white/20">
+          <TabsList className="grid w-full grid-cols-2 dark-tabs-list border border-white/5 mb-6">
             <TabsTrigger 
               value="card-design" 
-              className="flex items-center gap-2 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+              className="dark-tabs-trigger"
               data-testid="tab-card-design"
             >
-              <CreditCard className="h-4 w-4" />
               Card Design
             </TabsTrigger>
             <TabsTrigger 
               value="contact-info" 
-              className="flex items-center gap-2 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+              className="dark-tabs-trigger"
               data-testid="tab-contact-info"
             >
-              <User className="h-4 w-4" />
               Contact Details
             </TabsTrigger>
           </TabsList>
