@@ -23,6 +23,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showScanAnimation, setShowScanAnimation] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Format profile link using brand name (or username as fallback)

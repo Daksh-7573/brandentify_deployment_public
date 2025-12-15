@@ -28,6 +28,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [contactExpanded, setContactExpanded] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [layers, setLayers] = useState<HTMLElement[]>([]);
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Refs
   const cardRef = useRef<HTMLDivElement>(null);

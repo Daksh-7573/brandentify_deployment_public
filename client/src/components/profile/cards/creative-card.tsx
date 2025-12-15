@@ -45,6 +45,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   // Interactive states
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Format profile link using brand name (or username as fallback)
   const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;

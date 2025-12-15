@@ -50,6 +50,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [isContactExpanded, setIsContactExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Refs for tilt effect
   const cardRef = useRef<HTMLDivElement>(null);

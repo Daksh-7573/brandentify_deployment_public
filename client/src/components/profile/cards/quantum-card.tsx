@@ -8,6 +8,7 @@ interface QuantumCardProps {
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
+  const [activeTab, setActiveTab] = React.useState<'card' | 'contact'>('card');
   // Format profile link using brand name (or username as fallback)
   const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   

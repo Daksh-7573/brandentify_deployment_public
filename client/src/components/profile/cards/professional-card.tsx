@@ -24,6 +24,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   // State for card interaction
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Format profile link using brand name (or username as fallback)
   const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
