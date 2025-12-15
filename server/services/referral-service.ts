@@ -419,6 +419,22 @@ export class ReferralService {
     const unlocks = await this.getUserUnlocks(userId);
     const isPremium = subscriptionTier === 'premium';
     
+    // Calculate unlocked items using referral formula: floor(totalReferrals * (total / 6))
+    // This ensures scalability: as items are added, the unlock rate scales proportionally
+    // Examples: 
+    // - 12 cards / 6 = 2 cards per referral (1 ref = 2, 2 refs = 4, 6 refs = 12)
+    // - 23 portfolios / 6 = 3.83 per referral (1 ref = 3, 2 refs = 7, 6 refs = 23)
+    const cardsPerReferral = QUANTUM_CARDS.length / 6;
+    const portfoliosPerReferral = PORTFOLIO_LAYOUTS.length / 6;
+    
+    const unlockedCardsCount = isPremium 
+      ? QUANTUM_CARDS.length 
+      : Math.floor(unlocks.totalReferrals * cardsPerReferral);
+    
+    const unlockedPortfoliosCount = isPremium 
+      ? PORTFOLIO_LAYOUTS.length 
+      : Math.floor(unlocks.totalReferrals * portfoliosPerReferral);
+    
     // Map IDs to display names
     const cardNames: Record<string, string> = {
       'professional': 'Professional',
@@ -447,17 +463,17 @@ export class ReferralService {
     };
     
     // For premium users: all items are unlocked (not locked)
-    // For free users: use referral unlock status
-    const quantumCards = QUANTUM_CARDS.map(id => ({
+    // For free users: determine lock status based on calculated unlock threshold
+    const quantumCards = QUANTUM_CARDS.map((id, index) => ({
       id,
       name: cardNames[id] || id,
-      locked: isPremium ? false : !unlocks.quantumCards.includes(id)
+      locked: isPremium ? false : index >= unlockedCardsCount
     }));
     
-    const portfolios = PORTFOLIO_LAYOUTS.map(id => ({
+    const portfolios = PORTFOLIO_LAYOUTS.map((id, index) => ({
       id,
       name: portfolioNames[id] || id,
-      locked: isPremium ? false : !unlocks.portfolios.includes(id)
+      locked: isPremium ? false : index >= unlockedPortfoliosCount
     }));
     
     return {
@@ -465,9 +481,9 @@ export class ReferralService {
       portfolios,
       progress: {
         totalReferrals: unlocks.totalReferrals,
-        unlockedCards: isPremium ? QUANTUM_CARDS.length : unlocks.quantumCards.length,
+        unlockedCards: unlockedCardsCount,
         totalCards: QUANTUM_CARDS.length,
-        unlockedPortfolios: isPremium ? PORTFOLIO_LAYOUTS.length : unlocks.portfolios.length,
+        unlockedPortfolios: unlockedPortfoliosCount,
         totalPortfolios: PORTFOLIO_LAYOUTS.length
       }
     };
