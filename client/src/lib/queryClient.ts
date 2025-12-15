@@ -102,6 +102,11 @@ export async function apiRequest(
       return;
     }
     
+    // NEVER cache referral status endpoints - they depend on dynamic referral data
+    if (url.includes('/referral/status')) {
+      return;
+    }
+    
     if (method === 'GET' && response.ok) {
       try {
         const cacheKey = `api_cache_${url}`;

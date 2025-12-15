@@ -119,6 +119,7 @@ export function registerReferralRoutes(app: Express) {
   app.get('/api/referral/status', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).userId;
+      console.log(`[API] GET /api/referral/status - userId: ${userId}`);
       
       // Fetch user's subscription tier from database
       const userResult = await (require("../db")).pool.query(
@@ -130,12 +131,23 @@ export function registerReferralRoutes(app: Express) {
         ? userResult.rows[0].subscription_tier || 'free'
         : 'free';
       
+      console.log(`[API] User ${userId} subscriptionTier: ${subscriptionTier}`);
+      
       const status = await referralService.getAvailabilityStatus(userId, subscriptionTier);
       
-      res.json({
+      console.log(`[API] Referral status response for user ${userId}:`, {
+        quantumCardsCount: status.quantumCards.length,
+        portfoliosCount: status.portfolios.length,
+        progress: status.progress
+      });
+      
+      const response = {
         success: true,
         ...status
-      });
+      };
+      
+      console.log(`[API] Sending referral status response:`, response);
+      res.json(response);
     } catch (error: any) {
       console.error('[API] Get referral status error:', error);
       res.status(500).json({ error: error.message || 'Failed to get referral status' });

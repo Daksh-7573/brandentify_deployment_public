@@ -53,9 +53,10 @@ export function useReferralStatus() {
       }
     },
     enabled: !!user,
-    staleTime: 0,
+    staleTime: 30000,
+    gcTime: 60000,
     refetchOnWindowFocus: true,
-    retry: 1,
+    retry: 2,
   });
 }
 
