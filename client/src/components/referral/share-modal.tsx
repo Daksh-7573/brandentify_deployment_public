@@ -12,19 +12,24 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ open, onClose }: ShareModalProps) {
-  const { data: referralLink, refetch: refetchLink } = useReferralLink();
+  const { data: referralLink, refetch: refetchLink, isLoading: isLoadingLink } = useReferralLink();
+  const statsQuery = useReferralStatus();
   const stats = useReferralStats();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const queryClient = useQueryClient();
 
-  // Refetch referral status when modal opens
+  // Refetch referral status and link when modal opens
   useEffect(() => {
     if (open) {
+      // Refetch both queries to get fresh data
       queryClient.refetchQueries({ queryKey: ['/api/referral/status'] });
       refetchLink();
     }
   }, [open, queryClient, refetchLink]);
+
+  // Track if we're loading fresh data
+  const isLoadingStats = statsQuery.isLoading;
 
   const handleCopy = async () => {
     if (!referralLink?.link) return;
@@ -85,7 +90,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
                 <Gift className="h-5 w-5 text-yellow-400" />
                 <span className="font-semibold">Your Progress</span>
               </div>
-              <span className="text-2xl font-bold text-purple-300">
+              <span className={`text-2xl font-bold ${isLoadingStats ? 'text-white/40' : 'text-purple-300'} transition-colors`}>
                 {stats.totalReferrals}/6
               </span>
             </div>
@@ -93,7 +98,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
             {/* Progress Bar */}
             <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-4">
               <div
-                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500"
+                className={`h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-700 ${isLoadingStats ? 'opacity-50' : 'opacity-100'}`}
                 style={{
                   width: `${Math.min((stats.totalReferrals / 6) * 100, 100)}%`,
                 }}
@@ -103,13 +108,13 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Award className="h-4 w-4 text-blue-400" />
-                <span className="text-white/80">
+                <span className={`${isLoadingStats ? 'text-white/40' : 'text-white/80'}`}>
                   {stats.unlockedCards}/{stats.totalCards} Cards Unlocked
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Award className="h-4 w-4 text-pink-400" />
-                <span className="text-white/80">
+                <span className={`${isLoadingStats ? 'text-white/40' : 'text-white/80'}`}>
                   {stats.unlockedPortfolios}/{stats.totalPortfolios} Portfolios
                   Unlocked
                 </span>
@@ -117,7 +122,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
             </div>
 
             {referralsNeeded > 0 && (
-              <p className="mt-4 text-sm text-center text-white/70">
+              <p className={`mt-4 text-sm text-center ${isLoadingStats ? 'text-white/40' : 'text-white/70'}`}>
                 {referralsNeeded === 1
                   ? "Just 1 more referral to unlock everything!"
                   : `${referralsNeeded} more referrals to unlock all rewards`}

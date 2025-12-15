@@ -74,24 +74,13 @@ export function useReferralStats() {
     queryClient.invalidateQueries({ queryKey: ['/api/referral/status'] });
   };
   
-  if (isLoading || !data) {
-    return {
-      totalReferrals: 0,
-      unlockedCards: 0,
-      totalCards: 12,
-      unlockedPortfolios: 0,
-      totalPortfolios: 23,
-      isLoading,
-      invalidateStatus,
-    };
-  }
-  
+  // Always return current data if available, with proper fallback structure
   return {
-    totalReferrals: data.progress.totalReferrals,
-    unlockedCards: data.progress.unlockedCards,
-    totalCards: data.progress.totalCards,
-    unlockedPortfolios: data.progress.unlockedPortfolios,
-    totalPortfolios: data.progress.totalPortfolios,
+    totalReferrals: data?.progress?.totalReferrals ?? 0,
+    unlockedCards: data?.progress?.unlockedCards ?? 0,
+    totalCards: data?.progress?.totalCards ?? 12,
+    unlockedPortfolios: data?.progress?.unlockedPortfolios ?? 0,
+    totalPortfolios: data?.progress?.totalPortfolios ?? 23,
     isLoading,
     invalidateStatus,
   };
