@@ -301,41 +301,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
               
               {/* PROFESSIONAL DETAILS SECTION */}
               <div className="space-y-3 mt-2">
-                {/* Industry / Domain Tags - Paint chip labels */}
-                {industryTags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {industryTags.map((tag, index) => (
-                      <div 
-                        key={index}
-                        className="inline-flex items-center gap-1 py-0.5 pl-1 pr-1.5 text-[10px] font-medium"
-                        style={{
-                          backgroundColor: `${getArtisticColor(index)}25`,
-                          color: getArtisticColor(index),
-                          borderLeft: `2px solid ${getArtisticColor(index)}`,
-                          borderRadius: "0 4px 4px 0",
-                          transform: `rotate(${randomOffset(-2, 2)}deg)`,
-                          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                          opacity: hoveredSection === `tag-${index}` ? 1 : 0.9,
-                          transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={() => setHoveredSection(`tag-${index}`)}
-                        onMouseLeave={() => setHoveredSection(null)}
-                      >
-                        <span className="mr-0.5 opacity-80">
-                          {getIndustryIcon(tag)}
-                        </span>
-                        <span 
-                          style={{
-                            fontFamily: "'Sriracha', 'Caveat', cursive",
-                          }}
-                        >
-                          #{tag.trim()}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
                 {/* Company/Organization - Exhibition label */}
                 {userData.company && (
                   <div 
@@ -381,6 +346,41 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
                       }}
                     />
+                  </div>
+                )}
+                
+                {/* Industry / Domain Tags - Paint chip labels */}
+                {industryTags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {industryTags.map((tag, index) => (
+                      <div 
+                        key={index}
+                        className="inline-flex items-center gap-1 py-0.5 pl-1 pr-1.5 text-[10px] font-medium"
+                        style={{
+                          backgroundColor: `${getArtisticColor(index)}25`,
+                          color: getArtisticColor(index),
+                          borderLeft: `2px solid ${getArtisticColor(index)}`,
+                          borderRadius: "0 4px 4px 0",
+                          transform: `rotate(${randomOffset(-2, 2)}deg)`,
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                          opacity: hoveredSection === `tag-${index}` ? 1 : 0.9,
+                          transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={() => setHoveredSection(`tag-${index}`)}
+                        onMouseLeave={() => setHoveredSection(null)}
+                      >
+                        <span className="mr-0.5 opacity-80">
+                          {getIndustryIcon(tag)}
+                        </span>
+                        <span 
+                          style={{
+                            fontFamily: "'Sriracha', 'Caveat', cursive",
+                          }}
+                        >
+                          #{tag.trim()}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
                 
