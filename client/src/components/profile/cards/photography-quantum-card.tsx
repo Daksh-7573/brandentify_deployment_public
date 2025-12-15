@@ -143,25 +143,44 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
           )}
         </div>
 
-        {/* Contact Information */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-6 text-xs w-full">
-          {userData.email && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <Mail className="h-3.5 w-3.5 text-[#60A5FA] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.email}</span>
-            </div>
-          )}
+        {/* Spacer */}
+        <div className="flex-1" />
 
-          {userData.phoneNumber && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <Phone className="h-3.5 w-3.5 text-[#B87333] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.phoneNumber}</span>
-            </div>
-          )}
+        {/* Contact Information - Distinct Section */}
+        <div className="w-full bg-gradient-to-r from-[#0D0D0D]/80 to-[#1C1C1C]/80 backdrop-blur-md rounded-lg px-4 py-4 border border-[#FBBF24]/30">
+          <div className="space-y-2.5">
+            {userData.email && (
+              <a 
+                href={`mailto:${userData.email}`}
+                className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
+                data-testid="link-email"
+              >
+                <Mail className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate">{userData.email}</span>
+              </a>
+            )}
 
-          <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-            <Globe className="h-3.5 w-3.5 text-[#60A5FA] flex-shrink-0" />
-            <span className="truncate text-xs">{profileLink}</span>
+            {userData.phoneNumber && (
+              <a 
+                href={`tel:${userData.phoneNumber}`}
+                className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
+                data-testid="link-phone"
+              >
+                <Phone className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate">{userData.phoneNumber}</span>
+              </a>
+            )}
+
+            <a 
+              href={`/@${userData.brandName || userData.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
+              data-testid="link-profile"
+            >
+              <Globe className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
+              <span className="truncate">{profileLink}</span>
+            </a>
           </div>
         </div>
       </div>
