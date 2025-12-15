@@ -33,9 +33,7 @@ export function useReferralStatus() {
   return useQuery<ReferralStatus>({
     queryKey: ['/api/referral/status'],
     queryFn: async () => {
-      const response = await fetch('/api/referral/status');
-      if (!response.ok) throw new Error('Failed to fetch referral status');
-      const data = await response.json();
+      const data = await apiRequest('GET', '/api/referral/status', {});
       return {
         quantumCards: data.quantumCards,
         portfolios: data.portfolios,
@@ -52,9 +50,7 @@ export function useReferralLink() {
   return useQuery<ReferralLink>({
     queryKey: ['/api/referral/generate-link'],
     queryFn: async () => {
-      const response = await fetch('/api/referral/generate-link');
-      if (!response.ok) throw new Error('Failed to generate referral link');
-      const data = await response.json();
+      const data = await apiRequest('GET', '/api/referral/generate-link', {});
       return {
         code: data.code,
         link: data.link,
