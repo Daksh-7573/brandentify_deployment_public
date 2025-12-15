@@ -36,7 +36,7 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
   return (
     <article 
       ref={cardRef}
-      className="fitness-quantum-card w-full min-h-[620px] relative rounded-3xl overflow-hidden"
+      className="fitness-quantum-card w-full max-w-[420px] min-h-[600px] relative rounded-3xl overflow-hidden"
       role="region" 
       aria-labelledby="fitness-card-title"
       style={{
