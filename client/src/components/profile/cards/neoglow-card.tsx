@@ -193,6 +193,36 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
       
       {/* Content Layout Grid */}
       <div className="absolute inset-0 flex flex-col p-5 z-10">
+        {/* Tab Navigation */}
+        <div 
+          className="flex gap-2 mb-4 border-b"
+          style={{ borderColor: `${colors.teal}30` }}
+        >
+          <button 
+            onClick={() => setActiveTab('card')}
+            className="px-3 py-2 text-xs font-medium transition-colors"
+            style={{ 
+              color: activeTab === 'card' ? colors.teal : colors.textMuted,
+              borderBottom: activeTab === 'card' ? `2px solid ${colors.teal}` : 'none',
+              paddingBottom: activeTab === 'card' ? '6px' : '10px'
+            }}
+          >
+            Card
+          </button>
+          <button 
+            onClick={() => setActiveTab('contact')}
+            className="px-3 py-2 text-xs font-medium transition-colors"
+            style={{ 
+              color: activeTab === 'contact' ? colors.teal : colors.textMuted,
+              borderBottom: activeTab === 'contact' ? `2px solid ${colors.teal}` : 'none',
+              paddingBottom: activeTab === 'contact' ? '6px' : '10px'
+            }}
+          >
+            Contact
+          </button>
+        </div>
+        
+        {activeTab === 'card' && (<>
         {/* Profile Section */}
         <div className="relative mb-6 flex flex-col items-center">
           {/* Profile Picture with Neon Ring */}
@@ -462,7 +492,104 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             </div>
           )}
         </div>
+        </>)}
         
+        {activeTab === 'contact' && (
+          <div className="space-y-3 mt-2">
+            {/* Email */}
+            <div 
+              className="flex items-center justify-between gap-2 px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <Mail 
+                  className="h-4 w-4 flex-shrink-0"
+                  style={{ color: colors.teal }}
+                />
+                <span className="text-sm" style={{ color: colors.textSecondary }}>
+                  {userData.email || "Add email address"}
+                </span>
+              </div>
+              <button
+                className="p-1 rounded hover:bg-black/20 transition-colors"
+                onClick={() => userData.email && copyToClipboard(userData.email, "Email")}
+              >
+                <Copy className="h-3.5 w-3.5" style={{ color: colors.textMuted }} />
+              </button>
+            </div>
+
+            {/* Phone */}
+            <div 
+              className="flex items-center justify-between gap-2 px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <Phone 
+                  className="h-4 w-4 flex-shrink-0"
+                  style={{ color: colors.cyberBlue }}
+                />
+                <span className="text-sm" style={{ color: colors.textSecondary }}>
+                  {userData.phoneNumber || "Add phone number"}
+                </span>
+              </div>
+              {userData.phoneNumber && (
+                <button
+                  className="p-1 rounded hover:bg-black/20 transition-colors"
+                  onClick={() => copyToClipboard(userData.phoneNumber || "", "Phone")}
+                >
+                  <Copy className="h-3.5 w-3.5" style={{ color: colors.textMuted }} />
+                </button>
+              )}
+            </div>
+
+            {/* Profile Link */}
+            <div 
+              className="flex items-center justify-between gap-2 px-3 py-2 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                border: `1px solid ${colors.border}`,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <Globe 
+                  className="h-4 w-4 flex-shrink-0"
+                  style={{ color: colors.magenta }}
+                />
+                <span className="text-sm truncate" style={{ color: colors.textSecondary }}>
+                  {profileLink}
+                </span>
+              </div>
+              <button
+                className="p-1 rounded hover:bg-black/20 transition-colors"
+                onClick={() => copyToClipboard(`https://${profileLink}`, "Link")}
+              >
+                <Copy className="h-3.5 w-3.5" style={{ color: colors.textMuted }} />
+              </button>
+            </div>
+
+            {/* Copy success message */}
+            {copySuccess && (
+              <div 
+                className="text-center text-xs py-2 rounded"
+                style={{
+                  backgroundColor: `${colors.teal}20`,
+                  color: colors.teal,
+                }}
+              >
+                {copySuccess}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {activeTab === 'card' && (
+        <>
         {/* Contact Section - Slide Up Panel with Hover Effect */}
         <div 
           className="mt-4"
