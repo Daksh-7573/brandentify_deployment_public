@@ -92,35 +92,32 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           
           {/* Main content */}
           <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-            {/* Domain tag with animated pulse */}
-            {(userData.domain || isLoading) && (
+            {/* Industry tag with same design as domain */}
+            {(userData.industry || isLoading) && (
               <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                 {isLoading ? (
                   <div className="w-24 sm:w-28 h-5 sm:h-6 bg-purple-900/20 border border-purple-500/30 rounded-md animate-pulse"></div>
                 ) : (
                   <div className="flex items-center gap-1 sm:gap-2 py-1 px-2 sm:px-3 bg-purple-900/30 backdrop-blur-sm border border-purple-500/40 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.2)]">
-                    <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-purple-400"></span>
-                    </span>
                     <span className="text-purple-300 text-xs font-medium">
-                      #{userData.domain === "all" ? "General" : userData.domain}
+                      {userData.industry}
                     </span>
                   </div>
                 )}
               </div>
             )}
             
-            {/* Industry with holographic chip */}
-            {(userData.industry || isLoading) && (
-              <div className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 group">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)] transition-all duration-300">
-                  <Building2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-400" />
-                </div>
+            {/* Domain tag */}
+            {(userData.domain || isLoading) && (
+              <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                 {isLoading ? (
-                  <span className="w-20 sm:w-24 h-2.5 sm:h-3 bg-blue-300/20 rounded animate-pulse"></span>
+                  <div className="w-24 sm:w-28 h-5 sm:h-6 bg-purple-900/20 border border-purple-500/30 rounded-md animate-pulse"></div>
                 ) : (
-                  <span className="text-white/90 font-light tracking-wide text-xs sm:text-sm">{userData.industry}</span>
+                  <div className="flex items-center gap-1 sm:gap-2 py-1 px-2 sm:px-3 bg-purple-900/30 backdrop-blur-sm border border-purple-500/40 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+                    <span className="text-purple-300 text-xs font-medium">
+                      #{userData.domain === "all" ? "General" : userData.domain}
+                    </span>
+                  </div>
                 )}
               </div>
             )}
