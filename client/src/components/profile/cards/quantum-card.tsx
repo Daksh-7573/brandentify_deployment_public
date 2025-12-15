@@ -100,7 +100,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
                 ) : (
                   <div className="flex items-center gap-1 sm:gap-2 py-1 px-2 sm:px-3 bg-purple-900/30 backdrop-blur-sm border border-purple-500/40 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.2)]">
                     <span className="text-purple-300 text-xs font-medium">
-                      {userData.industry}
+                      #{userData.industry}
                     </span>
                   </div>
                 )}
