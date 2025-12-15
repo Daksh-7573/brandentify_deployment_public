@@ -186,7 +186,7 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
             </div>
 
             <p 
-              className="text-sm leading-relaxed mb-3"
+              className="text-sm leading-relaxed"
               style={{ color: `${colors.deepCharcoal}cc` }}
             >
               {isLoading ? (
@@ -195,70 +195,70 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
                 userData.tagline || "Strengthen the body. Calm the mind."
               )}
             </p>
-
-            <div className="flex flex-wrap gap-2 justify-start">
-              {userData.company && (
-                <div 
-                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
-                  style={{
-                    background: 'white',
-                    border: `1px solid rgba(6,95,70,0.06)`,
-                    color: `${colors.deepCharcoal}cc`
-                  }}
-                  title="Company"
-                >
-                  <Building2 className="h-3 w-3" style={{ color: colors.deepEmerald }} />
-                  <span>{userData.company}</span>
-                </div>
-              )}
-
-              {userData.industry && (
-                <div 
-                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
-                  style={{
-                    background: 'white',
-                    border: `1px solid rgba(6,95,70,0.06)`,
-                    color: `${colors.deepCharcoal}cc`
-                  }}
-                  title="Industry"
-                >
-                  <Briefcase className="h-3 w-3" style={{ color: colors.vibrantOrange }} />
-                  <span>{userData.industry}</span>
-                </div>
-              )}
-
-              {userData.domain && (
-                <div 
-                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
-                  style={{
-                    background: 'white',
-                    border: `1px solid rgba(6,95,70,0.06)`,
-                    color: `${colors.deepCharcoal}cc`
-                  }}
-                  title="Domain"
-                >
-                  <Hash className="h-3 w-3" style={{ color: colors.skyBlue }} />
-                  <span>{userData.domain}</span>
-                </div>
-              )}
-
-              {userData.location && (
-                <div 
-                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
-                  style={{
-                    background: 'white',
-                    border: `1px solid rgba(6,95,70,0.06)`,
-                    color: `${colors.deepCharcoal}cc`
-                  }}
-                  title="Location"
-                >
-                  <MapPin className="h-3 w-3" style={{ color: colors.deepEmerald }} />
-                  <span>{userData.location}</span>
-                </div>
-              )}
-            </div>
           </div>
         </header>
+
+        <div className="flex flex-wrap gap-2 w-full mb-6">
+          {userData.company && (
+            <div 
+              className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+              style={{
+                background: 'white',
+                border: `1px solid rgba(6,95,70,0.06)`,
+                color: `${colors.deepCharcoal}cc`
+              }}
+              title="Company"
+            >
+              <Building2 className="h-3 w-3" style={{ color: colors.deepEmerald }} />
+              <span>{userData.company}</span>
+            </div>
+          )}
+
+          {userData.industry && (
+            <div 
+              className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+              style={{
+                background: 'white',
+                border: `1px solid rgba(6,95,70,0.06)`,
+                color: `${colors.deepCharcoal}cc`
+              }}
+              title="Industry"
+            >
+              <Briefcase className="h-3 w-3" style={{ color: colors.vibrantOrange }} />
+              <span>{userData.industry}</span>
+            </div>
+          )}
+
+          {userData.domain && (
+            <div 
+              className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+              style={{
+                background: 'white',
+                border: `1px solid rgba(6,95,70,0.06)`,
+                color: `${colors.deepCharcoal}cc`
+              }}
+              title="Domain"
+            >
+              <Hash className="h-3 w-3" style={{ color: colors.skyBlue }} />
+              <span>{userData.domain}</span>
+            </div>
+          )}
+
+          {userData.location && (
+            <div 
+              className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+              style={{
+                background: 'white',
+                border: `1px solid rgba(6,95,70,0.06)`,
+                color: `${colors.deepCharcoal}cc`
+              }}
+              title="Location"
+            >
+              <MapPin className="h-3 w-3" style={{ color: colors.deepEmerald }} />
+              <span>{userData.location}</span>
+            </div>
+          )}
+        </div>
 
         <div className="flex-1" />
 
