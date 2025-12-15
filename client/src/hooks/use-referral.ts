@@ -35,7 +35,7 @@ export function useReferralStatus() {
     queryFn: async () => {
       try {
         console.log('[useReferralStatus] Fetching referral status...');
-        const response = await apiRequest('GET', '/api/referral/status', {});
+        const response = await apiRequest('GET', '/api/referral/status');
         console.log('[useReferralStatus] Response status:', response.status, 'OK:', response.ok);
         
         if (!response.ok) {
@@ -68,7 +68,7 @@ export function useReferralLink() {
     queryFn: async () => {
       try {
         console.log('[useReferralLink] Fetching referral link...');
-        const response = await apiRequest('GET', '/api/referral/generate-link', {});
+        const response = await apiRequest('GET', '/api/referral/generate-link');
         console.log('[useReferralLink] Response status:', response.status, 'OK:', response.ok);
         
         if (!response.ok) {
