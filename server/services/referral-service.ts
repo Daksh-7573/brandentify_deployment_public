@@ -6,7 +6,7 @@ import { createId } from '@paralleldrive/cuid2';
  * Handles share-to-unlock mechanics for Quantum Cards and Portfolio Templates
  */
 
-// Available Quantum Card designs (7 total)
+// Available Quantum Card designs (12 total)
 const QUANTUM_CARDS = [
   'professional',
   'quantum',
@@ -14,7 +14,12 @@ const QUANTUM_CARDS = [
   'holographic',
   'neoglow',
   'creative',
-  'artistic'
+  'artistic',
+  'fashion-quantum',
+  'graphic-quantum',
+  'photography',
+  'fitness-quantum',
+  'ceo-quantum'
 ];
 
 // Available Portfolio Layouts (13 total)

@@ -33,12 +33,8 @@ export function useReferralStatus() {
   return useQuery<ReferralStatus>({
     queryKey: ['/api/referral/status'],
     queryFn: async () => {
-      const data = await apiRequest('GET', '/api/referral/status', {});
-      return {
-        quantumCards: data.quantumCards,
-        portfolios: data.portfolios,
-        progress: data.progress,
-      };
+      const data = await apiRequest('GET', '/api/referral/status', {}) as ReferralStatus;
+      return data;
     },
     enabled: !!user,
   });
@@ -50,11 +46,8 @@ export function useReferralLink() {
   return useQuery<ReferralLink>({
     queryKey: ['/api/referral/generate-link'],
     queryFn: async () => {
-      const data = await apiRequest('GET', '/api/referral/generate-link', {});
-      return {
-        code: data.code,
-        link: data.link,
-      };
+      const data = await apiRequest('GET', '/api/referral/generate-link', {}) as ReferralLink;
+      return data;
     },
     enabled: !!user,
   });
@@ -85,7 +78,7 @@ export function useReferralStats() {
     return {
       totalReferrals: 0,
       unlockedCards: 0,
-      totalCards: 7,
+      totalCards: 12,
       unlockedPortfolios: 0,
       totalPortfolios: 13,
       isLoading,
