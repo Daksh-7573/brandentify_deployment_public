@@ -304,6 +304,29 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
         )}
 
         <div className="flex flex-wrap gap-2 mb-5">
+          {userData.industry && !isLoading && (
+            <div 
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200"
+              style={{
+                background: 'rgba(96,230,255,0.15)',
+                border: `1px solid rgba(96,230,255,0.4)`,
+                color: '#0891B2',
+                animation: 'staggeredFade 0.4s ease-out 0.15s forwards',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = `0 4px 10px rgba(0,0,0,0.12)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <Palette className="w-3 h-3" />
+              #{userData.industry}
+            </div>
+          )}
+          
           {userData.domain && !isLoading && (
             <div 
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200"
@@ -326,51 +349,9 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
               #{userData.domain === "all" ? "Creative" : userData.domain}
             </div>
           )}
-          
-          {userData.location && !isLoading && (
-            <div 
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200"
-              style={{
-                background: 'rgba(255,139,160,0.15)',
-                border: `1px solid rgba(255,139,160,0.4)`,
-                color: '#DB2777',
-                animation: 'staggeredFade 0.4s ease-out 0.2s forwards',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = `0 4px 10px rgba(0,0,0,0.12)`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              <MapPin className="w-3 h-3" />
-              {userData.location}
-            </div>
-          )}
         </div>
 
         <div className="space-y-2.5 text-xs flex-1">
-          {(userData.industry || isLoading) && (
-            <div className="flex items-center gap-2.5 group">
-              <div 
-                className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-200"
-                style={{
-                  background: 'rgba(96,230,255,0.12)',
-                  border: `1px solid rgba(96,230,255,0.3)`,
-                }}
-              >
-                <Building2 className="w-3.5 h-3.5" style={{ color: '#0891B2' }} />
-              </div>
-              {isLoading ? (
-                <span className="w-24 h-3 rounded animate-pulse" style={{ background: colors.softGrey }} />
-              ) : (
-                <span style={{ color: colors.deepInk }}>{userData.industry}</span>
-              )}
-            </div>
-          )}
-          
           {(userData.company || isLoading) && (
             <div className="flex items-center gap-2.5 group">
               <div 
@@ -386,6 +367,25 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
                 <span className="w-28 h-3 rounded animate-pulse" style={{ background: colors.softGrey }} />
               ) : (
                 <span style={{ color: colors.deepInk }}>{userData.company}</span>
+              )}
+            </div>
+          )}
+          
+          {(userData.location || isLoading) && (
+            <div className="flex items-center gap-2.5 group">
+              <div 
+                className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-200"
+                style={{
+                  background: 'rgba(255,139,160,0.15)',
+                  border: `1px solid rgba(255,139,160,0.4)`,
+                }}
+              >
+                <MapPin className="w-3.5 h-3.5" style={{ color: '#DB2777' }} />
+              </div>
+              {isLoading ? (
+                <span className="w-24 h-3 rounded animate-pulse" style={{ background: colors.softGrey }} />
+              ) : (
+                <span style={{ color: colors.deepInk }}>{userData.location}</span>
               )}
             </div>
           )}
