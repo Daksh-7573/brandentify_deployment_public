@@ -274,7 +274,6 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             </svg>
           </div>
         </div>
-      </div>
     </div>
   );
 };
