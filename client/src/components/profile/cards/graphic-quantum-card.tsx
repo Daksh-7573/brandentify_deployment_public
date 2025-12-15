@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { UserData } from "@/types/user";
-import { Mail, Phone, Globe, Briefcase, MapPin, Building2, Share2, Zap, Palette } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Building2, Zap, Palette } from "lucide-react";
 
 interface GraphicQuantumCardProps {
   userData: UserData;
@@ -458,32 +458,6 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
               </a>
             )}
           </div>
-        </div>
-
-        <div className="mt-5 flex justify-center">
-          <button
-            className="px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 relative overflow-hidden group"
-            style={{
-              background: `linear-gradient(90deg, ${colors.softMagenta}, ${colors.pastelCyan})`,
-              color: 'white',
-              boxShadow: isHovered ? `0 10px 30px rgba(255,63,174,0.25)` : '0 6px 20px rgba(0,0,0,0.1)',
-            }}
-            disabled={isLoading}
-            data-testid="button-share-card"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = `0 10px 30px rgba(255,63,174,0.25)`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.1)';
-            }}
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              <Share2 className="w-3.5 h-3.5" />
-              Share Card
-            </span>
-          </button>
         </div>
       </div>
     </div>
