@@ -172,6 +172,33 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
           
           {/* Content Container */}
           <div className="absolute inset-0 z-10 p-5 flex flex-col overflow-visible">
+            {/* Tab Navigation */}
+            <div className="flex gap-2 mb-3 border-b" style={{ borderColor: `${artisticColors.sage}40` }}>
+              <button 
+                onClick={() => setActiveTab('card')}
+                className="px-3 py-2 text-xs font-medium transition-colors"
+                style={{ 
+                  color: activeTab === 'card' ? artisticColors.burgundy : artisticColors.sage,
+                  borderBottom: activeTab === 'card' ? `2px solid ${artisticColors.burgundy}` : 'none',
+                  paddingBottom: activeTab === 'card' ? '6px' : '10px'
+                }}
+              >
+                Card
+              </button>
+              <button 
+                onClick={() => setActiveTab('contact')}
+                className="px-3 py-2 text-xs font-medium transition-colors"
+                style={{ 
+                  color: activeTab === 'contact' ? artisticColors.burgundy : artisticColors.sage,
+                  borderBottom: activeTab === 'contact' ? `2px solid ${artisticColors.burgundy}` : 'none',
+                  paddingBottom: activeTab === 'contact' ? '6px' : '10px'
+                }}
+              >
+                Contact
+              </button>
+            </div>
+            
+            {activeTab === 'card' && (<>
             {/* TOP SECTION - Visual Identity */}
             <div className="relative mb-4">
               <div className="flex items-start">
@@ -485,7 +512,10 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                 </svg>
               </div>
             </div>
+            </>)}
             
+            {activeTab === 'contact' && (
+            <>
             {/* CONTACT SECTION - Post-it notes & folded tabs */}
             <div className="space-y-2.5 mt-auto">
               <h3 
@@ -697,6 +727,8 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                 </div>
               </div>
             </div>
+            </>
+            )}
             
           </div>
         </div>

@@ -162,6 +162,33 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
           
           {/* Content Container */}
           <div className="absolute inset-0 z-10 p-4 flex flex-col overflow-visible">
+            {/* Tab Navigation */}
+            <div className="flex gap-2 mb-3 border-b" style={{ borderColor: `${creativeColors.darkText}20` }}>
+              <button 
+                onClick={() => setActiveTab('card')}
+                className="px-3 py-2 text-xs font-medium transition-colors"
+                style={{ 
+                  color: activeTab === 'card' ? creativeColors.coral : creativeColors.darkText + '80',
+                  borderBottom: activeTab === 'card' ? `2px solid ${creativeColors.coral}` : 'none',
+                  paddingBottom: activeTab === 'card' ? '6px' : '10px'
+                }}
+              >
+                Card
+              </button>
+              <button 
+                onClick={() => setActiveTab('contact')}
+                className="px-3 py-2 text-xs font-medium transition-colors"
+                style={{ 
+                  color: activeTab === 'contact' ? creativeColors.coral : creativeColors.darkText + '80',
+                  borderBottom: activeTab === 'contact' ? `2px solid ${creativeColors.coral}` : 'none',
+                  paddingBottom: activeTab === 'contact' ? '6px' : '10px'
+                }}
+              >
+                Contact
+              </button>
+            </div>
+            
+            {activeTab === 'card' && (<>
             {/* TOP SECTION - Visual Identity */}
             <div className="relative mb-4">
               {/* Profile Image with Watercolor Splash Border */}
@@ -448,7 +475,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
             
             {/* Small spacing between location and contact section */}
             <div className="py-1 mb-0.5"></div>
+            </>)}
             
+            {activeTab === 'contact' && (
+            <>
             {/* CONTACT SECTION - With animated icons */}
             <div className="space-y-1.5 mt-auto">
               <h3 
@@ -614,7 +644,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                 </button>
               </div>
             </div>
-            
+            </>
+            )}
 
           </div>
         </div>

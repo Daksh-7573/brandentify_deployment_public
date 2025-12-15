@@ -786,6 +786,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             </div>
           </div>
         </div>
+        </>)}
       </div>
       
       {/* Copy Success Message */}
