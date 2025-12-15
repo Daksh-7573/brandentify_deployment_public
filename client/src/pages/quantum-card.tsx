@@ -62,9 +62,9 @@ export default function QuantumCardPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col k1">
+    <div className="flex min-h-screen flex-col responsive-background">
       <Header />
-      <NeoGlassLayout className="mx-6 mt-3 relative z-10 k2">
+      <NeoGlassLayout className="mx-6 mt-3 relative z-10">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
