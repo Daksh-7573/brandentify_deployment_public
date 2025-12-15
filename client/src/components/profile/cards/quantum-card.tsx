@@ -178,8 +178,10 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
                 )}
               </div>
             )}
+            </div>
+          )}
 
-            {/* Contact Tab */}
+          {/* Contact Tab */}
             {activeTab === 'contact' && (
             <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
               <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t border-white/10">

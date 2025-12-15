@@ -532,7 +532,7 @@ export async function getTotalUnreadMessageCount(userId: number) {
         inArray(messages.conversation_id, conversationIds),
         eq(messages.isDeleted, false),
         isNull(readReceipts.id),
-        sql`${messages.sender_id} != ${userId}`
+        sql`${messages.sender_id} <> ${userId}`
       )
     );
     
