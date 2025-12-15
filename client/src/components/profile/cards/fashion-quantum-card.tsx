@@ -59,7 +59,7 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
     : ['Fashion', 'Editorial'];
 
   const quickStats = [
-    userData.location && { label: 'Based In', value: userData.location },
+    userData.company && { label: 'Company', value: userData.company },
     userData.industry && { label: 'Industry', value: userData.industry },
   ].filter(Boolean);
 
@@ -348,31 +348,6 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
           </a>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex gap-2 mt-2">
-          <button
-            className="flex-1 h-9 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5"
-            style={{
-              background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
-              color: colors.noirBlack,
-              boxShadow: '0 8px 20px rgba(249,197,213,0.25)',
-            }}
-            data-testid="fashion-card-cta-primary"
-          >
-            Book Me
-          </button>
-          <button
-            className="flex-1 h-9 rounded-full text-xs uppercase font-medium tracking-wide transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/10"
-            style={{
-              background: 'transparent',
-              border: `1px solid rgba(245,243,238,0.45)`,
-              color: 'rgba(255,255,255,0.9)',
-            }}
-            data-testid="fashion-card-cta-secondary"
-          >
-            View Portfolio
-          </button>
-        </div>
       </div>
     </div>
   );

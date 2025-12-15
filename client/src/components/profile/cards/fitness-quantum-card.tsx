@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { UserData } from "@/types/user";
-import { MapPin, Mail, Globe, Calendar, Dumbbell, Heart, Wind, Target, Instagram, Youtube, Phone } from "lucide-react";
+import { MapPin, Mail, Globe, Dumbbell, Phone, Building2, Briefcase, Hash } from "lucide-react";
 
 interface FitnessQuantumCardProps {
   userData: UserData;
@@ -8,7 +8,6 @@ interface FitnessQuantumCardProps {
 }
 
 const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoading = false }) => {
-  const [contactOpen, setContactOpen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -30,84 +29,9 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
     deepCharcoal: '#1F2937',
   };
 
-  const metrics = {
-    flexibility: 92,
-    strength: 88,
-    breath: 95,
-    trainingLevel: 'Advanced'
-  };
-
   const profileLink = userData.randomProfileLink 
     ? `brandentifier.com/r/${userData.randomProfileLink}` 
     : `brandentifier.com/@${userData.brandName || userData.username}`;
-
-  useEffect(() => {
-    const gauges = cardRef.current?.querySelectorAll('.gauge-fg');
-    if (gauges) {
-      gauges.forEach((g) => {
-        const el = g as SVGCircleElement;
-        const val = el.getAttribute('data-val');
-        const pct = Math.max(0, Math.min(100, Number(val) || 0));
-        const circumference = 2 * Math.PI * 34;
-        const offset = circumference - (pct / 100) * circumference;
-        el.style.strokeDasharray = `${circumference} ${circumference}`;
-        el.style.strokeDashoffset = `${circumference}`;
-        setTimeout(() => { 
-          el.style.strokeDashoffset = `${offset}`; 
-        }, 100);
-      });
-    }
-  }, []);
-
-  const MetricGauge = ({ label, value, icon: Icon, gradientId, colorStart, colorEnd, delay, reducedMotion }: {
-    label: string;
-    value: number;
-    icon: React.ElementType;
-    gradientId: string;
-    colorStart: string;
-    colorEnd: string;
-    delay: number;
-    reducedMotion?: boolean;
-  }) => (
-    <div className="gauge relative flex flex-col items-center" title={`${label}: ${value}%`}>
-      <svg width="72" height="72" viewBox="0 0 80 80" style={{ transform: 'rotate(-90deg)' }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={colorStart} />
-            <stop offset="100%" stopColor={colorEnd} />
-          </linearGradient>
-        </defs>
-        <circle
-          cx="40"
-          cy="40"
-          r="34"
-          fill="none"
-          stroke="#f0f7f2"
-          strokeWidth="8"
-          className="gauge-bg"
-        />
-        <circle
-          cx="40"
-          cy="40"
-          r="34"
-          fill="none"
-          stroke={`url(#${gradientId})`}
-          strokeWidth="8"
-          strokeLinecap="round"
-          className="gauge-fg"
-          data-val={value}
-          style={{
-            transition: reducedMotion ? 'none' : `stroke-dashoffset 1.3s cubic-bezier(0.4, 0, 0.2, 1) ${delay}s`
-          }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ transform: 'translateY(-2px)' }}>
-        <Icon className="h-4 w-4 mb-1" style={{ color: colorStart }} />
-        <span className="text-xs font-bold" style={{ color: colors.deepCharcoal }}>{value}</span>
-      </div>
-      <span className="text-[10px] mt-1 font-medium" style={{ color: colors.deepCharcoal }}>{label}</span>
-    </div>
-  );
 
   return (
     <article 
@@ -273,6 +197,51 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
             </p>
 
             <div className="flex flex-wrap gap-2">
+              {userData.company && (
+                <div 
+                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+                  style={{
+                    background: 'white',
+                    border: `1px solid rgba(6,95,70,0.06)`,
+                    color: `${colors.deepCharcoal}cc`
+                  }}
+                  title="Company"
+                >
+                  <Building2 className="h-3 w-3" style={{ color: colors.deepEmerald }} />
+                  <span>{userData.company}</span>
+                </div>
+              )}
+
+              {userData.industry && (
+                <div 
+                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+                  style={{
+                    background: 'white',
+                    border: `1px solid rgba(6,95,70,0.06)`,
+                    color: `${colors.deepCharcoal}cc`
+                  }}
+                  title="Industry"
+                >
+                  <Briefcase className="h-3 w-3" style={{ color: colors.vibrantOrange }} />
+                  <span>{userData.industry}</span>
+                </div>
+              )}
+
+              {userData.domain && (
+                <div 
+                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
+                  style={{
+                    background: 'white',
+                    border: `1px solid rgba(6,95,70,0.06)`,
+                    color: `${colors.deepCharcoal}cc`
+                  }}
+                  title="Domain"
+                >
+                  <Hash className="h-3 w-3" style={{ color: colors.skyBlue }} />
+                  <span>{userData.domain}</span>
+                </div>
+              )}
+
               {userData.location && (
                 <div 
                   className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
@@ -287,120 +256,17 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
                   <span>{userData.location}</span>
                 </div>
               )}
-
-              {userData.industry && (
-                <div 
-                  className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
-                  style={{
-                    background: 'white',
-                    border: `1px solid rgba(6,95,70,0.06)`,
-                    color: `${colors.deepCharcoal}cc`
-                  }}
-                  title="Specialty"
-                >
-                  <Heart className="h-3 w-3" style={{ color: colors.vibrantOrange }} />
-                  <span>{userData.industry}</span>
-                </div>
-              )}
             </div>
           </div>
         </header>
 
-        <section 
-          className="metrics-strip flex justify-center gap-4 py-4 px-3 mb-5 rounded-2xl"
-          style={{
-            background: `linear-gradient(135deg, rgba(163,230,53,0.06), rgba(56,189,248,0.04))`,
-            border: `1px solid rgba(6,95,70,0.06)`
-          }}
-          aria-labelledby="metrics-heading"
-        >
-          <h2 id="metrics-heading" className="sr-only">Fitness Metrics</h2>
-          
-          <MetricGauge 
-            label="Flexibility" 
-            value={metrics.flexibility} 
-            icon={Wind}
-            gradientId="g1" 
-            colorStart={colors.energeticLime} 
-            colorEnd={colors.vibrantOrange}
-            delay={0}
-            reducedMotion={prefersReducedMotion}
-          />
-          <MetricGauge 
-            label="Strength" 
-            value={metrics.strength} 
-            icon={Dumbbell}
-            gradientId="g2" 
-            colorStart={colors.vibrantOrange} 
-            colorEnd={colors.skyBlue}
-            delay={0.1}
-            reducedMotion={prefersReducedMotion}
-          />
-          <MetricGauge 
-            label="Breath" 
-            value={metrics.breath} 
-            icon={Wind}
-            gradientId="g3" 
-            colorStart={colors.skyBlue} 
-            colorEnd={colors.energeticLime}
-            delay={0.2}
-            reducedMotion={prefersReducedMotion}
-          />
-          
-          <div className="flex flex-col items-center justify-center px-3">
-            <div 
-              className="px-3 py-1.5 rounded-full text-xs font-bold mb-1"
-              style={{
-                background: `linear-gradient(90deg, ${colors.deepEmerald}, ${colors.energeticLime})`,
-                color: 'white'
-              }}
-            >
-              {metrics.trainingLevel}
-            </div>
-            <span className="text-[10px] font-medium" style={{ color: colors.deepCharcoal }}>Level</span>
-          </div>
-        </section>
-
         <div className="flex-1" />
 
-        <div className="flex justify-center gap-3 mb-4">
-          <button
-            onClick={() => setContactOpen(!contactOpen)}
-            className="fcta inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm cursor-pointer transition-all duration-300"
-            style={{
-              background: `linear-gradient(90deg, ${colors.energeticLime}, ${colors.vibrantOrange})`,
-              color: 'white',
-              boxShadow: `0 12px 32px rgba(163,230,53,0.2)`,
-              border: 'none'
-            }}
-            data-testid="button-connect-fitness"
-          >
-            <Calendar className="h-4 w-4" />
-            <span>Connect</span>
-          </button>
-
-          <button
-            className="fcta inline-flex items-center gap-2 px-4 py-2.5 rounded-full font-medium text-sm cursor-pointer transition-all"
-            style={{
-              background: 'white',
-              color: colors.deepCharcoal,
-              border: `1px solid rgba(6,95,70,0.1)`
-            }}
-            data-testid="button-portfolio-fitness"
-          >
-            <Globe className="h-4 w-4" />
-            <span>Portfolio</span>
-          </button>
-        </div>
-
+        {/* Contact Information Section */}
         <div 
-          className="contact-panel rounded-xl p-4 transition-all duration-500"
+          className="contact-panel rounded-xl p-4"
           style={{
             background: `linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,255,250,0.98))`,
-            boxShadow: contactOpen ? `0 -10px 40px rgba(6,95,70,0.1)` : 'none',
-            transform: contactOpen ? 'translateY(0)' : 'translateY(20px)',
-            opacity: contactOpen ? 1 : 0,
-            pointerEvents: contactOpen ? 'auto' : 'none',
             border: `1px solid rgba(6,95,70,0.08)`
           }}
         >
@@ -420,9 +286,9 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
               </a>
             )}
 
-            {(userData as any).phone && (
+            {userData.phoneNumber && (
               <a 
-                href={`tel:${(userData as any).phone}`}
+                href={`tel:${userData.phoneNumber}`}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
                 style={{
                   background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
@@ -431,75 +297,24 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
                 }}
               >
                 <Phone className="h-3.5 w-3.5" style={{ color: colors.vibrantOrange }} />
-                <span>{(userData as any).phone}</span>
+                <span>{userData.phoneNumber}</span>
               </a>
             )}
 
-            {(userData as any).websiteUrl && (
-              <a 
-                href={(userData as any).websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
-                style={{
-                  background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
-                  color: colors.deepCharcoal,
-                  border: `1px solid rgba(6,95,70,0.08)`
-                }}
-              >
-                <Globe className="h-3.5 w-3.5" style={{ color: colors.skyBlue }} />
-                <span>Website</span>
-              </a>
-            )}
-
-            {(userData as any).instagramUrl && (
-              <a 
-                href={(userData as any).instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
-                style={{
-                  background: `linear-gradient(135deg, rgba(251,146,60,0.1), rgba(163,230,53,0.05))`,
-                  color: colors.deepCharcoal,
-                  border: `1px solid rgba(6,95,70,0.08)`
-                }}
-              >
-                <Instagram className="h-3.5 w-3.5" style={{ color: '#E4405F' }} />
-                <span>Instagram</span>
-              </a>
-            )}
-
-            {(userData as any).youtubeUrl && (
-              <a 
-                href={(userData as any).youtubeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
-                style={{
-                  background: `linear-gradient(135deg, rgba(251,146,60,0.1), rgba(163,230,53,0.05))`,
-                  color: colors.deepCharcoal,
-                  border: `1px solid rgba(6,95,70,0.08)`
-                }}
-              >
-                <Youtube className="h-3.5 w-3.5" style={{ color: '#FF0000' }} />
-                <span>YouTube</span>
-              </a>
-            )}
-          </div>
-
-          <div className="text-center mt-3">
-            <button
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:scale-105"
+            <a 
+              href={`/@${userData.brandName || userData.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
               style={{
-                background: `linear-gradient(90deg, ${colors.deepEmerald}, ${colors.energeticLime})`,
-                color: 'white',
-                boxShadow: `0 8px 24px rgba(6,95,70,0.15)`
+                background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
+                color: colors.deepCharcoal,
+                border: `1px solid rgba(6,95,70,0.08)`
               }}
-              data-testid="button-book-session"
             >
-              <Calendar className="h-3.5 w-3.5 animate-pulse" />
-              <span>Book a Session</span>
-            </button>
+              <Globe className="h-3.5 w-3.5" style={{ color: colors.skyBlue }} />
+              <span>{profileLink}</span>
+            </a>
           </div>
         </div>
 

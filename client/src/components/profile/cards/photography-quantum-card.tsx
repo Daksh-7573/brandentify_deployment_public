@@ -1,6 +1,6 @@
 import React from "react";
 import { UserData } from "@/types/user";
-import { MapPin, Camera, Mail, Phone, Globe } from "lucide-react";
+import { MapPin, Camera, Mail, Phone, Globe, Building2, Briefcase, Hash } from "lucide-react";
 
 interface PhotographyQuantumCardProps {
   userData: UserData;
@@ -107,28 +107,44 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
             </span>
           </div>
 
-          {/* Tagline */}
-          <p className="text-center text-[#1C1C1C] text-sm sm:text-base max-w-xs leading-relaxed opacity-90">
-            {isLoading ? (
-              <span className="inline-block w-40 h-4 bg-[#D4D4D4] rounded animate-pulse" />
-            ) : (
-              userData.tagline || "Capturing moments with cinematic light"
-            )}
-          </p>
         </div>
 
         {/* Divider line */}
         <div className="w-12 h-1 bg-gradient-to-r from-[#FBBF24] to-transparent mx-auto mb-6" />
 
-        {/* Contact Information - Single line caption strip style */}
-        <div className="flex flex-wrap items-center gap-2 mb-6 text-xs w-full">
+        {/* Professional Info */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-4 text-xs w-full">
+          {userData.company && (
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
+              <Building2 className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+              <span className="truncate text-xs">{userData.company}</span>
+            </div>
+          )}
+          
+          {userData.industry && (
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
+              <Briefcase className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+              <span className="truncate text-xs">{userData.industry}</span>
+            </div>
+          )}
+          
+          {userData.domain && (
+            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
+              <Hash className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+              <span className="truncate text-xs">{userData.domain}</span>
+            </div>
+          )}
+
           {userData.location && (
             <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
               <MapPin className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
               <span className="truncate text-xs">{userData.location}</span>
             </div>
           )}
+        </div>
 
+        {/* Contact Information */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-6 text-xs w-full">
           {userData.email && (
             <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
               <Mail className="h-3.5 w-3.5 text-[#60A5FA] flex-shrink-0" />

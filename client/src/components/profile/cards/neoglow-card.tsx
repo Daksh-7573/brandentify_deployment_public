@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { 
   Mail, 
   Phone, 
@@ -9,9 +9,7 @@ import {
   Globe,
   ExternalLink,
   ChevronUp,
-  ChevronDown,
-  Circle,
-  CircleDot
+  ChevronDown
 } from "lucide-react";
 import { UserData } from "@/types/user";
 
@@ -52,7 +50,6 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [isContactExpanded, setIsContactExpanded] = useState(false);
-  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>('online');
   
   // Refs for tilt effect
   const cardRef = useRef<HTMLDivElement>(null);
@@ -123,16 +120,6 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
     requestAnimationFrame(animateReset);
   };
   
-  // Animation effect for simulating online status change
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const statuses: Array<'online' | 'offline' | 'away'> = ['online', 'away', 'online'];
-      const randomIndex = Math.floor(Math.random() * statuses.length);
-      setOnlineStatus(statuses[randomIndex]);
-    }, 30000); // Change every 30 seconds
-    
-    return () => clearInterval(interval);
-  }, []);
   
   return (
     <div 
@@ -275,27 +262,6 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
               />
             </div>
             
-            {/* Online Status Indicator */}
-            <div className="absolute bottom-1 right-1 z-20">
-              {onlineStatus === 'online' && (
-                <div className="relative">
-                  <CircleDot className="h-4 w-4 text-green-500" />
-                  <div 
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      boxShadow: `0 0 8px rgba(34, 197, 94, 0.7)`,
-                      animation: "pulse 2s infinite",
-                    }}
-                  />
-                </div>
-              )}
-              {onlineStatus === 'away' && (
-                <Circle className="h-4 w-4 text-yellow-500" />
-              )}
-              {onlineStatus === 'offline' && (
-                <Circle className="h-4 w-4 text-gray-400" />
-              )}
-            </div>
           </div>
           
           {/* Name and Title with Neon Text Effect */}

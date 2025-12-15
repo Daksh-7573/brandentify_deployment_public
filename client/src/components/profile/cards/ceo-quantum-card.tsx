@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { UserData } from "@/types/user";
-import { Mail, Globe, MapPin, Briefcase, Award, Users, Target, Zap, Download, Share2, Copy, Check } from "lucide-react";
+import { Mail, Globe, MapPin, Briefcase, Copy, Check, Phone, Building2, Hash } from "lucide-react";
 
 interface CEOQuantumCardProps {
   userData: UserData;
@@ -8,13 +8,9 @@ interface CEOQuantumCardProps {
 }
 
 const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = false }) => {
-  const [contactOpen, setContactOpen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [signatureDrawn, setSignatureDrawn] = useState(false);
-  const [hoveredAchievement, setHoveredAchievement] = useState<number | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const signatureSvgRef = useRef<SVGPathElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -23,23 +19,6 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
-
-  useEffect(() => {
-    if (!prefersReducedMotion && signatureSvgRef.current) {
-      const pathLength = signatureSvgRef.current.getTotalLength();
-      signatureSvgRef.current.style.strokeDasharray = `${pathLength}`;
-      signatureSvgRef.current.style.strokeDashoffset = `${pathLength}`;
-      
-      setTimeout(() => {
-        if (signatureSvgRef.current) {
-          signatureSvgRef.current.style.strokeDashoffset = '0';
-          setSignatureDrawn(true);
-        }
-      }, 100);
-    } else {
-      setSignatureDrawn(true);
-    }
-  }, [prefersReducedMotion]);
 
   const colors = {
     executiveGold: '#7C3AED',
@@ -54,16 +33,6 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
     platinumEdgeGlow: 'rgba(201,203,207,0.25)',
     navyShadow: 'rgba(15,26,46,0.5)',
   };
-
-  const achievements = [
-    "15+ Years Leading Teams",
-    userData.industry ? `Expertise in ${userData.industry}` : "Visionary Leader",
-    userData.domain ? `Specialist in ${userData.domain}` : "Innovation Pioneer",
-  ].filter(a => a);
-
-  const coreValues = Array.isArray(userData.coreValues) ? userData.coreValues.slice(0, 4) : [];
-  
-  const leadingPillars = coreValues.length > 0 ? coreValues : ["Vision", "Strategy", "People", "Execution"];
 
   const profileLink = userData.randomProfileLink 
     ? `brandentifier.com/r/${userData.randomProfileLink}` 
@@ -199,116 +168,62 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             </p>
           )}
 
-          {/* Animated executive tagline */}
-          {userData.tagline && (
-            <p style={{ color: colors.softWhite }} className="text-sm italic text-center max-w-xs leading-relaxed">
-              "{userData.tagline}"
-            </p>
+        </div>
+
+        {/* Professional Info Section */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {userData.company && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+              style={{
+                background: colors.richNavy,
+                border: `1px solid ${colors.platinumEdgeGlow}`,
+                color: colors.softWhite,
+              }}
+            >
+              <Building2 size={14} style={{ color: colors.executiveGold }} />
+              <span>{userData.company}</span>
+            </div>
+          )}
+
+          {userData.industry && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+              style={{
+                background: colors.richNavy,
+                border: `1px solid ${colors.platinumEdgeGlow}`,
+                color: colors.softWhite,
+              }}
+            >
+              <Briefcase size={14} style={{ color: colors.executiveGold }} />
+              <span>{userData.industry}</span>
+            </div>
+          )}
+
+          {userData.domain && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+              style={{
+                background: colors.richNavy,
+                border: `1px solid ${colors.platinumEdgeGlow}`,
+                color: colors.softWhite,
+              }}
+            >
+              <Hash size={14} style={{ color: colors.executiveGold }} />
+              <span>{userData.domain}</span>
+            </div>
           )}
         </div>
 
-        {/* 2️⃣ CEO SIGNATURE STRIP */}
-        <div
-          className="flex flex-col items-center py-6 px-4 rounded-lg"
-          style={{
-            background: `linear-gradient(90deg, ${colors.softGoldGlow}, transparent, ${colors.softGoldGlow})`,
-            border: `1px solid ${colors.platinumEdgeGlow}`,
-          }}
-        >
-          <svg width="160" height="60" viewBox="0 0 160 60" className="mb-3">
-            <defs>
-              <style>
-                {`
-                  @keyframes shimmerSweep {
-                    0% { filter: drop-shadow(0 0 5px ${colors.softGoldGlow}); }
-                    50% { filter: drop-shadow(0 0 15px ${colors.softGoldGlow}); }
-                    100% { filter: drop-shadow(0 0 5px ${colors.softGoldGlow}); }
-                  }
-                  @keyframes rotation {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                  }
-                  @keyframes subtleDrift {
-                    0% { transform: translate(0, 0); }
-                    50% { transform: translate(10px, 10px); }
-                    100% { transform: translate(0, 0); }
-                  }
-                  @keyframes geometricPan {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(100%); }
-                  }
-                  .sig-path {
-                    fill: none;
-                    stroke: ${colors.executiveGold};
-                    stroke-width: 1.5;
-                    stroke-linecap: round;
-                    stroke-linejoin: round;
-                    ${prefersReducedMotion ? '' : 'transition: stroke-dashoffset 2s ease-in-out;'}
-                  }
-                `}
-              </style>
-            </defs>
-            <path
-              ref={signatureSvgRef}
-              className="sig-path"
-              d="M 20 30 Q 40 20, 60 30 T 100 30 Q 120 35, 140 25 M 0 0"
-            />
-          </svg>
-          <p style={{ color: colors.executiveGold }} className="text-xs font-semibold tracking-widest">
-            FOUNDER & CHIEF EXECUTIVE OFFICER
-          </p>
-        </div>
-
-        {/* 3️⃣ KEY ACHIEVEMENTS */}
-        {achievements.length > 0 && (
-          <div className="space-y-3">
-            {achievements.map((achievement, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 rounded-lg transition-all duration-300 cursor-default"
-                onMouseEnter={() => setHoveredAchievement(idx)}
-                onMouseLeave={() => setHoveredAchievement(null)}
-                style={{
-                  background: hoveredAchievement === idx ? `${colors.softGoldGlow}20` : 'transparent',
-                  border: `1px solid ${hoveredAchievement === idx ? colors.executiveGold : colors.platinumEdgeGlow}`,
-                  transform: prefersReducedMotion ? 'none' : (hoveredAchievement === idx ? 'translateY(-2px)' : 'translateY(0)'),
-                }}
-              >
-                <Award size={16} style={{ color: colors.executiveGold, flexShrink: 0, marginTop: '2px' }} />
-                <span style={{ color: colors.softWhite }} className="text-sm">
-                  {achievement}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* 4️⃣ LEADERSHIP PILLARS */}
-        {leadingPillars.length > 0 && (
-          <div className="grid grid-cols-2 gap-3">
-            {leadingPillars.map((pillar, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center p-3 rounded-lg transition-all duration-300"
-                style={{
-                  background: colors.richNavy,
-                  border: `1px solid ${colors.platinumEdgeGlow}`,
-                }}
-              >
-                {idx === 0 && <Target size={18} style={{ color: colors.executiveGold, marginBottom: '6px' }} />}
-                {idx === 1 && <Briefcase size={18} style={{ color: colors.executiveGold, marginBottom: '6px' }} />}
-                {idx === 2 && <Users size={18} style={{ color: colors.executiveGold, marginBottom: '6px' }} />}
-                {idx === 3 && <Zap size={18} style={{ color: colors.executiveGold, marginBottom: '6px' }} />}
-                <span style={{ color: colors.softWhite }} className="text-xs font-semibold text-center">
-                  {pillar}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* 5️⃣ CONTACT SECTION */}
+        {/* Contact Section */}
         <div className="flex flex-col gap-2 mt-auto pt-4 border-t" style={{ borderColor: colors.platinumEdgeGlow }}>
+          {userData.location && (
+            <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: colors.mutedSilver }}>
+              <MapPin size={14} />
+              <span>{userData.location}</span>
+            </div>
+          )}
+
           {userData.email && (
             <button
               onClick={handleCopyEmail}
@@ -333,6 +248,19 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             </button>
           )}
 
+          {userData.phoneNumber && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+              style={{
+                border: `1px solid ${colors.platinumEdgeGlow}`,
+                color: colors.softWhite,
+              }}
+            >
+              <Phone size={14} style={{ color: colors.executiveGold }} />
+              <span>{userData.phoneNumber}</span>
+            </div>
+          )}
+
           <button
             onClick={handleCopyLink}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all duration-300"
@@ -354,13 +282,6 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
               </>
             )}
           </button>
-
-          {userData.location && (
-            <div className="flex items-center gap-2 px-3 py-2 text-xs" style={{ color: colors.mutedSilver }}>
-              <MapPin size={14} />
-              <span>{userData.location}</span>
-            </div>
-          )}
         </div>
       </div>
 

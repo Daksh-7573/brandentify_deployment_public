@@ -87,6 +87,14 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
 
         {/* Professional Info List */}
         <div className="space-y-3 mb-4">
+          {/* Company */}
+          <div className="flex items-center text-sm pl-2 border-l-2 border-blue-500/30 hover:border-blue-500/70 transition-colors group">
+            <Building2 className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0 drop-shadow-sm group-hover:drop-shadow-md transition-all" />
+            <span className="text-gray-700 dark:text-gray-300 truncate">
+              {userData.company || "Add company"}
+            </span>
+          </div>
+          
           {/* Industry */}
           <div className="flex items-center text-sm pl-2 border-l-2 border-blue-500/30 hover:border-blue-500/70 transition-colors group">
             <Briefcase className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0 drop-shadow-sm group-hover:drop-shadow-md transition-all" />
@@ -97,7 +105,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
           
           {/* Domain */}
           <div className="flex items-center text-sm pl-2 border-l-2 border-blue-500/30 hover:border-blue-500/70 transition-colors group">
-            <Building2 className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0 drop-shadow-sm group-hover:drop-shadow-md transition-all" />
+            <Hash className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0 drop-shadow-sm group-hover:drop-shadow-md transition-all" />
             <span className="text-gray-700 dark:text-gray-300 truncate capitalize">
               {userData.domain || "Add domain"}
             </span>
