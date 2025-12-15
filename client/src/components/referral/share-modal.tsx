@@ -21,14 +21,17 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
   // Refetch referral status and link when modal opens
   useEffect(() => {
     if (open) {
+      console.log('[ShareModal] Modal opened, refetching data...');
       // Refetch both queries to get fresh data
       queryClient.refetchQueries({ queryKey: ['/api/referral/status'] });
+      queryClient.refetchQueries({ queryKey: ['/api/referral/generate-link'] });
       refetchLink();
     }
   }, [open, queryClient, refetchLink]);
 
-  // Track if we're loading fresh data - use the stats isLoading state
+  // Track loading state from both sources
   const isLoadingStats = stats.isLoading;
+  const isLoadingLink = isLoadingLink;
 
   const handleCopy = async () => {
     if (!referralLink?.link) return;
@@ -139,12 +142,19 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
               Your Referral Link
             </label>
             <div className="flex gap-2">
-              <div className="flex-1 p-3 rounded-lg bg-white/5 border border-white/10 font-mono text-sm truncate">
-                {referralLink?.link || "Loading..."}
-              </div>
+              {isLoadingLink ? (
+                <div className="flex-1 p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div className="h-5 bg-white/10 rounded animate-pulse" />
+                </div>
+              ) : (
+                <div className="flex-1 p-3 rounded-lg bg-white/5 border border-white/10 font-mono text-sm truncate text-white/80">
+                  {referralLink?.link ? referralLink.link : 'Unable to load link'}
+                </div>
+              )}
               <Button
                 onClick={handleCopy}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                disabled={!referralLink?.link || isLoadingLink}
+                className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                 data-testid="button-copy-referral-link"
               >
                 {copied ? (
