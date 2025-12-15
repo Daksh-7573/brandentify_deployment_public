@@ -42,6 +42,34 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             </div>
           )}
           
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-4 border-b border-cyan-500/20">
+            <button
+              onClick={() => setActiveTab('card')}
+              className="px-3 py-2 text-xs font-medium transition-colors"
+              style={{
+                color: activeTab === 'card' ? '#22D3EE' : '#9CA3AF',
+                borderBottom: activeTab === 'card' ? '2px solid #22D3EE' : 'none',
+                paddingBottom: activeTab === 'card' ? '6px' : '10px',
+              }}
+            >
+              Card
+            </button>
+            <button
+              onClick={() => setActiveTab('contact')}
+              className="px-3 py-2 text-xs font-medium transition-colors"
+              style={{
+                color: activeTab === 'contact' ? '#22D3EE' : '#9CA3AF',
+                borderBottom: activeTab === 'contact' ? '2px solid #22D3EE' : 'none',
+                paddingBottom: activeTab === 'contact' ? '6px' : '10px',
+              }}
+            >
+              Contact
+            </button>
+          </div>
+
+          {activeTab === 'card' && (
+          <>
           {/* Header section with holographic profile picture */}
           <div className="flex flex-col items-center mb-3 sm:mb-6 mt-2 sm:mt-4">
             {/* Hexagonal profile picture frame with glow */}
@@ -151,62 +179,47 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
               </div>
             )}
 
-            {/* Contact section */}
-            <div className="mt-2 sm:mt-4 pt-2 sm:pt-4 border-t border-white/10">
-              {/* Email */}
-              <div className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 transition-all duration-300 hover:translate-x-1 group">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
-                  <Mail className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-400" />
-                </div>
-                {isLoading ? (
-                  <span className="w-32 sm:w-36 h-2.5 sm:h-3 bg-blue-300/20 rounded animate-pulse"></span>
-                ) : (
-                  <span className="text-white/90 text-xs tracking-wide truncate">{userData.email}</span>
-                )}
+          </div>
+          </>
+          )}
+
+          {activeTab === 'contact' && (
+          <div className="space-y-3 mt-4">
+            {/* Email */}
+            <div className="flex items-center gap-1.5 sm:gap-2 py-2 transition-all duration-300 hover:translate-x-1 group">
+              <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
+                <Mail className="h-3 w-3 text-blue-400" />
               </div>
-              
-              {/* Phone */}
-              <div className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 transition-all duration-300 hover:translate-x-1 group">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
-                  <Phone className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-400" />
-                </div>
-                {isLoading ? (
-                  <span className="w-24 sm:w-28 h-2.5 sm:h-3 bg-blue-300/20 rounded animate-pulse"></span>
-                ) : (
-                  <span className="text-white/90 text-xs tracking-wide">{userData.phoneNumber || "Add phone number"}</span>
-                )}
+              <span className="text-white/90 text-sm tracking-wide truncate">{userData.email}</span>
+            </div>
+            
+            {/* Phone */}
+            {userData.phoneNumber && (
+            <div className="flex items-center gap-1.5 sm:gap-2 py-2 transition-all duration-300 hover:translate-x-1 group">
+              <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
+                <Phone className="h-3 w-3 text-blue-400" />
               </div>
-              
-              {/* Profile Link with barcode-style - clickable */}
-              <div className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 transition-all duration-300 hover:translate-x-1 group">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
-                  <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-blue-400" />
-                </div>
-                {isLoading ? (
-                  <span className="w-28 sm:w-32 h-2.5 sm:h-3 bg-blue-300/20 rounded animate-pulse"></span>
-                ) : (
-                  <a 
-                    href={profileHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 text-xs tracking-wide font-medium truncate hover:text-cyan-300 transition-colors"
-                    data-testid="link-profile-url"
-                  >
-                    {profileLink}
-                  </a>
-                )}
+              <span className="text-white/90 text-sm tracking-wide">{userData.phoneNumber}</span>
+            </div>
+            )}
+            
+            {/* Profile Link */}
+            <div className="flex items-center gap-1.5 sm:gap-2 py-2 transition-all duration-300 hover:translate-x-1 group">
+              <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
+                <Globe className="h-3 w-3 text-blue-400" />
               </div>
+              <a 
+                href={profileHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 text-sm tracking-wide font-medium truncate hover:text-cyan-300 transition-colors"
+                data-testid="link-profile-url"
+              >
+                {profileLink}
+              </a>
             </div>
           </div>
-          
-          {/* Footer with share button */}
-          <div className="mt-4 sm:mt-6 pt-2 sm:pt-4 pb-2 sm:pb-3 flex justify-center">
-            <div className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-md text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/30 shadow-[0_0_10px_rgba(34,211,238,0.15)] ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer'}`}>
-              <Share2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1.5 sm:mr-2 text-cyan-400" />
-              <span className="hidden sm:inline">Share Quantum Card</span>
-              <span className="sm:hidden">Share</span>
-            </div>
-          </div>
+          )}
           
           {/* Decorative tech elements */}
           <div className="absolute top-0 right-0 h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 opacity-20">

@@ -150,7 +150,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             {/* Profile image */}
             <img
               src={userData.photoURL || `https://ui-avatars.com/api/?name=${userData.name}&background=0A0A0A&color=7C3AED`}
-              alt={userData.name}
+              alt={userData.name || 'Profile'}
               className="relative z-10 w-32 h-32 rounded-full object-cover border-2"
               style={{
                 borderColor: colors.executiveGold,

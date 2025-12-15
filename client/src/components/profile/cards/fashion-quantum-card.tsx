@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { UserData } from "@/types/user";
 import { Mail, MapPin, Globe, Instagram, Eye, Phone, Camera, Scissors, Star } from "lucide-react";
 
@@ -50,7 +51,7 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
   userData,
   isLoading = false,
 }) => {
-  const [activeTab, setActiveTab] = React.useState<'card' | 'contact'>('card');
+  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const profileLink = userData.randomProfileLink 
     ? `brandentifier.com/r/${userData.randomProfileLink}` 
     : `brandentifier.com/@${userData.brandName || userData.username}`;
