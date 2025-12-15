@@ -14,45 +14,41 @@ import {
 
 /**
  * React hook for feature access control
- * Provides convenient access to subscription tier limits and checks
+ * NOTE: All premium restrictions have been disabled.
+ * All users now have full access to all features.
  */
 export function useFeatureAccess() {
   const { user } = useUser();
   
-  // Support both camelCase and snake_case from database - check both, use whichever is not null/undefined
-  const subscriptionTier = (user as any)?.subscriptionTier || (user as any)?.subscription_tier || 'free';
+  // Always treat all users as having premium access
+  const isPremium = true;
+  const subscriptionTier = 'premium';
+  const quotas = getFeatureQuotas('premium');
   const premiumFeaturesUsage = (user as any)?.premiumFeaturesUsage as FeatureUsage | undefined;
   
-  const isPremium = subscriptionTier === 'premium';
-  const quotas = getFeatureQuotas(subscriptionTier);
-  
   return {
-    // User info
-    isPremium,
-    subscriptionTier,
+    // User info - always premium
+    isPremium: true,
+    subscriptionTier: 'premium',
     quotas,
     usage: premiumFeaturesUsage,
     
-    // Feature checks
-    aiChat: checkAIChatAccess(subscriptionTier, premiumFeaturesUsage),
-    resumeAnalysis: checkResumeAnalysisAccess(subscriptionTier, premiumFeaturesUsage),
+    // Feature checks - always granted
+    aiChat: { hasAccess: true, remaining: Infinity },
+    resumeAnalysis: { hasAccess: true, remaining: Infinity },
     
-    // Template checks
-    canAccessPortfolioTemplate: (templateId: string) => 
-      checkPortfolioTemplateAccess(templateId, subscriptionTier),
+    // Template checks - always granted
+    canAccessPortfolioTemplate: (templateId: string) => ({ hasAccess: true }),
     
-    canAccessVisitingCard: (cardType: string) => 
-      checkVisitingCardAccess(cardType, subscriptionTier),
+    canAccessVisitingCard: (cardType: string) => ({ hasAccess: true }),
     
-    // Quest checks
-    canAccessQuestType: (questType: 'career' | 'social') => 
-      checkQuestTypeAccess(questType, subscriptionTier),
+    // Quest checks - always granted
+    canAccessQuestType: (questType: 'career' | 'social') => ({ hasAccess: true }),
     
-    // Career capsule check
-    canCreateCareerCapsule: (currentCount: number) => 
-      checkCareerCapsuleAccess(currentCount, subscriptionTier),
+    // Career capsule check - always granted
+    canCreateCareerCapsule: (currentCount: number) => ({ hasAccess: true, remaining: Infinity }),
     
-    // Hashtag limit
-    hashtagLimit: getHashtagLimit(subscriptionTier),
+    // Hashtag limit - max for everyone
+    hashtagLimit: 10,
   };
 }

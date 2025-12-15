@@ -1,6 +1,7 @@
 /**
  * Feature Access Control System
- * Centralized logic for checking free vs premium feature access
+ * NOTE: All premium restrictions have been temporarily disabled.
+ * All users now have full access to all features.
  */
 
 export interface FeatureQuotas {
@@ -37,178 +38,99 @@ export interface FeatureUsage {
   lastResetDate: string | null;
 }
 
+// All users now get unlimited access (premium tier quotas)
 export const FREE_TIER_QUOTAS: FeatureQuotas = {
-  aiChatMessagesPerMonth: 5,
-  resumeAnalysisPerMonth: 1,
-  portfolioTemplatesAllowed: 2, // Corporate Executive, Scholar
-  visitingCardTemplatesAllowed: 2, // Professional, Quantum Tech
-  hashtagSuggestionsPerPost: 3,
-  careerCapsulesAllowed: 1,
-  allowCareerQuests: true,
-  allowSocialQuests: false,
-  insightfulReactionsDaily: 10,
-  misinformedReactionsDaily: 10,
-  premiumBadge: false,
-  prioritySupport: false,
-  earlyAccess: false,
-  adFree: false,
-};
-
-export const PREMIUM_TIER_QUOTAS: FeatureQuotas = {
   aiChatMessagesPerMonth: Infinity,
   resumeAnalysisPerMonth: Infinity,
-  portfolioTemplatesAllowed: Infinity, // All templates
-  visitingCardTemplatesAllowed: Infinity, // All templates
+  portfolioTemplatesAllowed: Infinity,
+  visitingCardTemplatesAllowed: Infinity,
   hashtagSuggestionsPerPost: 10,
   careerCapsulesAllowed: Infinity,
   allowCareerQuests: true,
   allowSocialQuests: true,
   insightfulReactionsDaily: 20,
   misinformedReactionsDaily: 20,
-  premiumBadge: true,
+  premiumBadge: false,
   prioritySupport: true,
   earlyAccess: true,
   adFree: true,
 };
 
-// Free tier allowed templates
-export const FREE_PORTFOLIO_TEMPLATES = ['corporate-executive', 'scholar'];
-export const FREE_VISITING_CARD_TEMPLATES = ['professional', 'quantum-tech'];
+export const PREMIUM_TIER_QUOTAS: FeatureQuotas = {
+  aiChatMessagesPerMonth: Infinity,
+  resumeAnalysisPerMonth: Infinity,
+  portfolioTemplatesAllowed: Infinity,
+  visitingCardTemplatesAllowed: Infinity,
+  hashtagSuggestionsPerPost: 10,
+  careerCapsulesAllowed: Infinity,
+  allowCareerQuests: true,
+  allowSocialQuests: true,
+  insightfulReactionsDaily: 20,
+  misinformedReactionsDaily: 20,
+  premiumBadge: false,
+  prioritySupport: true,
+  earlyAccess: true,
+  adFree: true,
+};
+
+// All templates are now accessible
+export const FREE_PORTFOLIO_TEMPLATES: string[] = [];
+export const FREE_VISITING_CARD_TEMPLATES: string[] = [];
 
 export function getFeatureQuotas(subscriptionTier?: string): FeatureQuotas {
-  return subscriptionTier === 'premium' ? PREMIUM_TIER_QUOTAS : FREE_TIER_QUOTAS;
+  // Always return premium quotas for all users
+  return PREMIUM_TIER_QUOTAS;
 }
 
 export function checkAIChatAccess(
   subscriptionTier?: string,
   usage?: FeatureUsage
 ): { hasAccess: boolean; remaining: number; message?: string } {
-  const quotas = getFeatureQuotas(subscriptionTier);
-  const used = usage?.aiChatCount || 0;
-  
-  if (quotas.aiChatMessagesPerMonth === Infinity) {
-    return { hasAccess: true, remaining: Infinity };
-  }
-  
-  const remaining = quotas.aiChatMessagesPerMonth - used;
-  
-  if (remaining <= 0) {
-    return {
-      hasAccess: false,
-      remaining: 0,
-      message: `You've used all ${quotas.aiChatMessagesPerMonth} AI chat messages this month. Upgrade to Premium for unlimited access!`,
-    };
-  }
-  
-  return { hasAccess: true, remaining };
+  // Always grant access
+  return { hasAccess: true, remaining: Infinity };
 }
 
 export function checkResumeAnalysisAccess(
   subscriptionTier?: string,
   usage?: FeatureUsage
 ): { hasAccess: boolean; remaining: number; message?: string } {
-  const quotas = getFeatureQuotas(subscriptionTier);
-  const used = usage?.resumeAnalysisCount || 0;
-  
-  if (quotas.resumeAnalysisPerMonth === Infinity) {
-    return { hasAccess: true, remaining: Infinity };
-  }
-  
-  const remaining = quotas.resumeAnalysisPerMonth - used;
-  
-  if (remaining <= 0) {
-    return {
-      hasAccess: false,
-      remaining: 0,
-      message: `You've used your ${quotas.resumeAnalysisPerMonth} resume analysis this month. Upgrade to Premium for unlimited access!`,
-    };
-  }
-  
-  return { hasAccess: true, remaining };
+  // Always grant access
+  return { hasAccess: true, remaining: Infinity };
 }
 
 export function checkPortfolioTemplateAccess(
   templateId: string,
   subscriptionTier?: string
 ): { hasAccess: boolean; message?: string } {
-  if (subscriptionTier === 'premium') {
-    return { hasAccess: true };
-  }
-  
-  if (FREE_PORTFOLIO_TEMPLATES.includes(templateId)) {
-    return { hasAccess: true };
-  }
-  
-  return {
-    hasAccess: false,
-    message: `This template is only available for Premium members. Upgrade to unlock all ${
-      12 - FREE_PORTFOLIO_TEMPLATES.length
-    }+ premium templates!`,
-  };
+  // Always grant access to all templates
+  return { hasAccess: true };
 }
 
 export function checkVisitingCardAccess(
   cardType: string,
   subscriptionTier?: string
 ): { hasAccess: boolean; message?: string } {
-  if (subscriptionTier === 'premium') {
-    return { hasAccess: true };
-  }
-  
-  if (FREE_VISITING_CARD_TEMPLATES.includes(cardType)) {
-    return { hasAccess: true };
-  }
-  
-  return {
-    hasAccess: false,
-    message: 'This visiting card design is only available for Premium members. Upgrade to unlock all premium designs!',
-  };
+  // Always grant access to all card types
+  return { hasAccess: true };
 }
 
 export function checkQuestTypeAccess(
   questType: 'career' | 'social',
   subscriptionTier?: string
 ): { hasAccess: boolean; message?: string } {
-  const quotas = getFeatureQuotas(subscriptionTier);
-  
-  if (questType === 'career' && quotas.allowCareerQuests) {
-    return { hasAccess: true };
-  }
-  
-  if (questType === 'social' && quotas.allowSocialQuests) {
-    return { hasAccess: true };
-  }
-  
-  return {
-    hasAccess: false,
-    message: 'Social media quests are only available for Premium members. Upgrade to unlock social quests!',
-  };
+  // Always grant access to all quest types
+  return { hasAccess: true };
 }
 
 export function checkCareerCapsuleAccess(
   currentCount: number,
   subscriptionTier?: string
 ): { hasAccess: boolean; remaining: number; message?: string } {
-  const quotas = getFeatureQuotas(subscriptionTier);
-  
-  if (quotas.careerCapsulesAllowed === Infinity) {
-    return { hasAccess: true, remaining: Infinity };
-  }
-  
-  const remaining = quotas.careerCapsulesAllowed - currentCount;
-  
-  if (remaining <= 0) {
-    return {
-      hasAccess: false,
-      remaining: 0,
-      message: `You've created your maximum of ${quotas.careerCapsulesAllowed} career capsule. Upgrade to Premium for unlimited capsules!`,
-    };
-  }
-  
-  return { hasAccess: true, remaining };
+  // Always grant access
+  return { hasAccess: true, remaining: Infinity };
 }
 
 export function getHashtagLimit(subscriptionTier?: string): number {
-  const quotas = getFeatureQuotas(subscriptionTier);
-  return quotas.hashtagSuggestionsPerPost;
+  // Return max limit for all users
+  return 10;
 }
