@@ -33,15 +33,29 @@ export function useReferralStatus() {
   return useQuery<ReferralStatus>({
     queryKey: ['/api/referral/status'],
     queryFn: async () => {
-      console.log('[useReferralStatus] Fetching referral status...');
-      const response = await apiRequest('GET', '/api/referral/status', {});
-      const data = await response.json() as ReferralStatus;
-      console.log('[useReferralStatus] Received data:', data);
-      return data;
+      try {
+        console.log('[useReferralStatus] Fetching referral status...');
+        const response = await apiRequest('GET', '/api/referral/status', {});
+        console.log('[useReferralStatus] Response status:', response.status, 'OK:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[useReferralStatus] Error response:', errorText);
+          throw new Error(`Failed to fetch referral status: ${response.status}`);
+        }
+        
+        const data = await response.json() as ReferralStatus;
+        console.log('[useReferralStatus] Received data:', data);
+        return data;
+      } catch (error) {
+        console.error('[useReferralStatus] Error:', error);
+        throw error;
+      }
     },
     enabled: !!user,
     staleTime: 0,
     refetchOnWindowFocus: true,
+    retry: 1,
   });
 }
 
@@ -51,15 +65,29 @@ export function useReferralLink() {
   return useQuery<ReferralLink>({
     queryKey: ['/api/referral/generate-link'],
     queryFn: async () => {
-      console.log('[useReferralLink] Fetching referral link...');
-      const response = await apiRequest('GET', '/api/referral/generate-link', {});
-      const data = await response.json() as ReferralLink;
-      console.log('[useReferralLink] Received data:', data);
-      return data;
+      try {
+        console.log('[useReferralLink] Fetching referral link...');
+        const response = await apiRequest('GET', '/api/referral/generate-link', {});
+        console.log('[useReferralLink] Response status:', response.status, 'OK:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[useReferralLink] Error response:', errorText);
+          throw new Error(`Failed to fetch referral link: ${response.status}`);
+        }
+        
+        const data = await response.json() as ReferralLink;
+        console.log('[useReferralLink] Received data:', data);
+        return data;
+      } catch (error) {
+        console.error('[useReferralLink] Error:', error);
+        throw error;
+      }
     },
     enabled: !!user,
     staleTime: 0,
     refetchOnWindowFocus: true,
+    retry: 1,
   });
 }
 
