@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { referralService } from "./services/referral-service";
 import jwt from "jsonwebtoken";
+import { pool } from "./db";
 
 /**
  * Authentication middleware for referral routes
@@ -122,7 +123,7 @@ export function registerReferralRoutes(app: Express) {
       console.log(`[API] GET /api/referral/status - userId: ${userId}`);
       
       // Fetch user's subscription tier from database
-      const userResult = await (require("../db")).pool.query(
+      const userResult = await pool.query(
         `SELECT subscription_tier FROM users WHERE id = $1`,
         [userId]
       );
