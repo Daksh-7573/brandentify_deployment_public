@@ -485,13 +485,6 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
             </span>
           </button>
         </div>
-
-        <div 
-          className="mt-4 text-center text-[10px] uppercase tracking-[0.2em]"
-          style={{ color: colors.aluminium }}
-        >
-          Graphic Quantum • Brandentifier
-        </div>
       </div>
     </div>
   );
