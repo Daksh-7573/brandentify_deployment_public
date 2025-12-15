@@ -112,35 +112,41 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
         {/* Divider line */}
         <div className="w-12 h-1 bg-gradient-to-r from-[#FBBF24] to-transparent mx-auto mb-6" />
 
-        {/* Professional Info */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-4 text-xs w-full">
-          {userData.company && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <Building2 className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.company}</span>
-            </div>
-          )}
-          
-          {userData.industry && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <Briefcase className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.industry}</span>
-            </div>
-          )}
-          
-          {userData.domain && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <Hash className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.domain}</span>
-            </div>
-          )}
+        {/* Professional Info - Grid Layout */}
+        <div className="space-y-2 mb-4 w-full">
+          {/* Row 1: Company and Location */}
+          <div className="flex gap-2 w-full">
+            {userData.company && (
+              <div className="flex-1 flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm min-w-0">
+                <Building2 className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate text-xs">{userData.company}</span>
+              </div>
+            )}
+            
+            {userData.location && (
+              <div className="flex-1 flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm min-w-0">
+                <MapPin className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate text-xs">{userData.location}</span>
+              </div>
+            )}
+          </div>
 
-          {userData.location && (
-            <div className="flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm whitespace-nowrap">
-              <MapPin className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate text-xs">{userData.location}</span>
-            </div>
-          )}
+          {/* Row 2: Industry and Domain */}
+          <div className="flex gap-2 w-full">
+            {userData.industry && (
+              <div className="flex-1 flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm min-w-0">
+                <Briefcase className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate text-xs">{userData.industry}</span>
+              </div>
+            )}
+            
+            {userData.domain && (
+              <div className="flex-1 flex items-center gap-1.5 text-[#1C1C1C] px-2 py-1.5 bg-white/40 rounded-lg backdrop-blur-sm min-w-0">
+                <Hash className="h-3.5 w-3.5 text-[#FBBF24] flex-shrink-0" />
+                <span className="truncate text-xs">{userData.domain}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Spacer */}
