@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Gift, Share2, Users, Award } from "lucide-react";
-import { useReferralLink, useReferralStats } from "@/hooks/use-referral";
+import { useReferralLink, useReferralStats, useReferralStatus } from "@/hooks/use-referral";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
