@@ -74,7 +74,6 @@ const halftoneDataUrl = `url("data:image/svg+xml,${encodeURIComponent(halftonePa
 const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoading = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const cardRef = useRef<HTMLDivElement>(null);
 
   const profileLink = `brandentifier.com/@${(userData.brandName || userData.username || 'user').toLowerCase().replace(/\s+/g, '-')}`;
@@ -177,36 +176,6 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
       </svg>
 
       <div className="relative z-20 p-5 sm:p-6 flex flex-col h-full">
-        
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-5 border-b border-gray-200">
-          <button
-            onClick={() => setActiveTab('card')}
-            className="px-4 py-2 text-sm font-medium transition-colors"
-            style={{
-              color: activeTab === 'card' ? colors.softMagenta : colors.graphite,
-              borderBottom: activeTab === 'card' ? `2px solid ${colors.softMagenta}` : 'none',
-              paddingBottom: activeTab === 'card' ? '6px' : '10px',
-            }}
-          >
-            Card
-          </button>
-          <button
-            onClick={() => setActiveTab('contact')}
-            className="px-4 py-2 text-sm font-medium transition-colors"
-            style={{
-              color: activeTab === 'contact' ? colors.softMagenta : colors.graphite,
-              borderBottom: activeTab === 'contact' ? `2px solid ${colors.softMagenta}` : 'none',
-              paddingBottom: activeTab === 'contact' ? '6px' : '10px',
-            }}
-          >
-            Contact
-          </button>
-        </div>
-
-        {/* Card Tab Content */}
-        {activeTab === 'card' && (
-        <>
         
         {isLoading && (
           <div className="absolute top-3 right-3 z-50 px-3 py-1.5 rounded-full border"
@@ -490,80 +459,6 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
             )}
           </div>
         </div>
-        </>
-        )}
-
-        {/* Contact Tab Content */}
-        {activeTab === 'contact' && (
-        <div className="flex flex-col gap-2.5">
-          {userData.email && (
-            <a 
-              href={`mailto:${userData.email}`}
-              className="flex items-center gap-2.5 group transition-all duration-200 hover:translate-x-1"
-            >
-              <div 
-                className="w-7 h-7 flex items-center justify-center rounded-lg"
-                style={{
-                  background: 'rgba(252,211,77,0.15)',
-                  border: `1px solid rgba(252,211,77,0.4)`,
-                }}
-              >
-                <Mail className="w-3.5 h-3.5" style={{ color: '#D97706' }} />
-              </div>
-              <span className="text-xs truncate" style={{ color: colors.deepInk }}>
-                {userData.email}
-              </span>
-            </a>
-          )}
-          
-          {userData.phoneNumber && (
-            <a 
-              href={`tel:${userData.phoneNumber}`}
-              className="flex items-center gap-2.5 group transition-all duration-200 hover:translate-x-1"
-            >
-              <div 
-                className="w-7 h-7 flex items-center justify-center rounded-lg"
-                style={{
-                  background: 'rgba(96,230,255,0.12)',
-                  border: `1px solid rgba(96,230,255,0.3)`,
-                }}
-              >
-                <Phone className="w-3.5 h-3.5" style={{ color: '#0891B2' }} />
-              </div>
-              <span className="text-xs" style={{ color: colors.deepInk }}>
-                {userData.phoneNumber || "Add phone"}
-              </span>
-            </a>
-          )}
-          
-          <a 
-            href={profileHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 group transition-all duration-200 hover:translate-x-1"
-          >
-            <div 
-              className="w-7 h-7 flex items-center justify-center rounded-lg"
-              style={{
-                background: 'rgba(255,63,174,0.1)',
-                border: `1px solid rgba(255,63,174,0.25)`,
-              }}
-            >
-              <Globe className="w-3.5 h-3.5" style={{ color: colors.softMagenta }} />
-            </div>
-            <a 
-              href={profileHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium truncate transition-colors hover:opacity-80"
-              style={{ color: colors.softMagenta }}
-              data-testid="link-profile-url"
-            >
-              {profileLink}
-            </a>
-          </a>
-        </div>
-        )}
       </div>
     </div>
   );

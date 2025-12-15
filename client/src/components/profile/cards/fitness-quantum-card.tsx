@@ -9,7 +9,6 @@ interface FitnessQuantumCardProps {
 
 const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoading = false }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,35 +80,6 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
       />
 
       <div className="relative z-10 h-full flex flex-col p-6 sm:p-8">
-        
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-4 border-b" style={{ borderColor: 'rgba(6,95,70,0.15)' }}>
-          <button
-            onClick={() => setActiveTab('card')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{
-              color: activeTab === 'card' ? colors.energeticLime : colors.coolGrey,
-              borderBottom: activeTab === 'card' ? `2px solid ${colors.energeticLime}` : 'none',
-              paddingBottom: activeTab === 'card' ? '6px' : '10px',
-            }}
-          >
-            Card
-          </button>
-          <button
-            onClick={() => setActiveTab('contact')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{
-              color: activeTab === 'contact' ? colors.energeticLime : colors.coolGrey,
-              borderBottom: activeTab === 'contact' ? `2px solid ${colors.energeticLime}` : 'none',
-              paddingBottom: activeTab === 'contact' ? '6px' : '10px',
-            }}
-          >
-            Contact
-          </button>
-        </div>
-
-        {activeTab === 'card' && (
-        <>
         
         <header className="flex items-start gap-5 mb-6">
           <div 
@@ -355,58 +325,6 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
             </a>
           </div>
         </div>
-        </>
-        )}
-
-        {activeTab === 'contact' && (
-        <div className="flex flex-col gap-3">
-          {userData.email && (
-            <a 
-              href={`mailto:${userData.email}`}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
-              style={{
-                background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
-                color: colors.deepCharcoal,
-                border: `1px solid rgba(6,95,70,0.08)`
-              }}
-            >
-              <Mail className="h-3.5 w-3.5" style={{ color: colors.deepEmerald }} />
-              <span>{userData.email}</span>
-            </a>
-          )}
-
-          {userData.phoneNumber && (
-            <a 
-              href={`tel:${userData.phoneNumber}`}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
-              style={{
-                background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
-                color: colors.deepCharcoal,
-                border: `1px solid rgba(6,95,70,0.08)`
-              }}
-            >
-              <Phone className="h-3.5 w-3.5" style={{ color: colors.vibrantOrange }} />
-              <span>{userData.phoneNumber}</span>
-            </a>
-          )}
-
-          <a 
-            href={`/@${userData.brandName || userData.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105 max-w-[200px]"
-            style={{
-              background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
-              color: colors.deepCharcoal,
-              border: `1px solid rgba(6,95,70,0.08)`
-            }}
-            data-testid="link-profile-url"
-          >
-            <Globe className="h-3.5 w-3.5 flex-shrink-0" style={{ color: colors.skyBlue }} />
-            <span className="truncate">{profileLink}</span>
-          </a>
-        </div>
-        )}
       </div>
 
       <style>{`

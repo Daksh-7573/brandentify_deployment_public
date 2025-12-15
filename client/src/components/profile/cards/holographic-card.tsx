@@ -23,7 +23,6 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showScanAnimation, setShowScanAnimation] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Format profile link using brand name (or username as fallback)
@@ -181,33 +180,6 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
 
       {/* Card content */}
       <div className={`relative h-full w-full flex flex-col text-white z-50 p-5 transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-4 border-b border-cyan-500/30">
-          <button 
-            onClick={() => setActiveTab('card')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{ 
-              color: activeTab === 'card' ? '#22d3ee' : 'rgba(255,255,255,0.5)',
-              borderBottom: activeTab === 'card' ? '2px solid #22d3ee' : 'none',
-              paddingBottom: activeTab === 'card' ? '6px' : '10px'
-            }}
-          >
-            Card
-          </button>
-          <button 
-            onClick={() => setActiveTab('contact')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{ 
-              color: activeTab === 'contact' ? '#22d3ee' : 'rgba(255,255,255,0.5)',
-              borderBottom: activeTab === 'contact' ? '2px solid #22d3ee' : 'none',
-              paddingBottom: activeTab === 'contact' ? '6px' : '10px'
-            }}
-          >
-            Contact
-          </button>
-        </div>
-        
-        {activeTab === 'card' && (<>
         {/* Top Identity Section */}
         <div className="flex flex-col items-center mb-6">
           {/* Profile picture with pulsing edge */}
@@ -396,9 +368,8 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             </div>
           )}
         </div>
-        </>)}
         
-        {activeTab === 'contact' && (
+        {/* Contact Details Section */}
         <div className="mt-auto space-y-3">
           {/* Email */}
           <div 
@@ -504,7 +475,21 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             </div>
           )}
         </div>
-        )}
+        
+        {/* Hover instruction for contact info */}
+        <div 
+          className="absolute inset-x-0 bottom-2 text-center text-xs text-cyan-200/70"
+          style={{
+            textShadow: "0 0 5px rgba(56, 189, 248, 0.5)",
+            opacity: isHovered ? 0 : 0.7,
+            transition: "opacity 0.3s ease"
+          }}
+        >
+          <div className="flex items-center justify-center gap-1">
+            <ScanLine className="h-3 w-3" />
+            <span>Hover to view contact details</span>
+          </div>
+        </div>
       </div>
       
       {/* Subtle floating particles */}

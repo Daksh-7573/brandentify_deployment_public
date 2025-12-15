@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { UserData } from "@/types/user";
 import { Mail, MapPin, Globe, Instagram, Eye, Phone, Camera, Scissors, Star } from "lucide-react";
 
@@ -51,7 +50,6 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
   userData,
   isLoading = false,
 }) => {
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   const profileLink = userData.randomProfileLink 
     ? `brandentifier.com/r/${userData.randomProfileLink}` 
     : `brandentifier.com/@${userData.brandName || userData.username}`;
@@ -117,35 +115,6 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
 
       {/* Card Content */}
       <div className="relative flex flex-col gap-3 p-5 sm:p-6">
-        
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-3 border-b" style={{ borderColor: 'rgba(245,243,238,0.15)' }}>
-          <button
-            onClick={() => setActiveTab('card')}
-            className="px-3 py-2 text-xs font-medium transition-colors uppercase tracking-wide"
-            style={{
-              color: activeTab === 'card' ? colors.blushPink : 'rgba(255,255,255,0.5)',
-              borderBottom: activeTab === 'card' ? `2px solid ${colors.blushPink}` : 'none',
-              paddingBottom: activeTab === 'card' ? '6px' : '10px',
-            }}
-          >
-            Card
-          </button>
-          <button
-            onClick={() => setActiveTab('contact')}
-            className="px-3 py-2 text-xs font-medium transition-colors uppercase tracking-wide"
-            style={{
-              color: activeTab === 'contact' ? colors.blushPink : 'rgba(255,255,255,0.5)',
-              borderBottom: activeTab === 'contact' ? `2px solid ${colors.blushPink}` : 'none',
-              paddingBottom: activeTab === 'contact' ? '6px' : '10px',
-            }}
-          >
-            Contact
-          </button>
-        </div>
-
-        {activeTab === 'card' && (
-        <>
         
         {/* Hero Image Block */}
         <div className="relative w-full" style={{ aspectRatio: '4/5' }}>
@@ -376,83 +345,7 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
             </span>
           </a>
         </div>
-        </>
-        )}
 
-        {activeTab === 'contact' && (
-        <div className="flex flex-col gap-2">
-          {userData.email && (
-            <a 
-              href={`mailto:${userData.email}`}
-              className="flex items-center gap-2.5 group transition-all duration-200"
-              data-testid="fashion-card-email"
-            >
-              <div 
-                className="w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:translate-x-0.5"
-                style={{
-                  background: 'rgba(245,243,238,0.06)',
-                  border: `1px solid rgba(245,243,238,0.25)`,
-                }}
-              >
-                <Mail className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.7)' }} />
-              </div>
-              <span 
-                className="text-xs truncate transition-colors duration-200 group-hover:underline"
-                style={{ color: 'rgba(255,255,255,0.8)' }}
-              >
-                {userData.email}
-              </span>
-            </a>
-          )}
-          
-          {userData.phoneNumber && (
-            <a 
-              href={`tel:${userData.phoneNumber}`}
-              className="flex items-center gap-2.5 group transition-all duration-200"
-            >
-              <div 
-                className="w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:translate-x-0.5"
-                style={{
-                  background: 'rgba(245,243,238,0.06)',
-                  border: `1px solid rgba(245,243,238,0.25)`,
-                }}
-              >
-                <Phone className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.7)' }} />
-              </div>
-              <span 
-                className="text-xs transition-colors duration-200 group-hover:underline"
-                style={{ color: 'rgba(255,255,255,0.8)' }}
-              >
-                {userData.phoneNumber}
-              </span>
-            </a>
-          )}
-
-          <a 
-            href={`/@${userData.brandName || userData.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 group transition-all duration-200"
-            data-testid="fashion-card-link"
-          >
-            <div 
-              className="w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:translate-x-0.5"
-              style={{
-                background: 'rgba(245,243,238,0.06)',
-                border: `1px solid rgba(245,243,238,0.25)`,
-              }}
-            >
-              <Globe className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.7)' }} />
-            </div>
-            <span 
-              className="text-xs truncate transition-colors duration-200 group-hover:underline"
-              style={{ color: 'rgba(255,255,255,0.8)' }}
-            >
-              {profileLink}
-            </span>
-          </a>
-        </div>
-        )}
       </div>
     </div>
   );

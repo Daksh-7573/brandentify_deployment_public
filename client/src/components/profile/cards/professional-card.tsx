@@ -24,7 +24,6 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   // State for card interaction
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Format profile link using brand name (or username as fallback)
   const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
@@ -90,34 +89,10 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
         )}
       </button>
       
-      {/* Tab Navigation */}
-      <div className={`absolute top-4 left-4 z-50 flex gap-1 rounded-full p-1 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-        <button 
-          onClick={(e) => { e.stopPropagation(); setActiveTab('card'); }}
-          className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
-            activeTab === 'card' 
-              ? (isDarkMode ? 'bg-indigo-600 text-white' : 'bg-indigo-600 text-white')
-              : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
-          }`}
-        >
-          Card
-        </button>
-        <button 
-          onClick={(e) => { e.stopPropagation(); setActiveTab('contact'); }}
-          className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
-            activeTab === 'contact' 
-              ? (isDarkMode ? 'bg-indigo-600 text-white' : 'bg-indigo-600 text-white')
-              : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
-          }`}
-        >
-          Contact
-        </button>
-      </div>
-      
       {/* Front side (Default view) */}
       <div 
-        className={`front-side absolute inset-0 p-6 pt-16 flex flex-col items-center justify-between transition-transform duration-500 ease-in-out ${
-          isRevealed || activeTab === 'contact' ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
+        className={`front-side absolute inset-0 p-6 flex flex-col items-center justify-between transition-transform duration-500 ease-in-out ${
+          isRevealed ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
         } ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
       >
         {/* Card background */}
@@ -229,8 +204,8 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
       
       {/* Back side (Revealed view) */}
       <div 
-        className={`back-side absolute inset-0 p-6 pt-16 flex flex-col transition-transform duration-500 ease-in-out ${
-          isRevealed || activeTab === 'contact' ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
+        className={`back-side absolute inset-0 p-6 flex flex-col transition-transform duration-500 ease-in-out ${
+          isRevealed ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
         } ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}
       >
         {/* Card background */}

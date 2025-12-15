@@ -28,7 +28,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
   const [contactExpanded, setContactExpanded] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [layers, setLayers] = useState<HTMLElement[]>([]);
-  const [activeTab, setActiveTab] = useState<'card' | 'contact'>('card');
   
   // Refs
   const cardRef = useRef<HTMLDivElement>(null);
@@ -208,33 +207,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
         
         {/* Card Content Container */}
         <div className="absolute inset-0 p-6 pb-16 flex flex-col z-10 overflow-visible">
-          {/* Tab Navigation */}
-          <div className="flex gap-2 mb-4 border-b" style={{ borderColor: `${colors.electricBlue}30` }}>
-            <button 
-              onClick={() => setActiveTab('card')}
-              className="px-3 py-2 text-xs font-medium transition-colors"
-              style={{ 
-                color: activeTab === 'card' ? colors.electricBlue : colors.silverGray,
-                borderBottom: activeTab === 'card' ? `2px solid ${colors.electricBlue}` : 'none',
-                paddingBottom: activeTab === 'card' ? '6px' : '10px'
-              }}
-            >
-              Card
-            </button>
-            <button 
-              onClick={() => setActiveTab('contact')}
-              className="px-3 py-2 text-xs font-medium transition-colors"
-              style={{ 
-                color: activeTab === 'contact' ? colors.electricBlue : colors.silverGray,
-                borderBottom: activeTab === 'contact' ? `2px solid ${colors.electricBlue}` : 'none',
-                paddingBottom: activeTab === 'contact' ? '6px' : '10px'
-              }}
-            >
-              Contact
-            </button>
-          </div>
-          
-          {activeTab === 'card' && (<>
           {/* Profile Picture Section */}
           <div 
             className="flex justify-center mb-6 relative"
@@ -454,10 +426,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
           
           {/* Removed Content - Space for other card elements */}
           <div className="flex-grow"></div>
-          </>)}
           
-          {activeTab === 'contact' && (
-          <>
           {/* Contact Information with Glass Effect - Positioned at bottom */}
           <div 
             className="mt-auto w-full"
@@ -560,8 +529,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
             
             {/* Removed View Full Profile and Powered by Musk sections */}
           </div>
-          </>
-          )}
         </div>
         
         {/* Copy Success Message */}

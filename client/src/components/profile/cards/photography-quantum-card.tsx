@@ -8,7 +8,6 @@ interface PhotographyQuantumCardProps {
 }
 
 const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userData, isLoading = false }) => {
-  const [activeTab, setActiveTab] = React.useState<'card' | 'contact'>('card');
   // Format profile link
   const profileLink = userData.randomProfileLink 
     ? `brandentifier.com/r/${userData.randomProfileLink}` 
@@ -44,35 +43,6 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
 
       {/* Content container */}
       <div className="relative z-10 h-full flex flex-col p-6 sm:p-8">
-        
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-4 border-b" style={{ borderColor: 'rgba(251,191,36,0.2)' }}>
-          <button
-            onClick={() => setActiveTab('card')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{
-              color: activeTab === 'card' ? '#FBBF24' : '#9CA3AF',
-              borderBottom: activeTab === 'card' ? '2px solid #FBBF24' : 'none',
-              paddingBottom: activeTab === 'card' ? '6px' : '10px',
-            }}
-          >
-            Card
-          </button>
-          <button
-            onClick={() => setActiveTab('contact')}
-            className="px-3 py-2 text-xs font-medium transition-colors"
-            style={{
-              color: activeTab === 'contact' ? '#FBBF24' : '#9CA3AF',
-              borderBottom: activeTab === 'contact' ? '2px solid #FBBF24' : 'none',
-              paddingBottom: activeTab === 'contact' ? '6px' : '10px',
-            }}
-          >
-            Contact
-          </button>
-        </div>
-
-        {activeTab === 'card' && (
-        <>
         
         {/* Hero Section - Filmstrip Frame */}
         <div className="flex flex-col items-center mb-6">
@@ -219,45 +189,6 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
             </a>
           </div>
         </div>
-        </>
-        )}
-
-        {activeTab === 'contact' && (
-        <div className="space-y-2.5">
-          {userData.email && (
-            <a 
-              href={`mailto:${userData.email}`}
-              className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
-              data-testid="link-email"
-            >
-              <Mail className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate">{userData.email}</span>
-            </a>
-          )}
-
-          {userData.phoneNumber && (
-            <a 
-              href={`tel:${userData.phoneNumber}`}
-              className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
-              data-testid="link-phone"
-            >
-              <Phone className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
-              <span className="truncate">{userData.phoneNumber}</span>
-            </a>
-          )}
-
-          <a 
-            href={`/@${userData.brandName || userData.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 text-[#F5E6C8] hover:text-[#FBBF24] transition-colors text-xs"
-            data-testid="link-profile"
-          >
-            <Globe className="h-4 w-4 text-[#FBBF24] flex-shrink-0" />
-            <span className="truncate">{profileLink}</span>
-          </a>
-        </div>
-        )}
       </div>
 
       <style>{`
