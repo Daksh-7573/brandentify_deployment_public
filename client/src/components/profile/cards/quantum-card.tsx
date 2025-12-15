@@ -27,7 +27,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
       {/* Content container - full card size */}
       <div className="relative w-full h-auto z-20 overflow-visible">
         {/* Glowing border effect */}
-        <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-xl z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]"></div>
+        <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-xl z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]" />
       
         {/* Card content */}
         <div className="relative flex flex-col w-full z-30 p-6 sm:p-8 pb-6">
