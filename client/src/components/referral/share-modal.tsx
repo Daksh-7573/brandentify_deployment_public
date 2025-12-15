@@ -13,20 +13,20 @@ interface ShareModalProps {
 
 export function ShareModal({ open, onClose }: ShareModalProps) {
   const { data: referralLink, refetch: refetchLink, isLoading: isLoadingLink } = useReferralLink();
+  const { refetch: refetchStatus } = useReferralStatus();
   const stats = useReferralStats();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
-  const queryClient = useQueryClient();
 
   // Refetch referral status and link when modal opens
   useEffect(() => {
     if (open) {
-      console.log('[ShareModal] Modal opened, invalidating and refetching data...');
-      // Invalidate and refetch both queries to get fresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/referral/status'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/referral/generate-link'] });
+      console.log('[ShareModal] Modal opened, refetching data...');
+      // Force refetch both queries to get fresh data
+      refetchLink();
+      refetchStatus();
     }
-  }, [open, queryClient]);
+  }, [open, refetchLink, refetchStatus]);
 
   // Track loading state from both sources
   const isLoadingStats = stats.isLoading;
