@@ -9,6 +9,7 @@ interface FitnessQuantumCardProps {
 
 const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoading = false }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [activeTab, setActiveTab] = useState<'info' | 'contact'>('info');
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -198,7 +199,34 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
           </div>
         </header>
 
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-6 border-b" style={{ borderColor: 'rgba(6,95,70,0.1)' }}>
+          <button
+            onClick={() => setActiveTab('info')}
+            className="px-4 py-2 text-xs font-medium transition-all"
+            style={{
+              color: activeTab === 'info' ? colors.deepEmerald : `${colors.deepCharcoal}80`,
+              borderBottom: activeTab === 'info' ? `2px solid ${colors.deepEmerald}` : 'none',
+              background: activeTab === 'info' ? 'rgba(6,95,70,0.05)' : 'transparent',
+            }}
+          >
+            Info
+          </button>
+          <button
+            onClick={() => setActiveTab('contact')}
+            className="px-4 py-2 text-xs font-medium transition-all"
+            style={{
+              color: activeTab === 'contact' ? colors.deepEmerald : `${colors.deepCharcoal}80`,
+              borderBottom: activeTab === 'contact' ? `2px solid ${colors.deepEmerald}` : 'none',
+              background: activeTab === 'contact' ? 'rgba(6,95,70,0.05)' : 'transparent',
+            }}
+          >
+            Contact
+          </button>
+        </div>
+
         {/* Professional Info - Grid Layout */}
+        {activeTab === 'info' && (
         <div className="space-y-2 w-full mb-6">
           {/* Row 1: Company and Location */}
           <div className="flex gap-2 w-full">
@@ -266,10 +294,12 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
             )}
           </div>
         </div>
+        )}
 
         <div className="flex-1" />
 
         {/* Contact Information Section */}
+        {activeTab === 'contact' && (
         <div 
           className="contact-panel rounded-xl p-4"
           style={{
@@ -325,6 +355,7 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
             </a>
           </div>
         </div>
+        )}
       </div>
 
       <style>{`

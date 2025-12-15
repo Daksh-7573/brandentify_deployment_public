@@ -10,6 +10,7 @@ interface CEOQuantumCardProps {
 const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = false }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'info' | 'contact'>('info');
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -163,7 +164,34 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
 
         </div>
 
-        {/* Professional Info Section - Grid Layout */}
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-6 border-b" style={{ borderColor: colors.platinumEdgeGlow }}>
+          <button
+            onClick={() => setActiveTab('info')}
+            className="px-4 py-2 text-xs font-medium transition-all"
+            style={{
+              color: activeTab === 'info' ? colors.executiveGold : colors.mutedSilver,
+              borderBottom: activeTab === 'info' ? `2px solid ${colors.executiveGold}` : 'none',
+              background: activeTab === 'info' ? `${colors.softGoldGlow}20` : 'transparent',
+            }}
+          >
+            Info
+          </button>
+          <button
+            onClick={() => setActiveTab('contact')}
+            className="px-4 py-2 text-xs font-medium transition-all"
+            style={{
+              color: activeTab === 'contact' ? colors.executiveGold : colors.mutedSilver,
+              borderBottom: activeTab === 'contact' ? `2px solid ${colors.executiveGold}` : 'none',
+              background: activeTab === 'contact' ? `${colors.softGoldGlow}20` : 'transparent',
+            }}
+          >
+            Contact
+          </button>
+        </div>
+
+        {/* Info Tab Content */}
+        {activeTab === 'info' && (
         <div className="space-y-2 mb-6 w-full">
           {/* Row 1: Company and Location */}
           <div className="flex gap-2 justify-center w-full">
@@ -227,9 +255,11 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             )}
           </div>
         </div>
+        )}
 
-        {/* Contact Section */}
-        <div className="flex flex-col gap-2 mt-auto pt-4 border-t" style={{ borderColor: colors.platinumEdgeGlow }}>
+        {/* Contact Tab Content */}
+        {activeTab === 'contact' && (
+        <div className="flex flex-col gap-2 mb-6" style={{}}>
           {userData.email && (
             <button
               onClick={handleCopyEmail}
@@ -289,6 +319,7 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
             )}
           </button>
         </div>
+        )}
       </div>
 
       {/* Platinum scanline (slow & thin) */}
