@@ -60,7 +60,7 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
 
   const quickStats = [
     userData.company && { label: 'Company', value: userData.company },
-    userData.industry && { label: 'Industry', value: userData.industry },
+    userData.location && { label: 'Location', value: userData.location },
   ].filter(Boolean);
 
   if (isLoading) {
@@ -214,39 +214,37 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
 
         {/* Fashion Tags (Chips Line) */}
         <div className="flex flex-wrap gap-1.5">
+          {userData.industry && (
+            <span 
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5"
+              style={{
+                background: 'rgba(249,197,213,0.12)',
+                border: `1px solid ${colors.blushPink}`,
+                color: 'rgba(255,255,255,0.8)',
+              }}
+              data-testid="fashion-tag-industry"
+            >
+              <span 
+                className="w-1 h-1 rounded-full"
+                style={{ backgroundColor: colors.blushPink }}
+              />
+              {userData.industry}
+            </span>
+          )}
           {fashionTags.map((tag, i) => (
             <span 
               key={i}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide transition-all duration-200 hover:-translate-y-0.5"
               style={{
-                background: i === 0 ? 'rgba(249,197,213,0.12)' : 'rgba(245,243,238,0.06)',
-                border: i === 0 ? `1px solid ${colors.blushPink}` : `1px solid rgba(245,243,238,0.35)`,
-                color: 'rgba(255,255,255,0.8)',
-              }}
-              data-testid={`fashion-tag-${i}`}
-            >
-              {i === 0 && (
-                <span 
-                  className="w-1 h-1 rounded-full"
-                  style={{ backgroundColor: colors.blushPink }}
-                />
-              )}
-              {tag}
-            </span>
-          ))}
-          {userData.location && (
-            <span 
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wide"
-              style={{
                 background: 'rgba(245,243,238,0.06)',
                 border: `1px solid rgba(245,243,238,0.35)`,
                 color: 'rgba(255,255,255,0.8)',
               }}
+              data-testid={`fashion-tag-${i}`}
             >
-              <MapPin className="w-2.5 h-2.5" />
-              {userData.location}
+              {tag}
             </span>
-          )}
+          ))}
         </div>
 
         {/* Quick Stats Row */}
