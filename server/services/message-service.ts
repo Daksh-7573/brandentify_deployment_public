@@ -12,7 +12,7 @@ import {
   type InsertConversationParticipant,
   type InsertReadReceipt
 } from "@shared/message-schema";
-import { eq, and, or, desc, sql, isNull, inArray } from "drizzle-orm";
+import { eq, and, or, desc, sql, isNull } from "drizzle-orm";
 import { storage } from "../storage";
 
 /**
@@ -529,10 +529,10 @@ export async function getTotalUnreadMessageCount(userId: number) {
     )
     .where(
       and(
-        inArray(messages.conversation_id, conversationIds),
+        sql`${messages.conversation_id} IN (${conversationIds.join(',')})`,
         eq(messages.isDeleted, false),
         isNull(readReceipts.id),
-        sql`${messages.sender_id} <> ${userId}`
+        sql`${messages.sender_id} != ${userId}`
       )
     );
     
