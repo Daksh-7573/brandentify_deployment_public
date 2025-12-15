@@ -34,7 +34,8 @@ export function useReferralStatus() {
     queryKey: ['/api/referral/status'],
     queryFn: async () => {
       console.log('[useReferralStatus] Fetching referral status...');
-      const data = await apiRequest('GET', '/api/referral/status', {}) as ReferralStatus;
+      const response = await apiRequest('GET', '/api/referral/status', {});
+      const data = await response.json() as ReferralStatus;
       console.log('[useReferralStatus] Received data:', data);
       return data;
     },
@@ -51,7 +52,8 @@ export function useReferralLink() {
     queryKey: ['/api/referral/generate-link'],
     queryFn: async () => {
       console.log('[useReferralLink] Fetching referral link...');
-      const data = await apiRequest('GET', '/api/referral/generate-link', {}) as ReferralLink;
+      const response = await apiRequest('GET', '/api/referral/generate-link', {});
+      const data = await response.json() as ReferralLink;
       console.log('[useReferralLink] Received data:', data);
       return data;
     },
