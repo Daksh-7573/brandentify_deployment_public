@@ -22,20 +22,30 @@ const QUANTUM_CARDS = [
   'ceo-quantum'
 ];
 
-// Available Portfolio Layouts (13 total)
+// Available Portfolio Layouts (23 total)
 const PORTFOLIO_LAYOUTS = [
+  '3d-portfolio',
+  'animated',
+  'artistic-portfolio',
+  'ceo-executive',
   'corporate-executive',
+  'creative-bold',
+  'creative-quantum',
+  'designer-portfolio',
+  'dynamic-innovator',
+  'fashion-is-art',
+  'fashion-quantum',
+  'fashion-runway',
+  'fitness-portfolio',
+  'freelancer-hub',
+  'holographic-neo',
+  'light-designer',
+  'nature-creative',
+  'pastel-dreamscape',
+  'photographer-portfolio',
+  'photography-cinematic',
   'scholar',
   'timeline-storyteller-2',
-  'visual-expert',
-  'dynamic-innovator',
-  'freelancer-hub',
-  'animated',
-  'designer-portfolio',
-  'photographer-portfolio',
-  'pastel-dreamscape',
-  'nature-creative',
-  'fashion-runway',
   'yoga-fitness-model'
 ];
 

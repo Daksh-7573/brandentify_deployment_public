@@ -208,7 +208,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
                 <ul className="text-sm text-white/80 space-y-1">
                   <li>• Each friend who joins unlocks 1 Quantum Card + 2 Portfolio Layouts</li>
                   <li>• No duplicates - you always get something new!</li>
-                  <li>• 6 referrals = unlock all 12 cards & 13 portfolios</li>
+                  <li>• 6 referrals = unlock all 12 cards & 23 portfolios</li>
                 </ul>
               </div>
             </div>

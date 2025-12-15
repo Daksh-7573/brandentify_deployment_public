@@ -380,27 +380,38 @@ export const serviceCategoryEnum = pgEnum("service_category", [
   "other"
 ]);
 
-// Portfolio layout enum
+// Portfolio layout enum (23 total)
 export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "professional", 
   "creative", 
   "minimal", 
   "technical",
   "executive",
-  "minimalist_pro", // Added "The Minimalist Pro" theme with snake_case format
-  "timeline-storyteller-2", // Timeline Storyteller 2.0 template - comprehensive interactive timeline
+  "minimalist_pro",
+  "timeline-storyteller-2",
   "visual-expert",
   "corporate-executive",
   "dynamic-innovator",
   "animated",
-  "animated-odyssey", // New immersive animated template with continuous scrolling
+  "animated-odyssey",
   "freelancer-hub",
   "scholar",
-  "designer-portfolio", // Designer portfolio template with glassmorphic design
-  "photographer-portfolio", // Photographer portfolio template with magazine-quality aesthetic
-  "nature-creative", // Nature-themed creative portfolio for freelancers with parallax effects and animations
-  "fashion-runway", // High-fashion editorial portfolio for fashion models with 3-layer parallax
-  "yoga-fitness-model" // Clean, soulful yoga/fitness portfolio with earth tones and mindful aesthetics
+  "designer-portfolio",
+  "photographer-portfolio",
+  "nature-creative",
+  "fashion-runway",
+  "yoga-fitness-model",
+  "fashion-is-art",
+  "pastel-dreamscape",
+  "creative-quantum",
+  "holographic-neo",
+  "3d-portfolio",
+  "artistic-portfolio",
+  "fashion-quantum",
+  "photography-cinematic",
+  "fitness-portfolio",
+  "ceo-executive",
+  "light-designer"
 ]);
 
 // Portfolio model

@@ -80,7 +80,7 @@ export function useReferralStats() {
       unlockedCards: 0,
       totalCards: 12,
       unlockedPortfolios: 0,
-      totalPortfolios: 13,
+      totalPortfolios: 23,
       isLoading,
       invalidateStatus,
     };
