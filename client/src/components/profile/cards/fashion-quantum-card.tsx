@@ -59,8 +59,9 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
     : ['Fashion', 'Editorial'];
 
   const quickStats = [
-    userData.company && { label: 'Company', value: userData.company },
+    userData.location && { label: 'Location', value: userData.location },
     userData.industry && { label: 'Industry', value: userData.industry },
+    userData.domain && { label: 'Domain', value: userData.domain },
   ].filter(Boolean);
 
   if (isLoading) {
