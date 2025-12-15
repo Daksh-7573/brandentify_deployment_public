@@ -94,7 +94,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
                 <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
               ) : (
                 <span className="text-2xl font-bold text-purple-300">
-                  {stats.totalReferrals}/6
+                  {stats.unlockedCards}/{stats.totalCards} Cards
                 </span>
               )}
             </div>
@@ -104,7 +104,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
               <div
                 className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500"
                 style={{
-                  width: isLoadingStats ? '0%' : `${Math.min((stats.totalReferrals / 6) * 100, 100)}%`,
+                  width: isLoadingStats ? '0%' : `${Math.min((stats.unlockedCards / stats.totalCards) * 100, 100)}%`,
                 }}
               />
             </div>
