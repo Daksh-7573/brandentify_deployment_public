@@ -127,7 +127,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
   return (
     <div className="artistic-card relative max-w-[420px] min-h-[600px] select-none">
       {/* Main Card Container */}
-      <div className="w-full h-full relative overflow-visible">
+      <div className="w-full min-h-[600px] relative overflow-visible">
         {/* Organic shape card with paper texture */}
         <div 
           className="absolute inset-0 rounded-2xl overflow-hidden"

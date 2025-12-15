@@ -113,7 +113,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
     >
       {/* Main Card Container */}
       <div 
-        className="w-full h-full relative transition-transform duration-200 ease-out"
+        className="w-full min-h-[600px] relative transition-transform duration-200 ease-out"
         style={{
           transform: `perspective(1000px) 
                      rotateY(${mousePosition.x * 10}deg) 

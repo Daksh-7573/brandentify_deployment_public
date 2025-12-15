@@ -21,12 +21,12 @@ interface VisitingCardPreviewProps {
 }
 
 const CardWrapper: React.FC<{children: React.ReactNode, cardType?: string}> = ({children, cardType}) => {
-  // For quantum, fashion-quantum, graphic-quantum, photography, fitness-quantum, and ceo-quantum cards, use completely flexible height without any constraints
-  const isFlexibleCard = cardType === "quantum" || cardType === "fashion-quantum" || cardType === "graphic-quantum" || cardType === "photography" || cardType === "fitness-quantum" || cardType === "ceo-quantum";
+  // All cards now use flexible height - they have their own min-h-[600px] constraints
+  const isFlexibleCard = true;
   
   return (
-    <div className={`visiting-card-preview w-full ${isFlexibleCard ? '' : 'h-full aspect-[2/3.5]'}`}>
-      <div className={`w-full ${isFlexibleCard ? '' : 'h-full'}`}>
+    <div className={`visiting-card-preview w-full`}>
+      <div className={`w-full`}>
         {children}
       </div>
     </div>
