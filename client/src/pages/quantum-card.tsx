@@ -5,7 +5,8 @@ import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Lock, Crown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, CreditCard, User } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -89,39 +90,65 @@ export default function QuantumCardPage() {
           </div>
         </div>
 
-        {/* Contact Information Section */}
-        <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg mb-6 overflow-visible">
-          <div className="p-6">
-            <PersonalInfoSection
-              userData={userData as any}
-              onEdit={() => setShowEditContactInfo(true)}
-            />
-          </div>
-        </NeoGlassSection>
+        {/* Tabbed Content */}
+        <Tabs defaultValue="card-design" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 border border-white/20">
+            <TabsTrigger 
+              value="card-design" 
+              className="flex items-center gap-2 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+              data-testid="tab-card-design"
+            >
+              <CreditCard className="h-4 w-4" />
+              Card Design
+            </TabsTrigger>
+            <TabsTrigger 
+              value="contact-info" 
+              className="flex items-center gap-2 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+              data-testid="tab-contact-info"
+            >
+              <User className="h-4 w-4" />
+              Contact Details
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Quantum Card Builder Section */}
-        <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
-          <div className="p-6">
-            {userData ? (
-              <VisitingCardBuilder
-                userData={userData as any}
-                selectedCardType={
-                  (userData as any)?.visitingCardType || "professional"
-                }
-                onCardTypeSelect={(cardType) => {
-                  console.log("Selected card type:", cardType);
-                }}
-                isPremium={isPremium}
-                canAccessCard={canAccessCard}
-                canAccessVisitingCard={canAccessVisitingCard}
-              />
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-white/70">Loading your quantum card...</p>
+          {/* Tab 1: Card Design */}
+          <TabsContent value="card-design">
+            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
+              <div className="p-6">
+                {userData ? (
+                  <VisitingCardBuilder
+                    userData={userData as any}
+                    selectedCardType={
+                      (userData as any)?.visitingCardType || "professional"
+                    }
+                    onCardTypeSelect={(cardType) => {
+                      console.log("Selected card type:", cardType);
+                    }}
+                    isPremium={isPremium}
+                    canAccessCard={canAccessCard}
+                    canAccessVisitingCard={canAccessVisitingCard}
+                  />
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-white/70">Loading your quantum card...</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </NeoGlassSection>
+            </NeoGlassSection>
+          </TabsContent>
+
+          {/* Tab 2: Contact Details */}
+          <TabsContent value="contact-info">
+            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg overflow-visible">
+              <div className="p-6">
+                <PersonalInfoSection
+                  userData={userData as any}
+                  onEdit={() => setShowEditContactInfo(true)}
+                />
+              </div>
+            </NeoGlassSection>
+          </TabsContent>
+        </Tabs>
       </NeoGlassLayout>
 
       {/* Edit Contact Information Dialog */}
