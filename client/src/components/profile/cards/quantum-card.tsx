@@ -229,7 +229,6 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
               </div>
             </div>
             )}
-          </div>
           
           {/* Footer with share button */}
           <div className="mt-4 sm:mt-6 pt-2 sm:pt-4 pb-2 sm:pb-3 flex justify-center">
