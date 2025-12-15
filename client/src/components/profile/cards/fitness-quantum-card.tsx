@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { UserData } from "@/types/user";
-import { MapPin, Mail, Globe, Dumbbell, Phone, Building2, Briefcase, Hash } from "lucide-react";
+import { MapPin, Mail, Globe, Dumbbell, Phone, Building2, Briefcase, Hash, Target } from "lucide-react";
 
 interface FitnessQuantumCardProps {
   userData: UserData;
@@ -196,7 +196,7 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
               )}
             </p>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-start">
               {userData.company && (
                 <div 
                   className="fchip inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs"
@@ -305,25 +305,19 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
               href={`/@${userData.brandName || userData.username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all hover:scale-105 max-w-[200px]"
               style={{
                 background: `linear-gradient(135deg, rgba(163,230,53,0.1), rgba(56,189,248,0.05))`,
                 color: colors.deepCharcoal,
                 border: `1px solid rgba(6,95,70,0.08)`
               }}
+              data-testid="link-profile-url"
             >
-              <Globe className="h-3.5 w-3.5" style={{ color: colors.skyBlue }} />
-              <span>{profileLink}</span>
+              <Globe className="h-3.5 w-3.5 flex-shrink-0" style={{ color: colors.skyBlue }} />
+              <span className="truncate">{profileLink}</span>
             </a>
           </div>
         </div>
-
-        <p 
-          className="text-center text-[10px] mt-3"
-          style={{ color: `${colors.deepCharcoal}66` }}
-        >
-          {profileLink}
-        </p>
       </div>
 
       <style>{`
