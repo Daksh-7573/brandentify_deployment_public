@@ -15,7 +15,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
   const profileHref = `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
-    <div className="quantum-card max-w-[420px] min-h-[600px] relative rounded-xl">
+    <div className="quantum-card w-full min-h-[500px] relative rounded-xl">
       {/* Background gradient with tech-inspired dark background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0A0F2C] to-[#1F1B44] z-0">
         {/* Grid pattern overlay */}

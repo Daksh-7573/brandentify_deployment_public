@@ -92,7 +92,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   return (
     <div 
       ref={cardRef}
-      className="max-w-[420px] min-h-[600px] relative cursor-pointer rounded-2xl overflow-hidden shadow-xl"
+      className="w-full aspect-[2/3.5] relative cursor-pointer rounded-2xl overflow-hidden shadow-xl"
       style={{
         perspective: "1000px",
         transformStyle: "preserve-3d",

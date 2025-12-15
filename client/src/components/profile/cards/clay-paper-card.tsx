@@ -137,7 +137,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   return (
     <div 
       ref={cardRef}
-      className="clay-paper-card max-w-[420px] min-h-[600px] relative select-none overflow-hidden rounded-2xl"
+      className="clay-paper-card w-full aspect-[2/3.5] relative select-none overflow-hidden rounded-2xl"
       style={{
         backgroundColor: colors.bgCard,
         boxShadow: `0 20px 30px -10px rgba(0, 0, 0, 0.5),
@@ -573,7 +573,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                   className="p-1 rounded hover:bg-black/20 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (userData.phoneNumber) copyToClipboard(userData.phoneNumber, "Phone");
+                    copyToClipboard(userData.phoneNumber, "Phone");
                   }}
                   title="Copy phone"
                 >

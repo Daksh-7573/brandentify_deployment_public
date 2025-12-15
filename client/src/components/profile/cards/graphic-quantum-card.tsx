@@ -98,7 +98,7 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
   return (
     <div
       ref={cardRef}
-      className="gq-card relative w-full max-w-[420px] min-h-[600px] overflow-hidden transition-all duration-300"
+      className="gq-card relative w-full max-w-[380px] min-h-[520px] overflow-hidden transition-all duration-300"
       style={{
         background: colors.porcelainWhite,
         borderRadius: '20px',

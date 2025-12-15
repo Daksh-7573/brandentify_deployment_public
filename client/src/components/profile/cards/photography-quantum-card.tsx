@@ -14,7 +14,7 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
     : `brandentifier.com/@${userData.brandName || userData.username}`;
 
   return (
-    <div className="photography-quantum-card w-full max-w-[420px] min-h-[600px] relative rounded-2xl overflow-hidden">
+    <div className="photography-quantum-card w-full min-h-[580px] relative rounded-2xl overflow-hidden">
       {/* Background gradient - cinematic light & dark fusion */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5E6C8] to-[#0D0D0D] z-0" />
       

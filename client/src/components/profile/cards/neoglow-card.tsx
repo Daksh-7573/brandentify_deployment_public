@@ -124,7 +124,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   return (
     <div 
       ref={cardRef}
-      className="neoglow-card max-w-[420px] min-h-[600px] relative select-none overflow-hidden rounded-2xl"
+      className="neoglow-card w-full aspect-[2/3.5] relative select-none overflow-hidden rounded-2xl"
       style={{
         backgroundColor: colors.bgCard,
         boxShadow: `0 20px 30px -10px rgba(0, 0, 0, 0.5),

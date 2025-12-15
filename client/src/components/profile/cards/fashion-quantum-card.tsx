@@ -83,9 +83,8 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
 
   return (
     <div 
-      className="relative w-full max-w-[420px] rounded-2xl overflow-hidden"
+      className="relative w-full rounded-2xl overflow-hidden"
       style={{
-        minHeight: '600px',
         background: `linear-gradient(135deg, ${colors.noirBlack}, ${colors.runwayCharcoal})`,
         border: `1px solid rgba(245,243,238,0.18)`,
         backdropFilter: 'blur(16px)',

@@ -107,13 +107,13 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
 
   return (
     <div 
-      className="creative-card relative max-w-[420px] min-h-[600px] select-none" 
+      className="creative-card relative w-full h-full select-none" 
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
     >
       {/* Main Card Container */}
       <div 
-        className="w-full min-h-[600px] relative transition-transform duration-200 ease-out"
+        className="w-full h-full relative transition-transform duration-200 ease-out"
         style={{
           transform: `perspective(1000px) 
                      rotateY(${mousePosition.x * 10}deg) 
