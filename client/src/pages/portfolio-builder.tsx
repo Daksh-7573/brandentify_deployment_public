@@ -69,6 +69,7 @@ import { FREE_PORTFOLIO_TEMPLATES } from "@/lib/feature-access";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
 // Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
+import { ShareModal } from "@/components/referral/share-modal";
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -125,6 +126,7 @@ export default function PortfolioBuilder() {
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
   
   // All templates accessible (premium restrictions disabled)
   const checkTemplateAccess = (layout: string) => {
@@ -917,7 +919,14 @@ export default function PortfolioBuilder() {
                 })}
               </div>
               
-              <div className="flex justify-center sm:justify-end mt-6">
+              <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-6">
+                <button 
+                  onClick={() => setShowShareModal(true)}
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm sm:text-base whitespace-nowrap w-full sm:w-auto justify-center"
+                >
+                  <Gift className="h-4 w-4" />
+                  <span>Unlock More Templates</span>
+                </button>
                 <button 
                   onClick={handleCreatePortfolio}
                   className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm sm:text-base whitespace-nowrap w-full sm:w-auto justify-center"
@@ -2136,6 +2145,7 @@ export default function PortfolioBuilder() {
         </NeoGlassLayout>
       </div>
       
+      <ShareModal open={showShareModal} onClose={() => setShowShareModal(false)} />
     </div>
   );
 }
