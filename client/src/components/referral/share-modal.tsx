@@ -31,7 +31,6 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
 
   // Track loading state from both sources
   const isLoadingStats = stats.isLoading;
-  const isLoadingLink = isLoadingLink;
 
   const handleCopy = async () => {
     if (!referralLink?.link) return;
