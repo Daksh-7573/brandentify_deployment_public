@@ -314,7 +314,7 @@ export class ReferralService {
   }
   
   /**
-   * Get user's unlocked items
+   * Get user's unlocked items (both from referrals AND created by user)
    */
   async getUserUnlocks(userId: number): Promise<{
     quantumCards: string[];
@@ -324,7 +324,7 @@ export class ReferralService {
     const client = await pool.connect();
     
     try {
-      // Get unlocks
+      // Get unlocks from user_unlocks table
       const unlocksResult = await client.query(
         `SELECT unlock_type, unlock_id FROM user_unlocks WHERE user_id = $1`,
         [userId]
@@ -337,6 +337,34 @@ export class ReferralService {
       const portfolios = unlocksResult.rows
         .filter((u: any) => u.unlock_type === 'portfolio')
         .map((u: any) => u.unlock_id);
+      
+      // Also add the card the user has created/selected
+      const userResult = await client.query(
+        `SELECT visiting_card_type, selected_portfolio_layout FROM users WHERE id = $1`,
+        [userId]
+      );
+      
+      if (userResult.rows.length > 0) {
+        const user = userResult.rows[0];
+        if (user.visiting_card_type && !quantumCards.includes(user.visiting_card_type)) {
+          quantumCards.push(user.visiting_card_type);
+        }
+        if (user.selected_portfolio_layout && !portfolios.includes(user.selected_portfolio_layout)) {
+          portfolios.push(user.selected_portfolio_layout);
+        }
+      }
+      
+      // Also add portfolios created by user
+      const portfoliosResult = await client.query(
+        `SELECT DISTINCT layout FROM portfolios WHERE user_id = $1 AND layout IS NOT NULL`,
+        [userId]
+      );
+      
+      for (const row of portfoliosResult.rows) {
+        if (row.layout && !portfolios.includes(row.layout)) {
+          portfolios.push(row.layout);
+        }
+      }
       
       // Get total referrals
       const referralsResult = await client.query(

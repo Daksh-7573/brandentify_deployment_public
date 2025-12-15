@@ -75,6 +75,11 @@ export function useInitializeUnlocks() {
 
 export function useReferralStats() {
   const { data, isLoading } = useReferralStatus();
+  const queryClient = useQueryClient();
+  
+  const invalidateStatus = () => {
+    queryClient.invalidateQueries({ queryKey: ['/api/referral/status'] });
+  };
   
   if (isLoading || !data) {
     return {
@@ -84,6 +89,7 @@ export function useReferralStats() {
       unlockedPortfolios: 0,
       totalPortfolios: 13,
       isLoading,
+      invalidateStatus,
     };
   }
   
@@ -94,5 +100,6 @@ export function useReferralStats() {
     unlockedPortfolios: data.progress.unlockedPortfolios,
     totalPortfolios: data.progress.totalPortfolios,
     isLoading,
+    invalidateStatus,
   };
 }
