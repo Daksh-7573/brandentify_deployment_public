@@ -13,7 +13,6 @@ interface ShareModalProps {
 
 export function ShareModal({ open, onClose }: ShareModalProps) {
   const { data: referralLink, refetch: refetchLink, isLoading: isLoadingLink } = useReferralLink();
-  const statsQuery = useReferralStatus();
   const stats = useReferralStats();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -28,8 +27,8 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
     }
   }, [open, queryClient, refetchLink]);
 
-  // Track if we're loading fresh data
-  const isLoadingStats = statsQuery.isLoading;
+  // Track if we're loading fresh data - use the stats isLoading state
+  const isLoadingStats = stats.isLoading;
 
   const handleCopy = async () => {
     if (!referralLink?.link) return;
@@ -90,17 +89,21 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
                 <Gift className="h-5 w-5 text-yellow-400" />
                 <span className="font-semibold">Your Progress</span>
               </div>
-              <span className={`text-2xl font-bold ${isLoadingStats ? 'text-white/40' : 'text-purple-300'} transition-colors`}>
-                {stats.totalReferrals}/6
-              </span>
+              {isLoadingStats ? (
+                <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+              ) : (
+                <span className="text-2xl font-bold text-purple-300">
+                  {stats.totalReferrals}/6
+                </span>
+              )}
             </div>
 
             {/* Progress Bar */}
             <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-4">
               <div
-                className={`h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-700 ${isLoadingStats ? 'opacity-50' : 'opacity-100'}`}
+                className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500"
                 style={{
-                  width: `${Math.min((stats.totalReferrals / 6) * 100, 100)}%`,
+                  width: isLoadingStats ? '0%' : `${Math.min((stats.totalReferrals / 6) * 100, 100)}%`,
                 }}
               />
             </div>
