@@ -12,7 +12,7 @@ import {
   type InsertConversationParticipant,
   type InsertReadReceipt
 } from "@shared/message-schema";
-import { eq, and, or, desc, sql, isNull } from "drizzle-orm";
+import { eq, and, or, desc, sql, isNull, inArray } from "drizzle-orm";
 import { storage } from "../storage";
 
 /**
@@ -148,7 +148,7 @@ export async function getConversationsForUser(userId: number) {
           eq(messages.conversationId, convId),
           eq(messages.isDeleted, false),
           isNull(readReceipts.id),
-          sql`${messages.sender_id} != ${userId}`
+          sql`${messages.senderId} != ${userId}`
         )
       );
     
@@ -203,7 +203,7 @@ export async function getMessages(
       
     if (beforeMessage) {
       query = query.where(
-        sql`${messages.sent_at} < ${beforeMessage.sentAt}`
+        sql`${messages.sentAt} < ${beforeMessage.sentAt}`
       );
     }
   }
@@ -289,7 +289,7 @@ export async function markConversationAsRead(conversationId: number, userId: num
       and(
         eq(messages.conversationId, conversationId),
         eq(messages.isDeleted, false),
-        sql`${messages.sender_id} != ${userId}`,
+        sql`${messages.senderId} != ${userId}`,
         isNull(readReceipts.id)
       )
     );
@@ -529,10 +529,10 @@ export async function getTotalUnreadMessageCount(userId: number) {
     )
     .where(
       and(
-        sql`${messages.conversation_id} IN (${conversationIds.join(',')})`,
+        conversationIds.length > 0 ? inArray(messages.conversationId, conversationIds) : eq(sql`1`, 0),
         eq(messages.isDeleted, false),
         isNull(readReceipts.id),
-        sql`${messages.sender_id} != ${userId}`
+        sql`${messages.senderId} != ${userId}`
       )
     );
     
