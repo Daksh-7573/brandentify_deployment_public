@@ -107,7 +107,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
 
   return (
     <div 
-      className="creative-card relative w-full h-full select-none" 
+      className="creative-card relative max-w-[420px] min-h-[600px] select-none" 
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
     >
