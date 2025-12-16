@@ -63,8 +63,8 @@ export class ReferralService {
     const client = await pool.connect();
     
     try {
-      // Determine the base URL for the link
-      const appBaseUrl = baseUrl || process.env.REPLIT_DEV_DOMAIN || process.env.APP_BASE_URL || 'https://brandentifier.com';
+      // Determine the base URL for the link (prioritize production URL)
+      const appBaseUrl = baseUrl || process.env.APP_BASE_URL || process.env.REPLIT_DEV_DOMAIN || 'https://brandentifier.replit.app';
       // Ensure no trailing slash
       const cleanBaseUrl = appBaseUrl.replace(/\/$/, '');
       
