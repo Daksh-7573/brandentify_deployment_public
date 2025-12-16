@@ -13,7 +13,7 @@ import {
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
   TrendingUp, Globe, BarChart2, Star, Database, UserCheck, Building,
   ExternalLink, Play, Image, Info, Link, Eye, Tag, Lightbulb, Heart,
-  Sparkles, Users
+  Sparkles, Users, Code
 } from "lucide-react";
 
 // Extended Project interface with mediaUrls property
@@ -265,9 +265,6 @@ export default function CorporateExecutive({
     // Default for any unrecognized skill
     return <Award className="h-5 w-5" />;
   };
-  
-  // Import Code icon from lucide
-  const Code = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
   
   // Initialize animations and styles on component mount
   useEffect(() => {
@@ -999,7 +996,7 @@ export default function CorporateExecutive({
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sortedSkills.length > 0 ? (
-              sortedSkills.slice(0, 6).map((skill, index) => (
+              sortedSkills.map((skill, index) => (
                 <div 
                   key={skill.id} 
                   className="skill-tag bg-white rounded-lg p-5 shadow-sm fade-in"
