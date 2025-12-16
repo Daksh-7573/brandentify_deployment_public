@@ -221,19 +221,53 @@ export default function CorporateExecutive({
   
 
   
-  // Maps skill names to appropriate icons
+  // Maps skill names to appropriate icons - comprehensive coverage for all skill types
   const getSkillIcon = (name: string) => {
     const nameLower = name.toLowerCase();
-    if (nameLower.includes('strateg')) return <Target className="h-5 w-5" />;
-    if (nameLower.includes('lead')) return <UserCheck className="h-5 w-5" />;
-    if (nameLower.includes('finance') || nameLower.includes('invest')) return <TrendingUp className="h-5 w-5" />;
-    if (nameLower.includes('global') || nameLower.includes('international')) return <Globe className="h-5 w-5" />;
-    if (nameLower.includes('analy')) return <BarChart2 className="h-5 w-5" />;
-    if (nameLower.includes('present') || nameLower.includes('public')) return <Presentation className="h-5 w-5" />;
-    if (nameLower.includes('management')) return <Briefcase className="h-5 w-5" />;
-    if (nameLower.includes('data')) return <Database className="h-5 w-5" />;
+    
+    // Business & Strategy Skills
+    if (nameLower.includes('strateg') || nameLower.includes('business') || nameLower.includes('planning')) return <Target className="h-5 w-5" />;
+    if (nameLower.includes('lead') || nameLower.includes('management') || nameLower.includes('team')) return <UserCheck className="h-5 w-5" />;
+    if (nameLower.includes('finance') || nameLower.includes('invest') || nameLower.includes('accounting') || nameLower.includes('budget')) return <TrendingUp className="h-5 w-5" />;
+    if (nameLower.includes('marketing') || nameLower.includes('brand') || nameLower.includes('social') || nameLower.includes('campaign')) return <Presentation className="h-5 w-5" />;
+    if (nameLower.includes('sales') || nameLower.includes('negotiat')) return <ChartBar className="h-5 w-5" />;
+    
+    // Communication & Soft Skills
+    if (nameLower.includes('communication') || nameLower.includes('presentation') || nameLower.includes('public speaking') || nameLower.includes('writing')) return <Presentation className="h-5 w-5" />;
+    if (nameLower.includes('collaboration') || nameLower.includes('cooperation') || nameLower.includes('teamwork')) return <UserCheck className="h-5 w-5" />;
+    
+    // Analytics & Data Skills
+    if (nameLower.includes('analy') || nameLower.includes('analytics') || nameLower.includes('reporting')) return <BarChart2 className="h-5 w-5" />;
+    if (nameLower.includes('data') || nameLower.includes('bi') || nameLower.includes('business intelligence')) return <Database className="h-5 w-5" />;
+    if (nameLower.includes('excel') || nameLower.includes('tableau') || nameLower.includes('power bi')) return <BarChart2 className="h-5 w-5" />;
+    
+    // Technology & Programming Skills
+    if (nameLower.includes('python') || nameLower.includes('java') || nameLower.includes('c++') || nameLower.includes('javascript') || nameLower.includes('typescript') || nameLower.includes('code') || nameLower.includes('programming') || nameLower.includes('development')) return <Code className="h-5 w-5" />;
+    if (nameLower.includes('react') || nameLower.includes('vue') || nameLower.includes('angular') || nameLower.includes('frontend') || nameLower.includes('web') || nameLower.includes('html') || nameLower.includes('css')) return <Code className="h-5 w-5" />;
+    if (nameLower.includes('backend') || nameLower.includes('node') || nameLower.includes('django') || nameLower.includes('flask') || nameLower.includes('api')) return <Database className="h-5 w-5" />;
+    if (nameLower.includes('database') || nameLower.includes('sql') || nameLower.includes('mongodb') || nameLower.includes('postgresql')) return <Database className="h-5 w-5" />;
+    if (nameLower.includes('devops') || nameLower.includes('docker') || nameLower.includes('kubernetes') || nameLower.includes('cloud') || nameLower.includes('aws') || nameLower.includes('azure') || nameLower.includes('gcp')) return <Building className="h-5 w-5" />;
+    if (nameLower.includes('git') || nameLower.includes('version control')) return <FileText className="h-5 w-5" />;
+    
+    // Design & Creative Skills
+    if (nameLower.includes('design') || nameLower.includes('figma') || nameLower.includes('adobe') || nameLower.includes('ui') || nameLower.includes('ux') || nameLower.includes('visual')) return <Sparkles className="h-5 w-5" />;
+    if (nameLower.includes('product') || nameLower.includes('user experience')) return <Sparkles className="h-5 w-5" />;
+    
+    // Global & Regional Skills
+    if (nameLower.includes('global') || nameLower.includes('international') || nameLower.includes('cross-cultural')) return <Globe className="h-5 w-5" />;
+    if (nameLower.includes('language') || nameLower.includes('multilingual')) return <Globe className="h-5 w-5" />;
+    
+    // Industry-Specific Skills
+    if (nameLower.includes('agile') || nameLower.includes('scrum') || nameLower.includes('kanban')) return <Target className="h-5 w-5" />;
+    if (nameLower.includes('project')) return <Briefcase className="h-5 w-5" />;
+    if (nameLower.includes('compliance') || nameLower.includes('risk') || nameLower.includes('audit')) return <Building className="h-5 w-5" />;
+    
+    // Default for any unrecognized skill
     return <Award className="h-5 w-5" />;
   };
+  
+  // Import Code icon from lucide
+  const Code = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>;
   
   // Initialize animations and styles on component mount
   useEffect(() => {
