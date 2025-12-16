@@ -10132,10 +10132,32 @@ export class DatabaseStorage implements IStorage {
         return { hasAccess: true, subscriptionTier };
       }
       
-      // Free card types
-      const FREE_VISITING_CARD_TEMPLATES = ['professional', 'quantum-tech'];
+      // Free card types - always available
+      const FREE_VISITING_CARD_TEMPLATES = ['professional', 'professional-renewed', 'quantum-tech'];
       
       if (FREE_VISITING_CARD_TEMPLATES.includes(cardType)) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      // Check referral unlock status for non-free cards
+      // Get referral count
+      const referrals = await this.getUserReferralsByUserId(userId);
+      const totalReferrals = referrals.length;
+      
+      // Calculate unlocked cards (2 cards per referral, max 12 cards with 6+ referrals)
+      const cardsPerReferral = 2;
+      const totalCards = 12;
+      const cardsPerReferralRatio = totalCards / 6;
+      const unlockedCardsCount = Math.floor(totalReferrals * cardsPerReferral);
+      
+      // List of quantum card types in order
+      const QUANTUM_CARDS = [
+        'professional', 'quantum', '3d-animated', 'holographic', 'neoglow', 'creative',
+        'artistic', 'fashion-quantum', 'graphic-quantum', 'photography', 'fitness-quantum', 'ceo-quantum'
+      ];
+      
+      const cardIndex = QUANTUM_CARDS.indexOf(cardType);
+      if (cardIndex !== -1 && cardIndex < unlockedCardsCount) {
         return { hasAccess: true, subscriptionTier };
       }
       
