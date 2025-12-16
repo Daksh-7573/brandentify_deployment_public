@@ -63,18 +63,32 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     setIsFinalized(newCardType === userData.visitingCardType);
   }, [selectedCardType, userData.visitingCardType]);
   
-  // All cards are now unlocked (premium restrictions disabled)
+  // Check if card is locked based on referral unlock status
+  // SECURITY: Default to locked if referral data is loading/unavailable to prevent bypass
   const isCardLocked = (cardId: string): boolean => {
-    return false;
+    if (isLoadingReferral || !referralStatus?.quantumCards) return true; // Block access while loading
+    const card = referralStatus.quantumCards.find(c => c.id === cardId);
+    // If not found in referral list, allow access (for legacy cards)
+    if (!card) return false;
+    return card.locked;
   };
 
-  // All cards are accessible (premium restrictions disabled)
+  // Check if card is free (unlocked via referrals)
   const isCardFree = (cardId: string): boolean => {
-    return true;
+    return !isCardLocked(cardId);
   };
 
-  // Handle tab change - all cards accessible
+  // Handle tab change - check if card is unlocked
   const handleTabChange = (value: string) => {
+    if (isCardLocked(value)) {
+      setShowShareModal(true);
+      toast({
+        title: "Card Locked",
+        description: "Share with friends to unlock more card designs!",
+        variant: "default",
+      });
+      return;
+    }
     setActiveTab(value);
     setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);

@@ -70,6 +70,7 @@ import { FREE_PORTFOLIO_TEMPLATES } from "@/lib/feature-access";
 import { apiRequest } from "@/lib/queryClient";
 // Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
 import { ShareModal } from "@/components/referral/share-modal";
+import { useReferralStatus } from "@/hooks/use-referral";
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -117,8 +118,12 @@ export default function PortfolioBuilder() {
   const { isPremium, canAccessPortfolioTemplate } = useFeatureAccess();
   const { toast } = useToast();
   
+  // Get referral-based unlock status
+  const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
+  
   // DEBUG: Log premium status
   console.log('[PortfolioBuilder] isPremium:', isPremium);
+  console.log('[PortfolioBuilder] referralStatus:', referralStatus);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(STEPS.SELECT_LAYOUT);
@@ -128,9 +133,14 @@ export default function PortfolioBuilder() {
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   
-  // All templates accessible (premium restrictions disabled)
-  const checkTemplateAccess = (layout: string) => {
-    return true;
+  // Check template access based on referral unlock status
+  // SECURITY: Default to blocked if referral data is loading/unavailable to prevent bypass
+  const checkTemplateAccess = (layout: string): boolean => {
+    if (isLoadingReferral || !referralStatus?.portfolios) return false; // Block access while loading
+    const portfolio = referralStatus.portfolios.find(p => p.id === layout);
+    // If not found in referral list, allow access (for legacy templates)
+    if (!portfolio) return true;
+    return !portfolio.locked;
   };
 
   // Show all templates for all users (premium restrictions disabled)
@@ -476,9 +486,14 @@ export default function PortfolioBuilder() {
     }
   });
 
-  // All templates are unlocked (premium restrictions disabled)
+  // Check if layout is locked based on referral unlock status
+  // SECURITY: Default to locked if referral data is loading/unavailable to prevent bypass
   const isLayoutLocked = (layoutId: string): boolean => {
-    return false;
+    if (isLoadingReferral || !referralStatus?.portfolios) return true; // Block access while loading
+    const portfolio = referralStatus.portfolios.find(p => p.id === layoutId);
+    // If not found in referral list, allow access (for legacy templates)
+    if (!portfolio) return false;
+    return portfolio.locked;
   };
 
   // Layout templates
@@ -883,15 +898,25 @@ export default function PortfolioBuilder() {
                         form.watch("layout") === layout.id 
                           ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
                           : "border border-white/10 bg-black/60"
-                      }`}
+                      } ${isLayoutLocked(layout.id) ? "opacity-60" : ""}`}
                       onClick={() => {
+                        if (isLayoutLocked(layout.id)) {
+                          setShowShareModal(true);
+                          toast({
+                            title: "Template Locked",
+                            description: "Share with friends to unlock more portfolio templates!",
+                            variant: "default",
+                          });
+                          return;
+                        }
                         form.setValue("layout", layout.id as any);
                       }}
                       data-testid={`portfolio-card-${layout.id}`}
                     >
                       <div className="flex flex-col h-full">
                         <div className="pb-2 flex items-center justify-between">
-                          <h3 className="text-base sm:text-lg font-medium text-white">
+                          <h3 className="text-base sm:text-lg font-medium text-white flex items-center gap-2">
+                            {isLayoutLocked(layout.id) && <Lock className="h-4 w-4 text-white/60" />}
                             {layout.name}
                           </h3>
                         </div>
