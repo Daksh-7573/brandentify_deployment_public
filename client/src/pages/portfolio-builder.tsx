@@ -1238,8 +1238,10 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "corporate-executive" && (
               <CorporateExecutive
                 userInfo={{
+                  id: userData?.id,
                   name: userData?.name || user?.name || '',
                   title: userData?.title || null,
+                  company: userData?.company || null,
                   industry: userData?.industry || null,
                   domain: userData?.domain || null,
                   location: userData?.location || null,
@@ -1247,7 +1249,14 @@ export default function PortfolioBuilder() {
                   photoURL: userData?.photoURL || user?.photoURL || null,
                   lookingFor: userData?.lookingFor || null,
                   jobLevel: userData?.jobLevel || null,
-                  aboutMe: userData?.aboutMe || ''
+                  aboutMe: userData?.aboutMe || null,
+                  tagline: userData?.tagline || null,
+                  visionStatement: userData?.visionStatement || null,
+                  missionStatement: userData?.missionStatement || null,
+                  coreValues: userData?.coreValues || [],
+                  uniqueValueProposition: userData?.uniqueValueProposition || null,
+                  primaryAudience: userData?.primaryAudience || [],
+                  secondaryAudience: userData?.secondaryAudience || []
                 }}
                 userSkills={skills || []}
                 userExperiences={experiences || []}
@@ -1257,6 +1266,7 @@ export default function PortfolioBuilder() {
                 })) || []}
                 userEducations={educations || []}
                 userServices={services || []}
+                currentUserId={userNumericId}
               />
             )}
             
