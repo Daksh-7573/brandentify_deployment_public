@@ -419,6 +419,8 @@ export class ReferralService {
     const unlocks = await this.getUserUnlocks(userId);
     const isPremium = subscriptionTier === 'premium';
     
+    console.log(`[DEBUG] getAvailabilityStatus - userId: ${userId}, subscriptionTier: ${subscriptionTier}, isPremium: ${isPremium}, totalReferrals: ${unlocks.totalReferrals}`);
+    
     // Calculate unlocked items using referral formula: floor(totalReferrals * (total / 6))
     // This ensures scalability: as items are added, the unlock rate scales proportionally
     // Examples: 
@@ -434,6 +436,8 @@ export class ReferralService {
     const unlockedPortfoliosCount = isPremium 
       ? PORTFOLIO_LAYOUTS.length 
       : Math.floor(unlocks.totalReferrals * portfoliosPerReferral);
+    
+    console.log(`[DEBUG] Calculations - cardsPerReferral: ${cardsPerReferral}, portfoliosPerReferral: ${portfoliosPerReferral}, unlockedCardsCount: ${unlockedCardsCount}, unlockedPortfoliosCount: ${unlockedPortfoliosCount}`);
     
     // Map IDs to display names
     const cardNames: Record<string, string> = {
