@@ -866,10 +866,6 @@ export default function CorporateExecutive({
         userInfo.uniqueValueProposition) && (
         <section className="py-16 px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-10 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
-              My Professional Brand
-            </h2>
-            
             <div className="space-y-6">
               {/* Tagline */}
               {userInfo.tagline && (
@@ -1048,13 +1044,15 @@ export default function CorporateExecutive({
                   </h3>
                 </div>
                 
-                <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {service.description || "Comprehensive service designed to meet your specific business needs and challenges."}
-                </p>
+                {service.description && (
+                  <p className="text-gray-600 mb-6 line-clamp-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {service.description}
+                  </p>
+                )}
                 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   {/* Pricing and Active Status details */}
-                  <div className="flex flex-wrap gap-2 items-center mb-1">
+                  <div className="flex flex-wrap gap-2 items-center">
                     {service.pricing && service.pricing.length > 0 && (
                       <div className="text-sm font-medium text-[#6a0dad] highlight-badge px-3 py-1 rounded-full" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {service.pricing}
@@ -1078,17 +1076,6 @@ export default function CorporateExecutive({
                         {service.isActive ? 'Active' : 'Inactive'}
                       </div>
                     )}
-                  </div>
-                  
-                  {/* Inquiry button */}
-                  <div className="flex justify-end">
-                    <Button 
-                      variant="outline"
-                      className="service-inquire-btn text-sm px-4 py-2 rounded-md flex items-center"
-                    >
-                      <span style={{ fontFamily: 'Inter, sans-serif' }}>Inquire</span>
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
                   </div>
                 </div>
               </div>
