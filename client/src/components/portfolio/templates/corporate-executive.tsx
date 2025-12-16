@@ -34,6 +34,7 @@ interface CorporateExecutiveProps {
     id?: number; // User ID for mentorship button (as mentorId)
     name: string;
     title: string | null;
+    company?: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
@@ -855,23 +856,19 @@ export default function CorporateExecutive({
                 </div>
               )}
               
-              {/* Executive Summary */}
-              <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-8 fade-in fade-in-delay-3">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  What I'm All About
-                </h3>
-                <div className="flex">
-                  <div className="text-[#6a0dad] mr-3 flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-quote"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+              {/* About Me - Only shown if it exists */}
+              {userInfo.aboutMe && (
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-8 fade-in fade-in-delay-3">
+                  <div className="flex">
+                    <div className="text-[#6a0dad] mr-3 flex-shrink-0 mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-quote"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {userInfo.aboutMe}
+                    </p>
                   </div>
-                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {userInfo.aboutMe || 
-                    `I'm passionate about delivering value and achieving results through collaborative work and innovative approaches.`}
-                  </p>
                 </div>
-              </div>
-              
-              {/* Contact/Connect section removed as requested */}
+              )}
             </div>
           </div>
         </div>
