@@ -803,9 +803,23 @@ export default function CorporateExecutive({
                   {userInfo.name}
                 </h1>
                 
-                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <h2 className="text-2xl text-gray-700 mb-2 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
                   I am a {userInfo.title || "Strategic Growth Advisor"}
                 </h2>
+                
+                {/* Company and Job Level */}
+                <div className="flex flex-wrap items-center gap-2 mb-6">
+                  {userInfo.company && (
+                    <span className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      at <span className="font-semibold text-[#6a0dad]">{userInfo.company}</span>
+                    </span>
+                  )}
+                  {userInfo.jobLevel && (
+                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-md px-3 py-1">
+                      <span style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.jobLevel}</span>
+                    </Badge>
+                  )}
+                </div>
               </div>
               
               <div className="flex items-center text-gray-500 mb-6 fade-in fade-in-delay-1">
