@@ -56,6 +56,7 @@ export interface PortfolioTemplateProps {
     id?: number;
     name: string;
     title: string | null;
+    company: string | null;
     email: string | null;
     photoURL: string | null;
     aboutMe: string | null;
@@ -68,11 +69,11 @@ export interface PortfolioTemplateProps {
     tagline: string | null;
     visionStatement: string | null;
     missionStatement: string | null;
-    coreValues: string[];
+    coreValues: string[] | null;
     uniqueValueProposition: string | null;
     brandName: string | null;
-    primaryAudience: string[];
-    secondaryAudience: string[];
+    primaryAudience: string[] | null;
+    secondaryAudience: string[] | null;
   };
   userSkills?: Array<{ id: number; skillName: string; proficiencyLevel?: string | null }>;
   userExperiences?: Array<{
