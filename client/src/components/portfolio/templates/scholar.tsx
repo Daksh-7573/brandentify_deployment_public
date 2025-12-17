@@ -26,6 +26,10 @@ import {
   School,
   Layers,
   Lightbulb,
+  Sparkles,
+  Target,
+  Heart,
+  Users,
   X
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -41,6 +45,7 @@ interface ScholarProps {
   userInfo: {
     name: string;
     title: string | null;
+    company?: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
