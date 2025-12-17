@@ -81,6 +81,7 @@ import {
   handleNearbyProfessionals 
 } from "./routes-decision-engine";
 import { objectStorageService } from "./services/object-storage-service";
+import { generatePortfolioPdf, cleanupOldPortfolioPdfs } from "./services/portfolio-pdf-generator";
 import { 
   insertUserSchema, 
   insertResumeSchema, 
@@ -10631,6 +10632,88 @@ ${extractedText.substring(0, 5000)}
     } catch (error) {
       console.error('Error serving team doc:', error);
       res.status(500).json({ error: 'Failed to serve document' });
+    }
+  });
+
+  // Portfolio PDF download endpoint
+  app.get('/api/portfolio/:userId/download-pdf', async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId) || userId <= 0) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:5000';
+    const baseUrl = `${protocol}://${host}`;
+
+    console.log(`[Portfolio PDF] Generating PDF for user ${userId}, baseUrl: ${baseUrl}`);
+
+    let pdfPath: string | null = null;
+    
+    try {
+      const result = await generatePortfolioPdf({
+        userId,
+        baseUrl
+      });
+      
+      pdfPath = result.pdfPath;
+      const fileName = result.fileName;
+
+      if (!fs.existsSync(pdfPath)) {
+        return res.status(500).json({ error: 'PDF generation failed - file not created' });
+      }
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      
+      const stream = fs.createReadStream(pdfPath);
+      
+      stream.on('error', (err) => {
+        console.error('[Portfolio PDF] Stream error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Failed to stream PDF' });
+        }
+      });
+      
+      stream.on('end', () => {
+        setTimeout(() => {
+          if (pdfPath) {
+            try {
+              fs.unlinkSync(pdfPath);
+              console.log('[Portfolio PDF] Cleaned up temp file');
+            } catch (e) {
+              console.log('[Portfolio PDF] Cleanup skipped (file may already be deleted)');
+            }
+          }
+        }, 5000);
+      });
+      
+      stream.pipe(res);
+      
+    } catch (error: any) {
+      console.error('[Portfolio PDF] Error:', error);
+      
+      if (pdfPath && fs.existsSync(pdfPath)) {
+        try {
+          fs.unlinkSync(pdfPath);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }
+      
+      if (!res.headersSent) {
+        const errorMessage = error?.message || 'Failed to generate portfolio PDF';
+        
+        if (errorMessage.includes('not found')) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+        if (errorMessage.includes('redirect') || errorMessage.includes('public portfolio')) {
+          return res.status(403).json({ error: 'Portfolio is not publicly accessible' });
+        }
+        
+        return res.status(500).json({ error: 'Failed to generate portfolio PDF. Please try again.' });
+      }
     }
   });
 

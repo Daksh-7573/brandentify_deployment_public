@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   UserPlus, MessageCircle, X, 
-  ChevronDown, Send, File, Paperclip, Loader2
+  ChevronDown, Send, File, Paperclip, Loader2, Download
 } from 'lucide-react';
 import {
   Dialog,
@@ -54,6 +54,7 @@ export default function PortfolioCtaButtons({
   const [selectedIntro, setSelectedIntro] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -177,8 +178,67 @@ export default function PortfolioCtaButtons({
   };
   
   const handleConnect = () => {
-    // Open the Let's Talk dialog
     setDialogOpen(true);
+  };
+  
+  const handleDownloadPortfolio = async () => {
+    if (!userId) {
+      toast({
+        title: "Cannot download portfolio",
+        description: "User information is not available",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsDownloading(true);
+    
+    try {
+      toast({
+        title: "Generating PDF...",
+        description: "Please wait while we prepare your portfolio download.",
+      });
+      
+      const response = await fetch(`/api/portfolio/${userId}/download-pdf`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `${userName?.toLowerCase().replace(/\s+/g, '-') || 'portfolio'}-portfolio.pdf`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+      
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download complete!",
+        description: "Your portfolio has been downloaded as a PDF.",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Download failed",
+        description: "Unable to generate the portfolio PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
   
   // Styles based on portfolio variant
@@ -265,6 +325,31 @@ export default function PortfolioCtaButtons({
           <MessageCircle size={16} />
           {variant === 'corporate' ? "Let's Talk" : "Connect"}
         </Button>
+        
+        {userId && (
+          <Button 
+            variant="outline"
+            onClick={handleDownloadPortfolio}
+            disabled={isDownloading}
+            className={variant === 'corporate' 
+              ? 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
+              : `${styles.mentorBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+            style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
+            data-testid="button-download-portfolio"
+          >
+            {isDownloading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                Download
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Let's Talk Dialog */}
