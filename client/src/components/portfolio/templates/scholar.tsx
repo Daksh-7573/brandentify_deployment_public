@@ -1275,18 +1275,9 @@ export default function Scholar({
                   </DialogHeader>
                 </div>
                 
-                {/* Enlarged Image or Placeholder */}
+                {/* Main Project Image */}
                 <div className="bg-white border-b border-gray-100 flex-shrink-0">
-                  {enlargedImage ? (
-                    <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100">
-                      <img
-                        src={enlargedImage}
-                        alt="Enlarged project media"
-                        className="w-full h-full object-contain cursor-pointer"
-                        onClick={() => setEnlargedImage(null)}
-                      />
-                    </div>
-                  ) : selectedProject.thumbnailUrl ? (
+                  {selectedProject.thumbnailUrl ? (
                     <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer" onClick={() => setEnlargedImage(selectedProject.thumbnailUrl!)}>
                       <img
                         src={selectedProject.thumbnailUrl}
