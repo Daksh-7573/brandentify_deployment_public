@@ -126,6 +126,7 @@ export default function Scholar({
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [displayedImageUrl, setDisplayedImageUrl] = useState<string | null>(null);
   
   // Fetch team members when project modal opens
   useEffect(() => {
@@ -1274,9 +1275,17 @@ export default function Scholar({
                   </DialogHeader>
                 </div>
                 
-                {/* Project Thumbnail Image */}
+                {/* Project Thumbnail Image - displays selected gallery image or default thumbnail */}
                 <div className="bg-white border-b border-gray-100 flex-shrink-0">
-                  {selectedProject.thumbnailUrl ? (
+                  {displayedImageUrl ? (
+                    <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100">
+                      <img
+                        src={displayedImageUrl}
+                        alt="Selected gallery image"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : selectedProject.thumbnailUrl ? (
                     <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100">
                       <img
                         src={selectedProject.thumbnailUrl}
@@ -1304,19 +1313,17 @@ export default function Scholar({
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {selectedProject.mediaUrls.map((url, index) => (
-                          <a 
+                          <div 
                             key={index}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer group"
+                            onClick={() => setDisplayedImageUrl(url)}
+                            className={`aspect-square rounded-md overflow-hidden border-2 shadow-sm hover:shadow-lg transition-shadow cursor-pointer group ${displayedImageUrl === url ? 'border-indigo-600' : 'border-indigo-100'}`}
                           >
                             <img 
                               src={url} 
                               alt={`Project media ${index + 1}`} 
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                             />
-                          </a>
+                          </div>
                         ))}
                       </div>
                     </div>
