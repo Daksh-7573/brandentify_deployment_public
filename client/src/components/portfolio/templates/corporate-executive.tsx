@@ -1173,8 +1173,10 @@ export default function CorporateExecutive({
               sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in flex flex-col"
+                  onClick={() => openProjectDetails(project.id)}
+                  className="project-card bg-white rounded-lg overflow-hidden shadow-sm fade-in flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
                   style={{ animationDelay: `${0.1 + index * 0.1}s`, width: '280px', aspectRatio: '2/3.5' }}
+                  data-testid={`card-project-${project.id}`}
                 >
                   {/* Project Thumbnail */}
                   {project.thumbnailUrl && (
@@ -1227,17 +1229,6 @@ export default function CorporateExecutive({
                           </span>
                         </div>
                       )}
-                      
-                      {/* View Details Button - Always Visible */}
-                      <button
-                        onClick={() => openProjectDetails(project.id)}
-                        className="mt-3 w-full bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white text-sm font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-opacity"
-                        style={{ fontFamily: 'Inter, sans-serif' }}
-                        data-testid={`button-view-project-${project.id}`}
-                      >
-                        <span>View Details</span>
-                        <Eye className="h-4 w-4" />
-                      </button>
                     </div>
                   </div>
                 </div>
