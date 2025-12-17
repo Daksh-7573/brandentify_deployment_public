@@ -764,8 +764,12 @@ export default function CorporateExecutive({
                 </div>
               </div>
             </div>
-          </DialogContent>
-        )}
+            </>
+          )}
+          {!selectedProject && (
+            <div className="p-8 text-center text-gray-500">Loading project details...</div>
+          )}
+        </DialogContent>
       </Dialog>
       {/* Fixed Navigation */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-100 py-4 shadow-sm">
