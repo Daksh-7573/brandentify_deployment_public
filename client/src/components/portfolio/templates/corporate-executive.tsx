@@ -738,33 +738,6 @@ export default function CorporateExecutive({
                   </div>
                 )}
                 
-                {/* Prominent View Project Button */}
-                <div>
-                  {selectedProject.projectUrl ? (
-                    <a
-                      href={selectedProject.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#6a0dad] text-white font-bold text-lg rounded-lg hover:bg-[#5a0a9d] transition-colors shadow-lg hover:shadow-xl"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                      data-testid="view-project-button"
-                    >
-                      <Globe className="h-5 w-5" />
-                      View Project
-                      <ExternalLink className="h-5 w-5" />
-                    </a>
-                  ) : (
-                    <button
-                      disabled
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-300 text-gray-600 font-bold text-lg rounded-lg cursor-not-allowed"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                      <Globe className="h-5 w-5" />
-                      Project URL Not Available
-                    </button>
-                  )}
-                </div>
-                
                 {/* Project Description */}
                 {selectedProject.description && (
                   <div className="bg-gray-50 p-6 rounded-lg border border-dotted border-gray-300">
@@ -800,7 +773,33 @@ export default function CorporateExecutive({
                     </div>
                   </div>
                 )}
-                
+
+                {/* Bottom View Project Button */}
+                <div className="pt-6 mt-8 border-t-2 border-dotted border-gray-300">
+                  {selectedProject.projectUrl ? (
+                    <a
+                      href={selectedProject.projectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#6a0dad] text-white font-bold text-lg rounded-lg hover:bg-[#5a0a9d] transition-colors shadow-lg hover:shadow-xl w-full justify-center"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                      data-testid="view-project-button-bottom"
+                    >
+                      <Globe className="h-5 w-5" />
+                      View Project
+                      <ExternalLink className="h-5 w-5" />
+                    </a>
+                  ) : (
+                    <button
+                      disabled
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-300 text-gray-600 font-bold text-lg rounded-lg cursor-not-allowed w-full justify-center"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Globe className="h-5 w-5" />
+                      Project URL Not Available
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             </>
