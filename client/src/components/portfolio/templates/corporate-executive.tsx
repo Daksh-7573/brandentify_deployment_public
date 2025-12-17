@@ -835,17 +835,12 @@ export default function CorporateExecutive({
                   {userInfo.name}
                 </h1>
                 
-                <h2 className="text-2xl text-gray-700 mb-2 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  I am a {userInfo.title || "Strategic Growth Advisor"}
+                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  I am a {userInfo.title || "Strategic Growth Advisor"}{userInfo.company && <span> at <span className="font-semibold text-[#6a0dad]">{userInfo.company}</span></span>}
                 </h2>
                 
-                {/* Company and Job Level */}
+                {/* Job Level */}
                 <div className="flex flex-wrap items-center gap-2 mb-6">
-                  {userInfo.company && (
-                    <span className="text-lg text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      at <span className="font-semibold text-[#6a0dad]">{userInfo.company}</span>
-                    </span>
-                  )}
                   {userInfo.jobLevel && (
                     <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-md px-3 py-1">
                       <span style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.jobLevel}</span>
@@ -895,9 +890,9 @@ export default function CorporateExecutive({
       {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
         userInfo.uniqueValueProposition) && (
-        <section className="py-16 px-8 bg-gray-50">
+        <section className="py-12 px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Tagline */}
               {userInfo.tagline && (
                 <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
@@ -917,27 +912,27 @@ export default function CorporateExecutive({
               {(userInfo.visionStatement || userInfo.missionStatement) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {userInfo.visionStatement && (
-                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm overflow-hidden">
                       <div className="flex items-center gap-3 mb-3">
-                        <Lightbulb className="h-5 w-5 text-[#6a0dad]" />
+                        <Lightbulb className="h-5 w-5 text-[#6a0dad] flex-shrink-0" />
                         <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                           Vision
                         </h3>
                       </div>
-                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {userInfo.visionStatement}
                       </p>
                     </div>
                   )}
                   {userInfo.missionStatement && (
-                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm overflow-hidden">
                       <div className="flex items-center gap-3 mb-3">
-                        <Target className="h-5 w-5 text-[#6a0dad]" />
+                        <Target className="h-5 w-5 text-[#6a0dad] flex-shrink-0" />
                         <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                           Mission
                         </h3>
                       </div>
-                      <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {userInfo.missionStatement}
                       </p>
                     </div>
@@ -970,14 +965,14 @@ export default function CorporateExecutive({
 
               {/* Unique Value Proposition */}
               {userInfo.uniqueValueProposition && (
-                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm overflow-hidden">
                   <div className="flex items-center gap-3 mb-3">
-                    <Sparkles className="h-5 w-5 text-[#6a0dad]" />
+                    <Sparkles className="h-5 w-5 text-[#6a0dad] flex-shrink-0" />
                     <h3 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>
                       What Sets Me Apart
                     </h3>
                   </div>
-                  <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <p className="text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                     {userInfo.uniqueValueProposition}
                   </p>
                 </div>
