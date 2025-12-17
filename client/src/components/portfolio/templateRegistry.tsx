@@ -221,6 +221,7 @@ export function buildPortfolioTemplateProps(
       id: userData?.id,
       name: userData?.name || '',
       title: userData?.title || null,
+      company: userData?.company || null,
       email: userData?.email || null,
       photoURL: userData?.photoURL || null,
       aboutMe: userData?.aboutMe || null,
@@ -233,11 +234,11 @@ export function buildPortfolioTemplateProps(
       tagline: userData?.tagline || null,
       visionStatement: userData?.visionStatement || null,
       missionStatement: userData?.missionStatement || null,
-      coreValues: userData?.coreValues || [],
+      coreValues: userData?.coreValues || null,
       uniqueValueProposition: userData?.uniqueValueProposition || null,
       brandName: userData?.brandName || null,
-      primaryAudience: userData?.primaryAudience || [],
-      secondaryAudience: userData?.secondaryAudience || []
+      primaryAudience: userData?.primaryAudience || null,
+      secondaryAudience: userData?.secondaryAudience || null
     },
     userSkills: collections.skills || [],
     userExperiences: collections.experiences || [],

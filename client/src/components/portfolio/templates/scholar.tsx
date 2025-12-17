@@ -41,6 +41,7 @@ interface ScholarProps {
   userInfo: {
     name: string;
     title: string | null;
+    company: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
