@@ -831,50 +831,54 @@ export default function CorporateExecutive({
             {/* Intro Content */}
             <div className="w-full md:w-3/4 flex flex-col">
               <div className="fade-in">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
                   {userInfo.name}
                 </h1>
                 
-                <h2 className="text-2xl text-gray-700 mb-6 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <h2 className="text-2xl text-gray-700 mb-4 accent-border" style={{ fontFamily: 'Inter, sans-serif' }}>
                   I am a {userInfo.title || "Strategic Growth Advisor"}{userInfo.company && <span> at <span className="font-semibold text-[#6a0dad]">{userInfo.company}</span></span>}
                 </h2>
                 
                 {/* Job Level */}
-                <div className="flex flex-wrap items-center gap-2 mb-6">
-                  {userInfo.jobLevel && (
+                {userInfo.jobLevel && (
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
                     <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 rounded-md px-3 py-1">
                       <span style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.jobLevel}</span>
                     </Badge>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
               
-              <div className="flex items-center text-gray-500 mb-6 fade-in fade-in-delay-1">
-                <MapPin className="h-4 w-4 mr-1" />
-                <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {userInfo.location || "New York, United States"}
-                </span>
-              </div>
+              {userInfo.location && (
+                <div className="flex items-center text-gray-500 mb-4 fade-in fade-in-delay-1">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span className="text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {userInfo.location}
+                  </span>
+                </div>
+              )}
               
               {/* Industry / Domain Badges */}
-              <div className="flex flex-wrap gap-3 mb-6 fade-in fade-in-delay-1">
-                {userInfo.industry && (
-                  <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
-                    <Briefcase className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.industry}</span>
-                  </Badge>
-                )}
-                {userInfo.domain && (
-                  <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
-                    <Globe className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.domain}</span>
-                  </Badge>
-                )}
-              </div>
+              {(userInfo.industry || userInfo.domain) && (
+                <div className="flex flex-wrap gap-3 mb-4 fade-in fade-in-delay-1">
+                  {userInfo.industry && (
+                    <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
+                      <Briefcase className="h-3.5 w-3.5 mr-1" />
+                      <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.industry}</span>
+                    </Badge>
+                  )}
+                  {userInfo.domain && (
+                    <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md px-3 py-1.5">
+                      <Globe className="h-3.5 w-3.5 mr-1" />
+                      <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.domain}</span>
+                    </Badge>
+                  )}
+                </div>
+              )}
               
               {/* Looking For */}
               {userInfo.lookingFor && (
-                <div className="mb-8 fade-in fade-in-delay-2">
+                <div className="fade-in fade-in-delay-2">
                   <Badge className="bg-[#1e3a8a]/5 text-[#1e3a8a] hover:bg-[#1e3a8a]/10 border border-[#1e3a8a]/20 font-medium rounded-md px-4 py-2">
                     <Target className="h-4 w-4 mr-2" />
                     <span style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.lookingFor}</span>
@@ -890,7 +894,7 @@ export default function CorporateExecutive({
       {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
         userInfo.uniqueValueProposition) && (
-        <section className="py-12 px-8 bg-gray-50">
+        <section className="py-16 px-8 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="space-y-4">
               {/* Tagline */}
