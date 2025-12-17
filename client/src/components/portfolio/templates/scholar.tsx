@@ -126,7 +126,6 @@ export default function Scholar({
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
-  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
   
   // Fetch team members when project modal opens
   useEffect(() => {
@@ -1275,19 +1274,10 @@ export default function Scholar({
                   </DialogHeader>
                 </div>
                 
-                {/* Enlarged Image or Placeholder */}
+                {/* Project Thumbnail Image */}
                 <div className="bg-white border-b border-gray-100 flex-shrink-0">
-                  {enlargedImage ? (
+                  {selectedProject.thumbnailUrl ? (
                     <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100">
-                      <img
-                        src={enlargedImage}
-                        alt="Enlarged project media"
-                        className="w-full h-full object-contain cursor-pointer"
-                        onClick={() => setEnlargedImage(null)}
-                      />
-                    </div>
-                  ) : selectedProject.thumbnailUrl ? (
-                    <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer" onClick={() => setEnlargedImage(selectedProject.thumbnailUrl!)}>
                       <img
                         src={selectedProject.thumbnailUrl}
                         alt={selectedProject.title}
@@ -1305,7 +1295,7 @@ export default function Scholar({
                 
                 {/* Content */}
                 <div className="notebook-paper p-5 flex-grow overflow-y-auto">
-                  {/* Media Gallery - All images clickable */}
+                  {/* Media Gallery */}
                   {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-base font-serif font-semibold text-indigo-800 mb-3 flex items-center">
@@ -1316,13 +1306,12 @@ export default function Scholar({
                         {selectedProject.mediaUrls.map((url, index) => (
                           <div 
                             key={index} 
-                            className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                            onClick={() => setEnlargedImage(url)}
+                            className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-md transition-shadow"
                           >
                             <img 
                               src={url} 
                               alt={`Project media ${index + 1}`} 
-                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                         ))}
@@ -1461,26 +1450,6 @@ export default function Scholar({
                 </DialogFooter>
               </div>
             </DialogContent>
-            
-            {/* Enlarged Image Modal Dialog Overlay */}
-            {enlargedImage && (
-              <div 
-                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center cursor-pointer"
-                onClick={() => setEnlargedImage(null)}
-              >
-                <button
-                  onClick={() => setEnlargedImage(null)}
-                  className="absolute top-4 right-4 text-white hover:text-gray-300 bg-white/10 rounded-full p-2 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-                <img 
-                  src={enlargedImage} 
-                  alt="Enlarged" 
-                  className="max-w-[90vw] max-h-[90vh] object-contain"
-                />
-              </div>
-            )}
           </>
         )}
       </Dialog>
