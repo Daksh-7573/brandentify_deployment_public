@@ -683,26 +683,13 @@ export default function CorporateExecutive({
                 </div>
                 
                 {/* Media Gallery - All clickable thumbnails */}
-                {(selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 || selectedProject.thumbnailUrl) && (
+                {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-600 mb-4 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
                       <Image className="h-4 w-4 text-[#6a0dad]" />
                       Click to enlarge
                     </h3>
                     <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                      {selectedProject.thumbnailUrl && (
-                        <button
-                          onClick={() => setEnlargedMediaUrl(selectedProject.thumbnailUrl)}
-                          className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all hover:ring-2 hover:ring-[#6a0dad] cursor-pointer"
-                          data-testid="media-thumbnail-main"
-                        >
-                          <img 
-                            src={selectedProject.thumbnailUrl} 
-                            alt="Main project image" 
-                            className="w-full h-24 object-cover"
-                          />
-                        </button>
-                      )}
                       {selectedProject.mediaUrls?.map((url: string, index: number) => (
                         <button
                           key={index}
@@ -722,13 +709,13 @@ export default function CorporateExecutive({
                 )}
                 
                 {/* Prominent View Project Button */}
-                {selectedProject.projectUrl && (
-                  <div>
+                <div>
+                  {selectedProject.projectUrl ? (
                     <a
                       href={selectedProject.projectUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#6a0dad] text-white font-semibold rounded-lg hover:bg-[#5a0a9d] transition-colors shadow-md hover:shadow-lg"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#6a0dad] text-white font-bold text-lg rounded-lg hover:bg-[#5a0a9d] transition-colors shadow-lg hover:shadow-xl"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                       data-testid="view-project-button"
                     >
@@ -736,8 +723,17 @@ export default function CorporateExecutive({
                       View Project
                       <ExternalLink className="h-5 w-5" />
                     </a>
-                  </div>
-                )}
+                  ) : (
+                    <button
+                      disabled
+                      className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-300 text-gray-600 font-bold text-lg rounded-lg cursor-not-allowed"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Globe className="h-5 w-5" />
+                      Project URL Not Available
+                    </button>
+                  )}
+                </div>
                 
                 {/* Project Description */}
                 {selectedProject.description && (
@@ -775,16 +771,6 @@ export default function CorporateExecutive({
                   </div>
                 )}
                 
-                {/* Client Endorsement */}
-                <div className="bg-purple-50 p-6 rounded-lg border border-dotted border-purple-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    <Award className="h-5 w-5 text-[#6a0dad]" />
-                    Client Endorsement
-                  </h3>
-                  <p className="text-gray-600 text-sm italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Client feedback and endorsement details will appear here
-                  </p>
-                </div>
               </div>
             </div>
             </>
