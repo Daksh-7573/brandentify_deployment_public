@@ -730,28 +730,28 @@ export default function Scholar({
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userServices.map((service, index) => (
-                <div key={service.id} className="notebook-card p-6 rounded-lg fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-serif font-semibold text-blue-800 mb-2">{service.title}</h3>
-                      {service.description && (
-                        <p className="text-gray-700 text-sm leading-relaxed mb-3">{service.description}</p>
-                      )}
-                    </div>
+                <div key={service.id} className="notebook-card p-6 rounded-lg fade-in-up flex flex-col" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-serif font-semibold text-blue-800 mb-2">{service.title}</h3>
+                    {service.description && (
+                      <p className="text-gray-700 text-sm leading-relaxed mb-3">{service.description}</p>
+                    )}
                   </div>
                   
-                  <div className="flex items-center justify-between mt-4">
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      {service.category}
-                    </Badge>
-                    {(service.priceUsd || service.priceInr) && (
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-blue-800">
-                          {service.priceUsd ? `$${service.priceUsd}` : service.priceInr ? `₹${service.priceInr}` : ''}
-                          {service.isHourly && <span className="text-sm font-normal text-gray-600">/hr</span>}
+                  <div className="mt-auto pt-4 border-t border-blue-100">
+                    <div className="flex items-center justify-between">
+                      <Badge className={service.isActive ? "bg-green-100 text-green-700 border border-green-200" : "bg-gray-100 text-gray-700 border border-gray-200"}>
+                        {service.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                      {(service.priceUsd || service.priceInr) && (
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-blue-800">
+                            {service.priceUsd ? `$${service.priceUsd}` : service.priceInr ? `₹${service.priceInr}` : ''}
+                            {service.isHourly && <span className="text-sm font-normal text-gray-600">/hr</span>}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
