@@ -1260,11 +1260,15 @@ export default function Scholar({
         </div>
       </section>
 
+      {/* Enlarged Image Overlay - Outside Dialog */}
+      {enlargedImage && !enlargedImage && null}
+      
       {/* Project Details Modal */}
-      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        {selectedProject && (
-          <>
-            <DialogContent className={`max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto ${enlargedImage ? 'hidden' : ''}`}>
+      {!enlargedImage && (
+        <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+          {selectedProject && (
+            <>
+              <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
               <div className="scholar-template overflow-y-auto max-h-[95vh] flex flex-col">
                 {/* Modal Header with Title Bar */}
                 <div className="bg-indigo-50 border-b border-indigo-100 flex-shrink-0 p-4 pl-6">
@@ -1451,30 +1455,35 @@ export default function Scholar({
                   </div>
                 </DialogFooter>
               </div>
-            </DialogContent>
-            
-            {/* Enlarged Image Modal Dialog Overlay */}
-            {enlargedImage && (
-              <div 
-                className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center cursor-pointer"
-                onClick={() => setEnlargedImage(null)}
-              >
-                <button
-                  onClick={() => setEnlargedImage(null)}
-                  className="absolute top-4 right-4 text-white hover:text-gray-300 bg-white/10 rounded-full p-2 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-                <img 
-                  src={enlargedImage} 
-                  alt="Enlarged" 
-                  className="max-w-[90vw] max-h-[90vh] object-contain"
-                />
-              </div>
-            )}
-          </>
-        )}
-      </Dialog>
+              </DialogContent>
+            </>
+          )}
+        </Dialog>
+      )}
+      
+      {/* Enlarged Image Full-Screen Overlay */}
+      {enlargedImage && (
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
+          onClick={() => setEnlargedImage(null)}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setEnlargedImage(null);
+            }}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 bg-white/10 rounded-full p-2 transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+          <img 
+            src={enlargedImage} 
+            alt="Enlarged" 
+            className="max-w-[90vw] max-h-[90vh] object-contain cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
