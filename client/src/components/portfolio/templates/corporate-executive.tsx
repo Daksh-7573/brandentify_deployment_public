@@ -627,14 +627,6 @@ export default function CorporateExecutive({
         <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] bg-white border-0 shadow-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
           {selectedProject && (
             <>
-            {/* Close Button */}
-            <button
-              onClick={closeProjectDetails}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 z-10"
-            >
-              <span className="text-2xl">×</span>
-            </button>
-            
             <div className="p-8">
               {/* Header Section */}
               <div className="mb-8 pb-6 border-b-2 border-dotted border-gray-300">
