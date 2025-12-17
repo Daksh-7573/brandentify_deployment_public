@@ -1282,7 +1282,7 @@ export default function Scholar({
                 {/* Main Project Image */}
                 <div className="bg-white border-b border-gray-100 flex-shrink-0">
                   {selectedProject.thumbnailUrl ? (
-                    <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer" onClick={() => setEnlargedImage(selectedProject.thumbnailUrl!)}>
+                    <div className="w-full h-64 md:h-80 overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer" onClick={() => { setEnlargedImage(selectedProject.thumbnailUrl!); setIsProjectModalOpen(false); }}>
                       <img
                         src={selectedProject.thumbnailUrl}
                         alt={selectedProject.title}
@@ -1312,7 +1312,7 @@ export default function Scholar({
                           <div 
                             key={index} 
                             className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                            onClick={() => setEnlargedImage(url)}
+                            onClick={() => { setEnlargedImage(url); setIsProjectModalOpen(false); }}
                           >
                             <img 
                               src={url} 
