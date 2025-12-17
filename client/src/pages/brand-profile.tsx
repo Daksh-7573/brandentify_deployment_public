@@ -137,8 +137,18 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     retry: false
   });
 
-  // Loading state
-  if (isUserLoading || isSkillsLoading || isExperiencesLoading || isProjectsLoading || isEducationsLoading || isServicesLoading || isPortfolioDataLoading) {
+  // Loading state - only wait for essential queries
+  if (isUserLoading) {
+    return <ProfilePageSkeleton />;
+  }
+  
+  // If user loaded but portfolio failed/doesn't exist, continue anyway
+  if (portfolioError || (isPortfolioDataLoading && !publishedPortfolio)) {
+    console.log("Portfolio fetch completed with error or no data - continuing without portfolio");
+  }
+  
+  // Wait for other data if still loading
+  if (isSkillsLoading || isExperiencesLoading || isProjectsLoading || isEducationsLoading || isServicesLoading) {
     return <ProfilePageSkeleton />;
   }
 
