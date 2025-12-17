@@ -42,17 +42,25 @@ export async function generatePortfolioPdf(options: PortfolioPdfOptions): Promis
     }
     
     const userName = userData.name || 'user';
+    const username = userData.username || `user-${userId}`;
     const sanitizedName = userName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
     const fileName = `${sanitizedName}-portfolio.pdf`;
     const timestamp = Date.now();
     const pdfFilePath = path.join(UPLOADS_DIR, `portfolio_${userId}_${timestamp}.pdf`);
     
-    const portfolioUrl = `${baseUrl}/portfolio/${userId}?print=true`;
+    // Use the /@username format which is the public profile/portfolio URL
+    const portfolioUrl = `${baseUrl}/@${username}?print=true`;
     
     console.log(`[Portfolio PDF] Generating PDF for user ${userId} from ${portfolioUrl}`);
     
+    const chromiumPath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+      '/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium';
+    
+    console.log(`[Portfolio PDF] Using Chromium at: ${chromiumPath}`);
+    
     browser = await puppeteer.launch({
       headless: true,
+      executablePath: chromiumPath,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -90,21 +98,32 @@ export async function generatePortfolioPdf(options: PortfolioPdfOptions): Promis
       throw new Error(`Portfolio page redirected to ${pageUrl} - user may not have a public portfolio`);
     }
     
+    // Wait for portfolio content to load
     try {
-      await page.waitForSelector('.corporate-executive-template, .minimalist-pro-template, .dynamic-innovator-template, .scholar-template, .holographic-neo-template, [class*="-template"]', {
-        timeout: 15000
+      // Try multiple selectors that might indicate the portfolio/profile is loaded
+      await page.waitForSelector('.corporate-executive-template, .minimalist-pro-template, .dynamic-innovator-template, .scholar-template, .holographic-neo-template, [class*="-template"], [data-testid="profile-hero"], [data-testid="portfolio-container"], .portfolio-section, main', {
+        timeout: 20000
       });
     } catch (selectorError) {
-      console.log('[Portfolio PDF] Template selector not found, checking for portfolio content...');
-      
-      const hasPortfolioContent = await page.evaluate(() => {
-        return document.body.innerText.length > 500;
-      });
-      
-      if (!hasPortfolioContent) {
-        throw new Error('Portfolio page does not contain expected content');
-      }
+      console.log('[Portfolio PDF] Template/main selector not found, checking for page content...');
     }
+    
+    // Verify page has meaningful content
+    const hasPortfolioContent = await page.evaluate(() => {
+      const bodyText = document.body.innerText || '';
+      const hasContent = bodyText.length > 200;
+      console.log(`[PDF Debug] Body text length: ${bodyText.length}`);
+      return hasContent;
+    });
+    
+    if (!hasPortfolioContent) {
+      // Log page content for debugging
+      const pageContent = await page.content();
+      console.log('[Portfolio PDF] Page HTML (first 500 chars):', pageContent.substring(0, 500));
+      throw new Error('Portfolio page does not contain expected content');
+    }
+    
+    console.log('[Portfolio PDF] Portfolio content verified, proceeding with PDF generation...');
     
     await new Promise(resolve => setTimeout(resolve, 2000));
     
