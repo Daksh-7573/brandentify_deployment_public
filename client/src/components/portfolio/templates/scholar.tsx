@@ -510,6 +510,13 @@ export default function Scholar({
                 </span>
               </div>
 
+              {(userInfo && userInfo.title && userInfo.company) && (
+                <div className="flex items-center justify-center md:justify-start text-gray-600 mb-1 fade-in-up delay-200">
+                  <Briefcase className="h-4 w-4 mr-1" />
+                  <span>{userInfo.title} at {userInfo.company}</span>
+                </div>
+              )}
+
               {userInfo && userInfo.location && (
                 <div className="flex items-center justify-center md:justify-start text-gray-600 mb-3 fade-in-up delay-200">
                   <MapPin className="h-4 w-4 mr-1" />
@@ -561,43 +568,8 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* About Section with Notebook Style */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
-            <Book className="h-6 w-6 mr-3 text-blue-600" />
-            What I'm All About
-          </h2>
-          
-          <div className="notebook-paper fade-in-up">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1 space-y-4">
-                {userInfo && userInfo.aboutMe ? (
-                  <p className="text-gray-700 leading-relaxed font-medium">
-                    {userInfo.aboutMe}
-                  </p>
-                ) : (
-                  <>
-                    <p className="text-gray-700 leading-relaxed font-medium">
-                      {userInfo && (userInfo.title || userInfo.industry || userInfo.domain)
-                        ? `As ${userInfo.title ? `a ${userInfo.title}` : ''}${userInfo.industry ? ` in the ${userInfo.industry} field` : ''}${userInfo.domain ? ` focusing on ${userInfo.domain}` : ''}, I'm passionate about continuous learning and applying my knowledge to real-world challenges.`
-                        : "I'm passionate about continuous learning and applying my knowledge to real-world challenges. My academic journey has equipped me with both theoretical understanding and practical skills."}
-                    </p>
-                    <p className="text-gray-700 leading-relaxed">
-                      {userInfo && userInfo.lookingFor 
-                        ? `Currently seeking ${userInfo.lookingFor.toLowerCase()}. I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects.`
-                        : "I bring a fresh perspective, strong work ethic, and eagerness to contribute to meaningful projects. I'm constantly looking to expand my skills and take on new challenges."}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* My Professional Brand Section */}
-      {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
+      {userInfo && (userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
         userInfo.uniqueValueProposition || 
         (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
