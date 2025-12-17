@@ -224,6 +224,7 @@ export const projects = pgTable("projects", {
   thumbnailUrl: text("thumbnail_url"), // URL to the main thumbnail image for the project
   thumbnailFile: text("thumbnail_file"), // Filename for uploaded image
   mediaUrls: jsonb("media_urls").default('[]'), // URLs to images, videos, or documents stored as JSON array
+  clientEndorsement: text("client_endorsement"), // Client testimonial or endorsement for the project
   // isVisible field removed as requested
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
