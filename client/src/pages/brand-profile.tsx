@@ -22,6 +22,7 @@ interface UserData {
   brandName: string;
   photoURL: string | null;
   title: string | null;
+  company: string | null;
   aboutMe: string | null;
   location: string | null;
   industry: string | null;
@@ -31,6 +32,13 @@ interface UserData {
   selectedPortfolioLayout: string;
   visitingCardType: string | null;
   jobLevel?: string | null;
+  tagline: string | null;
+  visionStatement: string | null;
+  missionStatement: string | null;
+  coreValues: string[];
+  uniqueValueProposition: string | null;
+  primaryAudience: string[];
+  secondaryAudience: string[];
   createdAt: string;
 }
 
@@ -261,6 +269,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       {
         ...userData,
         name: userData.name || userData.username,
+        company: userData.company || null,
         tagline: userData.tagline || null,
         visionStatement: userData.visionStatement || null,
         missionStatement: userData.missionStatement || null,
