@@ -124,6 +124,20 @@ export default function Scholar({
   // State for project modal
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  
+  // Fetch team members when project modal opens
+  useEffect(() => {
+    if (isProjectModalOpen && selectedProject?.id) {
+      fetch(`/api/projects/${selectedProject.id}/collaborators`)
+        .then(res => res.json())
+        .then(data => setTeamMembers(Array.isArray(data) ? data : []))
+        .catch(err => {
+          console.log('Could not fetch team members:', err);
+          setTeamMembers([]);
+        });
+    }
+  }, [isProjectModalOpen, selectedProject?.id]);
   
   // Open project modal with selected project
   const openProjectModal = (project: (typeof userProjects)[0]) => {
@@ -917,7 +931,11 @@ export default function Scholar({
           {hasProjects && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userProjects.map((project, index) => (
-                <div key={project.id} className={`project-card fade-in-up delay-${index * 100} overflow-hidden rounded-lg bg-white shadow-sm`}>
+                <div 
+                  key={project.id} 
+                  className={`project-card fade-in-up delay-${index * 100} overflow-hidden rounded-lg bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow`}
+                  onClick={() => openProjectModal(project)}
+                >
                   {project.thumbnailUrl && (
                     <div className="w-full aspect-square overflow-hidden">
                       <img 
@@ -1362,7 +1380,7 @@ export default function Scholar({
                       </p>
                     </div>
                     
-                    {/* Media Gallery - Placeholder for future implementation */}
+                    {/* Media Gallery */}
                     {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
                       <div className="mt-4">
                         <h3 className="text-base font-serif font-semibold text-indigo-800 mb-2 flex items-center">
@@ -1384,6 +1402,27 @@ export default function Scholar({
                     )}
                   </div>
                 </div>
+                
+                {/* Team Members Section */}
+                {teamMembers.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-indigo-100">
+                    <h3 className="text-base font-serif font-semibold text-indigo-800 mb-3 flex items-center">
+                      <Award className="h-4 w-4 mr-2" />
+                      Team Members
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {teamMembers.map((member: any) => (
+                        <div key={member.id} className="p-3 bg-indigo-50 rounded-md border border-indigo-100">
+                          <p className="font-semibold text-indigo-900 text-sm">{member.name}</p>
+                          <p className="text-xs text-indigo-700">{member.role}</p>
+                          {member.email && (
+                            <p className="text-xs text-indigo-600 mt-1">{member.email}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Footer */}
