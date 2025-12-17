@@ -1267,25 +1267,12 @@ export default function Scholar({
             <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
               <div className="scholar-template overflow-y-auto max-h-[95vh] flex flex-col">
                 {/* Modal Header with Title Bar */}
-                <div className="relative bg-indigo-50 border-b border-indigo-100 flex-shrink-0">
-                  <div className="p-4 pl-6 pr-12">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl font-serif font-bold text-indigo-800">
-                        {selectedProject.title}
-                      </DialogTitle>
-                    </DialogHeader>
-                  </div>
-                  
-                  {/* Close Button */}
-                  <button 
-                    onClick={() => {
-                      setIsProjectModalOpen(false);
-                      setEnlargedImage(null);
-                    }} 
-                    className="absolute top-4 right-4 text-indigo-400 hover:text-indigo-600 bg-white rounded-full p-1.5 shadow-sm transition-colors border border-indigo-100"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+                <div className="bg-indigo-50 border-b border-indigo-100 flex-shrink-0 p-4 pl-6">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-serif font-bold text-indigo-800">
+                      {selectedProject.title}
+                    </DialogTitle>
+                  </DialogHeader>
                 </div>
                 
                 {/* Enlarged Image or Placeholder */}
