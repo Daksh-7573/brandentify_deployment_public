@@ -599,7 +599,7 @@ export default function CorporateExecutive({
   return (
     <div className="corporate-executive-template bg-white">
       {/* Project Details Modal - Corporate Executive Styled */}
-      <Dialog open={!!selectedProjectId} onOpenChange={closeProjectDetails}>
+      <Dialog open={!!selectedProjectId} onOpenChange={(open) => { if (!open) closeProjectDetails(); }}>
         {selectedProject && (
           <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] bg-white border-0 shadow-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
             {/* Close Button with Corporate Color */}
