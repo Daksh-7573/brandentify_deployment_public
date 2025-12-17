@@ -598,133 +598,166 @@ export default function CorporateExecutive({
   
   return (
     <div className="corporate-executive-template bg-white">
-      {/* Project Details Modal */}
+      {/* Project Details Modal - Corporate Executive Styled */}
       <Dialog open={!!selectedProjectId} onOpenChange={closeProjectDetails}>
         {selectedProject && (
-          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh]">
-            <DialogHeader>
-              <DialogTitle className="text-xl md:text-2xl font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
-                {selectedProject.title}
-              </DialogTitle>
-              <DialogDescription className="text-base text-gray-600 mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>{formatDate(selectedProject.startDate)}</span>
-                  
-                  {selectedProject.category && (
-                    <>
-                      <span className="mx-1">•</span>
-                      <Badge variant="outline">{selectedProject.category}</Badge>
-                    </>
-                  )}
-                  
-                  {selectedProject.industry && (
-                    <>
-                      <span className="mx-1">•</span>
-                      <Badge className="bg-purple-50 text-purple-700 border border-purple-200">{selectedProject.industry}</Badge>
-                    </>
-                  )}
-                </div>
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] bg-white border-0 shadow-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {/* Close Button with Corporate Color */}
+            <button
+              onClick={closeProjectDetails}
+              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+            >
+              <span className="text-2xl">×</span>
+            </button>
             
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Main content */}
-              <div className="md:col-span-2 space-y-4">
-                {selectedProject.thumbnailUrl && (
-                  <div className="rounded-lg overflow-hidden">
-                    <img 
-                      src={selectedProject.thumbnailUrl} 
-                      alt={selectedProject.title} 
-                      className="w-full h-auto"
-                    />
-                  </div>
-                )}
-                
-                {selectedProject.description && (
-                  <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Overview</h3>
-                    <p className="text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {selectedProject.description}
-                    </p>
-                  </div>
-                )}
-                
-                {/* Project media gallery */}
-                {selectedProject && selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Gallery</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedProject.mediaUrls.map((url: string, index: number) => (
-                        <div key={index} className="rounded-lg overflow-hidden h-40">
-                          <img 
-                            src={url} 
-                            alt={`${selectedProject.title} - Image ${index + 1}`} 
-                            className="w-full h-full object-cover"
-                          />
+            <div className="p-8">
+              {/* Header Section with Corporate Styling */}
+              <div className="mb-8 pb-6 border-b-2 border-dotted border-gray-300">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {selectedProject.title}
+                    </h1>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {selectedProject.startDate && (
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4 text-[#6a0dad]" />
+                          <span>{formatDate(selectedProject.startDate, true)}</span>
                         </div>
-                      ))}
+                      )}
+                      
+                      {selectedProject.category && (
+                        <Badge className="bg-gray-100 text-gray-700 border-0">
+                          {selectedProject.category}
+                        </Badge>
+                      )}
+                      
+                      {selectedProject.industry && (
+                        <Badge className="bg-purple-50 text-purple-700 border border-purple-200">
+                          {selectedProject.industry}
+                        </Badge>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
               
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {selectedProject.projectUrl && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>External Link</h3>
-                    <a 
-                      href={selectedProject.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-[#6a0dad] hover:underline"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
-                      <span>Visit Project</span>
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-                )}
-                
-                {/* Additional project information */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Project Details</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <Calendar className="h-4 w-4 mt-1 text-gray-500" />
-                      <div>
-                        <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Date</span>
-                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {formatDate(selectedProject.startDate, true)}
-                        </p>
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column - Main Content */}
+                <div className="lg:col-span-2 space-y-8">
+                  {/* Project Image */}
+                  {selectedProject.thumbnailUrl && (
+                    <div className="rounded-lg overflow-hidden shadow-md">
+                      <img 
+                        src={selectedProject.thumbnailUrl} 
+                        alt={selectedProject.title} 
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Description */}
+                  {selectedProject.description && (
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <FileText className="h-5 w-5 text-[#6a0dad]" />
+                        Project Description
+                      </h3>
+                      <p className="text-gray-700 text-base leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {selectedProject.description}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Project Media Gallery */}
+                  {selectedProject && selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Image className="h-5 w-5 text-[#6a0dad]" />
+                        Project Media
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {selectedProject.mediaUrls.map((url: string, index: number) => (
+                          <div key={index} className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <img 
+                              src={url} 
+                              alt={`${selectedProject.title} - Image ${index + 1}`} 
+                              className="w-full h-40 object-cover"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    </li>
-                    
-                    {selectedProject.category && (
-                      <li className="flex items-start gap-2">
-                        <Tag className="h-4 w-4 mt-1 text-gray-500" />
-                        <div>
-                          <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Category</span>
-                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            {selectedProject.category}
-                          </p>
-                        </div>
-                      </li>
-                    )}
-                    
-                    {selectedProject.industry && (
-                      <li className="flex items-start gap-2">
-                        <Briefcase className="h-4 w-4 mt-1 text-gray-500" />
-                        <div>
-                          <span className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>Industry</span>
-                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            {selectedProject.industry}
-                          </p>
-                        </div>
-                      </li>
-                    )}
-                  </ul>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right Column - Details Sidebar */}
+                <div className="space-y-6">
+                  {/* Project Link */}
+                  {selectedProject.projectUrl && (
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Globe className="h-4 w-4 text-[#6a0dad]" />
+                        Project URL
+                      </h4>
+                      <a 
+                        href={selectedProject.projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#6a0dad] hover:text-[#5a0a9d] text-sm font-medium flex items-center gap-2 break-all"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        <span>Visit Project</span>
+                        <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                      </a>
+                    </div>
+                  )}
+                  
+                  {/* Project Details Card */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <Info className="h-4 w-4 text-[#6a0dad]" />
+                      Project Details
+                    </h4>
+                    <ul className="space-y-3">
+                      {selectedProject.startDate && (
+                        <li className="flex items-start gap-3">
+                          <Calendar className="h-4 w-4 mt-0.5 text-[#6a0dad] flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-semibold text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Date</p>
+                            <p className="text-sm text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {formatDate(selectedProject.startDate, true)}
+                            </p>
+                          </div>
+                        </li>
+                      )}
+                      
+                      {selectedProject.category && (
+                        <li className="flex items-start gap-3">
+                          <Tag className="h-4 w-4 mt-0.5 text-[#6a0dad] flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-semibold text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Category</p>
+                            <p className="text-sm text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {selectedProject.category}
+                            </p>
+                          </div>
+                        </li>
+                      )}
+                      
+                      {selectedProject.industry && (
+                        <li className="flex items-start gap-3">
+                          <Briefcase className="h-4 w-4 mt-0.5 text-[#6a0dad] flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-semibold text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>Industry</p>
+                            <p className="text-sm text-gray-700" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {selectedProject.industry}
+                            </p>
+                          </div>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1171,7 +1204,7 @@ export default function CorporateExecutive({
                       {project.description}
                     </p>
                     
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 mt-auto">
                       {/* Date information */}
                       <div className="text-xs text-gray-500 flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
                         <Calendar className="h-3.5 w-3.5 mr-1" />
@@ -1180,24 +1213,24 @@ export default function CorporateExecutive({
                       
                       {/* Project URL */}
                       {project.projectUrl && (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <Link className="h-3.5 w-3.5 mr-1 text-[#6a0dad]" />
-                            <span className="text-xs text-gray-500 truncate max-w-[150px]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {new URL(project.projectUrl).hostname}
-                            </span>
-                          </div>
-                          
-                          <button
-                            onClick={() => openProjectDetails(project.id)}
-                            className="text-[#6a0dad] text-sm flex items-center hover:underline"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            <span>View Details</span>
-                            <Eye className="h-3.5 w-3.5 ml-1" />
-                          </button>
+                        <div className="flex items-center gap-2 pt-1">
+                          <Link className="h-3.5 w-3.5 text-[#6a0dad]" />
+                          <span className="text-xs text-gray-500 truncate max-w-[150px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            {new URL(project.projectUrl).hostname}
+                          </span>
                         </div>
                       )}
+                      
+                      {/* View Details Button - Always Visible */}
+                      <button
+                        onClick={() => openProjectDetails(project.id)}
+                        className="mt-3 w-full bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white text-sm font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-opacity"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                        data-testid={`button-view-project-${project.id}`}
+                      >
+                        <span>View Details</span>
+                        <Eye className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
