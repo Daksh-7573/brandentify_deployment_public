@@ -1455,10 +1455,10 @@ export default function Scholar({
                   </div>
                 </div>
                 
-                {/* Footer - Only View Project button */}
-                {selectedProject.projectUrl && (
-                  <DialogFooter className="p-3 bg-indigo-50 border-t border-indigo-100 flex-shrink-0">
-                    <div className="w-full flex justify-end">
+                {/* Footer - View Project button */}
+                <DialogFooter className="p-3 bg-indigo-50 border-t border-indigo-100 flex-shrink-0">
+                  <div className="w-full flex justify-end">
+                    {selectedProject.projectUrl ? (
                       <a 
                         href={selectedProject.projectUrl} 
                         target="_blank" 
@@ -1467,9 +1467,11 @@ export default function Scholar({
                       >
                         View Project <ExternalLink className="h-4 w-4 ml-1.5" />
                       </a>
-                    </div>
-                  </DialogFooter>
-                )}
+                    ) : (
+                      <span className="text-xs text-gray-500">No project URL available</span>
+                    )}
+                  </div>
+                </DialogFooter>
               </div>
             </DialogContent>
             
