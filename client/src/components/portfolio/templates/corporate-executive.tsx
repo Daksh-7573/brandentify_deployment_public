@@ -105,6 +105,9 @@ export default function CorporateExecutive({
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
   const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
+  // Debug: Log projects received
+  console.log('🎯 [CORPORATE EXECUTIVE] Component mounted/updated with projects:', userProjects?.length || 0, userProjects);
+  
   // Function to handle opening project details - sets the selected project ID
   const openProjectDetails = (projectId: number) => {
     console.log('🔵 [PROJECT MODAL] openProjectDetails called with projectId:', projectId);
