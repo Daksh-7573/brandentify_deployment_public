@@ -638,26 +638,56 @@ export default function CorporateExecutive({
             <div className="p-8">
               {/* Header Section */}
               <div className="mb-8 pb-6 border-b-2 border-dotted border-gray-300">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  {selectedProject.title}
-                </h1>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {selectedProject.startDate && (
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <Calendar className="h-4 w-4 text-[#6a0dad]" />
-                      <span>{formatDate(selectedProject.startDate, true)}</span>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      {selectedProject.title}
+                    </h1>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {selectedProject.startDate && (
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4 text-[#6a0dad]" />
+                          <span>{formatDate(selectedProject.startDate, true)}</span>
+                        </div>
+                      )}
+                      {selectedProject.category && (
+                        <Badge className="bg-gray-100 text-gray-700 border-0">
+                          {selectedProject.category}
+                        </Badge>
+                      )}
+                      {selectedProject.industry && (
+                        <Badge className="bg-purple-50 text-purple-700 border border-purple-200">
+                          {selectedProject.industry}
+                        </Badge>
+                      )}
                     </div>
-                  )}
-                  {selectedProject.category && (
-                    <Badge className="bg-gray-100 text-gray-700 border-0">
-                      {selectedProject.category}
-                    </Badge>
-                  )}
-                  {selectedProject.industry && (
-                    <Badge className="bg-purple-50 text-purple-700 border border-purple-200">
-                      {selectedProject.industry}
-                    </Badge>
-                  )}
+                  </div>
+                  {/* Top View Project Button */}
+                  <div className="ml-4">
+                    {selectedProject.projectUrl ? (
+                      <a
+                        href={selectedProject.projectUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#6a0dad] text-white font-bold rounded-lg hover:bg-[#5a0a9d] transition-colors shadow-lg hover:shadow-xl whitespace-nowrap"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                        data-testid="view-project-button-top"
+                      >
+                        <Globe className="h-4 w-4" />
+                        View Project
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <button
+                        disabled
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-gray-600 font-bold rounded-lg cursor-not-allowed whitespace-nowrap"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        <Globe className="h-4 w-4" />
+                        URL Not Available
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
               
