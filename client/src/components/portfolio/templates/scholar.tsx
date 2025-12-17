@@ -123,6 +123,20 @@ export default function Scholar({
   userEducations,
   userProjects
 }: ScholarProps) {
+  // Debug logging for branding fields
+  console.log('🎓 [Scholar] userInfo received:', {
+    name: userInfo?.name,
+    title: userInfo?.title,
+    company: userInfo?.company,
+    tagline: userInfo?.tagline,
+    visionStatement: userInfo?.visionStatement,
+    missionStatement: userInfo?.missionStatement,
+    coreValues: userInfo?.coreValues,
+    uniqueValueProposition: userInfo?.uniqueValueProposition,
+    primaryAudience: userInfo?.primaryAudience,
+    secondaryAudience: userInfo?.secondaryAudience
+  });
+  
   // State for project modal
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
