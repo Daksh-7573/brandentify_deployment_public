@@ -986,6 +986,13 @@ export default function CorporateExecutive({
         </section>
       )}
       
+      {/* Divider Line */}
+      <div className="px-8 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t border-dashed border-gray-300"></div>
+        </div>
+      </div>
+      
       {/* Expertise (Skills) Section */}
       <section id="skills" className="py-16 px-8 bg-white">
         <div className="max-w-6xl mx-auto">
