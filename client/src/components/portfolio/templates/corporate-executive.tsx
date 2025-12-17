@@ -1056,7 +1056,7 @@ export default function CorporateExecutive({
             {enhancedServices.slice(0, 6).map((service, index) => (
               <div 
                 key={service.id} 
-                className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
+                className="service-card bg-white rounded-lg p-6 shadow-sm fade-in flex flex-col"
                 style={{ animationDelay: `${0.1 + index * 0.1}s` }}
               >
                 <div className="flex items-center mb-4">
@@ -1081,7 +1081,7 @@ export default function CorporateExecutive({
                   </p>
                 )}
                 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-auto">
                   {/* Pricing and Active Status details */}
                   <div className="flex flex-wrap gap-2 items-center">
                     {service.pricing && service.pricing.length > 0 && (
@@ -1122,7 +1122,7 @@ export default function CorporateExecutive({
             Showcase
           </h2>
           
-          <div className="flex flex-wrap justify-center md:justify-start gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {sortedProjects.length > 0 ? (
               sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
