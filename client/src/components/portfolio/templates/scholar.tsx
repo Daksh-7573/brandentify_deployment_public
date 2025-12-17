@@ -1304,16 +1304,19 @@ export default function Scholar({
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {selectedProject.mediaUrls.map((url, index) => (
-                          <div 
-                            key={index} 
-                            className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-md transition-shadow"
+                          <a 
+                            key={index}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="aspect-square rounded-md overflow-hidden border border-indigo-100 shadow-sm hover:shadow-lg transition-shadow cursor-pointer group"
                           >
                             <img 
                               src={url} 
                               alt={`Project media ${index + 1}`} 
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                             />
-                          </div>
+                          </a>
                         ))}
                       </div>
                     </div>
