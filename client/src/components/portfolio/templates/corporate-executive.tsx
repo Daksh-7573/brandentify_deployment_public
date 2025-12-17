@@ -107,11 +107,13 @@ export default function CorporateExecutive({
   
   // Function to handle opening project details - sets the selected project ID
   const openProjectDetails = (projectId: number) => {
+    console.log('🔵 [PROJECT MODAL] openProjectDetails called with projectId:', projectId);
     setSelectedProjectId(projectId);
   };
   
   // Function to close the project details modal
   const closeProjectDetails = () => {
+    console.log('🔴 [PROJECT MODAL] closeProjectDetails called');
     setSelectedProjectId(null);
   };
   
@@ -599,9 +601,10 @@ export default function CorporateExecutive({
   return (
     <div className="corporate-executive-template bg-white">
       {/* Project Details Modal - Corporate Executive Styled */}
-      <Dialog open={!!selectedProjectId} onOpenChange={(open) => { if (!open) closeProjectDetails(); }}>
-        {selectedProject && (
-          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] bg-white border-0 shadow-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+      <Dialog open={!!selectedProjectId} onOpenChange={(open) => { if (!open) { console.log('📭 [PROJECT MODAL] Dialog closing'); closeProjectDetails(); } else { console.log('📭 [PROJECT MODAL] Dialog trying to open'); } }}>
+        <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] bg-white border-0 shadow-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+          {selectedProject && (
+            <>
             {/* Close Button with Corporate Color */}
             <button
               onClick={closeProjectDetails}
