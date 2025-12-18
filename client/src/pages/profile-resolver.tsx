@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import PublicProfile from "./public-profile";
 import BrandProfile from "./brand-profile";
-import { apiRequest } from "@/lib/queryClient";
 import { SearchPageSkeleton } from "@/components/ui/page-skeletons/search-skeleton";
 
 interface UserData {
@@ -19,18 +18,9 @@ export default function ProfileResolver({ identifier }: ProfileResolverProps) {
   console.log(`[ProfileResolver] Resolving profile for identifier: ${identifier}`);
 
   // Fetch user data using the combined brand/username lookup endpoint
+  // Use the default queryFn which properly parses JSON (don't use apiRequest here as it returns Response, not JSON)
   const { data: userData, isLoading, error } = useQuery<UserData | null>({
-    queryKey: ['/api/users/brand', identifier],
-    queryFn: async () => {
-      if (!identifier) return null;
-      try {
-        const response = await apiRequest('GET', `/api/users/brand/${identifier}`);
-        return response as unknown as UserData;
-      } catch (error) {
-        console.error('[ProfileResolver] Error fetching user:', error);
-        throw error;
-      }
-    },
+    queryKey: [`/api/users/brand/${identifier}`],
     enabled: !!identifier
   });
 
