@@ -155,6 +155,7 @@ export default function PortfolioBuilder() {
     email: string;
     name: string;
     title: string | null;
+    company: string | null;
     photoURL: string | null;
     industry: string | null;
     domain: string | null;
@@ -1399,6 +1400,16 @@ export default function PortfolioBuilder() {
             {form.watch("layout") === "scholar" && (
               <>
                 {console.log("Scholar - portfolioPreviewData:", portfolioPreviewData)}
+                {console.log("Scholar - userData branding fields:", {
+                  tagline: userData?.tagline,
+                  visionStatement: userData?.visionStatement,
+                  missionStatement: userData?.missionStatement,
+                  coreValues: userData?.coreValues,
+                  uniqueValueProposition: userData?.uniqueValueProposition,
+                  primaryAudience: userData?.primaryAudience,
+                  secondaryAudience: userData?.secondaryAudience,
+                  company: userData?.company
+                })}
                 {console.log("Scholar - userSkills:", portfolioPreviewData?.skills || userSkills)}
                 {console.log("Scholar - userServices:", portfolioPreviewData?.services || userServices)}
                 {console.log("Scholar - userExperiences:", portfolioPreviewData?.experiences || userExperiences)}

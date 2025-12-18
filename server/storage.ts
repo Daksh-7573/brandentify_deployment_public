@@ -1760,7 +1760,7 @@ export class MemStorage implements IStorage {
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt",
-        tagline, vision_statement as "visionStatement", mission_statement as "misionStatement",
+        tagline, vision_statement as "visionStatement", mission_statement as "missionStatement",
         core_values as "coreValues", unique_value_proposition as "uniqueValueProposition",
         primary_audience as "primaryAudience", secondary_audience as "secondaryAudience",
         subscription_tier as "subscriptionTier", subscription_status as "subscriptionStatus",
