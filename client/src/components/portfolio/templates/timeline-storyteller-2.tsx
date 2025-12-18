@@ -8,8 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { 
   MapPin, Calendar, Building, GraduationCap, Briefcase, Award, 
-  ExternalLink, BookOpen, Compass, Map, Star, Feather, Clock,
-  Target, Heart, Users, TrendingUp, Mail, Phone, Globe
+  ExternalLink, Clock, Sparkles,
+  Target, Heart, Users, TrendingUp, Mail, Globe
 } from "lucide-react";
 
 interface TimelineStoryteller2Props {
@@ -43,85 +43,36 @@ interface TimelineStoryteller2Props {
   currentUserId?: number;
 }
 
-function FloatingStoryElement({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ 
-        opacity: [0.3, 0.6, 0.3],
-        y: [-10, 10, -10]
-      }}
-      transition={{
-        duration: 6,
-        delay,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function StorytellingParallaxBackground() {
+function ElegantBackground() {
   const { scrollY } = useScroll();
-  
-  const layer1Y = useTransform(scrollY, [0, 2000], [0, -400]);
-  const layer2Y = useTransform(scrollY, [0, 2000], [0, -800]);
-  const layer3Y = useTransform(scrollY, [0, 2000], [0, -1200]);
-  
-  const compass1Rotate = useTransform(scrollY, [0, 2000], [0, 360]);
-  const compass2Rotate = useTransform(scrollY, [0, 2000], [0, -180]);
+  const backgroundY = useTransform(scrollY, [0, 1000], [0, -100]);
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <motion.div 
-        style={{ y: layer1Y }}
-        className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100"
-      />
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Base gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-amber-50/80 to-orange-50/60" />
       
-      <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        <div className="absolute top-32 right-[10%] w-[500px] h-[500px] bg-amber-300/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-48 left-[8%] w-[600px] h-[600px] bg-orange-300/35 rounded-full blur-3xl" />
-        <div className="absolute top-[55%] left-[45%] w-96 h-96 bg-yellow-300/30 rounded-full blur-3xl" />
+      {/* Subtle warm overlay */}
+      <motion.div 
+        style={{ y: backgroundY }}
+        className="absolute inset-0"
+      >
+        {/* Soft ambient glows - no icons */}
+        <div className="absolute top-20 right-[15%] w-[400px] h-[400px] bg-amber-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-[40%] left-[5%] w-[500px] h-[500px] bg-orange-200/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-[25%] w-[350px] h-[350px] bg-yellow-200/20 rounded-full blur-3xl" />
         
-        <motion.div style={{ rotate: compass1Rotate }} className="absolute top-48 left-[12%] w-32 h-32">
-          <Compass className="w-full h-full text-amber-600/60" strokeWidth={1.5} />
-        </motion.div>
-        <motion.div style={{ rotate: compass2Rotate }} className="absolute bottom-56 right-[18%] w-40 h-40">
-          <Compass className="w-full h-full text-orange-600/60" strokeWidth={1.5} />
-        </motion.div>
-        
-        <div className="absolute top-[25%] right-[25%] w-28 h-28">
-          <BookOpen className="w-full h-full text-amber-700/50" strokeWidth={1.5} />
-        </div>
-        <div className="absolute bottom-[35%] left-[20%] w-24 h-24">
-          <Map className="w-full h-full text-orange-700/50" strokeWidth={1.5} />
-        </div>
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 opacity-[0.02]" 
+          style={{ 
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)',
+            backgroundSize: '24px 24px'
+          }} 
+        />
       </motion.div>
-
-      <motion.div style={{ y: layer3Y }} className="absolute inset-0">
-        <FloatingStoryElement delay={0}>
-          <Star className="absolute top-[20%] right-[15%] w-6 h-6 text-amber-500/60 fill-amber-400/40" />
-        </FloatingStoryElement>
-        <FloatingStoryElement delay={1}>
-          <Star className="absolute top-[65%] left-[18%] w-5 h-5 text-orange-500/60 fill-orange-400/40" />
-        </FloatingStoryElement>
-        <FloatingStoryElement delay={2}>
-          <Star className="absolute bottom-[25%] right-[22%] w-4 h-4 text-yellow-500/60 fill-yellow-400/40" />
-        </FloatingStoryElement>
-        
-        <div className="absolute top-[45%] left-[8%] w-16 h-16 rotate-45">
-          <Feather className="w-full h-full text-amber-600/50" strokeWidth={1.5} />
-        </div>
-        
-        <div className="absolute top-[35%] right-[12%] w-3 h-48 bg-gradient-to-b from-amber-500/50 to-transparent rounded-full" />
-        <div className="absolute bottom-[30%] left-[15%] w-3 h-40 bg-gradient-to-b from-orange-500/50 to-transparent rounded-full" />
-        
-        <div className="absolute top-[28%] right-[8%] w-4 h-4 rounded-full bg-amber-600/60" />
-        <div className="absolute top-[72%] left-[25%] w-3 h-3 rounded-full bg-orange-600/60" />
-        <div className="absolute bottom-[15%] right-[30%] w-4 h-4 rounded-full bg-yellow-600/60" />
-      </motion.div>
+      
+      {/* Bottom fade for content sections */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/40 to-transparent" />
     </div>
   );
 }
@@ -221,111 +172,92 @@ export default function TimelineStoryteller2({
   };
 
   return (
-    <div className="relative min-h-screen bg-amber-50 text-gray-900 font-serif">
-      <StorytellingParallaxBackground />
+    <div className="relative min-h-screen bg-stone-50 text-gray-900">
+      <ElegantBackground />
 
+      {/* Hero Section - Clean header with 6 fields */}
       <motion.section 
         style={{ opacity: heroOpacity }}
-        className="relative min-h-screen flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-20"
+        className="relative min-h-[85vh] flex flex-col items-center justify-center px-6 md:px-16 lg:px-24 py-16"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center max-w-5xl mx-auto space-y-8"
+          className="text-center max-w-4xl mx-auto"
         >
+          {/* Profile Picture */}
           <div className="flex justify-center mb-8">
-            <div className="relative">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="absolute -inset-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full blur-2xl opacity-30"
-              />
+            <motion.div 
+              className="relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="absolute -inset-3 bg-gradient-to-br from-amber-300/40 to-orange-300/40 rounded-full blur-xl" />
               <ProfileImage
                 src={userInfo.photoURL}
                 alt={userInfo.name}
-                className="w-48 h-48 rounded-full border-4 border-amber-300 shadow-2xl relative z-10"
+                className="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-white shadow-xl relative z-10 object-cover"
               />
-            </div>
+            </motion.div>
           </div>
 
-          <div className="space-y-4">
+          {/* Name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-4xl md:text-6xl font-bold text-gray-900 mb-3"
+          >
+            {userInfo.name}
+          </motion.h1>
+
+          {/* Title + Company */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-xl md:text-2xl text-amber-700 font-medium mb-4"
+          >
+            {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
+          </motion.p>
+
+          {/* Location */}
+          {userInfo.location && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-amber-200/50 rounded-full"
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-center gap-2 text-gray-600 mb-6"
             >
-              <BookOpen className="w-5 h-5 text-amber-700" />
-              <span className="text-amber-800 font-medium">Chapter One</span>
+              <MapPin className="w-4 h-4" />
+              <span>{userInfo.location}</span>
             </motion.div>
+          )}
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-700 via-orange-600 to-amber-700"
-            >
-              {userInfo.name}
-            </motion.h1>
-
+          {/* Tagline */}
+          {userInfo.tagline && (
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-2xl md:text-3xl text-amber-800 font-light"
+              transition={{ delay: 0.6 }}
+              className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed italic border-l-4 border-amber-400 pl-4 text-left"
             >
-              {userInfo.title}{userInfo.company ? ` at ${userInfo.company}` : ''}
+              "{userInfo.tagline}"
             </motion.p>
+          )}
 
-            {userInfo.tagline && (
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto italic"
-              >
-                "{userInfo.tagline}"
-              </motion.p>
-            )}
-          </div>
-
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-4 text-sm text-amber-800"
-          >
-            {userInfo.location && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
-                <MapPin className="w-4 h-4" />
-                <span>{userInfo.location}</span>
-              </div>
-            )}
-            {userInfo.industry && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
-                <Building className="w-4 h-4" />
-                <span>{userInfo.industry}</span>
-              </div>
-            )}
-            {userInfo.domain && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 rounded-full">
-                <Target className="w-4 h-4" />
-                <span>{userInfo.domain}</span>
-              </div>
-            )}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-4 pt-4"
+            className="flex flex-wrap justify-center gap-4 mt-8"
           >
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-6 rounded-full shadow-lg"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-8 py-5 rounded-lg shadow-md"
               data-testid="button-connect"
             >
               <Mail className="w-5 h-5 mr-2" />
@@ -334,7 +266,7 @@ export default function TimelineStoryteller2({
             <Button 
               size="lg"
               variant="outline"
-              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-8 py-6 rounded-full"
+              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-50 font-medium px-8 py-5 rounded-lg"
               data-testid="button-mentor"
             >
               <Users className="w-5 h-5 mr-2" />
@@ -355,9 +287,9 @@ export default function TimelineStoryteller2({
           >
             <div className="flex items-center gap-4 mb-8">
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full">
-                <Feather className="w-8 h-8 text-white" />
+                <Users className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-amber-900">The Story Begins</h2>
+              <h2 className="text-4xl font-bold text-amber-900">About Me</h2>
             </div>
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
               <CardContent className="p-8">
@@ -435,7 +367,7 @@ export default function TimelineStoryteller2({
                     <CardContent className="p-6 text-center">
                       <div className="flex justify-center mb-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center">
-                          <Star className="w-6 h-6 text-white fill-white" />
+                          <Sparkles className="w-6 h-6 text-white" />
                         </div>
                       </div>
                       <p className="text-lg font-semibold text-amber-900">{value}</p>
@@ -681,9 +613,9 @@ export default function TimelineStoryteller2({
           >
             <div className="flex items-center gap-4 mb-8">
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
-                <Map className="w-8 h-8 text-white" />
+                <Globe className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-amber-900">Notable Chapters</h2>
+              <h2 className="text-4xl font-bold text-amber-900">Projects</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
