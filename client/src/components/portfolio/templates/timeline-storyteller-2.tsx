@@ -9,7 +9,7 @@ import { Education, Project, Service, Skill, WorkExperience } from "@shared/sche
 import { 
   MapPin, Calendar, Building, GraduationCap, Briefcase, Award, 
   ExternalLink, Clock, Sparkles,
-  Target, Heart, Users, TrendingUp, Mail, Globe
+  Target, Heart, Users, TrendingUp, Mail, Globe, Building2
 } from "lucide-react";
 
 interface TimelineStoryteller2Props {
@@ -81,10 +81,6 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
   if (!project) return null;
 
   const mediaUrls = (project.mediaUrls as string[]) || [];
-  const allImages = [
-    ...(project.thumbnailUrl ? [project.thumbnailUrl] : []),
-    ...mediaUrls
-  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -103,9 +99,9 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           )}
         </DialogHeader>
         <div className="space-y-6">
-          {allImages.length > 0 && (
+          {mediaUrls.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {allImages.map((url, idx) => (
+              {mediaUrls.map((url, idx) => (
                 <motion.img
                   key={idx}
                   src={url}
@@ -151,6 +147,26 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
               <p className="text-gray-700 italic">"{project.clientEndorsement}"</p>
             </div>
           )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Team Members Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Team Members
+              </h4>
+              <p className="text-sm text-gray-600">Team member information coming soon. Add collaborators to showcase your team.</p>
+            </div>
+            
+            {/* Client Information Section */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-green-900 mb-3 flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                Client Information
+              </h4>
+              <p className="text-sm text-gray-600">Client details coming soon. Add client information to showcase your professional relationships.</p>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -284,7 +300,7 @@ export default function TimelineStoryteller2({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-4 mt-8"
+            className="flex flex-wrap justify-center gap-4 mt-8 pb-12"
           >
             <Button 
               size="lg"
@@ -307,7 +323,7 @@ export default function TimelineStoryteller2({
         </motion.div>
       </motion.section>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-16">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 space-y-16">
         {/* Vision, Mission, Core Values & Unique Value - All Combined in One Card */}
         {(userInfo.visionStatement || userInfo.missionStatement || (userInfo.coreValues && userInfo.coreValues.length > 0) || userInfo.uniqueValueProposition) && (
           <motion.section
@@ -499,9 +515,12 @@ export default function TimelineStoryteller2({
                           <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
                         </div>
                         <div className="relative h-3 bg-amber-100 rounded-full overflow-hidden">
-                          <div
-                            style={{ width: `${levelPercent}%` }}
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${levelPercent}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: idx * 0.05 }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
                           />
                         </div>
                       </CardContent>
