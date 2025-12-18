@@ -102,34 +102,17 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     enabled: !!userData?.id,
   });
 
-  // Fetch the user's published portfolio
-  const { data: publishedPortfolio, isLoading: isPortfolioDataLoading, error: portfolioError } = useQuery({
+  // Fetch the user's published portfolio (optional - render even if this fails)
+  const { data: publishedPortfolio } = useQuery({
     queryKey: [`/api/users/${userData?.id}/portfolio`], 
     queryFn: async () => {
-      console.log(`Brand profile - Portfolio query triggered. userData:`, userData);
-      console.log(`Brand profile - userData?.id:`, userData?.id);
-      if (!userData?.id) {
-        console.log('Brand profile - No userData.id, skipping portfolio fetch');
-        return null;
-      }
+      if (!userData?.id) return null;
       try {
-        console.log(`Brand profile - Fetching portfolio for user ID: ${userData.id}`);
-        console.log(`Brand profile - Making API call to: /api/users/${userData.id}/portfolio`);
-        
         const response = await fetch(`/api/users/${userData.id}/portfolio`);
-        console.log('Brand profile - Raw response:', response);
-        
-        if (!response.ok) {
-          console.error('Brand profile - API response not ok:', response.status, response.statusText);
-          return null;
-        }
-        
-        const portfolioData = await response.json();
-        console.log('Brand profile - Portfolio data received:', portfolioData);
-        return portfolioData;
+        if (!response.ok) return null;
+        return await response.json();
       } catch (error) {
-        console.error('Brand profile - Error fetching portfolio:', error);
-        console.error('Brand profile - Portfolio API call failed with error:', error);
+        console.error('Portfolio fetch error:', error);
         return null;
       }
     },
@@ -140,11 +123,6 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
   // Loading state - only wait for essential queries
   if (isUserLoading) {
     return <ProfilePageSkeleton />;
-  }
-  
-  // If user loaded but portfolio failed/doesn't exist, continue anyway
-  if (portfolioError || (isPortfolioDataLoading && !publishedPortfolio)) {
-    console.log("Portfolio fetch completed with error or no data - continuing without portfolio");
   }
   
   // Wait for other data if still loading
