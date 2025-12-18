@@ -53,8 +53,9 @@ export default function ProfileResolver({ identifier }: ProfileResolverProps) {
   // If the identifier matches the user's brand name, show BrandProfile
   // Otherwise show PublicProfile
   if (normalizedBrandName && normalizedIdentifier === normalizedBrandName) {
-    console.log(`[ProfileResolver] Identifier matches brand name - rendering BrandProfile`);
-    return <BrandProfile brandName={identifier} />;
+    console.log(`[ProfileResolver] Identifier matches brand name - rendering BrandProfile with full userData`);
+    // Pass the full userData to avoid refetch and ensure branding fields are available immediately
+    return <BrandProfile brandName={identifier} initialUserData={userData as any} />;
   }
 
   console.log(`[ProfileResolver] Identifier matches username - rendering PublicProfile`);

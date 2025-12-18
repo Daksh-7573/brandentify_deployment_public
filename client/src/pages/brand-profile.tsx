@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -65,14 +66,18 @@ interface PortfolioData {
 
 interface BrandProfileProps {
   brandName: string;
+  initialUserData?: UserData;
 }
 
-export default function BrandProfile({ brandName }: BrandProfileProps) {
-  // Fetch user data by brand name
-  const { data: userData, isLoading: isUserLoading, error: userError } = useQuery({
+export default function BrandProfile({ brandName, initialUserData }: BrandProfileProps) {
+  // Use initialUserData if provided (from ProfileResolver), otherwise fetch
+  const { data: fetchedUserData, isLoading: isUserLoading, error: userError } = useQuery({
     queryKey: [`/api/users/brand/${brandName}`],
-    enabled: !!brandName,
+    enabled: !!brandName && !initialUserData,
   }) as { data: UserData | undefined, isLoading: boolean, error: any };
+
+  // Prefer initialUserData over fetched data
+  const userData = initialUserData || fetchedUserData;
 
   // Debug log to see what userData contains
   useEffect(() => {
