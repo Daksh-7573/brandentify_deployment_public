@@ -561,9 +561,7 @@ export default function Scholar({
       {/* Professional Brand Section - No header label */}
       {userInfo && (userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
-        userInfo.uniqueValueProposition || 
-        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        userInfo.uniqueValueProposition) && (
         <section className="py-6 bg-gray-50">
           <div className="container mx-auto px-4 md:px-8">
             <div className="space-y-6">
@@ -626,49 +624,6 @@ export default function Scholar({
                     <h3 className="text-lg font-serif font-semibold text-blue-800">What Sets Me Apart</h3>
                   </div>
                   <p className="text-gray-700 leading-relaxed">{userInfo.uniqueValueProposition}</p>
-                </div>
-              )}
-
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <div className="notebook-paper p-6 fade-in-up">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Users className="h-5 w-5 text-blue-600" />
-                    <h3 className="text-lg font-serif font-semibold text-blue-800">Who I Serve</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-2">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              className="bg-blue-600 text-white hover:bg-blue-700"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium mb-2">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              variant="outline"
-                              className="bg-blue-50 text-blue-700 border-blue-200"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
