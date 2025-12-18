@@ -277,28 +277,6 @@ export default function TimelineStoryteller2({
       </motion.section>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-32">
-        {userInfo.aboutMe && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">About Me</h2>
-            </div>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
-              <CardContent className="p-8">
-                <p className="text-lg text-gray-700 leading-relaxed">{userInfo.aboutMe}</p>
-              </CardContent>
-            </Card>
-          </motion.section>
-        )}
-
         {userInfo.visionStatement && (
           <motion.section
             initial={{ opacity: 0, x: -40 }}
@@ -455,6 +433,160 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
+        {userSkills.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userSkills.map((skill, idx) => {
+                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
+                const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
+                return (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <CardContent className="p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-amber-900">{skill.name}</h4>
+                          <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
+                        </div>
+                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${levelPercent}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: idx * 0.05 }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
+                          />
+                        </div>
+                        <p className="text-xs text-amber-600 text-right">{levelPercent}%</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.section>
+        )}
+
+        {sortedProjects.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Projects</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedProjects.map((project, idx) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card 
+                    className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
+                    onClick={() => openProjectModal(project)}
+                  >
+                    <CardContent className="p-0">
+                      {project.thumbnailUrl && (
+                        <div className="relative h-48 overflow-hidden rounded-t-lg">
+                          <img 
+                            src={project.thumbnailUrl} 
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      )}
+                      
+                      <div className="p-6 space-y-3">
+                        <h3 className="text-xl font-bold text-amber-900 group-hover:text-orange-700 transition-colors">
+                          {project.title}
+                        </h3>
+                        
+                        {project.description && (
+                          <p className="text-gray-700 text-sm line-clamp-3">
+                            {project.description}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center gap-2 text-sm text-amber-600">
+                            <Calendar className="w-4 h-4" />
+                            <span>{project.startDate && new Date(project.startDate).getFullYear()}</span>
+                          </div>
+                          <ExternalLink className="w-5 h-5 text-amber-600 group-hover:text-orange-600 transition-colors" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {userServices && userServices.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-full">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Services Offered</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {userServices.map((service, idx) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
+                    <CardContent className="p-6 space-y-3">
+                      <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
+                      {service.description && (
+                        <p className="text-gray-700">{service.description}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
         {sortedExperiences.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -563,142 +695,6 @@ export default function TimelineStoryteller2({
                           {edu.endDate && ` - ${new Date(edu.endDate).getFullYear()}`}
                         </span>
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
-        {userSkills.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
-            </div>
-            
-            <div className="flex flex-wrap gap-3">
-              {userSkills.map((skill) => (
-                <motion.div
-                  key={skill.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Badge className="px-4 py-2 text-base bg-gradient-to-r from-amber-200 to-orange-200 text-amber-900 hover:from-amber-300 hover:to-orange-300 border border-amber-300">
-                    {skill.name}
-                  </Badge>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
-        {sortedProjects.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
-                <Globe className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Projects</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedProjects.map((project, idx) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card 
-                    className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full"
-                    onClick={() => openProjectModal(project)}
-                  >
-                    <CardContent className="p-0">
-                      {project.thumbnailUrl && (
-                        <div className="relative h-48 overflow-hidden rounded-t-lg">
-                          <img 
-                            src={project.thumbnailUrl} 
-                            alt={project.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      )}
-                      
-                      <div className="p-6 space-y-3">
-                        <h3 className="text-xl font-bold text-amber-900 group-hover:text-orange-700 transition-colors">
-                          {project.title}
-                        </h3>
-                        
-                        {project.description && (
-                          <p className="text-gray-700 text-sm line-clamp-3">
-                            {project.description}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="flex items-center gap-2 text-sm text-amber-600">
-                            <Calendar className="w-4 h-4" />
-                            <span>{project.startDate && new Date(project.startDate).getFullYear()}</span>
-                          </div>
-                          <ExternalLink className="w-5 h-5 text-amber-600 group-hover:text-orange-600 transition-colors" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
-        {userServices && userServices.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-full">
-                <Globe className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Services Offered</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userServices.map((service, idx) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
-                    <CardContent className="p-6 space-y-3">
-                      <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
-                      {service.description && (
-                        <p className="text-gray-700">{service.description}</p>
-                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
