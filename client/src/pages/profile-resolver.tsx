@@ -24,6 +24,17 @@ export default function ProfileResolver({ identifier }: ProfileResolverProps) {
     enabled: !!identifier
   });
 
+  // Debug: Log the full userData including branding fields
+  console.log(`[ProfileResolver] Full userData received:`, userData ? JSON.stringify({
+    id: userData.id,
+    brandName: userData.brandName,
+    tagline: userData.tagline,
+    company: userData.company,
+    visionStatement: userData.visionStatement,
+    missionStatement: userData.missionStatement,
+    coreValues: userData.coreValues
+  }) : 'null');
+
   if (isLoading) {
     return <SearchPageSkeleton />;
   }
