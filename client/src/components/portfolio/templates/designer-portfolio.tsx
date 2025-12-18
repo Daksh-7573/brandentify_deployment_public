@@ -662,12 +662,24 @@ export default function DesignerPortfolio({
                       className="group transition-all duration-300 hover:translate-x-2"
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <span 
-                          className="font-medium text-sm"
-                          style={{ color: colors.deepInk }}
-                        >
-                          {skill.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span 
+                            className="font-medium text-sm"
+                            style={{ color: colors.deepInk }}
+                          >
+                            {skill.name}
+                          </span>
+                          {(skill as any).category && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
+                              {(skill as any).category}
+                            </span>
+                          )}
+                          {(skill as any).yearsOfExperience && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700">
+                              {(skill as any).yearsOfExperience}y
+                            </span>
+                          )}
+                        </div>
                         <span 
                           className="text-xs font-medium px-2 py-0.5 rounded-full"
                           style={{ 

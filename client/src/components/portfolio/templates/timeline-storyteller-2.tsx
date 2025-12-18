@@ -514,6 +514,20 @@ export default function TimelineStoryteller2({
                           <h4 className="font-semibold text-amber-900">{skill.name}</h4>
                           <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
                         </div>
+                        {((skill as any).category || (skill as any).yearsOfExperience) && (
+                          <div className="flex flex-wrap gap-2 text-xs text-amber-600">
+                            {(skill as any).category && (
+                              <span className="bg-amber-50 px-2 py-0.5 rounded">
+                                {(skill as any).category}
+                              </span>
+                            )}
+                            {(skill as any).yearsOfExperience && (
+                              <span className="bg-orange-50 px-2 py-0.5 rounded">
+                                {(skill as any).yearsOfExperience} yrs exp
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="relative h-3 bg-amber-100 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}

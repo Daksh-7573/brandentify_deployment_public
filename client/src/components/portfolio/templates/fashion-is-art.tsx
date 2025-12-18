@@ -404,6 +404,18 @@ export default function FashionIsArt({
                 <Card key={skill.id} className="border-black/10">
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold">{skill.name}</h3>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(skill as any).category && (
+                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                          {(skill as any).category}
+                        </span>
+                      )}
+                      {(skill as any).yearsOfExperience && (
+                        <span className="text-xs bg-black text-white px-2 py-1 rounded">
+                          {(skill as any).yearsOfExperience}y exp
+                        </span>
+                      )}
+                    </div>
                     {skill.level && (
                       <p className="text-sm text-gray-600 mt-2">{skill.level}</p>
                     )}

@@ -539,13 +539,29 @@ export default function YogaFitnessModel({
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Badge className="px-6 py-3 text-base border-0 shadow-md" style={{
-                    backgroundColor: '#D4C5B0',
-                    color: '#2D5F4F',
-                    borderRadius: '20px'
-                  }}>
-                    {skill.name}
-                  </Badge>
+                  <div className="flex flex-col items-center gap-1">
+                    <Badge className="px-6 py-3 text-base border-0 shadow-md" style={{
+                      backgroundColor: '#D4C5B0',
+                      color: '#2D5F4F',
+                      borderRadius: '20px'
+                    }}>
+                      {skill.name}
+                    </Badge>
+                    {((skill as any).category || (skill as any).yearsOfExperience) && (
+                      <div className="flex gap-2 text-xs">
+                        {(skill as any).category && (
+                          <span className="px-2 py-1 rounded-full bg-white/80 text-gray-600">
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span className="px-2 py-1 rounded-full bg-[#2D5F4F]/20 text-[#2D5F4F]">
+                            {(skill as any).yearsOfExperience}y
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>

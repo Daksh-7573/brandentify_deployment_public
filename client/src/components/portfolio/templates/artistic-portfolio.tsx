@@ -683,17 +683,41 @@ export default function ArtisticPortfolio({
                     >
                       {skill.name}
                     </h4>
-                    {skill.level && (
-                      <span 
-                        className="inline-block px-2 py-0.5 rounded text-xs mb-3"
-                        style={{
-                          backgroundColor: `${color}20`,
-                          color: color,
-                        }}
-                      >
-                        {skill.level}
-                      </span>
-                    )}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {skill.level && (
+                        <span 
+                          className="inline-block px-2 py-0.5 rounded text-xs"
+                          style={{
+                            backgroundColor: `${color}20`,
+                            color: color,
+                          }}
+                        >
+                          {skill.level}
+                        </span>
+                      )}
+                      {(skill as any).category && (
+                        <span 
+                          className="inline-block px-2 py-0.5 rounded text-xs"
+                          style={{
+                            backgroundColor: `${colors.coral}20`,
+                            color: colors.coral,
+                          }}
+                        >
+                          {(skill as any).category}
+                        </span>
+                      )}
+                      {(skill as any).yearsOfExperience && (
+                        <span 
+                          className="inline-block px-2 py-0.5 rounded text-xs"
+                          style={{
+                            backgroundColor: `${colors.mustard}20`,
+                            color: colors.mustard,
+                          }}
+                        >
+                          {(skill as any).yearsOfExperience}y
+                        </span>
+                      )}
+                    </div>
                     
                     {/* Proficiency Dots */}
                     <div className="flex gap-1.5 mt-2">

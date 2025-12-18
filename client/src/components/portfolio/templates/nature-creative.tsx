@@ -676,12 +676,22 @@ export default function NatureCreative({
                     {/* Glow effect on hover */}
                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
                     
-                    <div className="relative px-6 py-3 bg-white/70 backdrop-blur-sm border-2 border-emerald-200 rounded-2xl shadow-md flex items-center gap-2">
+                    <div className="relative px-6 py-3 bg-white/70 backdrop-blur-sm border-2 border-emerald-200 rounded-2xl shadow-md flex flex-wrap items-center gap-2">
                       <Leaf className="text-emerald-500 group-hover:rotate-12 transition-transform" size={18} />
                       <span className="text-gray-700 font-medium">{skill.name}</span>
+                      {(skill as any).category && (
+                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">
+                          {(skill as any).category}
+                        </span>
+                      )}
+                      {(skill as any).yearsOfExperience && (
+                        <span className="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded">
+                          {(skill as any).yearsOfExperience}y
+                        </span>
+                      )}
                       {skill.proficiency && (
-                        <Badge className="ml-2 bg-teal-100 text-teal-700 text-xs">
-                          {skill.proficiency}
+                        <Badge className="ml-1 bg-cyan-100 text-cyan-700 text-xs">
+                          {skill.proficiency}%
                         </Badge>
                       )}
                     </div>

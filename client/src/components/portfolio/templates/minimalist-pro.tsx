@@ -354,7 +354,7 @@ export default function MinimalistPro({
                 sortedSkills.map((skill) => (
                   <div 
                     key={skill.id}
-                    className="skill-tag inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-2 rounded-full"
+                    className="skill-tag inline-flex items-center gap-2 bg-gray-100 text-gray-800 px-3 py-2 rounded-full"
                   >
                     <div className="w-8 h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
@@ -363,6 +363,12 @@ export default function MinimalistPro({
                       ></div>
                     </div>
                     <span className="text-sm font-medium">{skill.name}</span>
+                    {(skill as any).category && (
+                      <span className="text-xs text-gray-500">({(skill as any).category})</span>
+                    )}
+                    {(skill as any).yearsOfExperience && (
+                      <span className="text-xs text-primary">{(skill as any).yearsOfExperience}y</span>
+                    )}
                   </div>
                 ))
               ) : (

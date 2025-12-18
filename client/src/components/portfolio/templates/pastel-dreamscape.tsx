@@ -204,10 +204,25 @@ function SkillPetals({ skills }: { skills: Skill[] }) {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               whileHover={{ scale: 1.15 }}
             >
-              <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/70 border-2 border-white/90 shadow-lg flex flex-col items-center justify-center p-3 text-center hover:bg-white/90 transition-all duration-300">
-                <span className="font-bold text-xs text-gray-800 mb-1 line-clamp-2">{skill.name}</span>
+              <div className="w-32 h-32 rounded-full backdrop-blur-md bg-white/70 border-2 border-white/90 shadow-lg flex flex-col items-center justify-center p-2 text-center hover:bg-white/90 transition-all duration-300">
+                <span className="font-bold text-xs text-gray-800 mb-0.5 line-clamp-2">{skill.name}</span>
                 
-                <span className="px-2 py-0.5 bg-gradient-to-r from-pink-200 to-purple-200 text-xs font-semibold text-gray-700 rounded-full mb-2">
+                {((skill as any).category || (skill as any).yearsOfExperience) && (
+                  <div className="flex flex-wrap gap-1 justify-center mb-0.5">
+                    {(skill as any).category && (
+                      <span className="text-[10px] bg-pink-100 text-pink-600 px-1 rounded">
+                        {(skill as any).category}
+                      </span>
+                    )}
+                    {(skill as any).yearsOfExperience && (
+                      <span className="text-[10px] bg-purple-100 text-purple-600 px-1 rounded">
+                        {(skill as any).yearsOfExperience}y
+                      </span>
+                    )}
+                  </div>
+                )}
+                
+                <span className="px-2 py-0.5 bg-gradient-to-r from-pink-200 to-purple-200 text-xs font-semibold text-gray-700 rounded-full mb-1">
                   {skill.level}
                 </span>
                 

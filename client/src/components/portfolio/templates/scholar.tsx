@@ -697,6 +697,16 @@ export default function Scholar({
                     <div className="flex justify-between mb-1">
                       <span className="text-sm font-medium text-gray-800">{skill.name}</span>
                       <div className="flex items-center gap-2">
+                        {(skill as any).category && (
+                          <span className="text-xs px-2 py-1 rounded-md bg-green-50 text-green-700">
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span className="text-xs px-2 py-1 rounded-md bg-purple-50 text-purple-700">
+                            {(skill as any).yearsOfExperience}y
+                          </span>
+                        )}
                         <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                           {skill.level} - {skill.proficiency}%
                         </span>

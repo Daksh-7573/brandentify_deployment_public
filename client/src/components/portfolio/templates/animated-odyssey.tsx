@@ -581,6 +581,20 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                     <div className="skill-bubble-inner">
                       <div className="skill-content">
                         <h3 className="skill-name">{skill.name}</h3>
+                        {((skill as any).category || (skill as any).yearsOfExperience) && (
+                          <div className="flex flex-wrap gap-1 justify-center mb-2 text-xs">
+                            {(skill as any).category && (
+                              <span className="bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">
+                                {(skill as any).category}
+                              </span>
+                            )}
+                            {(skill as any).yearsOfExperience && (
+                              <span className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">
+                                {(skill as any).yearsOfExperience}y
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="skill-level">
                           <motion.div 
                             className="skill-fill"

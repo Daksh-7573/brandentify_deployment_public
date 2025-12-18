@@ -800,9 +800,23 @@ export default function PhotographerPortfolio({
                     >
                       <Aperture size={24} color={colors.warmAmber} opacity={0.3} />
                     </motion.div>
-                    <h3 className="text-lg font-bold mb-3" style={{ color: colors.warmAmber }}>
+                    <h3 className="text-lg font-bold mb-2" style={{ color: colors.warmAmber }}>
                       {skill.name}
                     </h3>
+                    {((skill as any).category || (skill as any).yearsOfExperience) && (
+                      <div className="flex flex-wrap gap-2 mb-3 text-xs">
+                        {(skill as any).category && (
+                          <span className="bg-amber-900/50 text-amber-300 px-2 py-0.5 rounded">
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span className="bg-red-900/50 text-red-300 px-2 py-0.5 rounded">
+                            {(skill as any).yearsOfExperience}y
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <div className="relative h-2 bg-black/50 rounded-full overflow-hidden">
                       <motion.div
                         className="absolute top-0 left-0 h-full rounded-full"

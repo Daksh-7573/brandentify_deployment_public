@@ -483,9 +483,15 @@ export default function FashionRunway({
                 >
                   <Badge 
                     variant="outline" 
-                    className="px-4 py-2 text-sm border-black/20 hover:bg-black hover:text-white transition-colors"
+                    className="px-4 py-2 text-sm border-black/20 hover:bg-black hover:text-white transition-colors flex items-center gap-2"
                   >
                     {skill.name}
+                    {(skill as any).category && (
+                      <span className="text-xs opacity-70">({(skill as any).category})</span>
+                    )}
+                    {(skill as any).yearsOfExperience && (
+                      <span className="text-xs font-bold">{(skill as any).yearsOfExperience}y</span>
+                    )}
                   </Badge>
                 </motion.div>
               ))}

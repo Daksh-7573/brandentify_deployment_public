@@ -354,10 +354,20 @@ function ExperienceNode({ experience, index, isLast, reducedMotion = false }: { 
           </ul>
         )}
         
-        {experience.location && (
-          <div className="flex items-center gap-1 mt-3 text-xs text-gray-400">
-            <MapPin className="w-3 h-3" />
-            <span>{experience.location}</span>
+        {(experience.location || experience.industry) && (
+          <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-400">
+            {experience.location && (
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {experience.location}
+              </span>
+            )}
+            {experience.industry && (
+              <span className="flex items-center gap-1">
+                <Briefcase className="w-3 h-3" />
+                {experience.industry}
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -399,14 +409,27 @@ function CertificationCard({ education, index, reducedMotion = false }: { educat
         <div className="flex-1">
           <h4 className="font-semibold text-gray-800">{education.degree}</h4>
           <p className="text-sm text-gray-600">{education.institution}</p>
-          <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
+          <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-400">
             <Calendar className="w-3 h-3" />
             <span>{formatDate(education.startDate)} — {education.endDate ? formatDate(education.endDate) : 'Present'}</span>
+            {education.location && (
+              <>
+                <span>•</span>
+                <MapPin className="w-3 h-3" />
+                <span>{education.location}</span>
+              </>
+            )}
+            {education.industry && (
+              <>
+                <span>•</span>
+                <span>{education.industry}</span>
+              </>
+            )}
           </div>
         </div>
       </div>
       
-      {(education.fieldOfStudy || skillsAcquired.length > 0) && (
+      {(education.fieldOfStudy || skillsAcquired.length > 0 || education.location || education.industry) && (
         <div className="mt-3">
           <button 
             onClick={() => setExpanded(!expanded)}

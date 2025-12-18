@@ -1176,10 +1176,25 @@ export function DynamicInnovator({
                 const SkillIcon = getSkillIcon(skill.name);
                 return (
                   <div key={skill.id} className="tech-card p-4">
-                    <div className="flex items-center mb-3">
+                    <div className="flex items-center mb-2">
                       <SkillIcon className="h-5 w-5 mr-2 text-[#08f7fe]" />
                       <span className="text-white">{skill.name}</span>
                     </div>
+                    
+                    {((skill as any).category || (skill as any).yearsOfExperience) && (
+                      <div className="flex flex-wrap gap-2 mb-3 text-xs">
+                        {(skill as any).category && (
+                          <span className="bg-cyan-900/50 text-cyan-300 px-2 py-0.5 rounded">
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span className="bg-purple-900/50 text-purple-300 px-2 py-0.5 rounded">
+                            {(skill as any).yearsOfExperience}y exp
+                          </span>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="skill-meter">
                       <div 

@@ -411,7 +411,14 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                     className="space-y-2"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold">{skillName}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold">{skillName}</span>
+                        {skill.category && (
+                          <span className="text-xs px-2 py-0.5 rounded" style={{ background: colors.softPurpleGlow, color: colors.executivePurple }}>
+                            {skill.category}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs" style={{ color: colors.platinumSilver }}>
                         {years > 0 ? `${years}+ years` : ''}
                       </span>
@@ -475,6 +482,16 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                         <p style={{ color: colors.mutedSilver }} className="text-xs mt-1">
                           {exp.startDate} {exp.endDate && `- ${exp.endDate}`}
                         </p>
+                        {(exp.location || exp.industry) && (
+                          <div className="flex flex-wrap gap-3 mt-1 text-xs" style={{ color: colors.platinumSilver }}>
+                            {exp.location && (
+                              <span>📍 {exp.location}</span>
+                            )}
+                            {exp.industry && (
+                              <span>🏢 {exp.industry}</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <ChevronDown
                         size={20}
@@ -554,6 +571,16 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                   <p style={{ color: colors.platinumSilver }} className="text-xs">
                     {edu.startDate} - {edu.endDate || 'Present'}
                   </p>
+                  {(edu.location || edu.industry) && (
+                    <div className="flex flex-wrap gap-3 mt-1 text-xs" style={{ color: colors.mutedSilver }}>
+                      {edu.location && (
+                        <span>📍 {edu.location}</span>
+                      )}
+                      {edu.industry && (
+                        <span>🏢 {edu.industry}</span>
+                      )}
+                    </div>
+                  )}
 
                   {Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">

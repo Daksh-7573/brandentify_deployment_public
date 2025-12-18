@@ -713,17 +713,41 @@ export default function HolographicNeo({
                       <h4 className="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">
                         {skill.name}
                       </h4>
-                      {skill.level && (
-                        <span 
-                          className="inline-block mt-1 px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(167, 139, 251, 0.2)',
-                            color: '#e9d5ff',
-                          }}
-                        >
-                          {skill.level}
-                        </span>
-                      )}
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {skill.level && (
+                          <span 
+                            className="inline-block px-2 py-0.5 rounded text-xs"
+                            style={{
+                              background: 'rgba(167, 139, 251, 0.2)',
+                              color: '#e9d5ff',
+                            }}
+                          >
+                            {skill.level}
+                          </span>
+                        )}
+                        {(skill as any).category && (
+                          <span 
+                            className="inline-block px-2 py-0.5 rounded text-xs"
+                            style={{
+                              background: 'rgba(34, 211, 238, 0.2)',
+                              color: '#67e8f9',
+                            }}
+                          >
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span 
+                            className="inline-block px-2 py-0.5 rounded text-xs"
+                            style={{
+                              background: 'rgba(74, 222, 128, 0.2)',
+                              color: '#86efac',
+                            }}
+                          >
+                            {(skill as any).yearsOfExperience}y
+                          </span>
+                        )}
+                      </div>
                       {/* Stars */}
                       <div className="flex gap-1 mt-2">
                         {[1, 2, 3, 4, 5].map((star) => (

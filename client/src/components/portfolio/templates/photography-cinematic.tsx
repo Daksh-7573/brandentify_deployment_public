@@ -271,10 +271,20 @@ function FilmReelExperience({ experience, index, isLast }: { experience: any; in
             </div>
           </div>
           
-          {experience.location && (
-            <div className="flex items-center gap-1 text-xs text-charcoal/60 mb-2">
-              <MapPin className="w-3 h-3" />
-              {experience.location}
+          {(experience.location || experience.industry) && (
+            <div className="flex flex-wrap items-center gap-3 text-xs text-charcoal/60 mb-2">
+              {experience.location && (
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {experience.location}
+                </span>
+              )}
+              {experience.industry && (
+                <span className="flex items-center gap-1">
+                  <Briefcase className="w-3 h-3" />
+                  {experience.industry}
+                </span>
+              )}
             </div>
           )}
           
@@ -329,11 +339,18 @@ function EducationSlide({ education, index }: { education: any; index: number })
         </div>
       </div>
       
-      <div className="flex items-center gap-2 text-xs text-charcoal/60 mb-3">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-charcoal/60 mb-3">
         {education.location && (
           <>
             <MapPin className="w-3 h-3" />
             <span className="truncate">{education.location}</span>
+            <span>•</span>
+          </>
+        )}
+        {education.industry && (
+          <>
+            <Briefcase className="w-3 h-3" />
+            <span className="truncate">{education.industry}</span>
             <span>•</span>
           </>
         )}

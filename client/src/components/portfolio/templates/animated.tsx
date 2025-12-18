@@ -798,7 +798,22 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       />
                     </div>
                     
-                    <h3 className="text-xl font-bold text-white mb-3 text-center">{skill.name}</h3>
+                    <h3 className="text-xl font-bold text-white mb-2 text-center">{skill.name}</h3>
+                    
+                    {((skill as any).category || (skill as any).yearsOfExperience) && (
+                      <div className="flex flex-wrap gap-2 justify-center mb-3 text-xs">
+                        {(skill as any).category && (
+                          <span className="bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded">
+                            {(skill as any).category}
+                          </span>
+                        )}
+                        {(skill as any).yearsOfExperience && (
+                          <span className="bg-pink-500/30 text-pink-200 px-2 py-0.5 rounded">
+                            {(skill as any).yearsOfExperience}y
+                          </span>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="flex flex-col items-center">
                       <div className="relative w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
@@ -1309,7 +1324,21 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
                     >
                       <h3 className="text-xl font-bold text-white">{experience.title}</h3>
-                      <h4 className="text-orange-400 font-medium mb-3">{experience.company}</h4>
+                      <h4 className="text-orange-400 font-medium mb-2">{experience.company}</h4>
+                      {(experience.location || experience.industry) && (
+                        <div className="flex flex-wrap gap-2 mb-3 text-sm text-gray-400">
+                          {experience.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" /> {experience.location}
+                            </span>
+                          )}
+                          {experience.industry && (
+                            <span className="flex items-center gap-1">
+                              <Briefcase className="h-3 w-3" /> {experience.industry}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       
                       {experience.description && (
                         <p className="text-gray-300 mb-4">{experience.description}</p>

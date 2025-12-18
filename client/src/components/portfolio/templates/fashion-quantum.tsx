@@ -988,6 +988,12 @@ export default function FashionQuantum({
                                 {exp.location}
                               </p>
                             )}
+                            {exp.industry && (
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
+                                <Building2 className="w-3 h-3" />
+                                {exp.industry}
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -1003,6 +1009,17 @@ export default function FashionQuantum({
                               <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
                                 <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.blushPink }} />
                                 {achievement}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {exp.keyResponsibilities && toStringArray(exp.keyResponsibilities).length > 0 && (
+                          <ul className="mt-4 space-y-2">
+                            {toStringArray(exp.keyResponsibilities).slice(0, 3).map((resp, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                                <span className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: colors.editorialNude }} />
+                                {resp}
                               </li>
                             ))}
                           </ul>
@@ -1096,6 +1113,22 @@ export default function FashionQuantum({
                             {edu.degree}
                             {edu.fieldOfStudy && <span className="opacity-80"> in {edu.fieldOfStudy}</span>}
                           </p>
+                          {(edu.location || edu.industry) && (
+                            <div className="flex flex-wrap gap-3 ml-12 mt-1 text-xs" style={{ color: colors.inkGrey }}>
+                              {edu.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {edu.location}
+                                </span>
+                              )}
+                              {edu.industry && (
+                                <span className="flex items-center gap-1">
+                                  <Building2 className="w-3 h-3" />
+                                  {edu.industry}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <span 
                           className="text-xs uppercase tracking-widest px-3 py-1 rounded-full"
@@ -1108,9 +1141,9 @@ export default function FashionQuantum({
                         </span>
                       </div>
 
-                      {edu.skills && toStringArray(edu.skills).length > 0 && (
+                      {(edu.skills || edu.skillsAcquired) && toStringArray(edu.skills || edu.skillsAcquired).length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-4 ml-12">
-                          {toStringArray(edu.skills).slice(0, 5).map((skill, i) => (
+                          {toStringArray(edu.skills || edu.skillsAcquired).slice(0, 5).map((skill, i) => (
                             <span 
                               key={i}
                               className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider"

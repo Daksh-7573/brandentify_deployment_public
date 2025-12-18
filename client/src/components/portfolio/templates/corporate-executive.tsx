@@ -1087,6 +1087,22 @@ export default function CorporateExecutive({
                     </h3>
                   </div>
                   
+                  {/* Category and Years of Experience */}
+                  {((skill as any).category || (skill as any).yearsOfExperience) && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(skill as any).category && (
+                        <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded">
+                          {(skill as any).category}
+                        </span>
+                      )}
+                      {(skill as any).yearsOfExperience && (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          {(skill as any).yearsOfExperience} yrs
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
                   {/* Proficiency Level - Enhanced with percentage progress bar */}
                   <div className="space-y-2">
                     {/* Progress bar with percentage */}

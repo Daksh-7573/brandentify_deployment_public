@@ -427,6 +427,20 @@ export default function FreelancerHub({
                           {getSkillIcon(skill.name)}
                           <h3 className="font-semibold text-gray-900 dark:text-white">{skill.name}</h3>
                         </div>
+                        {((skill as any).category || (skill as any).yearsOfExperience) && (
+                          <div className="flex flex-wrap gap-2 mb-2 text-xs">
+                            {(skill as any).category && (
+                              <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded">
+                                {(skill as any).category}
+                              </span>
+                            )}
+                            {(skill as any).yearsOfExperience && (
+                              <span className="bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 px-2 py-0.5 rounded">
+                                {(skill as any).yearsOfExperience}y
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center gap-2">
                           <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div 
@@ -541,14 +555,31 @@ export default function FreelancerHub({
                               {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
                             </Badge>
                           </div>
-                          {exp.location && (
-                            <p className="text-gray-600 dark:text-gray-400 mb-2">
-                              <MapPin className="inline h-4 w-4 mr-1" />
-                              {exp.location}
-                            </p>
+                          {(exp.location || (exp as any).industry) && (
+                            <div className="flex flex-wrap gap-3 mb-2 text-gray-600 dark:text-gray-400">
+                              {exp.location && (
+                                <span className="flex items-center">
+                                  <MapPin className="inline h-4 w-4 mr-1" />
+                                  {exp.location}
+                                </span>
+                              )}
+                              {(exp as any).industry && (
+                                <span className="flex items-center">
+                                  <Briefcase className="inline h-4 w-4 mr-1" />
+                                  {(exp as any).industry}
+                                </span>
+                              )}
+                            </div>
                           )}
                           {exp.description && (
                             <p className="text-gray-700 dark:text-gray-300 mt-3">{exp.description}</p>
+                          )}
+                          {(exp as any).keyResponsibilities && (exp as any).keyResponsibilities.length > 0 && (
+                            <ul className="mt-3 list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+                              {(exp as any).keyResponsibilities.map((resp: string, idx: number) => (
+                                <li key={idx} className="text-sm">{resp}</li>
+                              ))}
+                            </ul>
                           )}
                         </CardContent>
                       </Card>
@@ -592,9 +623,34 @@ export default function FreelancerHub({
                           {edu.fieldOfStudy && (
                             <p className="text-gray-600 dark:text-gray-400 mb-2">{edu.fieldOfStudy}</p>
                           )}
+                          {((edu as any).location || (edu as any).industry) && (
+                            <div className="flex flex-wrap gap-3 mb-2 text-sm text-gray-500 dark:text-gray-400">
+                              {(edu as any).location && (
+                                <span className="flex items-center">
+                                  <MapPin className="inline h-3 w-3 mr-1" />
+                                  {(edu as any).location}
+                                </span>
+                              )}
+                              {(edu as any).industry && (
+                                <span className="flex items-center">
+                                  <Briefcase className="inline h-3 w-3 mr-1" />
+                                  {(edu as any).industry}
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <Badge variant="outline" className="mt-2">
                             {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                           </Badge>
+                          {(edu as any).skillsAcquired && (edu as any).skillsAcquired.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {(edu as any).skillsAcquired.map((skill: string, idx: number) => (
+                                <Badge key={idx} className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     </motion.div>
