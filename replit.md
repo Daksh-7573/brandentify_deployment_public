@@ -6,6 +6,55 @@ Brandentifier is an AI-driven career development platform designed to help users
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (2024-12-18)
+### Portfolio Generation Engine - NEW ✅
+**Centralized system to auto-populate all portfolio templates from user profile**
+
+**Architecture:**
+```
+User Profile (Single Source of Truth)
+    ↓
+ProfileDataExtractor (extracts ALL fields)
+    ↓
+TemplateDataMapper (maps to template sections)
+    ↓
+DynamicPortfolioRenderer (renders any template)
+```
+
+**Components:**
+- `client/src/lib/portfolio-engine/types.ts` - Type definitions for extracted data
+- `client/src/lib/portfolio-engine/ProfileDataExtractor.ts` - Extracts all user profile fields
+- `client/src/lib/portfolio-engine/TemplateDataMapper.ts` - Maps data to template sections
+- `client/src/lib/portfolio-engine/ProfileCompletionAnalyzer.ts` - Analyzes profile completeness
+- `client/src/lib/portfolio-engine/DynamicPortfolioRenderer.tsx` - Core rendering engine
+
+**Benefits:**
+- ✅ Single source of truth - profile data extracted once, used everywhere
+- ✅ Auto-inclusion - new profile fields appear in ALL templates automatically
+- ✅ Less maintenance - no need to update 20+ templates individually
+- ✅ Profile completion tracking - shows users what fields to fill
+
+**Usage:**
+```tsx
+import { DynamicPortfolioRenderer, useDynamicPortfolio } from '@/lib/portfolio-engine';
+
+// Hook usage
+const { templateProps, TemplateComponent, completionAnalysis } = useDynamicPortfolio(
+  templateId,
+  userData,
+  { skills, experiences, projects, educations, services },
+  currentUserId
+);
+
+// Component usage
+<DynamicPortfolioRenderer
+  templateId="timeline-storyteller-2"
+  userData={userData}
+  collections={{ skills, experiences, projects, educations, services }}
+  currentUserId={userId}
+/>
+```
+
 ## Recent Changes (2024-12-10)
 ### Daily Quest Generation - FULLY FIXED, OPTIMIZED & TESTED ✅
 **Both Career & Social Quests Now Generate Daily - COMPREHENSIVE TEST PASSED**

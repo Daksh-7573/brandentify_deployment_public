@@ -130,7 +130,9 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     },
     userSkills: data.skills.map(skill => ({
       id: skill.id,
+      name: skill.skillName,
       skillName: skill.skillName,
+      level: skill.proficiencyLevel,
       proficiencyLevel: skill.proficiencyLevel,
       proficiency: skill.proficiency,
     })),
