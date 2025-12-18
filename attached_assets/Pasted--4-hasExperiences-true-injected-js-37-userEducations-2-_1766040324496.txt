@@ -1,0 +1,79 @@
+(4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+injected.js:37 Scholar template data validation:
+injected.js:37 - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}] hasSkills: true
+injected.js:37 - userExperiences: (4) [{…}, {…}, {…}, {…}] hasExperiences: true
+injected.js:37 - userEducations: (2) [{…}, {…}] hasEducation: true
+injected.js:37 - userProjects: (5) [{…}, {…}, {…}, {…}, {…}] hasProjects: true
+injected.js:37 - userServices: (3) [{…}, {…}, {…}] hasServices: true
+injected.js:37 - skillCategories: {technical: Array(1), soft: Array(8), tools: Array(0), other: Array(0)}
+injected.js:37 🎓 [Scholar] userInfo received: {name: 'Nishant Chopra', title: 'wdwq', company: undefined, tagline: undefined, visionStatement: undefined, …}
+inje

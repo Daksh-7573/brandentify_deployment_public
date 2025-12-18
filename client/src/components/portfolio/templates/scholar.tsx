@@ -123,20 +123,6 @@ export default function Scholar({
   userEducations,
   userProjects
 }: ScholarProps) {
-  // Debug logging for branding fields
-  console.log('🎓 [Scholar] userInfo received:', {
-    name: userInfo?.name,
-    title: userInfo?.title,
-    company: userInfo?.company,
-    tagline: userInfo?.tagline,
-    visionStatement: userInfo?.visionStatement,
-    missionStatement: userInfo?.missionStatement,
-    coreValues: userInfo?.coreValues,
-    uniqueValueProposition: userInfo?.uniqueValueProposition,
-    primaryAudience: userInfo?.primaryAudience,
-    secondaryAudience: userInfo?.secondaryAudience
-  });
-  
   // State for project modal
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -476,15 +462,6 @@ export default function Scholar({
   const hasEducation = userEducations && userEducations.length > 0;
   const hasProjects = userProjects && userProjects.length > 0;
   const hasServices = userServices && userServices.length > 0;
-  
-  // Debug logging
-  console.log("Scholar template data validation:");
-  console.log("- userSkills:", userSkills, "hasSkills:", hasSkills);
-  console.log("- userExperiences:", userExperiences, "hasExperiences:", hasExperiences);
-  console.log("- userEducations:", userEducations, "hasEducation:", hasEducation);
-  console.log("- userProjects:", userProjects, "hasProjects:", hasProjects);
-  console.log("- userServices:", userServices, "hasServices:", hasServices);
-  console.log("- skillCategories:", skillCategories);
   
   return (
     <div className="min-h-screen bg-white scholar-template">
