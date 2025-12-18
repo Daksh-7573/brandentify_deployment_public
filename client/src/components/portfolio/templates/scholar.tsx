@@ -26,7 +26,11 @@ import {
   School,
   Layers,
   Lightbulb,
-  X
+  X,
+  Sparkles,
+  Target,
+  Heart,
+  Users
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -561,16 +565,6 @@ export default function Scholar({
       </section>
 
       {/* My Professional Brand Section */}
-      {console.log("Scholar Template - userInfo branding fields:", {
-        tagline: userInfo?.tagline,
-        visionStatement: userInfo?.visionStatement,
-        missionStatement: userInfo?.missionStatement,
-        coreValues: userInfo?.coreValues,
-        uniqueValueProposition: userInfo?.uniqueValueProposition,
-        primaryAudience: userInfo?.primaryAudience,
-        secondaryAudience: userInfo?.secondaryAudience,
-        company: userInfo?.company
-      })}
       {userInfo && (userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
         userInfo.uniqueValueProposition || 
