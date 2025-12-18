@@ -68,8 +68,6 @@ interface BrandProfileProps {
 }
 
 export default function BrandProfile({ brandName }: BrandProfileProps) {
-  console.log(`[BrandProfile] Loading profile for brand name: ${brandName}`);
-
   // Fetch user data by brand name
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery({
     queryKey: [`/api/users/brand/${brandName}`],

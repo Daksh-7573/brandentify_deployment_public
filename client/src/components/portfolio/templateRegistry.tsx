@@ -216,6 +216,20 @@ export function buildPortfolioTemplateProps(
   },
   overrides?: Partial<PortfolioTemplateProps>
 ): PortfolioTemplateProps {
+  // Helper to parse JSON arrays from database
+  const parseArray = (value: any): any[] => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
   return {
     userInfo: {
       id: userData?.id,
@@ -234,11 +248,11 @@ export function buildPortfolioTemplateProps(
       tagline: userData?.tagline || null,
       visionStatement: userData?.visionStatement || null,
       missionStatement: userData?.missionStatement || null,
-      coreValues: userData?.coreValues || null,
+      coreValues: parseArray(userData?.coreValues),
       uniqueValueProposition: userData?.uniqueValueProposition || null,
       brandName: userData?.brandName || null,
-      primaryAudience: userData?.primaryAudience || null,
-      secondaryAudience: userData?.secondaryAudience || null
+      primaryAudience: parseArray(userData?.primaryAudience),
+      secondaryAudience: parseArray(userData?.secondaryAudience)
     },
     userSkills: collections.skills || [],
     userExperiences: collections.experiences || [],
