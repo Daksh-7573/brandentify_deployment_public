@@ -229,10 +229,24 @@ export default function TimelineStoryteller2({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex items-center justify-center gap-2 text-gray-600 mb-6"
+              className="flex items-center justify-center gap-2 text-gray-600 mb-4"
             >
               <MapPin className="w-4 h-4" />
               <span>{userInfo.location}</span>
+            </motion.div>
+          )}
+
+          {/* Looking For - highlighted */}
+          {userInfo.lookingFor && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 }}
+              className="mb-6"
+            >
+              <Badge className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium shadow-lg">
+                Looking for: {userInfo.lookingFor}
+              </Badge>
             </motion.div>
           )}
 
@@ -277,10 +291,11 @@ export default function TimelineStoryteller2({
       </motion.section>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-32">
-        {userInfo.visionStatement && (
+        {/* Vision & Mission - Combined side by side */}
+        {(userInfo.visionStatement || userInfo.missionStatement) && (
           <motion.section
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
@@ -288,91 +303,72 @@ export default function TimelineStoryteller2({
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
                 <Target className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-amber-900">The Vision</h2>
+              <h2 className="text-4xl font-bold text-amber-900">Vision & Mission</h2>
             </div>
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-xl">
               <CardContent className="p-8">
-                <p className="text-lg text-gray-700 leading-relaxed italic">{userInfo.visionStatement}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {userInfo.visionStatement && (
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
+                        <Target className="w-5 h-5" />
+                        Vision
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed italic break-words">{userInfo.visionStatement}</p>
+                    </div>
+                  )}
+                  {userInfo.missionStatement && (
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5" />
+                        Mission
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed break-words">{userInfo.missionStatement}</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </motion.section>
         )}
 
-        {userInfo.missionStatement && (
+        {/* Core Values & Unique Value - Combined */}
+        {((userInfo.coreValues && userInfo.coreValues.length > 0) || userInfo.uniqueValueProposition) && (
           <motion.section
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-4 mb-8">
               <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">The Mission</h2>
-            </div>
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
-              <CardContent className="p-8">
-                <p className="text-lg text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
-              </CardContent>
-            </Card>
-          </motion.section>
-        )}
-
-        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full">
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-amber-900">Core Values</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {userInfo.coreValues.map((value, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
-                    <CardContent className="p-6 text-center">
-                      <div className="flex justify-center mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-6 h-6 text-white" />
-                        </div>
-                      </div>
-                      <p className="text-lg font-semibold text-amber-900">{value}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
-        {userInfo.uniqueValueProposition && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-500 rounded-full">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Unique Value</h2>
+              <h2 className="text-4xl font-bold text-amber-900">Values & Proposition</h2>
             </div>
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
-              <CardContent className="p-8">
-                <p className="text-lg text-gray-700 leading-relaxed font-medium">{userInfo.uniqueValueProposition}</p>
+              <CardContent className="p-8 space-y-8">
+                {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-amber-900">Core Values</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {userInfo.coreValues.map((value, idx) => (
+                        <Badge 
+                          key={idx} 
+                          className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border border-amber-300 text-base font-medium"
+                        >
+                          {value}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {userInfo.uniqueValueProposition && (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-amber-900">Unique Value Proposition</h3>
+                    <p className="text-lg text-gray-700 leading-relaxed font-medium break-words">{userInfo.uniqueValueProposition}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.section>
@@ -703,62 +699,34 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
-        {(userInfo.lookingFor || userInfo.whatIOffer) && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="pb-20"
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Let's Connect</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userInfo.lookingFor && (
-                <Card className="bg-white/90 backdrop-blur-sm border-2 border-orange-200 shadow-lg">
-                  <CardContent className="p-6 space-y-3">
-                    <h3 className="text-xl font-bold text-orange-900">Looking For</h3>
-                    <p className="text-gray-700">{userInfo.lookingFor}</p>
-                  </CardContent>
-                </Card>
-              )}
-              
-              {userInfo.whatIOffer && (
-                <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg">
-                  <CardContent className="p-6 space-y-3">
-                    <h3 className="text-xl font-bold text-amber-900">What I Offer</h3>
-                    <p className="text-gray-700">{userInfo.whatIOffer}</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-4 pt-12">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-10 py-6 rounded-full shadow-xl"
-                data-testid="button-connect-footer"
-              >
-                <Mail className="w-5 h-5 mr-2" />
-                Connect With Me
-              </Button>
-              <Button 
-                size="lg"
-                variant="outline"
-                className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-10 py-6 rounded-full"
-                data-testid="button-mentor-footer"
-              >
-                <Users className="w-5 h-5 mr-2" />
-                Request Mentorship
-              </Button>
-            </div>
-          </motion.section>
-        )}
+        {/* CTA Buttons Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="pb-20"
+        >
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-10 py-6 rounded-full shadow-xl"
+              data-testid="button-connect-footer"
+            >
+              <Mail className="w-5 h-5 mr-2" />
+              Connect With Me
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-10 py-6 rounded-full"
+              data-testid="button-mentor-footer"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Request Mentorship
+            </Button>
+          </div>
+        </motion.section>
       </div>
 
       <ProjectModal 
