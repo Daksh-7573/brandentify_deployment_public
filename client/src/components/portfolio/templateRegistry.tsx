@@ -216,10 +216,27 @@ export function buildPortfolioTemplateProps(
   },
   overrides?: Partial<PortfolioTemplateProps>
 ): PortfolioTemplateProps {
-  // Helper to parse JSON arrays from database
+  // Helper to parse JSON arrays from database (handles multiple formats)
   const parseArray = (value: any): any[] => {
     if (Array.isArray(value)) return value;
     if (typeof value === 'string') {
+      // Handle PostgreSQL array format: {item1,item2,item3}
+      if (value.startsWith('{') && value.endsWith('}')) {
+        const content = value.slice(1, -1);
+        if (!content) return [];
+        // Split by comma and trim, handling quoted items
+        return content
+          .split(',')
+          .map(item => {
+            let cleaned = item.trim();
+            if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+              cleaned = cleaned.slice(1, -1);
+            }
+            return cleaned;
+          })
+          .filter(item => item.length > 0);
+      }
+      // Handle JSON format: ["item1","item2"]
       try {
         const parsed = JSON.parse(value);
         return Array.isArray(parsed) ? parsed : [];

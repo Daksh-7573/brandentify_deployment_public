@@ -74,6 +74,21 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     enabled: !!brandName,
   }) as { data: UserData | undefined, isLoading: boolean, error: any };
 
+  // Debug log to see what userData contains
+  useEffect(() => {
+    if (userData) {
+      console.log("[BrandProfile] userData branding fields:", {
+        tagline: userData.tagline,
+        visionStatement: userData.visionStatement,
+        missionStatement: userData.missionStatement,
+        coreValues: userData.coreValues,
+        uniqueValueProposition: userData.uniqueValueProposition,
+        primaryAudience: userData.primaryAudience,
+        secondaryAudience: userData.secondaryAudience
+      });
+    }
+  }, [userData]);
+
   // Fetch user's profile data once we have the user ID
   const { data: userSkills = [], isLoading: isSkillsLoading } = useQuery({
     queryKey: [`/api/users/${userData?.id}/skills`],
