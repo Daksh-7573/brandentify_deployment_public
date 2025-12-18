@@ -1099,6 +1099,7 @@ export default function PortfolioBuilder() {
                     id: userData?.id,
                     name: userData?.name || user?.name || '',
                     title: userData?.title || '',
+                    company: userData?.company || null,
                     industry: userData?.industry || '',
                     domain: userData?.domain || '',
                     location: userData?.location || '',
@@ -1106,7 +1107,12 @@ export default function PortfolioBuilder() {
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || '',
                     aboutMe: userData?.aboutMe || null,
-                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                    tagline: userData?.tagline || null,
+                    visionStatement: userData?.visionStatement || null,
+                    missionStatement: userData?.missionStatement || null,
+                    coreValues: userData?.coreValues || [],
+                    uniqueValueProposition: userData?.uniqueValueProposition || null
                   }}
                   userSkills={skills || []}
                   userExperiences={experiences || []}
