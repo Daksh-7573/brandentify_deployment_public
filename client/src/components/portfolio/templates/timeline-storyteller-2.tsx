@@ -291,7 +291,7 @@ export default function TimelineStoryteller2({
       </motion.section>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-32">
-        {/* Vision & Mission - Combined side by side */}
+        {/* Vision & Mission - Combined side by side, no section header */}
         {(userInfo.visionStatement || userInfo.missionStatement) && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -299,12 +299,6 @@ export default function TimelineStoryteller2({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full">
-                <Target className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Vision & Mission</h2>
-            </div>
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-xl">
               <CardContent className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -332,7 +326,7 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
-        {/* Core Values & Unique Value - Combined */}
+        {/* Core Values & Unique Value - Combined, no section header */}
         {((userInfo.coreValues && userInfo.coreValues.length > 0) || userInfo.uniqueValueProposition) && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -340,12 +334,6 @@ export default function TimelineStoryteller2({
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full">
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Values & Proposition</h2>
-            </div>
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
               <CardContent className="p-8 space-y-8">
                 {userInfo.coreValues && userInfo.coreValues.length > 0 && (
@@ -425,57 +413,6 @@ export default function TimelineStoryteller2({
                   </CardContent>
                 </Card>
               )}
-            </div>
-          </motion.section>
-        )}
-
-        {userSkills.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {userSkills.map((skill, idx) => {
-                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
-                const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
-                return (
-                  <motion.div
-                    key={skill.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
-                      <CardContent className="p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-amber-900">{skill.name}</h4>
-                          <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
-                        </div>
-                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${levelPercent}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: idx * 0.05 }}
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
-                          />
-                        </div>
-                        <p className="text-xs text-amber-600 text-right">{levelPercent}%</p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
             </div>
           </motion.section>
         )}
@@ -571,7 +508,14 @@ export default function TimelineStoryteller2({
                 >
                   <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
                     <CardContent className="p-6 space-y-3">
-                      <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
+                        {service.price && (
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold px-3 py-1">
+                            ₹{service.price}
+                          </Badge>
+                        )}
+                      </div>
                       {service.description && (
                         <p className="text-gray-700">{service.description}</p>
                       )}
@@ -579,6 +523,56 @@ export default function TimelineStoryteller2({
                   </Card>
                 </motion.div>
               ))}
+            </div>
+          </motion.section>
+        )}
+
+        {userSkills.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userSkills.map((skill, idx) => {
+                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
+                const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
+                return (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <CardContent className="p-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-amber-900">{skill.name}</h4>
+                          <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
+                        </div>
+                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${levelPercent}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: idx * 0.05 }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.section>
         )}
