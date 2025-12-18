@@ -227,36 +227,19 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     );
   }
 
-  // Render loading state for portfolio data only if still loading or no portfolio exists
-  if (isPortfolioDataLoading || (isPortfolioLoading && !portfolioData)) {
-    console.log("Showing loading state because:", {
-      isPortfolioDataLoading,
-      isPortfolioLoading,
-      hasPortfolioData: !!portfolioData
-    });
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-6 max-w-6xl">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // If no portfolio data exists but loading is complete, show error
-  if (!portfolioData && !isPortfolioDataLoading) {
-    console.log("No portfolio data available after loading completed");
+  // If user data exists, we can render - don't wait for portfolio data
+  // Portfolio data will fill in template details if available
+  if (!userData) {
+    console.log("No userData available");
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-6 max-w-6xl">
           <Card>
             <CardContent className="p-6 text-center">
               <div className="flex flex-col items-center gap-4">
-                <h1 className="text-2xl font-bold">Portfolio Not Available</h1>
+                <h1 className="text-2xl font-bold">User Not Found</h1>
                 <p className="text-muted-foreground">
-                  No published portfolio found for this profile.
+                  Unable to load user data.
                 </p>
               </div>
             </CardContent>
