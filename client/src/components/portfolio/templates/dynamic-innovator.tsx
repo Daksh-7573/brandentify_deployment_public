@@ -46,7 +46,11 @@ import {
   Clock,
   Tag,
   ArrowRight,
-  Building2
+  Building2,
+  Sparkles,
+  Target,
+  Heart,
+  Users
 } from "lucide-react";
 import {
   Dialog,
@@ -1797,13 +1801,13 @@ export function DynamicInnovator({
                 )}
                 
                 {/* Project gallery - if available */}
-                {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && (selectedProject.mediaUrls as string[]).length > 0 && (
                   <div className="mt-8 pt-6 border-t border-[#08f7fe]/20">
                     <h3 className="text-lg font-medium text-[#08f7fe] mb-4" style={{ fontFamily: 'Orbitron, sans-serif' }}>
                       Project Gallery
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {selectedProject.mediaUrls.map((url, index) => (
+                      {(selectedProject.mediaUrls as string[]).map((url: string, index: number) => (
                         <div key={index} className="overflow-hidden rounded-lg border-2 border-[#08f7fe]/30 shadow-lg shadow-[#08f7fe]/10 relative group">
                           <img 
                             src={url}
