@@ -91,6 +91,16 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-amber-50 to-orange-50">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-amber-900">{project.title}</DialogTitle>
+          {(project.category || project.industry) && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {project.category && (
+                <Badge className="bg-amber-200 text-amber-900">{project.category}</Badge>
+              )}
+              {project.industry && (
+                <Badge variant="outline" className="border-orange-300 text-orange-800">{project.industry}</Badge>
+              )}
+            </div>
+          )}
         </DialogHeader>
         <div className="space-y-6">
           {allImages.length > 0 && (
@@ -119,7 +129,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
             {project.startDate && (
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>{new Date(project.startDate).getFullYear()}</span>
+                <span>{new Date(project.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
               </div>
             )}
             {project.projectUrl && (
@@ -134,6 +144,13 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
               </a>
             )}
           </div>
+          
+          {project.clientEndorsement && (
+            <div className="bg-amber-100/50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+              <h4 className="text-sm font-semibold text-amber-900 mb-2">Client Endorsement</h4>
+              <p className="text-gray-700 italic">"{project.clientEndorsement}"</p>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -290,9 +307,9 @@ export default function TimelineStoryteller2({
         </motion.div>
       </motion.section>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-32">
-        {/* Vision & Mission - Combined side by side, no section header */}
-        {(userInfo.visionStatement || userInfo.missionStatement) && (
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-16 lg:px-24 py-20 space-y-16">
+        {/* Vision, Mission, Core Values & Unique Value - All Combined in One Card */}
+        {(userInfo.visionStatement || userInfo.missionStatement || (userInfo.coreValues && userInfo.coreValues.length > 0) || userInfo.uniqueValueProposition) && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -300,50 +317,37 @@ export default function TimelineStoryteller2({
             transition={{ duration: 0.6 }}
           >
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-xl">
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {userInfo.visionStatement && (
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
-                        <Target className="w-5 h-5" />
-                        Vision
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed italic break-words">{userInfo.visionStatement}</p>
-                    </div>
-                  )}
-                  {userInfo.missionStatement && (
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5" />
-                        Mission
-                      </h3>
-                      <p className="text-gray-700 leading-relaxed break-words">{userInfo.missionStatement}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.section>
-        )}
-
-        {/* Core Values & Unique Value - Combined, no section header */}
-        {((userInfo.coreValues && userInfo.coreValues.length > 0) || userInfo.uniqueValueProposition) && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-xl">
-              <CardContent className="p-8 space-y-8">
+              <CardContent className="p-8 space-y-6">
+                {(userInfo.visionStatement || userInfo.missionStatement) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {userInfo.visionStatement && (
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+                          <Target className="w-5 h-5" />
+                          Vision
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed italic break-words">{userInfo.visionStatement}</p>
+                      </div>
+                    )}
+                    {userInfo.missionStatement && (
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5" />
+                          Mission
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed break-words">{userInfo.missionStatement}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-amber-900">Core Values</h3>
-                    <div className="flex flex-wrap gap-3">
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-bold text-amber-900">Core Values</h3>
+                    <div className="flex flex-wrap gap-2">
                       {userInfo.coreValues.map((value, idx) => (
                         <Badge 
                           key={idx} 
-                          className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border border-amber-300 text-base font-medium"
+                          className="px-3 py-1.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border border-amber-300 text-sm font-medium"
                         >
                           {value}
                         </Badge>
@@ -352,9 +356,9 @@ export default function TimelineStoryteller2({
                   </div>
                 )}
                 {userInfo.uniqueValueProposition && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-amber-900">Unique Value Proposition</h3>
-                    <p className="text-lg text-gray-700 leading-relaxed font-medium break-words">{userInfo.uniqueValueProposition}</p>
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-bold text-amber-900">Unique Value Proposition</h3>
+                    <p className="text-gray-700 leading-relaxed font-medium break-words">{userInfo.uniqueValueProposition}</p>
                   </div>
                 )}
               </CardContent>
@@ -494,13 +498,10 @@ export default function TimelineStoryteller2({
                           <h4 className="font-semibold text-amber-900">{skill.name}</h4>
                           <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
                         </div>
-                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${levelPercent}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: idx * 0.05 }}
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
+                        <div className="relative h-3 bg-amber-100 rounded-full overflow-hidden">
+                          <div
+                            style={{ width: `${levelPercent}%` }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
                           />
                         </div>
                       </CardContent>
