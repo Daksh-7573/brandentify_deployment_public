@@ -25,7 +25,13 @@ interface CreativeBoldProps {
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
   };
-  userSkills?: Array<{ id: number; name: string; level?: string | null }>;
+  userSkills?: Array<{ 
+    id: number; 
+    name: string; 
+    level?: string | null;
+    category?: string | null;
+    yearsOfExperience?: number | null;
+  }>;
   userExperiences?: Array<{
     id: number;
     title: string;
@@ -33,14 +39,24 @@ interface CreativeBoldProps {
     startDate: string;
     endDate?: string | null;
     description?: string | null;
+    location?: string | null;
+    industry?: string | null;
+    domain?: string | null;
+    keyResponsibilities?: string[];
   }>;
   userProjects?: Array<{
     id: number;
     title: string;
     description: string;
     startDate?: string | null;
+    endDate?: string | null;
     thumbnailUrl?: string | null;
     projectUrl?: string | null;
+    technologies?: string[];
+    outcome?: string | null;
+    impact?: string | null;
+    role?: string | null;
+    teamSize?: number | null;
   }>;
   userEducations?: Array<{
     id: number;
@@ -49,6 +65,9 @@ interface CreativeBoldProps {
     fieldOfStudy?: string | null;
     startDate: string;
     endDate?: string | null;
+    location?: string | null;
+    industry?: string | null;
+    skillsAcquired?: string[];
   }>;
   userServices?: Array<{
     id: number;
@@ -456,6 +475,16 @@ export default function CreativeBold({
                       {exp.title}
                     </h3>
                     <p style={{ color: COOL_GRAY }}>{exp.company}</p>
+                    {exp.location && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        📍 {exp.location}
+                      </p>
+                    )}
+                    {exp.industry && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        🏢 {exp.industry}
+                      </p>
+                    )}
                     <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
                       {new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
                     </p>
@@ -463,6 +492,15 @@ export default function CreativeBold({
                       <p className="mt-3" style={{ color: COOL_GRAY }}>
                         {exp.description}
                       </p>
+                    )}
+                    {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 && (
+                      <ul className="mt-3 list-disc list-inside space-y-1">
+                        {exp.keyResponsibilities.map((resp, idx) => (
+                          <li key={idx} className="text-sm" style={{ color: COOL_GRAY }}>
+                            {resp}
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </div>
                 </motion.div>
@@ -501,7 +539,17 @@ export default function CreativeBold({
                   </h3>
                   {skill.level && (
                     <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      {skill.level}
+                      Level: {skill.level}
+                    </p>
+                  )}
+                  {skill.category && (
+                    <p className="text-sm" style={{ color: COOL_GRAY }}>
+                      Category: {skill.category}
+                    </p>
+                  )}
+                  {skill.yearsOfExperience && (
+                    <p className="text-sm" style={{ color: COOL_GRAY }}>
+                      Experience: {skill.yearsOfExperience} years
                     </p>
                   )}
                 </div>
@@ -543,12 +591,34 @@ export default function CreativeBold({
                   <p style={{ color: COOL_GRAY }}>{edu.institution}</p>
                   {edu.fieldOfStudy && (
                     <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
-                      {edu.fieldOfStudy}
+                      📚 {edu.fieldOfStudy}
+                    </p>
+                  )}
+                  {edu.location && (
+                    <p className="text-sm" style={{ color: COOL_GRAY }}>
+                      📍 {edu.location}
+                    </p>
+                  )}
+                  {edu.industry && (
+                    <p className="text-sm" style={{ color: COOL_GRAY }}>
+                      🏢 {edu.industry}
                     </p>
                   )}
                   <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
                     {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                   </p>
+                  {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm font-semibold mb-2" style={{ color: INK_BLACK }}>Skills Acquired:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {edu.skillsAcquired.map((skill, idx) => (
+                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="text-xs">
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
