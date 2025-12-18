@@ -37,6 +37,8 @@ export interface SkillData {
   skillName: string;
   proficiencyLevel: string | null;
   proficiency?: number | null;
+  category?: string | null;
+  yearsOfExperience?: number | null;
 }
 
 export interface ExperienceData {
@@ -60,6 +62,7 @@ export interface EducationData {
   startDate: string;
   endDate?: string | null;
   location?: string | null;
+  industry?: string | null;
   skillsAcquired?: string[];
 }
 
@@ -69,11 +72,17 @@ export interface ProjectData {
   description: string | null;
   projectUrl?: string | null;
   startDate?: string | null;
+  endDate?: string | null;
   category?: string | null;
   industry?: string | null;
   thumbnailUrl?: string | null;
   mediaUrls?: string[];
   clientEndorsement?: string | null;
+  technologies?: string[];
+  outcome?: string | null;
+  impact?: string | null;
+  role?: string | null;
+  teamSize?: number | null;
 }
 
 export interface ServiceData {

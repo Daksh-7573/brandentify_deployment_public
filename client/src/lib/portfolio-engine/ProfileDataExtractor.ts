@@ -78,6 +78,8 @@ export function extractSkills(skillsData: any[]): SkillData[] {
     skillName: skill.name || skill.skillName || '',
     proficiencyLevel: skill.level || skill.proficiencyLevel || null,
     proficiency: skill.proficiency || null,
+    category: skill.category || null,
+    yearsOfExperience: skill.yearsOfExperience || null,
   }));
 }
 
@@ -107,6 +109,7 @@ export function extractEducations(educationsData: any[]): EducationData[] {
     startDate: edu.startDate || '',
     endDate: edu.endDate || null,
     location: edu.location || null,
+    industry: edu.industry || null,
     skillsAcquired: parseJsonArray(edu.skillsAcquired),
   }));
 }
@@ -119,11 +122,17 @@ export function extractProjects(projectsData: any[]): ProjectData[] {
     description: proj.description || null,
     projectUrl: proj.projectUrl || proj.link || null,
     startDate: proj.startDate || null,
+    endDate: proj.endDate || null,
     category: proj.category || null,
     industry: proj.industry || null,
     thumbnailUrl: proj.thumbnailUrl || proj.imageUrl || null,
     mediaUrls: parseJsonArray(proj.mediaUrls),
     clientEndorsement: proj.clientEndorsement || null,
+    technologies: parseJsonArray(proj.technologies),
+    outcome: proj.outcome || null,
+    impact: proj.impact || null,
+    role: proj.role || null,
+    teamSize: proj.teamSize || null,
   }));
 }
 
