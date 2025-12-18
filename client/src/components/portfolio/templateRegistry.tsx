@@ -247,6 +247,28 @@ export function buildPortfolioTemplateProps(
     return [];
   };
 
+  // DEBUG: Log what userData contains for branding fields
+  console.log("[buildPortfolioTemplateProps] Raw userData branding fields:", {
+    tagline: userData?.tagline,
+    visionStatement: userData?.visionStatement,
+    missionStatement: userData?.missionStatement,
+    coreValues: userData?.coreValues,
+    uniqueValueProposition: userData?.uniqueValueProposition,
+    primaryAudience: userData?.primaryAudience,
+    secondaryAudience: userData?.secondaryAudience,
+    company: userData?.company
+  });
+
+  const parsedCoreValues = parseArray(userData?.coreValues);
+  const parsedPrimaryAudience = parseArray(userData?.primaryAudience);
+  const parsedSecondaryAudience = parseArray(userData?.secondaryAudience);
+
+  console.log("[buildPortfolioTemplateProps] Parsed arrays:", {
+    coreValues: parsedCoreValues,
+    primaryAudience: parsedPrimaryAudience,
+    secondaryAudience: parsedSecondaryAudience
+  });
+
   return {
     userInfo: {
       id: userData?.id,
@@ -265,11 +287,11 @@ export function buildPortfolioTemplateProps(
       tagline: userData?.tagline || null,
       visionStatement: userData?.visionStatement || null,
       missionStatement: userData?.missionStatement || null,
-      coreValues: parseArray(userData?.coreValues),
+      coreValues: parsedCoreValues,
       uniqueValueProposition: userData?.uniqueValueProposition || null,
       brandName: userData?.brandName || null,
-      primaryAudience: parseArray(userData?.primaryAudience),
-      secondaryAudience: parseArray(userData?.secondaryAudience)
+      primaryAudience: parsedPrimaryAudience,
+      secondaryAudience: parsedSecondaryAudience
     },
     userSkills: collections.skills || [],
     userExperiences: collections.experiences || [],
