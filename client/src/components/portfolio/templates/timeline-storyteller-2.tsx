@@ -48,7 +48,7 @@ function ElegantBackground() {
   const backgroundY = useTransform(scrollY, [0, 1000], [0, -100]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
       {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-amber-50/80 to-orange-50/60" />
       
@@ -417,6 +417,101 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
+        {userServices && userServices.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-full">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Services Offered</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {userServices.map((service, idx) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
+                    <CardContent className="p-6 space-y-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
+                        {(service.priceInr || service.priceUsd) && (
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold px-3 py-1">
+                            {service.priceInr ? `₹${service.priceInr}` : `$${service.priceUsd}`}
+                            {service.isHourly && '/hr'}
+                          </Badge>
+                        )}
+                      </div>
+                      {service.description && (
+                        <p className="text-gray-700">{service.description}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {userSkills.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userSkills.map((skill, idx) => {
+                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
+                const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
+                return (
+                  <motion.div
+                    key={skill.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <CardContent className="p-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-amber-900">{skill.name}</h4>
+                          <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
+                        </div>
+                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${levelPercent}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: idx * 0.05 }}
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.section>
+        )}
+
         {sortedProjects.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -483,100 +578,6 @@ export default function TimelineStoryteller2({
           </motion.section>
         )}
 
-        {userServices && userServices.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-400 rounded-full">
-                <Globe className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Services Offered</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userServices.map((service, idx) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow h-full">
-                    <CardContent className="p-6 space-y-3">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
-                        {service.price && (
-                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold px-3 py-1">
-                            ₹{service.price}
-                          </Badge>
-                        )}
-                      </div>
-                      {service.description && (
-                        <p className="text-gray-700">{service.description}</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
-        )}
-
-        {userSkills.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full">
-                <Award className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Skills & Expertise</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {userSkills.map((skill, idx) => {
-                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
-                const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
-                return (
-                  <motion.div
-                    key={skill.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Card className="bg-white/90 backdrop-blur-sm border-2 border-amber-200 shadow-lg hover:shadow-xl transition-shadow">
-                      <CardContent className="p-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-amber-900">{skill.name}</h4>
-                          <Badge className="bg-amber-100 text-amber-700 text-xs">{levelLabel}</Badge>
-                        </div>
-                        <div className="relative h-2 bg-amber-100 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${levelPercent}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: idx * 0.05 }}
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.section>
-        )}
-
         {sortedExperiences.length > 0 && (
           <motion.section
             initial={{ opacity: 0, y: 40 }}
@@ -621,11 +622,39 @@ export default function TimelineStoryteller2({
                           </div>
                           <Badge className="bg-amber-200 text-amber-900 hover:bg-amber-300">
                             {exp.startDate && new Date(exp.startDate).getFullYear()}
+                            {exp.endDate ? ` - ${new Date(exp.endDate).getFullYear()}` : ' - Present'}
                           </Badge>
                         </div>
                         
+                        {(exp.industry || exp.domain) && (
+                          <div className="flex flex-wrap gap-2">
+                            {exp.industry && (
+                              <Badge variant="outline" className="text-amber-700 border-amber-300">
+                                <Building className="w-3 h-3 mr-1" />
+                                {exp.industry}
+                              </Badge>
+                            )}
+                            {exp.domain && (
+                              <Badge variant="outline" className="text-orange-700 border-orange-300">
+                                {exp.domain}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        
                         {exp.description && (
                           <p className="text-gray-700 leading-relaxed">{exp.description}</p>
+                        )}
+                        
+                        {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-semibold text-amber-800">Key Responsibilities:</h4>
+                            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                              {(exp.keyResponsibilities as string[]).map((resp, i) => (
+                                <li key={i}>{resp}</li>
+                              ))}
+                            </ul>
+                          </div>
                         )}
                         
                         <div className="flex items-center gap-2 text-sm text-amber-600">
@@ -675,16 +704,52 @@ export default function TimelineStoryteller2({
                       </div>
                       
                       {edu.fieldOfStudy && (
-                        <p className="text-gray-700">{edu.fieldOfStudy}</p>
+                        <p className="text-gray-700 font-medium">{edu.fieldOfStudy}</p>
                       )}
                       
-                      <div className="flex items-center gap-2 text-sm text-amber-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {edu.startDate && new Date(edu.startDate).getFullYear()}
-                          {edu.endDate && ` - ${new Date(edu.endDate).getFullYear()}`}
-                        </span>
+                      {(edu.industry || edu.domain) && (
+                        <div className="flex flex-wrap gap-2">
+                          {edu.industry && (
+                            <Badge variant="outline" className="text-amber-700 border-amber-300 text-xs">
+                              {edu.industry}
+                            </Badge>
+                          )}
+                          {edu.domain && (
+                            <Badge variant="outline" className="text-orange-700 border-orange-300 text-xs">
+                              {edu.domain}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-amber-600">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>
+                            {edu.startDate && new Date(edu.startDate).getFullYear()}
+                            {edu.endDate ? ` - ${new Date(edu.endDate).getFullYear()}` : ' - Present'}
+                          </span>
+                        </div>
+                        {edu.location && (
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{edu.location}</span>
+                          </div>
+                        )}
                       </div>
+                      
+                      {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-semibold text-amber-800">Skills Acquired:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {(edu.skillsAcquired as string[]).map((skill, i) => (
+                              <Badge key={i} className="bg-orange-100 text-orange-800 text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
