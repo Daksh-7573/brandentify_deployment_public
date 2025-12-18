@@ -1410,6 +1410,7 @@ export default function PortfolioBuilder() {
                       userInfo={{
                         name: userData?.name || user?.name || '',
                         title: userData?.title || '',
+                        company: userData?.company || null,
                         industry: userData?.industry || '',
                         domain: userData?.domain || '',
                         location: userData?.location || '',
@@ -1417,7 +1418,14 @@ export default function PortfolioBuilder() {
                         photoURL: userData?.photoURL || user?.photoURL || null,
                         lookingFor: userData?.lookingFor || '',
                         jobLevel: userData?.jobLevel || '',
-                        aboutMe: userData?.aboutMe || ''
+                        aboutMe: userData?.aboutMe || '',
+                        tagline: userData?.tagline || null,
+                        visionStatement: userData?.visionStatement || null,
+                        missionStatement: userData?.missionStatement || null,
+                        coreValues: Array.isArray(userData?.coreValues) ? userData.coreValues : [],
+                        uniqueValueProposition: userData?.uniqueValueProposition || null,
+                        primaryAudience: Array.isArray(userData?.primaryAudience) ? userData.primaryAudience : [],
+                        secondaryAudience: Array.isArray(userData?.secondaryAudience) ? userData.secondaryAudience : []
                       }}
                       userSkills={skills || []}
                       userServices={services?.map(service => ({

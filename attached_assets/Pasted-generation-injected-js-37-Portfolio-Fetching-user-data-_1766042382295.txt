@@ -1,0 +1,169 @@
+generation
+injected.js:37 Portfolio - Fetching user data for userNumericId: 2
+injected.js:37 [PortfolioBuilder] isPremium: true
+injected.js:37 [PortfolioBuilder] referralStatus: {success: true, quantumCards: Array(12), portfolios: Array(23), progress: {…}}
+injected.js:37 Portfolio Builder Debug - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:37 Portfolio Builder Debug - userNumericId: 2
+injected.js:37 Portfolio Builder Debug - user?.id: 2
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 Portfolio - Got experiences: 4
+injected.js:37 Portfolio - Got skills: 9
+injected.js:37 Portfolio - Got projects: 5
+injected.js:37 Portfolio - Got educations: 2
+injected.js:37 Portfolio - Got services: 3
+injected.js:37 Portfolio - User details for AI analysis: {name: 'Nishant Chopra', title: 'wdwq', industry: 'Finance', domain: 'Public Relations', location: 'Basel, Switzerland', …}
+injected.js:37 Portfolio - Layout selected: scholar
+injected.js:37 Portfolio - AI generated data: {layout: 'scholar', publicUrl: null, isPublished: false, customTitle: 'Nishant Chopra', customBio: 'wdwq in Finance', …}
+injected.js:37 Portfolio - Saved preview data to localStorage
+injected.js:37 Portfolio - AI generation complete, moving to preview
+injected.js:37 [PortfolioBuilder] isPremium: true
+injected.js:37 [PortfolioBuilder] referralStatus: {success: true, quantumCards: Array(12), portfolios: Array(23), progress: {…}}
+injected.js:37 Portfolio Builder Debug - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+injected.js:37 Portfolio Builder Debug - userNumericId: 2
+injected.js:37 Portfolio Builder Debug - user?.id: 2
+injected.js:37 Portfolio Builder - userData check: {userData: {…}, whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', whatIOfferType: 'string', whatIOfferExists: true, whatIOfferFromState: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.'}
+injected.js:37 Portfolio Builder - whatIOfferValue from state: I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.
+injected.js:37 Preview step - Educations data: (2) [{…}, {…}] Length: 2
+injected.js:37 Preview step - Services data: (3) [{…}, {…}, {…}] Source: portfolioPreviewData
+injected.js:37 Scholar - portfolioPreviewData: {layout: 'scholar', publicUrl: null, isPublished: false, customTitle: 'Nishant Chopra', customBio: 'wdwq in Finance', …}
+injected.js:37 Scholar - userSkills: (9) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+injected.js:37 Scholar - userServices: (3) [{…}, {…}, {…}]
+injected.js:37 Scholar - userExperiences: (4) [{…}, {…}, {…}, {…}]
+injected.js:37 Scholar - userEducations: (2) [{…}, {…}]
+injected.js:37 Scholar - userProjects: (5) [{…}, {…}, {…}, {…}, {…}]
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 Actively fetching whatIOffer with dedicated endpoint for userId: 2
+ccc1103d695e1647.js:2 WebSocket is already in CLOSING or CLOSED state.
+value @ ccc1103d695e1647.js:2
+tA @ ccc1103d695e1647.js:2
+value @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+apply @ ccc1103d695e1647.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+wait @ 1a19897cc682bb02.js:2
+u @ ceb3e9d7e0918846.js:2
+(anonymous) @ ceb3e9d7e0918846.js:2
+o @ 83b407084e94837a.js:2
+setTimeout
+(anonymous) @ 83b407084e94837a.js:2
+Object.assign.isScheduled @ ceb3e9d7e0918846.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+t @ 1a19897cc682bb02.js:2
+o @ 83b407084e94837a.js:2Understand this error
+ccc1103d695e1647.js:2 WebSocket is already in CLOSING or CLOSED state.
+value @ ccc1103d695e1647.js:2
+tA @ ccc1103d695e1647.js:2
+value @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+apply @ ccc1103d695e1647.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+wait @ 1a19897cc682bb02.js:2
+u @ ceb3e9d7e0918846.js:2
+(anonymous) @ ceb3e9d7e0918846.js:2
+o @ 83b407084e94837a.js:2
+setTimeout
+(anonymous) @ 83b407084e94837a.js:2
+Object.assign.isScheduled @ ceb3e9d7e0918846.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+t @ 1a19897cc682bb02.js:2
+o @ 83b407084e94837a.js:2Understand this error
+injected.js:37 Fetched whatIOffer with dedicated endpoint: {userId: 2, whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', success: true, timestamp: 1766042351120, retries: 0}
+injected.js:37 Setting whatIOffer from API response: I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.
+ccc1103d695e1647.js:2 WebSocket is already in CLOSING or CLOSED state.
+value @ ccc1103d695e1647.js:2
+tA @ ccc1103d695e1647.js:2
+value @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+apply @ ccc1103d695e1647.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+wait @ 1a19897cc682bb02.js:2
+u @ ceb3e9d7e0918846.js:2
+(anonymous) @ ceb3e9d7e0918846.js:2
+o @ 83b407084e94837a.js:2
+setTimeout
+(anonymous) @ 83b407084e94837a.js:2
+Object.assign.isScheduled @ ceb3e9d7e0918846.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+t @ 1a19897cc682bb02.js:2
+o @ 83b407084e94837a.js:2Understand this error
+ccc1103d695e1647.js:2 WebSocket is already in CLOSING or CLOSED state.
+value @ ccc1103d695e1647.js:2
+tA @ ccc1103d695e1647.js:2
+value @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+(anonymous) @ ccc1103d695e1647.js:2
+apply @ ccc1103d695e1647.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+(anonymous) @ b7b37283fe653194.js:2
+t @ 8b684874f01baf0a.js:2
+s @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+(anonymous) @ 8b684874f01baf0a.js:2
+wait @ 1a19897cc682bb02.js:2
+u @ ceb3e9d7e0918846.js:2
+(anonymous) @ ceb3e9d7e0918846.js:2
+o @ 83b407084e94837a.js:2
+setTimeout
+(anonymous) @ 83b407084e94837a.js:2
+Object.assign.isScheduled @ ceb3e9d7e0918846.js:2
+(anonymous) @ 1a19897cc682bb02.js:2
+t @ 1a19897cc682bb02.js:2
+o @ 83b407084e94837a.js:2Understand this error
