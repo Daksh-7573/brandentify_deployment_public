@@ -534,12 +534,6 @@ export default function Scholar({
                     {userInfo.domain}
                   </Badge>
                 )}
-                {userInfo && userInfo.title && (
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 py-1 px-3">
-                    <GraduationCap className="w-3.5 h-3.5 mr-1.5" />
-                    {userInfo.title}
-                  </Badge>
-                )}
               </div>
             </div>
             
@@ -564,19 +558,14 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* My Professional Brand Section */}
+      {/* Professional Brand Section - No header label */}
       {userInfo && (userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
         userInfo.uniqueValueProposition || 
         (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
         (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-        <section className="py-12 bg-gray-50">
+        <section className="py-6 bg-gray-50">
           <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
-              <Sparkles className="h-6 w-6 mr-3 text-blue-600" />
-              My Professional Brand
-            </h2>
-            
             <div className="space-y-6">
               {userInfo.tagline && (
                 <div className="notebook-paper p-6 fade-in-up">
@@ -584,28 +573,28 @@ export default function Scholar({
                     <Star className="h-5 w-5 text-blue-600" />
                     <h3 className="text-lg font-serif font-semibold text-blue-800">Tagline</h3>
                   </div>
-                  <p className="text-gray-800 italic text-lg">"{userInfo.tagline}"</p>
+                  <p className="text-gray-800 italic text-lg break-words">"{userInfo.tagline}"</p>
                 </div>
               )}
 
               {(userInfo.visionStatement || userInfo.missionStatement) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {userInfo.visionStatement && (
-                    <div className="notebook-card p-6 rounded-lg fade-in-up">
+                    <div className="notebook-card p-6 rounded-lg fade-in-up overflow-hidden">
                       <div className="flex items-center gap-3 mb-3">
-                        <Lightbulb className="h-5 w-5 text-blue-600" />
+                        <Lightbulb className="h-5 w-5 text-blue-600 flex-shrink-0" />
                         <h3 className="text-lg font-serif font-semibold text-blue-800">Vision</h3>
                       </div>
-                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                      <p className="text-gray-700 leading-relaxed break-words whitespace-pre-wrap">{userInfo.visionStatement}</p>
                     </div>
                   )}
                   {userInfo.missionStatement && (
-                    <div className="notebook-card p-6 rounded-lg fade-in-up">
+                    <div className="notebook-card p-6 rounded-lg fade-in-up overflow-hidden">
                       <div className="flex items-center gap-3 mb-3">
-                        <Target className="h-5 w-5 text-blue-600" />
+                        <Target className="h-5 w-5 text-blue-600 flex-shrink-0" />
                         <h3 className="text-lg font-serif font-semibold text-blue-800">Mission</h3>
                       </div>
-                      <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                      <p className="text-gray-700 leading-relaxed break-words whitespace-pre-wrap">{userInfo.missionStatement}</p>
                     </div>
                   )}
                 </div>
