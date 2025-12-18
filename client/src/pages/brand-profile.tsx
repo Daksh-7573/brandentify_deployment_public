@@ -152,16 +152,9 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     return <ProfilePageSkeleton />;
   }
 
-  // Debug logging for portfolio data
-  console.log("Brand profile debug:");
-  console.log("- userData:", userData);
-  console.log("- publishedPortfolio:", publishedPortfolio);
-  console.log("- portfolioError:", portfolioError);
-  console.log("- isPortfolioDataLoading:", isPortfolioDataLoading);
-
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData && publishedPortfolio ? {
-    layout: publishedPortfolio.layout, // Use the actual portfolio layout from database
+    layout: publishedPortfolio.layout,
     publicUrl: publishedPortfolio.publicUrl,
     isPublished: publishedPortfolio.isPublished,
     customTitle: publishedPortfolio.customTitle || userData.name || userData.username,
@@ -180,52 +173,6 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     services: Array.isArray(userServices) ? userServices : [],
     userData: userData
   } : null;
-
-  const isPortfolioLoading = isSkillsLoading || isExperiencesLoading || isProjectsLoading || 
-                            isEducationsLoading || isServicesLoading || isPortfolioDataLoading;
-
-  console.log("Portfolio data construction:");
-  console.log("- userData exists:", !!userData);
-  console.log("- publishedPortfolio exists:", !!publishedPortfolio);
-  console.log("- portfolioData result:", !!portfolioData);
-  console.log("- isPortfolioLoading:", isPortfolioLoading);
-
-  // Handle loading state
-  if (isUserLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-6 max-w-6xl">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Handle user not found
-  if (userError || !userData) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-6 max-w-6xl">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <User className="h-16 w-16 text-muted-foreground" />
-                <h1 className="text-2xl font-bold">Profile Not Found</h1>
-                <p className="text-muted-foreground">
-                  The profile URL "{brandName}" doesn't exist or has been removed.
-                </p>
-                <Button onClick={() => window.location.href = '/'}>
-                  Return to Home
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   // If user data exists, we can render - don't wait for portfolio data
   // Portfolio data will fill in template details if available
