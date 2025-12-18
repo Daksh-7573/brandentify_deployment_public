@@ -90,6 +90,60 @@ import {
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
+import { DynamicPortfolioRenderer, useDynamicPortfolio } from "@/lib/portfolio-engine";
+
+interface PortfolioPreviewProps {
+  templateId: string;
+  userData: any;
+  user: any;
+  collections: {
+    skills: any[];
+    experiences: any[];
+    projects: any[];
+    educations: any[];
+    services: any[];
+  };
+  currentUserId?: number;
+  isPremium?: boolean;
+}
+
+function PortfolioPreviewRenderer({
+  templateId,
+  userData,
+  user,
+  collections,
+  currentUserId,
+  isPremium
+}: PortfolioPreviewProps) {
+  const mergedUserData = {
+    ...userData,
+    name: userData?.name || user?.name || '',
+    email: userData?.email || user?.email || '',
+    photoURL: userData?.photoURL || user?.photoURL || null,
+  };
+
+  const { templateProps, TemplateComponent, completionAnalysis } = useDynamicPortfolio(
+    templateId,
+    mergedUserData,
+    collections,
+    currentUserId
+  );
+
+  return (
+    <div className="rounded-lg overflow-hidden border border-white/10 shadow-lg relative">
+      <TemplateComponent
+        userInfo={templateProps.userInfo}
+        userSkills={templateProps.userSkills}
+        userExperiences={templateProps.userExperiences}
+        userProjects={templateProps.userProjects}
+        userEducations={templateProps.userEducations}
+        userServices={templateProps.userServices}
+        currentUserId={templateProps.currentUserId}
+        isPremium={isPremium}
+      />
+    </div>
+  );
+}
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({

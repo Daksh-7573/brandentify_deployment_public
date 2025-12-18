@@ -216,88 +216,13 @@ export function buildPortfolioTemplateProps(
   },
   overrides?: Partial<PortfolioTemplateProps>
 ): PortfolioTemplateProps {
-  // Helper to parse JSON arrays from database (handles multiple formats)
-  const parseArray = (value: any): any[] => {
-    if (Array.isArray(value)) return value;
-    if (typeof value === 'string') {
-      // Handle PostgreSQL array format: {item1,item2,item3}
-      if (value.startsWith('{') && value.endsWith('}')) {
-        const content = value.slice(1, -1);
-        if (!content) return [];
-        // Split by comma and trim, handling quoted items
-        return content
-          .split(',')
-          .map(item => {
-            let cleaned = item.trim();
-            if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-              cleaned = cleaned.slice(1, -1);
-            }
-            return cleaned;
-          })
-          .filter(item => item.length > 0);
-      }
-      // Handle JSON format: ["item1","item2"]
-      try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  };
-
-  // DEBUG: Log what userData contains for branding fields
-  console.log("[buildPortfolioTemplateProps] Raw userData branding fields:", {
-    tagline: userData?.tagline,
-    visionStatement: userData?.visionStatement,
-    missionStatement: userData?.missionStatement,
-    coreValues: userData?.coreValues,
-    uniqueValueProposition: userData?.uniqueValueProposition,
-    primaryAudience: userData?.primaryAudience,
-    secondaryAudience: userData?.secondaryAudience,
-    company: userData?.company
-  });
-
-  const parsedCoreValues = parseArray(userData?.coreValues);
-  const parsedPrimaryAudience = parseArray(userData?.primaryAudience);
-  const parsedSecondaryAudience = parseArray(userData?.secondaryAudience);
-
-  console.log("[buildPortfolioTemplateProps] Parsed arrays:", {
-    coreValues: parsedCoreValues,
-    primaryAudience: parsedPrimaryAudience,
-    secondaryAudience: parsedSecondaryAudience
-  });
-
+  const { extractAllProfileData, mapToTemplateProps } = require('@/lib/portfolio-engine');
+  
+  const extractedData = extractAllProfileData(userData, collections);
+  const templateProps = mapToTemplateProps(extractedData);
+  
   return {
-    userInfo: {
-      id: userData?.id,
-      name: userData?.name || '',
-      title: userData?.title || null,
-      company: userData?.company || null,
-      email: userData?.email || null,
-      photoURL: userData?.photoURL || null,
-      aboutMe: userData?.aboutMe || null,
-      location: userData?.location || null,
-      industry: userData?.industry || null,
-      domain: userData?.domain || null,
-      lookingFor: userData?.lookingFor || null,
-      whatIOffer: userData?.whatIOffer || null,
-      jobLevel: userData?.jobLevel || null,
-      tagline: userData?.tagline || null,
-      visionStatement: userData?.visionStatement || null,
-      missionStatement: userData?.missionStatement || null,
-      coreValues: parsedCoreValues,
-      uniqueValueProposition: userData?.uniqueValueProposition || null,
-      brandName: userData?.brandName || null,
-      primaryAudience: parsedPrimaryAudience,
-      secondaryAudience: parsedSecondaryAudience
-    },
-    userSkills: collections.skills || [],
-    userExperiences: collections.experiences || [],
-    userProjects: collections.projects || [],
-    userEducations: collections.educations || [],
-    userServices: collections.services || [],
+    ...templateProps,
     ...overrides
   };
 }
