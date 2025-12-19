@@ -742,37 +742,61 @@ export async function handleGoogleOAuthCallbackRoute(
       );
 
       // Serve a small HTML that notifies the opener via postMessage and auto-closes the popup
+      // FIXED: Increased delay to 500ms for cookie propagation and added multiple postMessage attempts
       return res.send(`
         <html>
           <head>
             <title>Authentication Successful</title>
             <script>
               (function() {
-                try {
-                  // Send postMessage to parent window indicating successful authentication
-                  if (window.opener) {
-                    window.opener.postMessage(
-                      { type: "oauth_success", provider: "google" },
-                      window.location.origin
-                    );
+                var messageSent = false;
+                
+                function sendOAuthMessage() {
+                  try {
+                    if (window.opener && !window.opener.closed) {
+                      console.log('[OAuth Popup] Sending oauth_success message to parent');
+                      window.opener.postMessage(
+                        { type: "oauth_success", provider: "google", timestamp: Date.now() },
+                        window.location.origin
+                      );
+                      messageSent = true;
+                      return true;
+                    } else {
+                      console.log('[OAuth Popup] No opener window available');
+                      return false;
+                    }
+                  } catch (err) {
+                    console.error("[OAuth Popup] postMessage error:", err);
+                    return false;
                   }
-                } catch (err) {
-                  console.error("Popup postMessage error", err);
                 }
                 
-                // Auto-close popup after 100ms to ensure message is received
+                // Send message immediately
+                sendOAuthMessage();
+                
+                // Retry after 100ms to ensure parent is ready
+                setTimeout(sendOAuthMessage, 100);
+                
+                // Auto-close popup after 500ms to ensure cookie propagation and message receipt
                 setTimeout(function() {
+                  console.log('[OAuth Popup] Closing popup, messageSent:', messageSent);
                   try {
                     window.close();
                   } catch (err) {
-                    console.error("Popup close error", err);
+                    console.error("[OAuth Popup] Close error:", err);
+                    // If popup can't close itself, it may have been opened by redirect
+                    // In this case, redirect to dashboard
+                    window.location.href = '/dashboard';
                   }
-                }, 100);
+                }, 500);
               })();
             </script>
           </head>
-          <body>
-            <p>Authentication successful. Closing...</p>
+          <body style="font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div style="text-align: center; color: white;">
+              <p style="font-size: 18px; margin: 0;">Authentication successful!</p>
+              <p style="font-size: 14px; opacity: 0.8; margin-top: 8px;">Closing this window...</p>
+            </div>
           </body>
         </html>
       `);

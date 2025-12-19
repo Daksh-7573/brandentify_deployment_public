@@ -1,14 +1,93 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
  * Google Authentication Component - Simplified Custom OAuth Only
+ * 
+ * FIXES APPLIED:
+ * 1. Uses postMessage listener instead of popup.closed detection
+ * 2. Verifies session before redirecting (prevents double-login)
+ * 3. Adds delay for cookie propagation before reload
  */
 export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const popupRef = useRef<Window | null>(null);
+  const checkClosedIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      if (event.data?.type === 'oauth_success') {
+        console.log('✅ [FastGoogleAuth] Received oauth_success postMessage');
+        
+        if (checkClosedIntervalRef.current) {
+          clearInterval(checkClosedIntervalRef.current);
+          checkClosedIntervalRef.current = null;
+        }
+
+        setIsLoading(true);
+        
+        console.log('🔄 [FastGoogleAuth] Waiting for cookie propagation...');
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        const maxRetries = 5;
+        let sessionVerified = false;
+        
+        for (let i = 0; i < maxRetries; i++) {
+          console.log(`🔍 [FastGoogleAuth] Verifying session (attempt ${i + 1}/${maxRetries})...`);
+          
+          try {
+            const sessionResponse = await fetch('/api/auth/session', {
+              method: 'GET',
+              credentials: 'include',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            });
+
+            if (sessionResponse.ok) {
+              const sessionData = await sessionResponse.json();
+              if (sessionData.success && sessionData.user) {
+                console.log('✅ [FastGoogleAuth] Session verified! User:', sessionData.user.email);
+                sessionVerified = true;
+                break;
+              }
+            }
+          } catch (error) {
+            console.log(`⚠️ [FastGoogleAuth] Session check attempt ${i + 1} failed:`, error);
+          }
+          
+          if (i < maxRetries - 1) {
+            await new Promise(resolve => setTimeout(resolve, 400));
+          }
+        }
+
+        if (sessionVerified) {
+          console.log('🚀 [FastGoogleAuth] Redirecting to dashboard...');
+          window.location.href = '/dashboard';
+        } else {
+          console.log('⚠️ [FastGoogleAuth] Session verification failed after retries, reloading page...');
+          window.location.reload();
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      if (checkClosedIntervalRef.current) {
+        clearInterval(checkClosedIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleGoogleAuth = async () => {
     setIsLoading(true);
@@ -17,7 +96,6 @@ export function FastGoogleAuth() {
       console.log('🔄 Starting Google authentication...');
       console.log('🚀 Using custom OAuth flow for all domains');
       
-      // Get OAuth URL from our server
       const response = await fetch('/api/auth/google/url', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -30,7 +108,6 @@ export function FastGoogleAuth() {
       const data = await response.json();
       console.log('✅ Got OAuth URL, redirecting...');
       
-      // Try popup first, fallback to redirect if popup is blocked
       try {
         const popup = window.open(
           data.oauthUrl,
@@ -42,26 +119,53 @@ export function FastGoogleAuth() {
         );
         
         if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-          // Popup blocked or failed, use redirect method
           console.log('Popup blocked, using redirect method');
           window.location.href = data.oauthUrl;
           return;
         }
         
-        // Monitor the popup for completion
-        const checkClosed = setInterval(() => {
+        popupRef.current = popup;
+        
+        checkClosedIntervalRef.current = setInterval(async () => {
           if (popup.closed) {
-            clearInterval(checkClosed);
+            clearInterval(checkClosedIntervalRef.current!);
+            checkClosedIntervalRef.current = null;
+            
+            console.log('🔄 [FastGoogleAuth] Popup closed, waiting for cookie propagation...');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            console.log('🔍 [FastGoogleAuth] Checking session after popup close...');
+            
+            try {
+              const sessionResponse = await fetch('/api/auth/session', {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-cache'
+                }
+              });
+
+              if (sessionResponse.ok) {
+                const sessionData = await sessionResponse.json();
+                if (sessionData.success && sessionData.user) {
+                  console.log('✅ [FastGoogleAuth] Session found after popup close! Redirecting...');
+                  window.location.href = '/dashboard';
+                  return;
+                }
+              }
+            } catch (error) {
+              console.log('⚠️ [FastGoogleAuth] Session check after popup close failed:', error);
+            }
+            
             setIsLoading(false);
-            // Check for authentication success
-            window.location.reload(); // Refresh to check auth state
+            window.location.reload();
           }
         }, 1000);
         
         return;
         
       } catch (popupError) {
-        // If popup fails completely, use redirect
         console.log('Popup failed, using redirect method:', popupError);
         window.location.href = data.oauthUrl;
         return;
@@ -70,7 +174,6 @@ export function FastGoogleAuth() {
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
       
-      // Handle OAuth errors
       let errorMessage = 'Authentication failed. Please try again.';
       
       if (error.message.includes('Failed to get OAuth URL')) {
@@ -99,12 +202,12 @@ export function FastGoogleAuth() {
       disabled={isLoading}
       className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
       size="lg"
+      data-testid="button-google-auth"
     >
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          {/* Google Icon */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">
             <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
             <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
