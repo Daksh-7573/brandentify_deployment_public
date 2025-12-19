@@ -34,7 +34,7 @@ export function FastGoogleAuth() {
         setIsLoading(true);
         
         console.log('🔄 [FastGoogleAuth] Waiting for cookie propagation...');
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 700));
         
         const maxRetries = 5;
         let sessionVerified = false;

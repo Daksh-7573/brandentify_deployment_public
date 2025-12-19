@@ -777,7 +777,11 @@ export async function handleGoogleOAuthCallbackRoute(
                 // Retry after 100ms to ensure parent is ready
                 setTimeout(sendOAuthMessage, 100);
                 
-                // Auto-close popup after 500ms to ensure cookie propagation and message receipt
+                // Send additional message at 300ms for fresh browser support
+                setTimeout(sendOAuthMessage, 300);
+                
+                // Auto-close popup after 1000ms to ensure cookie propagation and message receipt
+                // Extended from 500ms for fresh browsers where cookie setting takes longer
                 setTimeout(function() {
                   console.log('[OAuth Popup] Closing popup, messageSent:', messageSent);
                   try {
@@ -788,7 +792,7 @@ export async function handleGoogleOAuthCallbackRoute(
                     // In this case, redirect to dashboard
                     window.location.href = '/dashboard';
                   }
-                }, 500);
+                }, 1000);
               })();
             </script>
           </head>
