@@ -926,45 +926,37 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   </details>
                 )}
 
-                {/* Rich Action Cards (B1) - Actionable cards with icons + CTAs */}
+                {/* Follow-up Questions - Show all inline in chat */}
                 {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
-                  <div className="mt-4 flex flex-col gap-2">
-                    {message.quickResponses.slice(0, 3).map((response, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleQuickResponse(response)}
-                        className="px-4 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.08)',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          color: 'rgba(255, 255, 255, 0.95)'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)';
-                          e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.18)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                          e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.12)';
-                        }}
-                        aria-label={`Suggested response: ${response}`}
-                      >
-                        <div className="line-clamp-2">{response}</div>
-                      </button>
-                    ))}
-                    {message.quickResponses.length > 3 && (
-                      <button 
-                        className="text-blue-400 hover:text-blue-300 text-xs underline"
-                        onClick={() => {
-                          toast({
-                            title: "More suggestions",
-                            description: `${message.quickResponses!.slice(3).join(', ')}`
-                          });
-                        }}
-                      >
-                        +{message.quickResponses.length - 3} more
-                      </button>
-                    )}
+                  <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.1)] space-y-2">
+                    <div className="text-xs text-[rgba(255,255,255,0.7)] font-medium flex items-center gap-2">
+                      <span>💬 Continue:</span>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {message.quickResponses.map((response, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleQuickResponse(response)}
+                          className="w-full px-3 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
+                          style={{
+                            background: 'rgba(59, 130, 246, 0.1)',
+                            border: '1px solid rgba(59, 130, 246, 0.3)',
+                            color: 'rgba(255, 255, 255, 0.95)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
+                            e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
+                            e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+                          }}
+                          aria-label={`Follow-up: ${response}`}
+                        >
+                          <div className="line-clamp-2">{response}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
