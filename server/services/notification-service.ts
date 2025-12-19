@@ -110,33 +110,16 @@ export async function markNotificationAsRead(notificationId: string): Promise<No
  * @returns The number of notifications marked as read
  */
 export async function markAllNotificationsAsRead(userId: number): Promise<number> {
-  // First find all unread notifications for this user
-  const unreadNotifications = await db
-    .select()
-    .from(notifications)
+  // Use a single bulk update query for all unread notifications
+  const result = await db
+    .update(notifications)
+    .set({ isRead: true })
     .where(and(
       eq(notifications.userId, userId),
       eq(notifications.isRead, false)
     ));
   
-  if (unreadNotifications.length === 0) {
-    return 0;
-  }
-  
-  // Update all of them individually
-  let updatedCount = 0;
-  for (const notification of unreadNotifications) {
-    const result = await db
-      .update(notifications)
-      .set({ isRead: true })
-      .where(eq(notifications.id, notification.id));
-    
-    if (result.rowCount) {
-      updatedCount++;
-    }
-  }
-  
-  return updatedCount;
+  return result.rowCount || 0;
 }
 
 /**

@@ -57,6 +57,16 @@ export default function NotificationList({
       setLoading(false);
     }
   };
+
+  // Handle marking all as read - calls parent callback and refetches
+  const handleMarkAllAsReadLocal = async () => {
+    onMarkAllAsRead();
+    // Refetch notifications to update UI to show all as read
+    setTimeout(() => {
+      fetchNotifications();
+      setActiveTab('read'); // Switch to read tab to show marked notifications
+    }, 300);
+  };
   
   // Fetch notifications when component mounts
   useEffect(() => {
@@ -261,7 +271,7 @@ export default function NotificationList({
         <Button 
           variant="ghost" 
           size="sm" 
-          onClick={onMarkAllAsRead}
+          onClick={handleMarkAllAsReadLocal}
           className="text-xs text-spotify-light-gray hover:text-spotify-white hover:bg-spotify-glass-highlight"
           data-testid="button-mark-all-read"
         >
