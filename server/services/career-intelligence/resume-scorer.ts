@@ -126,66 +126,19 @@ export class ResumeScorerService {
    * Build the brutal analysis prompt
    */
   private buildAnalysisPrompt(resumeText: string, targetRole?: string): string {
-    return `You are a BRUTAL resume expert who gives honest, actionable feedback. Analyze this resume and be HARSH but helpful. PROVIDE ALL SECTIONS - DO NOT SKIP ANY.
+    return `You are a resume expert who gives honest, actionable feedback. Analyze this resume and provide detailed feedback.
 
 ${targetRole ? `TARGET ROLE: ${targetRole}\n\n` : ''}RESUME:
 ${resumeText}
 
-Provide COMPREHENSIVE analysis in this EXACT format. INCLUDE EVERY SECTION:
-
-## OVERALL ASSESSMENT
-Give a brutal 2-3 sentence summary of this resume's quality.
-
-## ATS COMPATIBILITY (0-25)
-Score: [number]
-- [Specific issue about formatting/readability for ATS]
-- [Another specific issue]
-- [Third specific issue]
-
-## IMPACT METRICS (0-25)
-Score: [number]
-- [Specific issue - call out lack of numbers/quantification]
-- [Missing achievements/results]
-- [Vague accomplishments that need metrics]
-
-## KEYWORD OPTIMIZATION (0-20)
-Score: [number]
-- [Missing keywords for ${targetRole || 'this role'}]
-- [Industry-specific terms not mentioned]
-- [Technical skills not highlighted]
-
-## STRUCTURE & FORMATTING (0-15)
-Score: [number]
-- [Formatting issue]
-- [Organization problem]
-- [Visual hierarchy issue]
-
-## CLARITY & ACTION VERBS (0-15)
-Score: [number]
-- [Weak verbs like "responsible for"]
-- [Passive language issue]
-- [Unclear descriptions]
-
-## LINE-BY-LINE BRUTAL FIXES
-Provide at least 10 specific fixes:
-
-### FIX #1 [CRITICAL]
-- Category: [metrics/verbs/keywords/structure/formatting]
-- Current: "[exact text from resume]"
-- Problem: [What's wrong - be brutal]
-- Rewrite: "[exact improved version]"
-- Why: [Why this is better]
-- Impact: [e.g., "+40% callbacks"]
-
-[Continue for all fixes - be THOROUGH]
-
-## BOTTOM LINE
-- Current callback rate estimate: [X]%
-- After fixes callback rate: [Y]%
-- Main problem: [brutal truth]
-- Fix first: [#1 priority]
-
-IMPORTANT: Output the COMPLETE analysis with ALL sections above. Do not truncate.`;
+Provide comprehensive analysis including:
+- Overall assessment of the resume
+- Strengths
+- Areas for improvement  
+- Specific actionable fixes
+- ATS compatibility issues if any
+- Keyword optimization suggestions
+- Overall feedback and recommendations`;
   }
 
   /**
