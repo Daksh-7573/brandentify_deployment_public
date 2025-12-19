@@ -16,9 +16,9 @@ export default function Sidebar({ activePage }: SidebarProps) {
   ];
 
   return (
-    <div className="bg-white w-64 border-r border-gray-200 flex flex-col h-full">
+    <div className="bg-[#1a1a2e] w-64 border-r border-white/10 flex flex-col h-full">
       <div className="flex items-center flex-shrink-0 px-4 pt-4 pb-2">
-        <span className="text-lg font-semibold text-gray-900">Brandentifier</span>
+        <span className="text-lg font-semibold text-white">Brandentifier</span>
       </div>
       <div className="flex-1 flex flex-col overflow-y-auto">
         <nav className="flex-1 px-2 space-y-1 py-2">
@@ -28,11 +28,11 @@ export default function Sidebar({ activePage }: SidebarProps) {
               className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer transition-colors ${
                 activePage === item.id
                   ? "bg-primary/10 text-primary"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
               }`}
               onClick={() => setLocation(item.path)}
             >
-              <i className={`${item.icon} mr-3 ${activePage === item.id ? "text-primary" : "text-gray-400 group-hover:text-gray-500"}`}></i>
+              <i className={`${item.icon} mr-3 ${activePage === item.id ? "text-primary" : "text-white/50 group-hover:text-white/70"}`}></i>
               {item.label}
             </div>
           ))}
