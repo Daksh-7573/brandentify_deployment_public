@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { apiRequest } from '@/lib/queryClient';
-import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon } from 'lucide-react';
+import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Copy, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -62,6 +62,28 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   const [suggestedTemplateIds, setSuggestedTemplateIds] = useState<number[]>([]);
   const { user } = useAuth(); // Get current user data from auth context
+  
+  // Helper function: Format timestamp
+  const formatTime = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return date.toLocaleDateString();
+  };
+
+  // Helper function: Loading Skeleton
+  const LoadingSkeleton = () => (
+    <div className="space-y-2">
+      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-3/4 animate-pulse"></div>
+      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-5/6 animate-pulse"></div>
+      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-2/3 animate-pulse"></div>
+    </div>
+  );
   
   // Initialize with default welcome message (personalized questions will load)
   const [messages, setMessages] = useState<Message[]>([
@@ -710,7 +732,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
-        {/* Header */}
+        {/* Header with message counter */}
         <div 
           className="flex items-center justify-between p-4"
           style={{
@@ -718,7 +740,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             background: 'rgba(255, 255, 255, 0.1)'
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1">
             <div 
               className="h-10 w-10 rounded-full flex items-center justify-center relative overflow-hidden"
               style={{
@@ -734,9 +756,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 decoding="async"
               />
             </div>
-            <div>
+            <div className="flex-1">
               <h3 className="font-semibold text-lg text-white">Musk</h3>
               <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>AI Career Assistant</p>
+            </div>
+            <div className="text-xs px-2 py-1 rounded-full bg-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)]">
+              {messages.length} messages
             </div>
           </div>
           <Button 
@@ -756,65 +781,102 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               <div 
                 key={message.id}
                 className={cn(
-                  "flex flex-col rounded-2xl p-4 animate-in fade-in-0 zoom-in-95 duration-300",
-                  message.sender === 'user' 
-                    ? "ml-auto rounded-br-none max-w-[62%] sm:max-w-[70%]" 
-                    : "mr-auto rounded-bl-none max-w-[72%] sm:max-w-[70%]"
+                  "flex gap-3 animate-in fade-in-0 zoom-in-95 duration-300",
+                  message.sender === 'user' ? "flex-row-reverse" : "flex-row"
                 )}
-                style={message.sender === 'user' ? {
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255, 255, 255, 0.18)',
-                  color: 'white',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-                } : {
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255, 255, 255, 0.14)',
-                  color: 'white'
-                }}
-                role={message.sender === 'musk' ? 'article' : undefined}
-                aria-label={`${message.sender === 'user' ? 'Your' : 'Musk'} message`}
               >
-                {/* Show thinking indicator */}
-                {message.thinking ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="text-sm text-white">Thinking</div>
-                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                {/* Avatar Badge Improvement #7 */}
+                {message.sender === 'user' ? (
+                  <div className="h-8 w-8 rounded-full flex-shrink-0 bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-xs font-semibold text-white border border-[rgba(255,255,255,0.3)]">
+                    {user?.name?.charAt(0) || 'U'}
                   </div>
                 ) : (
-                  <div 
-                    className="text-sm whitespace-pre-wrap leading-relaxed text-white prose prose-sm max-w-none prose-invert prose-headings:mb-2 prose-headings:mt-4 prose-h3:text-base prose-h2:text-lg prose-h1:text-xl prose-li:my-0 prose-p:my-2 first:prose-headings:mt-0 prose-headings:text-white prose-p:text-white prose-li:text-white prose-strong:text-white prose-em:text-white prose-code:text-white prose-pre:text-white"
-                    style={{
-                      color: 'white'
-                    }}
-                    dangerouslySetInnerHTML={{ 
-                      __html: (message.content || '')
-                        // Headers
-                        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                        // Bold and Italic
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        // Sections with emoji headers
-                        .replace(/(^|[^\w])([🔍📊📈🎯🧠⚠️💡✅❓📝📌]+) (.*?):/gm, '$1<h3 class="flex items-center gap-2"><span class="text-xl">$2</span> $3:</h3>')
-                        // Code formatting
-                        .replace(/```([^`]+)```/gm, '<pre><code>$1</code></pre>') // Multi-line code blocks
-                        .replace(/`([^`]+)`/g, '<code>$1</code>') // Inline code
-                        // Bullet lists
-                        .replace(/^- (.*)/gm, '<li>$1</li>') // List items
-                        .replace(/<li>/g, '<ul class="list-disc pl-5 my-2"><li>').replace(/<\/li>\s*(?!<li>|<\/ul>)/g, '</li></ul>') // Complete lists
-                        // Checkboxes
-                        .replace(/^\[x\] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 bg-primary flex items-center justify-center"><svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1L4 7L1 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div>$1</div></div>')
-                        .replace(/^\[ \] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 border border-border"></div><div>$1</div></div>')
-                        // Horizontal rule
-                        .replace(/^---$/gm, '<hr class="my-4">')
-                        // Paragraphs (add only if needed for proper spacing)
-                        .replace(/\n\n/g, '</p><p>')
-                    }}
-                  ></div>
+                  <div className="h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>
+                    <img src="/Contact Candour_1761062906599.gif" alt="Musk" className="h-full w-full object-cover" />
+                  </div>
                 )}
+
+                {/* Message Bubble */}
+                <div 
+                  className={cn(
+                    "flex flex-col rounded-2xl p-4 max-w-[45%] xs:max-w-[50%] sm:max-w-[55%] md:max-w-[60%]",
+                    message.sender === 'user' ? "rounded-tr-sm" : "rounded-tl-sm"
+                  )}
+                  style={message.sender === 'user' ? {
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.18)',
+                    color: 'white',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                  } : {
+                    background: 'rgba(255, 255, 255, 0.12)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    color: 'white'
+                  }}
+                  role={message.sender === 'musk' ? 'article' : undefined}
+                  aria-label={`${message.sender === 'user' ? 'Your' : 'Musk'} message`}
+                >
+                  {/* Show loading skeleton instead of "Thinking" - Improvement #6 */}
+                  {message.thinking ? (
+                    <LoadingSkeleton />
+                  ) : (
+                    <div 
+                      className="text-sm whitespace-pre-wrap leading-relaxed text-white prose prose-sm max-w-none prose-invert prose-headings:mb-2 prose-headings:mt-4 prose-h3:text-base prose-h2:text-lg prose-h1:text-xl prose-li:my-0 prose-p:my-2 first:prose-headings:mt-0 prose-headings:text-white prose-p:text-white prose-li:text-white prose-strong:text-white prose-em:text-white"
+                      style={{color: 'white'}}
+                      dangerouslySetInnerHTML={{ 
+                        __html: (message.content || '')
+                          // Headers
+                          .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                          .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                          .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                          // Bold and Italic
+                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                          // Sections with emoji headers
+                          .replace(/(^|[^\w])([🔍📊📈🎯🧠⚠️💡✅❓📝📌]+) (.*?):/gm, '$1<h3 class="flex items-center gap-2"><span class="text-xl">$2</span> $3:</h3>')
+                          // Code formatting - Improvement #4 (Better syntax highlighting)
+                          .replace(/```([^`]+)```/gm, '<pre style="background:rgba(0,0,0,0.3);padding:12px;border-radius:6px;border-left:3px solid rgba(59,130,246,0.5);overflow-x:auto;margin:8px 0"><code style="color:#00d4ff;font-family:monospace">$1</code></pre>')
+                          .replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:3px;color:#00d4ff;font-family:monospace">$1</code>')
+                          // Bullet lists
+                          .replace(/^- (.*)/gm, '<li>$1</li>')
+                          .replace(/<li>/g, '<ul class="list-disc pl-5 my-2"><li>').replace(/<\/li>\s*(?!<li>|<\/ul>)/g, '</li></ul>')
+                          // Checkboxes
+                          .replace(/^\[x\] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 bg-primary flex items-center justify-center"><svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1L4 7L1 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div>$1</div></div>')
+                          .replace(/^\[ \] (.*)/gm, '<div class="flex items-start gap-2 my-1"><div class="rounded-sm w-4 h-4 mt-1 border border-border"></div><div>$1</div></div>')
+                          // Horizontal rule
+                          .replace(/^---$/gm, '<hr class="my-4">')
+                          // Paragraphs
+                          .replace(/\n\n/g, '</p><p>')
+                      }}
+                    ></div>
+                  )}
+
+                  {/* Timestamp & Copy Button - Improvements #1 & #2 */}
+                  {!message.thinking && (
+                    <div className="mt-2 flex items-center justify-between gap-2 text-xs text-[rgba(255,255,255,0.6)]">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatTime(message.timestamp)}
+                      </span>
+                      {message.sender === 'musk' && (
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(message.content);
+                            toast({
+                              title: 'Copied!',
+                              description: 'Message copied to clipboard'
+                            });
+                          }}
+                          className="hover:text-white transition-colors flex items-center gap-1"
+                          title="Copy message"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
                 
                 {/* Message Meta Chips (B5) - Intent, Stage, Confidence */}
                 {message.sender === 'musk' && message.explainable && (
