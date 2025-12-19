@@ -1233,7 +1233,7 @@ export class MemStorage implements IStorage {
     const demoPortfolio: Portfolio = {
       id: 1,
       userId: 1,
-      layout: "professional", // Default layout
+      layout: "corporate-executive", // Default layout
       customTitle: null,
       customBio: null,
       customizationOptions: {},
@@ -1417,7 +1417,7 @@ export class MemStorage implements IStorage {
     const portfolio: Portfolio = {
       id: 1,
       userId: 1,
-      layout: "professional", // Default layout
+      layout: "corporate-executive", // Default layout
       customTitle: null,
       customBio: null,
       customizationOptions: {},
@@ -2659,7 +2659,7 @@ export class MemStorage implements IStorage {
           updated_at as "updatedAt"
       `, [
         insertPortfolio.userId,
-        insertPortfolio.layout || "professional",
+        insertPortfolio.layout || "corporate-executive",
         insertPortfolio.customTitle || null,
         insertPortfolio.customBio || null,
         JSON.stringify(insertPortfolio.customizationOptions || {}),
@@ -10756,7 +10756,7 @@ export class DatabaseStorage implements IStorage {
           updated_at as "updatedAt"
       `, [
         insertPortfolio.userId,
-        insertPortfolio.layout || "professional",
+        insertPortfolio.layout || "corporate-executive",
         insertPortfolio.customTitle || null,
         insertPortfolio.customBio || null,
         JSON.stringify(insertPortfolio.customizationOptions || {}),
