@@ -139,96 +139,15 @@ export default function Projects() {
   // Reference to hold the most recent data
   const latestProjectsRef = useRef<Project[]>([]);
   
-  // Fetch projects from the API with advanced options
+  // Fetch projects from the API with proper caching
   const { data: serverProjects, isLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userId}/projects`],
     enabled: !!userId,
-    staleTime: 0, // Always consider data stale to force refresh
-    refetchOnMount: 'always', // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchInterval: 1000, // Poll every second to keep data fresh
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnMount: false, // Don't refetch on mount
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchInterval: false, // Disable polling - manual refetch only
   });
-  
-  // Force a direct fetch every time the component renders
-  useEffect(() => {
-    async function directFetch() {
-      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Projects - Directly fetching latest projects data (${timestamp})`);
-      try {
-        const response = await fetch(`/api/users/${userId}/projects?_=${timestamp}`, {
-          method: 'GET',
-          headers: { 
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        const freshData = await response.json();
-        console.log("Projects - Got direct fetch data:", freshData);
-        
-        // Force update (only if there are actual changes)
-        if (freshData && Array.isArray(freshData)) {
-          // Normalize data to ensure mediaUrls is always an array
-          const normalizedData = freshData.map(project => {
-            // If mediaUrls is a string (JSON), parse it into an array
-            if (project.mediaUrls && typeof project.mediaUrls === 'string') {
-              try {
-                project.mediaUrls = JSON.parse(project.mediaUrls);
-              } catch (error) {
-                console.error("Error parsing mediaUrls:", error);
-                project.mediaUrls = [];
-              }
-            }
-            return project;
-          });
-          
-          // Check if there are meaningful changes before updating state
-          const currentProjectsStr = JSON.stringify(projects);
-          const newProjectsStr = JSON.stringify(normalizedData);
-          
-          if (currentProjectsStr !== newProjectsStr) {
-            console.log("Projects direct fetch found changes, updating state");
-            setProjects([...normalizedData]);
-            // Update the ref as well
-            latestProjectsRef.current = [...normalizedData];
-          } else {
-            console.log("Projects direct fetch found no changes, skipping update");
-          }
-        }
-      } catch (error) {
-        console.error("Error during direct projects fetch:", error);
-      }
-    }
-    
-    directFetch();
-    
-    // Poll every second
-    const interval = setInterval(directFetch, 1000);
-    return () => clearInterval(interval);
-  }, [userId, projects]); // Depend on both userId and projects state
-  
-  // Initialize projects from serverProjects on first load
-  useEffect(() => {
-    if (serverProjects && Array.isArray(serverProjects) && serverProjects.length > 0) {
-      // Normalize data to ensure mediaUrls is always an array
-      const normalizedData = serverProjects.map(project => {
-        // If mediaUrls is a string (JSON), parse it into an array
-        if (project.mediaUrls && typeof project.mediaUrls === 'string') {
-          try {
-            project.mediaUrls = JSON.parse(project.mediaUrls);
-          } catch (error) {
-            console.error("Error parsing mediaUrls:", error);
-            project.mediaUrls = [];
-          }
-        }
-        return project;
-      });
-      
-      console.log("Projects: Initial data from server:", normalizedData);
-      setProjects(normalizedData);
-      latestProjectsRef.current = normalizedData;
-    }
-  }, []);
   
   // Update projects state when server data changes
   useEffect(() => {
@@ -247,22 +166,11 @@ export default function Projects() {
         return project;
       });
       
-      console.log("Projects received updated data:", normalizedData);
-      
-      // Check if this update has any meaningful differences before replacing state
-      const hasChanges = JSON.stringify(normalizedData) !== JSON.stringify(projects);
-      if (hasChanges) {
-        console.log("Projects data has changes, updating state");
-        // Always update our reference with the latest data
-        latestProjectsRef.current = [...normalizedData];
-        
-        // Update the state too to trigger re-renders
-        setProjects([...normalizedData]);
-      } else {
-        console.log("Projects data unchanged, skipping state update");
-      }
+      console.log("Projects received data:", normalizedData);
+      setProjects(normalizedData);
+      latestProjectsRef.current = normalizedData;
     }
-  }, [serverProjects, projects]);
+  }, [serverProjects]);
   
   // Always use the latest data for display, using direct ref access as a fallback
   const displayProjects = projects.length > 0 ? projects : 
