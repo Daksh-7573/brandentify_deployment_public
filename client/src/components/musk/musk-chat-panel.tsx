@@ -74,28 +74,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     }
   ]);
   
-  // Update welcome message with personalized questions once user data loads
-  useEffect(() => {
-    // Once user data and suggested questions are loaded, update the welcome message
-    if (userData && suggestedQuestions.length > 0 && messages.length === 1) {
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
-      
-      // Only update if we have personalized questions and still just the welcome message
-      if (personalizedQuestions.length > 0) {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === 'welcome' 
-              ? {
-                  ...msg,
-                  quickResponses: personalizedQuestions
-                }
-              : msg
-          )
-        );
-      }
-    }
-  }, [userData, suggestedQuestions, messages.length]);
-  
   // Fetch user data when component mounts
   useEffect(() => {
     const fetchUserData = async () => {
