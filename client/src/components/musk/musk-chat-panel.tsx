@@ -92,7 +92,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       content: "Hi there! I'm Musk, your AI career assistant. I can analyze your resume or pitch deck, and provide personalized professional guidance. How can I help with your career development today?",
       sender: 'musk',
       timestamp: new Date(),
-      quickResponses: [] // Will be populated with AI-generated personalized questions
+      quickResponses: [
+        'Analyze my resume',
+        'Review my pitch deck',
+        'Career advice',
+        'Personal branding tips'
+      ]
     }
   ]);
   
@@ -793,25 +798,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               <div 
                 key={message.id}
                 className={cn(
-                  "flex gap-3 animate-in fade-in-0 zoom-in-95 duration-300",
-                  message.sender === 'user' ? "flex-row-reverse" : "flex-row"
+                  "flex gap-0 animate-in fade-in-0 zoom-in-95 duration-300 w-full",
+                  message.sender === 'user' ? "justify-end" : "justify-start"
                 )}
               >
-                {/* Avatar Badge Improvement #7 */}
-                {message.sender === 'user' ? (
-                  <div className="h-8 w-8 rounded-full flex-shrink-0 bg-[rgba(255,255,255,0.2)] flex items-center justify-center text-xs font-semibold text-white border border-[rgba(255,255,255,0.3)]">
-                    {user?.name?.charAt(0) || 'U'}
-                  </div>
-                ) : (
-                  <div className="h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>
-                    <img src="/Contact Candour_1761062906599.gif" alt="Musk" className="h-full w-full object-cover" />
-                  </div>
-                )}
-
-                {/* Message Bubble */}
+                {/* Message Bubble - No Avatars */}
                 <div 
                   className={cn(
-                    "flex flex-col rounded-2xl p-4 max-w-[85%] xs:max-w-[85%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%]",
+                    "flex flex-col rounded-2xl p-4 max-w-[95%] xs:max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%]",
                     message.sender === 'user' ? "rounded-tr-sm" : "rounded-tl-sm"
                   )}
                   style={message.sender === 'user' ? {
