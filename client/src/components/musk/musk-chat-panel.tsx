@@ -876,6 +876,40 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                       )}
                     </div>
                   )}
+
+                  {/* Follow-up Questions - Inside message bubble */}
+                  {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.15)] space-y-2">
+                      <div className="text-xs text-[rgba(255,255,255,0.8)] font-medium flex items-center gap-2">
+                        <span>💬 Continue:</span>
+                      </div>
+                      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                        {message.quickResponses.map((response, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleQuickResponse(response)}
+                            className="w-full px-3 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
+                            style={{
+                              background: 'rgba(59, 130, 246, 0.15)',
+                              border: '1px solid rgba(59, 130, 246, 0.4)',
+                              color: 'rgba(255, 255, 255, 0.95)'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)';
+                              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.6)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)';
+                              e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.4)';
+                            }}
+                            aria-label={`Follow-up: ${response}`}
+                          >
+                            <div className="line-clamp-2">{response}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Message Meta Chips (B5) - Intent, Stage, Confidence */}
@@ -924,40 +958,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                       </div>
                     </div>
                   </details>
-                )}
-
-                {/* Follow-up Questions - Show all inline in chat */}
-                {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
-                  <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.1)] space-y-2">
-                    <div className="text-xs text-[rgba(255,255,255,0.7)] font-medium flex items-center gap-2">
-                      <span>💬 Continue:</span>
-                    </div>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {message.quickResponses.map((response, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleQuickResponse(response)}
-                          className="w-full px-3 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
-                          style={{
-                            background: 'rgba(59, 130, 246, 0.1)',
-                            border: '1px solid rgba(59, 130, 246, 0.3)',
-                            color: 'rgba(255, 255, 255, 0.95)'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.2)';
-                            e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
-                            e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-                          }}
-                          aria-label={`Follow-up: ${response}`}
-                        >
-                          <div className="line-clamp-2">{response}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
                 )}
               </div>
             ))}
