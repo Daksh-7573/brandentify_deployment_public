@@ -207,25 +207,15 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
 
   // Send message function
   const sendMessage = (content: string, conversationId: number, recipientId?: number) => {
-    if (!socket || socket.readyState !== WebSocket.OPEN || !content.trim()) {
-      console.error('Cannot send message: Socket not connected or empty message');
+    if (!content.trim()) {
+      console.error('Cannot send message: Empty message');
       return;
     }
 
-    const messageData = {
-      type: 'message',
+    // Send through API to persist
+    apiRequest('POST', `/api/messaging/conversations/${conversationId}/messages`, {
+      conversationId,
       senderId: userId,
-      conversationId,
-      content,
-      recipientId,
-    };
-
-    // Send over WebSocket for real-time delivery
-    socket.send(JSON.stringify(messageData));
-
-    // Also send through API to persist
-    apiRequest('POST', '/api/messaging/messages', {
-      conversationId,
       content,
     })
       .then(async (response) => {
@@ -240,12 +230,33 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
           return;
         }
         
+        if (!response.ok) {
+          const error = await response.json();
+          toast({
+            title: "Failed to send message",
+            description: error.error || "Please try again later",
+            variant: "destructive",
+          });
+          return;
+        }
+        
         const newMessage = await response.json() as Message;
         // Optimistically update message list
         queryClient.setQueryData<Message[]>(
           ['/api/messaging/conversations', conversationId, 'messages'],
           (oldMessages) => [...(oldMessages || []), newMessage]
         );
+        
+        // Send over WebSocket for real-time delivery if connected
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({
+            type: 'message',
+            senderId: userId,
+            conversationId,
+            content,
+            recipientId,
+          }));
+        }
       })
       .catch((error) => {
         console.error('Error sending message via API:', error);
