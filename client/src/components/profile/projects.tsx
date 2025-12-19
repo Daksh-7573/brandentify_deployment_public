@@ -2076,26 +2076,35 @@ export default function Projects() {
                       {collaborators.filter(c => c.inviteStatus === 'Accepted').length > 0 ? (
                         <div className="space-y-2">
                           {collaborators.filter(c => c.inviteStatus === 'Accepted').map((collaborator) => (
-                            <div key={collaborator.id} className="flex items-center justify-between p-3 border rounded-lg">
-                              <div>
-                                <p className="font-medium">{collaborator.name}</p>
-                                <p className="text-sm text-muted-foreground">{collaborator.role}</p>
-                                {collaborator.profileLink && (
-                                  <a 
-                                    href={collaborator.profileLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-primary hover:underline flex items-center gap-1 mt-1"
-                                  >
-                                    <ExternalLink className="h-3 w-3" />
-                                    View Profile
-                                  </a>
-                                )}
+                            <div key={collaborator.id} className="flex items-center justify-between">
+                              <div className="flex-1">
+                                {/* Team member display with profile info */}
+                                <div className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                                    {collaborator.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-sm">{collaborator.name}</p>
+                                    <p className="text-xs text-muted-foreground">{collaborator.role}</p>
+                                  </div>
+                                  {collaborator.profileLink && (
+                                    <a 
+                                      href={collaborator.profileLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-primary hover:text-primary/80 flex-shrink-0"
+                                      data-testid="button-view-team-profile"
+                                    >
+                                      <ExternalLink className="h-4 w-4" />
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                               <Button 
                                 variant="ghost" 
                                 size="icon"
                                 onClick={() => handleDeleteCollaborator(collaborator.id)}
+                                data-testid="button-remove-team-member"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -2145,16 +2154,19 @@ export default function Projects() {
                       {endorsements.length > 0 ? (
                         <div className="space-y-2">
                           {endorsements.map((endorsement) => (
-                            <div key={endorsement.id} className="p-3 border rounded-lg">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <div className="flex items-center gap-1">
+                            <div key={endorsement.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                              <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-white text-sm font-medium flex-shrink-0 mt-0.5">
+                                  {endorsement.clientName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
                                     <p className="font-medium">{endorsement.clientName}</p>
                                     {endorsement.isVerified && (
-                                      <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                                      <CheckCircle className="h-3.5 w-3.5 text-green-500 flex-shrink-0" data-testid="icon-client-verified" />
                                     )}
                                     {!endorsement.isVerified && (
-                                      <Clock className="h-3.5 w-3.5 text-amber-500" />
+                                      <Clock className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" data-testid="icon-client-pending" />
                                     )}
                                   </div>
                                   {endorsement.clientTitle && endorsement.clientCompany && (
@@ -2167,25 +2179,27 @@ export default function Projects() {
                                   variant="ghost" 
                                   size="icon"
                                   onClick={() => handleDeleteEndorsement(endorsement.id)}
+                                  data-testid="button-remove-client"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
                               </div>
                               {endorsement.message && (
-                                <p className="text-sm mt-2 italic">"{endorsement.message}"</p>
+                                <p className="text-sm mt-2 italic text-muted-foreground">"{endorsement.message}"</p>
                               )}
                               {endorsement.rating && (
-                                <div className="flex items-center mt-2">
+                                <div className="flex items-center mt-2 gap-0.5">
                                   {Array.from({ length: 5 }).map((_, i) => (
                                     <Star
                                       key={i}
                                       className={`h-4 w-4 ${i < endorsement.rating! ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
+                                      data-testid={`icon-rating-${i}`}
                                     />
                                   ))}
                                 </div>
                               )}
                               {!endorsement.isVerified && (
-                                <p className="text-xs text-muted-foreground mt-2">
+                                <p className="text-xs text-amber-600 mt-2">
                                   Waiting for client verification
                                 </p>
                               )}
