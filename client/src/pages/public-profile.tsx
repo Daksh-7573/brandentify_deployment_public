@@ -297,8 +297,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     return <TemplateComponent {...templateProps} />;
   };
   
-  // If no portfolio data, show a basic profile
-  if (!portfolioData || !portfolioData.isPublished) {
+  // If no portfolio data (user hasn't selected a layout), show a basic profile
+  if (!portfolioData || !publishedPortfolio) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -381,7 +381,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                   
                   <div className="pt-4">
                     <p className="text-center md:text-left text-muted-foreground">
-                      This user hasn't published their portfolio yet.
+                      This user hasn't set up a portfolio yet.
                     </p>
                   </div>
                 </div>
