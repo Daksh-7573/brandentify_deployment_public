@@ -11,6 +11,7 @@ import { extractTextFromPdf } from './utils/pdf-extractor';
 import { ResumeScorerService } from './services/career-intelligence/resume-scorer';
 import { intentClassifier } from './services/intent-classifier';
 import { enhancedIntentClassifier } from './services/enhanced-intent-classifier';
+import { formatMuskReport, wrapAnalysisAsReport } from './services/musk-report-formatter';
 import { userMuskMemoryService } from './services/user-musk-memory';
 import { toneCalibrationService } from './services/tone-calibration';
 import { conversationGoalTrackerService } from './services/conversation-goal-tracker';
@@ -895,6 +896,13 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       throw new Error('Resume analysis failed: No analysis result returned');
     }
     
+    // Format analysis as professional report
+    const formattedAnalysis = formatMuskReport(
+      analysisResult.result.analysis,
+      'resume',
+      '📄 Resume Analysis Report'
+    );
+    
     return res.status(200).json({
       id: 'resume-analysis-' + Date.now(),
       success: true,
@@ -903,7 +911,7 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       criticalIssues: analysisResult.result.criticalIssues,
       importantIssues: analysisResult.result.importantIssues,
       optionalIssues: analysisResult.result.optionalIssues,
-      analysis: analysisResult.result.analysis,
+      analysis: formattedAnalysis,
       filename: resumeFile.name,
       extractedText: resumeText.substring(0, 500) + '...',
       timestamp: new Date()
