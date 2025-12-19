@@ -288,11 +288,13 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       
       // Replace the thinking message with the actual response
       // Use suggested questions, or fall back to extracted quick responses, or generate default follow-ups
-      let finalQuickResponses = suggestedQuestions.slice(0, 4).map(q => q.text);
+      let finalQuickResponses = suggestedQuestions && suggestedQuestions.length > 0 
+        ? suggestedQuestions.slice(0, 6).map(q => q.text) 
+        : [];
       
       // If no suggested questions, use extracted responses from AI
       if (finalQuickResponses.length === 0 && quickResponses && quickResponses.length > 0) {
-        finalQuickResponses = quickResponses;
+        finalQuickResponses = quickResponses.slice(0, 6);
       }
       
       // If still no follow-ups, generate some default contextual ones
@@ -301,7 +303,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           'Tell me more about this',
           'What are the next steps?',
           'How can I apply this?',
-          'Give me more details'
+          'Give me more details',
+          'Explain in detail',
+          'What should I do next?'
         ];
       }
       
@@ -885,16 +889,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
 
                   {/* Follow-up Questions - Inside message bubble */}
                   {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
-                    <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.15)] space-y-2">
-                      <div className="text-xs text-[rgba(255,255,255,0.8)] font-medium flex items-center gap-2">
-                        <span>💬 Continue:</span>
-                      </div>
-                      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.15)] space-y-2 w-full">
+                      <div className="text-xs text-[rgba(255,255,255,0.8)] font-medium">💬 Continue:</div>
+                      <div className="flex flex-col gap-2 w-full">
                         {message.quickResponses.map((response, i) => (
                           <button
                             key={i}
                             onClick={() => handleQuickResponse(response)}
-                            className="w-full px-3 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg"
+                            className="w-full px-3 py-2 text-xs text-left rounded-lg transition-all duration-200 hover:shadow-lg whitespace-normal"
                             style={{
                               background: 'rgba(59, 130, 246, 0.15)',
                               border: '1px solid rgba(59, 130, 246, 0.4)',
@@ -910,7 +912,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                             }}
                             aria-label={`Follow-up: ${response}`}
                           >
-                            <div className="line-clamp-2">{response}</div>
+                            {response}
                           </button>
                         ))}
                       </div>
