@@ -6432,6 +6432,44 @@ ${extractedText.substring(0, 5000)}
       res.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // GET /api/portfolios - Fetch portfolio by userId query param
+  apiRouter.get("/portfolios", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.query.userId as string;
+      
+      if (!userIdParam) {
+        return res.status(400).json({ message: "userId query parameter is required" });
+      }
+      
+      let userId: number;
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+      
+      const portfolio = await storage.getPortfolioByUserId(userId);
+      
+      if (!portfolio) {
+        return res.status(404).json({ message: "Portfolio not found" });
+      }
+      
+      res.json(portfolio);
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
   
   apiRouter.post("/portfolios", async (req: Request, res: Response) => {
     try {
