@@ -282,9 +282,23 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       }
       
       // Replace the thinking message with the actual response
-      // Instead of separate quick responses, use the suggested questions
-      // that we've already generated
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
+      // Use suggested questions, or fall back to extracted quick responses, or generate default follow-ups
+      let finalQuickResponses = suggestedQuestions.slice(0, 4).map(q => q.text);
+      
+      // If no suggested questions, use extracted responses from AI
+      if (finalQuickResponses.length === 0 && quickResponses && quickResponses.length > 0) {
+        finalQuickResponses = quickResponses;
+      }
+      
+      // If still no follow-ups, generate some default contextual ones
+      if (finalQuickResponses.length === 0) {
+        finalQuickResponses = [
+          'Tell me more about this',
+          'What are the next steps?',
+          'How can I apply this?',
+          'Give me more details'
+        ];
+      }
       
       setMessages(prev => 
         prev.map(msg => 
@@ -294,16 +308,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 content: content,
                 sender: 'musk',
                 timestamp: new Date(),
-                quickResponses: personalizedQuestions.length > 0 
-                  ? personalizedQuestions 
-                  : quickResponses // Fallback to regular quick responses if no suggested questions
+                quickResponses: finalQuickResponses
               }
             : msg
         )
       );
       
       // Update engagement history for the suggested questions that were used
-      if (personalizedQuestions.length > 0) {
+      if (suggestedQuestions.length > 0) {
         // Find the categories of the questions we just used
         const usedQuestions = suggestedQuestions.slice(0, 4);
         const newHistory = { ...engagementHistory };
@@ -799,7 +811,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 {/* Message Bubble */}
                 <div 
                   className={cn(
-                    "flex flex-col rounded-2xl p-4 max-w-[45%] xs:max-w-[50%] sm:max-w-[55%] md:max-w-[60%]",
+                    "flex flex-col rounded-2xl p-4 max-w-[85%] xs:max-w-[85%] sm:max-w-[80%] md:max-w-[75%] lg:max-w-[70%]",
                     message.sender === 'user' ? "rounded-tr-sm" : "rounded-tl-sm"
                   )}
                   style={message.sender === 'user' ? {
