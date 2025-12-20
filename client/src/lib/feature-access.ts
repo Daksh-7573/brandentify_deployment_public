@@ -73,8 +73,32 @@ export const PREMIUM_TIER_QUOTAS: FeatureQuotas = {
   adFree: true,
 };
 
-// Free users get 2 templates: Corporate Executive and Scholar
-export const FREE_PORTFOLIO_TEMPLATES: string[] = ["corporate-executive", "scholar"];
+// All templates available (Corporate Executive & Scholar always visible)
+export const FREE_PORTFOLIO_TEMPLATES: string[] = [
+  "corporate-executive",
+  "scholar", 
+  "timeline-storyteller-2",
+  "creative-bold",
+  "dynamic-innovator",
+  "freelancer-hub",
+  "animated",
+  "designer-portfolio",
+  "photographer-portfolio",
+  "pastel-dreamscape",
+  "nature-creative",
+  "fashion-runway",
+  "fashion-is-art",
+  "yoga-fitness-model",
+  "3d-portfolio",
+  "holographic-neo",
+  "creative-quantum",
+  "artistic-portfolio",
+  "fashion-quantum",
+  "light-designer",
+  "photography-cinematic",
+  "fitness-portfolio",
+  "ceo-executive"
+];
 export const FREE_VISITING_CARD_TEMPLATES: string[] = [];
 
 export function getFeatureQuotas(subscriptionTier?: string): FeatureQuotas {

@@ -197,15 +197,9 @@ export default function PortfolioBuilder() {
     return !portfolio.locked;
   };
 
-  // Show only free templates for free users, all for premium
+  // Show all templates (Corporate Executive & Scholar always available)
   const getVisibleTemplates = () => {
-    if (isPremium || user?.subscriptionTier === 'premium') {
-      return layoutOptions;
-    }
-    // Free users only get Corporate Executive and Scholar
-    return layoutOptions.filter(opt => 
-      opt.id === 'corporate-executive' || opt.id === 'scholar'
-    );
+    return layoutOptions;
   };
 
   // Define User type to match server-side schema
