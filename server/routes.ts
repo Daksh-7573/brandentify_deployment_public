@@ -74,7 +74,13 @@ import { UserContextBuilder } from "./services/user-context-builder.js";
 import { AIFeedRanker } from "./services/ai-feed-ranker.js";
 import { feedCache } from "./services/feed-cache.js";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute } from "./auth-oauth-routes";
-import { createNotification } from "./services/notification-service";
+import { 
+  createNotification, 
+  createXpEarnedNotification,
+  createNewFollowerNotification,
+  createMilestoneNotification,
+  createAchievementNotification 
+} from "./services/notification-service";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -8597,6 +8603,14 @@ ${extractedText.substring(0, 5000)}
       // Award XP to user
       await storage.incrementUserXp(userId, earnedXp, 'quest_completion', questId);
 
+      // Create XP earned notification
+      try {
+        await createXpEarnedNotification(userId, earnedXp, 'completing a quest');
+        console.log(`[Quest Completion] ✅ XP notification created for user ${userId}`);
+      } catch (notifError) {
+        console.error('[Quest Completion] Failed to create XP notification:', notifError);
+      }
+
       console.log(`[Quest Completion] ✅ Quest ${questId} completed by user ${userId}, awarded ${earnedXp} XP`);
 
       res.json({
@@ -8655,6 +8669,14 @@ ${extractedText.substring(0, 5000)}
 
       // Award XP to user
       await storage.incrementUserXp(userId, earnedXp, 'social_quest_completion', questId);
+
+      // Create XP earned notification
+      try {
+        await createXpEarnedNotification(userId, earnedXp, 'completing a social quest');
+        console.log(`[Social Quest Completion] ✅ XP notification created for user ${userId}`);
+      } catch (notifError) {
+        console.error('[Social Quest Completion] Failed to create XP notification:', notifError);
+      }
 
       console.log(`[Social Quest Completion] ✅ Social quest ${questId} completed by user ${userId}, awarded ${earnedXp} XP`);
 
@@ -9387,6 +9409,20 @@ ${extractedText.substring(0, 5000)}
       
       // Update the goal's progress
       await updateGoalProgress(milestone.goalId);
+      
+      // Create milestone notification if milestone was just completed
+      if (req.body.status === "completed" && milestone.status !== "completed") {
+        try {
+          // Get the goal to find the user
+          const goal = await storage.getCareerGoalById(milestone.goalId);
+          if (goal) {
+            await createMilestoneNotification(goal.userId, updatedMilestone?.title || 'Career Milestone');
+            console.log(`[Milestone] ✅ Milestone notification created for user ${goal.userId}`);
+          }
+        } catch (notifError) {
+          console.error('[Milestone] Failed to create milestone notification:', notifError);
+        }
+      }
       
       return res.json(updatedMilestone);
     } catch (error) {

@@ -7959,6 +7959,15 @@ export class MemStorage implements IStorage {
         displayOnProfile: true,
         displayOnResume: false
       });
+      
+      // Create achievement notification for badge earned
+      try {
+        const { createAchievementNotification } = await import('./services/notification-service');
+        await createAchievementNotification(quest.userId, questDefinition.badgeReward);
+        console.log(`[completeUserQuest] Achievement notification created for user ${quest.userId} - badge: ${questDefinition.badgeReward}`);
+      } catch (error) {
+        console.error('[completeUserQuest] Failed to create achievement notification:', error);
+      }
     }
     
     // Add XP to user account
