@@ -179,14 +179,21 @@ const RandomProfile = () => {
     );
   }
 
-  // Determine which layout to use
-  // Priority: Published portfolio > Default to Corporate Executive
-  let layoutToRender = 'executive'; // Default: Corporate Executive
-  
-  if (portfolioData && portfolioData.isPublished) {
-    // User has published a portfolio - use that layout
-    layoutToRender = portfolioData.layout;
+  // Show loading state while portfolio data is being fetched
+  if (isPortfolioLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <FeedSkeleton />
+        </div>
+      </div>
+    );
   }
+
+  // Determine which layout to use
+  // Priority: User has portfolio record > use professional layout as default
+  let layoutToRender = portfolioData?.layout || 'professional';
 
   // Build template props using shared helper
   const templateProps = buildPortfolioTemplateProps(
@@ -214,103 +221,6 @@ const RandomProfile = () => {
   // Get the appropriate template component and render it
   const TemplateComponent = getPortfolioTemplate(layoutToRender);
   return <TemplateComponent {...templateProps} />;
-
-  // Default profile view if no portfolio is published
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <div className="flex flex-col md:flex-row items-start gap-6">
-              <Avatar className="h-24 w-24">
-                <AvatarImage 
-                  src={userData.photoURL || ""} 
-                  alt={userData.name || userData.username} 
-                />
-                <AvatarFallback className="text-lg">
-                  {(userData.name || userData.username).charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {userData.name || userData.username}
-                </h1>
-                {userData.title && (
-                  <p className="text-xl text-gray-600 mb-3">{userData.title}</p>
-                )}
-                {userData.location && (
-                  <p className="text-gray-500 flex items-center gap-2 mb-4">
-                    <MapPin className="h-4 w-4" />
-                    {userData.location}
-                  </p>
-                )}
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {userData.industry && (
-                    <Badge variant="secondary">{userData.industry}</Badge>
-                  )}
-                  {userData.domain && (
-                    <Badge variant="outline">{userData.domain}</Badge>
-                  )}
-                </div>
-                
-                {userData.aboutMe && (
-                  <p className="text-gray-700 leading-relaxed">{userData.aboutMe}</p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {userData.whatIOffer && (
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-4">What I Offer</h2>
-              <p className="text-gray-700 leading-relaxed">{userData.whatIOffer}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {userData.lookingFor && (
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Looking For</h2>
-              <p className="text-gray-700 leading-relaxed">{userData.lookingFor}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Display skills if available */}
-        {skills.length > 0 && (
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((skill: any) => (
-                  <Badge key={skill.id} variant="outline">
-                    {skill.name}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Contact section */}
-        <Card>
-          <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Connect</h2>
-            <p className="text-gray-600 mb-4">Interested in connecting? Reach out through the platform!</p>
-            <Button onClick={() => navigate("/")}>
-              Visit Brandentifier
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
 };
 
 export default RandomProfile;
