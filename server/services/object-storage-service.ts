@@ -1,10 +1,26 @@
 import { Storage } from '@google-cloud/storage';
 import { Readable } from 'stream';
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Initialize Google Cloud Storage
+// Initialize Google Cloud Storage with Replit sidecar endpoint (production) or fallback to ADC
 const storage = new Storage({
   projectId: process.env.REPLIT_CLUSTER_PROJECT || 'replit',
-  keyFilename: undefined, // Uses Application Default Credentials (already set in Replit)
+  // Use sidecar auth on Replit, ADC as fallback
+  credentials: process.env.REPLIT_CLUSTER_PROJECT ? {
+    audience: 'replit',
+    subject_token_type: 'access_token',
+    token_url: 'http://127.0.0.1:1106/token',
+    type: 'external_account',
+    credential_source: {
+      url: 'http://127.0.0.1:1106/credential',
+      format: {
+        type: 'json',
+        subject_token_field_name: 'access_token',
+      },
+    },
+    universe_domain: 'googleapis.com',
+  } : undefined,
 });
 
 const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
@@ -31,8 +47,8 @@ export class ObjectStorageService {
   ): Promise<string> {
     try {
       if (!this.bucket) {
-        console.error('[ObjectStorageService] Bucket not initialized - falling back to local storage');
-        return `/uploads/${folder}/${fileName}`;
+        console.warn('[ObjectStorageService] Bucket not initialized - falling back to local storage');
+        return this.fallbackToLocalStorage(fileName, fileBuffer, folder);
       }
 
       // Create a readable stream from buffer
@@ -79,8 +95,35 @@ export class ObjectStorageService {
       console.log(`[ObjectStorageService] Public URL: ${publicUrl}`);
       return publicUrl;
     } catch (error) {
-      console.error('[ObjectStorageService] Error uploading media:', error);
-      throw error;
+      console.error('[ObjectStorageService] GCS upload failed, falling back to local storage:', error);
+      // Gracefully fall back to local storage on error
+      return this.fallbackToLocalStorage(fileName, fileBuffer, folder);
+    }
+  }
+
+  /**
+   * Fallback to local storage when GCS is not available
+   */
+  private fallbackToLocalStorage(
+    fileName: string,
+    fileBuffer: Buffer,
+    folder: string = 'media'
+  ): string {
+    try {
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const filePath = path.join(uploadDir, fileName);
+      fs.writeFileSync(filePath, fileBuffer);
+
+      const relativeUrl = `/uploads/${folder}/${fileName}`;
+      console.log(`[ObjectStorageService] Fallback: Saved to local storage: ${relativeUrl}`);
+      return relativeUrl;
+    } catch (localError) {
+      console.error('[ObjectStorageService] Local fallback also failed:', localError);
+      throw new Error(`Upload failed: ${localError instanceof Error ? localError.message : 'Unknown error'}`);
     }
   }
 
