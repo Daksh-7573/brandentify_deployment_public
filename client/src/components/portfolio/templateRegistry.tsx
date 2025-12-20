@@ -216,13 +216,38 @@ export function buildPortfolioTemplateProps(
   },
   overrides?: Partial<PortfolioTemplateProps>
 ): PortfolioTemplateProps {
-  const { extractAllProfileData, mapToTemplateProps } = require('@/lib/portfolio-engine');
-  
-  const extractedData = extractAllProfileData(userData, collections);
-  const templateProps = mapToTemplateProps(extractedData);
-  
+  // Return template props directly without transformation for now
+  // This ensures portfolios render without the require() error
   return {
-    ...templateProps,
+    userInfo: {
+      id: userData.id,
+      name: userData.name || userData.username,
+      email: userData.email,
+      title: userData.title || null,
+      company: userData.company || null,
+      jobLevel: userData.jobLevel || null,
+      industry: userData.industry || null,
+      domain: userData.domain || null,
+      location: userData.location || null,
+      photoURL: userData.photoURL || null,
+      aboutMe: userData.aboutMe || null,
+      lookingFor: userData.lookingFor || null,
+      whatIOffer: userData.whatIOffer || null,
+      brandName: userData.brandName || null,
+      tagline: userData.tagline || null,
+      visionStatement: userData.visionStatement || null,
+      missionStatement: userData.missionStatement || null,
+      coreValues: userData.coreValues || null,
+      uniqueValueProposition: userData.uniqueValueProposition || null,
+      primaryAudience: userData.primaryAudience || null,
+      secondaryAudience: userData.secondaryAudience || null
+    },
+    userSkills: collections.skills || [],
+    userExperiences: collections.experiences || [],
+    userProjects: collections.projects || [],
+    userEducations: collections.educations || [],
+    userServices: collections.services || [],
+    currentUserId: userData.id,
     ...overrides
   };
 }
