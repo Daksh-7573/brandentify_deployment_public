@@ -202,6 +202,7 @@ export function UnifiedMediaUpload({
       const response = await fetch("/api/pulses/upload-media", {
         method: "POST",
         body: formData,
+        credentials: "include", // Send session cookie
       });
 
       if (!response.ok) {

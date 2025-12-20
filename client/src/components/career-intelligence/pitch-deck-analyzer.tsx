@@ -40,7 +40,8 @@ export default function PitchDeckAnalyzer() {
 
       const response = await fetch('/api/career-tools/upload-pitch-deck', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include', // Send session cookie
       });
 
       if (!response.ok) {

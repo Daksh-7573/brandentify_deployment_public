@@ -2951,14 +2951,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No files uploaded" });
       }
       
-      // Get project ID and other metadata
-      const projectId = req.body.projectId;
-      const imageCount = parseInt(req.body.imageCount) || 0;
+      // Get project ID and other metadata from both req.body and req.fields (multipart support)
+      const projectId = req.body?.projectId || (req as any).fields?.projectId?.[0];
+      const imageCountStr = req.body?.imageCount || (req as any).fields?.imageCount?.[0];
+      const imageCount = parseInt(imageCountStr) || 0;
       
       // Read the thumbnailIndex from request (this is used when user selects an image as thumbnail)
-      const thumbnailIndex = parseInt(req.body.thumbnailIndex) || -1;
-      const featuredImageIndex = parseInt(req.body.featuredImageIndex) || 0;
-      const existingFeaturedImageUrl = req.body.existingFeaturedImageUrl;
+      const thumbnailIndexStr = req.body?.thumbnailIndex || (req as any).fields?.thumbnailIndex?.[0];
+      const thumbnailIndex = parseInt(thumbnailIndexStr) || -1;
+      const featuredImageIndexStr = req.body?.featuredImageIndex || (req as any).fields?.featuredImageIndex?.[0];
+      const featuredImageIndex = parseInt(featuredImageIndexStr) || 0;
+      const existingFeaturedImageUrl = req.body?.existingFeaturedImageUrl || (req as any).fields?.existingFeaturedImageUrl?.[0];
       
       console.log(`[POST /projects/upload-media] Project ID: ${projectId}, Image count: ${imageCount}, Thumbnail index: ${thumbnailIndex}, Featured image index: ${featuredImageIndex}, Existing featured URL: ${existingFeaturedImageUrl || 'none'}`);
       
@@ -4363,10 +4366,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Fallback to form field userId if session not available (for backwards compatibility)
-      // but log a warning - this should be removed once all clients are updated
-      if (!userId && req.body.userId) {
-        userId = parseInt(req.body.userId);
-        console.warn(`[POST /pulses/upload-media] Using form field userId (legacy): ${userId}`);
+      // Express-fileupload stores form fields in req.body when useTempFiles is true
+      // Check both req.body and req.fields for userId from multipart FormData
+      if (!userId) {
+        const userIdFromBody = req.body?.userId;
+        const userIdFromFields = (req as any).fields?.userId;
+        const userIdValue = userIdFromBody || userIdFromFields;
+        
+        if (userIdValue) {
+          const userIdStr = Array.isArray(userIdValue) ? userIdValue[0] : userIdValue;
+          userId = parseInt(userIdStr);
+          console.warn(`[POST /pulses/upload-media] Using form field userId (legacy): ${userId}`);
+        }
       }
       
       if (!userId) {

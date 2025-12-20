@@ -607,6 +607,7 @@ export default function Projects() {
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
             body: mediaFormData,
+            credentials: 'include', // Send session cookie
           });
           
           if (mediaUploadResponse.ok) {
@@ -669,6 +670,7 @@ export default function Projects() {
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
             body: mediaFormData,
+            credentials: 'include', // Send session cookie
           });
           
           if (mediaUploadResponse.ok) {

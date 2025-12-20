@@ -207,6 +207,7 @@ export default function ProjectForm({
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
+            credentials: 'include', // Send session cookie,
             body: mediaFormData,
           });
           
@@ -244,6 +245,7 @@ export default function ProjectForm({
         // First create the project
         response = await apiRequest({
           method: 'POST', 
+            credentials: 'include', // Send session cookie,
           url: '/api/projects', 
           data: newProjectData
         });
@@ -276,6 +278,7 @@ export default function ProjectForm({
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
+            credentials: 'include', // Send session cookie,
             body: mediaFormData,
           });
           

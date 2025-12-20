@@ -266,6 +266,7 @@ export default function ProjectForm({
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
+            credentials: 'include', // Send session cookie,
             body: mediaFormData,
           });
           
@@ -340,6 +341,7 @@ export default function ProjectForm({
           // Use fetch directly for media uploads
           const mediaUploadResponse = await fetch('/api/projects/upload-media', {
             method: 'POST',
+            credentials: 'include', // Send session cookie,
             body: mediaFormData,
           });
           
@@ -377,6 +379,7 @@ export default function ProjectForm({
             try {
               await fetch(`/api/project-collaborators`, {
                 method: 'POST',
+            credentials: 'include', // Send session cookie,
                 headers: {
                   'Content-Type': 'application/json',
                 },
@@ -398,6 +401,7 @@ export default function ProjectForm({
           try {
             await fetch(`/api/project-endorsements`, {
               method: 'POST',
+            credentials: 'include', // Send session cookie,
               headers: {
                 'Content-Type': 'application/json',
               },

@@ -85,7 +85,8 @@ export default function ResumeScorer() {
         
         const response = await fetch('/api/career-tools/upload-resume', {
           method: 'POST',
-          body: formData
+          body: formData,
+          credentials: 'include', // Send session cookie
         });
         
         if (!response.ok) {
