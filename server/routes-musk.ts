@@ -220,13 +220,7 @@ I understand that getting quality feedback on your resume is important. Here are
 To help me understand your needs better, I'd like to ask:
 - 🔍 What specific role or industry are you targeting with your resume?
 - 🎯 Which section of your resume do you feel needs the most improvement?
-- 🛠️ What would success look like for you after improving your resume?
-
-Quick Response Options:
-"What makes a good resume summary?"
-"How can I showcase my skills effectively?"
-"What common resume mistakes should I avoid?"
-"How should I format my work experience section?"`;
+- 🛠️ What would success look like for you after improving your resume?`;
   }
   
   // Check for career advice queries
@@ -249,13 +243,7 @@ As a ${userTitle}, there are several paths you might consider for career growth:
 To better understand your career goals, I'd like to ask:
 - 🔍 What specific aspects of your career are you looking to develop right now?
 - 🎯 What challenges are you currently facing in your professional growth?
-- 🛠️ Where do you see yourself in 3-5 years, and what steps might help you get there?
-
-Quick Response Options:
-"What skills are most in-demand in my industry?"
-"How can I prepare for a job interview?"
-"What should I focus on for career growth?"
-"How can I build my professional network?"`;
+- 🛠️ Where do you see yourself in 3-5 years, and what steps might help you get there?`;
   }
   
   // Default fallback response
@@ -275,13 +263,7 @@ I'm usually able to provide personalized career advice and professional insights
 To help me better understand how I can assist you, I'd like to ask:
 - 🔍 What specific professional goals are you working toward right now?
 - 🎯 What area of your career would you most value guidance on?
-- 🛠️ What would make our conversation most helpful for your current situation?
-
-Quick Response Options:
-"What can Musk help me with?"
-"What features does Brandentifier offer?"
-"How can I improve my profile?"
-"Can I upload my resume for analysis?"`;
+- 🛠️ What would make our conversation most helpful for your current situation?`;
 }
 
 export const handleMuskChat = async (req: Request, res: Response) => {
@@ -639,10 +621,9 @@ async function generateMuskResponse(message: string, context: any) {
     // Use our enhanced intelligence system instead of direct OpenAI call
     let response = await generatePersonalizedResponse(message, muskContext);
     
-    // Ensure we always have quick response options
-    if (!response.includes("Quick Response Options:")) {
-      response += "\n\nQuick Response Options: \"Tell me more about my career options\", \"How can I improve my skills?\", \"What industries are growing?\"";
-    }
+    // REMOVED: Template-based fallback for quick responses
+    // Follow-up questions should ONLY come from AI-generated "Quick Response Options:" in the response
+    // If the AI doesn't include follow-ups, that's fine - the UI will simply not show follow-up buttons
     
     console.log("Musk AI response generated with enhanced intelligence system");
     return response;
