@@ -871,6 +871,13 @@ export interface IStorage {
   // Brand Goals operations
   getBrandGoalsByUserId(userId: number): Promise<BrandGoal | undefined>;
   saveBrandGoals(userId: number, selectedGoals: string[], customGoals?: string[]): Promise<BrandGoal>;
+  
+  // User Unlocks operations (Referral System)
+  createUserUnlock(unlock: InsertUserUnlock): Promise<UserUnlock>;
+  getUserUnlocks(userId: number): Promise<UserUnlock[]>;
+  getUserUnlocksByType(userId: number, unlockType: 'portfolio' | 'quantum_card'): Promise<UserUnlock[]>;
+  checkUserHasUnlock(userId: number, unlockType: 'portfolio' | 'quantum_card', unlockId: string): Promise<boolean>;
+  deleteUserUnlock(id: number): Promise<boolean>;
 }
 
 // In-memory implementation of the storage
@@ -14558,6 +14565,94 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
+
+  // User Unlocks operations (Referral System)
+  async createUserUnlock(unlock: InsertUserUnlock): Promise<UserUnlock> {
+    try {
+      console.log(`[db.createUserUnlock] Creating unlock for user ${unlock.userId}: ${unlock.unlockType} - ${unlock.unlockId}`);
+      
+      const result = await pool.query(
+        `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source, referral_conversion_id)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING *`,
+        [unlock.userId, unlock.unlockType, unlock.unlockId, unlock.unlockSource || 'referral', unlock.referralConversionId || null]
+      );
+      
+      console.log(`[db.createUserUnlock] Created unlock with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserUnlock] Error creating unlock:`, error);
+      throw error;
+    }
+  }
+
+  async getUserUnlocks(userId: number): Promise<UserUnlock[]> {
+    try {
+      console.log(`[db.getUserUnlocks] Fetching unlocks for user ${userId}`);
+      
+      const result = await pool.query(
+        `SELECT * FROM user_unlocks WHERE user_id = $1 ORDER BY unlocked_at DESC`,
+        [userId]
+      );
+      
+      console.log(`[db.getUserUnlocks] Found ${result.rows.length} unlocks for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserUnlocks] Error fetching unlocks:`, error);
+      return [];
+    }
+  }
+
+  async getUserUnlocksByType(userId: number, unlockType: 'portfolio' | 'quantum_card'): Promise<UserUnlock[]> {
+    try {
+      console.log(`[db.getUserUnlocksByType] Fetching ${unlockType} unlocks for user ${userId}`);
+      
+      const result = await pool.query(
+        `SELECT * FROM user_unlocks WHERE user_id = $1 AND unlock_type = $2 ORDER BY unlocked_at DESC`,
+        [userId, unlockType]
+      );
+      
+      console.log(`[db.getUserUnlocksByType] Found ${result.rows.length} ${unlockType} unlocks for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserUnlocksByType] Error fetching unlocks:`, error);
+      return [];
+    }
+  }
+
+  async checkUserHasUnlock(userId: number, unlockType: 'portfolio' | 'quantum_card', unlockId: string): Promise<boolean> {
+    try {
+      const result = await pool.query(
+        `SELECT id FROM user_unlocks WHERE user_id = $1 AND unlock_type = $2 AND unlock_id = $3`,
+        [userId, unlockType, unlockId]
+      );
+      
+      const hasUnlock = result.rows.length > 0;
+      console.log(`[db.checkUserHasUnlock] User ${userId} ${hasUnlock ? 'has' : 'does not have'} unlock for ${unlockId}`);
+      return hasUnlock;
+    } catch (error) {
+      console.error(`[db.checkUserHasUnlock] Error checking unlock:`, error);
+      return false;
+    }
+  }
+
+  async deleteUserUnlock(id: number): Promise<boolean> {
+    try {
+      console.log(`[db.deleteUserUnlock] Deleting unlock with ID ${id}`);
+      
+      const result = await pool.query(
+        `DELETE FROM user_unlocks WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      const success = result.rowCount > 0;
+      console.log(`[db.deleteUserUnlock] Unlock deletion ${success ? 'successful' : 'failed'} for ID ${id}`);
+      return success;
+    } catch (error) {
+      console.error(`[db.deleteUserUnlock] Error deleting unlock:`, error);
+      return false;
+    }
+  }
 }
 
 // Create a properly typed storage instance
@@ -14945,5 +15040,12 @@ export const storage = {
   checkSocialQuestAccess: (userId: number) => dbStorage.checkSocialQuestAccess(userId),
   checkHashtagSuggestionLimit: (userId: number) => dbStorage.checkHashtagSuggestionLimit(userId),
   checkReactionQuota: (userId: number) => dbStorage.checkReactionQuota(userId),
-  incrementReactionUsage: (userId: number) => dbStorage.incrementReactionUsage(userId)
+  incrementReactionUsage: (userId: number) => dbStorage.incrementReactionUsage(userId),
+  
+  // User Unlocks methods (Referral System)
+  createUserUnlock: (unlock: InsertUserUnlock) => dbStorage.createUserUnlock(unlock),
+  getUserUnlocks: (userId: number) => dbStorage.getUserUnlocks(userId),
+  getUserUnlocksByType: (userId: number, unlockType: 'portfolio' | 'quantum_card') => dbStorage.getUserUnlocksByType(userId, unlockType),
+  checkUserHasUnlock: (userId: number, unlockType: 'portfolio' | 'quantum_card', unlockId: string) => dbStorage.checkUserHasUnlock(userId, unlockType, unlockId),
+  deleteUserUnlock: (id: number) => dbStorage.deleteUserUnlock(id)
 } as IStorage;
