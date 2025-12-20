@@ -9357,7 +9357,7 @@ export class DatabaseStorage implements IStorage {
     
     // Auto-create a default portfolio for the new user
     try {
-      const defaultLayout = insertUser.selectedPortfolioLayout || 'professional';
+      const defaultLayout = insertUser.selectedPortfolioLayout || 'corporate-executive';
       await this.createPortfolio({
         userId: user.id,
         layout: defaultLayout as any,

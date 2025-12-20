@@ -73,8 +73,8 @@ export const PREMIUM_TIER_QUOTAS: FeatureQuotas = {
   adFree: true,
 };
 
-// All templates are now accessible
-export const FREE_PORTFOLIO_TEMPLATES: string[] = [];
+// Free users get 2 templates: Corporate Executive and Scholar
+export const FREE_PORTFOLIO_TEMPLATES: string[] = ["corporate-executive", "scholar"];
 export const FREE_VISITING_CARD_TEMPLATES: string[] = [];
 
 export function getFeatureQuotas(subscriptionTier?: string): FeatureQuotas {
