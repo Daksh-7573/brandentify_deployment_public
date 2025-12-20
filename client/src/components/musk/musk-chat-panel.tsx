@@ -128,8 +128,8 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         console.error("Failed to load question engagement history:", error);
       }
       
-      // Generate AI-powered contextual suggestions
-      generateContextualSuggestions();
+      // Note: Contextual suggestions disabled - only use AI-extracted follow-ups
+      // generateContextualSuggestions();
     }
   }, [userData]);
   
