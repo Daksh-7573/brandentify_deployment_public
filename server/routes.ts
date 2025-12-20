@@ -245,6 +245,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const apiRouter = express.Router();
   
+  // Ensure JSON body parsing for all API routes
+  apiRouter.use(express.json({ limit: '50mb' }));
+  apiRouter.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
     // Add Cache-Control headers to prevent API caching
@@ -1010,6 +1014,163 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("[FORCE UPDATE] Error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // ========================================
+  // USER FOLLOW/UNFOLLOW ENDPOINTS
+  // ========================================
+  
+  // POST /api/users/:userId/follow - Follow a user
+  // Accepts followerId from body OR query parameter (fallback)
+  apiRouter.post("/users/:userId/follow", async (req: Request, res: Response) => {
+    try {
+      const followeeId = parseInt(req.params.userId);
+      console.log('[POST /users/:userId/follow] req.body:', JSON.stringify(req.body));
+      console.log('[POST /users/:userId/follow] req.query:', JSON.stringify(req.query));
+      console.log('[POST /users/:userId/follow] followeeId:', followeeId);
+      
+      // Try to get followerId from body first, then fallback to query param
+      // Due to body parsing issues in some middleware configurations, also check query params
+      const followerId = req.body?.followerId ?? req.query?.followerId;
+      console.log('[POST /users/:userId/follow] Resolved followerId:', followerId);
+      
+      if (isNaN(followeeId) || followerId === undefined || followerId === null) {
+        console.log('[POST /users/:userId/follow] Validation failed - followerId:', followerId, 'followeeId:', followeeId);
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid user ID or missing follower ID' 
+        });
+      }
+
+      const followerIdNum = parseInt(followerId);
+      
+      // Validate followerIdNum is a valid integer
+      if (isNaN(followerIdNum) || !Number.isInteger(followerIdNum) || followerIdNum <= 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid follower ID - must be a positive integer' 
+        });
+      }
+      
+      // Prevent self-follow
+      if (followerIdNum === followeeId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'You cannot follow yourself' 
+        });
+      }
+
+      console.log(`[POST /users/:userId/follow] User ${followerIdNum} following user ${followeeId}`);
+
+      // Create follow relationship
+      const follow = await storage.followUser(followerIdNum, followeeId);
+      
+      if (!follow) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Already following this user' 
+        });
+      }
+
+      // Create notification for the followee
+      try {
+        const follower = await storage.getUser(followerIdNum);
+        const followerName = follower?.name || 'Someone';
+        
+        await createNewFollowerNotification(followeeId, followerName);
+        console.log(`[POST /users/:userId/follow] ✅ New follower notification created for user ${followeeId}`);
+      } catch (notifError) {
+        console.error('[POST /users/:userId/follow] Failed to create notification:', notifError);
+        // Don't fail the follow operation if notification fails
+      }
+
+      res.status(201).json({ 
+        success: true, 
+        message: 'Successfully followed user',
+        follow
+      });
+    } catch (error) {
+      console.error('[POST /users/:userId/follow] Error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error following user' 
+      });
+    }
+  });
+
+  // DELETE /api/users/:userId/follow - Unfollow a user
+  apiRouter.delete("/users/:userId/follow", async (req: Request, res: Response) => {
+    try {
+      const followeeId = parseInt(req.params.userId);
+      const { followerId } = req.body;
+      
+      if (isNaN(followeeId) || !followerId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid user ID or missing follower ID' 
+        });
+      }
+
+      const followerIdNum = parseInt(followerId);
+      
+      // Validate followerIdNum is a valid integer
+      if (isNaN(followerIdNum) || !Number.isInteger(followerIdNum) || followerIdNum <= 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid follower ID - must be a positive integer' 
+        });
+      }
+      
+      console.log(`[DELETE /users/:userId/follow] User ${followerIdNum} unfollowing user ${followeeId}`);
+
+      const success = await storage.unfollowUser(followerIdNum, followeeId);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: 'Successfully unfollowed user' 
+        });
+      } else {
+        res.status(404).json({ 
+          success: false, 
+          message: 'Follow relationship not found' 
+        });
+      }
+    } catch (error) {
+      console.error('[DELETE /users/:userId/follow] Error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error unfollowing user' 
+      });
+    }
+  });
+
+  // GET /api/users/:userId/is-following/:targetUserId - Check if user is following another user
+  apiRouter.get("/users/:userId/is-following/:targetUserId", async (req: Request, res: Response) => {
+    try {
+      const followerId = parseInt(req.params.userId);
+      const followeeId = parseInt(req.params.targetUserId);
+      
+      if (isNaN(followerId) || isNaN(followeeId)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid user IDs' 
+        });
+      }
+
+      const isFollowing = await storage.isUserFollowing(followerId, followeeId);
+      
+      res.json({ 
+        success: true, 
+        isFollowing 
+      });
+    } catch (error) {
+      console.error('[GET /users/:userId/is-following/:targetUserId] Error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error checking follow status' 
+      });
     }
   });
   
