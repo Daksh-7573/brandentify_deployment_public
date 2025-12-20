@@ -38,7 +38,7 @@ Preferred communication style: Simple, everyday language.
 - **Content Moderation**: Democratic flagging and AI-powered auto-deletion.
 - **Deployment**: Docker, Kubernetes, Nginx, Redis, PostgreSQL (Neon serverless).
 - **Subscription System**: Free and Premium tiers with feature access control and Razorpay integration.
-- **Referral System**: Share-to-unlock mechanism with server-side processing for referral rewards.
+- **Referral System (V2)**: Share-to-unlock mechanism for both portfolios AND quantum cards. Users get 2 free portfolios (Corporate Executive + Scholar) at signup. When they refer others who sign up, they unlock 2-3 additional random portfolios + 1-2 random quantum cards per referral. 20+ portfolios remain locked until unlocked via referrals.
 - **Intelligent Hashtag Generator**: 6-layer system for context-aware, audience-targeted hashtag suggestions.
 - **Trend Intelligence System**: Real-time market trend ingestion and AI-powered dynamic quest narrative generation.
 - **Feed Ranking System**: Time-decay algorithm and AI-powered personalization for the Industry Pulse feed.
@@ -55,7 +55,15 @@ Preferred communication style: Simple, everyday language.
 - **Payment Gateway**: Razorpay
 - **File Processing**: Advanced PDF parsing
 
-## Production Readiness Audit (2024-12-19)
+## Production Readiness Audit (2024-12-20)
+
+### Referral-Based Portfolio & Quantum Card Unlock System - IMPLEMENTED ✅
+- **Free Base**: Corporate Executive + Scholar portfolios always unlocked at signup
+- **Locked Assets**: 20+ portfolios locked by default, unlock via referrals
+- **Referral Rewards**: Each referral conversion grants referrer 2-3 random portfolio unlocks + 1-2 quantum card unlocks
+- **Database**: userUnlocks table tracks all unlocks with userId, unlockType, unlockId, unlockSource, referralConversionId
+- **Frontend**: Portfolio builder and quantum card selector check unlock status and show "Share to unlock" for locked items
+- **Security**: Locked state defaults while fetching to prevent access bypass
 
 ### Database Health - VERIFIED ✅
 - 119 tables operational with core data intact
@@ -63,6 +71,7 @@ Preferred communication style: Simple, everyday language.
 - Quests: 80-130 quests per user, daily generation working
 - Pulses/Feed: 521 pulses in system
 - Messages, Notifications, Skills, Projects, Educations all functional
+- User Unlocks: Tracking portfolio and quantum card unlocks per referral
 
 ### API Endpoints Verified ✅
 - User data APIs (GET /api/users/:id, /api/users/:userId/skills, /experiences, etc.)
@@ -72,6 +81,8 @@ Preferred communication style: Simple, everyday language.
 - Notification APIs
 - Feed/Pulse APIs (521 pulses loaded)
 - Media serving (/uploads/media/ returning 200 status)
+- Referral Status API (GET /api/referral/status - returns unlock status)
+- Referral Link Generation (POST /api/referral/generate-link)
 
 ### Authentication System ✅
 - Google OAuth URL generation working
@@ -84,11 +95,15 @@ Preferred communication style: Simple, everyday language.
 - Timezone-aware scheduling working
 
 ### XP and Subscription Systems ✅
-- XP balance tracking (695 XP for test user)
+- XP balance tracking
 - Free/Premium tier enforcement working
 
 ### Fixes Applied
-- Added GET /api/portfolios endpoint for API consistency
+- Fixed media upload (files now save with proper content from file.tempFilePath)
+- Added Express static file serving for /uploads/ directory
+- Changed default portfolio to "corporate-executive" for all new users
+- Implemented referral-based unlock system for portfolios and quantum cards
+- Storage methods for managing user unlocks (createUserUnlock, getUserUnlocks, checkUserHasUnlock)
 
 ### Known TypeScript Warnings (non-blocking)
 - 57 TypeScript warnings in routes.ts (session typing, error types)
