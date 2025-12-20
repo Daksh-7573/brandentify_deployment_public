@@ -77,14 +77,20 @@ const RandomProfile = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Extract random link from URL
-  const [match, params] = useRoute("/r/:randomLink");
-  const randomLink = params?.randomLink;
+  // Extract random link from URL - handle both /r/:randomLink and /profile/:userId
+  const [matchRandom, paramsRandom] = useRoute("/r/:randomLink");
+  const [matchProfile, paramsProfile] = useRoute("/profile/:userId");
+  
+  const randomLink = paramsRandom?.randomLink;
+  const userId = paramsProfile?.userId;
+  
+  // Determine which endpoint to use - if userId is provided, fetch directly; otherwise use random link
+  const useDirectUserId = !!userId && !randomLink;
 
-  // Fetch user data by random link
+  // Fetch user data by random link OR direct user ID
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData>({
-    queryKey: [`/api/r/${randomLink}`],
-    enabled: !!randomLink,
+    queryKey: useDirectUserId ? [`/api/users/${userId}`] : [`/api/r/${randomLink}`],
+    enabled: useDirectUserId ? !!userId : !!randomLink,
     retry: 2,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -124,7 +130,7 @@ const RandomProfile = () => {
   });
 
   // Handle loading state
-  if (!randomLink) {
+  if (!randomLink && !userId) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />

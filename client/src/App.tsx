@@ -336,6 +336,13 @@ function Router() {
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
           )} />
+          <Route path="/profile/:userId">
+            {(params) => (
+              <Suspense fallback={<MuskLoadingShell />}>
+                <RandomProfile />
+              </Suspense>
+            )}
+          </Route>
           <Route path="/career-tools" component={() => (
             <ProtectedRoute path="/career-tools" component={CareerTools} />
           )} />
