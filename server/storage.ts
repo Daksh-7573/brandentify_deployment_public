@@ -13674,6 +13674,7 @@ export class DatabaseStorage implements IStorage {
 
   async getUserSocialQuestsWithDefinitions(userId: number): Promise<any[]> {
     try {
+      // Updated query to include V2 fields from generated_social_quests and quest_definitions
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
@@ -13681,16 +13682,38 @@ export class DatabaseStorage implements IStorage {
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          uq.recommended_post_time as "recommendedPostTime",
+          uq.recommendation_source as "recommendationSource",
+          uq.confidence_score as "confidenceScore",
+          uq.suggested_hashtags as "suggestedHashtags",
+          COALESCE(gsq.personalized_title, qd.title) as title,
+          COALESCE(gsq.personalized_description, qd.description) as description,
+          qd.type, qd.target_count as "targetCount",
           qd.target_action as "targetAction", qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+          qd.badge_reward as "badgeReward", qd.platform,
+          COALESCE(gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+          COALESCE(gsq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          COALESCE(gsq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+          COALESCE(gsq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+          COALESCE(gsq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        LEFT JOIN LATERAL (
+          SELECT * FROM generated_social_quests
+          WHERE user_id = uq.user_id
+            AND quest_definition_id = uq.quest_definition_id
+            AND assigned_date = uq.assigned_date::text
+          ORDER BY id DESC
+          LIMIT 1
+        ) gsq ON true
         WHERE uq.user_id = $1 AND qd.type IN ('social_quest', 'social_post')
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
-      // Add definition object for frontend compatibility
+      // Add definition object for frontend compatibility with V2 fields
       return result.rows.map(row => ({
         ...row,
         definition: {
@@ -13702,7 +13725,15 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          platform: row.platform,
+          muskTip: row.muskTip,
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet,
+          estimatedTimeMinutes: row.estimatedTimeMinutes,
+          difficultyLevel: row.difficultyLevel
         }
       }));
     } catch (error) {
@@ -13713,6 +13744,7 @@ export class DatabaseStorage implements IStorage {
 
   async getUserQuestsWithDefinitions(userId: number): Promise<any[]> {
     try {
+      // Updated query to include V2 fields from generated_career_quests and quest_definitions
       const result = await pool.query(`
         SELECT 
           uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
@@ -13720,16 +13752,34 @@ export class DatabaseStorage implements IStorage {
           uq.completed_at as "completedAt", uq.xp_earned as "xpEarned", 
           uq.badge_earned as "badgeEarned", uq.musk_response as "muskResponse",
           uq.week_number as "weekNumber", uq.year, uq.assigned_date as "assignedDate",
-          qd.title, qd.description, qd.type, qd.target_count as "targetCount",
+          COALESCE(gcq.personalized_title, qd.title) as title,
+          COALESCE(gcq.personalized_description, qd.description) as description,
+          qd.type, qd.target_count as "targetCount",
           qd.target_action as "targetAction", qd.xp_reward as "xpReward",
-          qd.badge_reward as "badgeReward", qd.musk_tip as "muskTip"
+          qd.badge_reward as "badgeReward", qd.platform,
+          COALESCE(gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+          COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
+          qd.quantity_value as "quantityValue",
+          qd.quantity_type as "quantityType",
+          qd.platform_constraints as "platformConstraints",
+          COALESCE(gcq.guidance_snippet, qd.guidance_snippet) as "guidanceSnippet",
+          COALESCE(gcq.estimated_time_minutes, qd.estimated_time_minutes) as "estimatedTimeMinutes",
+          COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        LEFT JOIN LATERAL (
+          SELECT * FROM generated_career_quests
+          WHERE user_id = uq.user_id
+            AND quest_definition_id = uq.quest_definition_id
+            AND assigned_date = uq.assigned_date::text
+          ORDER BY id DESC
+          LIMIT 1
+        ) gcq ON true
         WHERE uq.user_id = $1 AND qd.type NOT IN ('social_quest', 'social_post')
         ORDER BY uq.assigned_at DESC
       `, [userId]);
       
-      // Add definition object for frontend compatibility
+      // Add definition object for frontend compatibility with V2 fields
       return result.rows.map(row => ({
         ...row,
         definition: {
@@ -13741,7 +13791,15 @@ export class DatabaseStorage implements IStorage {
           targetAction: row.targetAction,
           xpReward: row.xpReward,
           badgeReward: row.badgeReward,
-          muskTip: row.muskTip
+          platform: row.platform,
+          muskTip: row.muskTip,
+          deliverableFormat: row.deliverableFormat,
+          quantityValue: row.quantityValue,
+          quantityType: row.quantityType,
+          platformConstraints: row.platformConstraints,
+          guidanceSnippet: row.guidanceSnippet,
+          estimatedTimeMinutes: row.estimatedTimeMinutes,
+          difficultyLevel: row.difficultyLevel
         }
       }));
     } catch (error) {
