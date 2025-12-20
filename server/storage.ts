@@ -9354,6 +9354,27 @@ export class DatabaseStorage implements IStorage {
     };
     
     const [user] = await db.insert(users).values(userWithRandomLink).returning();
+    
+    // Auto-create a default portfolio for the new user
+    try {
+      const defaultLayout = insertUser.selectedPortfolioLayout || 'professional';
+      await this.createPortfolio({
+        userId: user.id,
+        layout: defaultLayout as any,
+        customTitle: '',
+        customBio: '',
+        customizationOptions: {},
+        isPublished: false,
+        featuredProjects: [],
+        featuredSkills: [],
+        featuredExperiences: []
+      });
+      console.log(`[db.createUser] Created default portfolio for new user ${user.id}`);
+    } catch (error) {
+      console.error(`[db.createUser] Error creating default portfolio for user ${user.id}:`, error);
+      // Don't throw - user was created successfully, portfolio creation failure shouldn't block signup
+    }
+    
     return user;
   }
 
