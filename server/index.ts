@@ -820,6 +820,24 @@ messageQueue.registerHandler(TaskTypes.USER_ACTIVITY_LOG, async (payload) => {
 
 console.log("Phase 3 microservices architecture initialized");
 
+// ✅ Serve static files from public directory (uploads)
+// This must be before routes to properly serve media files
+const uploadsPath = path.join(__dirname, '../public/uploads');
+console.log(`📁 [STATIC FILES] Serving uploads from: ${uploadsPath}`);
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '1d',
+  etag: false,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Content-Type', 'application/octet-stream');
+  }
+}));
+
+console.log('✅ Static file serving configured for uploads');
+
 (async () => {
   const server = await registerRoutes(app);
   
