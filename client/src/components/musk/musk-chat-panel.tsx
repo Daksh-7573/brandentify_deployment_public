@@ -85,19 +85,14 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     </div>
   );
   
-  // Initialize with default welcome message (personalized questions will load)
+  // Initialize with default welcome message (no follow-ups on first message)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       content: "Hi there! I'm Musk, your AI career assistant. I can analyze your resume or pitch deck, and provide personalized professional guidance. How can I help with your career development today?",
       sender: 'musk',
       timestamp: new Date(),
-      quickResponses: [
-        'Analyze my resume',
-        'Review my pitch deck',
-        'Career advice',
-        'Personal branding tips'
-      ]
+      quickResponses: []
     }
   ]);
   
