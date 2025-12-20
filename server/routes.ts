@@ -2986,8 +2986,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const ext = path.extname(file.name);
           const filename = `project_${projectId}_image_${timestamp}${ext}`;
           
-          // Upload to object storage
-          const fileBuffer = file.data as Buffer;
+          // Upload to object storage - read from temp file if using temp files
+          const fileBuffer = (file as any).tempFilePath 
+            ? fs.readFileSync((file as any).tempFilePath) 
+            : (file.data as Buffer);
           const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'projects');
           uploadedMediaUrls.push(cdnUrl);
           uploadedFileNames.push(filename);
@@ -3004,8 +3006,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const ext = path.extname(file.name);
         const filename = `project_${projectId}_video_${timestamp}${ext}`;
         
-        // Upload to object storage
-        const fileBuffer = file.data as Buffer;
+        // Upload to object storage - read from temp file if using temp files
+        const fileBuffer = (file as any).tempFilePath 
+          ? fs.readFileSync((file as any).tempFilePath) 
+          : (file.data as Buffer);
         const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'projects');
         uploadedMediaUrls.push(cdnUrl);
         uploadedFileNames.push(filename);
@@ -4448,8 +4452,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const ext = path.extname(file.name);
           const filename = `media_${userId}_${timestamp}${ext}`;
           
-          // Upload to object storage
-          const fileBuffer = file.data as Buffer;
+          // Upload to object storage - read from temp file if using temp files
+          const fileBuffer = (file as any).tempFilePath 
+            ? fs.readFileSync((file as any).tempFilePath) 
+            : (file.data as Buffer);
           const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'media');
           uploadedMediaUrls.push(cdnUrl);
           uploadedFileNames.push(filename);
@@ -4469,8 +4475,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const ext = path.extname(file.name);
         const filename = `media_${userId}_${timestamp}${ext}`;
         
-        // Upload to object storage
-        const fileBuffer = file.data as Buffer;
+        // Upload to object storage - read from temp file if using temp files
+        const fileBuffer = (file as any).tempFilePath 
+          ? fs.readFileSync((file as any).tempFilePath) 
+          : (file.data as Buffer);
         const cdnUrl = await objectStorageService.uploadMedia(filename, fileBuffer, file.mimetype, 'media');
         uploadedMediaUrls.push(cdnUrl);
         uploadedFileNames.push(filename);
