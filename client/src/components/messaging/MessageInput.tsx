@@ -216,10 +216,10 @@ const MessageInput: React.FC = () => {
             disabled={(!message.trim() && attachments.length === 0) || !currentConversation || isSubmitting || !isConnected}
             className={cn(
               "h-9 w-9 sm:h-10 sm:w-10 rounded-full ml-1 flex items-center justify-center",
-              "bg-black/50 border border-spotify-glass-border",
-              "text-spotify-green hover:text-spotify-bright-green",
+              "bg-spotify-glass-highlight border border-spotify-glass-border",
+              "text-spotify-green hover:border-spotify-green hover:bg-spotify-glass-highlight",
               "transition-all duration-200",
-              "hover:border-spotify-green",
+              "hover:shadow-lg hover:shadow-spotify-green/20",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
             data-testid="send-button"
