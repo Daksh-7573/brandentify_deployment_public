@@ -217,6 +217,8 @@ export async function getMessages(
     
     enhancedMessages.push({
       ...msg,
+      senderName: sender?.name,
+      senderPhotoURL: sender?.photoURL,
       sender: sender ? {
         id: sender.id,
         name: sender.name,
@@ -227,7 +229,8 @@ export async function getMessages(
     });
   }
   
-  return enhancedMessages;
+  // Return in ascending order (oldest first) so latest messages are at the end
+  return enhancedMessages.reverse();
 }
 
 /**
