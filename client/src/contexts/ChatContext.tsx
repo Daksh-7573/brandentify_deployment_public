@@ -69,81 +69,106 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const reconnectTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Set up WebSocket connection
+  // Set up WebSocket connection with automatic reconnection
   useEffect(() => {
     if (!userId) return;
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    const ws = new WebSocket(wsUrl);
+    const connectWebSocket = () => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      const ws = new WebSocket(wsUrl);
 
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      // Authenticate with the server
-      ws.send(JSON.stringify({ 
-        type: 'auth',
-        userId: userId.toString()
-      }));
-    };
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        setReconnectAttempt(0); // Reset attempt counter on successful connection
+        // Authenticate with the server
+        ws.send(JSON.stringify({ 
+          type: 'auth',
+          userId: userId.toString()
+        }));
+      };
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        
-        if (data.type === 'auth_success') {
-          setIsConnected(true);
-          console.log('WebSocket authenticated');
-        } else if (data.type === 'new_message') {
-          // Handle incoming message
-          const newMessage: Message = {
-            id: data.id || crypto.randomUUID(),
-            conversationId: data.conversationId,
-            senderId: data.senderId,
-            content: data.content,
-            sentAt: data.timestamp || new Date().toISOString(),
-            readAt: null,
-            replyToId: null,
-            senderName: data.senderName,
-          };
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
           
-          // Add to messages cache using same key structure as MessageList
-          queryClient.setQueryData<Message[]>(
-            ['/api/messaging/conversations', data.conversationId, 'messages'],
-            (oldMessages) => [...(oldMessages || []), newMessage]
-          );
-          
-          // Invalidate conversations to refresh unread counts
-          queryClient.invalidateQueries({ 
-            predicate: (query) => {
-              const key = query.queryKey[0];
-              return typeof key === 'string' && key.includes('/api/messaging/conversations');
-            }
-          });
+          if (data.type === 'auth_success') {
+            setIsConnected(true);
+            console.log('WebSocket authenticated');
+          } else if (data.type === 'new_message') {
+            // Handle incoming message
+            const newMessage: Message = {
+              id: data.id || crypto.randomUUID(),
+              conversationId: data.conversationId,
+              senderId: data.senderId,
+              content: data.content,
+              sentAt: data.timestamp || new Date().toISOString(),
+              readAt: null,
+              replyToId: null,
+              senderName: data.senderName,
+            };
+            
+            // Add to messages cache using same key structure as MessageList
+            queryClient.setQueryData<Message[]>(
+              ['/api/messaging/conversations', data.conversationId, 'messages'],
+              (oldMessages) => [...(oldMessages || []), newMessage]
+            );
+            
+            // Invalidate conversations to refresh unread counts
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey[0];
+                return typeof key === 'string' && key.includes('/api/messaging/conversations');
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Error handling WebSocket message:', error);
         }
-      } catch (error) {
-        console.error('Error handling WebSocket message:', error);
-      }
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setIsConnected(false);
+        
+        // Attempt to reconnect with exponential backoff
+        const attempt = reconnectAttempt + 1;
+        setReconnectAttempt(attempt);
+        
+        // Cap reconnection attempts at reasonable intervals (max 30 seconds)
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 30000);
+        console.log(`Reconnecting in ${delay}ms (attempt ${attempt})`);
+        
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectWebSocket();
+        }, delay);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setIsConnected(false);
+      };
+
+      setSocket(ws);
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      setIsConnected(false);
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    setSocket(ws);
+    connectWebSocket();
 
     // Clean up on unmount
     return () => {
-      ws.close();
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (socket) {
+        socket.close();
+      }
     };
-  }, [userId, queryClient]);
+  }, [userId, queryClient, reconnectAttempt]);
 
   // Fetch conversations using direct fetch with proper key structure
   const { data: conversationsData, isLoading: loadingConversations } = useQuery({

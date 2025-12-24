@@ -176,14 +176,15 @@ router.post("/conversations/:id/messages", async (req, res) => {
     }
     
     // For direct conversations (not group chats), check connection status
-    // Direct conversations have exactly 2 participants
-    if (conversation.type === 'direct') {
+    // Direct conversations have exactly 2 participants and isGroup = false
+    if (!conversation.isGroup) {
       // Extract the other user ID from the conversation
-      // Direct conversations typically have user IDs in participantIds
-      const participants = conversation.participantIds || [];
+      // Direct conversations have exactly 2 participants
+      const participants = conversation.participants || [];
       
       if (participants.length === 2) {
-        const otherUserId = participants.find((id: number) => id !== senderId);
+        const otherParticipant = participants.find((p: any) => p.userId !== senderId);
+        const otherUserId = otherParticipant?.userId;
         
         if (otherUserId) {
           const areConnected = await storage.areUsersConnected(senderId, otherUserId);
