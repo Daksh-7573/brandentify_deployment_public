@@ -8,8 +8,23 @@ import { Badge } from '@/components/ui/badge';
 import { Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
-const ConversationList: React.FC = () => {
+interface ConversationListProps {
+  filter?: 'recent' | 'unread' | 'all';
+}
+
+const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent' }) => {
   const { conversations, currentConversation, setCurrentConversation, loadingConversations, markConversationAsRead } = useChat();
+
+  const filteredConversations = React.useMemo(() => {
+    if (filter === 'unread') {
+      return conversations.filter(c => (c.unreadCount || 0) > 0);
+    }
+    if (filter === 'all') {
+      return conversations;
+    }
+    // 'recent' - already sorted by date, just return as is
+    return conversations;
+  }, [conversations, filter]);
 
   if (loadingConversations) {
     return (
@@ -36,6 +51,20 @@ const ConversationList: React.FC = () => {
         <h3 className="font-medium text-spotify-white mb-2">No conversations yet</h3>
         <p className="text-sm text-spotify-light-gray mb-2">
           Visit a profile and send a connection request to start messaging
+        </p>
+      </div>
+    );
+  }
+
+  if (filteredConversations.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+        <div className="w-16 h-16 bg-spotify-glass-highlight rounded-full flex items-center justify-center mb-4">
+          <Users className="h-8 w-8 text-spotify-white" />
+        </div>
+        <h3 className="font-medium text-spotify-white mb-2">No {filter} conversations</h3>
+        <p className="text-sm text-spotify-light-gray mb-2">
+          {filter === 'unread' && 'All conversations are read'}
         </p>
       </div>
     );
@@ -72,7 +101,7 @@ const ConversationList: React.FC = () => {
 
   return (
     <div className="space-y-2">
-      {conversations.map((conversation) => {
+      {filteredConversations.map((conversation) => {
         const isActive = currentConversation?.id === conversation.id;
         const lastMessage = conversation.lastMessage;
         const avatarUrl = getParticipantAvatar(conversation);

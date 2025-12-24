@@ -19,9 +19,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 const Chat: React.FC<{ userId: number }> = ({ userId }) => {
-  const { currentConversation, setCurrentConversation, markConversationAsRead } = useChat();
+  const { currentConversation, setCurrentConversation, markConversationAsRead, conversations } = useChat();
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all'>('recent');
 
   // Scroll to bottom effect for new messages
   useEffect(() => {
@@ -64,14 +65,32 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
             </div>
             
             <div className="sidebar-tabs">
-              <div className="sidebar-tab active">Recent</div>
-              <div className="sidebar-tab">Unread</div>
-              <div className="sidebar-tab">All</div>
+              <button 
+                className={`sidebar-tab ${filter === 'recent' ? 'active' : ''}`}
+                onClick={() => setFilter('recent')}
+                data-testid="filter-recent"
+              >
+                Recent
+              </button>
+              <button 
+                className={`sidebar-tab ${filter === 'unread' ? 'active' : ''}`}
+                onClick={() => setFilter('unread')}
+                data-testid="filter-unread"
+              >
+                Unread
+              </button>
+              <button 
+                className={`sidebar-tab ${filter === 'all' ? 'active' : ''}`}
+                onClick={() => setFilter('all')}
+                data-testid="filter-all"
+              >
+                All
+              </button>
             </div>
           </div>
           
           <div className="sidebar-playlists">
-            <ConversationList />
+            <ConversationList filter={filter} />
           </div>
         </div>
       </div>
