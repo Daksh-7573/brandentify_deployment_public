@@ -191,37 +191,33 @@ const MessageList: React.FC = () => {
                       {(() => {
                         // Split message into text and markdown links
                         const parts: { type: 'text' | 'link'; content: string; filename?: string; url?: string }[] = [];
-                        const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-                        let lastIndex = 0;
-                        let match;
-
-                        while ((match = markdownLinkRegex.exec(message.content)) !== null) {
-                          // Add text before the link
-                          if (match.index > lastIndex) {
+                        
+                        // Split by newline first - each line could be text or a link
+                        const lines = message.content.split('\n');
+                        
+                        lines.forEach((line, lineIdx) => {
+                          if (!line.trim()) return;
+                          
+                          // Check if this line is a markdown link: [filename](url)
+                          const linkMatch = line.match(/^\s*\[([^\]]+)\]\(([^)]+)\)\s*$/);
+                          
+                          if (linkMatch) {
+                            parts.push({
+                              type: 'link',
+                              filename: linkMatch[1],
+                              url: linkMatch[2],
+                              content: line
+                            });
+                          } else {
+                            // It's regular text
                             parts.push({
                               type: 'text',
-                              content: message.content.substring(lastIndex, match.index)
+                              content: line
                             });
                           }
-                          // Add the link
-                          parts.push({
-                            type: 'link',
-                            filename: match[1],
-                            url: match[2],
-                            content: match[0]
-                          });
-                          lastIndex = markdownLinkRegex.lastIndex;
-                        }
+                        });
 
-                        // Add remaining text
-                        if (lastIndex < message.content.length) {
-                          parts.push({
-                            type: 'text',
-                            content: message.content.substring(lastIndex)
-                          });
-                        }
-
-                        // If no links found, just display the content
+                        // If no parts, display the content as-is
                         if (parts.length === 0) {
                           return <div>{message.content}</div>;
                         }
