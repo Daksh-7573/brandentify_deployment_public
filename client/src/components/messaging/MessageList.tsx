@@ -26,10 +26,13 @@ const MessageList: React.FC = () => {
 
   const messages: MessageType[] = Array.isArray(messagesData) ? messagesData : [];
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change - scroll the parent container
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    const scrollContainer = document.querySelector('.neo-spotify-content');
+    if (scrollContainer) {
+      setTimeout(() => {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }, 0);
     }
   }, [messages.length]);
 

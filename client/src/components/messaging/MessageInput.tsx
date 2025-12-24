@@ -174,10 +174,11 @@ const MessageInput: React.FC = () => {
             placeholder="Type your message..."
             className={cn(
               "resize-none py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 min-h-[45px] sm:min-h-[50px] max-h-[120px] sm:max-h-[150px] overflow-y-auto w-full",
-              "rounded-full bg-spotify-glass-bg text-spotify-white text-sm sm:text-base",
-              "border border-spotify-glass-border focus:border-spotify-light-gray/30",
-              "focus:outline-none focus:ring-1 focus:ring-spotify-light-gray/30",
-              "placeholder:text-spotify-light-gray/60"
+              "rounded-full bg-white/10 backdrop-filter backdrop-blur-[20px] text-spotify-white text-sm sm:text-base",
+              "border border-white/20 focus:border-spotify-green/50 hover:border-white/30",
+              "focus:outline-none focus:ring-1 focus:ring-spotify-green/30",
+              "placeholder:text-white/40 transition-all duration-200",
+              "shadow-lg"
             )}
             disabled={!currentConversation || !isConnected}
           />
