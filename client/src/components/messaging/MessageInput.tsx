@@ -197,7 +197,13 @@ const MessageInput: React.FC = () => {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white mx-1 transition-colors"
+            className={cn(
+              "w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full mx-1",
+              "bg-spotify-glass-highlight border border-spotify-glass-border",
+              "text-spotify-light-gray hover:text-spotify-white hover:border-spotify-green",
+              "transition-all duration-200",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
             disabled={!currentConversation || !isConnected}
             data-testid="attach-button"
           >
@@ -209,10 +215,12 @@ const MessageInput: React.FC = () => {
             onClick={handleSubmit}
             disabled={(!message.trim() && attachments.length === 0) || !currentConversation || isSubmitting || !isConnected}
             className={cn(
-              "h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-spotify-white text-spotify-black",
-              "flex items-center justify-center ml-1",
-              "hover:scale-105 transition-transform",
-              (!message.trim() && attachments.length === 0) && "opacity-70"
+              "h-9 w-9 sm:h-10 sm:w-10 rounded-full ml-1 flex items-center justify-center",
+              "bg-spotify-glass-highlight border border-spotify-glass-border",
+              "text-spotify-green hover:border-spotify-green hover:bg-spotify-glass-highlight",
+              "transition-all duration-200",
+              "hover:shadow-lg hover:shadow-spotify-green/20",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
             data-testid="send-button"
           >
