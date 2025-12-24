@@ -33,24 +33,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Chat: React.FC<{ userId: number }> = ({ userId }) => {
-  const { currentConversation, setCurrentConversation, createConversation, markConversationAsRead, conversations, loadingConversations } = useChat();
+  const { currentConversation, setCurrentConversation, createConversation, markConversationAsRead } = useChat();
   const [isNewConversationModalOpen, setIsNewConversationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Auto-select most recent conversation if none selected
-  useEffect(() => {
-    if (!currentConversation && conversations && conversations.length > 0 && !loadingConversations) {
-      // Sort by date and select most recent
-      const sorted = [...conversations].sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      if (sorted[0]) {
-        setCurrentConversation(sorted[0]);
-      }
-    }
-  }, [conversations, currentConversation, loadingConversations, setCurrentConversation]);
 
   // Scroll to bottom effect for new messages
   useEffect(() => {
