@@ -160,17 +160,6 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   // Convert data to proper types
   const conversations: Conversation[] = Array.isArray(conversationsData) ? conversationsData : [];
 
-  // Auto-select most recent conversation when they load and none is selected
-  useEffect(() => {
-    if (!currentConversation && conversations.length > 0 && !loadingConversations) {
-      const sorted = [...conversations].sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      if (sorted[0]) {
-        setCurrentConversation(sorted[0]);
-      }
-    }
-  }, [conversations, currentConversation, loadingConversations, setCurrentConversation]);
 
   // Fetch messages for current conversation
   const conversationId = currentConversation?.id;
@@ -294,21 +283,25 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
     markAsReadMutation.mutate(conversationId);
   };
 
-  const contextValue: ChatContextType = {
-    conversations,
-    currentConversation,
-    messages,
-    loadingMessages,
-    loadingConversations,
-    socket,
-    sendMessage,
-    setCurrentConversation,
-    createConversation,
-    markConversationAsRead,
-    isConnected,
-  };
-
-  return <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider 
+      value={{
+        conversations,
+        currentConversation,
+        messages,
+        loadingMessages,
+        loadingConversations,
+        socket,
+        sendMessage,
+        setCurrentConversation,
+        createConversation,
+        markConversationAsRead,
+        isConnected,
+      }}
+    >
+      {children}
+    </ChatContext.Provider>
+  );
 };
 
 export const useChat = () => useContext(ChatContext);
