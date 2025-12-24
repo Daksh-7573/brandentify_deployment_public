@@ -2,7 +2,7 @@ import React, { useState, KeyboardEvent, useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip, Image, Smile, Loader2, X } from 'lucide-react';
+import { Send, Paperclip, Smile, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -235,21 +235,11 @@ const MessageInput: React.FC = () => {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1 transition-colors"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white mx-1 transition-colors"
             disabled={!currentConversation || !isConnected}
             data-testid="attach-button"
           >
             <Paperclip className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1 transition-colors"
-            disabled={!currentConversation || !isConnected}
-            data-testid="image-button"
-          >
-            <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           
           <button 
