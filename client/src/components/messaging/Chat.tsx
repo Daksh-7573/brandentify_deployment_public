@@ -45,8 +45,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
 
   return (
     <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 h-full overflow-hidden">
-      {/* Left sidebar - Hidden on mobile when a conversation is selected, or when viewing Musk chat */}
-      <div className={`${filter === 'musk' ? 'hidden' : currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full md:min-w-[280px] lg:min-w-[300px] overflow-hidden flex flex-col`}>
+      {/* Left sidebar - Hidden on mobile when a conversation is selected */}
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full md:min-w-[280px] lg:min-w-[300px] overflow-hidden flex flex-col`}>
         <div className="neo-spotify-sidebar h-full flex flex-col overflow-hidden">
           <div className="sidebar-top">
             <div className="user-profile">
@@ -112,8 +112,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
         </div>
       </div>
       
-      {/* Main chat area - Full width on mobile when a conversation is selected, or when viewing Musk chat */}
-      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full ${filter === 'musk' ? 'w-full' : 'md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)]'} overflow-hidden flex flex-col`}>
+      {/* Main chat area - Full width on mobile when a conversation is selected */}
+      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)] overflow-hidden flex flex-col`}>
         <div className="neo-spotify-main h-full w-full flex flex-col overflow-hidden">
           {filter === 'musk' ? (
             <>
