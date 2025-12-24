@@ -736,7 +736,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       />
 
       <motion.div
-        className={`${context?.page === 'messages' ? 'relative w-full h-full flex-1' : 'fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50'} flex flex-col overflow-hidden ${context?.page !== 'messages' ? 'rounded-xl' : ''}`}
+        className={`${context?.page === 'messages' ? 'w-full h-full relative' : 'fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 rounded-xl'} flex flex-col overflow-hidden`}
         variants={panelVariants}
         initial="hidden"
         animate="visible"
