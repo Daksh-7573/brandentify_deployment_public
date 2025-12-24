@@ -240,6 +240,9 @@ const MessageList: React.FC = () => {
                               // Check if it's an image
                               const isImage = url.includes('data:image') || 
                                             /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(url);
+                              // Check if it's a PDF
+                              const isPdf = url.includes('data:application/pdf') || 
+                                          /\.pdf$/i.test(url);
 
                               if (isImage) {
                                 return (
@@ -253,17 +256,45 @@ const MessageList: React.FC = () => {
                                 );
                               }
 
+                              // PDF attachment with better styling
+                              if (isPdf) {
+                                return (
+                                  <a
+                                    key={idx}
+                                    href={url}
+                                    download={filename}
+                                    className={cn(
+                                      "inline-flex items-center gap-2 px-3 py-2 rounded-lg",
+                                      "border transition-all",
+                                      isOwnMessage 
+                                        ? "bg-spotify-green/20 border-spotify-green/40 text-spotify-black hover:bg-spotify-green/30" 
+                                        : "bg-spotify-glass-highlight border-spotify-glass-border text-spotify-white hover:border-spotify-green/50"
+                                    )}
+                                    title={filename}
+                                  >
+                                    <span className="text-lg">📄</span>
+                                    <span className="text-xs font-medium truncate max-w-[120px]">{filename}</span>
+                                  </a>
+                                );
+                              }
+
                               // Regular file attachment
                               return (
                                 <a
                                   key={idx}
                                   href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs underline hover:opacity-80 block truncate max-w-[150px]"
+                                  download={filename}
+                                  className={cn(
+                                    "inline-flex items-center gap-2 px-3 py-2 rounded-lg",
+                                    "border transition-all",
+                                    isOwnMessage 
+                                      ? "bg-spotify-green/20 border-spotify-green/40 text-spotify-black hover:bg-spotify-green/30" 
+                                      : "bg-spotify-glass-highlight border-spotify-glass-border text-spotify-white hover:border-spotify-green/50"
+                                  )}
                                   title={filename}
                                 >
-                                  📎 {filename}
+                                  <span className="text-lg">📎</span>
+                                  <span className="text-xs font-medium truncate max-w-[120px]">{filename}</span>
                                 </a>
                               );
                             })}
