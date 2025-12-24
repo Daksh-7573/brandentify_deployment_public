@@ -204,7 +204,9 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   // Mark conversation as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (conversationId: number) => {
-      const response = await apiRequest('PATCH', `/api/messaging/conversations/${conversationId}/read`);
+      const response = await apiRequest('PATCH', `/api/messaging/conversations/${conversationId}/read`, {
+        userId
+      });
       return response.json();
     },
     onSuccess: () => {

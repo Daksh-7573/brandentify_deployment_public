@@ -215,9 +215,13 @@ router.post("/conversations/:id/messages", async (req, res) => {
 router.patch("/conversations/:id/read", async (req, res) => {
   try {
     const conversationId = Number(req.params.id);
-    const userId = Number(req.body.userId);
+    // Try to get userId from body first, then from session as fallback
+    let userId = Number(req.body.userId);
+    if (isNaN(userId)) {
+      userId = (req.session as any)?.userId || req.user?.id;
+    }
     
-    if (isNaN(conversationId) || isNaN(userId)) {
+    if (isNaN(conversationId) || !userId) {
       return res.status(400).json({ error: "Invalid IDs" });
     }
     
