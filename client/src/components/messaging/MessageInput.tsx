@@ -173,17 +173,19 @@ const MessageInput: React.FC = () => {
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
             style={{
-              backgroundColor: 'rgba(40, 40, 40, 0.6)',
-              borderColor: 'rgba(255, 255, 255, 0.15)',
+              backgroundColor: 'rgba(24, 24, 24, 0.8)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              caretColor: '#1DB954'
             }}
             className={cn(
               "resize-none py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 min-h-[45px] sm:min-h-[50px] max-h-[120px] sm:max-h-[150px] overflow-y-auto w-full",
-              "rounded-full backdrop-filter backdrop-blur-[20px] text-white text-sm sm:text-base font-medium",
-              "border transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-spotify-green/50 focus:border-spotify-green",
-              "hover:border-white/30",
-              "placeholder:text-gray-400",
-              "shadow-xl"
+              "rounded-full backdrop-filter backdrop-blur-[20px] text-sm sm:text-base",
+              "border border-solid transition-all duration-200",
+              "focus:outline-none focus:border-spotify-green focus:ring-2 focus:ring-spotify-green/30",
+              "hover:border-white/20",
+              "placeholder:text-gray-500",
+              "shadow-lg"
             )}
             disabled={!currentConversation || !isConnected}
           />
