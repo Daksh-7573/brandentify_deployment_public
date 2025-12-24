@@ -736,16 +736,16 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
       />
 
       <motion.div
-        className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 flex flex-col overflow-hidden rounded-xl"
+        className={`${context?.page === 'messages' ? 'relative w-full h-full flex-1' : 'fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50'} flex flex-col overflow-hidden ${context?.page !== 'messages' ? 'rounded-xl' : ''}`}
         variants={panelVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
         style={{
-          background: 'rgba(18, 18, 18, 0.95)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+          background: context?.page === 'messages' ? 'transparent' : 'rgba(18, 18, 18, 0.95)',
+          backdropFilter: context?.page === 'messages' ? 'none' : 'blur(16px)',
+          border: context?.page === 'messages' ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: context?.page === 'messages' ? 'none' : '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
         {/* Header with message counter */}
