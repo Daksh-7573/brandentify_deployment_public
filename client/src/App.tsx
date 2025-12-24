@@ -178,26 +178,21 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Show loading animation during auth check (inside AppShell for consistent look)
+  // During auth check, show the page content directly - page renders fast enough without loading icon
   if (isLoading) {
     if (noShell) {
-      return fallback ? <>{fallback}</> : <MuskLoadingShell />;
+      return fallback ? <>{fallback}</> : null;
     }
     return (
       <AppShell>
-        {fallback ? <>{fallback}</> : <MuskLoadingShell />}
+        {fallback}
       </AppShell>
     );
   }
   
   // Only block if we've confirmed user is NOT authenticated
-  // Show loading shell during redirect instead of blank page
   if (!isAuthenticated) {
-    return (
-      <AppShell>
-        <MuskLoadingShell />
-      </AppShell>
-    );
+    return null;
   }
   
   // Wrap page in AppShell for consistent header and background
