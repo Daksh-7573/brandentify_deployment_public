@@ -55,6 +55,21 @@ export interface FollowUpTemplate {
   purpose: FollowUpPurpose;
 }
 
+// Follow-up bundle for UI organization (Phase 3)
+export interface FollowUpBundle {
+  category: string;
+  icon?: string;
+  followUps: Array<{ text: string; purpose: FollowUpPurpose; tone: string }>;
+  priority: 'high' | 'medium' | 'low';
+}
+
+// Smart silence detection (Phase 3)
+export interface SilenceSignal {
+  isLowEffortResponse: boolean;
+  responseType: 'acknowledgment' | 'uncertain' | 'engaged' | 'action_ready';
+  suggestedAction?: string;
+}
+
 /**
  * Detect user confidence from message content and patterns (Phase 2: Enhanced)
  */
@@ -604,7 +619,122 @@ function extractKeyword(text: string): string {
 }
 
 /**
- * Main FIL orchestrator: Generate smart follow-ups using all intelligence layers
+ * Detect low-effort responses (Smart Silence Rule - Phase 3)
+ */
+export function detectSilenceSignal(userMessage: string): SilenceSignal {
+  const msg = userMessage.toLowerCase().trim();
+  
+  // Low-effort acknowledgments
+  const acknowledgments = ['okay', 'ok', 'yeah', 'sure', 'got it', 'thanks', 'good', 'cool', 'nice'];
+  const uncertain = ['hmm', 'um', 'uh', 'i guess', 'maybe'];
+  const engaged = ['interesting', 'wow', 'that\'s great', 'tell me more', 'how', 'why', 'what', 'when'];
+  const actionReady = ['let\'s', 'let me', 'i will', 'i\'ll', 'ready', 'let\'s go', 'let\'s do it'];
+  
+  // Check message length and type
+  const isShort = msg.length < 15;
+  const isOneWord = msg.split(' ').length === 1;
+  const hasQuestion = msg.includes('?');
+  
+  let responseType: 'acknowledgment' | 'uncertain' | 'engaged' | 'action_ready' = 'engaged';
+  let isLowEffort = false;
+  let suggestedAction = undefined;
+  
+  // Categorize response
+  if (actionReady.some(a => msg.includes(a))) {
+    responseType = 'action_ready';
+  } else if (engaged.some(e => msg.includes(e)) && hasQuestion) {
+    responseType = 'engaged';
+  } else if (uncertain.some(u => msg.includes(u))) {
+    responseType = 'uncertain';
+  } else if (acknowledgments.some(a => msg === a || msg.includes(a)) && (isShort || isOneWord)) {
+    responseType = 'acknowledgment';
+    isLowEffort = true;
+    suggestedAction = "Want me to take the next step for you?";
+  }
+  
+  return {
+    isLowEffortResponse: isLowEffort,
+    responseType,
+    suggestedAction
+  };
+}
+
+/**
+ * Group follow-ups into semantic bundles for better UI (Phase 3)
+ */
+export function groupFollowUpsIntoBundles(
+  followUps: Array<{ text: string; purpose: FollowUpPurpose; tone: string }>
+): FollowUpBundle[] {
+  const bundles: Record<string, FollowUpBundle> = {
+    'next_best_steps': {
+      category: 'Next Best Steps',
+      icon: '🎯',
+      followUps: [],
+      priority: 'high'
+    },
+    'execution': {
+      category: 'Ready to Execute',
+      icon: '⚡',
+      followUps: [],
+      priority: 'high'
+    },
+    'decision': {
+      category: 'Let\'s Decide',
+      icon: '🤔',
+      followUps: [],
+      priority: 'medium'
+    },
+    'exploration': {
+      category: 'Explore Further',
+      icon: '🔍',
+      followUps: [],
+      priority: 'medium'
+    },
+    'validation': {
+      category: 'Validation & Alignment',
+      icon: '✓',
+      followUps: [],
+      priority: 'low'
+    }
+  };
+  
+  // Distribute follow-ups into bundles based on purpose
+  followUps.forEach(followUp => {
+    switch (followUp.purpose) {
+      case FollowUpPurpose.EXECUTE:
+        bundles.execution.followUps.push(followUp);
+        break;
+      case FollowUpPurpose.DECIDE:
+        bundles.decision.followUps.push(followUp);
+        break;
+      case FollowUpPurpose.EXPAND:
+        bundles.exploration.followUps.push(followUp);
+        break;
+      case FollowUpPurpose.CLARIFY:
+        bundles.decision.followUps.push(followUp);
+        break;
+      case FollowUpPurpose.VALIDATE:
+        bundles.validation.followUps.push(followUp);
+        break;
+      case FollowUpPurpose.REFLECT:
+        bundles.exploration.followUps.push(followUp);
+        break;
+      default:
+        bundles.next_best_steps.followUps.push(followUp);
+    }
+  });
+  
+  // Return only non-empty bundles, sorted by priority
+  return Object.values(bundles)
+    .filter(bundle => bundle.followUps.length > 0)
+    .sort((a, b) => {
+      const priorityMap = { 'high': 1, 'medium': 2, 'low': 3 };
+      return priorityMap[a.priority] - priorityMap[b.priority];
+    });
+}
+
+/**
+ * Main FIL orchestrator: Generate smart follow-ups using all intelligence layers (Phase 3: Bundle Support)
  */
 export function generateFollowUpIntelligence(
   context: MuskContext,
@@ -612,6 +742,8 @@ export function generateFollowUpIntelligence(
   conversationHistory?: Array<{ content: string; sender: 'user' | 'musk' }>
 ): {
   followUps: Array<{ text: string; purpose: FollowUpPurpose; tone: string }>;
+  bundles: FollowUpBundle[];
+  silenceSignal?: SilenceSignal;
   memory: ConversationMemory;
   gaps: ProfileGap[];
   confidence: ConfidenceSignals;
@@ -620,11 +752,39 @@ export function generateFollowUpIntelligence(
   const lastUserMessage = conversationHistory?.[conversationHistory.length - 1]?.content || '';
   const confidence = detectUserConfidence(lastUserMessage);
   
+  // 1.5 (Phase 3) Detect silence signals
+  const silenceSignal = detectSilenceSignal(lastUserMessage);
+  
   // 2. Identify profile gaps
   const gaps = identifyProfileGaps(context, intent);
   
   // 3. Extract conversation memory
   const memory = conversationHistory ? extractConversationMemory(conversationHistory) : { recentIntents: [], topicContinuity: [] };
+  
+  // If smart silence detected, return early with suggested action
+  if (silenceSignal.isLowEffortResponse) {
+    return {
+      followUps: [{
+        text: silenceSignal.suggestedAction || "Want me to take the next step for you?",
+        purpose: FollowUpPurpose.EXECUTE,
+        tone: confidence.recommendedTone
+      }],
+      bundles: [{
+        category: 'Next Action',
+        icon: '→',
+        followUps: [{
+          text: silenceSignal.suggestedAction || "Want me to take the next step for you?",
+          purpose: FollowUpPurpose.EXECUTE,
+          tone: confidence.recommendedTone
+        }],
+        priority: 'high'
+      }],
+      silenceSignal,
+      memory,
+      gaps,
+      confidence
+    };
+  }
   
   // 4. Generate outcome-anchored follow-ups
   let followUps = generateOutcomeAnchoredFollowUps(context, intent);
@@ -651,8 +811,13 @@ export function generateFollowUpIntelligence(
   // 7. Adapt tone based on confidence
   const tonedFollowUps = adaptFollowUpTone(followUps.slice(0, 3), confidence);
   
+  // 8. (Phase 3) Group into semantic bundles for UI
+  const bundles = groupFollowUpsIntoBundles(tonedFollowUps);
+  
   return {
     followUps: tonedFollowUps,
+    bundles,
+    silenceSignal,
     memory,
     gaps,
     confidence
