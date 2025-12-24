@@ -152,8 +152,17 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   }, [userId, queryClient]);
 
   // Fetch conversations
-  const { data: conversationsData, isLoading: loadingConversations } = useQuery({
-    queryKey: [`/api/messaging/conversations?userId=${userId}`],
+  const { data: conversationsData, isLoading: loadingConversations, error: conversationsError } = useQuery({
+    queryKey: ['/api/messaging/conversations', userId],
+    queryFn: async () => {
+      const response = await fetch(`/api/messaging/conversations?userId=${userId}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch conversations: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: !!userId,
   });
 
@@ -175,6 +184,15 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   // Fetch messages for current conversation
   const { data: messagesData, isLoading: loadingMessages } = useQuery({
     queryKey: ['/api/messaging/conversations', currentConversation?.id, 'messages'],
+    queryFn: async () => {
+      const response = await fetch(`/api/messaging/conversations/${currentConversation?.id}/messages`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch messages: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: !!currentConversation,
   });
   
