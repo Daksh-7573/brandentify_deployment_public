@@ -14,7 +14,6 @@ const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachments, setAttachments] = useState<Array<{ name: string; type: string; url: string }>>([]);
-  const [isShowingEmoji, setIsShowingEmoji] = useState(false);
   const { currentConversation, sendMessage, isConnected } = useChat();
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -123,7 +122,6 @@ const MessageInput: React.FC = () => {
 
   const addEmojiToMessage = (emoji: string) => {
     setMessage(prev => prev + emoji);
-    setIsShowingEmoji(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -191,7 +189,7 @@ const MessageInput: React.FC = () => {
           />
           
           <div className="absolute right-3 bottom-2 sm:bottom-3 flex items-center">
-            <Popover open={isShowingEmoji} onOpenChange={setIsShowingEmoji}>
+            <Popover>
               <PopoverTrigger asChild>
                 <button
                   type="button"
