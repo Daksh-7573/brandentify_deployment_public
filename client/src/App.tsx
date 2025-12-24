@@ -191,8 +191,13 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   }
   
   // Only block if we've confirmed user is NOT authenticated
+  // Show loading shell during redirect instead of blank page
   if (!isAuthenticated) {
-    return null;
+    return (
+      <AppShell>
+        <MuskLoadingShell />
+      </AppShell>
+    );
   }
   
   // Wrap page in AppShell for consistent header and background
