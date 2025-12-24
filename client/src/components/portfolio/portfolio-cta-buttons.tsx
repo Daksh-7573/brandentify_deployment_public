@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   UserPlus, MessageCircle, X, 
-  ChevronDown, Send, File, Paperclip, Loader2, Download
+  ChevronDown, Send, File, Paperclip, Loader2, Download, MessageSquare
 } from 'lucide-react';
 import {
   Dialog,
@@ -24,6 +24,7 @@ import { ResumeButton } from "@/components/shared/resume-button";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 export interface PortfolioCtaButtonsProps {
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
@@ -58,6 +59,7 @@ export default function PortfolioCtaButtons({
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
 
   // Mutation for sending connection request
   const connectionMutation = useMutation({
@@ -179,6 +181,29 @@ export default function PortfolioCtaButtons({
   
   const handleConnect = () => {
     setDialogOpen(true);
+  };
+
+  const handleMessage = () => {
+    if (!user || !user.id) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to send messages",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!userId) {
+      toast({
+        title: "Invalid recipient",
+        description: "Cannot send message to this user",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Navigate to chat page
+    navigate('/chat');
   };
   
   const handleDownloadPortfolio = async () => {
@@ -321,9 +346,23 @@ export default function PortfolioCtaButtons({
             ? 'bg-[#6a0dad] hover:bg-[#7b1fa2] text-white border-none flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
             : `${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
           style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
+          data-testid="button-connect"
         >
           <MessageCircle size={16} />
           {variant === 'corporate' ? "Let's Talk" : "Connect"}
+        </Button>
+
+        <Button 
+          variant={variant === 'corporate' ? 'default' : 'outline'}
+          onClick={handleMessage}
+          className={variant === 'corporate' 
+            ? 'bg-[#9c27b0] hover:bg-[#ab47bc] text-white border-none flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
+            : `${styles.connectBtn} flex items-center gap-2 min-w-[120px] justify-center`}
+          style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
+          data-testid="button-message"
+        >
+          <MessageSquare size={16} />
+          Message
         </Button>
         
         {userId && (
