@@ -1,26 +1,44 @@
 import React, { useEffect, useRef } from 'react';
 import { useChat, type Message as MessageType } from '@/contexts/ChatContext';
+import { useQuery } from '@tanstack/react-query';
 import { format, isToday, isYesterday } from 'date-fns';
 import { Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const MessageList: React.FC = () => {
-  const { messages, currentConversation, loadingMessages, markConversationAsRead } = useChat();
+  const { currentConversation, markConversationAsRead } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const conversationId = currentConversation?.id;
+
+  // Fetch messages directly with useQuery - only when we have a valid conversation ID
+  const { data: messagesData, isLoading: loadingMessages } = useQuery<MessageType[]>({
+    queryKey: ['/api/messaging/conversations', conversationId, 'messages'],
+    queryFn: async () => {
+      if (!conversationId) return [];
+      const response = await fetch(`/api/messaging/conversations/${conversationId}/messages`, {
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Failed to fetch messages');
+      return response.json();
+    },
+    enabled: !!conversationId,
+  });
+
+  const messages: MessageType[] = Array.isArray(messagesData) ? messagesData : [];
 
   // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages.length]);
 
   // Mark conversation as read when viewing
   useEffect(() => {
-    if (currentConversation?.id && messages.length > 0) {
-      markConversationAsRead(currentConversation.id);
+    if (conversationId && messages.length > 0) {
+      markConversationAsRead(conversationId);
     }
-  }, [currentConversation?.id, messages, markConversationAsRead]);
+  }, [conversationId, messages.length, markConversationAsRead]);
 
   if (loadingMessages) {
     return (

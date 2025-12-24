@@ -109,13 +109,11 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
             senderName: data.senderName,
           };
           
-          // Add to messages if in current conversation
-          if (currentConversation && currentConversation.id === data.conversationId) {
-            queryClient.setQueryData<Message[]>(
-              [`/api/messaging/conversations/${currentConversation.id}/messages`],
-              (oldMessages) => [...(oldMessages || []), newMessage]
-            );
-          }
+          // Add to messages cache using same key structure as MessageList
+          queryClient.setQueryData<Message[]>(
+            ['/api/messaging/conversations', data.conversationId, 'messages'],
+            (oldMessages) => [...(oldMessages || []), newMessage]
+          );
           
           // Invalidate conversations to refresh unread counts
           queryClient.invalidateQueries({ 
