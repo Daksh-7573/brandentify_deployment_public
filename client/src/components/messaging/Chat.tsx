@@ -42,10 +42,10 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 h-full">
+    <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 h-full overflow-hidden">
       {/* Left sidebar - Hidden on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full md:min-w-[280px] lg:min-w-[300px]`}>
-        <div className="neo-spotify-sidebar h-full">
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full md:min-w-[280px] lg:min-w-[300px] overflow-hidden flex flex-col`}>
+        <div className="neo-spotify-sidebar h-full flex flex-col overflow-hidden">
           <div className="sidebar-top">
             <div className="user-profile">
               <div className="neo-spotify-avatar">
@@ -96,8 +96,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)]`}>
-        <div className="neo-spotify-main h-full w-full">
+      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)] overflow-hidden flex flex-col`}>
+        <div className="neo-spotify-main h-full w-full flex flex-col overflow-hidden">
           {currentConversation ? (
             <>
               {/* Message header */}
@@ -137,7 +137,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               </div>
               
               {/* Message content */}
-              <div className="neo-spotify-content" ref={scrollRef}>
+              <div className="neo-spotify-content flex-1 overflow-y-auto" ref={scrollRef}>
                 <MessageList />
               </div>
               
