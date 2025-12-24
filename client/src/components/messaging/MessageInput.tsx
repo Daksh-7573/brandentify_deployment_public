@@ -146,7 +146,7 @@ const MessageInput: React.FC = () => {
           {attachments.map((attachment, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 bg-spotify-glass-highlight border border-spotify-glass-border rounded-lg px-3 py-2"
+              className="flex items-center gap-2 bg-spotify-glass-highlight backdrop-filter backdrop-blur-[8px] border border-spotify-glass-border rounded-lg px-3 py-2"
             >
               <span className="text-xs text-spotify-light-gray truncate max-w-[150px]">
                 {attachment.name}
@@ -164,7 +164,7 @@ const MessageInput: React.FC = () => {
         </div>
       )}
 
-      <div className="flex items-end gap-1 sm:gap-2 relative">
+      <div className="flex items-end gap-1 sm:gap-2 relative bg-spotify-glass-bg/50 backdrop-filter backdrop-blur-[8px] rounded-2xl border border-spotify-glass-border/60 p-3 sm:p-4">
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -174,10 +174,11 @@ const MessageInput: React.FC = () => {
             placeholder="Type your message..."
             className={cn(
               "resize-none py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 min-h-[45px] sm:min-h-[50px] max-h-[120px] sm:max-h-[150px] overflow-y-auto w-full",
-              "rounded-full bg-spotify-glass-bg text-spotify-white text-sm sm:text-base",
-              "border border-spotify-glass-border focus:border-spotify-light-gray/30",
-              "focus:outline-none focus:ring-1 focus:ring-spotify-light-gray/30",
-              "placeholder:text-spotify-light-gray/60"
+              "rounded-xl bg-spotify-glass-highlight/40 text-spotify-white text-sm sm:text-base",
+              "border border-spotify-glass-border/50 focus:border-spotify-light-gray/50",
+              "focus:outline-none focus:ring-1 focus:ring-spotify-green/30 focus:bg-spotify-glass-highlight/60",
+              "placeholder:text-spotify-light-gray/60 backdrop-filter backdrop-blur-[4px]",
+              "transition-all duration-200"
             )}
             disabled={!currentConversation || !isConnected}
           />
