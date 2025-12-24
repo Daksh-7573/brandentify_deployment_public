@@ -178,7 +178,22 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
       message
     });
     
-    // TODO: Create notification for receiver
+    // Create notification for receiver
+    try {
+      const sender = await storage.getUser(senderId);
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: receiverId,
+        type: 'info' as const,
+        category: 'connection_request' as const,
+        title: 'New Connection Request',
+        message: `${sender?.name || 'Someone'} sent you a connection request`,
+        actionUrl: `/connections`,
+        isRead: false
+      });
+    } catch (notificationError) {
+      console.error('Error sending connection request notification:', notificationError);
+    }
     
     return res.status(201).json(newRequest);
   } catch (error) {
@@ -224,7 +239,22 @@ router.put('/connection-requests/:id/accept', async (req: Request, res: Response
     // Update the connection request
     const updatedRequest = await storage.acceptConnectionRequest(id, conversation.id);
     
-    // TODO: Create notification for sender
+    // Create notification for sender
+    try {
+      const receiver = await storage.getUser(request.receiverId);
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: request.senderId,
+        type: 'success' as const,
+        category: 'connection_request' as const,
+        title: 'Connection Request Accepted',
+        message: `${receiver?.name || 'Someone'} accepted your connection request`,
+        actionUrl: `/messages`,
+        isRead: false
+      });
+    } catch (notificationError) {
+      console.error('Error sending connection accepted notification:', notificationError);
+    }
     
     return res.status(200).json({
       request: updatedRequest,
@@ -265,6 +295,23 @@ router.put('/connection-requests/:id/decline', async (req: Request, res: Respons
     }
 
     const updatedRequest = await storage.declineConnectionRequest(id);
+    
+    // Create notification for sender
+    try {
+      const receiver = await storage.getUser(request.receiverId);
+      const { createNotification } = await import('./services/notification-service');
+      await createNotification({
+        userId: request.senderId,
+        type: 'info' as const,
+        category: 'connection_request' as const,
+        title: 'Connection Request Declined',
+        message: `${receiver?.name || 'Someone'} declined your connection request`,
+        actionUrl: `/connections`,
+        isRead: false
+      });
+    } catch (notificationError) {
+      console.error('Error sending connection declined notification:', notificationError);
+    }
     
     return res.status(200).json(updatedRequest);
   } catch (error) {
