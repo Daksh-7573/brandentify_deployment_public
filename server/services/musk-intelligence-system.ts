@@ -4,6 +4,7 @@
  */
 import { User, WorkExperience, Education, Skill, Project } from "@shared/schema";
 import { localAIService } from "./local-ai-service";
+import { generateFollowUpIntelligence, FollowUpPurpose } from "./musk-followup-intelligence";
 
 export interface MuskContext {
   userId?: string | number;
@@ -17,6 +18,7 @@ export interface MuskContext {
   dataSource?: string;
   page?: string;
   section?: string;
+  conversationHistory?: Array<{ content: string; sender: 'user' | 'musk' }>;
 }
 
 export interface UserMemory {
@@ -75,8 +77,8 @@ export async function generatePersonalizedResponse(
     // Generate response using local AI service
     const aiResponse = await localAIService.generateCareerAdvice(userProfile);
     
-    // Format response with personalization and smart quick responses
-    const finalResponse = formatResponseWithPersonalization(aiResponse, context);
+    // Format response with personalization and smart quick responses (with intent awareness)
+    const finalResponse = formatResponseWithPersonalization(aiResponse, context, intent);
     
     return finalResponse;
   } catch (error) {
@@ -180,7 +182,7 @@ function calculateProfileCompleteness(context: MuskContext): number {
 /**
  * Format response with personalization and smart quick responses
  */
-function formatResponseWithPersonalization(response: string, context: MuskContext): string {
+function formatResponseWithPersonalization(response: string, context: MuskContext, intent: string = 'career_advice'): string {
   let formattedResponse = response;
 
   // Add personalization based on user data
@@ -191,16 +193,22 @@ function formatResponseWithPersonalization(response: string, context: MuskContex
     }
   }
 
-  // Add context-specific formatting
-  if (context.page && !formattedResponse.includes("follow-up")) {
-    formattedResponse += "\n\nFeel free to ask any follow-up questions about your career development!";
-  }
-
-  // Add smart quick response options based on user profile and context
-  const quickResponses = generateSmartQuickResponses(context);
-  
-  if (quickResponses.length > 0) {
-    formattedResponse += `\n\nQuick Response Options: ${quickResponses.map(q => `"${q}"`).join(", ")}`;
+  // Try to use new FIL (Follow-Up Intelligence Layer) for smarter follow-ups
+  try {
+    const filResult = generateFollowUpIntelligence(context, intent, context.conversationHistory);
+    const quickResponses = filResult.followUps.map(fu => fu.text);
+    
+    if (quickResponses.length > 0) {
+      formattedResponse += `\n\nQuick Response Options: ${quickResponses.map(q => `"${q}"`).join(", ")}`;
+    }
+  } catch (error) {
+    // Fallback to original method if FIL fails
+    console.log('FIL error, falling back to standard responses:', error);
+    const quickResponses = generateSmartQuickResponses(context);
+    
+    if (quickResponses.length > 0) {
+      formattedResponse += `\n\nQuick Response Options: ${quickResponses.map(q => `"${q}"`).join(", ")}`;
+    }
   }
   
   return formattedResponse;
