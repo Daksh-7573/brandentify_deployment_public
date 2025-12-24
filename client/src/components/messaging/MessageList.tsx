@@ -185,31 +185,62 @@ const MessageList: React.FC = () => {
                     )}
                   >
                     <div className="break-words whitespace-pre-line space-y-2">
-                      {message.content.split('\n\n').map((paragraph, idx) => {
-                        // Check if paragraph contains markdown links
+                      {(() => {
+                        // Split message into text and markdown links
+                        const parts: { type: 'text' | 'link'; content: string; filename?: string; url?: string }[] = [];
                         const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-                        const hasLinks = markdownLinkRegex.test(paragraph);
-                        markdownLinkRegex.lastIndex = 0;
-                        
-                        if (!hasLinks) {
-                          return <div key={idx}>{paragraph}</div>;
+                        let lastIndex = 0;
+                        let match;
+
+                        while ((match = markdownLinkRegex.exec(message.content)) !== null) {
+                          // Add text before the link
+                          if (match.index > lastIndex) {
+                            parts.push({
+                              type: 'text',
+                              content: message.content.substring(lastIndex, match.index)
+                            });
+                          }
+                          // Add the link
+                          parts.push({
+                            type: 'link',
+                            filename: match[1],
+                            url: match[2],
+                            content: match[0]
+                          });
+                          lastIndex = markdownLinkRegex.lastIndex;
                         }
-                        
-                        // Parse and render markdown links
+
+                        // Add remaining text
+                        if (lastIndex < message.content.length) {
+                          parts.push({
+                            type: 'text',
+                            content: message.content.substring(lastIndex)
+                          });
+                        }
+
+                        // If no links found, just display the content
+                        if (parts.length === 0) {
+                          return <div>{message.content}</div>;
+                        }
+
                         return (
-                          <div key={idx} className="space-y-1">
-                            {paragraph.split(/(\[[^\]]+\]\([^)]+\))/g).map((part, partIdx) => {
-                              const linkMatch = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
-                              if (!linkMatch) {
-                                return part ? <span key={partIdx}>{part}</span> : null;
+                          <div className="space-y-2">
+                            {parts.map((part, idx) => {
+                              if (part.type === 'text') {
+                                return part.content ? (
+                                  <div key={idx} className="whitespace-pre-wrap">{part.content}</div>
+                                ) : null;
                               }
-                              
-                              const [, filename, url] = linkMatch;
-                              const isImage = /\.(jpg|jpeg|png|gif|webp|svg|data:image)/i.test(url);
-                              
+
+                              const url = part.url || '';
+                              const filename = part.filename || 'attachment';
+                              // Check if it's an image
+                              const isImage = url.includes('data:image') || 
+                                            /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(url);
+
                               if (isImage) {
                                 return (
-                                  <div key={partIdx} className="mt-2">
+                                  <div key={idx} className="mt-2">
                                     <img 
                                       src={url} 
                                       alt={filename}
@@ -218,14 +249,15 @@ const MessageList: React.FC = () => {
                                   </div>
                                 );
                               }
-                              
+
+                              // Regular file attachment
                               return (
                                 <a
-                                  key={partIdx}
+                                  key={idx}
                                   href={url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs underline hover:opacity-80 block truncate"
+                                  className="text-xs underline hover:opacity-80 block truncate max-w-[150px]"
                                   title={filename}
                                 >
                                   📎 {filename}
@@ -234,7 +266,7 @@ const MessageList: React.FC = () => {
                             })}
                           </div>
                         );
-                      })}
+                      })()}
                     </div>
                     <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end">
                       {format(new Date(message.sentAt), 'h:mm a')}
