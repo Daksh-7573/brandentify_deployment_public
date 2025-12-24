@@ -24,14 +24,11 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all'>('recent');
 
-  // Scroll to bottom effect for new messages - scroll whenever conversation changes or content updates
+  // Scroll to bottom effect for new messages
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }
-    }, 100);
-    return () => clearTimeout(timer);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [currentConversation?.id]);
   
   // Mark conversation as read when it's opened
