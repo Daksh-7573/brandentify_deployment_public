@@ -116,7 +116,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
           // Add to messages if in current conversation
           if (currentConversation && currentConversation.id === data.conversationId) {
             queryClient.setQueryData<Message[]>(
-              ['/api/messaging/conversations', currentConversation.id, 'messages'],
+              [`/api/messaging/conversations/${currentConversation.id}/messages`],
               (oldMessages) => [...(oldMessages || []), newMessage]
             );
           }
@@ -125,7 +125,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
           queryClient.invalidateQueries({ 
             predicate: (query) => {
               const key = query.queryKey[0];
-              return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+              return typeof key === 'string' && key.includes('/api/messaging/conversations');
             }
           });
         }
@@ -151,18 +151,9 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
     };
   }, [userId, queryClient]);
 
-  // Fetch conversations
-  const { data: conversationsData, isLoading: loadingConversations, error: conversationsError } = useQuery({
-    queryKey: ['/api/messaging/conversations', userId],
-    queryFn: async () => {
-      const response = await fetch(`/api/messaging/conversations?userId=${userId}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch conversations: ${response.statusText}`);
-      }
-      return response.json();
-    },
+  // Fetch conversations using direct fetch with proper key structure
+  const { data: conversationsData, isLoading: loadingConversations } = useQuery({
+    queryKey: [`/api/messaging/conversations?userId=${userId}`],
     enabled: !!userId,
   });
 
@@ -182,18 +173,10 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   }, [conversations, currentConversation, loadingConversations, setCurrentConversation]);
 
   // Fetch messages for current conversation
+  const conversationId = currentConversation?.id;
   const { data: messagesData, isLoading: loadingMessages } = useQuery({
-    queryKey: ['/api/messaging/conversations', currentConversation?.id, 'messages'],
-    queryFn: async () => {
-      const response = await fetch(`/api/messaging/conversations/${currentConversation?.id}/messages`, {
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch messages: ${response.statusText}`);
-      }
-      return response.json();
-    },
-    enabled: !!currentConversation,
+    queryKey: [`/api/messaging/conversations/${conversationId}/messages`],
+    enabled: !!conversationId,
   });
   
   // Convert data to proper types
@@ -213,7 +196,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       queryClient.invalidateQueries({ 
         predicate: (query) => {
           const key = query.queryKey[0];
-          return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+          return typeof key === 'string' && key.includes('/api/messaging/conversations');
         }
       });
     },
@@ -231,7 +214,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
       queryClient.invalidateQueries({ 
         predicate: (query) => {
           const key = query.queryKey[0];
-          return typeof key === 'string' && key.startsWith('/api/messaging/conversations');
+          return typeof key === 'string' && key.includes('/api/messaging/conversations');
         }
       });
     },
