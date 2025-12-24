@@ -603,7 +603,8 @@ async function generateMuskResponse(message: string, context: any) {
       } : undefined,
       dataSource: context.dataSource,
       page: context.page,
-      section: context.section
+      section: context.section,
+      conversationHistory: context.conversationHistory || []
     };
     
     // Log context data for debugging
