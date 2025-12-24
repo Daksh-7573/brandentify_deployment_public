@@ -153,6 +153,13 @@ const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 const JoinReferralPage = lazy(() => import("@/pages/join-referral"));
 // Brand of the Day is now integrated into Nowboard
 
+// Loading placeholder - shows AppShell while page code is loading
+const LoadingPlaceholder = () => (
+  <AppShell>
+    <div className="flex-1" />
+  </AppShell>
+);
+
 // Custom redirect component to handle page redirects
 const PageRedirect = ({ to }: { to: string }) => {
   const [_, navigate] = useLocation();
@@ -228,12 +235,12 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
-        return <Suspense fallback={null}><AuthSuccessPage /></Suspense>;
+        return <Suspense fallback={<LoadingPlaceholder />}><AuthSuccessPage /></Suspense>;
       }} />
       {/* Referral join link handler */}
       <Route path="/join/:code">
         {(params) => (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <JoinReferralPage code={params.code} />
           </Suspense>
         )}
@@ -244,7 +251,7 @@ function Router() {
       <Route path="/auth-test" component={() => {
         const AuthTest = lazy(() => import("@/pages/auth-test"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthTest />
           </Suspense>
         );
@@ -252,7 +259,7 @@ function Router() {
       <Route path="/simple-auth-test" component={() => {
         const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <SimpleAuthTest />
           </Suspense>
         );
@@ -260,7 +267,7 @@ function Router() {
       <Route path="/auth-popup-fix" component={() => {
         const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthPopupFix />
           </Suspense>
         );
@@ -268,7 +275,7 @@ function Router() {
       <Route path="/auth-flow-test" component={() => {
         const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthFlowTest />
           </Suspense>
         );
@@ -276,7 +283,7 @@ function Router() {
       <Route path="/auth-debug-detailed" component={() => {
         const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthDebugDetailed />
           </Suspense>
         );
@@ -284,7 +291,7 @@ function Router() {
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthEnhancedPopup />
           </Suspense>
         );
@@ -292,7 +299,7 @@ function Router() {
       <Route path="/auth-redirect-test" component={() => {
         const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthRedirectTest />
           </Suspense>
         );
@@ -300,7 +307,7 @@ function Router() {
       <Route path="/auth-direct-oauth" component={() => {
         const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthDirectOAuth />
           </Suspense>
         );
@@ -308,7 +315,7 @@ function Router() {
       <Route path="/auth-working-test" component={() => {
         const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthWorkingTest />
           </Suspense>
         );
@@ -337,7 +344,7 @@ function Router() {
           )} />
           <Route path="/profile/:userId">
             {(params) => (
-              <Suspense fallback={null}>
+              <Suspense fallback={<LoadingPlaceholder />}>
                 <RandomProfile />
               </Suspense>
             )}
@@ -382,7 +389,7 @@ function Router() {
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <FixedLoginPage />
           </Suspense>
         );
@@ -390,7 +397,7 @@ function Router() {
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <DevAuthUtilityPage />
           </Suspense>
         );
@@ -410,7 +417,7 @@ function Router() {
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthDebugPage />
           </Suspense>
         );
@@ -418,7 +425,7 @@ function Router() {
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <AuthPopupDebugPage />
           </Suspense>
         );
@@ -438,7 +445,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AICareerPage />
             </Suspense>
           );
@@ -558,7 +565,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminDashboardWithLayout = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminDashboard />
@@ -577,7 +584,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminUsersWithLayout = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminUsers />
@@ -597,7 +604,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContentWithLayout = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminContentNew />
@@ -615,7 +622,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -636,7 +643,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -656,7 +663,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminSettings = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <SettingsPage />
@@ -676,7 +683,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminRoles = () => (
-            <Suspense fallback={null}>
+            <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
                 <AdminLayout>
                   <RolesManagement />
@@ -700,7 +707,7 @@ function Router() {
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <SharedCardPage userId={params.userId} />
           </Suspense>
         )}
@@ -727,7 +734,7 @@ function Router() {
       {/* Random profile link route */}
       <Route path="/r/:randomLink">
         {(params) => (
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingPlaceholder />}>
             <RandomProfile />
           </Suspense>
         )}
@@ -744,7 +751,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={null}>
+        <Suspense fallback={<LoadingPlaceholder />}>
           <Router />
           <GlobalMuskButton />
           {/* DomainHelper removed - Firebase disabled */}
