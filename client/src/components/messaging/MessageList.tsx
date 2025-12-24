@@ -33,13 +33,6 @@ const MessageList: React.FC = () => {
     }
   }, [messages.length]);
 
-  // Mark conversation as read when viewing
-  useEffect(() => {
-    if (conversationId && messages.length > 0) {
-      markConversationAsRead(conversationId);
-    }
-  }, [conversationId, messages.length, markConversationAsRead]);
-
   if (loadingMessages) {
     return (
       <div className="flex-1 flex flex-col p-4 space-y-8">
