@@ -2,13 +2,10 @@ import React, { useState, KeyboardEvent, useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip, Smile, Loader2, X } from 'lucide-react';
+import { Send, Paperclip, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
-
-const COMMON_EMOJIS = ['😀', '😂', '😍', '🤔', '👍', '👎', '🎉', '🔥', '💯', '✨', '🙌', '💪', '😎', '🚀', '❤️', '😢', '😡', '🤗', '👏', '💖'];
 
 const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -120,9 +117,6 @@ const MessageInput: React.FC = () => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
-  const addEmojiToMessage = (emoji: string) => {
-    setMessage(prev => prev + emoji);
-  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -188,35 +182,6 @@ const MessageInput: React.FC = () => {
             disabled={!currentConversation || !isConnected}
           />
           
-          <div className="absolute right-3 bottom-2 sm:bottom-3 flex items-center">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="text-spotify-light-gray hover:text-spotify-white transition-colors"
-                  disabled={!currentConversation || !isConnected}
-                  data-testid="emoji-picker-button"
-                >
-                  <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-2 bg-spotify-glass-bg border border-spotify-glass-border rounded-lg">
-                <div className="grid grid-cols-5 gap-1">
-                  {COMMON_EMOJIS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      onClick={() => addEmojiToMessage(emoji)}
-                      className="p-2 text-lg hover:bg-spotify-glass-highlight rounded transition-colors hover:scale-110"
-                      type="button"
-                      data-testid={`emoji-${emoji}`}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
         </div>
         
         <div className="flex items-center">
