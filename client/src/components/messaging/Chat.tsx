@@ -106,7 +106,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)] overflow-hidden flex flex-col`}>
+      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full overflow-hidden flex flex-col`}>
         <div className="neo-spotify-main h-full w-full flex flex-col overflow-hidden">
           {filter === 'musk' ? (
             <>
