@@ -100,14 +100,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
           </div>
           
           <div className="sidebar-playlists">
-            {filter === 'musk' ? (
-              <div className="p-4 text-center text-spotify-light-gray text-sm">
-                <Sparkles className="w-12 h-12 mx-auto mb-3 text-spotify-green opacity-70" />
-                <p>Chat with Musk in the panel →</p>
-              </div>
-            ) : (
-              <ConversationList filter={filter} />
-            )}
+            <ConversationList filter={filter} onMuskSelect={() => {}} />
           </div>
         </div>
       </div>

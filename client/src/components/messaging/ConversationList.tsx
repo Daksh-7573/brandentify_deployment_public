@@ -5,14 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Users } from 'lucide-react';
+import { Users, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ConversationListProps {
-  filter?: 'recent' | 'unread' | 'all';
+  filter?: 'recent' | 'unread' | 'all' | 'musk';
+  onMuskSelect?: () => void;
 }
 
-const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent' }) => {
+const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent', onMuskSelect }) => {
   const { conversations, currentConversation, setCurrentConversation, loadingConversations, markConversationAsRead } = useChat();
 
   const filteredConversations = React.useMemo(() => {
@@ -101,6 +102,38 @@ const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent' }
 
   return (
     <div className="space-y-2">
+      {/* Show Musk conversation item when musk filter is active */}
+      {filter === 'musk' && (
+        <div
+          className="neo-spotify-playlist p-3 cursor-pointer active"
+          onClick={() => {
+            onMuskSelect?.();
+          }}
+        >
+          <div className="flex items-start gap-3 w-full">
+            <div className="neo-spotify-avatar w-10 h-10 flex-shrink-0">
+              <div className="bg-spotify-green rounded-full w-full h-full flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-spotify-black" />
+              </div>
+            </div>
+            
+            <div className="flex flex-col flex-1 min-w-0">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium truncate text-spotify-white">
+                  Musk AI Assistant
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-xs text-spotify-light-gray italic">
+                  Your Career Coach
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {filteredConversations.map((conversation) => {
         const isActive = currentConversation?.id === conversation.id;
         const lastMessage = conversation.lastMessage;
