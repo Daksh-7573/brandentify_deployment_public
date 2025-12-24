@@ -10,7 +10,6 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 // import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
-import { MuskLoadingShell } from "@/components/ui/musk-loading-shell";
 import { AppShell } from "@/components/layout/app-shell";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
@@ -229,12 +228,12 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
-        return <Suspense fallback={<MuskLoadingShell />}><AuthSuccessPage /></Suspense>;
+        return <Suspense fallback={null}><AuthSuccessPage /></Suspense>;
       }} />
       {/* Referral join link handler */}
       <Route path="/join/:code">
         {(params) => (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <JoinReferralPage code={params.code} />
           </Suspense>
         )}
@@ -245,7 +244,7 @@ function Router() {
       <Route path="/auth-test" component={() => {
         const AuthTest = lazy(() => import("@/pages/auth-test"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthTest />
           </Suspense>
         );
@@ -253,7 +252,7 @@ function Router() {
       <Route path="/simple-auth-test" component={() => {
         const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <SimpleAuthTest />
           </Suspense>
         );
@@ -261,7 +260,7 @@ function Router() {
       <Route path="/auth-popup-fix" component={() => {
         const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthPopupFix />
           </Suspense>
         );
@@ -269,7 +268,7 @@ function Router() {
       <Route path="/auth-flow-test" component={() => {
         const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthFlowTest />
           </Suspense>
         );
@@ -277,7 +276,7 @@ function Router() {
       <Route path="/auth-debug-detailed" component={() => {
         const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthDebugDetailed />
           </Suspense>
         );
@@ -285,7 +284,7 @@ function Router() {
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthEnhancedPopup />
           </Suspense>
         );
@@ -293,7 +292,7 @@ function Router() {
       <Route path="/auth-redirect-test" component={() => {
         const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthRedirectTest />
           </Suspense>
         );
@@ -301,7 +300,7 @@ function Router() {
       <Route path="/auth-direct-oauth" component={() => {
         const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthDirectOAuth />
           </Suspense>
         );
@@ -309,7 +308,7 @@ function Router() {
       <Route path="/auth-working-test" component={() => {
         const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthWorkingTest />
           </Suspense>
         );
@@ -338,7 +337,7 @@ function Router() {
           )} />
           <Route path="/profile/:userId">
             {(params) => (
-              <Suspense fallback={<MuskLoadingShell />}>
+              <Suspense fallback={null}>
                 <RandomProfile />
               </Suspense>
             )}
@@ -383,7 +382,7 @@ function Router() {
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <FixedLoginPage />
           </Suspense>
         );
@@ -391,7 +390,7 @@ function Router() {
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <DevAuthUtilityPage />
           </Suspense>
         );
@@ -411,7 +410,7 @@ function Router() {
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthDebugPage />
           </Suspense>
         );
@@ -419,7 +418,7 @@ function Router() {
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <AuthPopupDebugPage />
           </Suspense>
         );
@@ -439,7 +438,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AICareerPage />
             </Suspense>
           );
@@ -559,7 +558,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminDashboardWithLayout = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminDashboard />
@@ -578,7 +577,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminUsersWithLayout = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminUsers />
@@ -598,7 +597,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContentWithLayout = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminContentNew />
@@ -616,7 +615,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -637,7 +636,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -657,7 +656,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminSettings = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <SettingsPage />
@@ -677,7 +676,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminRoles = () => (
-            <Suspense fallback={<MuskLoadingShell />}>
+            <Suspense fallback={null}>
               <AdminCheck>
                 <AdminLayout>
                   <RolesManagement />
@@ -701,7 +700,7 @@ function Router() {
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <SharedCardPage userId={params.userId} />
           </Suspense>
         )}
@@ -728,7 +727,7 @@ function Router() {
       {/* Random profile link route */}
       <Route path="/r/:randomLink">
         {(params) => (
-          <Suspense fallback={<MuskLoadingShell />}>
+          <Suspense fallback={null}>
             <RandomProfile />
           </Suspense>
         )}
@@ -745,7 +744,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={<MuskLoadingShell />}>
+        <Suspense fallback={null}>
           <Router />
           <GlobalMuskButton />
           {/* DomainHelper removed - Firebase disabled */}
