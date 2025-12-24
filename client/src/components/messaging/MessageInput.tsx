@@ -227,7 +227,7 @@ const MessageInput: React.FC = () => {
             type="file"
             multiple
             onChange={handleFileSelect}
-            style={{ display: 'none' }}
+            style={{ position: 'absolute', width: '0', height: '0', opacity: '0', pointerEvents: 'none' }}
             data-testid="file-input"
             accept="*/*"
           />
