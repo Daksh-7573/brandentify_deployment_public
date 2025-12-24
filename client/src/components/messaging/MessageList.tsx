@@ -226,8 +226,14 @@ const MessageList: React.FC = () => {
                           <div className="space-y-2">
                             {parts.map((part, idx) => {
                               if (part.type === 'text') {
+                                // Check if this text contains raw base64 PDF data (old malformed message)
+                                if (part.content.includes('data:application/pdf;base64,') || 
+                                    (part.content.length > 1000 && part.content.match(/^[A-Za-z0-9+/=]+$/))) {
+                                  // This is likely raw base64 PDF content - don't display it
+                                  return null;
+                                }
                                 return part.content ? (
-                                  <div key={idx} className="whitespace-pre-wrap">{part.content}</div>
+                                  <div key={idx} className="whitespace-pre-wrap text-sm">{part.content}</div>
                                 ) : null;
                               }
 
