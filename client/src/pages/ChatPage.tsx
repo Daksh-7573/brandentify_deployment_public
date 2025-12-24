@@ -60,7 +60,7 @@ const ChatPage: React.FC = () => {
 
   return (
     <div 
-      className="neo-spotify-container responsive-background flex flex-col"
+      className="neo-spotify-container responsive-background flex flex-col h-screen overflow-hidden"
       style={{ 
         backgroundImage: `url(${backgroundImage})`
       }}
@@ -68,12 +68,14 @@ const ChatPage: React.FC = () => {
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <div className="relative z-10 w-full flex flex-col h-screen">
+      <div className="relative z-10 w-full flex flex-col h-full overflow-hidden">
         <Header />
-        <NeoGlassLayout className="mt-1 mx-3 sm:mx-6 flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 max-w-7xl mx-auto w-full flex flex-col overflow-hidden">
-              {/* Page Heading (Now inside the card, without border) */}
-              <div className="p-3 sm:p-4 md:p-6">
+        
+        <div className="flex-1 w-full overflow-hidden">
+          <div className="mt-1 mx-3 sm:mx-6 h-full flex flex-col">
+            <div className="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 flex-1 flex flex-col overflow-hidden">
+              {/* Page Heading */}
+              <div className="pb-3 sm:pb-4 md:pb-6">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-spotify-white mb-1 md:mb-2">Messages</h1>
                 <p className="text-xs sm:text-sm md:text-base text-spotify-light-gray">Connect with professionals in your network</p>
               </div>
@@ -84,7 +86,8 @@ const ChatPage: React.FC = () => {
                 </div>
               </ChatProvider>
             </div>
-          </NeoGlassLayout>
+          </div>
+        </div>
       </div>
     </div>
   );
