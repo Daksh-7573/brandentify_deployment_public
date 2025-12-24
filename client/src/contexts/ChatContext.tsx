@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useContext, ReactNode, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -35,8 +35,6 @@ export type Conversation = {
 type ChatContextType = {
   conversations: Conversation[];
   currentConversation: Conversation | null;
-  messages: Message[];
-  loadingMessages: boolean;
   loadingConversations: boolean;
   socket: WebSocket | null;
   sendMessage: (content: string, conversationId: number, recipientId?: number) => void;
@@ -50,8 +48,6 @@ type ChatContextType = {
 const ChatContext = createContext<ChatContextType>({
   conversations: [],
   currentConversation: null,
-  messages: [],
-  loadingMessages: false,
   loadingConversations: false,
   socket: null,
   sendMessage: () => {},
@@ -159,17 +155,6 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
 
   // Convert data to proper types
   const conversations: Conversation[] = Array.isArray(conversationsData) ? conversationsData : [];
-
-
-  // Fetch messages for current conversation
-  const conversationId = currentConversation?.id;
-  const { data: messagesData, isLoading: loadingMessages } = useQuery({
-    queryKey: [`/api/messaging/conversations/${conversationId}/messages`],
-    enabled: !!conversationId,
-  });
-  
-  // Convert data to proper types
-  const messages: Message[] = Array.isArray(messagesData) ? messagesData : [];
 
   // Create conversation mutation
   const createConversationMutation = useMutation({
@@ -283,22 +268,20 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
     markAsReadMutation.mutate(conversationId);
   };
 
+  const contextValue = useMemo(() => ({
+    conversations,
+    currentConversation,
+    loadingConversations,
+    socket,
+    sendMessage,
+    setCurrentConversation,
+    createConversation,
+    markConversationAsRead,
+    isConnected,
+  }), [conversations, currentConversation, loadingConversations, socket, sendMessage, setCurrentConversation, createConversation, markConversationAsRead, isConnected]);
+
   return (
-    <ChatContext.Provider 
-      value={{
-        conversations,
-        currentConversation,
-        messages,
-        loadingMessages,
-        loadingConversations,
-        socket,
-        sendMessage,
-        setCurrentConversation,
-        createConversation,
-        markConversationAsRead,
-        isConnected,
-      }}
-    >
+    <ChatContext.Provider value={contextValue}>
       {children}
     </ChatContext.Provider>
   );
