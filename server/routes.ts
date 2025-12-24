@@ -2776,11 +2776,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Project routes
-  apiRouter.get("/users/:userId/projects", cacheMiddleware(60), async (req: Request, res: Response) => {
+  // Project routes - OPTIMIZED: Uses lightweight summary by default, excludes large base64 data
+  apiRouter.get("/users/:userId/projects", cacheMiddleware(30), async (req: Request, res: Response) => {
     try {
       const userIdParam = req.params.userId;
-      console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}`);
+      const includeFullMedia = req.query.full === 'true';
+      console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}, full: ${includeFullMedia}`);
       
       let userId: number;
       
@@ -2789,7 +2790,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (isFirebaseUid) {
         console.log(`[GET /users/:userId/projects] userId appears to be a Firebase UID: ${userIdParam}`);
-        // Try to find user with this username (Firebase UID)
         const user = await storage.getUserByUsername(userIdParam);
         
         if (!user) {
@@ -2800,7 +2800,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[GET /users/:userId/projects] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
         userId = user.id;
       } else {
-        // Try to parse as numeric ID
         userId = parseInt(userIdParam);
         
         if (isNaN(userId)) {
@@ -2811,8 +2810,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[GET /users/:userId/projects] Using numeric userId: ${userId}`);
       }
       
-      const projects = await storage.getProjectsByUserId(userId);
-      console.log(`[GET /users/:userId/projects] Found ${projects.length} projects for userId: ${userId}`);
+      // Use lightweight summary by default, full data only when explicitly requested
+      const projects = includeFullMedia 
+        ? await storage.getProjectsByUserId(userId)
+        : await storage.getProjectsSummaryByUserId(userId);
+      console.log(`[GET /users/:userId/projects] Found ${projects.length} projects for userId: ${userId} (lightweight: ${!includeFullMedia})`);
       res.json(projects);
     } catch (error) {
       console.error("Error fetching projects:", error);

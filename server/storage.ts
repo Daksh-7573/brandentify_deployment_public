@@ -450,6 +450,7 @@ export interface IStorage {
   
   // Project operations
   getProjectsByUserId(userId: number): Promise<Project[]>;
+  getProjectsSummaryByUserId(userId: number): Promise<Partial<Project>[]>;
   getProjectById(id: number): Promise<Project | undefined>;
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: number, project: Partial<Project>): Promise<Project | undefined>;
@@ -2454,6 +2455,25 @@ export class MemStorage implements IStorage {
   async getProjectsByUserId(userId: number): Promise<Project[]> {
     return Array.from(this.projects.values())
       .filter(project => project.userId === userId);
+  }
+
+  async getProjectsSummaryByUserId(userId: number): Promise<Partial<Project>[]> {
+    // For in-memory storage, we filter out large fields to match DB behavior
+    return Array.from(this.projects.values())
+      .filter(project => project.userId === userId)
+      .map(project => ({
+        id: project.id,
+        userId: project.userId,
+        title: project.title,
+        description: project.description,
+        startDate: project.startDate,
+        projectUrl: project.projectUrl,
+        category: project.category,
+        industry: project.industry,
+        thumbnailUrl: project.thumbnailUrl,
+        thumbnailFile: (project.thumbnailFile && project.thumbnailFile.length > 500) ? null : project.thumbnailFile,
+        mediaUrls: (project.mediaUrls && JSON.stringify(project.mediaUrls).length > 1000) ? [] : project.mediaUrls
+      }));
   }
   
   async getProjectById(id: number): Promise<Project | undefined> {
@@ -10573,6 +10593,44 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
+  async getProjectsSummaryByUserId(userId: number): Promise<Partial<Project>[]> {
+    console.log(`[db.getProjectsSummaryByUserId] Looking for project summaries with userId: ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, description, start_date as "startDate",
+                project_url as "projectUrl", category, industry,
+                CASE 
+                  WHEN LENGTH(thumbnail_url) > 500 OR thumbnail_url LIKE 'data:%' THEN NULL 
+                  ELSE thumbnail_url 
+                END as "thumbnailUrl",
+                CASE 
+                  WHEN LENGTH(thumbnail_file) > 500 THEN NULL 
+                  ELSE thumbnail_file 
+                END as "thumbnailFile",
+                CASE 
+                  WHEN LENGTH(media_urls::text) > 1000 THEN '[]'::jsonb
+                  ELSE COALESCE(media_urls, '[]'::jsonb)
+                END as "mediaUrls"
+          FROM projects
+          WHERE user_id = $1
+          ORDER BY created_at DESC
+        `, [userId]);
+        
+        console.log(`[db.getProjectsSummaryByUserId] Found ${result.rows.length} project summaries for user ${userId}`);
+        
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getProjectsSummaryByUserId] Error fetching project summaries for user ${userId}:`, error);
+        throw error;
+      }
+    }, 3, 800).catch(error => {
+      console.error(`[db.getProjectsSummaryByUserId] All retries failed for user ${userId}:`, error);
+      return [];
+    });
+  }
+
   async getProjectById(id: number): Promise<Project | undefined> {
     const [project] = await db.select().from(projects).where(eq(projects.id, id));
     return project || undefined;
@@ -14721,6 +14779,7 @@ export const storage = {
   
   // Project methods
   getProjectsByUserId: (userId: number) => dbStorage.getProjectsByUserId(userId),
+  getProjectsSummaryByUserId: (userId: number) => dbStorage.getProjectsSummaryByUserId(userId),
   getProjectById: (id: number) => dbStorage.getProjectById(id),
   createProject: (project: InsertProject) => dbStorage.createProject(project),
   updateProject: (id: number, project: Partial<Project>) => dbStorage.updateProject(id, project),

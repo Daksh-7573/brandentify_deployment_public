@@ -3,6 +3,30 @@ import { referralService } from "./services/referral-service";
 import jwt from "jsonwebtoken";
 import { pool } from "./db";
 
+// In-memory cache for referral status to reduce database load
+const referralStatusCache = new Map<number, { data: any; timestamp: number }>();
+const CACHE_TTL_MS = 30000; // 30 seconds cache TTL
+
+function getCachedReferralStatus(userId: number): any | null {
+  const cached = referralStatusCache.get(userId);
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+    console.log(`[Cache] Referral status HIT for user ${userId}`);
+    return cached.data;
+  }
+  return null;
+}
+
+function setCachedReferralStatus(userId: number, data: any): void {
+  referralStatusCache.set(userId, { data, timestamp: Date.now() });
+  console.log(`[Cache] Referral status cached for user ${userId}`);
+}
+
+// Invalidate cache when referral-related changes happen
+export function invalidateReferralCache(userId: number): void {
+  referralStatusCache.delete(userId);
+  console.log(`[Cache] Referral status invalidated for user ${userId}`);
+}
+
 /**
  * Authentication middleware for referral routes
  * Extracts and validates user session
@@ -122,6 +146,12 @@ export function registerReferralRoutes(app: Express) {
       const userId = (req as any).userId;
       console.log(`[API] GET /api/referral/status - userId: ${userId}`);
       
+      // Check cache first for fast response
+      const cachedResponse = getCachedReferralStatus(userId);
+      if (cachedResponse) {
+        return res.json(cachedResponse);
+      }
+      
       // Fetch user's subscription tier from database
       const userResult = await pool.query(
         `SELECT subscription_tier FROM users WHERE id = $1`,
@@ -147,7 +177,9 @@ export function registerReferralRoutes(app: Express) {
         ...status
       };
       
-      console.log(`[API] Sending referral status response:`, response);
+      // Cache the response for future requests
+      setCachedReferralStatus(userId, response);
+      
       res.json(response);
     } catch (error: any) {
       console.error('[API] Get referral status error:', error);
