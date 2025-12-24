@@ -418,14 +418,36 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
 }
 
 /**
- * Template enrichment system for dynamic follow-ups
+ * Template enrichment system for dynamic follow-ups with error handling
  */
-function fillFollowUpTemplate(template: string, slots: Record<string, string>): string {
-  let filled = template;
-  Object.entries(slots).forEach(([key, value]) => {
-    filled = filled.replace(`{{${key}}}`, value);
-  });
-  return filled;
+function fillFollowUpTemplate(template: string, slots: Record<string, string>): string | null {
+  try {
+    let filled = template;
+    const originalFilled = filled;
+    
+    // Fill all slots
+    Object.entries(slots).forEach(([key, value]) => {
+      filled = filled.replace(`{{${key}}}`, value);
+    });
+    
+    // Check if there are unfilled slots remaining (indicates missing slot data)
+    const unfilledSlots = filled.match(/\{\{(\w+)\}\}/g);
+    if (unfilledSlots && unfilledSlots.length > 0) {
+      console.warn(`[FIL] Unfilled slots detected: ${unfilledSlots.join(', ')} - Falling back to original`);
+      return null; // Signal failure to fall back
+    }
+    
+    // Check if result is reasonable length (catch extremely short results)
+    if (filled.trim().length < 10) {
+      console.warn(`[FIL] Template result too short: "${filled}" - Falling back to original`);
+      return null;
+    }
+    
+    return filled;
+  } catch (error) {
+    console.error(`[FIL] Template filling error: ${error instanceof Error ? error.message : String(error)}`);
+    return null; // Signal failure to fall back
+  }
 }
 
 /**
@@ -569,7 +591,14 @@ function getFollowUpTemplates(confidence: ConfidenceSignals): Record<FollowUpPur
 }
 
 /**
- * Apply confidence-adaptive tone to follow-ups (Phase 2: Template-based enrichment)
+ * Apply confidence-adaptive tone to follow-ups with fallback (Phase 2: Template-based enrichment)
+ * 
+ * FALLBACK MECHANISM:
+ * If template filling fails, returns original text unchanged
+ * Failures can occur:
+ * - Unfilled slots: template has {{slot}} that doesn't exist in slots dict
+ * - Short result: template + slots produce unreasonably short output
+ * - Exception: regex/string operations fail
  */
 export function adaptFollowUpTone(
   followUps: Array<{ text: string; purpose: FollowUpPurpose }>,
@@ -579,12 +608,13 @@ export function adaptFollowUpTone(
   
   return followUps.map(followUp => {
     let adaptedText = followUp.text;
+    let usedTemplate = false;
     
     // Try to enrich with template if available
     const purposeTemplates = templates[followUp.purpose];
     if (purposeTemplates && purposeTemplates.length > 0) {
-      // Use first template as fallback
       const selectedTemplate = purposeTemplates[0];
+      
       // Extract slots from original text and fill template
       const slots: Record<string, string> = {
         topic: extractKeyword(followUp.text) || 'your goals',
@@ -594,7 +624,19 @@ export function adaptFollowUpTone(
         option2: 'option B',
         timeframe: '30 days'
       };
-      adaptedText = fillFollowUpTemplate(selectedTemplate, slots);
+      
+      // Attempt template filling with error handling
+      const filledTemplate = fillFollowUpTemplate(selectedTemplate, slots);
+      
+      if (filledTemplate !== null) {
+        // Template succeeded - use it
+        adaptedText = filledTemplate;
+        usedTemplate = true;
+      } else {
+        // Template failed - fallback to original text
+        console.log(`[FIL] Falling back to original text for ${followUp.purpose}: "${followUp.text}"`);
+        adaptedText = followUp.text;
+      }
     }
     
     return {
