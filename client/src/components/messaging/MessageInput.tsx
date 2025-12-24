@@ -2,16 +2,23 @@ import React, { useState, KeyboardEvent, useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip, Image, Smile, Loader2 } from 'lucide-react';
+import { Send, Paperclip, Image, Smile, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useToast } from '@/hooks/use-toast';
+
+const COMMON_EMOJIS = ['😀', '😂', '😍', '🤔', '👍', '👎', '🎉', '🔥', '💯', '✨', '🙌', '💪', '😎', '🚀', '❤️', '😢', '😡', '🤗', '👏', '💖'];
 
 const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attachments, setAttachments] = useState<Array<{ name: string; type: string; url: string }>>([]);
+  const [isShowingEmoji, setIsShowingEmoji] = useState(false);
   const { currentConversation, sendMessage, isConnected } = useChat();
+  const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus the textarea when the conversation changes
   useEffect(() => {
@@ -21,7 +28,7 @@ const MessageInput: React.FC = () => {
   }, [currentConversation?.id]);
 
   const handleSubmit = async () => {
-    if (!message.trim() || !currentConversation || isSubmitting) return;
+    if ((!message.trim() && attachments.length === 0) || !currentConversation || isSubmitting) return;
     
     setIsSubmitting(true);
     
@@ -32,12 +39,22 @@ const MessageInput: React.FC = () => {
         p => p.userId.toString() !== userId
       );
       
+      // Format message with attachments
+      let finalMessage = message.trim();
+      if (attachments.length > 0) {
+        const attachmentLinks = attachments
+          .map(att => `[${att.name}](${att.url})`)
+          .join(' ');
+        finalMessage = finalMessage ? `${finalMessage}\n${attachmentLinks}` : attachmentLinks;
+      }
+      
       await sendMessage(
-        message.trim(), 
+        finalMessage, 
         currentConversation.id,
         recipient?.userId
       );
       setMessage('');
+      setAttachments([]);
       
       // Auto-resize the textarea back to default size
       if (textareaRef.current) {
@@ -45,9 +62,68 @@ const MessageInput: React.FC = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        if (file.size > maxSize) {
+          toast({
+            title: "File too large",
+            description: "Files must be smaller than 10MB",
+            variant: "destructive"
+          });
+          continue;
+        }
+
+        // Convert to data URL for now
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const url = e.target?.result as string;
+          setAttachments(prev => [...prev, {
+            name: file.name,
+            type: file.type,
+            url
+          }]);
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error('Error processing file:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process file",
+        variant: "destructive"
+      });
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const addEmojiToMessage = (emoji: string) => {
+    setMessage(prev => prev + emoji);
+    setIsShowingEmoji(false);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -72,6 +148,30 @@ const MessageInput: React.FC = () => {
 
   return (
     <div className="w-full relative">
+      {/* Attachments Preview */}
+      {attachments.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {attachments.map((attachment, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 bg-spotify-glass-highlight border border-spotify-glass-border rounded-lg px-3 py-2"
+            >
+              <span className="text-xs text-spotify-light-gray truncate max-w-[150px]">
+                {attachment.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeAttachment(index)}
+                className="text-spotify-light-gray hover:text-spotify-white transition-colors"
+                data-testid="remove-attachment"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-end gap-1 sm:gap-2 relative">
         <div className="flex-1 relative">
           <textarea
@@ -91,29 +191,63 @@ const MessageInput: React.FC = () => {
           />
           
           <div className="absolute right-3 bottom-2 sm:bottom-3 flex items-center">
-            <button
-              type="button"
-              className="text-spotify-light-gray hover:text-spotify-white transition-colors"
-              disabled={!currentConversation || !isConnected}
-            >
-              <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
-            </button>
+            <Popover open={isShowingEmoji} onOpenChange={setIsShowingEmoji}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="text-spotify-light-gray hover:text-spotify-white transition-colors"
+                  disabled={!currentConversation || !isConnected}
+                  data-testid="emoji-picker-button"
+                >
+                  <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[280px] p-2 bg-spotify-glass-bg border border-spotify-glass-border rounded-lg">
+                <div className="grid grid-cols-5 gap-1">
+                  {COMMON_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => addEmojiToMessage(emoji)}
+                      className="p-2 text-lg hover:bg-spotify-glass-highlight rounded transition-colors hover:scale-110"
+                      type="button"
+                      data-testid={`emoji-${emoji}`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
         
         <div className="flex items-center">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
+            data-testid="file-input"
+            accept="*/*"
+          />
+          
           <button
             type="button"
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1 transition-colors"
             disabled={!currentConversation || !isConnected}
+            data-testid="attach-button"
           >
             <Paperclip className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           
           <button
             type="button"
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            onClick={() => fileInputRef.current?.click()}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1 transition-colors"
             disabled={!currentConversation || !isConnected}
+            data-testid="image-button"
           >
             <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
@@ -121,13 +255,14 @@ const MessageInput: React.FC = () => {
           <button 
             type="submit"
             onClick={handleSubmit}
-            disabled={!message.trim() || !currentConversation || isSubmitting || !isConnected}
+            disabled={(!message.trim() && attachments.length === 0) || !currentConversation || isSubmitting || !isConnected}
             className={cn(
               "h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-spotify-white text-spotify-black",
               "flex items-center justify-center ml-1",
               "hover:scale-105 transition-transform",
-              !message.trim() && "opacity-70"
+              (!message.trim() && attachments.length === 0) && "opacity-70"
             )}
+            data-testid="send-button"
           >
             {isSubmitting ? (
               <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
