@@ -3,6 +3,7 @@ import { useChat } from '@/contexts/ChatContext';
 import ConversationList from './ConversationList';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import MuskChatPanel from '@/components/musk/musk-chat-panel';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
@@ -13,7 +14,8 @@ import {
   Music2,
   Home,
   LibraryBig,
-  ChevronLeft
+  ChevronLeft,
+  Sparkles
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +24,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const { currentConversation, setCurrentConversation, markConversationAsRead, conversations } = useChat();
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all'>('recent');
+  const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all' | 'musk'>('recent');
 
   // Scroll to bottom effect for new messages
   useEffect(() => {
@@ -86,19 +88,68 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               >
                 All
               </button>
+              <button 
+                className={`sidebar-tab ${filter === 'musk' ? 'active' : ''}`}
+                onClick={() => setFilter('musk')}
+                data-testid="filter-musk"
+              >
+                <Sparkles className="w-3 h-3 inline mr-1" />
+                Musk
+              </button>
             </div>
           </div>
           
           <div className="sidebar-playlists">
-            <ConversationList filter={filter} />
+            {filter === 'musk' ? (
+              <div className="p-4 text-center text-spotify-light-gray text-sm">
+                <Sparkles className="w-12 h-12 mx-auto mb-3 text-spotify-green opacity-70" />
+                <p>Chat with Musk in the panel →</p>
+              </div>
+            ) : (
+              <ConversationList filter={filter} />
+            )}
           </div>
         </div>
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)] overflow-hidden flex flex-col`}>
+      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)] overflow-hidden flex flex-col`}>
         <div className="neo-spotify-main h-full w-full flex flex-col overflow-hidden">
-          {currentConversation ? (
+          {filter === 'musk' ? (
+            <>
+              {/* Musk Chat Header */}
+              <div className="neo-spotify-header">
+                <div className="flex items-center">
+                  <div className="header-nav mr-2 sm:mr-4 md:hidden">
+                    <button 
+                      className="header-nav-btn p-2"
+                      onClick={() => setFilter('recent')}
+                    >
+                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </button>
+                  </div>
+                  
+                  <div className="neo-spotify-avatar">
+                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-spotify-green" />
+                  </div>
+                  
+                  <div className="ml-2 sm:ml-3">
+                    <div className="font-semibold text-sm sm:text-base">
+                      Musk AI Assistant
+                    </div>
+                    <div className="text-xs sm:text-sm text-spotify-light-gray">
+                      Your Career Coach
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Musk Chat Content */}
+              <div className="neo-spotify-content flex-1 overflow-hidden">
+                <MuskChatPanel context={{ userId, page: 'messages' }} />
+              </div>
+            </>
+          ) : currentConversation ? (
             <>
               {/* Message header */}
               <div className="neo-spotify-header">
