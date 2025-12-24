@@ -5,14 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
-type ConversationListProps = {
-  onNewConversation: () => void;
-};
-
-const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }) => {
+const ConversationList: React.FC = () => {
   const { conversations, currentConversation, setCurrentConversation, loadingConversations, markConversationAsRead } = useChat();
 
   if (loadingConversations) {
@@ -38,16 +34,9 @@ const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }
           <Users className="h-8 w-8 text-spotify-white" />
         </div>
         <h3 className="font-medium text-spotify-white mb-2">No conversations yet</h3>
-        <p className="text-sm text-spotify-light-gray mb-6">
-          Start connecting with professionals
+        <p className="text-sm text-spotify-light-gray mb-2">
+          Visit a profile and send a connection request to start messaging
         </p>
-        <button 
-          onClick={onNewConversation}
-          className="px-4 py-2 rounded-full bg-spotify-green text-spotify-black hover:scale-105 transition-transform text-sm font-medium flex items-center"
-        >
-          <PlusCircle className="mr-2 h-4 w-4" />
-          New Connection
-        </button>
       </div>
     );
   }
