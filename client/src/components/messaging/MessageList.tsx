@@ -184,8 +184,57 @@ const MessageList: React.FC = () => {
                       !isOwnMessage && !nextIsSameSender ? "rounded-bl-md" : ""
                     )}
                   >
-                    <div className="break-words whitespace-pre-line">
-                      {message.content}
+                    <div className="break-words whitespace-pre-line space-y-2">
+                      {message.content.split('\n\n').map((paragraph, idx) => {
+                        // Check if paragraph contains markdown links
+                        const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                        const hasLinks = markdownLinkRegex.test(paragraph);
+                        markdownLinkRegex.lastIndex = 0;
+                        
+                        if (!hasLinks) {
+                          return <div key={idx}>{paragraph}</div>;
+                        }
+                        
+                        // Parse and render markdown links
+                        return (
+                          <div key={idx} className="space-y-1">
+                            {paragraph.split(/(\[[^\]]+\]\([^)]+\))/g).map((part, partIdx) => {
+                              const linkMatch = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
+                              if (!linkMatch) {
+                                return part ? <span key={partIdx}>{part}</span> : null;
+                              }
+                              
+                              const [, filename, url] = linkMatch;
+                              const isImage = /\.(jpg|jpeg|png|gif|webp|svg|data:image)/i.test(url);
+                              
+                              if (isImage) {
+                                return (
+                                  <div key={partIdx} className="mt-2">
+                                    <img 
+                                      src={url} 
+                                      alt={filename}
+                                      className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
+                                    />
+                                  </div>
+                                );
+                              }
+                              
+                              return (
+                                <a
+                                  key={partIdx}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs underline hover:opacity-80 block truncate"
+                                  title={filename}
+                                >
+                                  📎 {filename}
+                                </a>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
                     </div>
                     <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end">
                       {format(new Date(message.sentAt), 'h:mm a')}
