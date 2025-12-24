@@ -748,47 +748,49 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           boxShadow: context?.page === 'messages' ? 'none' : '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
-        {/* Header with message counter */}
-        <div 
-          className="flex items-center justify-between p-4"
-          style={{
-            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-            background: 'rgba(255, 255, 255, 0.1)'
-          }}
-        >
-          <div className="flex items-center gap-3 flex-1">
-            <div 
-              className="h-10 w-10 rounded-full flex items-center justify-center relative overflow-hidden"
-              style={{
-                background: 'transparent',
-                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
-              }}
-            >
-              <img 
-                src="/Contact Candour_1761062906599.gif"
-                alt="Musk AI" 
-                className="h-full w-full object-cover rounded-full"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg text-white">Musk</h3>
-              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>AI Career Assistant</p>
-            </div>
-            <div className="text-xs px-2 py-1 rounded-full bg-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)]">
-              {messages.length} messages
-            </div>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onClose}
-            className="h-8 w-8 rounded-full text-white hover:bg-white/10 border-0"
+        {/* Header with message counter - Hidden when used in messages page (Chat component provides header) */}
+        {context?.page !== 'messages' && (
+          <div 
+            className="flex items-center justify-between p-4"
+            style={{
+              borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.1)'
+            }}
           >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+            <div className="flex items-center gap-3 flex-1">
+              <div 
+                className="h-10 w-10 rounded-full flex items-center justify-center relative overflow-hidden"
+                style={{
+                  background: 'transparent',
+                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+                }}
+              >
+                <img 
+                  src="/Contact Candour_1761062906599.gif"
+                  alt="Musk AI" 
+                  className="h-full w-full object-cover rounded-full"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg text-white">Musk</h3>
+                <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>AI Career Assistant</p>
+              </div>
+              <div className="text-xs px-2 py-1 rounded-full bg-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)]">
+                {messages.length} messages
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose}
+              className="h-8 w-8 rounded-full text-white hover:bg-white/10 border-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto" role="log" aria-live="polite" aria-label="Chat messages">
