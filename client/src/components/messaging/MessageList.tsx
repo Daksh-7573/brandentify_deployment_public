@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useChat, type Message as MessageType } from '@/contexts/ChatContext';
 import { useQuery } from '@tanstack/react-query';
 import { format, isToday, isYesterday } from 'date-fns';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { clientEncryption } from '@/lib/encryption';
 
 const MessageList: React.FC = () => {
   const { currentConversation, markConversationAsRead } = useChat();
@@ -24,7 +25,24 @@ const MessageList: React.FC = () => {
     enabled: !!conversationId,
   });
 
-  const messages: MessageType[] = Array.isArray(messagesData) ? messagesData : [];
+  // Decrypt messages that are encrypted
+  const messages: MessageType[] = useMemo(() => {
+    if (!Array.isArray(messagesData)) return [];
+    
+    const publicKey = clientEncryption.getPublicKey();
+    
+    return messagesData.map(msg => {
+      if (msg.isEncrypted && !msg.decryptedContent && publicKey) {
+        const decrypted = clientEncryption.decryptMessageContent(
+          msg.content, 
+          true, 
+          publicKey
+        );
+        return { ...msg, decryptedContent: decrypted };
+      }
+      return msg;
+    });
+  }, [messagesData]);
 
   // Scroll to bottom when messages change - scroll the parent container
   useEffect(() => {
@@ -189,11 +207,14 @@ const MessageList: React.FC = () => {
                   >
                     <div className="break-words whitespace-pre-line space-y-2">
                       {(() => {
+                        // Use decrypted content if available, otherwise fall back to raw content
+                        const displayContent = message.decryptedContent || message.content;
+                        
                         // Split message into text and markdown links
                         const parts: { type: 'text' | 'link'; content: string; filename?: string; url?: string }[] = [];
                         
                         // Split by newline first - each line could be text or a link
-                        const lines = message.content.split('\n');
+                        const lines = displayContent.split('\n');
                         
                         lines.forEach((line, lineIdx) => {
                           if (!line.trim()) return;
@@ -219,7 +240,7 @@ const MessageList: React.FC = () => {
 
                         // If no parts, display the content as-is
                         if (parts.length === 0) {
-                          return <div>{message.content}</div>;
+                          return <div>{displayContent}</div>;
                         }
 
                         return (
@@ -304,7 +325,12 @@ const MessageList: React.FC = () => {
                         );
                       })()}
                     </div>
-                    <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end">
+                    <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end gap-1">
+                      {message.isEncrypted && (
+                        <span title="End-to-end encrypted">
+                          <Lock className="h-2.5 w-2.5 inline-block" />
+                        </span>
+                      )}
                       {format(new Date(message.sentAt), 'h:mm a')}
                       {isOwnMessage && (
                         <span className="ml-1">

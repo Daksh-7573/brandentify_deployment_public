@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useContext, ReactNode, useMe
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useEncryption } from '@/hooks/use-encryption';
 
 // Types
 export type Message = {
@@ -14,6 +15,8 @@ export type Message = {
   replyToId: string | null;
   senderName?: string;
   senderPhotoURL?: string;
+  isEncrypted?: boolean;
+  decryptedContent?: string;
 };
 
 export type Conversation = {
@@ -29,6 +32,8 @@ export type Conversation = {
     userPhotoURL?: string;
   }>;
   unreadCount?: number;
+  isMuskConversation?: boolean;
+  isEncryptionEnabled?: boolean;
 };
 
 // Context type
@@ -73,6 +78,8 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const reconnectTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  
+  const { encryptForRecipients, decryptMessage, isReady: encryptionReady } = useEncryption(userId);
 
   // Set up WebSocket connection with automatic reconnection
   useEffect(() => {
@@ -101,7 +108,15 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
             setIsConnected(true);
             console.log('WebSocket authenticated');
           } else if (data.type === 'new_message') {
-            // Handle incoming message
+            // Handle incoming message with E2E decryption
+            let displayContent = data.content;
+            const isEncrypted = data.isEncrypted || false;
+            
+            // Decrypt if message is encrypted
+            if (isEncrypted && encryptionReady) {
+              displayContent = decryptMessage(data.content, true);
+            }
+            
             const newMessage: Message = {
               id: data.id || crypto.randomUUID(),
               conversationId: data.conversationId,
@@ -111,6 +126,8 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
               readAt: null,
               replyToId: null,
               senderName: data.senderName,
+              isEncrypted,
+              decryptedContent: isEncrypted ? displayContent : undefined,
             };
             
             // Add to messages cache using same key structure as MessageList
@@ -217,18 +234,42 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
     },
   });
 
-  // Send message function
-  const sendMessage = (content: string, conversationId: number, recipientId?: number) => {
+  // Send message function with E2E encryption support
+  const sendMessage = async (content: string, conversationId: number, recipientId?: number) => {
     if (!content.trim()) {
       console.error('Cannot send message: Empty message');
       return;
+    }
+
+    // Check if we should encrypt this message
+    const conversation = conversations.find(c => c.id === conversationId);
+    const shouldEncrypt = encryptionReady && 
+                          conversation?.isEncryptionEnabled !== false && 
+                          !conversation?.isMuskConversation;
+    
+    let finalContent = content;
+    let isEncrypted = false;
+    let encryptedForUsers = '';
+    
+    // Encrypt if possible and conversation supports it
+    if (shouldEncrypt && recipientId) {
+      const recipientIds = [recipientId, userId].filter(Boolean);
+      const encrypted = await encryptForRecipients(content, recipientIds);
+      if (encrypted) {
+        finalContent = encrypted.encrypted;
+        isEncrypted = true;
+        encryptedForUsers = encrypted.encryptedForUsers;
+        console.log('[E2E] Message encrypted for recipients');
+      }
     }
 
     // Send through API to persist
     apiRequest('POST', `/api/messaging/conversations/${conversationId}/messages`, {
       conversationId,
       senderId: userId,
-      content,
+      content: finalContent,
+      isEncrypted,
+      encryptedForUsers,
     })
       .then(async (response) => {
         // Check for 403 Forbidden (not connected)
@@ -253,6 +294,10 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
         }
         
         const newMessage = await response.json() as Message;
+        // Add decrypted content for display if encrypted
+        if (newMessage.isEncrypted) {
+          newMessage.decryptedContent = content; // We know the original content
+        }
         // Optimistically update message list
         queryClient.setQueryData<Message[]>(
           ['/api/messaging/conversations', conversationId, 'messages'],
