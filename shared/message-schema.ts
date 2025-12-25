@@ -24,7 +24,9 @@ export const conversations = pgTable('conversations', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   isGroup: boolean('is_group').default(false).notNull(),
-  creatorId: integer('creator_id').notNull()
+  creatorId: integer('creator_id').notNull(),
+  isMuskConversation: boolean('is_musk_conversation').default(false).notNull(),
+  isEncryptionEnabled: boolean('is_encryption_enabled').default(true).notNull(),
 });
 
 /**
