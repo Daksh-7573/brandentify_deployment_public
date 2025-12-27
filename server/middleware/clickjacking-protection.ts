@@ -58,12 +58,14 @@ export function clickjackingProtection(req: Request, res: Response, next: NextFu
 
   if (isEmbeddableRoute(path)) {
     // Allow embedding from trusted domains only
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    // Don't set X-Frame-Options - let CSP frame-ancestors handle it
+    // X-Frame-Options doesn't support multiple domains, but CSP does
     res.setHeader('Content-Security-Policy', 
       `frame-ancestors ${TRUSTED_FRAME_ANCESTORS.join(' ')}`
     );
   } else {
     // Block all framing for non-embeddable routes
+    // Set both for maximum browser compatibility
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
   }
