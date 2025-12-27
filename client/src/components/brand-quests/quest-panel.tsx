@@ -49,14 +49,43 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     timestamp: new Date().toISOString()
   });
 
-  // Additional hooks for counts in tab labels
-  const { data: dailyCareerForCount = [] } = useUserCareerQuestsByBucket(userId, 'daily');
-  const { data: completedCareerForCount = [] } = useUserCareerQuestsByBucket(userId, 'completed');
-  const { data: missedCareerForCount = [] } = useUserCareerQuestsByBucket(userId, 'missed');
+  // Fetch other buckets only when switching tabs to avoid redundant queries
+  const [careerBucketsData, setCareerBucketsData] = useState<Record<string, any[]>>({});
+  const [socialBucketsData, setSocialBucketsData] = useState<Record<string, any[]>>({});
   
-  const { data: dailySocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'daily');
-  const { data: completedSocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'completed');
-  const { data: missedSocialForCount = [] } = useUserSocialQuestsByBucket(userId, 'missed');
+  // Fetch other career buckets on tab change
+  const { data: careerBucketData } = useUserCareerQuestsByBucket(
+    userId, 
+    careerSubTab !== 'daily' ? (careerSubTab as 'daily' | 'completed' | 'missed') : undefined
+  );
+  
+  // Fetch other social buckets on tab change
+  const { data: socialBucketData } = useUserSocialQuestsByBucket(
+    userId,
+    socialSubTab !== 'daily' ? (socialSubTab as 'daily' | 'completed' | 'missed') : undefined
+  );
+  
+  // Cache bucket data
+  useEffect(() => {
+    if (careerBucketData && careerSubTab !== 'daily') {
+      setCareerBucketsData(prev => ({ ...prev, [careerSubTab]: careerBucketData }));
+    }
+  }, [careerBucketData, careerSubTab]);
+  
+  useEffect(() => {
+    if (socialBucketData && socialSubTab !== 'daily') {
+      setSocialBucketsData(prev => ({ ...prev, [socialSubTab]: socialBucketData }));
+    }
+  }, [socialBucketData, socialSubTab]);
+  
+  // Compute counts from cached data instead of fetching separately
+  const dailyCareerForCount = currentCareerQuests;
+  const completedCareerForCount = careerBucketsData['completed'] || [];
+  const missedCareerForCount = careerBucketsData['missed'] || [];
+  
+  const dailySocialForCount = currentSocialQuests;
+  const completedSocialForCount = socialBucketsData['completed'] || [];
+  const missedSocialForCount = socialBucketsData['missed'] || [];
 
   // Fetch instant quests (trending opportunities) by type
   // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
