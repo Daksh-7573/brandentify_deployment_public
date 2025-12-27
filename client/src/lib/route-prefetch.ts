@@ -1,4 +1,7 @@
+import { queryClient } from "@/lib/queryClient";
+
 const prefetchedRoutes = new Set<string>();
+const prefetchedData = new Set<string>();
 
 const routeChunks: Record<string, () => Promise<any>> = {
   "/industry-pulse": () => import("@/pages/industry-pulse-new"),
@@ -42,6 +45,28 @@ export function prefetchRoute(route: string): void {
 
 export function prefetchOnHover(route: string): void {
   prefetchRoute(route);
+}
+
+export function prefetchProfileData(userId: string | number): void {
+  if (!userId) return;
+  const key = `profile-${userId}`;
+  if (prefetchedData.has(key)) return;
+  
+  prefetchedData.add(key);
+  safeRequestIdleCallback(() => {
+    queryClient.prefetchQuery({
+      queryKey: ['/api/users', userId, 'profile-complete'],
+      queryFn: async () => {
+        const response = await fetch(`/api/users/${userId}/profile-complete`, {
+          credentials: 'include',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Prefetch failed');
+        return response.json();
+      },
+      staleTime: 60000,
+    });
+  }, { timeout: 100 });
 }
 
 export function prefetchCommonRoutes(): void {

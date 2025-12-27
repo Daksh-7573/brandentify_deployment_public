@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield, Crown } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
 import { PremiumBadge } from "@/components/ui/premium-badge";
-import { prefetchRoute } from "@/lib/route-prefetch";
+import { prefetchRoute, prefetchProfileData } from "@/lib/route-prefetch";
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -333,7 +333,7 @@ export default function Header() {
                   : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
               }`}
               onClick={() => setLocation('/profile')}
-              onMouseEnter={() => prefetchRoute('/profile')}
+              onMouseEnter={() => { prefetchRoute('/profile'); prefetchProfileData(userId); }}
             >
               {/* User name */}
               <span className="text-sm font-medium text-white hidden md:block">

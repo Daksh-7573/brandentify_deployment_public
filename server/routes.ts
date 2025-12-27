@@ -69,6 +69,7 @@ import { createBrandGoalsRoutes } from "./routes-brand-goals";
 import { createUserUpdateRoutes } from "./routes-user-update";
 import encryptionRoutes from "./routes-encryption";
 import feedBatchRoutes from "./routes-feed-batch";
+import profileBatchRoutes from "./routes-profile-batch";
 import { personalizedQuestAssignment } from "./services/personalized-quest-assignment";
 import { weeklyQuestScheduler } from "./services/weekly-quest-scheduler";
 import { authRoutes } from "./auth-routes";
@@ -9206,6 +9207,7 @@ ${extractedText.substring(0, 5000)}
   console.log("E2E Encryption routes loaded");
   
   app.use(feedBatchRoutes);
+  app.use("/api", profileBatchRoutes);
   console.log("Feed Batch API routes loaded (performance optimization)");
   
   apiRouter.use('/mentor', mentorRoutes);
