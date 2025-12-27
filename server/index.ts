@@ -30,6 +30,7 @@ import { initMentorScheduler } from "./services/mentor-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
 import { logDatabaseStartupInfo } from "./db";
+import { clickjackingProtection, securityHeaders } from "./middleware/clickjacking-protection";
 
 const app = express();
 
@@ -48,38 +49,15 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
       req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx') ||
       req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs')) {
-    console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
     return next();
   }
-
-  // Force removal of X-Frame-Options header - this must run before all other middleware
-  // Remove any existing X-Frame-Options header
-  res.removeHeader('X-Frame-Options');
-  
-  // Override the setHeader method to prevent X-Frame-Options from being set
-  const originalSetHeader = res.setHeader.bind(res);
-  res.setHeader = function(name: string, value: any) {
-    if (name.toLowerCase() === 'x-frame-options') {
-      console.log(`🚫 Blocked attempt to set X-Frame-Options: ${value}`);
-      return this; // Don't set the header
-    }
-    return originalSetHeader(name, value);
-  };
-  
-  // Also override res.end to ensure no headers are set at response time
-  const originalEnd = res.end.bind(res);
-  res.end = function(chunk?: any, encoding?: any) {
-    // Final removal of X-Frame-Options right before sending response (only if headers haven't been sent)
-    if (!this.headersSent) {
-      this.removeHeader('X-Frame-Options');
-      console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
-    }
-    return originalEnd.call(this, chunk, encoding);
-  };
-  
-  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
   next();
 });
+
+// Clickjacking Protection - Apply early to ensure headers are set correctly
+// Protects most routes while allowing specific embed routes to be framed
+app.use(clickjackingProtection);
+app.use(securityHeaders);
 
 // CORS Configuration using explicit allowlist (security best practice)
 const ALLOWED_ORIGINS = [
@@ -131,11 +109,7 @@ app.use((req, res, next) => {
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  
-  // Forcibly remove X-Frame-Options to allow iframe embedding
-  res.removeHeader('X-Frame-Options');
-  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
