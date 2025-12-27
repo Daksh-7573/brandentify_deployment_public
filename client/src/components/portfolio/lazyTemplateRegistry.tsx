@@ -1,4 +1,4 @@
-import { lazy, Suspense, ComponentType } from "react";
+import { lazy, Suspense, ComponentType, useMemo } from "react";
 import type { PortfolioLayoutKey } from "./templateRegistry";
 
 const TemplateSkeleton = () => (
@@ -80,6 +80,7 @@ function normalizeLayoutKey(layout: string): string {
 }
 
 const templateCache = new Map<string, ComponentType<any>>();
+const lazyComponentCache = new Map<string, ComponentType<any>>();
 
 export async function loadTemplate(layout: string): Promise<ComponentType<any>> {
   const normalizedKey = normalizeLayoutKey(layout);
@@ -103,16 +104,27 @@ export async function loadTemplate(layout: string): Promise<ComponentType<any>> 
   return component as ComponentType<any>;
 }
 
+function getLazyComponent(normalizedKey: string): ComponentType<any> {
+  if (!lazyComponentCache.has(normalizedKey)) {
+    const LazyComponent = lazy(async () => {
+      const component = await loadTemplate(normalizedKey);
+      return { default: component };
+    });
+    lazyComponentCache.set(normalizedKey, LazyComponent);
+  }
+  return lazyComponentCache.get(normalizedKey)!;
+}
+
 export function LazyPortfolioTemplate({
   layout,
   ...props
 }: { layout: string } & Record<string, any>) {
   const normalizedKey = normalizeLayoutKey(layout);
   
-  const LazyComponent = lazy(async () => {
-    const component = await loadTemplate(normalizedKey);
-    return { default: component };
-  });
+  const LazyComponent = useMemo(
+    () => getLazyComponent(normalizedKey),
+    [normalizedKey]
+  );
   
   return (
     <Suspense fallback={<TemplateSkeleton />}>

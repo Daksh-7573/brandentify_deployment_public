@@ -11,13 +11,24 @@ const routeChunks: Record<string, () => Promise<any>> = {
   "/quantum-card": () => import("@/pages/quantum-card"),
 };
 
+const safeRequestIdleCallback = (
+  callback: () => void,
+  options?: { timeout: number }
+): void => {
+  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(callback, options);
+  } else {
+    setTimeout(callback, options?.timeout || 1);
+  }
+};
+
 export function prefetchRoute(route: string): void {
   if (prefetchedRoutes.has(route)) return;
   
   const loader = routeChunks[route];
   if (loader) {
     prefetchedRoutes.add(route);
-    requestIdleCallback(() => {
+    safeRequestIdleCallback(() => {
       loader().catch(() => {
         prefetchedRoutes.delete(route);
       });
@@ -30,7 +41,7 @@ export function prefetchOnHover(route: string): void {
 }
 
 export function prefetchCommonRoutes(): void {
-  requestIdleCallback(() => {
+  safeRequestIdleCallback(() => {
     prefetchRoute("/industry-pulse");
     prefetchRoute("/profile");
   }, { timeout: 3000 });
@@ -53,6 +64,6 @@ export function setupLinkPrefetching(): void {
   document.addEventListener("mouseover", handleMouseEnter, { passive: true });
 }
 
-if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+if (typeof window !== "undefined") {
   setupLinkPrefetching();
 }
