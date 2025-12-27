@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield, Crown } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
 import { PremiumBadge } from "@/components/ui/premium-badge";
+import { prefetchRoute } from "@/lib/route-prefetch";
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -194,6 +195,7 @@ export default function Header() {
                   : 'text-white/90 hover:text-white hover:bg-white/10 neo-glass-nav-item'
               }`}
               onClick={() => setLocation('/brand-quests')}
+              onMouseEnter={() => prefetchRoute('/brand-quests')}
             >
               <Trophy className="h-5 w-5" />
               <span>Brand Quests</span>
@@ -212,6 +214,7 @@ export default function Header() {
                   : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
               }`}
               onClick={() => setLocation('/industry-pulse')}
+              onMouseEnter={() => prefetchRoute('/industry-pulse')}
             >
               <Home className="h-4 w-4" />
               <span>Industry Pulse</span>
@@ -254,6 +257,7 @@ export default function Header() {
                   : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
               }`}
               onClick={() => setLocation('/career-capsule')}
+              onMouseEnter={() => prefetchRoute('/career-capsule')}
             >
               <Flag className="h-4 w-4" />
               <span>Career Capsule</span>
@@ -304,6 +308,7 @@ export default function Header() {
                   setHasUnreadMessages(false);
                 }
               }}
+              onMouseEnter={() => prefetchRoute('/messages')}
               aria-label="Messages"
             >
               <MessageSquare className="h-5 w-5" />
@@ -328,6 +333,7 @@ export default function Header() {
                   : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
               }`}
               onClick={() => setLocation('/profile')}
+              onMouseEnter={() => prefetchRoute('/profile')}
             >
               {/* User name */}
               <span className="text-sm font-medium text-white hidden md:block">

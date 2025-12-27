@@ -11,8 +11,8 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { AppShell } from "@/components/layout/app-shell";
-import AuthCallback from "@/pages/auth-callback";
-import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
+const AuthCallback = lazy(() => import("@/pages/auth-callback"));
+const CatchAllAuthHandler = lazy(() => import("@/routes/CatchAllAuthHandler"));
 
 // Enhanced progressive loading state management
 const useProgressiveLoading = () => {
@@ -130,23 +130,21 @@ const OnboardingFlowPage = lazy(() => import("@/pages/onboarding-flow"));
 const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
 const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
 const ManageServicesPage = lazy(() => import("@/pages/manage-services"));
-import AddServicePage from "@/pages/add-service";
-// TestNowboardPage import removed as it's no longer needed
-import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
-import ConnectionsPage from "@/pages/ConnectionsPage"; // Connections management
-import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
-// Quest Demo Page removed per request
-import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
-import DirectUsersPage from "@/pages/direct-users"; // Direct access to users (debugging)
-import DirectContentPage from "@/pages/direct-content"; // Direct access to content items (debugging)
-import DirectContentManagementPage from "@/pages/direct-content-management"; // Direct content management (debugging)
-import NeoGlassDemoPage from "@/pages/neo-glass-demo"; // Neo-Glass UI demo page
-import NeoGlassSpotifyDemoPage from "@/pages/neo-glass-demo-spotify"; // Spotify-style Neo-Glass UI demo
-import NeoGlassFormDemoPage from "@/pages/neo-glass-form-demo"; // Neo-Glass Form UI demo
-import NeoGlassDemoMainPage from "@/pages/neo-glass-demo-main"; // Main platform styled Neo-Glass UI demo
-import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass demo without dependencies
-import PitchDeckDownload from "@/pages/pitch-deck-download"; // Pitch deck download page
-import DocsDownload from "@/pages/docs-download"; // Documentation download page
+const AddServicePage = lazy(() => import("@/pages/add-service"));
+const ChatPage = lazy(() => import("@/pages/ChatPage"));
+const ConnectionsPage = lazy(() => import("@/pages/ConnectionsPage"));
+const PrivacyPage = lazy(() => import("@/pages/privacy"));
+const DirectUsersPage = lazy(() => import("@/pages/direct-users"));
+const DirectContentPage = lazy(() => import("@/pages/direct-content"));
+const DirectContentManagementPage = lazy(() => import("@/pages/direct-content-management"));
+const NeoGlassDemoPage = lazy(() => import("@/pages/neo-glass-demo"));
+const NeoGlassSpotifyDemoPage = lazy(() => import("@/pages/neo-glass-demo-spotify"));
+const NeoGlassFormDemoPage = lazy(() => import("@/pages/neo-glass-form-demo"));
+const NeoGlassDemoMainPage = lazy(() => import("@/pages/neo-glass-demo-main"));
+const NeoGlassSimplePage = lazy(() => import("@/pages/neo-glass-simple"));
+const PitchDeckDownload = lazy(() => import("@/pages/pitch-deck-download"));
+const DocsDownload = lazy(() => import("@/pages/docs-download"));
+const CookieConsentBanner = lazy(() => import("@/components/privacy/cookie-consent-banner"));
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Referral join page
@@ -159,6 +157,31 @@ const LoadingPlaceholder = () => (
     <div className="flex-1" />
   </AppShell>
 );
+
+// Minimal loading placeholder without shell for public pages
+const MinimalLoadingPlaceholder = () => (
+  <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+  </div>
+);
+
+// Lazy route wrapper - handles Suspense for any lazy component
+function LazyRoute({ component: Component, withShell = false }: { component: React.ComponentType; withShell?: boolean }) {
+  if (withShell) {
+    return (
+      <AppShell>
+        <Suspense fallback={<div className="flex-1" />}>
+          <Component />
+        </Suspense>
+      </AppShell>
+    );
+  }
+  return (
+    <Suspense fallback={<MinimalLoadingPlaceholder />}>
+      <Component />
+    </Suspense>
+  );
+}
 
 // Custom redirect component to handle page redirects
 const PageRedirect = ({ to }: { to: string }) => {
@@ -173,6 +196,7 @@ const PageRedirect = ({ to }: { to: string }) => {
 
 // Protected route component that checks if the user is authenticated
 // Wraps all protected pages in AppShell for consistent layout
+// Includes Suspense boundary to support lazy-loaded components
 function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode, noShell?: boolean }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, navigate] = useLocation();
@@ -184,14 +208,17 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // During auth check, show the page content directly - page renders fast enough without loading icon
+  // Default fallback for lazy loading
+  const suspenseFallback = fallback || <div className="flex-1" />;
+  
+  // During auth check, show loading state
   if (isLoading) {
     if (noShell) {
-      return fallback ? <>{fallback}</> : null;
+      return <>{suspenseFallback}</>;
     }
     return (
       <AppShell>
-        {fallback}
+        {suspenseFallback}
       </AppShell>
     );
   }
@@ -201,14 +228,20 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
     return null;
   }
   
-  // Wrap page in AppShell for consistent header and background
+  // Wrap page in AppShell and Suspense for consistent header, background, and lazy loading support
   if (noShell) {
-    return <Component />;
+    return (
+      <Suspense fallback={<>{suspenseFallback}</>}>
+        <Component />
+      </Suspense>
+    );
   }
   
   return (
     <AppShell>
-      <Component />
+      <Suspense fallback={suspenseFallback}>
+        <Component />
+      </Suspense>
     </AppShell>
   );
 }
@@ -219,20 +252,20 @@ function Router() {
   return (
     <Switch>
       {/* Tier 1: Critical Routes (Always Available) */}
-      <Route path="/" component={Landing} />
-      <Route path="/nav-test" component={NavigationTest} />
-      <Route path="/url-demo" component={URLInputDemo} />
+      <Route path="/" component={() => <LazyRoute component={Landing} />} />
+      <Route path="/nav-test" component={() => <LazyRoute component={NavigationTest} />} />
+      <Route path="/url-demo" component={() => <LazyRoute component={URLInputDemo} />} />
       <Route path="/industry-pulse" component={() => (
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       )} />
-      <Route path="/pulse/:id" component={PulseDetail} />
+      <Route path="/pulse/:id" component={() => <LazyRoute component={PulseDetail} withShell />} />
       <Route path="/create-pulse" component={() => (
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
       )} />
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
-      <Route path="/auth" component={AuthPage} />
+      <Route path="/auth" component={() => <LazyRoute component={AuthPage} />} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<LoadingPlaceholder />}><AuthSuccessPage /></Suspense>;
@@ -321,9 +354,9 @@ function Router() {
         );
       }} />
 
-      <Route path="/auth-callback" component={AuthCallbackPage} />
-      <Route path="/_/auth/callback" component={AuthCallbackPage} />
-      <Route path="/auth/callback" component={AuthCallbackPage} />
+      <Route path="/auth-callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
+      <Route path="/_/auth/callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
+      <Route path="/auth/callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
       
       {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
       <Route path="/search" component={() => (
@@ -358,8 +391,8 @@ function Router() {
           <Route path="/designer-portfolio" component={() => (
             <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
           )} />
-          <Route path="/pricing" component={PricingPage} />
-          <Route path="/upgrade" component={PricingPage} />
+          <Route path="/pricing" component={() => <LazyRoute component={PricingPage} />} />
+          <Route path="/upgrade" component={() => <LazyRoute component={PricingPage} />} />
           <Route path="/checkout" component={() => (
             <ProtectedRoute path="/checkout" component={CheckoutPage} />
           )} />
@@ -379,13 +412,13 @@ function Router() {
       {adminLoaded && (
         <>
           <Route path="/login" component={() => <PageRedirect to="/auth" />} />
-          <Route path="/auth-status" component={AuthStatusPage} />
-          <Route path="/dev-login" component={DevLoginPage} />
-          <Route path="/simple-login" component={SimpleLoginPage} />
-          <Route path="/reliable-login" component={ReliableLoginPage} />
-          <Route path="/universal-login" component={UniversalLoginPage} />
-          <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
-          <Route path="/easy-login" component={EasyLoginPage} />
+          <Route path="/auth-status" component={() => <LazyRoute component={AuthStatusPage} />} />
+          <Route path="/dev-login" component={() => <LazyRoute component={DevLoginPage} />} />
+          <Route path="/simple-login" component={() => <LazyRoute component={SimpleLoginPage} />} />
+          <Route path="/reliable-login" component={() => <LazyRoute component={ReliableLoginPage} />} />
+          <Route path="/universal-login" component={() => <LazyRoute component={UniversalLoginPage} />} />
+          <Route path="/simple-universal-login" component={() => <LazyRoute component={SimpleUniversalLoginPage} />} />
+          <Route path="/easy-login" component={() => <LazyRoute component={EasyLoginPage} />} />
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
@@ -402,18 +435,18 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/auth-test" component={FirebaseAuthTest} />
-      <Route path="/google-auth-test" component={GoogleAuthTest} />
-      <Route path="/google-auth-debug" component={GoogleAuthDebug} />
-      <Route path="/auth-cleaner" component={AuthCleaner} />
-      <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
-      <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
-      <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
-      <Route path="/replit-login" component={ReplitDomainLogin} />
-      <Route path="/replit-redirect-auth" component={ReplitRedirectAuth} />
-      <Route path="/google-login" component={GoogleRedirectOnly} />
-      <Route path="/domain-debug" component={DomainDebug} />
-      <Route path="/replit-auth" component={FinalReplitAuth} />
+      <Route path="/auth-test" component={() => <LazyRoute component={FirebaseAuthTest} />} />
+      <Route path="/google-auth-test" component={() => <LazyRoute component={GoogleAuthTest} />} />
+      <Route path="/google-auth-debug" component={() => <LazyRoute component={GoogleAuthDebug} />} />
+      <Route path="/auth-cleaner" component={() => <LazyRoute component={AuthCleaner} />} />
+      <Route path="/google-auth-fix" component={() => <LazyRoute component={GoogleAuthFixPage} />} />
+      <Route path="/universal-google-auth" component={() => <LazyRoute component={UniversalGoogleAuthPage} />} />
+      <Route path="/cross-domain-google-auth" component={() => <LazyRoute component={CrossDomainGoogleAuth} />} />
+      <Route path="/replit-login" component={() => <LazyRoute component={ReplitDomainLogin} />} />
+      <Route path="/replit-redirect-auth" component={() => <LazyRoute component={ReplitRedirectAuth} />} />
+      <Route path="/google-login" component={() => <LazyRoute component={GoogleRedirectOnly} />} />
+      <Route path="/domain-debug" component={() => <LazyRoute component={DomainDebug} />} />
+      <Route path="/replit-auth" component={() => <LazyRoute component={FinalReplitAuth} />} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
@@ -430,14 +463,18 @@ function Router() {
           </Suspense>
         );
       }} />
-          <Route path="/verify-email" component={EmailVerification} />
+          <Route path="/verify-email" component={() => <LazyRoute component={EmailVerification} />} />
         </>
       )}
       
       {/* Routes that should always be available */}
       {/* Profile route - uses resolver to choose between BrandProfile and PublicProfile */}
       <Route path="/@:identifier">
-        {(params) => <ProfileResolver identifier={params.identifier} />}
+        {(params) => (
+          <Suspense fallback={<MinimalLoadingPlaceholder />}>
+            <ProfileResolver identifier={params.identifier} />
+          </Suspense>
+        )}
       </Route>
       
       {/* Additional protected routes */}
@@ -699,10 +736,18 @@ function Router() {
       </Route>
       
       {/* Pitch Deck Download page */}
-      <Route path="/pitch-deck-download" component={PitchDeckDownload} />
+      <Route path="/pitch-deck-download">
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <PitchDeckDownload />
+        </Suspense>
+      </Route>
       
       {/* Documentation Download page */}
-      <Route path="/docs-download" component={DocsDownload} />
+      <Route path="/docs-download">
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <DocsDownload />
+        </Suspense>
+      </Route>
       
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
@@ -716,19 +761,19 @@ function Router() {
       
       {/* Add catch-all route for handling any Google Auth redirects with common Firebase paths */}
       <Route path="/_/auth/*">
-        <CatchAllAuthHandler />
+        <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
       <Route path="/auth/callback/*">
-        <CatchAllAuthHandler />
+        <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
       <Route path="/oauth/callback/*">
-        <CatchAllAuthHandler />
+        <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
       <Route path="/auth-callback/*">
-        <CatchAllAuthHandler />
+        <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
       <Route path="/signin-callback">
-        <CatchAllAuthHandler />
+        <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
       
       {/* Random profile link route */}
@@ -741,7 +786,7 @@ function Router() {
       </Route>
       
       {/* Default 404 route */}
-      <Route component={NotFound} />
+      <Route component={() => <LazyRoute component={NotFound} />} />
     </Switch>
   );
 }

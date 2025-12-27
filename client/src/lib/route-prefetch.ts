@@ -9,6 +9,10 @@ const routeChunks: Record<string, () => Promise<any>> = {
   "/smart-connect": () => import("@/pages/smart-connect"),
   "/messages": () => import("@/pages/ChatPage"),
   "/quantum-card": () => import("@/pages/quantum-card"),
+  "/connections": () => import("@/pages/ConnectionsPage"),
+  "/search": () => import("@/pages/search-fixed"),
+  "/radar": () => import("@/pages/radar"),
+  "/privacy": () => import("@/pages/privacy"),
 };
 
 const safeRequestIdleCallback = (
