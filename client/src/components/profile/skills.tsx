@@ -12,6 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { SkillsListSkeleton } from "@/components/ui/skeleton-components";
 import { CustomSelect } from "@/components/ui/custom-select";
+import { useProfileSkills } from "@/contexts/profile-data-context";
 
 type SkillItem = {
   id: number;
@@ -24,8 +25,6 @@ type SkillItem = {
 export default function Skills() {
   const { user } = useAuth();
   
-  // Use consistent user ID logic matching the profile page
-  // Primary: numeric ID, Fallback: username, uid, or default to 1
   const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '1';
   
   console.log("Skills component - user object:", {
@@ -36,15 +35,18 @@ export default function Skills() {
   });
   console.log("Skills component - Using userIdentifier:", userIdentifier);
   
-  // Fetch skills from the API with proper caching
-  const { data: serverSkills, isLoading, refetch } = useQuery({
+  const batchData = useProfileSkills();
+  
+  const { data: serverSkills, isLoading: queryLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userIdentifier}/skills`],
-    enabled: !!userIdentifier,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnMount: false, // Prevent automatic refetch on mount
-    refetchOnWindowFocus: false, // Disable refetch on window focus
-    refetchInterval: false, // Disable polling
+    enabled: !!userIdentifier && !batchData.isFromBatch,
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
   });
+  
+  const isLoading = batchData.isFromBatch ? batchData.isLoading : queryLoading;
   
   // Removed infinite loop causing useEffect completely
   
@@ -58,12 +60,12 @@ export default function Skills() {
   const [sliderValue, setSliderValue] = useState(50);
   const { toast } = useToast();
   
-  // Update local skills when server skills change
   useEffect(() => {
-    if (serverSkills && Array.isArray(serverSkills)) {
-      setSkills(serverSkills);
+    const dataToUse = batchData.isFromBatch ? batchData.data : serverSkills;
+    if (dataToUse && Array.isArray(dataToUse)) {
+      setSkills(dataToUse);
     }
-  }, [serverSkills]);
+  }, [serverSkills, batchData.data, batchData.isFromBatch]);
   
   const levelOptions = [
     { value: 'Beginner', label: 'Beginner' },

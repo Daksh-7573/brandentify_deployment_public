@@ -53,6 +53,7 @@ import { useForm } from 'react-hook-form';
 
 // Import constants for industry and domain mappings
 import { INDUSTRIES, INDUSTRY_DOMAINS } from '@shared/constants';
+import { useProfileExperiences } from "@/contexts/profile-data-context";
 
 // Work Experience Schema
 const workExperienceFormSchema = z.object({
@@ -134,11 +135,16 @@ export default function WorkExperience() {
 
   // Queries and mutations
   const queryClient = useQueryClient();
+  
+  const batchData = useProfileExperiences();
 
-  const { data: experiences = [], isLoading } = useQuery<any[]>({
+  const { data: serverExperiences = [], isLoading: queryLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${userIdentifier}/experiences`],
-    enabled: !!userIdentifier
+    enabled: !!userIdentifier && !batchData.isFromBatch
   });
+  
+  const experiences = batchData.isFromBatch ? (batchData.data || []) : serverExperiences;
+  const isLoading = batchData.isFromBatch ? batchData.isLoading : queryLoading;
 
   const createExperienceMutation = useMutation({
     mutationFn: async (data: any) => {

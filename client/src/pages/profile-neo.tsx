@@ -47,6 +47,7 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { SkillsListSkeleton, EducationItemSkeleton, ExperienceItemSkeleton, ProfileCardSkeleton } from "@/components/ui/skeleton-components";
 import { PremiumBadge } from "@/components/ui/premium-badge";
+import { ProfileDataProvider } from "@/contexts/profile-data-context";
 
 // Define "I am looking for" categories - matching the form constants with icons
 const LOOKING_FOR_CATEGORIES = [
@@ -319,6 +320,7 @@ export default function ProfileNeo() {
   };
   
   return (
+    <ProfileDataProvider userId={userIdentifier}>
     <div 
       className="flex h-screen flex-col responsive-background"
       style={{ 
@@ -931,5 +933,6 @@ export default function ProfileNeo() {
         onSave={updateProfilePicture}
       />
     </div>
+    </ProfileDataProvider>
   );
 }

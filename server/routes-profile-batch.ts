@@ -41,8 +41,8 @@ router.get("/users/:userId/profile-complete", async (req: Request, res: Response
     
     if (projectIds.length > 0) {
       const [collaboratorsResults, endorsementsResults] = await Promise.all([
-        Promise.all(projectIds.map(id => storage.getProjectCollaborators(id))),
-        Promise.all(projectIds.map(id => storage.getProjectEndorsements(id)))
+        Promise.all(projectIds.map(id => storage.getProjectCollaboratorsByProjectId(id))),
+        Promise.all(projectIds.map(id => storage.getProjectEndorsementsByProjectId(id)))
       ]);
       
       projectIds.forEach((id, index) => {

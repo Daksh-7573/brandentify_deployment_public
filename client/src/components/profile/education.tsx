@@ -88,6 +88,7 @@ const DEGREES = [
 ];
 
 import { INDUSTRY_DOMAINS, INDUSTRIES } from '@shared/constants';
+import { useProfileEducations } from "@/contexts/profile-data-context";
 
 // Create schema for education
 const educationSchema = z.object({
@@ -157,17 +158,22 @@ export default function Education() {
   // Use the actual user ID from auth context if available, or 1 for demo mode
   const effectiveUserId = user?.id || 1;
   
+  const batchData = useProfileEducations();
+  
   // Fetch education data for user
-  const { data: fetchedEducations = [], isLoading } = useQuery<any>({
+  const { data: fetchedEducations = [], isLoading: queryLoading } = useQuery<any>({
     queryKey: [`/api/users/${effectiveUserId}/educations`],
-    enabled: true,
+    enabled: !batchData.isFromBatch,
     staleTime: 1000, 
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
   
+  const isLoading = batchData.isFromBatch ? batchData.isLoading : queryLoading;
+  
   // Ensure educations is always an array to prevent "map is not a function" errors
-  const educations = Array.isArray(fetchedEducations) ? fetchedEducations : [];
+  const dataToUse = batchData.isFromBatch ? batchData.data : fetchedEducations;
+  const educations = Array.isArray(dataToUse) ? dataToUse : [];
   
   const form = useForm<Education>({
     resolver: zodResolver(educationSchema),

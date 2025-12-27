@@ -11,6 +11,7 @@ import { IndustryCombobox } from '@/components/ui/industry-combobox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { INDUSTRY_DOMAINS } from '@shared/constants';
+import { useProfileProjects } from "@/contexts/profile-data-context";
 
 interface Project {
   id: number;
@@ -102,8 +103,12 @@ const ProjectsFixed = () => {
   // Fetch projects from the backend using current authenticated user
   // Use consistent user ID logic matching the profile page  
   const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '1';
-  const { data: projects = [], isLoading: isProjectsLoading } = useQuery({
+  
+  const batchData = useProfileProjects();
+  
+  const { data: serverProjects = [], isLoading: queryLoading } = useQuery({
     queryKey: ['/api/users', userIdentifier, 'projects'],
+    enabled: !batchData.isFromBatch,
     queryFn: async () => {
       try {
         const response = await fetch(`/api/users/${userIdentifier}/projects`);
@@ -163,6 +168,9 @@ const ProjectsFixed = () => {
       }
     }
   });
+  
+  const projects = batchData.isFromBatch ? (batchData.data || []) : serverProjects;
+  const isProjectsLoading = batchData.isFromBatch ? batchData.isLoading : queryLoading;
   
   // Create the mutation for saving projects to backend
   const createProjectMutation = useMutation({
