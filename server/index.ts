@@ -35,7 +35,9 @@ import { clickjackingProtection, securityHeaders } from "./middleware/clickjacki
 const app = express();
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
-app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
+// CRITICAL: This MUST be set BEFORE any middleware that uses req.ip (like rate limiting)
+app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
+console.log(`[Security] Trust Proxy enabled: ${process.env.TRUST_PROXY === '1'}`);
 
 // Add cookie parser to handle session cookies
 app.use(cookieParser());
@@ -59,65 +61,9 @@ app.use((req, res, next) => {
 app.use(clickjackingProtection);
 app.use(securityHeaders);
 
-// CORS Configuration using explicit allowlist (security best practice)
-const ALLOWED_ORIGINS = [
-  'https://brandentifier.com',
-  'https://www.brandentifier.com',
-  'https://brandentifier.replit.app',
-  'http://localhost:3000',
-  'http://localhost:5000',
-  'http://127.0.0.1:5000',
-  'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev'
-];
-
-app.use((req, res, next) => {
-  const origin = req.get('origin');
-  
-  console.log('CORS: Checking origin:', origin);
-  console.log('CORS: ALLOWED_ORIGINS:', ALLOWED_ORIGINS);
-  console.log('CORS: NODE_ENV:', process.env.NODE_ENV);
-  
-  // Check if origin is allowed
-  let isAllowed = false;
-  
-  if (!origin) {
-    // No-origin requests (direct access) - no credentials needed
-    res.header('Access-Control-Allow-Origin', '*');
-    console.log('CORS: Allowing request with no origin');
-    isAllowed = true;
-  } else if (ALLOWED_ORIGINS.includes(origin)) {
-    // Exact match in allowlist
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Origin found in ALLOWED_ORIGINS');
-    isAllowed = true;
-  } else if (origin.endsWith('.replit.app') || origin.endsWith('.replit.dev')) {
-    // Wildcard match for all Replit domains
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Allowing Replit domain:', origin);
-    isAllowed = true;
-  } else if (process.env.NODE_ENV === 'development') {
-    // Development mode - allow all
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    console.log('CORS: Allowing due to development mode');
-    isAllowed = true;
-  } else {
-    console.log('CORS: Blocking unauthorized origin:', origin);
-    // For unauthorized origins, don't set CORS headers
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  
-  next();
+// Health check endpoint (used by load balancers, not rate limited)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // 🚫 DISABLE Firebase proxies in production - they cause redirect loops

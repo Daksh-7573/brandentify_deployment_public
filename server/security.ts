@@ -401,18 +401,24 @@ export async function setupSecurity(app: any) {
     standardHeaders: true,
     legacyHeaders: false,
     message: { message: 'Too many requests, please try again later.' },
-    // PRODUCTION: Configure keyGenerator for proper X-Forwarded-For handling via env vars
-    // keyGenerator: (req) => req.ip || 'unknown',
-    // PRODUCTION: Set via environment: TRUST_PROXY=1 and configure X-Forwarded-For header
+    // CRITICAL FIX: Proper IP extraction that respects trust proxy setting
+    keyGenerator: (req: Request) => {
+      // When trust proxy is enabled (app.set('trust proxy', 1) in index.ts),
+      // Express.js automatically sets req.ip to the rightmost IP in X-Forwarded-For
+      // This extracts the REAL client IP, not the proxy IP
+      const clientIp = req.ip || (req as any).connection?.remoteAddress || 'unknown';
+      console.log(`[Rate Limiter] Client IP: ${clientIp}, X-Forwarded-For: ${req.headers['x-forwarded-for']}`);
+      return clientIp;
+    },
     skip: (req: Request) => {
       // Skip rate limiting for health checks and static assets
       try {
         const url = (req as any).url || '';
-        if (url.startsWith('/assets/') || url.startsWith('/src/')) {
+        if (url.startsWith('/assets/') || url.startsWith('/src/') || url === '/health') {
           return true;
         }
       } catch (e) {
-        // Fail safely
+        // Fail safely - don't skip if error occurs
       }
       return false;
     }
