@@ -225,6 +225,36 @@ export default function CreativeBold({
                 )}
               </div>
 
+              {/* Company, Domain, Looking For, UVP Grid */}
+              {(sortedExperiences[0]?.company || userInfo.domain || userInfo.lookingFor || userInfo.uniqueValueProposition) && (
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 pt-6 border-t" style={{ borderColor: '#E5E7EB' }}>
+                  {sortedExperiences[0]?.company && (
+                    <div>
+                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Company</p>
+                      <p style={{ color: INK_BLACK }}>{sortedExperiences[0].company}</p>
+                    </div>
+                  )}
+                  {userInfo.domain && (
+                    <div>
+                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Domain</p>
+                      <p style={{ color: INK_BLACK }}>{userInfo.domain}</p>
+                    </div>
+                  )}
+                  {userInfo.lookingFor && (
+                    <div>
+                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Looking For</p>
+                      <p style={{ color: INK_BLACK }}>{userInfo.lookingFor}</p>
+                    </div>
+                  )}
+                  {userInfo.uniqueValueProposition && (
+                    <div>
+                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Unique Value</p>
+                      <p style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* CTAs */}
               <div className="flex gap-3 pt-4">
                 {userInfo.email && (
@@ -249,8 +279,8 @@ export default function CreativeBold({
         </div>
       </section>
 
-      {/* BRAND IDENTITY */}
-      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
+      {/* BRAND IDENTITY - Only show Vision/Mission/Values, NOT About */}
+      {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
         <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
           <div className="max-w-[1200px] mx-auto">
             <motion.div
@@ -260,43 +290,33 @@ export default function CreativeBold({
               viewport={{ once: true }}
               className="space-y-8"
             >
-              <h2 className="text-4xl font-bold" style={{ color: INK_BLACK }}>About</h2>
-              
-              {userInfo.aboutMe && (
-                <p className="text-lg leading-relaxed max-w-3xl" style={{ color: COOL_GRAY }}>
-                  {userInfo.aboutMe}
-                </p>
-              )}
-
               {/* Vision, Mission, Values Grid */}
-              {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-                  {userInfo.visionStatement && (
-                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Vision</h3>
-                      <p style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {userInfo.visionStatement && (
+                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Vision</h3>
+                    <p style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                  </div>
+                )}
+                {userInfo.missionStatement && (
+                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Mission</h3>
+                    <p style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                  </div>
+                )}
+                {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                  <div>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-3" style={{ color: CORAL }}>Values</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {userInfo.coreValues.map((value, idx) => (
+                        <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }}>
+                          {value}
+                        </Badge>
+                      ))}
                     </div>
-                  )}
-                  {userInfo.missionStatement && (
-                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Mission</h3>
-                      <p style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
-                    </div>
-                  )}
-                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                    <div>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-3" style={{ color: CORAL }}>Values</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {userInfo.coreValues.map((value, idx) => (
-                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }}>
-                            {value}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         </section>
@@ -510,54 +530,68 @@ export default function CreativeBold({
         </section>
       )}
 
-      {/* SKILLS */}
-      {userSkills.length > 0 && (
-        <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
-          <div className="max-w-[1200px] mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="text-4xl font-bold mb-12"
-              style={{ color: INK_BLACK }}
-            >
-              Skills
-            </motion.h2>
+      {/* SKILLS - Filtered to remove unwanted skills */}
+      {(() => {
+        const filteredSkills = userSkills.filter(skill => {
+          const unwantedSkills = [
+            'Automation & Workflow Optimization',
+            'Machine Learning Solutions',
+            'ChatGPT said: AI Strategy & Consulting',
+            'ChatGPT said'
+          ];
+          return !unwantedSkills.some(unwanted => 
+            skill.name.includes(unwanted) || skill.name.includes('ChatGPT')
+          );
+        });
+        
+        return filteredSkills.length > 0 && (
+          <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
+            <div className="max-w-[1200px] mx-auto">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-4xl font-bold mb-12"
+                style={{ color: INK_BLACK }}
+              >
+                Skills
+              </motion.h2>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {userSkills.map((skill) => (
-                <div key={skill.id} className="p-4 bg-white rounded-lg">
-                  <h3 className="font-bold mb-2" style={{ color: INK_BLACK }}>
-                    {skill.name}
-                  </h3>
-                  {skill.level && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      Level: {skill.level}
-                    </p>
-                  )}
-                  {skill.category && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      Category: {skill.category}
-                    </p>
-                  )}
-                  {skill.yearsOfExperience && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      Experience: {skill.yearsOfExperience} years
-                    </p>
-                  )}
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-      )}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {filteredSkills.map((skill) => (
+                  <div key={skill.id} className="p-4 bg-white rounded-lg">
+                    <h3 className="font-bold mb-2" style={{ color: INK_BLACK }}>
+                      {skill.name}
+                    </h3>
+                    {skill.level && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        Level: {skill.level}
+                      </p>
+                    )}
+                    {skill.category && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        Category: {skill.category}
+                      </p>
+                    )}
+                    {skill.yearsOfExperience && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        Experience: {skill.yearsOfExperience} years
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* EDUCATION */}
       {userEducations.length > 0 && (
