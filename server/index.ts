@@ -712,10 +712,10 @@ app.use((req, res, next) => {
 // Standard body parsers for all other routes with enhanced debugging
 app.use(express.json({ 
   limit: '50mb',
-  verify: (req, res, buf: Buffer, encoding) => {
-    if (req.path.includes('/users/')) {
-      console.log(`[JSON Parser] ${req.method} ${req.path} - Raw buffer length:`, buf.length);
-      console.log(`[JSON Parser] ${req.method} ${req.path} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
+  verify: (req: any, res: any, buf: Buffer, encoding: string) => {
+    if (req.url?.includes('/users/')) {
+      console.log(`[JSON Parser] ${req.method} ${req.url} - Raw buffer length:`, buf.length);
+      console.log(`[JSON Parser] ${req.method} ${req.url} - Buffer content preview:`, buf.toString('utf8').substring(0, 100) + '...');
     }
   }
 }));

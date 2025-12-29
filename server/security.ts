@@ -400,7 +400,22 @@ export async function setupSecurity(app: any) {
     max: 500, // limit each IP to 500 requests per windowMs (generous limit to avoid breaking functionality)
     standardHeaders: true,
     legacyHeaders: false,
-    message: { message: 'Too many requests, please try again later.' }
+    message: { message: 'Too many requests, please try again later.' },
+    // PRODUCTION: Configure keyGenerator for proper X-Forwarded-For handling via env vars
+    // keyGenerator: (req) => req.ip || 'unknown',
+    // PRODUCTION: Set via environment: TRUST_PROXY=1 and configure X-Forwarded-For header
+    skip: (req: Request) => {
+      // Skip rate limiting for health checks and static assets
+      try {
+        const url = (req as any).url || '';
+        if (url.startsWith('/assets/') || url.startsWith('/src/')) {
+          return true;
+        }
+      } catch (e) {
+        // Fail safely
+      }
+      return false;
+    }
   });
   
   // Apply rate limiting to authentication routes only to avoid disrupting normal usage

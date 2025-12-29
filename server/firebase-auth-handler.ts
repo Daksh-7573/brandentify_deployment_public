@@ -12,10 +12,16 @@ import { Request, Response, NextFunction } from 'express';
  * and handles it appropriately by redirecting to our auth-callback route
  */
 export function firebaseAuthRedirectHandler(req: Request, res: Response, next: NextFunction) {
-  // FIREBASE COMPLETELY DISABLED - No longer intercept auth redirects
-  console.log(`🚫 [Firebase Auth Handler] DISABLED - Firebase auth handler bypassed for: ${req.url}`);
+  // Firebase auth can be enabled via environment variable
+  const isFirebaseEnabled = process.env.FIREBASE_AUTH_ENABLED === 'true';
   
-  // Always continue to next middleware - no interception
+  if (!isFirebaseEnabled) {
+    console.log(`🚫 [Firebase Auth Handler] DISABLED - Firebase auth handler bypassed for: ${req.url}`);
+    return next();
+  }
+  
+  // Firebase auth is enabled - add your Firebase redirect handling logic here
+  // For now, just continue to next middleware
   next();
 }
 
