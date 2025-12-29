@@ -53,3 +53,9 @@ integrations = ["javascript_object_storage:1.0.0"]
 
 [userenv.shared]
 APP_BASE_URL = "https://brandentifier.replit.app"
+
+[userenv.production]
+TRUST_PROXY = "1"
+FIREBASE_AUTH_ENABLED = "false"
+VITE_HMR_PORT = "443"
+VITE_HMR_PROTOCOL = "wss"
