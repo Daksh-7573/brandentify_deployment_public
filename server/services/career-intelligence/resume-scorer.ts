@@ -117,8 +117,18 @@ export class ResumeScorerService {
         fullAnalysis: response
       };
     } catch (error) {
-      console.error('[ResumeScorer] AI analysis failed:', error);
-      throw new Error('Failed to analyze resume');
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error('[ResumeScorer] AI analysis failed:', errorMsg);
+      
+      // Provide specific error message for different failure types
+      if (errorMsg.includes('503') || errorMsg.includes('Service Unavailable')) {
+        throw new Error('AI service temporarily unavailable - Resume analysis service is not responding');
+      } else if (errorMsg.includes('timeout') || errorMsg.includes('ECONNREFUSED')) {
+        throw new Error('AI service connection timeout - Please try again in a moment');
+      } else if (errorMsg.includes('401') || errorMsg.includes('Unauthorized')) {
+        throw new Error('AI service authentication failed - Configuration error on server');
+      }
+      throw new Error(`Resume analysis service error: ${errorMsg}`);
     }
   }
 

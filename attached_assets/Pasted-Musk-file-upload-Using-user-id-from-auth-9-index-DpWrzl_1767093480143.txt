@@ -1,0 +1,266 @@
+Musk file upload: Using user.id from auth: 9
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+via.placeholder.com/600x400?text=Image+Not+Available:1  GET https://via.placeholder.com/600x400?text=Image+Not+Available net::ERR_NAME_NOT_RESOLVED
+Image
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1764395262102.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_7_1764395871187.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_8_1759656326610.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_8_1759656456590.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16  GET https://via.placeholder.com/800x450?text=Video+Not+Available net::ERR_NAME_NOT_RESOLVED
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1767015351087.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1764496738058.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1759655118427.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_7_1759579550271.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+index-DpWrzlM4.js:49 Cached response for /api/notifications/9/count
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+index-DpWrzlM4.js:192  POST https://brandentifier.replit.app/api/musk/resume-upload 503 (Service Unavailable)
+Q @ index-DpWrzlM4.js:192
+$ @ index-DpWrzlM4.js:192
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38
+uT @ index-DpWrzlM4.js:38Understand this error
+index-DpWrzlM4.js:192 Error processing resume: Error: HTTP error 503: 
+    at G.onload (index-DpWrzlM4.js:192:131626)
+$ @ index-DpWrzlM4.js:192Understand this error
+industry-pulse-new-BMd4PoMw.js:16 [PULSE PAGE] user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …} userId: 9 user?.id: 9
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 6 currentUser: 9 itemUser: 12
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 5 currentUser: 9 itemUser: 7
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 4 currentUser: 9 itemUser: 9
+index-DpWrzlM4.js:49 Cached response for /api/notifications/9/count
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+via.placeholder.com/600x400?text=Image+Not+Available:1  GET https://via.placeholder.com/600x400?text=Image+Not+Available net::ERR_NAME_NOT_RESOLVED
+Image
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1764395262102.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_7_1764395871187.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_8_1759656326610.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_8_1759656456590.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1767015351087.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1764496738058.png
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load image: /uploads/media/media_7_1759655118427.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 Failed to load project image: /uploads/media/media_7_1759579550271.jpg
+onError @ industry-pulse-new-BMd4PoMw.js:16
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38Understand this error
+industry-pulse-new-BMd4PoMw.js:16 [PULSE PAGE] user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …} userId: 9 user?.id: 9
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 6 currentUser: 9 itemUser: 12
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 5 currentUser: 9 itemUser: 7
+nowboard-panel-simple-Z59-0Ok7.js:1 NowboardMenu rendering for item: 4 currentUser: 9 itemUser: 9

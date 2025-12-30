@@ -913,11 +913,13 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     let suggestion = "Please try again or contact support if the problem persists.";
     
     if (error instanceof Error) {
-      if (error.message.includes('Resume analysis failed')) {
+      if (error.message.includes('AI service') || error.message.includes('service') || error.message.includes('unavailable')) {
         errorType = "AI_SERVICE_ERROR";
-        errorMessage = "Unable to analyze resume - AI service is temporarily unavailable.";
+        errorMessage = error.message.includes('temporarily unavailable') 
+          ? "Our AI analysis service is temporarily unavailable. Please try again in a few moments."
+          : "Unable to analyze resume. Please try again.";
         statusCode = 503;
-        suggestion = "Please try again in a few moments. If this persists, your resume may be outside our supported format.";
+        suggestion = "The analysis service is currently experiencing issues. Please try uploading your resume again in a moment.";
       } else if (error.message.includes('Unable to extract text') || error.message.includes('empty') || error.message.includes('unreadable')) {
         errorType = "TEXT_EXTRACTION_ERROR";
         errorMessage = "Could not read the content of your document. Make sure it's a valid, readable file with actual text.";
