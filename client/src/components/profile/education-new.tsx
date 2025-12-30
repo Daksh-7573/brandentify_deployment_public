@@ -364,13 +364,13 @@ export default function Education() {
 
       {/* Add Education Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] relative">
+        <DialogContent className="sm:max-w-[550px]">
           <button
             onClick={() => setIsAddModalOpen(false)}
-            className="absolute top-4 right-4 p-1 text-gray-500 hover:text-gray-700 transition-colors z-50"
+            className="fixed top-6 right-6 p-1.5 text-gray-400 hover:text-gray-600 transition-colors z-50 hover:bg-gray-200/10 rounded"
             aria-label="Close"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
