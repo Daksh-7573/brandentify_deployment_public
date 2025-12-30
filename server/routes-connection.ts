@@ -154,6 +154,14 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
       });
     }
     
+    // Validate that receiver exists
+    const receiver = await storage.getUser(receiverId);
+    if (!receiver) {
+      return res.status(400).json({ 
+        message: 'Invalid recipient. Cannot send connection request to this user.' 
+      });
+    }
+    
     // Check if users are already connected
     const alreadyConnected = await storage.areUsersConnected(senderId, receiverId);
     if (alreadyConnected) {
