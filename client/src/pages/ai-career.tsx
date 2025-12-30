@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export default function AICareerPage() {
   const { user } = useAuth();
-  const userId = user?.id || 1; // Use authenticated user or fallback to demo
+  const userId = user?.id; // Use authenticated user or fallback to demo
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   
   // Context data to pass to Musk AI

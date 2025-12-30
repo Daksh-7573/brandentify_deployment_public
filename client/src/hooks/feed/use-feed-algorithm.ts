@@ -50,7 +50,7 @@ export interface FeedAlgorithmOptions<T extends FeedItem> {
  */
 export function useFeedAlgorithm<T extends FeedItem>(options: FeedAlgorithmOptions<T>) {
   const { user } = useAuth();
-  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  const userId = user?.id; // Default to 1 (demo user) if not authenticated
   
   const [filteredItems, setFilteredItems] = useState<T[]>([]);
   const [hasNewContent, setHasNewContent] = useState(false);

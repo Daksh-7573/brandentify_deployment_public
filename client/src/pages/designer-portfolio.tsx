@@ -118,7 +118,7 @@ export default function DesignerPortfolio() {
   const [showContactModal, setShowContactModal] = useState(false);
   const anim = useAnimationConfig();
   
-  const userId = user?.id || 1;
+  const userId = user?.id;
   
   // Fetch user profile data
   const { data: profile } = useQuery<User>({

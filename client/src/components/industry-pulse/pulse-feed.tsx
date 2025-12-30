@@ -41,7 +41,7 @@ interface PulseItem {
 
 export default function PulseFeed() {
   const { user } = useAuth();
-  const userId = user?.id || 1; // Default to demo user if not logged in
+  const userId = user?.id; // Default to demo user if not logged in
   
   const [activeTab, setActiveTab] = useState<string>("all");
   const [relevanceSort, setRelevanceSort] = useState(true);

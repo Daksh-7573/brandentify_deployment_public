@@ -113,7 +113,7 @@ interface NowboardItem {
 export default function NowboardPanel() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const userId = user?.id || 1; // Default to demo user if not logged in
+  const userId = user?.id; // Default to demo user if not logged in
   
   console.log("NowboardPanel rendering - user:", user, "userId:", userId);
   

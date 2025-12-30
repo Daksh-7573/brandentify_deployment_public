@@ -19,9 +19,9 @@ export default function Header() {
   // Helper function to check if current path matches
   const isActive = (routePath: string) => path === routePath;
   
-  // PERFORMANCE FIX: Use same numeric database ID logic as all other pages
-  // This eliminates redundant API calls and cache inconsistencies
-  const userId = user?.id || 1; // Use numeric database ID or demo fallback
+  // PERFORMANCE FIX: Use authenticated user's numeric ID only (no fallback)
+  // This prevents 404 errors during initial auth load
+  const userId = user?.id; // Use numeric database ID, undefined until auth completes
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isLoading, isError } = useQuery({
@@ -41,7 +41,7 @@ export default function Header() {
       console.log("[HEADER PERFORMANCE] User data loaded:", data ? 'SUCCESS' : 'NULL');
       return data;
     },
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!userId && !isLoading, // Only run query if userId exists and auth is complete
     staleTime: 0, // Always consider data stale so updates show immediately
     refetchOnWindowFocus: false // Don't auto-refetch to avoid unnecessary calls
   });

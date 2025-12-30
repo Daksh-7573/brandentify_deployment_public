@@ -272,8 +272,9 @@ export default function ChatInterface({ initialQuestion }: ChatInterfaceProps = 
     e.preventDefault();
     
     if (!inputMessage.trim()) return;
+    if (!user?.id) return; // Don't submit if user not authenticated
     
-    const userId = user?.id || 1; // Use authenticated user ID or fallback to demo user
+    const userId = user.id; // Use authenticated user ID
     const userMessage: Message = {
       id: Date.now().toString(),
       message: inputMessage,
