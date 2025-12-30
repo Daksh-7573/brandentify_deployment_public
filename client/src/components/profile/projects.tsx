@@ -1050,7 +1050,16 @@ export default function Projects() {
       
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent relative">
+          <button
+            onClick={() => setIsAddModalOpen(false)}
+            className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors z-50"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
           </DialogHeader>

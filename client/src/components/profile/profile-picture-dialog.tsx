@@ -268,7 +268,16 @@ export function ProfilePictureDialog({
       if (isUploading && !newOpen) return;
       onOpenChange(newOpen);
     }}>
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl relative">
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors z-50"
+          aria-label="Close"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
         <DialogHeader>
           <DialogTitle className="text-white font-semibold">Profile Picture</DialogTitle>
           <DialogDescription className="text-white/70">
