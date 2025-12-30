@@ -10341,8 +10341,7 @@ ${extractedText.substring(0, 5000)}
             assignedAt: new Date(),
             assignedDate: todayDateString,
             weekNumber: currentWeek,
-            year: currentYear,
-            bucket: 'daily'
+            year: currentYear
           })
           .returning();
         
