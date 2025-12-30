@@ -3665,11 +3665,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
+      // Get current user from session
+      const currentUserId = (req.session as any)?.userId || req.user?.id;
+      if (!currentUserId) {
+        return res.status(401).json({ message: "You must be logged in to delete a project" });
+      }
+      
       // First, fetch the project to make sure it exists
       const existingProject = await storage.getProjectById(projectId);
       
       if (!existingProject) {
         return res.status(404).json({ message: "Project not found" });
+      }
+      
+      // Verify ownership - only the project owner can delete it
+      if (existingProject.userId !== currentUserId) {
+        return res.status(403).json({ message: "You can only delete your own projects" });
       }
       
       // Delete the project

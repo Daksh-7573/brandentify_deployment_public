@@ -1,0 +1,101 @@
+Making API calls to /api/projects/13/collaborators and /api/projects/13/endorsements
+profile-neo-CDwY52MX.js:14 Collaborators response status: 200 
+profile-neo-CDwY52MX.js:14 Endorsements response status: 200 
+profile-neo-CDwY52MX.js:14 Fresh project collaborators: []
+profile-neo-CDwY52MX.js:14 Fresh project endorsements: []
+index-DpWrzlM4.js:238 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-DpWrzlM4.js:238
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+aw @ index-DpWrzlM4.js:41
+E @ index-DpWrzlM4.js:26
+L @ index-DpWrzlM4.js:26Understand this warning
+profile-neo-CDwY52MX.js:14 [USER ID DEBUG] User object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:14 [USER ID DEBUG] Selected userIdentifier: 9
+profile-neo-CDwY52MX.js:14 Profile page render - user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …}
+profile-neo-CDwY52MX.js:14 Profile page render - userIdentifier: 9
+profile-neo-CDwY52MX.js:14 Profile page render - isUserDataLoading: false
+profile-neo-CDwY52MX.js:14 Profile page render - userData: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-CDwY52MX.js:14 Profile page render - userDataError: null
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userIdentifier: 9
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userData full object: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+profile-utils-DWZVIC3W.js:1 Profile Completion Input: {userData: 'User ID: 9', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+profile-utils-DWZVIC3W.js:1 User data being used for calculation: {name: 'Varun Chawla', photoURL: 'exists', title: 'Founder', location: 'Agra, India', industry: 'Finance', …}
+profile-utils-DWZVIC3W.js:1 Profile completion percentage: 60
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] userData?.lookingFor: business_partnerships
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] Found category: {value: 'business_partnerships', label: 'Business Partnerships', icon: '🚀'}
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] Final label: Business Partnerships Icon: 🚀
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] isLoading: false
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userData ready: true
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userId: 9
+profile-picture-dialog-bsmaRFbZ.js:2 useProfileServices hook - services found directly: 4
+profile-picture-dialog-bsmaRFbZ.js:2 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 4, isLoading: false, isError: false, error: undefined}
+profile-neo-CDwY52MX.js:14 Skills component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:14 Skills component - Using userIdentifier: 9
+profile-neo-CDwY52MX.js:11 WorkExperience component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:11 WorkExperience component - Using userIdentifier: 9
+profile-picture-dialog-bsmaRFbZ.js:2 ProfilePictureDialog rendered with open: false
+profile-picture-dialog-bsmaRFbZ.js:2 [PROFILE DIALOG DEBUG] Auth user data: {id: 9, uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-picture-dialog-bsmaRFbZ.js:2 [PROFILE DIALOG DEBUG] Using actualUserId: 9
+profile-neo-CDwY52MX.js:14  DELETE https://brandentifier.replit.app/api/projects/13 404 (Not Found)
+mutationFn @ profile-neo-CDwY52MX.js:14
+fn @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+execute @ index-DpWrzlM4.js:49
+await in execute
+mutate @ useMutation-Cxqy8tz1.js:1
+(anonymous) @ useMutation-Cxqy8tz1.js:1
+onClick @ profile-neo-CDwY52MX.js:14
+HC @ index-DpWrzlM4.js:38
+GC @ index-DpWrzlM4.js:38
+QC @ index-DpWrzlM4.js:38
+jm @ index-DpWrzlM4.js:38
+hx @ index-DpWrzlM4.js:38
+(anonymous) @ index-DpWrzlM4.js:38
+Rh @ index-DpWrzlM4.js:41
+L0 @ index-DpWrzlM4.js:38
+tu @ index-DpWrzlM4.js:38
+rh @ index-DpWrzlM4.js:38
+uT @ index-DpWrzlM4.js:38Understand this error
+profile-neo-CDwY52MX.js:14 [USER ID DEBUG] User object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:14 [USER ID DEBUG] Selected userIdentifier: 9
+profile-neo-CDwY52MX.js:14 Profile page render - user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …}
+profile-neo-CDwY52MX.js:14 Profile page render - userIdentifier: 9
+profile-neo-CDwY52MX.js:14 Profile page render - isUserDataLoading: false
+profile-neo-CDwY52MX.js:14 Profile page render - userData: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-CDwY52MX.js:14 Profile page render - userDataError: null
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userIdentifier: 9
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] userData full object: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-CDwY52MX.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+profile-utils-DWZVIC3W.js:1 Profile Completion Input: {userData: 'User ID: 9', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+profile-utils-DWZVIC3W.js:1 User data being used for calculation: {name: 'Varun Chawla', photoURL: 'exists', title: 'Founder', location: 'Agra, India', industry: 'Finance', …}
+profile-utils-DWZVIC3W.js:1 Profile completion percentage: 60
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] userData?.lookingFor: business_partnerships
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] Found category: {value: 'business_partnerships', label: 'Business Partnerships', icon: '🚀'}
+profile-neo-CDwY52MX.js:14 [PROFILE NEO DEBUG] Final label: Business Partnerships Icon: 🚀
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] isLoading: false
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userData ready: true
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userId: 9
+profile-picture-dialog-bsmaRFbZ.js:2 useProfileServices hook - services found directly: 4
+profile-picture-dialog-bsmaRFbZ.js:2 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 4, isLoading: false, isError: false, error: undefined}
+profile-neo-CDwY52MX.js:14 Skills component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:14 Skills component - Using userIdentifier: 9
+profile-neo-CDwY52MX.js:11 WorkExperience component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-CDwY52MX.js:11 WorkExperience component - Using userIdentifier: 9
+profile-picture-dialog-bsmaRFbZ.js:2 ProfilePictureDialog rendered with open: false
+profile-picture-dialog-bsmaRFbZ.js:2 [PROFILE DIALOG DEBUG] Auth user data: {id: 9, uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-picture-dialog-bsmaRFbZ.js:2 [PROFILE DIALOG DEBUG] Using actualUserId: 9
