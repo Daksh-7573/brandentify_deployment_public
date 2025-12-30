@@ -129,13 +129,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const handleGoogleAuthSuccess = async (event: Event) => {
       const customEvent = event as CustomEvent<{ user: AuthUser }>;
       const { user: userData } = customEvent.detail;
-      console.log('[Auth] Google auth success event received:', userData.email);
+      console.log('[Auth] Google auth success event received:', userData?.email);
       
       // Verify with server session after OAuth callback
       const verifiedUser = await fetchServerSession();
       if (verifiedUser) {
+        console.log('[Auth] Session verified after Google auth, updating user state');
         setUser(verifiedUser);
         setIsLoading(false);
+        loadingRef.current = false;
         
         // Process pending referral if exists
         const referralCode = sessionStorage.getItem('referral_code');
@@ -143,6 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('[Referral] Found pending referral code, processing...');
           processReferral(verifiedUser.id, referralCode);
         }
+      } else {
+        console.warn('[Auth] Session verification failed after Google auth event');
       }
     };
 

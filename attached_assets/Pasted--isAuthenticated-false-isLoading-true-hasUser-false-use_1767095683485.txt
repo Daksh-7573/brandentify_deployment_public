@@ -1,0 +1,104 @@
+{isAuthenticated: false, isLoading: true, hasUser: false, userEmail: undefined}
+index-DpWrzlM4.js:184  GET https://brandentifier.replit.app/api/auth/session 401 (Unauthorized)
+(anonymous) @ index-DpWrzlM4.js:184
+w @ index-DpWrzlM4.js:184
+(anonymous) @ index-DpWrzlM4.js:184
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+aw @ index-DpWrzlM4.js:41
+E @ index-DpWrzlM4.js:26
+L @ index-DpWrzlM4.js:26Understand this error
+index-DpWrzlM4.js:184 [Auth] Server session response: {status: 401, ok: false}
+index-DpWrzlM4.js:184 [Auth] No valid session found
+index-DpWrzlM4.js:184 [Auth] Auth check complete
+index-DpWrzlM4.js:184 [Auth] Current state: {hasUser: false, isAuthenticated: false, isLoading: false, userEmail: undefined}
+auth-page-DksJ5oY2.js:11 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-DpWrzlM4.js:49  GET https://brandentifier.replit.app/api/users/1 404 (Not Found)
+Ye @ index-DpWrzlM4.js:49
+queryFn @ index-DpWrzlM4.js:234
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+aw @ index-DpWrzlM4.js:41
+E @ index-DpWrzlM4.js:26
+L @ index-DpWrzlM4.js:26Understand this error
+index-DpWrzlM4.js:49 API request failed: GET /api/users/1 - Status: 404
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+queryFn @ index-DpWrzlM4.js:234
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+aw @ index-DpWrzlM4.js:41
+E @ index-DpWrzlM4.js:26
+L @ index-DpWrzlM4.js:26Understand this warning
+auth:317 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+auth:318 📊 Total page load time: 976.10ms
+auth:319 🔥 Firebase init time: 976.10ms
+auth:327 ✅ [Strategy 1] Preconnect/Preload: 5 preconnect + 2 preload + 18 modulepreload links active
+auth:328 ⚡ Expected improvement: 100-300ms faster cold starts
+auth:333 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+auth:334 ⚡ Expected improvement: 150-250ms faster auth loads
+auth:363 🔄 [Strategy 4] Service Worker: Installing...
+auth:370 🎯 PERFORMANCE STATUS: GOOD - Optimizations improving load times
+auth:375 📈 Performance Optimization Complete - All 4 strategies active!
+index-DpWrzlM4.js:49 API Error 404 from https://brandentifier.replit.app/api/users/1: {"message":"User not found"}
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+queryFn @ index-DpWrzlM4.js:234
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+aw @ index-DpWrzlM4.js:41
+E @ index-DpWrzlM4.js:26
+L @ index-DpWrzlM4.js:26Understand this error
+auth:343 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+auth:344 ⚡ Expected improvement: 50-100ms perceived performance boost
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=1
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 1
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=1
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 1
+auth:1 The resource https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+auth:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKaW1wb3J0ICIuL3N0eWxlcy9uZW8tZ2xhc3MtbWFpbi5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy10aGVtZS5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy1zcG90aWZ5LmNzcyI7CgovLyBOb3RlOiBGaXJlYmFzZSByZW1vdmVkIC0gdXNpbmcgY3VzdG9tIE9BdXRoIG9ubHkKCi8vIFBlcmZvcm1hbmNlIG1lYXN1cmVtZW50CmNvbnN0IGFwcFN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwpjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCBpbml0aWFsaXphdGlvbiBzdGFydGVkJyk7CgovLyBSZW1vdmUgSFRNTCBsb2FkZXIgaW1tZWRpYXRlbHkgd2hlbiBSZWFjdCBhcHAgc3RhcnRzCmNvbnN0IGxvYWRlciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAtbG9hZGVyJyk7CmlmIChsb2FkZXIpIHsKICBsb2FkZXIuc3R5bGUub3BhY2l0eSA9ICcwJzsKICBsb2FkZXIuc3R5bGUudHJhbnNpdGlvbiA9ICdvcGFjaXR5IDAuMTVzIGVhc2Utb3V0JzsKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGxvYWRlci5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgY29uc29sZS5sb2coJ1tQRVJGXSBTa2VsZXRvbiBsb2FkZXIgcmVtb3ZlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIGFwcFN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgfSwgMTUwKTsKfQoKLy8gQ2hlY2sgaWYgd2Ugc2hvdWxkIHVzZSB0aGUgc2ltcGxlIGFwcCBvciB0aGUgZnVsbCBhcHAKY29uc3QgdXNlU2ltcGxlQXBwID0gZmFsc2U7IC8vIFNldCB0byB0cnVlIGZvciB0ZXN0aW5nCgovLyBQcm9ncmVzc2l2ZSByZW5kZXJpbmcgLSBzdGFydCB3aXRoIGNyaXRpY2FsIGNvbXBvbmVudHMKY29uc3QgcmVuZGVyQXBwID0gKCkgPT4gewogIGNvbnN0IHJlbmRlclN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwogIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgcmVuZGVyaW5nIHN0YXJ0ZWQnKTsKICAKICBjcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikhKS5yZW5kZXIoCiAgICB1c2VTaW1wbGVBcHAgPyA8U2ltcGxlQXBwIC8+IDogPEFwcCAvPgogICk7CiAgCiAgLy8gUmVwb3J0IHJlbmRlcmluZyB0aW1lIGFmdGVyIFJlYWN0IGhhcyBtb3VudGVkCiAgc2V0VGltZW91dCgoKSA9PiB7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCByZW5kZXJlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIHJlbmRlclN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFRvdGFsIGluaXRpYWxpemF0aW9uIHRpbWU6JywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAwKTsKfTsKCi8vIE9wdGltaXplIHJlbmRlcmluZyB0aW1pbmcKaWYgKGRvY3VtZW50LnJlYWR5U3RhdGUgPT09ICdsb2FkaW5nJykgewogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCByZW5kZXJBcHApOwp9IGVsc2UgewogIHJlbmRlckFwcCgpOwp9Cg== was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning

@@ -70,8 +70,15 @@ export function FastGoogleAuth() {
         }
 
         if (sessionVerified) {
-          console.log('🚀 [FastGoogleAuth] Redirecting to dashboard...');
-          window.location.href = '/dashboard';
+          console.log('🚀 [FastGoogleAuth] Session verified, dispatching event and redirecting...');
+          // Dispatch event to trigger auth context refresh
+          window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
+            detail: { user: sessionData } 
+          }));
+          // Give auth context time to update before redirecting
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 100);
         } else {
           console.log('⚠️ [FastGoogleAuth] Session verification failed after retries, reloading page...');
           window.location.reload();
@@ -149,8 +156,15 @@ export function FastGoogleAuth() {
               if (sessionResponse.ok) {
                 const sessionData = await sessionResponse.json();
                 if (sessionData.success && sessionData.user) {
-                  console.log('✅ [FastGoogleAuth] Session found after popup close! Redirecting...');
-                  window.location.href = '/dashboard';
+                  console.log('✅ [FastGoogleAuth] Session found after popup close! Dispatching event and redirecting...');
+                  // Dispatch event to trigger auth context refresh
+                  window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
+                    detail: { user: sessionData.user } 
+                  }));
+                  // Give auth context time to update before redirecting
+                  setTimeout(() => {
+                    window.location.href = '/dashboard';
+                  }, 100);
                   return;
                 }
               }
