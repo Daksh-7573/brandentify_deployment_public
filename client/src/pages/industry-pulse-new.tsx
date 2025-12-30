@@ -416,7 +416,7 @@ function PollVoting({ pulse }: PollVotingProps) {
   
   // Get the current user ID from auth context
   const { user } = useAuth();
-  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  const userId = user?.id; // Use authenticated user ID only
   
   // Fetch user's vote for this poll
   const { data: userVoteData } = useQuery<any>({
@@ -1228,7 +1228,7 @@ export default function IndustryPulsePage() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const { user, isLoading: isAuthLoading } = useAuth();
-  const userId = user?.id || 1; // Get current user ID for personalized pulses, default to 1
+  const userId = user?.id; // Get current user ID for personalized pulses
   
   // DEBUG: Log the userId being used
   console.log('[PULSE PAGE] user:', user, 'userId:', userId, 'user?.id:', user?.id);
