@@ -388,29 +388,30 @@ export default function Dashboard() {
     enabled: !!userId
   });
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const viewParam = params.get('view');
-    const projectIdParam = params.get('projectId');
-    
-    if (viewParam === 'project' && projectIdParam) {
-      setView('project');
-      setProjectId(projectIdParam);
-    }
-  }, []);
-
   const handleBackToDashboard = () => {
     setView(null);
     setProjectId(null);
     setLocation('/dashboard');
   };
 
-  if (!isAuthenticated && !isDemoMode) {
+  // Show loading state while auth is being confirmed
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <h2 className="text-2xl font-bold">Verifying your session...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Please sign in to access your dashboard</h2>
-          <Button onClick={() => setLocation('/login')}>Sign In</Button>
+          <Button onClick={() => setLocation('/auth')}>Sign In</Button>
         </div>
       </div>
     );
