@@ -116,8 +116,8 @@ interface Endorsement {
 }
 
 export default function Projects() {
-  const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.uid || 0);
+  const { user } = useAuth();
+  const userId = user?.id;
   const { toast } = useToast();
   
   // State for projects and current data

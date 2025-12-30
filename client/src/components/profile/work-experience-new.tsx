@@ -28,8 +28,8 @@ type WorkExperienceItem = {
 };
 
 export default function WorkExperience() {
-  const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+  const { user } = useAuth();
+  const userId = user?.id;
   
   // Fetch work experiences from the API with proper caching
   const { data: serverExperiences, isLoading, refetch } = useQuery({

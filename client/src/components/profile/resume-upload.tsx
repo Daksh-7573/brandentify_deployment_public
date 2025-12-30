@@ -23,7 +23,7 @@ export default function ResumeUpload() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
-  const { user, isDemoMode, refreshUserData } = useAuth();
+  const { user } = useAuth();
   
   const validateFile = (selectedFile: File): boolean => {
     // Validate file type
@@ -139,8 +139,12 @@ export default function ResumeUpload() {
       const base64Data = await fileReadPromise;
       console.log("File successfully converted to base64, length:", base64Data.length);
       
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      if (!user?.id) {
+        throw new Error("Not authenticated");
+      }
+      
+      // Use authenticated user's numeric ID
+      const userId = user.id;
       
       // Save the resume
       console.log("Sending resume to server");
@@ -236,8 +240,12 @@ export default function ResumeUpload() {
     setIsConfirming(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      if (!user?.id) {
+        throw new Error("Not authenticated");
+      }
+      
+      // Use authenticated user's numeric ID
+      const userId = user.id;
       
       // Call the confirm-resume-data endpoint to save the data
       const response = await apiRequest('POST', '/api/confirm-resume-data', {

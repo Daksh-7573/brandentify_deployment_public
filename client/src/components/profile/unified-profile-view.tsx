@@ -23,7 +23,7 @@ interface UnifiedProfileViewProps {
 export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUserId }) => {
   const { userId: paramUserId } = useParams<{ userId: string }>();
   const userId = propUserId || paramUserId;
-  const parsedUserId = userId ? parseInt(userId) : 1; // Default to user ID 1 if none provided
+  const parsedUserId = userId ? parseInt(userId) : undefined; // No fallback - require valid ID
   
   const { data: profileData, isLoading, error } = useUserProfile(parsedUserId);
   

@@ -17,9 +17,18 @@ export default function LinkedInImport() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   const { toast } = useToast();
-  const { user, isDemoMode, refreshUserData } = useAuth();
+  const { user } = useAuth();
   
   const handleImport = async () => {
+    if (!user?.id) {
+      toast({
+        title: "Not Authenticated",
+        description: "Please sign in to import your LinkedIn profile.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!profileUrl || !profileUrl.includes('linkedin.com')) {
       toast({
         title: "Invalid URL",
@@ -32,8 +41,8 @@ export default function LinkedInImport() {
     setIsParsing(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // Use authenticated user's numeric ID
+      const userId = user.id;
       
       const response = await apiRequest('POST', '/api/parse-linkedin', {
         userId,
@@ -94,13 +103,13 @@ export default function LinkedInImport() {
   };
   
   const confirmAndSaveData = async () => {
-    if (!parsedData) return;
+    if (!parsedData || !user?.id) return;
     
     setIsConfirming(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // Use authenticated user's numeric ID
+      const userId = user.id;
       
       // Process the extracted data - add work experiences
       if (parsedData.experiences && parsedData.experiences.length > 0) {

@@ -93,11 +93,11 @@ const industryOptions = [
 ];
 
 export default function WorkExperience() {
-  const { user, isDemoMode } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   
-  // Get user ID (use demo ID if in demo mode)
-  const userId = isDemoMode ? 1 : (user?.uid || null);
+  // Get user ID from authenticated user
+  const userId = user?.id;
   
   // Get user data from profile page
   const { data: userData } = useQuery<any>({
