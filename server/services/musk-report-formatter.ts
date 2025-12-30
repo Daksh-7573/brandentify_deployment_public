@@ -30,3 +30,15 @@ export function formatMuskReport(
   // Return the raw content as-is, no processing
   return rawContent;
 }
+
+/**
+ * Wrap analysis content as a formatted report
+ */
+export function wrapAnalysisAsReport(
+  content: string,
+  reportType: ReportType = 'general',
+  title?: string
+): string {
+  // Return the content wrapped as a report
+  return content;
+}

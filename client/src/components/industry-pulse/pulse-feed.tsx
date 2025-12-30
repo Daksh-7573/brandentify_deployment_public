@@ -238,7 +238,7 @@ export default function PulseFeed() {
                 <PulseCard 
                   key={pulse.id} 
                   pulse={pulse} 
-                  userId={userId} 
+                  userId={userId || 0} 
                   quotaData={userQuota} 
                 />
               ))}

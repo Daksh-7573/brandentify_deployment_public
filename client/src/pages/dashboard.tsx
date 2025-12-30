@@ -345,12 +345,12 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 }
 
 export default function Dashboard() {
-  const { user, isAuthenticated, isLoading, isDemoMode } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [view, setView] = useState<string | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
   
-  const userId = isDemoMode ? 1 : user?.uid;
+  const userId = user?.id;
   
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -363,22 +363,22 @@ export default function Dashboard() {
     }
   }, []);
 
-  const { data: projects = [] } = useQuery({
+  const { data: projects = [] as any[] } = useQuery({
     queryKey: [`/api/projects/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: workExperiences = [] } = useQuery({
+  const { data: workExperiences = [] as any[] } = useQuery({
     queryKey: [`/api/work-experiences/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: educations = [] } = useQuery({
+  const { data: educations = [] as any[] } = useQuery({
     queryKey: [`/api/educations/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: skills = [] } = useQuery({
+  const { data: skills = [] as any[] } = useQuery({
     queryKey: [`/api/skills/user/${userId}`],
     enabled: !!userId
   });

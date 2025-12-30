@@ -24,7 +24,7 @@ export default function Header() {
   const userId = user?.id; // Use numeric database ID, undefined until auth completes
   
   // Use TanStack Query to fetch and cache user data
-  const { data: userData, isLoading, isError } = useQuery({
+  const { data: userData, isLoading: userDataLoading, isError } = useQuery({
     queryKey: ['/api/users', userId],
     queryFn: async () => {
       if (!userId) return null;
@@ -41,7 +41,7 @@ export default function Header() {
       console.log("[HEADER PERFORMANCE] User data loaded:", data ? 'SUCCESS' : 'NULL');
       return data;
     },
-    enabled: !!userId && !isLoading, // Only run query if userId exists and auth is complete
+    enabled: !!userId, // Only run query if userId exists
     staleTime: 0, // Always consider data stale so updates show immediately
     refetchOnWindowFocus: false // Don't auto-refetch to avoid unnecessary calls
   });
@@ -138,7 +138,7 @@ export default function Header() {
   // Wait for userData to load before showing any photo to prevent flicker
   const getPhotoURL = () => {
     // Show placeholder while loading to prevent flicker
-    if (isLoading) {
+    if (userDataLoading) {
       return "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
     }
     
@@ -149,10 +149,10 @@ export default function Header() {
   const photoURL = getPhotoURL();
   
   // Performance monitoring logs
-  console.log('[HEADER PERFORMANCE] isLoading:', isLoading);
+  console.log('[HEADER PERFORMANCE] isLoading:', userDataLoading);
   console.log('[HEADER PERFORMANCE] userData ready:', !!userData);
   console.log('[HEADER PERFORMANCE] Photo source:', 
-    isLoading ? 'LOADING_PLACEHOLDER' : 
+    userDataLoading ? 'LOADING_PLACEHOLDER' : 
     userData?.photoURL ? 'CUSTOM_UPLOAD' : 
     user?.photoURL ? 'GOOGLE_PHOTO' : 'DEFAULT');
   console.log('[HEADER PERFORMANCE] userId:', userId);
