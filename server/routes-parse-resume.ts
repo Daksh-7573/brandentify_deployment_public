@@ -58,7 +58,22 @@ export async function handleParseResume(req: Request, res: Response) {
     
     // Parse the extracted text to get structured resume data
     console.log("Parsing extracted text into structured resume data");
-    const parsedResume = await parseResumeText(extractedText);
+    let parsedResume;
+    
+    try {
+      parsedResume = await parseResumeText(extractedText);
+    } catch (parseError) {
+      console.error("Resume parsing with AI failed, returning basic result:", parseError);
+      // Return success with extracted text but no structured parsing
+      parsedResume = {
+        experiences: [],
+        educations: [],
+        skills: [],
+        title: null,
+        location: null,
+        rawText: extractedText
+      };
+    }
     
     // Return the structured resume data in the format expected by the client
     return res.json({
@@ -67,7 +82,8 @@ export async function handleParseResume(req: Request, res: Response) {
       educations: parsedResume.educations || [],
       skills: parsedResume.skills || [],
       title: parsedResume.title || null,
-      location: parsedResume.location || null
+      location: parsedResume.location || null,
+      rawText: parsedResume.rawText || extractedText
     });
     
   } catch (error) {

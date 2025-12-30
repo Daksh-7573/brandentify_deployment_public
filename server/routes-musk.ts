@@ -287,6 +287,15 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       global.resumeContexts = {};
     }
     
+    // Return a simple fallback response if AI service is unavailable
+    if (!message || message.trim().length === 0) {
+      return res.json({
+        success: true,
+        response: "I'm ready to help! Please tell me about your career goals or ask any career-related questions.",
+        followUps: ["Tell me about your career goals", "What skills would you like to develop?", "How can I help you today?"]
+      });
+    }
+    
     // NOTE: User interaction memory is now stored in PostgreSQL via userMuskMemoryService
     
     // Handle both Firebase UIDs and numeric user IDs
