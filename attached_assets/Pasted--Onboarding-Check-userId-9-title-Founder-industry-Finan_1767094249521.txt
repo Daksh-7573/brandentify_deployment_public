@@ -1,0 +1,336 @@
+[Onboarding Check] {userId: 9, title: 'Founder', industry: 'Finance', location: 'Agra, India', lookingFor: 'business_partnerships', …}
+index-DpWrzlM4.js:241 [Onboarding] All mandatory fields present, no onboarding needed
+3index-DpWrzlM4.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-DpWrzlM4.js:241 [AppShell] Rendering with hideHeader: false
+index-DpWrzlM4.js:241 [AppShell] Rendering Header component
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] isLoading: false
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userData ready: true
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] userId: 9
+index-DpWrzlM4.js:49  POST https://brandentifier.replit.app/api/messaging/conversations/mark-all-read?userId=9 404 (Not Found)
+Ye @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 API request failed: POST /api/messaging/conversations/mark-all-read?userId=9 - Status: 404
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this warning
+index-DpWrzlM4.js:49 API Error 404 from https://brandentifier.replit.app/api/messaging/conversations/mark-all-read?userId=9: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/messaging/conversations/mark-all-read</pre>
+</body>
+</html>
+
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Uncaught (in promise) Error: 404: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/messaging/conversations/mark-all-read</pre>
+</body>
+</html>
+
+    at Y_ (index-DpWrzlM4.js:49:40501)
+    at async Ye (index-DpWrzlM4.js:49:43138)
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49  POST https://brandentifier.replit.app/api/messaging/conversations/mark-all-read?userId=9 404 (Not Found)
+Ye @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 API request failed: POST /api/messaging/conversations/mark-all-read?userId=9 - Status: 404
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this warning
+index-DpWrzlM4.js:49 API Error 404 from https://brandentifier.replit.app/api/messaging/conversations/mark-all-read?userId=9: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/messaging/conversations/mark-all-read</pre>
+</body>
+</html>
+
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Uncaught (in promise) Error: 404: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/messaging/conversations/mark-all-read</pre>
+</body>
+</html>
+
+    at Y_ (index-DpWrzlM4.js:49:40501)
+    at async Ye (index-DpWrzlM4.js:49:43138)
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+(anonymous) @ index-DpWrzlM4.js:234
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Cached response for /api/notifications/9/count
+index-DpWrzlM4.js:49  POST https://brandentifier.replit.app/api/encryption/keys 401 (Unauthorized)
+Ye @ index-DpWrzlM4.js:49
+Z @ ChatPage-oK3JIGwm.js:6
+(anonymous) @ ChatPage-oK3JIGwm.js:6
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 API request failed: POST /api/encryption/keys - Status: 401
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+Z @ ChatPage-oK3JIGwm.js:6
+(anonymous) @ ChatPage-oK3JIGwm.js:6
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this warning
+index-DpWrzlM4.js:49 API Error 401 from https://brandentifier.replit.app/api/encryption/keys: {"error":"Authentication required"}
+Y_ @ index-DpWrzlM4.js:49
+await in Y_
+Ye @ index-DpWrzlM4.js:49
+await in Ye
+Z @ ChatPage-oK3JIGwm.js:6
+(anonymous) @ ChatPage-oK3JIGwm.js:6
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+ChatPage-oK3JIGwm.js:6 [E2E] Failed to register public key: Error: 401: {"error":"Authentication required"}
+    at Y_ (index-DpWrzlM4.js:49:40501)
+    at async Ye (index-DpWrzlM4.js:49:43138)
+    at async Z (ChatPage-oK3JIGwm.js:6:37533)
+Z @ ChatPage-oK3JIGwm.js:6
+await in Z
+(anonymous) @ ChatPage-oK3JIGwm.js:6
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+index-DpWrzlM4.js:49  GET https://brandentifier.replit.app/api/encryption/keys/me?t=1767094225825 401 (Unauthorized)
+(anonymous) @ index-DpWrzlM4.js:49
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Unauthorized request to /api/encryption/keys/me
+(anonymous) @ index-DpWrzlM4.js:49
+await in (anonymous)
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this warning
+index-DpWrzlM4.js:49 Query error for /api/encryption/keys/me: Error: You must be logged in to view this content
+    at index-DpWrzlM4.js:49:45487
+(anonymous) @ index-DpWrzlM4.js:49
+await in (anonymous)
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+ChatPage-oK3JIGwm.js:6 WebSocket connected
+index-DpWrzlM4.js:49 Cached response for /api/notifications/9/count
+index-DpWrzlM4.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-DpWrzlM4.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+ChatPage-oK3JIGwm.js:6 WebSocket authenticated
+index-DpWrzlM4.js:49 Fetching data from: /api/encryption/keys/me
+index-DpWrzlM4.js:49  GET https://brandentifier.replit.app/api/encryption/keys/me?t=1767094227167 401 (Unauthorized)
+(anonymous) @ index-DpWrzlM4.js:49
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.then
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.catch
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error
+index-DpWrzlM4.js:49 Unauthorized request to /api/encryption/keys/me
+(anonymous) @ index-DpWrzlM4.js:49
+await in (anonymous)
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.then
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.catch
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this warning
+index-DpWrzlM4.js:49 Query error for /api/encryption/keys/me: Error: You must be logged in to view this content
+    at index-DpWrzlM4.js:49:45487
+(anonymous) @ index-DpWrzlM4.js:49
+await in (anonymous)
+s @ index-DpWrzlM4.js:49
+w @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.then
+(anonymous) @ index-DpWrzlM4.js:49
+Promise.catch
+w @ index-DpWrzlM4.js:49
+start @ index-DpWrzlM4.js:49
+fetch @ index-DpWrzlM4.js:49
+Js @ index-DpWrzlM4.js:49
+onSubscribe @ index-DpWrzlM4.js:49
+subscribe @ index-DpWrzlM4.js:49
+(anonymous) @ index-DpWrzlM4.js:49
+Rx @ index-DpWrzlM4.js:39
+cc @ index-DpWrzlM4.js:41
+Qo @ index-DpWrzlM4.js:41
+Tk @ index-DpWrzlM4.js:41
+Ir @ index-DpWrzlM4.js:41
+ag @ index-DpWrzlM4.js:41
+Pr @ index-DpWrzlM4.js:39
+(anonymous) @ index-DpWrzlM4.js:41Understand this error

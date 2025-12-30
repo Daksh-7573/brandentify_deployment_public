@@ -96,7 +96,10 @@ export default function Header() {
       // Mark all messages as read when visiting the messages page
       if (userId) {
         console.log('[HEADER PERFORMANCE] Marking all messages as read for userId:', userId);
-        apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
+        apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`).catch((error: any) => {
+          // Silently ignore if endpoint doesn't exist - it's optional functionality
+          console.debug('[HEADER] Mark-all-read request failed (optional):', error);
+        });
       }
     }
   }, [path, checkUnreadMessages, userId]);
@@ -304,7 +307,7 @@ export default function Header() {
                 setLocation('/messages');
                 // Mark messages as read if there are any unread
                 if (hasUnreadMessages && userId) {
-                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
+                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`).catch(() => {});
                   setHasUnreadMessages(false);
                 }
               }}
@@ -444,7 +447,7 @@ export default function Header() {
                 setIsMobileMenuOpen(false);
                 // Mark messages as read if there are any unread
                 if (hasUnreadMessages && userId) {
-                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
+                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`).catch(() => {});
                   setHasUnreadMessages(false);
                 }
               }}

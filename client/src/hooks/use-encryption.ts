@@ -39,8 +39,13 @@ export function useEncryption(userId: number | null) {
     try {
       await apiRequest('POST', '/api/encryption/keys', { publicKey });
       console.log('[E2E] Public key registered with server');
-    } catch (error) {
-      console.error('[E2E] Failed to register public key:', error);
+    } catch (error: any) {
+      // Silently ignore authentication errors - E2E encryption is optional
+      if (error?.message?.includes('401') || error?.status === 401) {
+        console.debug('[E2E] Encryption keys endpoint requires authentication (optional)');
+      } else {
+        console.error('[E2E] Failed to register public key:', error);
+      }
     }
   };
   
