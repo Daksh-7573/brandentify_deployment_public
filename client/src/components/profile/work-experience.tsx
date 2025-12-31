@@ -321,7 +321,7 @@ export default function WorkExperience() {
           </DialogTrigger>
           
           {/* Add Experience Dialog - Beautiful Glass UI */}
-          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden">
+          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden" hideCloseButton>
             <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
                  style={{
                    scrollbarWidth: 'thin',
@@ -612,7 +612,7 @@ export default function WorkExperience() {
             resetForm();
           }
         }}>
-          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden">
+          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden" hideCloseButton>
             <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
                  style={{
                    scrollbarWidth: 'thin',
