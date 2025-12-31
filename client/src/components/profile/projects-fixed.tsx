@@ -304,6 +304,7 @@ const ProjectsFixed = () => {
     mutationFn: async (projectId: number) => {
       const response = await fetch(`/api/projects/${projectId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       
       // Handle 404 as success since the project doesn't exist anyway
