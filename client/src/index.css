@@ -279,6 +279,8 @@ input.smart-radar-input::placeholder {
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
+  max-height: calc(100vh - 4rem) !important;
+  overflow-y: auto !important;
 }
 
 [role="dialog"].neo-glass-card:hover {
