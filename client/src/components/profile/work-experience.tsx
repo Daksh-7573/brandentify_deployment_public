@@ -322,11 +322,7 @@ export default function WorkExperience() {
           
           {/* Add Experience Dialog - Beautiful Glass UI */}
           <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden" hideCloseButton>
-            <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
-                 style={{
-                   scrollbarWidth: 'thin',
-                   scrollbarColor: 'rgba(255,255,255,0.3) transparent'
-                 }}>
+            <div className="space-y-6 py-5 overflow-x-hidden">
               <DialogHeader>
                 <DialogTitle className="text-white">
                   Add Career Path
@@ -583,7 +579,14 @@ export default function WorkExperience() {
                 </div>
 
                 {/* Form Action Buttons */}
-                <div className="flex justify-end pt-6 border-t border-white/10">
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddDialog(false)}
+                    className="px-6 py-3 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-md rounded-md shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-white/30"
+                  >
+                    Cancel
+                  </button>
                   <button
                     type="submit"
                     disabled={createExperienceMutation.isPending}
@@ -613,11 +616,7 @@ export default function WorkExperience() {
           }
         }}>
           <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden" hideCloseButton>
-            <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
-                 style={{
-                   scrollbarWidth: 'thin',
-                   scrollbarColor: 'rgba(255,255,255,0.3) transparent'
-                 }}>
+            <div className="space-y-6 py-5 overflow-x-hidden">
               <DialogHeader>
                 <DialogTitle className="text-white">
                   Edit Career Path
@@ -882,7 +881,7 @@ export default function WorkExperience() {
                       setEditingExperience(null);
                       resetForm();
                     }}
-                    className="px-6 py-3 text-white/80 font-medium rounded-md transition-all hover:text-white focus:outline-none"
+                    className="px-6 py-3 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-md rounded-md shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-white/30"
                   >
                     Cancel
                   </button>
