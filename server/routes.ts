@@ -3665,8 +3665,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
-      // Get current user from session
-      const currentUserId = (req.session as any)?.userId || req.user?.id;
+      // Get current user from JWT session cookie
+      let currentUserId: number | null = null;
+      const sessionToken = req.cookies?.brandentifier_session;
+      
+      if (sessionToken) {
+        try {
+          const decoded = jwt.verify(sessionToken, process.env.JWT_SECRET || 'brandentifier-jwt-secret-key') as any;
+          if (decoded.userId) {
+            currentUserId = decoded.userId;
+          }
+        } catch (jwtError) {
+          console.warn(`[DELETE /projects/:id] Invalid session token`);
+        }
+      }
+      
+      // Fallback to session or user object
+      if (!currentUserId) {
+        currentUserId = (req.session as any)?.userId || req.user?.id;
+      }
+      
       if (!currentUserId) {
         return res.status(401).json({ message: "You must be logged in to delete a project" });
       }
