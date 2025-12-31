@@ -205,14 +205,11 @@ const ProjectsFixed = () => {
       
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: "Success!",
         description: "Your project showcase has been saved successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
       setIsAddModalOpen(false);
       // Reset form and clear data
       projectForm.reset();
@@ -221,6 +218,11 @@ const ProjectsFixed = () => {
       setCurrentTeamMember({ role: '', brandentifier: '' });
       setSelectedIndustry('');
       setSelectedDomain('');
+      
+      // Immediately refetch to update the UI with new project
+      await queryClient.refetchQueries({ 
+        queryKey: ['/api/users', userIdentifier, 'projects']
+      });
     },
     onError: (error: any) => {
       console.error('Error creating project:', error);
@@ -273,14 +275,11 @@ const ProjectsFixed = () => {
       
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: "Success!",
         description: "Your project showcase has been updated successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
       setIsAddModalOpen(false);
       setEditingProjectId(null); // Clear editing state
       projectForm.reset();
@@ -289,6 +288,11 @@ const ProjectsFixed = () => {
       setCurrentTeamMember({ role: '', brandentifier: '' });
       setSelectedIndustry('');
       setSelectedDomain('');
+      
+      // Immediately refetch to update the UI with updated project
+      await queryClient.refetchQueries({ 
+        queryKey: ['/api/users', userIdentifier, 'projects']
+      });
     },
     onError: (error: any) => {
       console.error('Error updating project:', error);
@@ -336,8 +340,8 @@ const ProjectsFixed = () => {
       setIsViewModalOpen(false);
       setSelectedProject(null);
       
-      // Invalidate the query to force a refetch from the server
-      await queryClient.invalidateQueries({ 
+      // Refetch to verify the deletion with the server
+      await queryClient.refetchQueries({ 
         queryKey: ['/api/users', userIdentifier, 'projects']
       });
       
