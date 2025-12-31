@@ -108,7 +108,7 @@ const ProjectsFixed = () => {
   
   const { data: serverProjects = [], isLoading: queryLoading } = useQuery({
     queryKey: ['/api/users', userIdentifier, 'projects'],
-    enabled: !batchData.isFromBatch,
+    enabled: true,
     queryFn: async () => {
       try {
         const response = await fetch(`/api/users/${userIdentifier}/projects`);
@@ -169,8 +169,8 @@ const ProjectsFixed = () => {
     }
   });
   
-  const projects = batchData.isFromBatch ? (batchData.data || []) : serverProjects;
-  const isProjectsLoading = batchData.isFromBatch ? batchData.isLoading : queryLoading;
+  const projects = serverProjects;
+  const isProjectsLoading = queryLoading;
   
   // Create the mutation for saving projects to backend
   const createProjectMutation = useMutation({
