@@ -336,8 +336,11 @@ const ProjectsFixed = () => {
       setIsViewModalOpen(false);
       setSelectedProject(null);
       
-      // Immediately refetch to ensure data consistency
-      await queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
+      // Invalidate the cache and force refetch from server
+      await queryClient.invalidateQueries({ 
+        queryKey: ['/api/users', userIdentifier, 'projects'],
+        refetchType: 'all' // Force refetch all queries with this key
+      });
       
       // Also invalidate other related queries
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
