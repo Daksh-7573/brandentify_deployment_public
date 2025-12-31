@@ -374,7 +374,7 @@ export default function Services() {
                   
                   {/* Service description */}
                   {service.description && (
-                    <p className="mt-2 text-sm text-gray-300 break-words whitespace-pre-wrap">
+                    <p className="mt-2 text-sm text-gray-300 break-words whitespace-pre-wrap max-h-[150px] overflow-y-auto">
                       {service.description}
                     </p>
                   )}
