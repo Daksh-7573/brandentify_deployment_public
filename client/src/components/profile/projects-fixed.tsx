@@ -332,23 +332,13 @@ const ProjectsFixed = () => {
       return { previousProjects, projectId };
     },
     onSuccess: async (data, projectId, context) => {
-      // Immediately remove the deleted project from all relevant cache entries
-      queryClient.setQueriesData(
-        { queryKey: ['/api/users', userIdentifier, 'projects'] },
-        (oldData: any) => {
-          if (!Array.isArray(oldData)) return oldData;
-          return oldData.filter((project: Project) => project.id !== projectId);
-        }
-      );
-      
-      // Close the modal
+      // Close the modal first
       setIsViewModalOpen(false);
       setSelectedProject(null);
       
-      // Force a fresh refetch from the server to ensure consistency
-      queryClient.refetchQueries({ 
-        queryKey: ['/api/users', userIdentifier, 'projects'],
-        type: 'active'
+      // Invalidate the query to force a refetch from the server
+      await queryClient.invalidateQueries({ 
+        queryKey: ['/api/users', userIdentifier, 'projects']
       });
       
       toast({
