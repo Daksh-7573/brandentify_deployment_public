@@ -349,7 +349,7 @@ export default function Services() {
                   className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
                 >
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
+                    <h3 className="font-medium text-base flex-1 text-white">{service.title}</h3>
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
                         className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
@@ -374,7 +374,7 @@ export default function Services() {
                   
                   {/* Service description */}
                   {service.description && (
-                    <p className="mt-2 text-sm text-gray-300 line-clamp-2">
+                    <p className="mt-2 text-sm text-gray-300 break-words whitespace-pre-wrap">
                       {service.description}
                     </p>
                   )}

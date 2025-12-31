@@ -94,7 +94,7 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
           {userData.whatIOffer && (
             <div className="border-t pt-4">
               <div className="text-sm font-medium mb-2">What I Offer</div>
-              <div className="text-sm text-muted-foreground">{userData.whatIOffer}</div>
+              <div className="text-sm text-muted-foreground break-words whitespace-pre-wrap">{userData.whatIOffer}</div>
             </div>
           )}
           
