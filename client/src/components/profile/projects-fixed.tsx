@@ -328,17 +328,20 @@ const ProjectsFixed = () => {
         return old.filter((project: Project) => project.id !== projectId);
       });
       
-      // Close the modal immediately
+      // Return context with the previous projects for rollback
+      return { previousProjects, projectId };
+    },
+    onSuccess: async (data, projectId, context) => {
+      // Close the modal AFTER successful deletion
       setIsViewModalOpen(false);
       setSelectedProject(null);
       
-      // Return context with the previous projects for rollback
-      return { previousProjects };
-    },
-    onSuccess: () => {
-      // Invalidate to refetch and ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
+      // Immediately refetch to ensure data consistency
+      await queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier, 'projects'] });
+      
+      // Also invalidate other related queries
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      
       toast({
         title: "Success!",
         description: "Project deleted successfully.",
