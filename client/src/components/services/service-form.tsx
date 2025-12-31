@@ -43,11 +43,12 @@ interface ServiceFormProps {
   service?: Service;
   initialData?: Service | null;
   onSubmit: (data: any) => void; // Use any to allow us to transform the data before submission
+  onCancel?: () => void;
   isPending: boolean;
   existingServicesCount?: number;
 }
 
-export default function ServiceForm({ service, initialData, onSubmit, isPending, existingServicesCount = 0 }: ServiceFormProps) {
+export default function ServiceForm({ service, initialData, onSubmit, onCancel, isPending, existingServicesCount = 0 }: ServiceFormProps) {
   // Use initialData if provided, otherwise fall back to service
   const serviceData = initialData || service;
   // Maximum allowed services (6)
@@ -363,20 +364,32 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           )}
         />
         
-        <Button 
-          type="submit" 
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105" 
-          disabled={isPending}
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{serviceData ? "Updating..." : "Creating..."}</span>
-            </>
-          ) : (
-            <span>{serviceData ? "Update Service" : "Create Service"}</span>
+        <div className="flex gap-3">
+          {onCancel && (
+            <Button 
+              type="button"
+              variant="outline"
+              className="flex-1 py-2.5 px-4 border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all" 
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
           )}
-        </Button>
+          <Button 
+            type="submit" 
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105" 
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{serviceData ? "Updating..." : "Creating..."}</span>
+              </>
+            ) : (
+              <span>{serviceData ? "Update Service" : "Create Service"}</span>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   );

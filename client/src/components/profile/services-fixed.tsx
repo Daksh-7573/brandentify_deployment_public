@@ -323,6 +323,7 @@ export default function Services() {
               </DialogHeader>
               <ServiceForm 
                 onSubmit={handleCreate} 
+                onCancel={() => setIsCreateDialogOpen(false)}
                 isPending={isPendingCreate}
                 existingServicesCount={services.length}
               />
@@ -459,6 +460,7 @@ export default function Services() {
           {selectedService && (
             <ServiceForm 
               onSubmit={handleUpdate} 
+              onCancel={() => setIsEditDialogOpen(false)}
               isPending={isPendingUpdate}
               existingServicesCount={services.length}
               initialData={selectedService}
