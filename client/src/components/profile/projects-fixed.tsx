@@ -631,7 +631,7 @@ const ProjectsFixed = () => {
           if (videoInputRef.current) videoInputRef.current.value = '';
         }
       }}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent" hideCloseButton>
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">
               {editingProjectId ? 'Edit Showcase' : 'Add Showcase'}
@@ -1014,7 +1014,14 @@ const ProjectsFixed = () => {
               </Tabs>
               
               {/* Form Action Buttons */}
-              <div className="flex justify-end pt-6 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="px-6 py-3 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-md rounded-md shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-white/30"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={createProjectMutation.isPending}

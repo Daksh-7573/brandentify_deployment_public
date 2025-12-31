@@ -287,7 +287,7 @@ export default function Skills() {
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] neo-glass-card">
+        <DialogContent className="sm:max-w-[550px] neo-glass-card" hideCloseButton>
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
@@ -364,7 +364,14 @@ export default function Skills() {
               </div>
             </div>
           </div>
-          <DialogFooter className="flex justify-end pt-4">
+          <DialogFooter className="flex gap-3 justify-end pt-4">
+            <button 
+              type="button" 
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm py-2 px-4 rounded-md border flex items-center gap-2"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </button>
             <button 
               type="button" 
               className="neo-glass-button flex items-center gap-2 py-2 px-4"

@@ -208,7 +208,7 @@ export default function WorkExperienceComponent({ userFirebaseId, userNumericId 
           </DialogTrigger>
           
           {/* Add Experience Dialog - Beautiful Glass UI */}
-          <DialogContent className="sm:max-w-[550px] neo-glass-card">
+          <DialogContent className="sm:max-w-[550px] neo-glass-card" hideCloseButton>
             <div className="space-y-6 py-5">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2">

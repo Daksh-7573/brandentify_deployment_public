@@ -586,7 +586,7 @@ export default function Education() {
       
       {/* Education dialog for adding/editing */}
       <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent" hideCloseButton>
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">
               {editingEducation ? "Edit Academic Background" : "Add Academic Background"}
@@ -943,10 +943,17 @@ export default function Education() {
                 )}
               />
               
-              <DialogFooter>
+              <DialogFooter className="flex gap-3 justify-end">
+                <button 
+                  type="button" 
+                  className="px-6 py-3 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-md rounded-md shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-white/30"
+                  onClick={() => setOpenDialog(false)}
+                >
+                  Cancel
+                </button>
                 <button 
                   type="submit" 
-                  className="neo-glass-button"
+                  className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30 disabled:opacity-60 disabled:cursor-not-allowed"
                   disabled={createEducationMutation.isPending || updateEducationMutation.isPending}
                 >
                   {editingEducation ? "Update" : "Add"} Academic Background
