@@ -1037,7 +1037,7 @@ const ProjectsFixed = () => {
 
       {/* View Project Details Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent" hideCloseButton>
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">
               {selectedProject?.title || 'Project Details'}
@@ -1234,19 +1234,19 @@ const ProjectsFixed = () => {
                   >
                     Close
                   </button>
+
+                  <button
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                        deleteProjectMutation.mutate(selectedProject.id);
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 font-medium rounded-md transition-all flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </button>
                 </div>
-                
-                {/* Delete Icon - Bottom Right Corner */}
-                <button
-                  onClick={() => {
-                    if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-                      deleteProjectMutation.mutate(selectedProject.id);
-                    }
-                  }}
-                  className="absolute bottom-4 right-4 p-2 rounded-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 transition-colors"
-                >
-                  <Trash2 className="h-4 w-4 text-red-400" />
-                </button>
               </div>
             </div>
           )}
