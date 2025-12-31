@@ -26,14 +26,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
-  DialogClose
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X } from "lucide-react";
 import { 
   Select,
   SelectContent,
@@ -687,12 +685,6 @@ export default function ProfileNeo() {
       {/* Looking For Dialog */}
       <Dialog open={showLookingForDialog} onOpenChange={setShowLookingForDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
-          <DialogClose asChild>
-            <button className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors" aria-label="Close">
-              <X className="w-5 h-5" />
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-white">What are you looking for?</DialogTitle>
           </DialogHeader>
@@ -779,12 +771,6 @@ export default function ProfileNeo() {
       {/* Industry and Domain Dialog */}
       <Dialog open={showIndustryDialog} onOpenChange={setShowIndustryDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
-          <DialogClose asChild>
-            <button className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors" aria-label="Close">
-              <X className="w-5 h-5" />
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-white">Industry & Domain</DialogTitle>
           </DialogHeader>

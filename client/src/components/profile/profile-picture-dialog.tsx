@@ -4,9 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 import { ProfileUpload } from "./profile-upload";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { useAuth } from "@/hooks/use-auth";
@@ -271,12 +269,6 @@ export function ProfilePictureDialog({
       onOpenChange(newOpen);
     }}>
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-        <DialogClose asChild>
-          <button className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors" aria-label="Close">
-            <X className="w-5 h-5" />
-            <span className="sr-only">Close</span>
-          </button>
-        </DialogClose>
         <DialogHeader>
           <DialogTitle className="text-white font-semibold">Profile Picture</DialogTitle>
           <DialogDescription className="text-white/70">

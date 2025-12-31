@@ -24,7 +24,6 @@ import {
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -1052,12 +1051,6 @@ export default function Projects() {
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
-          <DialogClose asChild>
-            <button className="absolute top-4 right-4 p-1 text-white/60 hover:text-white transition-colors" aria-label="Close">
-              <X className="w-5 h-5" />
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
           </DialogHeader>
@@ -1491,12 +1484,6 @@ export default function Projects() {
       {currentProject && (
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-            <DialogClose asChild>
-              <button className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close">
-                <X className="w-5 h-5" />
-                <span className="sr-only">Close</span>
-              </button>
-            </DialogClose>
             <DialogHeader>
               <DialogTitle>Edit Showcase</DialogTitle>
             </DialogHeader>
@@ -2185,12 +2172,6 @@ export default function Projects() {
       {currentProject && (
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
           <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-            <DialogClose asChild>
-              <button className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close">
-                <X className="w-5 h-5" />
-                <span className="sr-only">Close</span>
-              </button>
-            </DialogClose>
             <DialogHeader>
               <DialogTitle className="text-xl">{currentProject.title}</DialogTitle>
               <div className="flex items-center text-sm text-muted-foreground">

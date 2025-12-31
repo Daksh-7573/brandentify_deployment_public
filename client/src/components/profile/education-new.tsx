@@ -6,8 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, CalendarIcon, Plus, Pencil, Trash } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -366,12 +365,6 @@ export default function Education() {
       {/* Add Education Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
         <DialogContent className="sm:max-w-[550px]">
-          <DialogClose asChild>
-            <button className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close">
-              <X className="w-5 h-5" />
-              <span className="sr-only">Close</span>
-            </button>
-          </DialogClose>
           <DialogHeader>
             <DialogTitle>{newEducation.id ? 'Edit Education' : 'Add Education'}</DialogTitle>
           </DialogHeader>
