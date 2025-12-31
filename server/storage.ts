@@ -10651,14 +10651,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    // First, set projectId to NULL for all pulses associated with this project
+    // Delete in order respecting foreign key constraints:
+    // 1. Delete project collaborators
+    await db.delete(projectCollaborators).where(eq(projectCollaborators.projectId, id));
+    
+    // 2. Delete project endorsements
+    await db.delete(projectEndorsements).where(eq(projectEndorsements.projectId, id));
+    
+    // 3. Set projectId to NULL for all pulses associated with this project
     // This allows the project to be deleted while keeping the pulses intact
     await db
       .update(pulses)
       .set({ projectId: null })
       .where(eq(pulses.projectId, id));
     
-    // Now delete the project
+    // 4. Now delete the project
     const result = await db.delete(projects).where(eq(projects.id, id));
     return result.rowCount > 0;
   }
