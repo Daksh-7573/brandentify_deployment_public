@@ -405,14 +405,14 @@ export default function Services() {
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
+        <DialogContent className="sm:max-w-[525px] neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Edit General Professional Offering</DialogTitle>
             <DialogDescription className="text-gray-300">
               Describe your overall professional services and expertise.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
             <div className="space-y-2">
               <label htmlFor="whatIOffer" className="text-sm font-medium text-white">
                 Description
