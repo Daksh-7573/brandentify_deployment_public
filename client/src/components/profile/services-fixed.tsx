@@ -412,7 +412,7 @@ export default function Services() {
               Describe your overall professional services and expertise.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
               <label htmlFor="whatIOffer" className="text-sm font-medium text-white">
                 Description
