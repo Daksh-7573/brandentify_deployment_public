@@ -1152,15 +1152,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             uq.week_number as "weekNumber",
             uq.year,
             uq.assigned_date as "assignedDate",
-            COALESCE(gcq.personalized_title, gsq.personalized_title, qd.title) as title,
-            COALESCE(gcq.personalized_description, gsq.personalized_description, qd.description) as description,
+            COALESCE(gsq.personalized_title, gcq.personalized_title, qd.title) as title,
+            COALESCE(gsq.personalized_description, gcq.personalized_description, qd.description) as description,
             qd.type as type,
             qd.target_count as "targetCount",
             qd.target_action as "targetAction",
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
-            COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
+            COALESCE(gsq.personalized_musk_tip, gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
             qd.quantity_type as "quantityType",
@@ -1211,6 +1211,8 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             guidanceSnippet: row.guidanceSnippet
           }
         })).filter(isSocialQuest);
+        
+        console.log(`[GET Social Daily] Found ${quests.length} active social quests for user ${userId}`);
       } else if (bucket === 'completed') {
         // Get completed social quests WITH personalized generated data
         const result = await pool.query(`

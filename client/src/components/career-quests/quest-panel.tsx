@@ -57,8 +57,21 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     ...(dailyCareerQuests || []),
     ...(canAccessSocialQuests ? (dailySocialQuests || []) : [])
   ];
-  
-  // Removed XP progress functionality since it's now in the parent component
+
+  // Debugging logs to help identify missing quests
+  useEffect(() => {
+    if (userId) {
+      console.log(`[QuestPanel] User ${userId} daily quests:`, {
+        careerCount: dailyCareerQuests?.length || 0,
+        socialCount: dailySocialQuests?.length || 0,
+        combinedCount: dailyQuests.length,
+        canAccessSocialQuests
+      });
+      if (dailySocialQuests && dailySocialQuests.length > 0) {
+        console.log(`[QuestPanel] Social quest sample:`, dailySocialQuests[0]);
+      }
+    }
+  }, [userId, dailyCareerQuests, dailySocialQuests, dailyQuests.length, canAccessSocialQuests]);
 
   useEffect(() => {
     const refetchInterval = setInterval(() => {

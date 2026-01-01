@@ -292,7 +292,7 @@ export const useUserDailySocialQuests = (userId?: number) => {
   const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   
   return useQuery({
-    queryKey: [userId ? `/api/users/${userId}/social-quests/current-day` : null, currentDate],
+    queryKey: [userId ? `/api/users/${userId}/social-quests/bucket/daily` : null, currentDate],
     queryFn: async () => {
       // If no user ID provided, return empty array
       if (!userId) {
@@ -301,16 +301,15 @@ export const useUserDailySocialQuests = (userId?: number) => {
       
       try {
         // Get social quests for current day for this user
-        const currentDayRes = await fetch(`/api/users/${userId}/social-quests/current-day`);
+        const currentDayRes = await fetch(`/api/users/${userId}/social-quests/bucket/daily`);
         if (currentDayRes.ok) {
           const contentType = currentDayRes.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
             const quests = await currentDayRes.json() as any[];
-            // Only return ACTIVE quests for the daily tab
-            const activeQuests = quests.filter(quest => quest.status === 'active');
-            if (activeQuests && activeQuests.length > 0) {
-              console.log(`Found ${activeQuests.length} active social quests for current day for user ${userId}`);
-              return activeQuests;
+            // Quests from bucket/daily are already filtered for 'active' status in the backend
+            if (quests && quests.length > 0) {
+              console.log(`Found ${quests.length} active social quests for current day for user ${userId}`);
+              return quests;
             }
           }
         }
