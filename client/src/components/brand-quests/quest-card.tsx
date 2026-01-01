@@ -251,7 +251,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const { cleanContent: muskTipContent, hashtags: extractedHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
   
   // Get hashtags from database or extracted from tip
-  const displayHashtags = (quest as any).suggestedHashtags && (quest as any).suggestedHashtags.length > 0 
+  let displayHashtags = (quest as any).suggestedHashtags && (quest as any).suggestedHashtags.length > 0 
     ? (quest as any).suggestedHashtags 
     : (extractedHashtags.length > 0 ? extractedHashtags : ((questDefinition as any).suggestedHashtags || []));
   
