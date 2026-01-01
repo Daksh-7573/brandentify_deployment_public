@@ -28,15 +28,15 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   // 3. Flattened properties (direct from new API)
   const questDefinition = quest.questDefinition || quest.definition || {
     id: quest.questDefinitionId,
-    title: quest.personalizedTitle || quest.questTitle || '',
-    description: quest.personalizedDescription || quest.questDescription || '',
-    type: (quest.questType as QuestType) || 'social_quest',
-    targetCount: 1, // Default if not provided
-    targetAction: quest.targetAction || '',
-    xpReward: (quest.definition as any)?.xpReward || (quest.questDefinition as any)?.xpReward || 0,
+    title: (quest as any).title || quest.personalizedTitle || quest.questTitle || '',
+    description: (quest as any).description || quest.personalizedDescription || quest.questDescription || '',
+    type: (quest as any).type || (quest.questType as QuestType) || 'social_quest',
+    targetCount: (quest as any).targetCount || 1, // Default if not provided
+    targetAction: (quest as any).targetAction || quest.targetAction || '',
+    xpReward: (quest as any).xpReward || (quest.definition as any)?.xpReward || (quest.questDefinition as any)?.xpReward || 0,
     badgeReward: undefined,
     // For Musk tips, use any available field that might have it
-    muskTip: quest.personalizedMuskTip || quest.questMuskTip || quest.muskResponse || '',
+    muskTip: (quest as any).muskTip || (quest as any).musk_tip || quest.personalizedMuskTip || quest.questMuskTip || quest.muskResponse || '',
     isActive: true,
     createdAt: '',
     updatedAt: ''
@@ -172,6 +172,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskTip || 
     questDefinition.muskTip || 
     quest.muskResponse ||
+    // Check if it's on the quest object itself directly from SQL results
+    (quest as any).muskTip ||
+    (quest as any).musk_tip ||
     // Final fallback for debugging
     (quest.definition && (quest.definition as any).muskTip ? (quest.definition as any).muskTip : null);
 
@@ -218,20 +221,15 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   if (isSocialQuest || displayHashtags.length > 0) {
     console.log('Quest Debug:', {
       title: questDefinition.title,
+      description: questDefinition.description,
       targetAction: questDefinition.targetAction,
       isSocialQuest,
       hasHashtags: displayHashtags.length > 0,
       hashtags: displayHashtags,
-      suggestedHashtags: quest.suggestedHashtags,
-      extractedHashtags: extractedHashtags,
       rawMuskTip: rawMuskTipContent,
-      // Additional debug info
-      personalizedTitle: (quest as any).personalizedTitle,
-      personalizedDescription: (quest as any).personalizedDescription,
-      personalizedMuskTip: (quest as any).personalizedMuskTip,
-      definitionTargetAction: (quest.definition as any)?.targetAction,
-      questTargetAction: quest.targetAction,
-      questType: (quest.definition as any)?.type
+      // Full objects for inspection
+      quest,
+      questDefinition
     });
   }
 
@@ -322,18 +320,18 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         </p>
         
         {/* Deliverable Specifications - New specific quest metadata */}
-        {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType) && (
+        {((questDefinition as any)?.deliverableFormat || (questDefinition as any)?.quantityType || (quest as any).deliverableFormat) && (
           <div className="ml-7 mt-3 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 space-y-1.5">
-            {(questDefinition as any)?.deliverableFormat && (
+            {((questDefinition as any)?.deliverableFormat || (quest as any).deliverableFormat) && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">📋 Deliverable:</span>
-                <span>{(questDefinition as any).deliverableFormat}</span>
+                <span>{(questDefinition as any).deliverableFormat || (quest as any).deliverableFormat}</span>
               </div>
             )}
-            {(questDefinition as any)?.quantityValue && (questDefinition as any)?.quantityType && (
+            {((questDefinition as any)?.quantityValue || (quest as any).quantityValue) && ((questDefinition as any)?.quantityType || (quest as any).quantityType) && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">🎯 Requirement:</span>
-                <span>{(questDefinition as any).quantityValue} {(questDefinition as any).quantityType}</span>
+                <span>{(questDefinition as any).quantityValue || (quest as any).quantityValue} {(questDefinition as any).quantityType || (quest as any).quantityType}</span>
               </div>
             )}
             {/* Show detailed Type for career quests, Platform for social quests */}
@@ -342,7 +340,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 {questDefinition.type === 'social_quest' || questDefinition.type === 'social_post' ? (
                   <>
                     <span className="font-semibold">📱 Platform:</span>
-                    <span>{(questDefinition as any).platformConstraints || (questDefinition as any).platform || 'Social Media'}</span>
+                    <span>{(questDefinition as any).platformConstraints || (questDefinition as any).platform || (quest as any).platform || 'Social Media'}</span>
                   </>
                 ) : (
                   <>
@@ -357,10 +355,10 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 )}
               </div>
             )}
-            {(questDefinition as any)?.guidanceSnippet && (
+            {((questDefinition as any)?.guidanceSnippet || (quest as any).guidanceSnippet) && (
               <div className="flex items-start gap-2 text-xs text-blue-200">
                 <span className="font-semibold">💡 How:</span>
-                <span>{(questDefinition as any).guidanceSnippet}</span>
+                <span>{(questDefinition as any).guidanceSnippet || (quest as any).guidanceSnippet}</span>
               </div>
             )}
           </div>
