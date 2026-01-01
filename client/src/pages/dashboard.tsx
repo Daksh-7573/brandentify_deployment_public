@@ -52,7 +52,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   }, [projectId]);
   
   // Use React Query for proper data management
-  const { data: project, isLoading: loading, error } = useQuery({
+  const { data: project, isLoading: loading, error } = useQuery<any>({
     queryKey: [`/api/projects/${projectId}`],
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -67,7 +67,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   });
 
   // Fetch project collaborators
-  const { data: collaborators = [] } = useQuery({
+  const { data: collaborators = [] } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/collaborators`],
     staleTime: 300000,
     refetchOnWindowFocus: false,
@@ -75,7 +75,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   });
 
   // Fetch project endorsements
-  const { data: endorsements = [] } = useQuery({
+  const { data: endorsements = [] } = useQuery<any[]>({
     queryKey: [`/api/projects/${projectId}/endorsements`],
     staleTime: 300000,
     refetchOnWindowFocus: false,
