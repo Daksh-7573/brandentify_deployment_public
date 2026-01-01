@@ -1191,26 +1191,33 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           ORDER BY uq.assigned_at DESC
         `, [userId]);
         
-        quests = result.rows.map(row => ({
-          ...row,
-          definition: {
-            id: row.questDefinitionId,
-            title: row.title,
-            description: row.description,
-            type: row.type,
-            targetCount: row.targetCount,
-            targetAction: row.targetAction,
-            xpReward: row.xpReward,
-            badgeReward: row.badgeReward,
-            platform: row.platform,
-            muskTip: row.muskTip,
-            deliverableFormat: row.deliverableFormat,
-            quantityValue: row.quantityValue,
-            quantityType: row.quantityType,
-            platformConstraints: row.platformConstraints,
-            guidanceSnippet: row.guidanceSnippet
-          }
-        })).filter(isSocialQuest);
+        quests = result.rows.map(row => {
+          const questData = {
+            ...row,
+            definition: {
+              id: row.questDefinitionId,
+              title: row.title,
+              description: row.description,
+              type: row.type,
+              targetCount: row.targetCount,
+              targetAction: row.targetAction,
+              xpReward: row.xpReward,
+              badgeReward: row.badgeReward,
+              platform: row.platform,
+              muskTip: row.muskTip,
+              deliverableFormat: row.deliverableFormat,
+              quantityValue: row.quantityValue,
+              quantityType: row.quantityType,
+              platformConstraints: row.platformConstraints,
+              guidanceSnippet: row.guidanceSnippet
+            }
+          };
+          // Double-check top-level fields match for frontend safety
+          if (!questData.title && questData.definition.title) questData.title = questData.definition.title;
+          if (!questData.description && questData.definition.description) questData.description = questData.definition.description;
+          if (!questData.muskTip && questData.definition.muskTip) questData.muskTip = questData.definition.muskTip;
+          return questData;
+        }).filter(isSocialQuest);
         
         console.log(`[GET Social Daily] Found ${quests.length} active social quests for user ${userId}`);
       } else if (bucket === 'completed') {
@@ -1270,26 +1277,33 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           ORDER BY uq.completed_at DESC
         `, [userId]);
         
-        quests = result.rows.map(row => ({
-          ...row,
-          definition: {
-            id: row.questDefinitionId,
-            title: row.title,
-            description: row.description,
-            type: row.type,
-            targetCount: row.targetCount,
-            targetAction: row.targetAction,
-            xpReward: row.xpReward,
-            badgeReward: row.badgeReward,
-            platform: row.platform,
-            muskTip: row.muskTip,
-            deliverableFormat: row.deliverableFormat,
-            quantityValue: row.quantityValue,
-            quantityType: row.quantityType,
-            platformConstraints: row.platformConstraints,
-            guidanceSnippet: row.guidanceSnippet
-          }
-        })).filter(isSocialQuest);
+        quests = result.rows.map(row => {
+          const questData = {
+            ...row,
+            definition: {
+              id: row.questDefinitionId,
+              title: row.title,
+              description: row.description,
+              type: row.type,
+              targetCount: row.targetCount,
+              targetAction: row.targetAction,
+              xpReward: row.xpReward,
+              badgeReward: row.badgeReward,
+              platform: row.platform,
+              muskTip: row.muskTip,
+              deliverableFormat: row.deliverableFormat,
+              quantityValue: row.quantityValue,
+              quantityType: row.quantityType,
+              platformConstraints: row.platformConstraints,
+              guidanceSnippet: row.guidanceSnippet
+            }
+          };
+          // Double-check top-level fields match for frontend safety
+          if (!questData.title && questData.definition.title) questData.title = questData.definition.title;
+          if (!questData.description && questData.definition.description) questData.description = questData.definition.description;
+          if (!questData.muskTip && questData.definition.muskTip) questData.muskTip = questData.definition.muskTip;
+          return questData;
+        }).filter(isSocialQuest);
       } else if (bucket === 'missed') {
         // Get missed/expired social quests WITH personalized generated data
         const result = await pool.query(`
@@ -1347,26 +1361,33 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           ORDER BY uq.assigned_at DESC
         `, [userId]);
         
-        quests = result.rows.map(row => ({
-          ...row,
-          definition: {
-            id: row.questDefinitionId,
-            title: row.title,
-            description: row.description,
-            type: row.type,
-            targetCount: row.targetCount,
-            targetAction: row.targetAction,
-            xpReward: row.xpReward,
-            badgeReward: row.badgeReward,
-            platform: row.platform,
-            muskTip: row.muskTip,
-            deliverableFormat: row.deliverableFormat,
-            quantityValue: row.quantityValue,
-            quantityType: row.quantityType,
-            platformConstraints: row.platformConstraints,
-            guidanceSnippet: row.guidanceSnippet
-          }
-        })).filter(isSocialQuest);
+        quests = result.rows.map(row => {
+          const questData = {
+            ...row,
+            definition: {
+              id: row.questDefinitionId,
+              title: row.title,
+              description: row.description,
+              type: row.type,
+              targetCount: row.targetCount,
+              targetAction: row.targetAction,
+              xpReward: row.xpReward,
+              badgeReward: row.badgeReward,
+              platform: row.platform,
+              muskTip: row.muskTip,
+              deliverableFormat: row.deliverableFormat,
+              quantityValue: row.quantityValue,
+              quantityType: row.quantityType,
+              platformConstraints: row.platformConstraints,
+              guidanceSnippet: row.guidanceSnippet
+            }
+          };
+          // Double-check top-level fields match for frontend safety
+          if (!questData.title && questData.definition.title) questData.title = questData.definition.title;
+          if (!questData.description && questData.definition.description) questData.description = questData.definition.description;
+          if (!questData.muskTip && questData.definition.muskTip) questData.muskTip = questData.definition.muskTip;
+          return questData;
+        }).filter(isSocialQuest);
       }
 
       res.json(quests || []);

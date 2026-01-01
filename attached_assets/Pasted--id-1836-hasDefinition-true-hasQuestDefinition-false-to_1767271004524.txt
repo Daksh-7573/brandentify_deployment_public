@@ -1,0 +1,176 @@
+{id: 1836, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1790, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: daily
+injected.js:37 [QUEST HOOK DEBUG] Hook enabled: true
+injected.js:37 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: daily
+injected.js:37 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+injected.js:37 [QUEST PANEL DEBUG] Current quest data: {userId: 2, tabValue: 'social', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 59, …}
+injected.js:37 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 2, bucket: undefined
+injected.js:37 [QUEST HOOK DEBUG] Hook enabled: true
+injected.js:37 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 2, bucket: undefined
+injected.js:37 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+injected.js:37 [QUEST CARD] Full quest data: {id: 4831, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4830, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4829, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4707, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4551, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4549, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4424, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4423, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4311, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4128, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4126, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4012, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3964, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3962, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3778, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3777, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3776, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3653, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3652, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3520, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3519, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3418, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3417, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3416, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3415, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3361, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3290, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3289, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3288, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3287, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3286, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3188, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3187, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3051, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3050, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3049, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3046, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2896, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2841, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2792, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2737, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2687, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2580, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2514, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2479, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2422, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2262, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2263, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2261, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2210, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2152, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2112, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2052, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2006, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1960, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1914, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1864, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1836, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1790, hasDefinition: true, hasQuestDefinition: false, topLevelKeys: Array(30), definitionKeys: Array(17), …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4834, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4833, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4832, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4712, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4554, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4553, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4426, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4425, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4315, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4131, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 4129, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3967, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3965, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3781, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3780, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3779, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3654, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3522, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3521, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3422, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3421, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3420, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3419, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3363, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3295, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3294, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3293, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3292, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3291, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3190, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3189, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3057, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3056, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3055, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 3052, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2897, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2842, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2738, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2688, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2581, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2515, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2423, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2374, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2331, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2211, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2154, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2053, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 2007, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1961, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1915, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1865, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1837, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
+injected.js:37 [QUEST CARD] Full quest data: {id: 1791, hasDefinition: false, hasQuestDefinition: false, topLevelKeys: Array(13), definitionKeys: Array(0), …}
+injected.js:37 Quest Debug: {title: '', description: '', targetAction: '', isSocialQuest: true, hasHashtags: false, …}
