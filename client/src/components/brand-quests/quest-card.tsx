@@ -26,21 +26,43 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   // 1. quest.questDefinition (original format)
   // 2. quest.definition (direct DB query format)
   // 3. Flattened properties (direct from new API)
-  const questDefinition = quest.questDefinition || quest.definition || {
-    id: quest.questDefinitionId,
-    title: (quest as any).title || quest.personalizedTitle || quest.questTitle || '',
-    description: (quest as any).description || quest.personalizedDescription || quest.questDescription || '',
-    type: (quest as any).type || (quest.questType as QuestType) || 'social_quest',
-    targetCount: (quest as any).targetCount || 1, // Default if not provided
-    targetAction: (quest as any).targetAction || quest.targetAction || '',
-    xpReward: (quest as any).xpReward || (quest.definition as any)?.xpReward || (quest.questDefinition as any)?.xpReward || 0,
-    badgeReward: undefined,
-    // For Musk tips, use any available field that might have it
-    muskTip: (quest as any).muskTip || (quest as any).musk_tip || quest.personalizedMuskTip || quest.questMuskTip || quest.muskResponse || '',
-    isActive: true,
-    createdAt: '',
-    updatedAt: ''
+  
+  // Extract base definition from available sources
+  const baseDefinition = quest.questDefinition || quest.definition || {};
+  
+  // LOG THE QUEST OBJECT TO SEE ITS STRUCTURE
+  console.log('[QUEST CARD] Full quest data:', {
+    id: quest.id,
+    hasDefinition: !!quest.definition,
+    hasQuestDefinition: !!quest.questDefinition,
+    topLevelKeys: Object.keys(quest),
+    definitionKeys: quest.definition ? Object.keys(quest.definition) : [],
+    questDefinitionKeys: quest.questDefinition ? Object.keys(quest.questDefinition) : []
+  });
+
+  // Merge definition with top-level properties to ensure we get personalized data
+  // We prioritize the properties found directly on the quest object first, then the definition
+  // We use both camelCase and snake_case to handle different API response formats
+  const questDefinition = {
+    id: (quest as any).questDefinitionId || baseDefinition.id || (quest as any).id,
+    title: (quest as any).title || (quest as any).personalizedTitle || (quest as any).questTitle || baseDefinition.title || (quest as any).quest_title || '',
+    description: (quest as any).description || (quest as any).personalizedDescription || (quest as any).questDescription || baseDefinition.description || (quest as any).quest_description || '',
+    type: (quest as any).type || (quest as any).questType || (quest as any).quest_type || baseDefinition.type || 'social_quest',
+    targetCount: (quest as any).targetCount || (quest as any).target_count || baseDefinition.targetCount || 1,
+    targetAction: (quest as any).targetAction || (quest as any).target_action || baseDefinition.targetAction || '',
+    xpReward: (quest as any).xpReward || (quest as any).xp_reward || (quest as any).xpRewardEarned || baseDefinition.xpReward || 0,
+    badgeReward: (quest as any).badgeReward || (quest as any).badge_reward || baseDefinition.badgeReward || undefined,
+    muskTip: (quest as any).muskTip || (quest as any).musk_tip || (quest as any).personalizedMuskTip || (quest as any).questMuskTip || (quest as any).muskResponse || baseDefinition.muskTip || '',
+    isActive: (quest as any).isActive !== undefined ? (quest as any).isActive : (baseDefinition.isActive !== undefined ? baseDefinition.isActive : true),
+    createdAt: (quest as any).createdAt || (quest as any).assignedAt || baseDefinition.createdAt || '',
+    updatedAt: (quest as any).updatedAt || baseDefinition.updatedAt || ''
   };
+
+  // Ensure mandatory fields are populated from the direct quest object if definition is missing
+  if (!questDefinition.title && (quest as any).title) questDefinition.title = (quest as any).title;
+  if (!questDefinition.description && (quest as any).description) questDefinition.description = (quest as any).description;
+  if (!questDefinition.muskTip && (quest as any).muskTip) questDefinition.muskTip = (quest as any).muskTip;
+  if (!questDefinition.muskTip && (quest as any).musk_tip) questDefinition.muskTip = (quest as any).musk_tip;
   
   // Ensure targetCount has a minimum value of 1 to prevent division by zero
   const targetCount = questDefinition.targetCount || 1;
@@ -162,19 +184,19 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   // Get the Musk tip content from any available source in priority order
   const rawMuskTipContent = 
-    // First check direct properties from social quest V2
+    // Check definition first as it's the standard source
+    questDefinition.muskTip ||
+    // Then check direct properties from social quest V2
     (quest as any).personalizedMuskTip ||
+    (quest as any).muskTip ||
+    (quest as any).musk_tip ||
     // Then check definition properties (API response structure)
     quest.definition?.muskTip ||
     // Then check questDefinition
     quest.questDefinition?.muskTip ||
     // Then check direct properties
     quest.muskTip || 
-    questDefinition.muskTip || 
     quest.muskResponse ||
-    // Check if it's on the quest object itself directly from SQL results
-    (quest as any).muskTip ||
-    (quest as any).musk_tip ||
     // Final fallback for debugging
     (quest.definition && (quest.definition as any).muskTip ? (quest.definition as any).muskTip : null);
 
@@ -183,13 +205,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     if (!content) return { cleanContent: '', hashtags: [] };
     
     // Pattern to match both "hashtag suggestions" and "strategic hashtags"
-    const hashtagPattern = /💡 Musk's (hashtag suggestions|strategic hashtags):\s*([#\w\s]+)$/mi;
+    const hashtagPattern = /💡 Musk's (hashtag suggestions|strategic hashtags):\s*([#\w\s,]+)$/mi;
     const match = content.match(hashtagPattern);
     
     if (match) {
-      const hashtagsText = match[2].trim(); // Use match[2] since match[1] is the capture group for "hashtag suggestions|strategic hashtags"
+      const hashtagsText = match[2].trim(); 
       const hashtags = hashtagsText
-        .split(/\s+/)
+        .split(/[,\s]+/)
         .filter(tag => tag.startsWith('#'))
         .map(tag => tag.substring(1)); // Remove the # symbol
       
@@ -203,19 +225,23 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const { cleanContent: muskTipContent, hashtags: extractedHashtags } = extractHashtagsAndCleanTip(rawMuskTipContent || '');
   
   // Get hashtags from database or extracted from tip
-  const displayHashtags = quest.suggestedHashtags && quest.suggestedHashtags.length > 0 
-    ? quest.suggestedHashtags 
-    : extractedHashtags;
+  const displayHashtags = (quest as any).suggestedHashtags && (quest as any).suggestedHashtags.length > 0 
+    ? (quest as any).suggestedHashtags 
+    : (extractedHashtags.length > 0 ? extractedHashtags : ((questDefinition as any).suggestedHashtags || []));
   
   // Check if this is a Social Quest (platform-specific social media quest)
   // Check both targetAction and quest title patterns since targetAction might be empty
   const socialQuestActions = ['post_linkedin_suggestion', 'post_instagram_suggestion', 'post_twitter_suggestion', 'post_youtube_suggestion', 'post_facebook_suggestion', 'post_tiktok_suggestion'];
   const socialQuestTitles = ['LinkedIn', 'Instagram', 'Twitter', 'YouTube', 'Facebook', 'TikTok'];
   
+  const questType = (questDefinition.type as string)?.toLowerCase() || '';
+  
   const isSocialQuest = socialQuestActions.includes(questDefinition.targetAction || '') ||
     socialQuestTitles.some(platform => questDefinition.title?.includes(platform)) ||
     displayHashtags.length > 0 ||
-    questDefinition.type === 'social_quest'; // Added explicit type check
+    questType === 'social_quest' ||
+    questType === 'social_post' ||
+    questType.includes('social'); // Added more flexible check
   
   // Debug logging (only for Social Quests)
   if (isSocialQuest || displayHashtags.length > 0) {
