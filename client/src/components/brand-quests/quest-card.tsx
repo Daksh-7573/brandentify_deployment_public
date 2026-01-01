@@ -28,15 +28,15 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   // 3. Flattened properties (direct from new API)
   const questDefinition = quest.questDefinition || quest.definition || {
     id: quest.questDefinitionId,
-    title: quest.questTitle || '',
-    description: quest.questDescription || '',
+    title: quest.personalizedTitle || quest.questTitle || '',
+    description: quest.personalizedDescription || quest.questDescription || '',
     type: (quest.questType as QuestType) || 'pulse_creation',
     targetCount: 1, // Default if not provided
     targetAction: quest.targetAction || '',
     xpReward: (quest.definition as any)?.xpReward || (quest.questDefinition as any)?.xpReward || 0,
     badgeReward: undefined,
     // For Musk tips, use any available field that might have it
-    muskTip: quest.questMuskTip || quest.muskResponse || '',
+    muskTip: quest.personalizedMuskTip || quest.questMuskTip || quest.muskResponse || '',
     isActive: true,
     createdAt: '',
     updatedAt: ''
@@ -162,7 +162,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   // Get the Musk tip content from any available source in priority order
   const rawMuskTipContent = 
-    // First check definition properties (API response structure)
+    // First check direct properties from social quest V2
+    quest.personalizedMuskTip ||
+    // Then check definition properties (API response structure)
     quest.definition?.muskTip ||
     // Then check questDefinition
     quest.questDefinition?.muskTip ||
@@ -223,6 +225,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       extractedHashtags: extractedHashtags,
       rawMuskTip: rawMuskTipContent,
       // Additional debug info
+      personalizedTitle: quest.personalizedTitle,
+      personalizedDescription: quest.personalizedDescription,
+      personalizedMuskTip: quest.personalizedMuskTip,
       definitionTargetAction: quest.definition?.targetAction,
       questTargetAction: quest.targetAction,
       questType: quest.definition?.type
