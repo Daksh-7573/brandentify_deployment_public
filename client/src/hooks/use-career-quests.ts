@@ -700,47 +700,30 @@ export const getCurrentYear = (): number => {
 };
 
 // Bucket-based Quest Hooks for Daily/Completed/Missed functionality
-export const useUserCareerQuestsByBucket = (userId?: number, bucket?: 'daily' | 'completed' | 'missed') => {
-  // Debug logging for hook state
-  console.log(`[QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: ${userId}, bucket: ${bucket}`);
-  console.log(`[QUEST HOOK DEBUG] Hook enabled: ${!!userId}`);
-  
+export const useUserCareerQuestsByBucket = (userId?: number, bucket: 'daily' | 'completed' | 'missed' = 'daily') => {
   return useQuery({
-    queryKey: [`/api/users/${userId || 0}/quests`],
+    queryKey: [`/api/users/${userId || 0}/quests/bucket/${bucket}`],
     queryFn: async () => {
-      console.log(`[QUEST API DEBUG] Starting career quest fetch for userId: ${userId}`);
-      
       if (!userId) {
-        console.warn(`[QUEST API DEBUG] Missing userId: ${userId}`);
         return [];
       }
       
       try {
-        const url = `/api/users/${userId}/quests`;
-        console.log(`[QUEST API DEBUG] Fetching from: ${url}`);
-        
+        const url = `/api/users/${userId}/quests/bucket/${bucket}`;
         const res = await fetch(url);
-        console.log(`[QUEST API DEBUG] Response status: ${res.status}, ok: ${res.ok}`);
         
         if (!res.ok) {
-          console.error(`[QUEST API ERROR] Failed to fetch career quests, status:`, res.status);
-          const errorText = await res.text();
-          console.error(`[QUEST API ERROR] Error response:`, errorText);
+          console.error(`[QUEST API ERROR] Failed to fetch career quests (${bucket}), status:`, res.status);
           return [];
         }
         
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-          console.error(`[QUEST API ERROR] Expected JSON but got ${contentType}`);
           return [];
         }
         
         const data = await res.json();
-        console.log(`[QUEST API SUCCESS] Career quests fetched successfully:`, {
-          count: Array.isArray(data) ? data.length : 'Not an array',
-          userId
-        });
-        
+        console.log(`[QUEST API] Career quests (${bucket}) fetched:`, data.length);
         return data;
       } catch (error) {
         console.error(`[QUEST API ERROR] Error fetching career quests:`, error);
@@ -751,47 +734,30 @@ export const useUserCareerQuestsByBucket = (userId?: number, bucket?: 'daily' | 
   });
 };
 
-export const useUserSocialQuestsByBucket = (userId?: number, bucket?: 'daily' | 'completed' | 'missed') => {
-  // Debug logging for hook state
-  console.log(`[SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: ${userId}, bucket: ${bucket}`);
-  console.log(`[SOCIAL QUEST HOOK DEBUG] Hook enabled: ${!!userId}`);
-  
+export const useUserSocialQuestsByBucket = (userId?: number, bucket: 'daily' | 'completed' | 'missed' = 'daily') => {
   return useQuery({
-    queryKey: [`/api/users/${userId || 0}/social-quests`],
+    queryKey: [`/api/users/${userId || 0}/social-quests/bucket/${bucket}`],
     queryFn: async () => {
-      console.log(`[SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: ${userId}`);
-      
       if (!userId) {
-        console.warn(`[SOCIAL QUEST API DEBUG] Missing userId: ${userId}`);
         return [];
       }
       
       try {
-        const url = `/api/users/${userId}/social-quests`;
-        console.log(`[SOCIAL QUEST API DEBUG] Fetching from: ${url}`);
-        
+        const url = `/api/users/${userId}/social-quests/bucket/${bucket}`;
         const res = await fetch(url);
-        console.log(`[SOCIAL QUEST API DEBUG] Response status: ${res.status}, ok: ${res.ok}`);
         
         if (!res.ok) {
-          console.error(`[SOCIAL QUEST API ERROR] Failed to fetch social quests, status:`, res.status);
-          const errorText = await res.text();
-          console.error(`[SOCIAL QUEST API ERROR] Error response:`, errorText);
+          console.error(`[SOCIAL QUEST API ERROR] Failed to fetch social quests (${bucket}), status:`, res.status);
           return [];
         }
         
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-          console.error(`[SOCIAL QUEST API ERROR] Expected JSON but got ${contentType}`);
           return [];
         }
         
         const data = await res.json();
-        console.log(`[SOCIAL QUEST API SUCCESS] Social quests fetched successfully:`, {
-          count: Array.isArray(data) ? data.length : 'Not an array',
-          userId
-        });
-        
+        console.log(`[SOCIAL QUEST API] Social quests (${bucket}) fetched:`, data.length);
         return data;
       } catch (error) {
         console.error(`[SOCIAL QUEST API ERROR] Error fetching social quests:`, error);

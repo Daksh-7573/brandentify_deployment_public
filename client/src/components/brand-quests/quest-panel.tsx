@@ -36,56 +36,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     isLoading: isLoadingCurrentSocial 
   } = useUserSocialQuestsByBucket(userId, socialSubTab as 'daily' | 'completed' | 'missed');
 
-  // DEBUG: Log quest data to identify the issue
-  console.log('[QUEST PANEL DEBUG] Current quest data:', {
-    userId,
-    tabValue,
-    careerSubTab,
-    socialSubTab,
-    careerQuestCount: currentCareerQuests.length,
-    socialQuestCount: currentSocialQuests.length,
-    careerLoading: isLoadingCurrentCareer,
-    socialLoading: isLoadingCurrentSocial,
-    timestamp: new Date().toISOString()
-  });
-
-  // Fetch other buckets only when switching tabs to avoid redundant queries
-  const [careerBucketsData, setCareerBucketsData] = useState<Record<string, any[]>>({});
-  const [socialBucketsData, setSocialBucketsData] = useState<Record<string, any[]>>({});
-  
-  // Fetch other career buckets on tab change
-  const { data: careerBucketData } = useUserCareerQuestsByBucket(
-    userId, 
-    careerSubTab !== 'daily' ? (careerSubTab as 'daily' | 'completed' | 'missed') : undefined
-  );
-  
-  // Fetch other social buckets on tab change
-  const { data: socialBucketData } = useUserSocialQuestsByBucket(
-    userId,
-    socialSubTab !== 'daily' ? (socialSubTab as 'daily' | 'completed' | 'missed') : undefined
-  );
-  
-  // Cache bucket data
-  useEffect(() => {
-    if (careerBucketData && careerSubTab !== 'daily') {
-      setCareerBucketsData(prev => ({ ...prev, [careerSubTab]: careerBucketData }));
-    }
-  }, [careerBucketData, careerSubTab]);
-  
-  useEffect(() => {
-    if (socialBucketData && socialSubTab !== 'daily') {
-      setSocialBucketsData(prev => ({ ...prev, [socialSubTab]: socialBucketData }));
-    }
-  }, [socialBucketData, socialSubTab]);
-  
-  // Compute counts from cached data instead of fetching separately
-  const dailyCareerForCount = currentCareerQuests;
-  const completedCareerForCount = careerBucketsData['completed'] || [];
-  const missedCareerForCount = careerBucketsData['missed'] || [];
-  
-  const dailySocialForCount = currentSocialQuests;
-  const completedSocialForCount = socialBucketsData['completed'] || [];
-  const missedSocialForCount = socialBucketsData['missed'] || [];
+  // Removed redundant bucket caching - hooks now properly use bucket parameter
 
   // Fetch instant quests (trending opportunities) by type
   // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
@@ -205,11 +156,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
             <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Career Quests</span>
-              <span className="text-xs">({dailyCareerForCount.length + completedCareerForCount.length + missedCareerForCount.length})</span>
+              <span className="text-xs">({currentCareerQuests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Social Quests</span>
-              <span className="text-xs">({dailySocialForCount.length + completedSocialForCount.length + missedSocialForCount.length})</span>
+              <span className="text-xs">({currentSocialQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
@@ -223,15 +174,15 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               <TabsList className="grid grid-cols-3 mb-2 dark-tabs-list border border-white/5 w-full h-auto">
                 <TabsTrigger value="daily" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Daily</span>
-                  <span className="text-xs">({dailyCareerForCount.length})</span>
+                  {careerSubTab === 'daily' && <span className="text-xs">({currentCareerQuests.length})</span>}
                 </TabsTrigger>
                 <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Completed</span>
-                  <span className="text-xs">({completedCareerForCount.length})</span>
+                  {careerSubTab === 'completed' && <span className="text-xs">({currentCareerQuests.length})</span>}
                 </TabsTrigger>
                 <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Missed</span>
-                  <span className="text-xs">({missedCareerForCount.length})</span>
+                  {careerSubTab === 'missed' && <span className="text-xs">({currentCareerQuests.length})</span>}
                 </TabsTrigger>
               </TabsList>
               
@@ -283,15 +234,15 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               <TabsList className="grid grid-cols-3 mb-2 dark-tabs-list border border-white/5 w-full h-auto">
                 <TabsTrigger value="daily" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Daily</span>
-                  <span className="text-xs">({dailySocialForCount.length})</span>
+                  {socialSubTab === 'daily' && <span className="text-xs">({currentSocialQuests.length})</span>}
                 </TabsTrigger>
                 <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Completed</span>
-                  <span className="text-xs">({completedSocialForCount.length})</span>
+                  {socialSubTab === 'completed' && <span className="text-xs">({currentSocialQuests.length})</span>}
                 </TabsTrigger>
                 <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
                   <span>Missed</span>
-                  <span className="text-xs">({missedSocialForCount.length})</span>
+                  {socialSubTab === 'missed' && <span className="text-xs">({currentSocialQuests.length})</span>}
                 </TabsTrigger>
               </TabsList>
               
