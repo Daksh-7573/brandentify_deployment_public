@@ -769,6 +769,42 @@ export const useUserSocialQuestsByBucket = (userId?: number, bucket: 'daily' | '
 };
 
 // ========================================
+// QUEST BUCKET COUNTS HOOKS
+// ========================================
+
+// Fetch all bucket counts for career quests in parallel
+export const useCareerQuestBucketCounts = (userId?: number) => {
+  const { data: daily = [], isLoading: loadingDaily } = useUserCareerQuestsByBucket(userId, 'daily');
+  const { data: completed = [], isLoading: loadingCompleted } = useUserCareerQuestsByBucket(userId, 'completed');
+  const { data: missed = [], isLoading: loadingMissed } = useUserCareerQuestsByBucket(userId, 'missed');
+  
+  return {
+    counts: {
+      daily: daily.length,
+      completed: completed.length,
+      missed: missed.length
+    },
+    isLoading: loadingDaily || loadingCompleted || loadingMissed
+  };
+};
+
+// Fetch all bucket counts for social quests in parallel
+export const useSocialQuestBucketCounts = (userId?: number) => {
+  const { data: daily = [], isLoading: loadingDaily } = useUserSocialQuestsByBucket(userId, 'daily');
+  const { data: completed = [], isLoading: loadingCompleted } = useUserSocialQuestsByBucket(userId, 'completed');
+  const { data: missed = [], isLoading: loadingMissed } = useUserSocialQuestsByBucket(userId, 'missed');
+  
+  return {
+    counts: {
+      daily: daily.length,
+      completed: completed.length,
+      missed: missed.length
+    },
+    isLoading: loadingDaily || loadingCompleted || loadingMissed
+  };
+};
+
+// ========================================
 // INSTANT QUEST HOOKS (Trending Opportunities)
 // ========================================
 
