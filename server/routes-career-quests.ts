@@ -873,7 +873,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let quests: any[] = [];
 
       if (bucket === 'daily') {
-        // Query database directly to get personalized quest data
+        // Query database directly to get personalized quest data using direct ID joins
         // Show all ACTIVE quests regardless of assigned date (fixes issue where yesterday's quests disappear)
         const result = await pool.query(`
           SELECT 
@@ -909,22 +909,8 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             COALESCE(gcq.difficulty_level, qd.difficulty_level) as "difficultyLevel"
           FROM user_quests uq
           JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-          LEFT JOIN LATERAL (
-            SELECT * FROM generated_career_quests
-            WHERE user_id = uq.user_id
-              AND quest_definition_id = uq.quest_definition_id
-              AND assigned_date = uq.assigned_date::text
-            ORDER BY id DESC
-            LIMIT 1
-          ) gcq ON true
-          LEFT JOIN LATERAL (
-            SELECT * FROM generated_social_quests
-            WHERE user_id = uq.user_id
-              AND quest_definition_id = uq.quest_definition_id
-              AND assigned_date = uq.assigned_date::text
-            ORDER BY id DESC
-            LIMIT 1
-          ) gsq ON true
+          LEFT JOIN generated_career_quests gcq ON uq.generated_career_quest_id = gcq.id
+          LEFT JOIN generated_social_quests gsq ON uq.generated_quest_id = gsq.id
           WHERE uq.user_id = $1
             AND uq.status = 'active'
           ORDER BY uq.assigned_at DESC

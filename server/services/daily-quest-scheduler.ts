@@ -381,12 +381,13 @@ class DailyQuestScheduler {
           console.log(`[DailyQuestScheduler] 📋 Deliverable: ${detailedQuest.deliverableFormat}`);
           console.log(`[DailyQuestScheduler] ⏱️ Time: ${detailedQuest.estimatedTimeMinutes} min`);
           
-          // Insert into userQuests (standard quest tracking)
+          // Insert into userQuests (standard quest tracking) - LINK to generated career quest
           const [quest] = await db
             .insert(userQuests)
             .values({
               userId,
               questDefinitionId: selectedQuest.questDefinitionId,
+              generatedCareerQuestId: generatedCareerQuest.id, // CRITICAL: Link to personalized content
               status: 'active',
               progress: 0,
               assignedAt: new Date(),
@@ -472,12 +473,13 @@ class DailyQuestScheduler {
           
           console.log(`[DailyQuestScheduler] ✅ Generated detailed social quest ${generatedSocialQuest.id}: "${detailedSocialQuest.personalizedTitle}" for ${platform}`);
           
-          // Insert into userQuests (standard quest tracking)
+          // Insert into userQuests (standard quest tracking) - LINK to generated social quest
           const [quest] = await db
             .insert(userQuests)
             .values({
               userId,
               questDefinitionId: selectedQuest.questDefinitionId,
+              generatedQuestId: generatedSocialQuest.id, // CRITICAL: Link to personalized social content
               status: 'active',
               progress: 0,
               assignedAt: new Date(),
