@@ -336,7 +336,7 @@ export default function Header() {
                   : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
               }`}
               onClick={() => setLocation('/profile')}
-              onMouseEnter={() => { prefetchRoute('/profile'); prefetchProfileData(userId); }}
+              onMouseEnter={() => { prefetchRoute('/profile'); if (userId) prefetchProfileData(userId); }}
             >
               {/* User name */}
               <span className="text-sm font-medium text-white hidden md:block">

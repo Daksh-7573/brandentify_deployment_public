@@ -19,6 +19,7 @@ interface PulseUser {
   title: string | null;
   company: string | null;
   brandName: string | null;
+  randomProfileLink?: string | null;
 }
 
 interface Pulse {

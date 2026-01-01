@@ -363,22 +363,22 @@ export default function Dashboard() {
     }
   }, []);
 
-  const { data: projects = [] as any[] } = useQuery({
+  const { data: projects = [] } = useQuery<any[]>({
     queryKey: [`/api/projects/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: workExperiences = [] as any[] } = useQuery({
+  const { data: workExperiences = [] } = useQuery<any[]>({
     queryKey: [`/api/work-experiences/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: educations = [] as any[] } = useQuery({
+  const { data: educations = [] } = useQuery<any[]>({
     queryKey: [`/api/educations/user/${userId}`],
     enabled: !!userId
   });
 
-  const { data: skills = [] as any[] } = useQuery({
+  const { data: skills = [] } = useQuery<any[]>({
     queryKey: [`/api/skills/user/${userId}`],
     enabled: !!userId
   });
