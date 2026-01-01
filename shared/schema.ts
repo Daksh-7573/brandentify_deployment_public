@@ -1274,8 +1274,8 @@ export const userQuests = pgTable("user_quests", {
   hashtagContext: text("hashtag_context"), // Explanation of why these hashtags were chosen
   brandGoalsSnapshot: text("brand_goals_snapshot"), // JSON snapshot of user's Brand Goals when quest was completed (for smart profile quest tracking)
   profileSnapshot: text("profile_snapshot"), // JSON snapshot of user profile when quest was completed (for smart regeneration logic)
-  // Removed field:
-  // - dismissedReason (quest dismissal functionality removed)
+  generatedQuestId: integer("generated_quest_id"), // Link to AI-generated social quest content
+  generatedCareerQuestId: integer("generated_career_quest_id"), // Link to AI-generated career quest content
 });
 
 // Instant quest status enum
