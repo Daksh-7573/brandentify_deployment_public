@@ -30,7 +30,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     id: quest.questDefinitionId,
     title: quest.personalizedTitle || quest.questTitle || '',
     description: quest.personalizedDescription || quest.questDescription || '',
-    type: (quest.questType as QuestType) || 'pulse_creation',
+    type: (quest.questType as QuestType) || 'social_quest',
     targetCount: 1, // Default if not provided
     targetAction: quest.targetAction || '',
     xpReward: (quest.definition as any)?.xpReward || (quest.questDefinition as any)?.xpReward || 0,
@@ -163,7 +163,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   // Get the Musk tip content from any available source in priority order
   const rawMuskTipContent = 
     // First check direct properties from social quest V2
-    quest.personalizedMuskTip ||
+    (quest as any).personalizedMuskTip ||
     // Then check definition properties (API response structure)
     quest.definition?.muskTip ||
     // Then check questDefinition
@@ -173,7 +173,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     questDefinition.muskTip || 
     quest.muskResponse ||
     // Final fallback for debugging
-    (quest.definition && Object.keys(quest.definition).includes('muskTip') ? quest.definition.muskTip : null);
+    (quest.definition && (quest.definition as any).muskTip ? (quest.definition as any).muskTip : null);
 
   // Extract hashtag suggestions and clean the tip content
   const extractHashtagsAndCleanTip = (content: string) => {
@@ -211,7 +211,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   const isSocialQuest = socialQuestActions.includes(questDefinition.targetAction || '') ||
     socialQuestTitles.some(platform => questDefinition.title?.includes(platform)) ||
-    displayHashtags.length > 0; // If it has hashtag suggestions, it's likely a social quest
+    displayHashtags.length > 0 ||
+    questDefinition.type === 'social_quest'; // Added explicit type check
   
   // Debug logging (only for Social Quests)
   if (isSocialQuest || displayHashtags.length > 0) {
@@ -225,12 +226,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       extractedHashtags: extractedHashtags,
       rawMuskTip: rawMuskTipContent,
       // Additional debug info
-      personalizedTitle: quest.personalizedTitle,
-      personalizedDescription: quest.personalizedDescription,
-      personalizedMuskTip: quest.personalizedMuskTip,
-      definitionTargetAction: quest.definition?.targetAction,
+      personalizedTitle: (quest as any).personalizedTitle,
+      personalizedDescription: (quest as any).personalizedDescription,
+      personalizedMuskTip: (quest as any).personalizedMuskTip,
+      definitionTargetAction: (quest.definition as any)?.targetAction,
       questTargetAction: quest.targetAction,
-      questType: quest.definition?.type
+      questType: (quest.definition as any)?.type
     });
   }
 
