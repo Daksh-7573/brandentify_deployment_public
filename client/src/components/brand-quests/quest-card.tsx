@@ -28,69 +28,44 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   // 3. Flattened properties (direct from new API)
   
   // Extract base definition from available sources
-  const baseDefinition = quest.questDefinition || quest.definition || {};
-  
-  // Final emergency check for fields that might be directly on the quest object with slightly different names
-  Object.keys(quest).forEach(key => {
-    const val = (quest as any)[key];
-    if (!val) return;
-    
-    const lowerKey = key.toLowerCase();
-    // Prioritize title mapping
-    if (!questDefinition.title && (lowerKey === 'title' || lowerKey === 'label' || lowerKey.includes('questtitle') || lowerKey.includes('personalizedtitle') || lowerKey.includes('deftitle') || lowerKey.includes('gentitle'))) {
-      questDefinition.title = val;
-    }
-    // Prioritize description mapping
-    if (!questDefinition.description && (lowerKey === 'description' || lowerKey.includes('content') || lowerKey.includes('questdescription') || lowerKey.includes('personalizeddescription') || lowerKey.includes('defdescription') || lowerKey.includes('gendescription'))) {
-      questDefinition.description = val;
-    }
-    // Prioritize muskTip mapping
-    if (!questDefinition.muskTip && (lowerKey === 'musktip' || lowerKey === 'tip' || lowerKey.includes('response') || lowerKey.includes('guidance') || lowerKey.includes('musk_tip') || lowerKey.includes('gen_musk_tip'))) {
-      questDefinition.muskTip = val;
-    }
-  });
+  const baseDefinition = (quest as any).questDefinition || (quest as any).definition || {};
 
-  // LOG THE QUEST OBJECT TO SEE ITS STRUCTURE
-  if (!questDefinition.title || !questDefinition.description) {
-    console.log('[QUEST CARD] Missing Field Debug:', {
-      id: quest.id,
-      questObject: quest,
-      mappedDefinition: questDefinition,
-      topLevelKeys: Object.keys(quest)
-    });
-  }
-
-  // Merge definition with top-level properties to ensure we get personalized data
-  // We prioritize the properties found directly on the quest object first, then the definition
-  // We use both camelCase and snake_case to handle different API response formats
-  // AND we check both with and without prefixes (questTitle vs title)
-  const questDefinition = {
-    id: (quest as any).questDefinitionId || (quest as any).quest_definition_id || (baseDefinition as any).id || (quest as any).id,
-    title: (quest as any).title || (quest as any).personalizedTitle || (quest as any).questTitle || (quest as any).quest_title || (quest as any).personalized_title || (baseDefinition as any).title || (baseDefinition as any).questTitle || (baseDefinition as any).quest_title || (quest as any).def_title || (quest as any).defTitle || (quest as any).gen_title || (quest as any).genTitle || '',
-    description: (quest as any).description || (quest as any).personalizedDescription || (quest as any).questDescription || (quest as any).quest_description || (quest as any).personalized_description || (baseDefinition as any).description || (baseDefinition as any).questDescription || (baseDefinition as any).quest_description || (quest as any).def_description || (quest as any).defDescription || (quest as any).gen_description || (quest as any).genDescription || '',
-    type: (quest as any).type || (quest as any).questType || (quest as any).quest_type || (baseDefinition as any).type || (baseDefinition as any).quest_type || (quest as any).def_type || (quest as any).defType || 'social_quest',
-    targetCount: (quest as any).targetCount || (quest as any).target_count || (quest as any).def_target_count || (quest as any).defTargetCount || (quest as any).target_action_count || (baseDefinition as any).targetCount || (baseDefinition as any).target_count || 1,
-    targetAction: (quest as any).targetAction || (quest as any).target_action || (quest as any).def_target_action || (quest as any).defTargetAction || (baseDefinition as any).targetAction || (baseDefinition as any).target_action || '',
-    xpReward: (quest as any).xpReward || (quest as any).xp_reward || (quest as any).xpRewardEarned || (quest as any).xp_reward_earned || (quest as any).def_xp_reward || (quest as any).defXpReward || (baseDefinition as any).xpReward || (baseDefinition as any).xp_reward || 0,
-    badgeReward: (quest as any).badgeReward || (quest as any).badge_reward || (baseDefinition as any).badgeReward || (baseDefinition as any).badge_reward || (quest as any).defBadgeReward || undefined,
-    muskTip: (quest as any).muskTip || (quest as any).musk_tip || (quest as any).personalizedMuskTip || (quest as any).personalized_musk_tip || (quest as any).questMuskTip || (quest as any).muskResponse || (quest as any).musk_response || (quest as any).def_musk_tip || (quest as any).defMuskTip || (quest as any).gen_musk_tip || (quest as any).genMuskTip || (baseDefinition as any).muskTip || (baseDefinition as any).musk_tip || '',
-    isActive: (quest as any).isActive !== undefined ? (quest as any).isActive : ((baseDefinition as any).isActive !== undefined ? (baseDefinition as any).isActive : true),
-    createdAt: (quest as any).createdAt || (quest as any).assignedAt || (quest as any).assigned_at || (quest as any).created_at || (baseDefinition as any).createdAt || '',
-    updatedAt: (quest as any).updatedAt || (quest as any).updated_at || (baseDefinition as any).updatedAt || ''
+  // HELPER: findValue for mapping fields from quest or its definition
+  const findValue = (obj: any, base: any, fieldNames: string[], defaultValue: any = '') => {
+    for (const name of fieldNames) {
+      if (obj && obj[name] !== undefined && obj[name] !== null && obj[name] !== '') return obj[name];
+    }
+    for (const name of fieldNames) {
+      if (base && base[name] !== undefined && base[name] !== null && base[name] !== '') return base[name];
+    }
+    return defaultValue;
   };
 
-  // Final emergency mapping using Object.keys to handle any dynamic field variations
-  Object.keys(quest).forEach(key => {
-    const val = (quest as any)[key];
-    if (!val || typeof val !== 'string') return;
-    const lowerKey = key.toLowerCase();
-    if (!questDefinition.title && (lowerKey.includes('title') || lowerKey === 'label')) questDefinition.title = val;
-    if (!questDefinition.description && (lowerKey.includes('description') || lowerKey.includes('content'))) questDefinition.description = val;
-    if (!questDefinition.muskTip && (lowerKey.includes('tip') || lowerKey.includes('response') || lowerKey.includes('guidance'))) questDefinition.muskTip = val;
-  });
+  const questDefinition = {
+    id: findValue(quest, baseDefinition, ['questDefinitionId', 'quest_definition_id', 'id'], quest.id),
+    title: findValue(quest, baseDefinition, ['title', 'personalizedTitle', 'questTitle', 'quest_title', 'personalized_title', 'def_title', 'defTitle', 'gen_title', 'genTitle', 'label']),
+    description: findValue(quest, baseDefinition, ['description', 'personalizedDescription', 'questDescription', 'quest_description', 'personalized_description', 'def_description', 'defDescription', 'gen_description', 'genDescription', 'content']),
+    type: findValue(quest, baseDefinition, ['type', 'questType', 'quest_type', 'def_type', 'defType'], 'social_quest'),
+    targetCount: findValue(quest, baseDefinition, ['targetCount', 'target_count', 'def_target_count', 'defTargetCount', 'target_action_count'], 1),
+    targetAction: findValue(quest, baseDefinition, ['targetAction', 'target_action', 'def_target_action', 'defTargetAction'], ''),
+    xpReward: findValue(quest, baseDefinition, ['xpReward', 'xp_reward', 'xpRewardEarned', 'xp_reward_earned', 'def_xp_reward', 'defXpReward'], 0),
+    badgeReward: findValue(quest, baseDefinition, ['badgeReward', 'badge_reward', 'defBadgeReward'], undefined),
+    muskTip: findValue(quest, baseDefinition, ['muskTip', 'musk_tip', 'personalizedMuskTip', 'personalized_musk_tip', 'questMuskTip', 'muskResponse', 'musk_response', 'def_musk_tip', 'defMuskTip', 'gen_musk_tip', 'genMuskTip', 'guidance']),
+    isActive: (quest as any).isActive !== undefined ? (quest as any).isActive : ((baseDefinition as any).isActive !== undefined ? (baseDefinition as any).isActive : true),
+    createdAt: findValue(quest, baseDefinition, ['createdAt', 'assignedAt', 'assigned_at', 'created_at'], ''),
+    updatedAt: findValue(quest, baseDefinition, ['updatedAt', 'updated_at'], '')
+  };
 
-  // Add more robust platform check for social quests
-  const platform = (quest as any).platform || (quest as any).socialPlatform || (quest as any).social_platform || '';
+  // Ensure mandatory fields are populated if still missing
+  if (!questDefinition.title) {
+    questDefinition.title = 'Brand Quest';
+  }
+  if (!questDefinition.description) {
+    questDefinition.description = 'Complete this quest to build your professional brand.';
+  }
+
+  // Add robust platform check for social quests
+  const platform = findValue(quest, baseDefinition, ['platform', 'socialPlatform', 'social_platform'], '');
   if (platform && !questDefinition.targetAction) {
     questDefinition.targetAction = `post_${platform.toLowerCase()}_suggestion`;
   }
