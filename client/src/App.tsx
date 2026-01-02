@@ -35,12 +35,14 @@ const useProgressiveLoading = () => {
       // Prefetch critical data once secondary components are ready
       const userId = localStorage.getItem('userId');
       if (userId) {
-        import("@/lib/route-prefetch").then(({ prefetchProfileData, prefetchCommonRoutes }) => {
+        import("@/lib/route-prefetch").then(({ prefetchProfileData, prefetchCommonRoutes, prefetchRoute }) => {
           prefetchProfileData(userId);
           prefetchCommonRoutes();
+          // Prefetch most common routes immediately
+          ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule"].forEach(route => prefetchRoute(route));
         });
       }
-    }, 50); // Reduced from 100ms for faster perceived performance
+    }, 5); // Near-instant secondary load
     
     // Tier 3: Admin/debug components load last
     const adminTimer = setTimeout(() => {
