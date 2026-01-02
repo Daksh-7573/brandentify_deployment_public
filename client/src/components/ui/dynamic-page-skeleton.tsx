@@ -20,7 +20,12 @@ export function DynamicPageSkeleton({ route }: DynamicPageSkeletonProps) {
       return <QuestPageSkeleton />;
     }
     if (route.startsWith("/messages")) {
-      return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4 h-[600px]" />; 
+      return (
+        <div className="flex flex-col items-center justify-center p-20 w-full">
+          <MuskLoadingCompact />
+          <div className="mt-4 animate-pulse text-white/40 font-medium">Synchronizing communications...</div>
+        </div>
+      );
     }
     // Default fallback
     return (
