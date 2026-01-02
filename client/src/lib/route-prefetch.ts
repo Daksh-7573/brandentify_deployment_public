@@ -73,6 +73,10 @@ export function prefetchCommonRoutes(): void {
   safeRequestIdleCallback(() => {
     prefetchRoute("/industry-pulse");
     prefetchRoute("/profile");
+    prefetchRoute("/brand-quests");
+    prefetchRoute("/search");
+    prefetchRoute("/career-capsule");
+    prefetchRoute("/messages");
   }, { timeout: 3000 });
 }
 

@@ -498,7 +498,7 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 15, // 15 minutes instead of 5 minutes
+      staleTime: 1000 * 60 * 60, // 1 hour instead of 15 minutes
       retry: (failureCount, error) => {
         // Don't retry 404s for poll-votes (expected when user hasn't voted)
         if (error && error.message && error.message.includes('404') && error.message.includes('poll-votes')) {
@@ -511,7 +511,7 @@ export const queryClient = new QueryClient({
       // Add network mode to avoid multiple simultaneous requests
       networkMode: 'always', // Keep trying even if browser is offline
       // Reduce query cache size to avoid memory issues
-      gcTime: 1000 * 60 * 30, // 30 minutes before garbage collection
+      gcTime: 1000 * 60 * 120, // 2 hours before garbage collection
     },
     mutations: {
       retry: 1, // Allow one retry for mutations

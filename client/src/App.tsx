@@ -32,6 +32,14 @@ const useProgressiveLoading = () => {
     const secondaryTimer = setTimeout(() => {
       setSecondaryLoaded(true);
       console.log('[Progressive Loading] 🚀 Secondary components loaded');
+      // Prefetch critical data once secondary components are ready
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        import("@/lib/route-prefetch").then(({ prefetchProfileData, prefetchCommonRoutes }) => {
+          prefetchProfileData(userId);
+          prefetchCommonRoutes();
+        });
+      }
     }, 50); // Reduced from 100ms for faster perceived performance
     
     // Tier 3: Admin/debug components load last
