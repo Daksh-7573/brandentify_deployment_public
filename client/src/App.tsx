@@ -191,9 +191,7 @@ const LoadingPlaceholder = () => {
 
 // Minimal loading placeholder without shell for public pages
 const MinimalLoadingPlaceholder = () => (
-  <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-  </div>
+  <MuskLoadingShell />
 );
 
 // Lazy route wrapper - handles Suspense for any lazy component

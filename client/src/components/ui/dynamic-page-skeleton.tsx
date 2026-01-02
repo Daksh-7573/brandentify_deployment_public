@@ -2,6 +2,7 @@ import { FeedSkeleton } from "./skeleton-components";
 import { ProfilePageSkeleton } from "./page-skeletons/profile-skeleton";
 import { QuestPageSkeleton } from "./page-skeletons/quest-skeleton";
 import { AppShell } from "@/components/layout/app-shell";
+import { MuskLoadingCompact } from "./musk-loading-shell";
 
 interface DynamicPageSkeletonProps {
   route: string;
@@ -22,11 +23,16 @@ export function DynamicPageSkeleton({ route }: DynamicPageSkeletonProps) {
       return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4 h-[600px]" />; 
     }
     // Default fallback
-    return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4 h-[400px]" />;
+    return (
+      <div className="flex flex-col items-center justify-center p-20 w-full">
+        <MuskLoadingCompact />
+        <div className="mt-4 animate-pulse text-white/40 font-medium">Loading professional intelligence...</div>
+      </div>
+    );
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-[60[px]">
       {getSkeleton()}
     </div>
   );
