@@ -77,7 +77,9 @@ export function prefetchCommonRoutes(): void {
     prefetchRoute("/search");
     prefetchRoute("/career-capsule");
     prefetchRoute("/messages");
-  }, { timeout: 3000 });
+    prefetchRoute("/dashboard");
+    prefetchRoute("/smart-connect");
+  }, { timeout: 1000 }); // Reduced timeout for faster boot prefetching
 }
 
 export function setupLinkPrefetching(): void {

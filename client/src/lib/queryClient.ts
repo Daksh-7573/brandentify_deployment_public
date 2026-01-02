@@ -500,9 +500,10 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 60 * 24, // 24 hours - aggressively stale
       gcTime: 1000 * 60 * 60 * 25, // 25 hours
-      retry: 1,
+      retry: 2,
       retryDelay: attempt => Math.min(1000 * 2 ** attempt, 5000),
       networkMode: 'always',
+      placeholderData: (previousData: any) => previousData, // Keep previous data while fetching
     },
     mutations: {
       retry: 1,
