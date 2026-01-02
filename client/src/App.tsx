@@ -198,15 +198,14 @@ const MinimalLoadingPlaceholder = () => (
 // Lazy route wrapper - handles Suspense for any lazy component
 function LazyRoute({ component: Component, withShell = false }: { component: React.ComponentType; withShell?: boolean }) {
   const [location] = useLocation();
-  const suspenseFallback = <DynamicPageSkeleton route={location} />;
 
   if (withShell) {
     return (
-      <Suspense fallback={suspenseFallback}>
-        <AppShell>
+      <AppShell>
+        <Suspense fallback={<DynamicPageSkeleton route={location} />}>
           <Component />
-        </AppShell>
-      </Suspense>
+        </Suspense>
+      </AppShell>
     );
   }
   return (
@@ -231,17 +230,14 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
     }
   }, [isAuthenticated, isLoading, navigate]);
   
-  // Default fallback for lazy loading
-  const suspenseFallback = fallback || <DynamicPageSkeleton route={location} />;
-  
   // During auth check, show loading state
   if (isLoading) {
     if (noShell) {
-      return <>{suspenseFallback}</>;
+      return <DynamicPageSkeleton route={location} />;
     }
     return (
       <AppShell>
-        {suspenseFallback}
+        <DynamicPageSkeleton route={location} />
       </AppShell>
     );
   }
@@ -254,18 +250,18 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   // Wrap page in AppShell and Suspense for consistent header, background, and lazy loading support
   if (noShell) {
     return (
-      <Suspense fallback={<>{suspenseFallback}</>}>
+      <Suspense fallback={<DynamicPageSkeleton route={location} />}>
         <Component />
       </Suspense>
     );
   }
   
   return (
-    <Suspense fallback={suspenseFallback}>
-      <AppShell>
+    <AppShell>
+      <Suspense fallback={<DynamicPageSkeleton route={location} />}>
         <Component />
-      </AppShell>
-    </Suspense>
+      </Suspense>
+    </AppShell>
   );
 }
 
