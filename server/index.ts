@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
+import compression from "compression";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { registerRoutes } from "./routes";
 import { setupVite, log } from "./vite";
@@ -41,6 +42,9 @@ console.log(`[Security] Trust Proxy enabled: ${process.env.TRUST_PROXY === '1'}`
 
 // Add cookie parser to handle session cookies
 app.use(cookieParser());
+
+// Enable gzip compression
+app.use(compression());
 
 // Add performance middleware first
 app.use(performanceMiddleware());
@@ -561,6 +565,7 @@ try {
 
 // Serve static files from public directory with proper MIME types
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
+  maxAge: '1d', // Cache for 1 day
   setHeaders: (res, filePath) => {
     // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
     if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
@@ -571,6 +576,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')
 
 // Serve the public directory directly for things like upload-test.html with proper MIME types
 app.use(express.static(path.join(process.cwd(), 'public'), {
+  maxAge: '1d', // Cache for 1 day
   setHeaders: (res, filePath) => {
     // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
     if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
