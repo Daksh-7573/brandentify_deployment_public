@@ -272,31 +272,64 @@ function Router() {
   
   return (
     <Switch>
-      <Route path="/profile" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/profile" component={ProfileNeo} />
-        </Suspense>
-      )} />
-      <Route path="/industry-pulse" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
-        </Suspense>
-      )} />
-      <Route path="/pulse/:id" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <LazyRoute component={PulseDetail} withShell />
-        </Suspense>
-      )} />
-      <Route path="/create-pulse" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
-        </Suspense>
-      )} />
-      <Route path="/create-pulse-new" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
-        </Suspense>
-      )} />
+      {/* Landing page */}
+      <Route path="/">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <LazyRoute component={Landing} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/nav-test">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <LazyRoute component={NavigationTest} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/url-demo">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <LazyRoute component={URLInputDemo} />
+          </Suspense>
+        )}
+      </Route>
+      
+      <Route path="/profile">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/profile" component={ProfileNeo} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/industry-pulse">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/pulse/:id">
+        {(params) => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <LazyRoute component={PulseDetail} withShell />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/create-pulse">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/create-pulse-new">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
+          </Suspense>
+        )}
+      </Route>
       <Route path="/auth" component={() => <LazyRoute component={AuthPage} />} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
@@ -391,22 +424,32 @@ function Router() {
       <Route path="/auth/callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
       
       {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
-      <Route path="/search" component={() => (
-        <ProtectedRoute path="/search" component={SearchPage} />
-      )} />
-      <Route path="/brand-score" component={() => {
-        const BrandScore = lazy(() => import("@/pages/BrandScore"));
-        return (
-          <ProtectedRoute path="/brand-score" component={BrandScore} />
-        );
-      }} />
+      <Route path="/search">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/search" component={SearchPage} />
+          </Suspense>
+        )}
+      </Route>
+      <Route path="/brand-score">
+        {() => {
+          const BrandScore = lazy(() => import("@/pages/BrandScore"));
+          return (
+            <Suspense fallback={<LoadingPlaceholder />}>
+              <ProtectedRoute path="/brand-score" component={BrandScore} />
+            </Suspense>
+          );
+        }}
+      </Route>
       
       {/* Tier 2: Secondary Routes (Load after 5ms) */}
       {secondaryLoaded && (
         <>
-          <Route path="/profile-legacy" component={() => (
-            <ProtectedRoute path="/profile-legacy" component={Profile} />
-          )} />
+          <Route path="/profile-legacy">
+            {() => (
+              <ProtectedRoute path="/profile-legacy" component={Profile} />
+            )}
+          </Route>
           <Route path="/profile/:userId">
             {(params) => (
               <Suspense fallback={<LoadingPlaceholder />}>
@@ -414,29 +457,47 @@ function Router() {
               </Suspense>
             )}
           </Route>
-          <Route path="/career-tools" component={() => (
-            <ProtectedRoute path="/career-tools" component={CareerTools} />
-          )} />
-          <Route path="/portfolio-builder" component={() => (
-            <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
-          )} />
-          <Route path="/designer-portfolio" component={() => (
-            <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
-          )} />
-          <Route path="/pricing" component={() => <LazyRoute component={PricingPage} />} />
-          <Route path="/upgrade" component={() => <LazyRoute component={PricingPage} />} />
-          <Route path="/checkout" component={() => (
-            <ProtectedRoute path="/checkout" component={CheckoutPage} />
-          )} />
-          <Route path="/subscription-manage" component={() => (
-            <ProtectedRoute path="/subscription-manage" component={SubscriptionManagePage} />
-          )} />
-          <Route path="/subscription/manage" component={() => (
-            <ProtectedRoute path="/subscription/manage" component={SubscriptionManagePage} />
-          )} />
-          <Route path="/subscription/success" component={() => (
-            <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
-          )} />
+          <Route path="/career-tools">
+            {() => (
+              <ProtectedRoute path="/career-tools" component={CareerTools} />
+            )}
+          </Route>
+          <Route path="/portfolio-builder">
+            {() => (
+              <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
+            )}
+          </Route>
+          <Route path="/designer-portfolio">
+            {() => (
+              <ProtectedRoute path="/designer-portfolio" component={DesignerPortfolio} />
+            )}
+          </Route>
+          <Route path="/pricing">
+            {() => <LazyRoute component={PricingPage} />}
+          </Route>
+          <Route path="/upgrade">
+            {() => <LazyRoute component={PricingPage} />}
+          </Route>
+          <Route path="/checkout">
+            {() => (
+              <ProtectedRoute path="/checkout" component={CheckoutPage} />
+            )}
+          </Route>
+          <Route path="/subscription-manage">
+            {() => (
+              <ProtectedRoute path="/subscription-manage" component={SubscriptionManagePage} />
+            )}
+          </Route>
+          <Route path="/subscription/manage">
+            {() => (
+              <ProtectedRoute path="/subscription/manage" component={SubscriptionManagePage} />
+            )}
+          </Route>
+          <Route path="/subscription/success">
+            {() => (
+              <ProtectedRoute path="/subscription/success" component={SubscriptionSuccessPage} />
+            )}
+          </Route>
         </>
       )}
       
@@ -510,156 +571,211 @@ function Router() {
       </Route>
       
       {/* Additional protected routes */}
-      <Route path="/ai-career" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/ai-career" component={() => {
-            const AICareerPage = lazy(() => import("@/pages/ai-career"));
-            return (
-              <Suspense fallback={<LoadingPlaceholder />}>
-                <AICareerPage />
-              </Suspense>
-            );
-          }} />
-        </Suspense>
-      )} />
+      <Route path="/ai-career">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/ai-career" component={() => {
+              const AICareerPage = lazy(() => import("@/pages/ai-career"));
+              return (
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <AICareerPage />
+                </Suspense>
+              );
+            }} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/smart-connect" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
-        </Suspense>
-      )} />
+      <Route path="/smart-connect">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/services" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/services" component={ManageServicesPage} />
-        </Suspense>
-      )} />
+      <Route path="/services">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/services" component={ManageServicesPage} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/add-service" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/add-service" component={AddServicePage} />
-        </Suspense>
-      )} />
+      <Route path="/add-service">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/add-service" component={AddServicePage} />
+          </Suspense>
+        )}
+      </Route>
       
       {/* Dashboard route - direct to Industry Pulse */}
-      <Route path="/dashboard" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
-        </Suspense>
-      )} />
+      <Route path="/dashboard">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/news-sources" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
-        </Suspense>
-      )} />
+      <Route path="/news-sources">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
+          </Suspense>
+        )}
+      </Route>
       
       {/* Additional system routes */}
-      <Route path="/radar" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/radar" component={Radar} />
-        </Suspense>
-      )} />
+      <Route path="/radar">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/radar" component={Radar} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/musk-match" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
-        </Suspense>
-      )} />
+      <Route path="/musk-match">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/resume-builder" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/resume-builder" component={ResumePage} />
-        </Suspense>
-      )} />
+      <Route path="/resume-builder">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/resume-builder" component={ResumePage} />
+          </Suspense>
+        )}
+      </Route>
       
-      <Route path="/brand-quests" component={() => (
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
-        </Suspense>
-      )} />
+      <Route path="/brand-quests">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+          </Suspense>
+        )}
+      </Route>
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/career-capsule">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+          </Suspense>
+        )}
       </Route>
       {/* Quantum Card route - dedicated digital visiting card feature */}
       <Route path="/quantum-card">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/quantum-card" component={QuantumCardPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/quantum-card" component={QuantumCardPage} />
+          </Suspense>
+        )}
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/onboarding">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/onboarding-old">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/edit-profile">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/musk-testing">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
+          </Suspense>
+        )}
       </Route>
       {/* Removed Test route for nowboard integration as it's now part of quests */}
       {/* Messaging feature */}
       <Route path="/messages">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/messages" component={ChatPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/messages" component={ChatPage} />
+          </Suspense>
+        )}
       </Route>
       {/* Connections management */}
       <Route path="/connections">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/connections" component={ConnectionsPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/connections" component={ConnectionsPage} />
+          </Suspense>
+        )}
       </Route>
       {/* Privacy & Data Control page */}
       <Route path="/privacy">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/privacy" component={PrivacyPage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/privacy" component={PrivacyPage} />
+          </Suspense>
+        )}
       </Route>
       
-      {/* Direct access to users for debugging */}
-      <Route path="/direct-users" component={() => (
-        <ProtectedRoute path="/direct-users" component={DirectUsersPage} noShell={false} />
-      )} />
+      <Route path="/direct-users">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/direct-users" component={DirectUsersPage} noShell={false} />
+          </Suspense>
+        )}
+      </Route>
       
       {/* Direct access to content for debugging */}
-      <Route path="/direct-content" component={() => (
-        <ProtectedRoute path="/direct-content" component={DirectContentPage} noShell={false} />
-      )} />
+      <Route path="/direct-content">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/direct-content" component={DirectContentPage} noShell={false} />
+          </Suspense>
+        )}
+      </Route>
       {/* Direct access to content management for debugging */}
-      <Route path="/direct-content-management" component={() => (
-        <ProtectedRoute path="/direct-content-management" component={DirectContentManagementPage} noShell={false} />
-      )} />
+      <Route path="/direct-content-management">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/direct-content-management" component={DirectContentManagementPage} noShell={false} />
+          </Suspense>
+        )}
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
-        </Suspense>
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/unified-profile/:userId">
         {(params) => (
@@ -678,64 +794,75 @@ function Router() {
         )}
       </Route>
       
-      {/* Admin Panel Routes - Using lazy loading */}
       <Route path="/admin">
-        <ProtectedRoute path="/admin" component={() => {
-          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
-          const AdminDashboard = lazy(() => import("@/pages/admin/index"));
-          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
-          const AdminDashboardWithLayout = () => (
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <AdminCheck>
-                <AdminLayout>
-                  <AdminDashboard />
-                </AdminLayout>
-              </AdminCheck>
-            </Suspense>
-          );
-          
-          return <AdminDashboardWithLayout />;
-        }} />
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/admin" component={() => {
+              const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+              const AdminDashboard = lazy(() => import("@/pages/admin/index"));
+              const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+              
+              const AdminDashboardWithLayout = () => (
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <AdminCheck>
+                    <AdminLayout>
+                      <AdminDashboard />
+                    </AdminLayout>
+                  </AdminCheck>
+                </Suspense>
+              );
+              
+              return <AdminDashboardWithLayout />;
+            }} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/admin/users">
-        <ProtectedRoute path="/admin/users" component={() => {
-          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
-          const AdminUsers = lazy(() => import("@/pages/admin/users"));
-          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
-          const AdminUsersWithLayout = () => (
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <AdminCheck>
-                <AdminLayout>
-                  <AdminUsers />
-                </AdminLayout>
-              </AdminCheck>
-            </Suspense>
-          );
-          
-          return <AdminUsersWithLayout />;
-        }} />
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/admin/users" component={() => {
+              const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+              const AdminUsers = lazy(() => import("@/pages/admin/users"));
+              const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+              
+              const AdminUsersWithLayout = () => (
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <AdminCheck>
+                    <AdminLayout>
+                      <AdminUsers />
+                    </AdminLayout>
+                  </AdminCheck>
+                </Suspense>
+              );
+              
+              return <AdminUsersWithLayout />;
+            }} />
+          </Suspense>
+        )}
       </Route>
       {/* Content Management page using our direct API approach */}
       <Route path="/admin/content">
-        <ProtectedRoute path="/admin/content" component={() => {
-          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
-          const AdminContentNew = lazy(() => import("@/pages/admin/content-new"));
-          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
-          const AdminContentWithLayout = () => (
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <AdminCheck>
-                <AdminLayout>
-                  <AdminContentNew />
-                </AdminLayout>
-              </AdminCheck>
-            </Suspense>
-          );
-          
-          return <AdminContentWithLayout />;
-        }} />
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/admin/content" component={() => {
+              const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+              const AdminContentNew = lazy(() => import("@/pages/admin/content-new"));
+              const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+              
+              const AdminContentWithLayout = () => (
+                <Suspense fallback={<LoadingPlaceholder />}>
+                  <AdminCheck>
+                    <AdminLayout>
+                      <AdminContentNew />
+                    </AdminLayout>
+                  </AdminCheck>
+                </Suspense>
+              );
+              
+              return <AdminContentWithLayout />;
+            }} />
+          </Suspense>
+        )}
       </Route>
       <Route path="/admin/analytics">
         <ProtectedRoute path="/admin/analytics" component={() => {
