@@ -14,6 +14,17 @@ import { AppShell } from "@/components/layout/app-shell";
 const AuthCallback = lazy(() => import("@/pages/auth-callback"));
 const CatchAllAuthHandler = lazy(() => import("@/routes/CatchAllAuthHandler"));
 
+// Custom redirect component to handle page redirects
+const PageRedirect = ({ to }: { to: string }) => {
+  const [_, navigate] = useLocation();
+  
+  useEffect(() => {
+    navigate(to);
+  }, [navigate, to]);
+  
+  return null;
+};
+
 // Enhanced progressive loading state management
 const useProgressiveLoading = () => {
   const [coreLoaded, setCoreLoaded] = useState(false);
@@ -169,12 +180,14 @@ const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 const JoinReferralPage = lazy(() => import("@/pages/join-referral"));
 // Brand of the Day is now integrated into Nowboard
 
-// Loading placeholder - shows AppShell while page code is loading
-const LoadingPlaceholder = () => (
-  <AppShell>
-    <div className="flex-1" />
-  </AppShell>
-);
+
+import { DynamicPageSkeleton } from "@/components/ui/dynamic-page-skeleton";
+
+// Loading placeholder - shows AppShell with dynamic skeleton while page code is loading
+const LoadingPlaceholder = () => {
+  const [location] = useLocation();
+  return <DynamicPageSkeleton route={location} />;
+};
 
 // Minimal loading placeholder without shell for public pages
 const MinimalLoadingPlaceholder = () => (
@@ -201,23 +214,13 @@ function LazyRoute({ component: Component, withShell = false }: { component: Rea
   );
 }
 
-// Custom redirect component to handle page redirects
-const PageRedirect = ({ to }: { to: string }) => {
-  const [_, navigate] = useLocation();
-  
-  useEffect(() => {
-    navigate(to);
-  }, [navigate, to]);
-  
-  return null;
-};
-
 // Protected route component that checks if the user is authenticated
 // Wraps all protected pages in AppShell for consistent layout
 // Includes Suspense boundary to support lazy-loaded components
 function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode, noShell?: boolean }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, navigate] = useLocation();
+  const [location] = useLocation();
   
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -227,7 +230,7 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   }, [isAuthenticated, isLoading, navigate]);
   
   // Default fallback for lazy loading
-  const suspenseFallback = fallback || <div className="flex-1" />;
+  const suspenseFallback = fallback || <DynamicPageSkeleton route={location} />;
   
   // During auth check, show loading state
   if (isLoading) {
@@ -274,12 +277,10 @@ function Router() {
           <ProtectedRoute path="/profile" component={ProfileNeo} />
         </Suspense>
       )} />
-      {/* Tier 1: Critical Routes (Always Available) */}
-      <Route path="/" component={() => <LazyRoute component={Landing} />} />
-      <Route path="/nav-test" component={() => <LazyRoute component={NavigationTest} />} />
-      <Route path="/url-demo" component={() => <LazyRoute component={URLInputDemo} />} />
       <Route path="/industry-pulse" component={() => (
-        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+        </Suspense>
       )} />
       <Route path="/pulse/:id" component={() => <LazyRoute component={PulseDetail} withShell />} />
       <Route path="/create-pulse" component={() => (
@@ -526,7 +527,9 @@ function Router() {
       
       {/* Dashboard route - direct to Industry Pulse */}
       <Route path="/dashboard" component={() => (
-        <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
+        </Suspense>
       )} />
       
       <Route path="/news-sources" component={() => (
@@ -547,12 +550,16 @@ function Router() {
       )} />
       
       <Route path="/brand-quests" component={() => (
-        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+        </Suspense>
       )} />
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
-        <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
+        </Suspense>
       </Route>
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
