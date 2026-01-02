@@ -23,50 +23,76 @@ interface DynamicPageSkeletonProps {
 
 export function DynamicPageSkeleton({ route }: DynamicPageSkeletonProps) {
   const getSkeleton = () => {
+    // Normalize route by removing query params and trailing slashes
+    const path = route.split('?')[0].replace(/\/$/, '') || '/';
+
     // Exact matches or startsWith for nested routes
-    if (route === "/industry-pulse" || route.startsWith("/dashboard")) {
-      return <DashboardPageSkeleton />;
-    }
-    if (route === "/industry-pulse-new") {
+    if (path === "/industry-pulse" || path === "/industry-pulse-new" || path === "/dashboard" || path === "/industry-pulse-fixed") {
       return <FeedSkeleton />;
     }
-    if (route.startsWith("/profile") || route.startsWith("/@") || route.startsWith("/unified-profile")) {
+    
+    // Profile related routes (including @username)
+    if (path.startsWith("/profile") || path.startsWith("/@") || path.startsWith("/unified-profile") || path.startsWith("/public-profile")) {
       return <ProfilePageSkeleton />;
     }
-    if (route.startsWith("/brand-quests") || route.startsWith("/career-quests") || route.includes("/quests")) {
+    
+    // Quest related routes
+    if (path.startsWith("/brand-quests") || path.startsWith("/career-quests") || path.includes("/quests")) {
       return <QuestPageSkeleton />;
     }
-    if (route.startsWith("/messages") || route.startsWith("/chat")) {
+    
+    // Messaging/Chat
+    if (path.startsWith("/messages") || path.startsWith("/chat") || path === "/ChatPage") {
       return <MessagingPageSkeleton />;
     }
-    if (route.startsWith("/connections")) {
+    
+    // Connections
+    if (path.startsWith("/connections")) {
       return <ConnectionsPageSkeleton />;
     }
-    if (route.startsWith("/create-pulse")) {
+    
+    // Content Creation
+    if (path.startsWith("/create-pulse")) {
       return <CreatePulsePageSkeleton />;
     }
-    if (route.startsWith("/brand-score")) {
+    
+    // Analytics/Score
+    if (path.startsWith("/brand-score")) {
       return <BrandScorePageSkeleton />;
     }
-    if (route.startsWith("/career-capsule")) {
+    
+    // Career Capsule / Roadmap
+    if (path.startsWith("/career-capsule") || path.startsWith("/career-roadmap")) {
       return <CareerCapsulePageSkeleton />;
     }
-    if (route.startsWith("/portfolio") || route.startsWith("/designer-portfolio")) {
+    
+    // Portfolio
+    if (path.startsWith("/portfolio") || path.startsWith("/designer-portfolio") || path.startsWith("/portfolio-builder")) {
       return <PortfolioPageSkeleton />;
     }
-    if (route.startsWith("/pricing") || route.startsWith("/upgrade") || route.startsWith("/checkout")) {
+    
+    // Subscription/Pricing
+    if (path.startsWith("/pricing") || path.startsWith("/upgrade") || path.startsWith("/checkout") || path.startsWith("/subscription")) {
       return <PricingPageSkeleton />;
     }
-    if (route.startsWith("/resume")) {
+    
+    // Resume
+    if (path.startsWith("/resume")) {
       return <ResumeParserPageSkeleton />;
     }
-    if (route.startsWith("/search")) {
+    
+    // Search
+    if (path.startsWith("/search")) {
       return <SearchPageSkeleton />;
     }
-    if (route.startsWith("/services") || route.startsWith("/manage-services")) {
+    
+    // Services
+    if (path.startsWith("/services") || path.startsWith("/manage-services") || path.startsWith("/add-service")) {
       return <ServicesPageSkeleton />;
     }
-    if (route.startsWith("/nowboard")) {
+    
+    // Opportunities
+    if (path.startsWith("/nowboard")) {
       return <NowboardPageSkeleton />;
     }
     
