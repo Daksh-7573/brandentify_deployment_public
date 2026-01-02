@@ -261,6 +261,9 @@ function Router() {
   
   return (
     <Switch>
+      <Route path="/profile" component={() => (
+        <ProtectedRoute path="/profile" component={ProfileNeo} />
+      )} />
       {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={() => <LazyRoute component={Landing} />} />
       <Route path="/nav-test" component={() => <LazyRoute component={NavigationTest} />} />
@@ -379,12 +382,9 @@ function Router() {
         );
       }} />
       
-      {/* Tier 2: Secondary Routes (Load after 50ms) */}
+      {/* Tier 2: Secondary Routes (Load after 5ms) */}
       {secondaryLoaded && (
         <>
-          <Route path="/profile" component={() => (
-            <ProtectedRoute path="/profile" component={ProfileNeo} />
-          )} />
           <Route path="/profile-legacy" component={() => (
             <ProtectedRoute path="/profile-legacy" component={Profile} />
           )} />
