@@ -181,6 +181,7 @@ const JoinReferralPage = lazy(() => import("@/pages/join-referral"));
 // Brand of the Day is now integrated into Nowboard
 
 
+import { DynamicPageSkeleton } from "@/components/ui/dynamic-page-skeleton";
 import { MuskLoadingShell, MuskLoadingCompact } from "@/components/ui/musk-loading-shell";
 
 // Loading placeholder - shows AppShell with dynamic skeleton while page code is loading
