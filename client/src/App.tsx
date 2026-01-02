@@ -203,7 +203,7 @@ function LazyRoute({ component: Component, withShell = false }: { component: Rea
   if (withShell) {
     return (
       <AppShell>
-        <Suspense fallback={suspenseFallback}>
+        <Suspense fallback={<div className="flex-1" />}>
           <Component />
         </Suspense>
       </AppShell>
