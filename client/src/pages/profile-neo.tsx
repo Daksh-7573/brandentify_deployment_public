@@ -69,68 +69,102 @@ export default function ProfileNeo() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // State variables
+  // ALL STATE HOOKS MUST BE DECLARED BEFORE ANY EARLY RETURNS
   const [showEditPersonalInfoDialog, setShowEditPersonalInfoDialog] = useState(false);
   const [dialogKey, setDialogKey] = useState(0);
-  
-  // Debug: Track dialog state changes and update key when dialog opens
-  useEffect(() => {
-    console.log("[DIALOG STATE] showEditPersonalInfoDialog changed to:", showEditPersonalInfoDialog);
-    if (showEditPersonalInfoDialog) {
-      setDialogKey(prev => prev + 1); // Force form remount when dialog opens
-    }
-  }, [showEditPersonalInfoDialog]);
   const [showLookingForDialog, setShowLookingForDialog] = useState(false);
   const [selectedLookingFor, setSelectedLookingFor] = useState<string | null>(null);
   const [industryValue, setIndustryValue] = useState<string | null>(null);
   const [domainValue, setDomainValue] = useState<string | null>(null);
   const [showIndustryDialog, setShowIndustryDialog] = useState(false);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
   
   // Get the correct user identifier for API calls
-  // Primary approach: Use the numeric ID if available (for custom OAuth)
-  // Fallback: Use username or uid for Firebase users
   const userIdentifier = user?.id?.toString() || localStorage.getItem('userId') || user?.username || user?.uid || '';
 
-  // Get user profile data with enhanced error handling
+  // ALL QUERY/MUTATION HOOKS MUST BE DECLARED BEFORE ANY EARLY RETURNS
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
     queryKey: ['/api/users', userIdentifier],
     queryFn: async () => {
-      console.log('[PROFILE DATA FETCH] Starting fetch for userIdentifier:', userIdentifier);
-      if (!userIdentifier) {
-        console.warn('[PROFILE DATA FETCH] No user identifier available');
-        throw new Error('No user identifier available');
-      }
-      console.log('[PROFILE DATA FETCH] Request URL:', `/api/users/${userIdentifier}`);
-      
+      if (!userIdentifier) throw new Error('No user identifier available');
       const response = await fetch(`/api/users/${userIdentifier}`, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        // Add credentials for session-based auth
+        headers: { 'Accept': 'application/json' },
         credentials: 'include',
       });
-      
-      console.log('[PROFILE DATA FETCH] Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch user data: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`Failed to fetch user data: ${response.status}`);
       return response.json();
     },
     enabled: !!userIdentifier,
-    staleTime: 1000 * 60 * 60, // 1 hour
+    staleTime: 1000 * 60 * 60,
   });
 
-  // Redirect if not logged in
+  const { data: userPreferences } = useQuery({
+    queryKey: ['/api/user-preferences', userIdentifier],
+    enabled: !!userIdentifier && !!userData,
+  });
+
+  const { isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(userIdentifier);
+
+  const updateLookingForMutation = useMutation({
+    mutationFn: async (lookingFor: string | null) => {
+      const res = await apiRequest("PATCH", `/api/users/${userIdentifier}`, { lookingFor });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Looking for updated", description: "Your preference has been updated." });
+      setShowLookingForDialog(false);
+      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => 
+        oldData ? { ...oldData, lookingFor: selectedLookingFor } : oldData
+      );
+    },
+    onError: () => {
+      toast({ title: "Update failed", description: "Something went wrong.", variant: "destructive" });
+    }
+  });
+
+  const updateIndustryMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("PATCH", `/api/users/${userIdentifier}`, {
+        industry: industryValue,
+        domain: domainValue
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Industry preferences updated", description: "Your preferences have been updated." });
+      setShowIndustryDialog(false);
+      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => 
+        oldData ? { ...oldData, industry: industryValue, domain: domainValue } : oldData
+      );
+    },
+    onError: () => {
+      toast({ title: "Update failed", description: "Something went wrong.", variant: "destructive" });
+    }
+  });
+
+  // ALL EFFECTS MUST BE DECLARED BEFORE ANY EARLY RETURNS
+  useEffect(() => {
+    if (showEditPersonalInfoDialog) {
+      setDialogKey(prev => prev + 1);
+    }
+  }, [showEditPersonalInfoDialog]);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       setLocation('/auth');
     }
   }, [isAuthenticated, isLoading, setLocation]);
 
-  // If loading auth or user data, show standard loading screen
+  useEffect(() => {
+    if (userData) {
+      setSelectedLookingFor(userData.lookingFor);
+      setIndustryValue(userData.industry);
+      setDomainValue(userData.domain);
+    }
+  }, [userData]);
+
+  // NOW we can have early returns after all hooks are declared
   if (isLoading || isUserDataLoading || !userData) {
     return (
       <AppShell>
@@ -141,139 +175,16 @@ export default function ProfileNeo() {
     );
   }
 
-  // Debug logging for user data after variables are defined
-  console.log('Profile page render - user:', user);
-  console.log('Profile page render - userIdentifier:', userIdentifier);
-  console.log('Profile page render - isUserDataLoading:', isUserDataLoading);
-  console.log('Profile page render - userData:', userData);
-  console.log('Profile page render - userDataError:', userDataError);
-  
-  // Query for user's industries and domain preferences
-  const { data: userPreferences, isLoading: isPreferencesLoading } = useQuery({
-    queryKey: ['/api/user-preferences', userIdentifier],
-  });
-  
-  // Profile picture functionality
-  const [showProfileDialog, setShowProfileDialog] = useState(false);
-  const { isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(userIdentifier);
-  
-  // Use the photoURL from the main userData query instead of the hook's separate query
+  // Derived values (not hooks, safe after early return)
   const profilePictureUrl = userData?.photoURL || null;
-  
-  // Debug logging for profile picture URL
-  console.log('[PROFILE PICTURE DEBUG] userData?.photoURL:', userData?.photoURL ? 'BASE64_EXISTS' : 'NULL');
-  console.log('[PROFILE PICTURE DEBUG] profilePictureUrl:', profilePictureUrl ? 'HAS_URL' : 'NULL');
-  console.log('[PROFILE PICTURE DEBUG] userIdentifier:', userIdentifier);
-  console.log('[PROFILE PICTURE DEBUG] userData full object:', userData);
-  console.log('[PROFILE PICTURE DEBUG] profilePictureUrl value:', profilePictureUrl?.substring(0, 100) + (profilePictureUrl?.length > 100 ? '...' : ''));
-
-  // Test base64 image loading manually
-  useEffect(() => {
-    if (profilePictureUrl?.startsWith('data:image/')) {
-      console.log('[PROFILE PICTURE DEBUG] 🧪 Testing manual image load...');
-      const img = new Image();
-      img.onload = () => {
-        console.log('[PROFILE PICTURE DEBUG] ✅ Manual image test: SUCCESSFUL');
-        console.log('[PROFILE PICTURE DEBUG] Manual test dimensions:', img.naturalWidth + 'x' + img.naturalHeight);
-      };
-      img.onerror = (e) => {
-        console.error('[PROFILE PICTURE DEBUG] ❌ Manual image test: FAILED', e);
-      };
-      img.src = profilePictureUrl;
-    }
-  }, [profilePictureUrl]);
-  
-  // Force refresh userData after profile picture updates
   const refreshUserData = () => {
-    console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
-    // Use refetchQueries instead of invalidateQueries to prevent wrong API calls
     queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier], exact: true });
   };
-
-  // Update looking for
-  const updateLookingForMutation = useMutation({
-    mutationFn: async (lookingFor: string | null) => {
-      const res = await apiRequest("PATCH", `/api/users/${userIdentifier}`, {
-        lookingFor
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Looking for updated",
-        description: "Your 'I am looking for' preference has been updated."
-      });
-      setShowLookingForDialog(false);
-      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
-        if (oldData) {
-          return { ...oldData, lookingFor: selectedLookingFor };
-        }
-        return oldData;
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Update failed",
-        description: "Something went wrong while updating your preference.",
-        variant: "destructive"
-      });
-      console.error("Error updating looking for:", error);
-    }
-  });
-
-  // Update industry and domain preferences
-  const updateIndustryMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("PATCH", `/api/users/${userIdentifier}`, {
-        industry: industryValue,
-        domain: domainValue
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Industry preferences updated",
-        description: "Your industry and domain preferences have been updated."
-      });
-      setShowIndustryDialog(false);
-      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
-        if (oldData) {
-          return { ...oldData, industry: industryValue, domain: domainValue };
-        }
-        return oldData;
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Update failed",
-        description: "Something went wrong while updating your preferences.",
-        variant: "destructive"
-      });
-      console.error("Error updating industry preferences:", error);
-    }
-  });
-
-  // Effect to set initial values
-  useEffect(() => {
-    if (userData) {
-      setSelectedLookingFor(userData.lookingFor);
-      setIndustryValue(userData.industry);
-      setDomainValue(userData.domain);
-    }
-  }, [userData]);
-
   const profileCompletion = calculateOverallProfileCompletion(userData);
   const portfolioDataMissing = !userData?.hasPortfolio;
-  
-  // Find looking for category with icon and label
-  console.log("[PROFILE NEO DEBUG] userData?.lookingFor:", userData?.lookingFor);
   const lookingForCategory = LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData?.lookingFor);
-  console.log("[PROFILE NEO DEBUG] Found category:", lookingForCategory);
   const lookingForLabel = lookingForCategory?.label || "Not specified";
   const lookingForIcon = lookingForCategory?.icon || "";
-  console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel, "Icon:", lookingForIcon);
-
-  if (!userData) return null;
   
   const handleSubmitLookingFor = () => {
     updateLookingForMutation.mutate(selectedLookingFor);
