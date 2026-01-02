@@ -340,7 +340,7 @@ export default function Header() {
             >
               {/* User name */}
               <span className="text-sm font-medium text-white hidden md:block">
-                {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
+                {userData?.name || user?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
               {/* User avatar */}
