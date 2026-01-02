@@ -8991,6 +8991,61 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Admin endpoint to manually trigger daily quest generation for all users
+  apiRouter.post('/quests/scheduler/trigger', async (req: Request, res: Response) => {
+    try {
+      console.log('[Daily Quest Scheduler API] Manual trigger requested');
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      const result = await dailyQuestScheduler.triggerFullDailyProcess();
+      
+      console.log(`[Daily Quest Scheduler API] Trigger complete:`, result);
+      res.json({
+        success: true,
+        message: 'Daily quest generation triggered successfully',
+        result: {
+          successfulAssignments: result.successfulAssignments,
+          expiredQuests: result.expiredQuests,
+          errors: result.errors
+        }
+      });
+    } catch (error) {
+      console.error('[Daily Quest Scheduler API] Error triggering generation:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error triggering daily quest generation',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Admin endpoint to trigger quest generation for a specific user
+  apiRouter.post('/quests/scheduler/trigger/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ success: false, message: 'Invalid user ID' });
+      }
+      
+      console.log(`[Daily Quest Scheduler API] Manual trigger for user ${userId} requested`);
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+      const result = await dailyQuestScheduler.triggerDailyAssignmentForUser(userId);
+      
+      console.log(`[Daily Quest Scheduler API] Trigger for user ${userId} complete:`, result);
+      res.json({
+        success: true,
+        message: `Quest generation triggered for user ${userId}`,
+        result
+      });
+    } catch (error) {
+      console.error('[Daily Quest Scheduler API] Error triggering generation for user:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error triggering quest generation for user',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Brand Score API
   apiRouter.get('/brand-score/:userId', async (req: Request, res: Response) => {
     try {
