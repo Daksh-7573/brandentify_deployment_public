@@ -202,11 +202,11 @@ function LazyRoute({ component: Component, withShell = false }: { component: Rea
 
   if (withShell) {
     return (
-      <AppShell suspenseFallback={suspenseFallback}>
-        <Suspense fallback={null}>
+      <Suspense fallback={suspenseFallback}>
+        <AppShell>
           <Component />
-        </Suspense>
-      </AppShell>
+        </AppShell>
+      </Suspense>
     );
   }
   return (
@@ -240,8 +240,8 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
       return <>{suspenseFallback}</>;
     }
     return (
-      <AppShell suspenseFallback={suspenseFallback}>
-        {null}
+      <AppShell>
+        {suspenseFallback}
       </AppShell>
     );
   }
@@ -261,11 +261,11 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   }
   
   return (
-    <AppShell suspenseFallback={suspenseFallback}>
-      <Suspense fallback={null}>
+    <Suspense fallback={suspenseFallback}>
+      <AppShell>
         <Component />
-      </Suspense>
-    </AppShell>
+      </AppShell>
+    </Suspense>
   );
 }
 
