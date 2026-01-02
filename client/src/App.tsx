@@ -262,7 +262,9 @@ function Router() {
   return (
     <Switch>
       <Route path="/profile" component={() => (
-        <ProtectedRoute path="/profile" component={ProfileNeo} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/profile" component={ProfileNeo} />
+        </Suspense>
       )} />
       {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={() => <LazyRoute component={Landing} />} />

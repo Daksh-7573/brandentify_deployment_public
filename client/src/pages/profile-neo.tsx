@@ -45,6 +45,7 @@ import {
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import AppShell from "@/components/layout/app-shell";
 import { SkillsListSkeleton, EducationItemSkeleton, ExperienceItemSkeleton, ProfileCardSkeleton } from "@/components/ui/skeleton-components";
 import { PremiumBadge } from "@/components/ui/premium-badge";
 import { ProfileDataProvider } from "@/contexts/profile-data-context";
@@ -88,13 +89,17 @@ export default function ProfileNeo() {
   // Get the correct user identifier for API calls
   // Primary approach: Use the numeric ID if available (for custom OAuth)
   // Fallback: Use username or uid for Firebase users
-  const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '';
+  const userIdentifier = user?.id?.toString() || localStorage.getItem('userId') || user?.username || user?.uid || '';
 
   // Get user profile data with enhanced error handling
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
     queryKey: ['/api/users', userIdentifier],
     queryFn: async () => {
       console.log('[PROFILE DATA FETCH] Starting fetch for userIdentifier:', userIdentifier);
+      if (!userIdentifier) {
+        console.warn('[PROFILE DATA FETCH] No user identifier available');
+        throw new Error('No user identifier available');
+      }
       console.log('[PROFILE DATA FETCH] Request URL:', `/api/users/${userIdentifier}`);
       
       const response = await fetch(`/api/users/${userIdentifier}`, {
@@ -107,56 +112,25 @@ export default function ProfileNeo() {
       });
       
       console.log('[PROFILE DATA FETCH] Response status:', response.status);
-      console.log('[PROFILE DATA FETCH] Response statusText:', response.statusText);
-      console.log('[PROFILE DATA FETCH] Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
-        let errorMessage = `Failed to fetch user data: ${response.status} ${response.statusText}`;
-        
-        try {
-          const errorData = await response.text();
-          console.error('[PROFILE DATA FETCH] Error response body:', errorData);
-          errorMessage += ` - ${errorData}`;
-        } catch (e) {
-          console.error('[PROFILE DATA FETCH] Could not read error response body:', e);
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(`Failed to fetch user data: ${response.status}`);
       }
       
-      const data = await response.json();
-      console.log('[PROFILE DATA FETCH] Success! User data received:', {
-        id: data.id,
-        email: data.email,
-        name: data.name,
-        hasPhotoURL: !!data.photoURL
-      });
-      return data;
+      return response.json();
     },
-    enabled: !!userIdentifier && !!user,
-    retry: (failureCount, error) => {
-      console.log('[PROFILE DATA FETCH] Retry attempt:', failureCount, 'Error:', error.message);
-      return failureCount < 2;
-    },
-    staleTime: 30000, // 30 seconds
-    refetchOnWindowFocus: false, // Prevent unnecessary refetches
+    enabled: !!userIdentifier,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 
   // If loading auth or user data, show standard loading screen
-  if (isLoading || (isAuthenticated && isUserDataLoading)) {
+  if (isLoading || isUserDataLoading || !userData) {
     return (
-      <div 
-        className="min-h-screen bg-cover bg-center bg-fixed relative"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <Header />
-          <div className="container mx-auto px-4 py-6">
-            <ProfileCardSkeleton />
-          </div>
+      <AppShell>
+        <div className="container mx-auto px-4 py-6">
+          <ProfileCardSkeleton />
         </div>
-      </div>
+      </AppShell>
     );
   }
 
