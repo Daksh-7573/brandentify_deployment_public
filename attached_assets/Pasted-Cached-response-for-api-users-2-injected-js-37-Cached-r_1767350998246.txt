@@ -1,0 +1,115 @@
+Cached response for /api/users/2
+injected.js:37 Cached response for /api/users/2/experiences
+injected.js:37 Cached response for /api/users/2/educations
+injected.js:37 Cached response for /api/users/2/skills
+injected.js:37 Cached response for /api/users/2/projects
+injected.js:37 [Onboarding Check] Object
+injected.js:37 [Onboarding] All mandatory fields present, no onboarding needed
+injected.js:37 [HEADER PERFORMANCE] User data loaded: SUCCESS
+injected.js:37 [AppShell] Rendering with hideHeader: false
+injected.js:37 [AppShell] Rendering Header component
+injected.js:37 [HEADER PERFORMANCE] isLoading: false
+injected.js:37 [HEADER PERFORMANCE] userData ready: true
+injected.js:37 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+injected.js:37 [HEADER PERFORMANCE] userId: 2
+injected.js:37 Warning: React has detected a change in the order of Hooks called by ProfileNeo. This will lead to bugs and errors if not fixed. For more information, read the Rules of Hooks: https://reactjs.org/link/rules-of-hooks
+
+   Previous render            Next render
+   ------------------------------------------------------
+1. useContext                 useContext
+2. useContext                 useContext
+3. useSyncExternalStore       useSyncExternalStore
+4. useRef                     useRef
+5. useInsertionEffect         useInsertionEffect
+6. useState                   useState
+7. useEffect                  useEffect
+8. useState                   useState
+9. useState                   useState
+10. useEffect                 useEffect
+11. useState                  useState
+12. useState                  useState
+13. useState                  useState
+14. useState                  useState
+15. useState                  useState
+16. useContext                useContext
+17. useContext                useContext
+18. useContext                useContext
+19. useEffect                 useEffect
+20. useState                  useState
+21. useCallback               useCallback
+22. useSyncExternalStore      useSyncExternalStore
+23. useEffect                 useEffect
+24. undefined                 useEffect
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    at ProfileNeo (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/profile-neo.tsx:73:57)
+    at Suspense
+    at main
+    at div
+    at div
+    at AppShell (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/app-shell.tsx:22:28)
+    at ProtectedRoute (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=H4984Wv2MsSeyO8gmVDkv:314:38)
+    at Suspense
+    at component
+    at Route (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=04f29624:191:16)
+    at Switch (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=04f29624:247:17)
+    at Router (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=H4984Wv2MsSeyO8gmVDkv:381:56)
+    at Suspense
+    at AuthProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/simple-auth-context.tsx:30:32)
+    at QueryClientProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=04f29624:2805:3)
+    at App
+(anonymous) @ injected.js:37Understand this error
+2chunk-XQLYTHWV.js?v=04f29624:11678 Uncaught Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (chunk-XQLYTHWV.js?v=04f29624:11678:21)
+    at updateEffectImpl (chunk-XQLYTHWV.js?v=04f29624:12074:22)
+    at updateEffect (chunk-XQLYTHWV.js?v=04f29624:12099:18)
+    at Object.useEffect (chunk-XQLYTHWV.js?v=04f29624:12703:22)
+    at useEffect (chunk-VJA5E53X.js?v=04f29624:1078:29)
+    at ProfileNeo (profile-neo.tsx:138:3)
+    at renderWithHooks (chunk-XQLYTHWV.js?v=04f29624:11548:26)
+    at updateFunctionComponent (chunk-XQLYTHWV.js?v=04f29624:14582:28)
+    at beginWork (chunk-XQLYTHWV.js?v=04f29624:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-XQLYTHWV.js?v=04f29624:3674:22)Understand this error
+injected.js:37 The above error occurred in the <ProfileNeo> component:
+
+    at ProfileNeo (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/profile-neo.tsx:73:57)
+    at Suspense
+    at main
+    at div
+    at div
+    at AppShell (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/layout/app-shell.tsx:22:28)
+    at ProtectedRoute (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=H4984Wv2MsSeyO8gmVDkv:314:38)
+    at Suspense
+    at component
+    at Route (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=04f29624:191:16)
+    at Switch (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=04f29624:247:17)
+    at Router (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx?v=H4984Wv2MsSeyO8gmVDkv:381:56)
+    at Suspense
+    at AuthProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/context/simple-auth-context.tsx:30:32)
+    at QueryClientProvider (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=04f29624:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+(anonymous) @ injected.js:37Understand this error
+chunk-XQLYTHWV.js?v=04f29624:9129 Uncaught Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (chunk-XQLYTHWV.js?v=04f29624:11678:21)
+    at updateEffectImpl (chunk-XQLYTHWV.js?v=04f29624:12074:22)
+    at updateEffect (chunk-XQLYTHWV.js?v=04f29624:12099:18)
+    at Object.useEffect (chunk-XQLYTHWV.js?v=04f29624:12703:22)
+    at useEffect (chunk-VJA5E53X.js?v=04f29624:1078:29)
+    at ProfileNeo (profile-neo.tsx:138:3)
+    at renderWithHooks (chunk-XQLYTHWV.js?v=04f29624:11548:26)
+    at updateFunctionComponent (chunk-XQLYTHWV.js?v=04f29624:14582:28)
+    at beginWork (chunk-XQLYTHWV.js?v=04f29624:15924:22)
+    at beginWork$1 (chunk-XQLYTHWV.js?v=04f29624:19753:22)Understand this error
+injected.js:37 Cached response for /api/notifications/2/count
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:37 Cached response for /api/notifications/2/count
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2
+injected.js:37 Cached response for /api/messaging/unread/count?userId=2
+injected.js:37 [HEADER PERFORMANCE] Unread messages check completed for userId: 2

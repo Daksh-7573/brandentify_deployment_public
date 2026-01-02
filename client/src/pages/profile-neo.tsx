@@ -123,6 +123,13 @@ export default function ProfileNeo() {
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setLocation('/auth');
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
+
   // If loading auth or user data, show standard loading screen
   if (isLoading || isUserDataLoading || !userData) {
     return (
@@ -133,13 +140,6 @@ export default function ProfileNeo() {
       </AppShell>
     );
   }
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      setLocation('/auth');
-    }
-  }, [isAuthenticated, isLoading, setLocation]);
 
   // Debug logging for user data after variables are defined
   console.log('Profile page render - user:', user);
@@ -189,7 +189,7 @@ export default function ProfileNeo() {
     // Use refetchQueries instead of invalidateQueries to prevent wrong API calls
     queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier], exact: true });
   };
-  
+
   // Update looking for
   const updateLookingForMutation = useMutation({
     mutationFn: async (lookingFor: string | null) => {
@@ -220,7 +220,7 @@ export default function ProfileNeo() {
       console.error("Error updating looking for:", error);
     }
   });
-  
+
   // Update industry and domain preferences
   const updateIndustryMutation = useMutation({
     mutationFn: async () => {
@@ -252,7 +252,7 @@ export default function ProfileNeo() {
       console.error("Error updating industry preferences:", error);
     }
   });
-  
+
   // Effect to set initial values
   useEffect(() => {
     if (userData) {
@@ -261,25 +261,7 @@ export default function ProfileNeo() {
       setDomainValue(userData.domain);
     }
   }, [userData]);
-  
-  // If loading, show standard loading screen
-  if (isUserDataLoading) {
-    return (
-      <div 
-        className="min-h-screen bg-cover bg-center bg-fixed relative"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <Header />
-          <div className="container mx-auto px-4 py-6">
-            <ProfileCardSkeleton />
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+
   const profileCompletion = calculateOverallProfileCompletion(userData);
   const portfolioDataMissing = !userData?.hasPortfolio;
   
@@ -290,6 +272,8 @@ export default function ProfileNeo() {
   const lookingForLabel = lookingForCategory?.label || "Not specified";
   const lookingForIcon = lookingForCategory?.icon || "";
   console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel, "Icon:", lookingForIcon);
+
+  if (!userData) return null;
   
   const handleSubmitLookingFor = () => {
     updateLookingForMutation.mutate(selectedLookingFor);
