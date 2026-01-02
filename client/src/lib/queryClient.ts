@@ -498,23 +498,14 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 60, // 1 hour instead of 15 minutes
-      retry: (failureCount, error) => {
-        // Don't retry 404s for poll-votes (expected when user hasn't voted)
-        if (error && error.message && error.message.includes('404') && error.message.includes('poll-votes')) {
-          return false;
-        }
-        // Only retry once for other errors to avoid cascading failures
-        return failureCount < 1;
-      },
-      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10000), // Faster, shorter exponential backoff
-      // Add network mode to avoid multiple simultaneous requests
-      networkMode: 'always', // Keep trying even if browser is offline
-      // Reduce query cache size to avoid memory issues
-      gcTime: 1000 * 60 * 120, // 2 hours before garbage collection
+      staleTime: 1000 * 60 * 60, // 1 hour
+      gcTime: 1000 * 60 * 120, // 2 hours
+      retry: 1,
+      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 5000),
+      networkMode: 'always',
     },
     mutations: {
-      retry: 1, // Allow one retry for mutations
+      retry: 1,
     },
   },
 });

@@ -83,13 +83,18 @@ export function prefetchCommonRoutes(): void {
 export function setupLinkPrefetching(): void {
   if (typeof window === "undefined") return;
   
+  let prefetchTimer: any;
   const handleMouseEnter = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     const link = target.closest("a[href]") as HTMLAnchorElement | null;
     if (link) {
       const href = link.getAttribute("href");
       if (href && href.startsWith("/") && routeChunks[href]) {
-        prefetchRoute(href);
+        // Debounce prefetch to avoid spamming on fast mouse moves
+        clearTimeout(prefetchTimer);
+        prefetchTimer = setTimeout(() => {
+          prefetchRoute(href);
+        }, 50);
       }
     }
   };
