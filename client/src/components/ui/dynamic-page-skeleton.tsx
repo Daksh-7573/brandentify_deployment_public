@@ -19,15 +19,15 @@ export function DynamicPageSkeleton({ route }: DynamicPageSkeletonProps) {
       return <QuestPageSkeleton />;
     }
     if (route.startsWith("/messages")) {
-      return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4" />; // Replace with MessageSkeleton if exists
+      return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4 h-[600px]" />; 
     }
     // Default fallback
-    return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4" />;
+    return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4 h-[400px]" />;
   };
 
   return (
-    <AppShell>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {getSkeleton()}
-    </AppShell>
+    </div>
   );
 }
