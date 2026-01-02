@@ -275,150 +275,82 @@ function Router() {
   return (
     <Switch>
       {/* Landing page */}
-      <Route path="/">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <LazyRoute component={Landing} />
-          </Suspense>
-        )}
-      </Route>
-      <Route path="/nav-test">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <LazyRoute component={NavigationTest} />
-          </Suspense>
-        )}
-      </Route>
-      <Route path="/url-demo">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <LazyRoute component={URLInputDemo} />
-          </Suspense>
-        )}
-      </Route>
+      <Route path="/" component={() => <LazyRoute component={Landing} />} />
+      <Route path="/nav-test" component={() => <LazyRoute component={NavigationTest} />} />
+      <Route path="/url-demo" component={() => <LazyRoute component={URLInputDemo} />} />
       
       <Route path="/profile">
         {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/profile" component={ProfileNeo} />
-          </Suspense>
+          <ProtectedRoute path="/profile" component={ProfileNeo} />
         )}
       </Route>
       <Route path="/industry-pulse">
         {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
-          </Suspense>
+          <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
         )}
       </Route>
       <Route path="/pulse/:id">
         {(params) => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <LazyRoute component={PulseDetail} withShell />
-          </Suspense>
+          <LazyRoute component={PulseDetail} withShell />
         )}
       </Route>
       <Route path="/create-pulse">
         {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
-          </Suspense>
+          <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
         )}
       </Route>
       <Route path="/create-pulse-new">
         {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
-          </Suspense>
+          <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
         )}
       </Route>
       <Route path="/auth" component={() => <LazyRoute component={AuthPage} />} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
-        return <Suspense fallback={<LoadingPlaceholder />}><AuthSuccessPage /></Suspense>;
+        return <LazyRoute component={AuthSuccessPage} />;
       }} />
       {/* Referral join link handler */}
       <Route path="/join/:code">
         {(params) => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <JoinReferralPage code={params.code} />
-          </Suspense>
+          <JoinReferralPage code={params.code} />
         )}
       </Route>
 
-
-
       <Route path="/auth-test" component={() => {
         const AuthTest = lazy(() => import("@/pages/auth-test"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthTest />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthTest} />;
       }} />
       <Route path="/simple-auth-test" component={() => {
         const SimpleAuthTest = lazy(() => import("@/pages/simple-auth-test"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <SimpleAuthTest />
-          </Suspense>
-        );
+        return <LazyRoute component={SimpleAuthTest} />;
       }} />
       <Route path="/auth-popup-fix" component={() => {
         const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthPopupFix />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthPopupFix} />;
       }} />
       <Route path="/auth-flow-test" component={() => {
         const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthFlowTest />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthFlowTest} />;
       }} />
       <Route path="/auth-debug-detailed" component={() => {
         const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthDebugDetailed />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthDebugDetailed} />;
       }} />
       <Route path="/auth-enhanced-popup" component={() => {
         const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthEnhancedPopup />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthEnhancedPopup} />;
       }} />
       <Route path="/auth-redirect-test" component={() => {
         const AuthRedirectTest = lazy(() => import("@/pages/auth-redirect-test"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthRedirectTest />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthRedirectTest} />;
       }} />
       <Route path="/auth-direct-oauth" component={() => {
         const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthDirectOAuth />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthDirectOAuth} />;
       }} />
       <Route path="/auth-working-test" component={() => {
         const AuthWorkingTest = lazy(() => import("@/pages/auth-working-test"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthWorkingTest />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthWorkingTest} />;
       }} />
 
       <Route path="/auth-callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
@@ -428,19 +360,13 @@ function Router() {
       {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
       <Route path="/search">
         {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/search" component={SearchPage} />
-          </Suspense>
+          <ProtectedRoute path="/search" component={SearchPage} />
         )}
       </Route>
       <Route path="/brand-score">
         {() => {
           const BrandScore = lazy(() => import("@/pages/BrandScore"));
-          return (
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <ProtectedRoute path="/brand-score" component={BrandScore} />
-            </Suspense>
-          );
+          return <ProtectedRoute path="/brand-score" component={BrandScore} />;
         }}
       </Route>
       
@@ -454,9 +380,7 @@ function Router() {
           </Route>
           <Route path="/profile/:userId">
             {(params) => (
-              <Suspense fallback={<LoadingPlaceholder />}>
-                <RandomProfile />
-              </Suspense>
+              <RandomProfile />
             )}
           </Route>
           <Route path="/career-tools">
@@ -516,19 +440,11 @@ function Router() {
           <Route path="/easy-login" component={() => <LazyRoute component={EasyLoginPage} />} />
           <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <FixedLoginPage />
-          </Suspense>
-        );
+        return <LazyRoute component={FixedLoginPage} />;
       }} />
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <DevAuthUtilityPage />
-          </Suspense>
-        );
+        return <LazyRoute component={DevAuthUtilityPage} />;
       }} />
       <Route path="/auth-test" component={() => <LazyRoute component={FirebaseAuthTest} />} />
       <Route path="/google-auth-test" component={() => <LazyRoute component={GoogleAuthTest} />} />
@@ -544,19 +460,11 @@ function Router() {
       <Route path="/replit-auth" component={() => <LazyRoute component={FinalReplitAuth} />} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthDebugPage />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthDebugPage} />;
       }} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
-        return (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <AuthPopupDebugPage />
-          </Suspense>
-        );
+        return <LazyRoute component={AuthPopupDebugPage} />;
       }} />
           <Route path="/verify-email" component={() => <LazyRoute component={EmailVerification} />} />
         </>
