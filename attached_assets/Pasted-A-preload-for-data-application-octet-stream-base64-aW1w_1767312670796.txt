@@ -1,0 +1,174 @@
+A preload for 'data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKaW1wb3J0ICIuL3N0eWxlcy9uZW8tZ2xhc3MtbWFpbi5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy10aGVtZS5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy1zcG90aWZ5LmNzcyI7CgovLyBOb3RlOiBGaXJlYmFzZSByZW1vdmVkIC0gdXNpbmcgY3VzdG9tIE9BdXRoIG9ubHkKCi8vIFBlcmZvcm1hbmNlIG1lYXN1cmVtZW50CmNvbnN0IGFwcFN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwpjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCBpbml0aWFsaXphdGlvbiBzdGFydGVkJyk7CgovLyBSZW1vdmUgSFRNTCBsb2FkZXIgaW1tZWRpYXRlbHkgd2hlbiBSZWFjdCBhcHAgc3RhcnRzCmNvbnN0IGxvYWRlciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAtbG9hZGVyJyk7CmlmIChsb2FkZXIpIHsKICBsb2FkZXIuc3R5bGUub3BhY2l0eSA9ICcwJzsKICBsb2FkZXIuc3R5bGUudHJhbnNpdGlvbiA9ICdvcGFjaXR5IDAuMTVzIGVhc2Utb3V0JzsKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGxvYWRlci5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgY29uc29sZS5sb2coJ1tQRVJGXSBTa2VsZXRvbiBsb2FkZXIgcmVtb3ZlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIGFwcFN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgfSwgMTUwKTsKfQoKLy8gQ2hlY2sgaWYgd2Ugc2hvdWxkIHVzZSB0aGUgc2ltcGxlIGFwcCBvciB0aGUgZnVsbCBhcHAKY29uc3QgdXNlU2ltcGxlQXBwID0gZmFsc2U7IC8vIFNldCB0byB0cnVlIGZvciB0ZXN0aW5nCgovLyBQcm9ncmVzc2l2ZSByZW5kZXJpbmcgLSBzdGFydCB3aXRoIGNyaXRpY2FsIGNvbXBvbmVudHMKY29uc3QgcmVuZGVyQXBwID0gKCkgPT4gewogIGNvbnN0IHJlbmRlclN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwogIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgcmVuZGVyaW5nIHN0YXJ0ZWQnKTsKICAKICBjcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikhKS5yZW5kZXIoCiAgICB1c2VTaW1wbGVBcHAgPyA8U2ltcGxlQXBwIC8+IDogPEFwcCAvPgogICk7CiAgCiAgLy8gUmVwb3J0IHJlbmRlcmluZyB0aW1lIGFmdGVyIFJlYWN0IGhhcyBtb3VudGVkCiAgc2V0VGltZW91dCgoKSA9PiB7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCByZW5kZXJlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIHJlbmRlclN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFRvdGFsIGluaXRpYWxpemF0aW9uIHRpbWU6JywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAwKTsKfTsKCi8vIE9wdGltaXplIHJlbmRlcmluZyB0aW1pbmcKaWYgKGRvY3VtZW50LnJlYWR5U3RhdGUgPT09ICdsb2FkaW5nJykgewogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCByZW5kZXJBcHApOwp9IGVsc2UgewogIHJlbmRlckFwcCgpOwp9Cg==' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+brand-quests:283 [SW DISABLED] Unregistering all service workers to clear cache
+index-CNqz2frp.js:241 [PERF] React app initialization started
+index-CNqz2frp.js:241 [PERF] React rendering started
+brand-quests:383 [Skeleton] DOM loaded, preparing smooth transition
+index-CNqz2frp.js:184 [Auth] Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:184 [Auth] Starting auth check
+index-CNqz2frp.js:184 [Auth] Fetching session from server...
+index-CNqz2frp.js:241 [PERF] React app rendered in 64.40 ms
+index-CNqz2frp.js:241 [PERF] Total initialization time: 65.30 ms
+brand-quests:306 [SW DISABLED] ✅ All service workers and caches cleared - fresh content will load
+brand-quests:389 [Skeleton] Starting fade-out transition
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:241 [Progressive Loading] Starting tiered component loading
+index-CNqz2frp.js:241 [Progressive Loading] ⚡ Core components ready
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+index-CNqz2frp.js:241 [PERF] Skeleton loader removed in 158.40 ms
+index-CNqz2frp.js:241 [Progressive Loading] 🚀 Secondary components loaded
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+brand-quests:395 [Skeleton] Skeleton loading complete - app ready
+brand-quests:399 ⚡ [PERF] Skeleton-to-app transition: 270.20ms
+index-CNqz2frp.js:241 [Progressive Loading] 🔧 All components loaded in 204.70ms
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: undefined
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: URL
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 127
+brand-quests:317 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+brand-quests:318 📊 Total page load time: 387.20ms
+brand-quests:319 🔥 Firebase init time: 387.20ms
+brand-quests:327 ✅ [Strategy 1] Preconnect/Preload: 5 preconnect + 2 preload + 4 modulepreload links active
+brand-quests:328 ⚡ Expected improvement: 100-300ms faster cold starts
+brand-quests:333 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+brand-quests:334 ⚡ Expected improvement: 150-250ms faster auth loads
+brand-quests:363 🔄 [Strategy 4] Service Worker: Installing...
+brand-quests:368 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+brand-quests:375 📈 Performance Optimization Complete - All 4 strategies active!
+index-CNqz2frp.js:184 [Auth] Server session response: {status: 200, ok: true}
+index-CNqz2frp.js:184 [Auth] Raw server response: {success: true, user: {…}}
+index-CNqz2frp.js:184 [Auth] Unwrapped user from server response
+index-CNqz2frp.js:184 [Auth] Valid session found for: nishant.brodos@gmail.com
+index-CNqz2frp.js:184 [Auth] Auth check complete
+index-CNqz2frp.js:184 [Auth] Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: true
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: 9
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-CNqz2frp.js:234 Header mounted - invalidating user query
+brand-quests-DmI1VJM6.js:11 [BRAND QUESTS PAGE DEBUG] Component rendered with user: {userId: 9, actualUserId: 9, authenticated: true, timestamp: '2026-01-02T00:10:41.952Z'}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-DmI1VJM6.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 9, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [QUEST API DEBUG] Starting career quest fetch for userId: 9
+use-current-user-KV1tdx77.js:1 [QUEST API DEBUG] Fetching from: /api/users/9/quests
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST API DEBUG] Starting social quest fetch for userId: 9
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST API DEBUG] Fetching from: /api/users/9/social-quests
+brand-quests:343 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+brand-quests:344 ⚡ Expected improvement: 50-100ms perceived performance boost
+index-CNqz2frp.js:49 Cached response for /api/notifications/9/count
+index-CNqz2frp.js:49 Cached response for /api/users/9/experiences
+index-CNqz2frp.js:49 Cached response for /api/users/9/projects
+index-CNqz2frp.js:49 Cached response for /api/users/9
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: true
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: 9
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source type: BASE64
+index-CNqz2frp.js:234 [HEADER IMAGE DEBUG] Image source length: 55819
+index-CNqz2frp.js:241 [Onboarding Check] {userId: 9, title: 'Founder', industry: 'Finance', location: 'Agra, India', lookingFor: 'business_partnerships', …}
+index-CNqz2frp.js:241 [Onboarding] All mandatory fields present, no onboarding needed
+index-CNqz2frp.js:241 [AppShell] Rendering with hideHeader: false
+index-CNqz2frp.js:241 [AppShell] Rendering Header component
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] isLoading: false
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userData ready: true
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] userId: 9
+index-CNqz2frp.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-CNqz2frp.js:49 Cached response for /api/users/9/skills
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+use-current-user-KV1tdx77.js:1 [QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST API DEBUG] Response status: 200, ok: true
+use-current-user-KV1tdx77.js:1 [QUEST API SUCCESS] Career quests fetched successfully: {count: 0, userId: 9}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-DmI1VJM6.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 9, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST API SUCCESS] Social quests fetched successfully: {count: 6, userId: 9}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-DmI1VJM6.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 9, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-CNqz2frp.js:49 Cached response for /api/users/9/educations
+brand-quests-DmI1VJM6.js:11 [BRAND QUESTS PAGE DEBUG] Component rendered with user: {userId: 9, actualUserId: 9, authenticated: true, timestamp: '2026-01-02T00:10:42.394Z'}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: daily
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+brand-quests-DmI1VJM6.js:1 [QUEST PANEL DEBUG] Current quest data: {userId: 9, tabValue: 'career', careerSubTab: 'daily', socialSubTab: 'daily', careerQuestCount: 0, …}
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] useUserCareerQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [QUEST HOOK DEBUG] Hook enabled: true
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] useUserSocialQuestsByBucket called with userId: 9, bucket: undefined
+use-current-user-KV1tdx77.js:1 [SOCIAL QUEST HOOK DEBUG] Hook enabled: true
+index-CNqz2frp.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-CNqz2frp.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+brand-quests:1 The resource https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+brand-quests:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKaW1wb3J0ICIuL3N0eWxlcy9uZW8tZ2xhc3MtbWFpbi5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy10aGVtZS5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy1zcG90aWZ5LmNzcyI7CgovLyBOb3RlOiBGaXJlYmFzZSByZW1vdmVkIC0gdXNpbmcgY3VzdG9tIE9BdXRoIG9ubHkKCi8vIFBlcmZvcm1hbmNlIG1lYXN1cmVtZW50CmNvbnN0IGFwcFN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwpjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCBpbml0aWFsaXphdGlvbiBzdGFydGVkJyk7CgovLyBSZW1vdmUgSFRNTCBsb2FkZXIgaW1tZWRpYXRlbHkgd2hlbiBSZWFjdCBhcHAgc3RhcnRzCmNvbnN0IGxvYWRlciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAtbG9hZGVyJyk7CmlmIChsb2FkZXIpIHsKICBsb2FkZXIuc3R5bGUub3BhY2l0eSA9ICcwJzsKICBsb2FkZXIuc3R5bGUudHJhbnNpdGlvbiA9ICdvcGFjaXR5IDAuMTVzIGVhc2Utb3V0JzsKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGxvYWRlci5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgY29uc29sZS5sb2coJ1tQRVJGXSBTa2VsZXRvbiBsb2FkZXIgcmVtb3ZlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIGFwcFN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgfSwgMTUwKTsKfQoKLy8gQ2hlY2sgaWYgd2Ugc2hvdWxkIHVzZSB0aGUgc2ltcGxlIGFwcCBvciB0aGUgZnVsbCBhcHAKY29uc3QgdXNlU2ltcGxlQXBwID0gZmFsc2U7IC8vIFNldCB0byB0cnVlIGZvciB0ZXN0aW5nCgovLyBQcm9ncmVzc2l2ZSByZW5kZXJpbmcgLSBzdGFydCB3aXRoIGNyaXRpY2FsIGNvbXBvbmVudHMKY29uc3QgcmVuZGVyQXBwID0gKCkgPT4gewogIGNvbnN0IHJlbmRlclN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwogIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgcmVuZGVyaW5nIHN0YXJ0ZWQnKTsKICAKICBjcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikhKS5yZW5kZXIoCiAgICB1c2VTaW1wbGVBcHAgPyA8U2ltcGxlQXBwIC8+IDogPEFwcCAvPgogICk7CiAgCiAgLy8gUmVwb3J0IHJlbmRlcmluZyB0aW1lIGFmdGVyIFJlYWN0IGhhcyBtb3VudGVkCiAgc2V0VGltZW91dCgoKSA9PiB7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCByZW5kZXJlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIHJlbmRlclN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFRvdGFsIGluaXRpYWxpemF0aW9uIHRpbWU6JywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAwKTsKfTsKCi8vIE9wdGltaXplIHJlbmRlcmluZyB0aW1pbmcKaWYgKGRvY3VtZW50LnJlYWR5U3RhdGUgPT09ICdsb2FkaW5nJykgewogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCByZW5kZXJBcHApOwp9IGVsc2UgewogIHJlbmRlckFwcCgpOwp9Cg== was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
