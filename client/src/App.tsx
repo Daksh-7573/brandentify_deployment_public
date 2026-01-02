@@ -39,10 +39,10 @@ const useProgressiveLoading = () => {
           prefetchProfileData(userId);
           prefetchCommonRoutes();
           // Prefetch most common routes immediately
-          ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule"].forEach(route => prefetchRoute(route));
+          ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule", "/radar", "/messaging"].forEach(route => prefetchRoute(route));
         });
       }
-    }, 5); // Near-instant secondary load
+    }, 1); // Maximum speed secondary load
     
     // Tier 3: Admin/debug components load last
     const adminTimer = setTimeout(() => {

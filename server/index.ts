@@ -44,7 +44,14 @@ console.log(`[Security] Trust Proxy enabled: ${process.env.TRUST_PROXY === '1'}`
 app.use(cookieParser());
 
 // Enable gzip compression
-app.use(compression());
+app.use(compression({
+  level: 6, // Balanced compression/speed
+  threshold: 1024, // Only compress responses > 1KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
 // Add performance middleware first
 app.use(performanceMiddleware());
