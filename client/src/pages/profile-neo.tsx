@@ -85,16 +85,30 @@ export default function ProfileNeo() {
   const [domainValue, setDomainValue] = useState<string | null>(null);
   const [showIndustryDialog, setShowIndustryDialog] = useState(false);
   
+  // If loading auth or user data, show standard loading screen
+  if (isLoading || (isAuthenticated && isUserDataLoading)) {
+    return (
+      <div 
+        className="min-h-screen bg-cover bg-center bg-fixed relative"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <Header />
+          <div className="container mx-auto px-4 py-6">
+            <ProfileCardSkeleton />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Redirect if not logged in
   useEffect(() => {
-    if (!user) {
+    if (!isLoading && !isAuthenticated) {
       setLocation('/auth');
     }
-  }, [user, setLocation]);
-  
-  if (!user) {
-    return null;
-  }
+  }, [isAuthenticated, isLoading, setLocation]);
 
   // Get the correct user identifier for API calls
   // Primary approach: Use the numeric ID if available (for custom OAuth)

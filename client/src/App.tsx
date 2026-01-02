@@ -65,13 +65,13 @@ function SimpleTestApp() {
 const Landing = lazy(() => import("@/pages/landing"));
 const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const PulseDetail = lazy(() => import("@/pages/pulse-detail"));
-const Profile = lazy(() => import("@/pages/profile"));
+const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 const AuthCallbackPage = lazy(() => import("@/pages/auth-callback"));
 
 // Secondary components (loaded after first paint)
 const NotFound = lazy(() => import("@/pages/not-found"));
-const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
+const Profile = lazy(() => import("@/pages/profile"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
 const ProfileResolver = lazy(() => import("@/pages/profile-resolver"));
@@ -374,6 +374,9 @@ function Router() {
         <>
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
+          )} />
+          <Route path="/profile-legacy" component={() => (
+            <ProtectedRoute path="/profile-legacy" component={Profile} />
           )} />
           <Route path="/profile/:userId">
             {(params) => (
