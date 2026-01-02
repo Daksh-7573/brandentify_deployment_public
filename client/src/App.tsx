@@ -197,10 +197,13 @@ const MinimalLoadingPlaceholder = () => (
 
 // Lazy route wrapper - handles Suspense for any lazy component
 function LazyRoute({ component: Component, withShell = false }: { component: React.ComponentType; withShell?: boolean }) {
+  const [location] = useLocation();
+  const suspenseFallback = <DynamicPageSkeleton route={location} />;
+
   if (withShell) {
     return (
       <AppShell>
-        <Suspense fallback={<div className="flex-1" />}>
+        <Suspense fallback={suspenseFallback}>
           <Component />
         </Suspense>
       </AppShell>
