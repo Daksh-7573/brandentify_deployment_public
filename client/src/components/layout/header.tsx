@@ -339,8 +339,12 @@ export default function Header() {
               onMouseEnter={() => { prefetchRoute('/profile'); if (userId) prefetchProfileData(userId); }}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-white hidden md:block">
-                {userData?.name || user?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
+              <span className="text-sm font-medium text-white hidden md:block min-w-[60px]">
+                {userDataLoading ? (
+                  <div className="h-4 w-20 bg-white/10 animate-pulse rounded" />
+                ) : (
+                  userData?.name || user?.name || (user && 'displayName' in user ? user.displayName : null) || ""
+                )}
               </span>
               
               {/* User avatar */}
