@@ -202,8 +202,8 @@ function LazyRoute({ component: Component, withShell = false }: { component: Rea
 
   if (withShell) {
     return (
-      <AppShell>
-        <Suspense fallback={<div className="flex-1" />}>
+      <AppShell suspenseFallback={suspenseFallback}>
+        <Suspense fallback={null}>
           <Component />
         </Suspense>
       </AppShell>
@@ -240,8 +240,8 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
       return <>{suspenseFallback}</>;
     }
     return (
-      <AppShell>
-        {suspenseFallback}
+      <AppShell suspenseFallback={suspenseFallback}>
+        {null}
       </AppShell>
     );
   }
@@ -261,8 +261,8 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
   }
   
   return (
-    <AppShell>
-      <Suspense fallback={suspenseFallback}>
+    <AppShell suspenseFallback={suspenseFallback}>
+      <Suspense fallback={null}>
         <Component />
       </Suspense>
     </AppShell>

@@ -7,9 +7,10 @@ interface AppShellProps {
   children: ReactNode;
   hideHeader?: boolean;
   className?: string;
+  suspenseFallback?: ReactNode;
 }
 
-export function AppShell({ children, hideHeader = false, className = "" }: AppShellProps) {
+export function AppShell({ children, hideHeader = false, className = "", suspenseFallback }: AppShellProps) {
   const { user } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -93,7 +94,7 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
         )}
         
         <main className={`flex-1 ${className}`}>
-          {children}
+          {children || suspenseFallback}
         </main>
       </div>
 
