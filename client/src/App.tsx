@@ -282,12 +282,20 @@ function Router() {
           <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
         </Suspense>
       )} />
-      <Route path="/pulse/:id" component={() => <LazyRoute component={PulseDetail} withShell />} />
+      <Route path="/pulse/:id" component={() => (
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <LazyRoute component={PulseDetail} withShell />
+        </Suspense>
+      )} />
       <Route path="/create-pulse" component={() => (
-        <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
+        </Suspense>
       )} />
       <Route path="/create-pulse-new" component={() => (
-        <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
+        </Suspense>
       )} />
       <Route path="/auth" component={() => <LazyRoute component={AuthPage} />} />
       <Route path="/auth-success" component={() => {
@@ -503,26 +511,34 @@ function Router() {
       
       {/* Additional protected routes */}
       <Route path="/ai-career" component={() => (
-        <ProtectedRoute path="/ai-career" component={() => {
-          const AICareerPage = lazy(() => import("@/pages/ai-career"));
-          return (
-            <Suspense fallback={<LoadingPlaceholder />}>
-              <AICareerPage />
-            </Suspense>
-          );
-        }} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/ai-career" component={() => {
+            const AICareerPage = lazy(() => import("@/pages/ai-career"));
+            return (
+              <Suspense fallback={<LoadingPlaceholder />}>
+                <AICareerPage />
+              </Suspense>
+            );
+          }} />
+        </Suspense>
       )} />
       
       <Route path="/smart-connect" component={() => (
-        <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
+        </Suspense>
       )} />
       
       <Route path="/services" component={() => (
-        <ProtectedRoute path="/services" component={ManageServicesPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/services" component={ManageServicesPage} />
+        </Suspense>
       )} />
       
       <Route path="/add-service" component={() => (
-        <ProtectedRoute path="/add-service" component={AddServicePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/add-service" component={AddServicePage} />
+        </Suspense>
       )} />
       
       {/* Dashboard route - direct to Industry Pulse */}
@@ -533,20 +549,28 @@ function Router() {
       )} />
       
       <Route path="/news-sources" component={() => (
-        <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
+        </Suspense>
       )} />
       
       {/* Additional system routes */}
       <Route path="/radar" component={() => (
-        <ProtectedRoute path="/radar" component={Radar} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/radar" component={Radar} />
+        </Suspense>
       )} />
       
       <Route path="/musk-match" component={() => (
-        <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
+        </Suspense>
       )} />
       
       <Route path="/resume-builder" component={() => (
-        <ProtectedRoute path="/resume-builder" component={ResumePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/resume-builder" component={ResumePage} />
+        </Suspense>
       )} />
       
       <Route path="/brand-quests" component={() => (
@@ -562,40 +586,60 @@ function Router() {
         </Suspense>
       </Route>
       <Route path="/career-capsule">
-        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+        </Suspense>
       </Route>
       {/* Quantum Card route - dedicated digital visiting card feature */}
       <Route path="/quantum-card">
-        <ProtectedRoute path="/quantum-card" component={QuantumCardPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/quantum-card" component={QuantumCardPage} />
+        </Suspense>
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
-        <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
+        </Suspense>
       </Route>
       <Route path="/onboarding">
-        <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
+        </Suspense>
       </Route>
       <Route path="/onboarding-old">
-        <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
+        </Suspense>
       </Route>
       <Route path="/edit-profile">
-        <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
+        </Suspense>
       </Route>
       <Route path="/musk-testing">
-        <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
+        </Suspense>
       </Route>
       {/* Removed Test route for nowboard integration as it's now part of quests */}
       {/* Messaging feature */}
       <Route path="/messages">
-        <ProtectedRoute path="/messages" component={ChatPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/messages" component={ChatPage} />
+        </Suspense>
       </Route>
       {/* Connections management */}
       <Route path="/connections">
-        <ProtectedRoute path="/connections" component={ConnectionsPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/connections" component={ConnectionsPage} />
+        </Suspense>
       </Route>
       {/* Privacy & Data Control page */}
       <Route path="/privacy">
-        <ProtectedRoute path="/privacy" component={PrivacyPage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/privacy" component={PrivacyPage} />
+        </Suspense>
       </Route>
       
       {/* Direct access to users for debugging */}
@@ -613,15 +657,25 @@ function Router() {
       )} />
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
-        <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
+        <Suspense fallback={<LoadingPlaceholder />}>
+          <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
+        </Suspense>
       </Route>
       <Route path="/unified-profile/:userId">
-        {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
+        {(params) => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />
+          </Suspense>
+        )}
       </Route>
       
       {/* Profile Quest Routes - Nested under profile */}
       <Route path="/profile/:userId/quests">
-        {(params) => <ProtectedRoute path="/profile/:userId/quests" component={() => <BrandQuestsPage />} />}
+        {(params) => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute path="/profile/:userId/quests" component={() => <BrandQuestsPage />} />
+          </Suspense>
+        )}
       </Route>
       
       {/* Admin Panel Routes - Using lazy loading */}

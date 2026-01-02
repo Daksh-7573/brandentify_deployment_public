@@ -12,11 +12,14 @@ export function DynamicPageSkeleton({ route }: DynamicPageSkeletonProps) {
     if (route.startsWith("/industry-pulse") || route.startsWith("/dashboard")) {
       return <FeedSkeleton />;
     }
-    if (route.startsWith("/profile") || route.startsWith("/@")) {
+    if (route.startsWith("/profile") || route.startsWith("/@") || route.startsWith("/unified-profile")) {
       return <ProfilePageSkeleton />;
     }
-    if (route.startsWith("/brand-quests") || route.startsWith("/career-quests")) {
+    if (route.startsWith("/brand-quests") || route.startsWith("/career-quests") || route.includes("/quests")) {
       return <QuestPageSkeleton />;
+    }
+    if (route.startsWith("/messages")) {
+      return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4" />; // Replace with MessageSkeleton if exists
     }
     // Default fallback
     return <div className="flex-1 animate-pulse bg-white/5 rounded-3xl m-4" />;
