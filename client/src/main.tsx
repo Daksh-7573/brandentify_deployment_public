@@ -26,7 +26,9 @@ if (loader) {
 // Check if we should use the simple app or the full app
 const useSimpleApp = false; // Set to true for testing
 
-// Progressive rendering - start with critical components
+// Tell the loader we are ready
+(window as any).__APP_READY__ = true;
+
 const renderApp = () => {
   const renderStartTime = performance.now();
   console.log('[PERF] React rendering started');

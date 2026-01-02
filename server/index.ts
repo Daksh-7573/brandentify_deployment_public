@@ -572,18 +572,21 @@ try {
 
 // Serve static files from public directory with proper MIME types
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
-  maxAge: '1d', // Cache for 1 day
+  maxAge: '1y', // Cache for 1 year (standard for immutable assets)
+  immutable: true,
   setHeaders: (res, filePath) => {
     // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
     if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     }
+    // Add security and performance headers
+    res.setHeader('X-Content-Type-Options', 'nosniff');
   }
 }));
 
 // Serve the public directory directly for things like upload-test.html with proper MIME types
 app.use(express.static(path.join(process.cwd(), 'public'), {
-  maxAge: '1d', // Cache for 1 day
+  maxAge: '1h', // Shorter cache for root public files
   setHeaders: (res, filePath) => {
     // Fix MIME type for JavaScript modules (only compiled JS files, not TS source)
     if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {

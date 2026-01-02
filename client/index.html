@@ -35,16 +35,14 @@
   <!-- Enhanced Preconnect & DNS-Prefetch for Maximum Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://accounts.google.com">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="preconnect" href="https://api.brandentifier.com">
+  <link rel="preconnect" href="https://accounts.google.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
   
   <!-- Critical Resource Preloading -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-  <link rel="preload" href="/src/main.tsx" as="script">
+  <link rel="preload" href="/src/main.tsx" as="script" crossorigin>
   <link rel="preload" href="/src/index.css" as="style">
-  <link rel="modulepreload" href="/src/main.tsx">
+  <link rel="modulepreload" href="/src/main.tsx" crossorigin>
   
   <!-- Defer non-critical assets (background images) - loaded after first paint -->
   <link rel="prefetch" href="/Brandentifier Landing_1751376023002.png" as="image" fetchpriority="low">
@@ -337,24 +335,22 @@
     window.addEventListener('DOMContentLoaded', function() {
       console.log('[Skeleton] DOM loaded, preparing smooth transition');
       
-      // Enhanced transition timing for better UX
-      setTimeout(function() {
-        var loader = document.getElementById('app-loader');
-        if (loader) {
-          console.log('[Skeleton] Starting fade-out transition');
-          loader.style.opacity = '0';
-          loader.style.transition = 'opacity 0.15s ease-out'; // Faster transition
-          
-          setTimeout(function() {
-            loader.style.display = 'none';
-            console.log('[Skeleton] Skeleton loading complete - app ready');
-            
-            // Mark skeleton removal performance
-            const skeletonTime = performance.now() - window.__performance_start;
-            console.log(`⚡ [PERF] Skeleton-to-app transition: ${skeletonTime.toFixed(2)}ms`);
-          }, 150); // Faster removal
+      // Near-zero delay for instant switch-over once bundle is ready
+      var checkReady = setInterval(function() {
+        if (window.__APP_READY__) {
+          clearInterval(checkReady);
+          var loader = document.getElementById('app-loader');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.1s ease-out';
+            setTimeout(function() {
+              loader.style.display = 'none';
+              const skeletonTime = performance.now() - window.__performance_start;
+              console.log(`⚡ [PERF] Skeleton-to-app transition: ${skeletonTime.toFixed(2)}ms`);
+            }, 100);
+          }
         }
-      }, 50); // Reduced delay for faster perceived performance
+      }, 10);
     });
     
     // Backup loader removal for slower connections

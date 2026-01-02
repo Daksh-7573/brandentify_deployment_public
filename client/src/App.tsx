@@ -36,10 +36,18 @@ const useProgressiveLoading = () => {
       const userId = localStorage.getItem('userId');
       if (userId) {
         import("@/lib/route-prefetch").then(({ prefetchProfileData, prefetchCommonRoutes, prefetchRoute }) => {
-          prefetchProfileData(userId);
-          prefetchCommonRoutes();
-          // Prefetch most common routes immediately
-          ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule", "/radar", "/messaging"].forEach(route => prefetchRoute(route));
+          // Wrap in requestIdleCallback if available for zero impact on main thread
+          const prefetch = () => {
+            prefetchProfileData(userId);
+            prefetchCommonRoutes();
+            ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule", "/radar", "/messaging"].forEach(route => prefetchRoute(route));
+          };
+          
+          if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(prefetch);
+          } else {
+            setTimeout(prefetch, 50);
+          }
         });
       }
     }, 1); // Maximum speed secondary load
