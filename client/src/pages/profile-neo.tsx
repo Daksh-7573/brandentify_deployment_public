@@ -64,7 +64,7 @@ const LOOKING_FOR_CATEGORIES = [
 import { INDUSTRY_DOMAINS, INDUSTRIES } from '@shared/constants';
 
 export default function ProfileNeo() {
-  const { user, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
@@ -85,44 +85,11 @@ export default function ProfileNeo() {
   const [domainValue, setDomainValue] = useState<string | null>(null);
   const [showIndustryDialog, setShowIndustryDialog] = useState(false);
   
-  // If loading auth or user data, show standard loading screen
-  if (isLoading || (isAuthenticated && isUserDataLoading)) {
-    return (
-      <div 
-        className="min-h-screen bg-cover bg-center bg-fixed relative"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      >
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <Header />
-          <div className="container mx-auto px-4 py-6">
-            <ProfileCardSkeleton />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      setLocation('/auth');
-    }
-  }, [isAuthenticated, isLoading, setLocation]);
-
   // Get the correct user identifier for API calls
   // Primary approach: Use the numeric ID if available (for custom OAuth)
   // Fallback: Use username or uid for Firebase users
   const userIdentifier = user?.id?.toString() || user?.username || user?.uid || '';
-  
-  console.log('[USER ID DEBUG] User object:', {
-    id: user?.id,
-    username: user?.username, 
-    uid: user?.uid,
-    email: user?.email
-  });
-  console.log('[USER ID DEBUG] Selected userIdentifier:', userIdentifier);
-  
+
   // Get user profile data with enhanced error handling
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
     queryKey: ['/api/users', userIdentifier],
@@ -174,6 +141,31 @@ export default function ProfileNeo() {
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false, // Prevent unnecessary refetches
   });
+
+  // If loading auth or user data, show standard loading screen
+  if (isLoading || (isAuthenticated && isUserDataLoading)) {
+    return (
+      <div 
+        className="min-h-screen bg-cover bg-center bg-fixed relative"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <Header />
+          <div className="container mx-auto px-4 py-6">
+            <ProfileCardSkeleton />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setLocation('/auth');
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
 
   // Debug logging for user data after variables are defined
   console.log('Profile page render - user:', user);
