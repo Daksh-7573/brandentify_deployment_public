@@ -297,19 +297,21 @@ export default function CreativeBold({
                     </div>
                   )}
 
-                  {userInfo.missionStatement && (
-                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
-                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
-                    </div>
-                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t" style={{ borderColor: '#E5E7EB' }}>
+                    {userInfo.missionStatement && (
+                      <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                        <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
+                        <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                      </div>
+                    )}
 
-                  {userInfo.visionStatement && (
-                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
-                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
-                    </div>
-                  )}
+                    {userInfo.visionStatement && (
+                      <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                        <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
+                        <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
