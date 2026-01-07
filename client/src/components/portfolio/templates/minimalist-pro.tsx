@@ -25,6 +25,13 @@ interface MinimalistProProps {
     jobLevel: string | null;
     aboutMe?: string | null;
     whatIOffer?: string | null;
+    tagline?: string | null;
+    visionStatement?: string | null;
+    missionStatement?: string | null;
+    coreValues?: string[] | null;
+    uniqueValueProposition?: string | null;
+    primaryAudience?: string | null;
+    secondaryAudience?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];

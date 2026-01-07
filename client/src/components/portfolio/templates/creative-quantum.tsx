@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, Building, ExternalLink,
@@ -302,48 +303,12 @@ export default function CreativeQuantum({
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap justify-center gap-4">
-                <button 
-                  onClick={() => setIsMentorshipDialogOpen(true)}
-                  className="px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 hover:translate-y-[-2px]"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, rgba(167, 139, 251, 0.3) 100%)',
-                    border: '1px solid rgba(34, 211, 238, 0.5)',
-                    boxShadow: '0 0 20px rgba(34, 211, 238, 0.3)',
-                    color: '#ffffff',
-                  }}
-                >
-                  Let's Talk
-                </button>
-                {userInfo.resumeUrl && (
-                  <a 
-                    href={userInfo.resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 hover:translate-y-[-2px] flex items-center gap-2"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%)',
-                      border: '1px solid rgba(59, 130, 246, 0.5)',
-                      boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
-                      color: '#ffffff',
-                    }}
-                  >
-                    <Download className="w-4 h-4" />
-                    Grab My Resume
-                  </a>
-                )}
-                <button 
-                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-300 hover:translate-y-[-2px] flex items-center gap-2"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(167, 139, 251, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%)',
-                    border: '1px solid rgba(167, 139, 251, 0.5)',
-                    boxShadow: '0 0 20px rgba(167, 139, 251, 0.3)',
-                    color: '#ffffff',
-                  }}
-                >
-                  View My Work
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <PortfolioCtaButtons 
+                  variant="technical"
+                  userId={userInfo.id}
+                  userName={userInfo.name}
+                  userEmail={userInfo.email}
+                />
               </div>
             </div>
           </div>

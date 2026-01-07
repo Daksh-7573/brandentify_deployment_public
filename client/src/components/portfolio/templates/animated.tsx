@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MentorshipButton } from '@/components/shared/mentorship-button';
 import { MentorshipDialog } from '@/components/shared/mentorship-dialog';
+import PortfolioCtaButtons from '../portfolio-cta-buttons';
 import {
   ArrowRight,
   ChevronDown,
@@ -282,31 +283,11 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               </div>
               
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                <a 
-                  href={`mailto:${email}`}
-                  className="btn-primary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
-                >
-                  Let's Talk
-                </a>
-                <a 
-                  href="#projects" 
-                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
-                >
-                  Grab My Resume
-                </a>
-                <Button
-                  onClick={() => setIsDialogOpen(true)}
-                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
-                >
-                  Mentor
-                </Button>
-                
-                {/* Mentorship Dialog using shared component */}
-                <MentorshipDialog 
-                  isOpen={isDialogOpen}
-                  onOpenChange={setIsDialogOpen}
-                  userId={currentUserId}
-                  mentorId={id}
+                <PortfolioCtaButtons 
+                  variant="technical"
+                  userId={id}
+                  userName={name}
+                  userEmail={email}
                 />
               </div>
             </motion.div>

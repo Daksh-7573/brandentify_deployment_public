@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, MapPin, Calendar, Download, Briefcase, GraduationCap, 
   Award, Target, Building, ExternalLink, Eye, Check, ArrowRight, 
@@ -438,44 +439,12 @@ export default function DesignerPortfolio({
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap justify-center gap-4">
-                <button 
-                  onClick={() => setIsMentorshipDialogOpen(true)}
-                  className="px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:translate-y-[-3px] hover:shadow-xl relative overflow-hidden group"
-                  style={{
-                    background: `linear-gradient(90deg, ${colors.softMagenta}, ${colors.pastelCyan})`,
-                    color: 'white',
-                    boxShadow: `0 8px 25px ${colors.softMagenta}30`,
-                  }}
-                >
-                  <span className="relative z-10">Let's Connect</span>
-                </button>
-                {userInfo.resumeUrl && (
-                  <a 
-                    href={userInfo.resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg flex items-center gap-2"
-                    style={{
-                      backgroundColor: 'white',
-                      color: colors.deepInk,
-                      border: `2px solid ${colors.aluminium}`,
-                    }}
-                  >
-                    <Download className="w-4 h-4" />
-                    Download Resume
-                  </a>
-                )}
-                <button 
-                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-7 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:translate-y-[-3px] hover:shadow-lg flex items-center gap-2"
-                  style={{
-                    backgroundColor: colors.deepInk,
-                    color: 'white',
-                  }}
-                >
-                  View My Work
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <PortfolioCtaButtons 
+                  variant="creative"
+                  userId={userInfo.id}
+                  userName={userInfo.name}
+                  userEmail={userInfo.email}
+                />
               </div>
             </div>
           </div>
