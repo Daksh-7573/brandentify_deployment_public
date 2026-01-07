@@ -1079,6 +1079,19 @@ export default function PortfolioBuilder() {
         
         return (
           <div className="space-y-8">
+            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold mb-2 text-white">
+                    {layoutOptions.find(l => l.id === form.watch("layout"))?.name || "Portfolio Preview"}
+                  </h2>
+                  <p className="text-white/70">
+                    Review your AI-generated portfolio before publishing it to the world.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             {/* Dynamic portfolio preview using Portfolio Generation Engine */}
             <PortfolioPreviewRenderer
               templateId={form.watch("layout")}
@@ -1213,7 +1226,7 @@ export default function PortfolioBuilder() {
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline">Back</span>
             </button>
-            <div className="mt-0">
+            <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
               <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
             </div>
