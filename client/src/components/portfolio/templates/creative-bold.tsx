@@ -118,7 +118,7 @@ export default function CreativeBold({
   return (
     <div className="min-h-screen" style={{ backgroundColor: PAPER_WHITE, color: INK_BLACK }}>
       {/* STICKY HEADER - Hidden in preview mode */}
-      {!isPreview && (
+      {!isPreview && !window.location.pathname.includes('/portfolio-builder') && (
         <motion.header 
           initial={{ y: -100 }} 
           animate={{ y: 0 }} 
