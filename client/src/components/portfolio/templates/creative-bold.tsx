@@ -116,7 +116,7 @@ export default function CreativeBold({
   const displayTitle = userInfo.title || "Creative Professional";
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: PAPER_WHITE, color: INK_BLACK }}>
+    <div className="min-h-screen" style={{ backgroundColor: PAPER_WHITE, color: INK_BLACK }}>
       {/* STICKY HEADER - Hidden in preview mode */}
       {!isPreview && (
         <motion.header 
@@ -141,7 +141,7 @@ export default function CreativeBold({
       )}
 
       {/* HERO - Service-First with Photo */}
-      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-0' : 'pt-32'}`}>
+      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-6' : 'pt-32'}`}>
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 
