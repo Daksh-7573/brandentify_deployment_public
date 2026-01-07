@@ -141,7 +141,7 @@ export default function CreativeBold({
       )}
 
       {/* HERO - Service-First with Photo */}
-      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-12' : 'pt-32'}`}>
+      <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-0' : 'pt-32'}`}>
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 

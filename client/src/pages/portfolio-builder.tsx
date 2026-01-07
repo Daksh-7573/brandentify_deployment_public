@@ -1209,57 +1209,71 @@ export default function PortfolioBuilder() {
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm z-0"></div>
       <div className="flex-1 overflow-y-auto">
         <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 mb-6 relative z-10">
-          <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 gap-4 text-center">
-            <button
-              onClick={() => {
-                if (currentStep === STEPS.SELECT_LAYOUT) {
-                  // If on first step, go back to profile
-                  setLocation('/profile');
-                } else {
-                  // Otherwise go back one step
-                  setCurrentStep(currentStep - 1);
-                }
-              }}
-              className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm self-start"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back</span>
-            </button>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
-              <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
+          {currentStep !== STEPS.PREVIEW && (
+            <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 gap-4 text-center">
+              <button
+                onClick={() => {
+                  if (currentStep === STEPS.SELECT_LAYOUT) {
+                    // If on first step, go back to profile
+                    setLocation('/profile');
+                  } else {
+                    // Otherwise go back one step
+                    setCurrentStep(currentStep - 1);
+                  }
+                }}
+                className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm self-start"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
+                <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
+              </div>
+              {/* Progress indicator */}
+              <div className="flex sm:hidden items-center space-x-1 w-full">
+                {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
+                  <div 
+                    key={step} 
+                    className={`h-2 flex-1 rounded-full ${
+                      currentStep === step 
+                        ? 'bg-primary' 
+                        : currentStep > step 
+                          ? 'bg-primary/70' 
+                          : 'bg-slate-600'
+                    }`}
+                  />
+                ))}
+              </div>
+              <div className="hidden sm:flex items-center space-x-2">
+                {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
+                  <div 
+                    key={step} 
+                    className={`h-2 w-12 rounded-full ${
+                      currentStep === step 
+                        ? 'bg-primary' 
+                        : currentStep > step 
+                          ? 'bg-primary/70' 
+                          : 'bg-slate-600'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-            {/* Progress indicator */}
-            <div className="flex sm:hidden items-center space-x-1 w-full">
-              {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
-                <div 
-                  key={step} 
-                  className={`h-2 flex-1 rounded-full ${
-                    currentStep === step 
-                      ? 'bg-primary' 
-                      : currentStep > step 
-                        ? 'bg-primary/70' 
-                        : 'bg-slate-600'
-                  }`}
-                />
-              ))}
-            </div>
-            <div className="hidden sm:flex items-center space-x-2">
-              {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
-                <div 
-                  key={step} 
-                  className={`h-2 w-12 rounded-full ${
-                    currentStep === step 
-                      ? 'bg-primary' 
-                      : currentStep > step 
-                        ? 'bg-primary/70' 
-                        : 'bg-slate-600'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
+          )}
           
+          {currentStep === STEPS.PREVIEW && (
+            <div className="absolute top-4 left-4 z-50">
+              <button
+                onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm bg-black/50 hover:bg-black/70 text-white rounded-full border border-white/20 backdrop-blur-md transition-all shadow-lg"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Templates</span>
+              </button>
+            </div>
+          )}
+
           {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
             renderLoadingState()
           ) : (
