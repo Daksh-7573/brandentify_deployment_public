@@ -186,7 +186,7 @@ export default function TimelineStoryteller2({
   };
 
   return (
-    <div className="timeline-storyteller-unique-scope relative min-h-screen bg-stone-50 text-gray-900">
+    <div className="timeline-storyteller-unique-scope-v3 relative min-h-screen bg-stone-50 text-gray-900">
       <ElegantBackground />
 
       {/* Hero Section - Clean header with 6 fields */}
@@ -436,7 +436,7 @@ export default function TimelineStoryteller2({
                         <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
                         {(service.priceInr !== undefined || service.priceUsd !== undefined) && (
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold px-3 py-1">
-                            {service.priceInr ? `₹${service.priceInr}` : service.priceUsd ? `$${service.priceUsd}` : ''}
+                            {service.priceUsd ? `$${service.priceUsd}` : service.priceInr ? `₹${service.priceInr}` : ''}
                             {service.isHourly && '/hr'}
                           </Badge>
                         )}
@@ -503,7 +503,7 @@ export default function TimelineStoryteller2({
                             initial={{ width: 0 }}
                             whileInView={{ width: `${levelPercent}%` }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: (idx % 10) * 0.1 }}
+                            transition={{ duration: 0.8, delay: (idx % 10) * 0.1 + 0.5 }}
                             className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
                           />
                         </div>
