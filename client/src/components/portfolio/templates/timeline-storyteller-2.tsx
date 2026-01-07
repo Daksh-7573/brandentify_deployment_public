@@ -186,7 +186,7 @@ export default function TimelineStoryteller2({
   };
 
   return (
-    <div className="timeline-storyteller-container relative min-h-screen bg-stone-50 text-gray-900">
+    <div className="timeline-storyteller-unique-scope relative min-h-screen bg-stone-50 text-gray-900">
       <ElegantBackground />
 
       {/* Hero Section - Clean header with 6 fields */}
@@ -503,7 +503,7 @@ export default function TimelineStoryteller2({
                             initial={{ width: 0 }}
                             whileInView={{ width: `${levelPercent}%` }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: 0.1 }}
+                            transition={{ duration: 0.8, delay: (idx % 10) * 0.1 }}
                             className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
                           />
                         </div>
