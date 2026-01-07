@@ -274,7 +274,7 @@ export default function CreativeBold({
                 )}
               </div>
 
-              {/* Background Section */}
+              {/* BRAND STORY & CORE PILLARS */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
                 {userInfo.aboutMe && (
                   <div>
@@ -282,35 +282,35 @@ export default function CreativeBold({
                     <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.aboutMe}</p>
                   </div>
                 )}
-                {/* Values Moved here */}
-                {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                  <div>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Values</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.coreValues.map((value, idx) => (
-                        <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="px-3 py-1">
-                          {value}
-                        </Badge>
-                      ))}
+                
+                <div className="space-y-8">
+                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                    <div>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Values</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {userInfo.coreValues.map((value, idx) => (
+                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="px-3 py-1">
+                            {value}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
 
-              {/* MISSION & VISION */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
-                {userInfo.missionStatement && (
-                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
-                    <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
-                  </div>
-                )}
-                {userInfo.visionStatement && (
-                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
-                    <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
-                  </div>
-                )}
+                  {userInfo.missionStatement && (
+                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
+                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                    </div>
+                  )}
+
+                  {userInfo.visionStatement && (
+                    <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
+                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
