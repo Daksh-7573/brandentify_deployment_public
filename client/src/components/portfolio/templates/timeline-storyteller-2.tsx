@@ -142,32 +142,12 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
             )}
           </div>
           
-          {project.clientEndorsement && (
+          {project && (project as any).clientEndorsement && (
             <div className="bg-amber-100/50 border-l-4 border-amber-500 p-4 rounded-r-lg">
               <h4 className="text-sm font-semibold text-amber-900 mb-2">Client Endorsement</h4>
-              <p className="text-gray-700 italic">"{project.clientEndorsement}"</p>
+              <p className="text-gray-700 italic">"{(project as any).clientEndorsement}"</p>
             </div>
           )}
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Team Members Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Team Members
-              </h4>
-              <p className="text-sm text-gray-600">Team member information coming soon. Add collaborators to showcase your team.</p>
-            </div>
-            
-            {/* Client Information Section */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-green-900 mb-3 flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                Client Information
-              </h4>
-              <p className="text-sm text-gray-600">Client details coming soon. Add client information to showcase your professional relationships.</p>
-            </div>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -488,7 +468,7 @@ export default function TimelineStoryteller2({
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {userSkills.map((skill, idx) => {
-                const levelPercent = skill.level ? Math.min(100, Math.max(0, skill.level)) : 75;
+                const levelPercent = typeof skill.level === 'string' ? parseInt(skill.level) : (skill.level || 75);
                 const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
                 return (
                   <motion.div
@@ -791,23 +771,12 @@ export default function TimelineStoryteller2({
           className="pb-20"
         >
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-10 py-6 rounded-full shadow-xl"
-              data-testid="button-connect-footer"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Connect With Me
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 font-semibold px-10 py-6 rounded-full"
-              data-testid="button-mentor-footer"
-            >
-              <Users className="w-5 h-5 mr-2" />
-              Request Mentorship
-            </Button>
+            <PortfolioCtaButtons 
+              variant="minimal" 
+              userId={userInfo.id} 
+              userName={userInfo.name} 
+              userEmail={userInfo.email} 
+            />
           </div>
         </motion.section>
       </div>
