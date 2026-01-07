@@ -435,9 +435,9 @@ export default function TimelineStoryteller2({
                     <CardContent className="p-6 space-y-3">
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
-                        {(service.priceUsd || service.priceInr) && (
+                        {((service.priceUsd && parseFloat(service.priceUsd) > 0) || (service.priceInr && parseFloat(service.priceInr) > 0)) && (
                           <Badge className="bg-amber-600 text-white font-semibold px-3 py-1">
-                            {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
+                            {service.priceUsd && parseFloat(service.priceUsd) > 0 ? `$${service.priceUsd}` : `₹${service.priceInr}`}
                             {service.isHourly && '/hr'}
                           </Badge>
                         )}
@@ -469,7 +469,7 @@ export default function TimelineStoryteller2({
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {userSkills.map((skill, idx) => {
-                const levelPercent = skill.proficiency || (typeof skill.level === 'number' ? skill.level : 75);
+                const levelPercent = skill.proficiency ?? (typeof skill.level === 'number' ? skill.level : (typeof skill.level === 'string' && !isNaN(parseInt(skill.level)) ? parseInt(skill.level) : 75));
                 const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
                 return (
                   <motion.div
