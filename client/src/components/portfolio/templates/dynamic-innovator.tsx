@@ -92,6 +92,7 @@ interface DynamicInnovatorProps {
     lookingFor: string | null;
     jobLevel: string | null;
     whatIOffer: string | null;
+    photoURL: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -798,10 +799,14 @@ export function DynamicInnovator({
       {/* Hero Section */}
       <section className="section py-16 px-4 md:px-8 relative overflow-hidden">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Digital Profile Image - Simplified */}
+          {/* Digital Profile Image with Scanner Effect */}
           <div className="flex justify-center md:justify-start">
-            <div className="scanner-profile-frame w-64 h-64 relative flex items-center justify-center bg-gradient-to-br from-[#08f7fe]/10 to-[#fe53bb]/10">
-              <Cpu className="h-20 w-20 text-[#08f7fe]/40" />
+            <div className="scanner-profile-frame w-64 h-64 relative">
+              <ProfileImage
+                src={userInfo.photoURL}
+                alt={userInfo.name}
+                className="w-full h-full object-cover"
+              />
               {scannerOn && <div className="scanner-line"></div>}
               <div className="absolute -top-2 -left-2 -right-2 -bottom-2 border-2 border-[#08f7fe]/20 rounded-full"></div>
               <div className="absolute -top-4 -left-4 -right-4 -bottom-4 border-2 border-[#08f7fe]/10 rounded-full"></div>

@@ -21,6 +21,7 @@ interface CreativeBoldProps {
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
+    photoURL: string | null;
   };
   userSkills?: Array<{ 
     id: number; 

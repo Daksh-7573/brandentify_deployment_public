@@ -48,6 +48,7 @@ interface FreelancerHubProps {
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
+    photoURL: string | null;
   };
   userSkills: Skill[];
   userProjects: Project[];
@@ -177,8 +178,8 @@ export default function FreelancerHub({
                 transition={{ duration: 0.6 }}
               >
                 <div className="relative inline-block mb-6">
-                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-purple-400 shadow-2xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                    <Briefcase className="h-16 w-16 text-purple-400" />
+                  <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-purple-400 shadow-2xl">
+                    <ProfileImage src={userInfo.photoURL} alt={userInfo.name} />
                   </div>
                   <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                     Available
