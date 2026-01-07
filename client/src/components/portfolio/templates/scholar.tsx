@@ -710,11 +710,8 @@ export default function Scholar({
           </h2>
           
           {!hasProjects && (
-            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center">
-              <p className="text-gray-500 italic">Add projects to showcase your academic work, research, and accomplishments.</p>
-              <Button variant="outline" className="mt-4 text-blue-600 border-blue-200 hover:bg-blue-50">
-                Add Projects
-              </Button>
+            <div className="notebook-paper mb-6 border-dashed border-blue-200 text-center py-8">
+              <p className="text-gray-500 italic">No projects have been added yet.</p>
             </div>
           )}
           
