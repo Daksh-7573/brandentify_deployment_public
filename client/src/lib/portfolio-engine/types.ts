@@ -1,6 +1,7 @@
 export interface UserBasicInfo {
   id?: number;
   name: string;
+  email: string | null;
   photoURL: string | null;
   title: string | null;
   company: string | null;

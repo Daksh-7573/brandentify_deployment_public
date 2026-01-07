@@ -32,6 +32,7 @@ export function extractBasicInfo(userData: any): UserBasicInfo {
   return {
     id: userData?.id,
     name: userData?.name || 'Professional',
+    email: userData?.email || null,
     photoURL: userData?.photoURL || null,
     title: userData?.title || null,
     company: userData?.company || null,

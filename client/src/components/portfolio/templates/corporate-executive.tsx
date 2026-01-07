@@ -870,9 +870,7 @@ export default function CorporateExecutive({
                 {/* Other CTA Buttons */}
                 <PortfolioCtaButtons 
                   variant="corporate"
-                  resumeUrl={null} 
-                  mentorUrl={null}
-                  connectUrl={null}
+                  userId={userInfo.id}
                   userEmail={userInfo.email}
                   userName={userInfo.name}
                   className="flex-row gap-3 mt-0"
@@ -1483,9 +1481,7 @@ export default function CorporateExecutive({
               {/* Other CTA Buttons */}
               <PortfolioCtaButtons 
                 variant="corporate"
-                resumeUrl={null} 
-                mentorUrl={null}
-                connectUrl={null}
+                userId={userInfo.id}
                 userEmail={userInfo.email}
                 userName={userInfo.name}
                 className="sm:justify-end"
