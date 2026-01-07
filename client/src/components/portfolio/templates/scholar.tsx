@@ -1018,39 +1018,6 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* Contact Section / CTA */}
-      <section className="py-12 bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50">
-        <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
-            <Send className="h-6 w-6 mr-3 text-indigo-600" /> 
-            Let's Connect
-          </h2>
-          
-          <div className="max-w-3xl mx-auto fade-in-up">
-            <div className="notebook-paper mb-6 p-8">
-              <p className="text-gray-700 leading-relaxed mb-6">
-                Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
-              </p>
-              
-              <div className="flex flex-row gap-2">
-                <PortfolioCtaButtons 
-                  userId={userInfo?.id}
-                  userEmail={userInfo?.email}
-                  userName={userInfo?.name}
-                  variant="technical"
-                  size="sm"
-                  className="space-x-2 flex flex-row"
-                  buttonStyle={{
-                    background: "linear-gradient(to right, #4A69BD, #3B5998)",
-                    color: "white",
-                    border: "none"
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer Section */}
       <footer className="py-12 border-t border-gray-100 bg-gray-50">
