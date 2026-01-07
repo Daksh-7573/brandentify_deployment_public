@@ -344,28 +344,30 @@ export default function CreativeBold({
                   key={service.id}
                   whileHover={{ y: -6 }}
                   transition={{ duration: 0.3 }}
-                  className="p-6 rounded-lg transition-all"
+                  className="p-6 rounded-lg transition-all relative flex flex-col min-h-[160px]"
                   style={{ 
                     backgroundColor: PORCELAIN, 
                     borderTop: `4px solid ${CORAL}`,
                     cursor: 'pointer'
                   }}
                 >
-                  <h3 className="text-xl font-bold mb-2" style={{ color: INK_BLACK }}>
-                    {service.title}
-                  </h3>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold mb-2" style={{ color: INK_BLACK }}>
+                      {service.title}
+                    </h3>
+                    {service.description && (
+                      <p className="text-sm mb-4" style={{ color: COOL_GRAY }}>
+                        {service.description}
+                      </p>
+                    )}
+                  </div>
                   {((service.priceUsd && parseFloat(String(service.priceUsd)) > 0) || (service.priceInr && parseFloat(String(service.priceInr)) > 0)) && (
-                    <div className="mb-2">
+                    <div className="mt-auto">
                       <Badge className="bg-amber-100 text-amber-900 border border-amber-200">
                         {service.priceUsd && parseFloat(String(service.priceUsd)) > 0 ? `$${service.priceUsd}` : `₹${service.priceInr}`}
                         {service.isHourly && ' / hr'}
                       </Badge>
                     </div>
-                  )}
-                  {service.description && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      {service.description}
-                    </p>
                   )}
                 </motion.div>
               ))}
