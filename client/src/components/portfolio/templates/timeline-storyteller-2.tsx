@@ -438,7 +438,7 @@ export default function TimelineStoryteller2({
                         {((service.priceUsd && parseFloat(String(service.priceUsd)) > 0) || (service.priceInr && parseFloat(String(service.priceInr)) > 0)) && (
                           <Badge className="bg-amber-600 text-white font-semibold px-3 py-1">
                             {service.priceUsd && parseFloat(String(service.priceUsd)) > 0 ? `$${service.priceUsd}` : `₹${service.priceInr}`}
-                            {service.isHourly && '/hr'}
+                            {service.isHourly && ' / hr'}
                           </Badge>
                         )}
                       </div>
