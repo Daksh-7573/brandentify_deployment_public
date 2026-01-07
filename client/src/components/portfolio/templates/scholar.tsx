@@ -127,21 +127,7 @@ export default function Scholar({
   // State for project modal
   const [selectedProject, setSelectedProject] = useState<(typeof userProjects)[0] | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const [displayedImageUrl, setDisplayedImageUrl] = useState<string | null>(null);
-  
-  // Fetch team members when project modal opens
-  useEffect(() => {
-    if (isProjectModalOpen && selectedProject?.id) {
-      fetch(`/api/projects/${selectedProject.id}/collaborators`)
-        .then(res => res.json())
-        .then(data => setTeamMembers(Array.isArray(data) ? data : []))
-        .catch(err => {
-          console.log('Could not fetch team members:', err);
-          setTeamMembers([]);
-        });
-    }
-  }, [isProjectModalOpen, selectedProject?.id]);
   
   // Open project modal with selected project
   const openProjectModal = (project: (typeof userProjects)[0]) => {
@@ -360,28 +346,9 @@ export default function Scholar({
     delayBetween: 2000
   });
 
-  // Function to choose a color for skills based on skill name
-  const getSkillColor = (name: string) => {
-    const nameToLower = name.toLowerCase();
-    
-    if (nameToLower.includes('communication') || nameToLower.includes('speaking')) {
-      return 'bg-blue-50 text-blue-700 border-blue-200';
-    } else if (nameToLower.includes('leadership') || nameToLower.includes('management')) {
-      return 'bg-purple-50 text-purple-700 border-purple-200';
-    } else if (nameToLower.includes('teamwork') || nameToLower.includes('collaboration')) {
-      return 'bg-green-50 text-green-700 border-green-200';
-    } else if (nameToLower.includes('problem') || nameToLower.includes('analytical')) {
-      return 'bg-orange-50 text-orange-700 border-orange-200';
-    } else if (nameToLower.includes('creative') || nameToLower.includes('design')) {
-      return 'bg-pink-50 text-pink-700 border-pink-200';
-    } else {
-      return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
   // Helper function to get icon for project categories
   const getCategoryIcon = (category: string) => {
-    const categoryLower = category.toLowerCase();
+    const categoryLower = category ? category.toLowerCase() : '';
     
     if (categoryLower.includes('research') || categoryLower.includes('academic')) {
       return <BookOpen className="h-3.5 w-3.5" />;
@@ -400,7 +367,7 @@ export default function Scholar({
   const safeSkills = userSkills || [];
   
   // Separate technical and tools skills logically, but randomize soft/other skills distribution
-  const technicalSkills = safeSkills.filter(skill => 
+  const technicalSkills = safeSkills.filter((skill: any) => 
     skill && skill.name && (
       skill.name.toLowerCase().includes('programming') || 
       skill.name.toLowerCase().includes('technical') ||
@@ -417,7 +384,7 @@ export default function Scholar({
     )
   );
   
-  const toolsSkills = safeSkills.filter(skill => 
+  const toolsSkills = safeSkills.filter((skill: any) => 
     skill && skill.name && (
       skill.name.toLowerCase().includes('tool') || 
       skill.name.toLowerCase().includes('software') ||
@@ -429,7 +396,7 @@ export default function Scholar({
   );
   
   // Get remaining skills (non-technical and non-tools) - combine as one stable list
-  const remainingSkills = safeSkills.filter(skill => 
+  const remainingSkills = safeSkills.filter((skill: any) => 
     skill && skill.name && 
     !technicalSkills.includes(skill) && 
     !toolsSkills.includes(skill)
@@ -1068,12 +1035,19 @@ export default function Scholar({
                 Interested in discussing academic opportunities, collaborations, mentorship, or just want to chat about shared research interests? Feel free to reach out!
               </p>
               
-              <div>
+              <div className="flex flex-row gap-2">
                 <PortfolioCtaButtons 
+                  userId={userInfo?.id}
                   userEmail={userInfo?.email}
                   userName={userInfo?.name}
-                  variant="creative"
-                  className="space-x-3"
+                  variant="technical"
+                  size="sm"
+                  className="space-x-2 flex flex-row"
+                  buttonStyle={{
+                    background: "linear-gradient(to right, #4A69BD, #3B5998)",
+                    color: "white",
+                    border: "none"
+                  }}
                 />
               </div>
             </div>
@@ -1081,8 +1055,36 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* Project Details Modal */}
-      <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
+      {/* Footer Section */}
+      <footer className="py-12 border-t border-gray-100 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-center md:text-left">
+              <h2 className="text-2xl font-serif font-bold text-gray-800">
+                {userInfo && userInfo.name ? userInfo.name : "Scholar"}
+              </h2>
+              <p className="text-gray-500 mt-1">
+                {userInfo && userInfo.title ? userInfo.title : "Academic Scholar"}
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <PortfolioCtaButtons 
+                userId={userInfo?.id}
+                userEmail={userInfo?.email}
+                userName={userInfo?.name}
+                variant="technical"
+                className="space-x-3"
+                buttonStyle={{
+                  background: "linear-gradient(to right, #4A69BD, #3B5998)",
+                  color: "white",
+                  border: "none"
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </footer>
         {selectedProject && (
           <>
             <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
@@ -1178,7 +1180,7 @@ export default function Scholar({
                             <div className="w-20 text-gray-500 font-medium text-sm">Category:</div>
                             <div className="flex-1">
                               <Badge className="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 flex items-center">
-                                {getCategoryIcon(selectedProject.category)}
+                                {getCategoryIcon(selectedProject.category || '')}
                                 <span className="ml-1.5">{selectedProject.category}</span>
                               </Badge>
                             </div>
@@ -1239,23 +1241,6 @@ export default function Scholar({
                             Client Endorsement
                           </h4>
                           <p className="text-sm text-gray-700 italic">"{selectedProject.clientEndorsement}"</p>
-                        </div>
-                      )}
-                      
-                      {teamMembers.length > 0 && (
-                        <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                          <h4 className="text-sm font-serif font-semibold text-indigo-800 mb-2 flex items-center">
-                            <Award className="h-4 w-4 mr-2" />
-                            Team Members
-                          </h4>
-                          <div className="space-y-2">
-                            {teamMembers.map((member: any) => (
-                              <div key={member.id} className="text-xs">
-                                <p className="font-semibold text-indigo-900">{member.name}</p>
-                                <p className="text-indigo-700">{member.role}</p>
-                              </div>
-                            ))}
-                          </div>
                         </div>
                       )}
                     </div>
