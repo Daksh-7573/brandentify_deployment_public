@@ -156,7 +156,6 @@ const CareerCapsulePage = lazy(() => import("@/pages/career-capsule"));
 const QuantumCardPage = lazy(() => import("@/pages/quantum-card"));
 const OnboardingPage = lazy(() => import("@/pages/onboarding"));
 const OnboardingFlowPage = lazy(() => import("@/pages/onboarding-flow"));
-const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
 const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
 const ManageServicesPage = lazy(() => import("@/pages/manage-services"));
 const AddServicePage = lazy(() => import("@/pages/add-service"));
@@ -611,12 +610,12 @@ function Router() {
           </Suspense>
         )}
       </Route>
+      {/* Redirect old edit-profile route to profile page */}
       <Route path="/edit-profile">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/edit-profile" component={EditProfilePage} />
-          </Suspense>
-        )}
+        {() => {
+          window.location.replace('/profile');
+          return null;
+        }}
       </Route>
       <Route path="/musk-testing">
         {() => (
