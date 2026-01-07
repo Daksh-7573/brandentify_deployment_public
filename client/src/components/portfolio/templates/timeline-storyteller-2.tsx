@@ -44,12 +44,12 @@ interface TimelineStoryteller2Props {
   currentUserId?: number;
 }
 
-function ElegantBackground() {
+function ElegantBackground({ isPreview = false }: { isPreview?: boolean }) {
   const { scrollY } = useScroll();
   const backgroundY = useTransform(scrollY, [0, 1000], [0, -100]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
+    <div className={`${isPreview ? 'absolute' : 'fixed'} inset-0 pointer-events-none overflow-hidden`} style={{ zIndex: -1 }}>
       {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-stone-50 via-amber-50/80 to-orange-50/60" />
       
@@ -161,8 +161,9 @@ export default function TimelineStoryteller2({
   userProjects,
   userEducations = [],
   userServices = [],
-  currentUserId
-}: TimelineStoryteller2Props) {
+  currentUserId,
+  isPremium
+}: TimelineStoryteller2Props & { isPremium?: boolean }) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -186,8 +187,8 @@ export default function TimelineStoryteller2({
   };
 
   return (
-    <div className="timeline-storyteller-unique-scope-v3 relative min-h-screen bg-stone-50 text-gray-900">
-      <ElegantBackground />
+    <div className="timeline-storyteller-unique-scope-v3 relative min-h-screen bg-stone-50 text-gray-900 isolate">
+      <ElegantBackground isPreview={true} />
 
       {/* Hero Section - Clean header with 6 fields */}
       <motion.section 
@@ -434,9 +435,9 @@ export default function TimelineStoryteller2({
                     <CardContent className="p-6 space-y-3">
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="text-xl font-bold text-amber-900">{service.title}</h3>
-                        {(service.priceInr !== undefined || service.priceUsd !== undefined) && (
-                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold px-3 py-1">
-                            {service.priceUsd ? `$${service.priceUsd}` : service.priceInr ? `₹${service.priceInr}` : ''}
+                        {(service.priceUsd || service.priceInr) && (
+                          <Badge className="bg-amber-600 text-white font-semibold px-3 py-1">
+                            {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
                             {service.isHourly && '/hr'}
                           </Badge>
                         )}
@@ -468,7 +469,7 @@ export default function TimelineStoryteller2({
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {userSkills.map((skill, idx) => {
-                const levelPercent = typeof skill.level === 'string' ? parseInt(skill.level) : (skill.level || 75);
+                const levelPercent = skill.proficiency || (typeof skill.level === 'number' ? skill.level : 75);
                 const levelLabel = levelPercent >= 90 ? 'Expert' : levelPercent >= 70 ? 'Advanced' : levelPercent >= 50 ? 'Intermediate' : 'Beginner';
                 return (
                   <motion.div
@@ -635,12 +636,12 @@ export default function TimelineStoryteller2({
                             {exp.industry && (
                               <Badge variant="outline" className="text-amber-700 border-amber-300">
                                 <Building className="w-3 h-3 mr-1" />
-                                {exp.industry as React.ReactNode}
+                                {exp.industry as React.ReactNode || ''}
                               </Badge>
                             )}
                             {exp.domain && (
                               <Badge variant="outline" className="text-orange-700 border-orange-300">
-                                {exp.domain as React.ReactNode}
+                                {exp.domain as React.ReactNode || ''}
                               </Badge>
                             )}
                           </div>
@@ -715,12 +716,12 @@ export default function TimelineStoryteller2({
                         <div className="flex flex-wrap gap-2">
                           {edu.industry && (
                             <Badge variant="outline" className="text-amber-700 border-amber-300 text-xs">
-                              {edu.industry as React.ReactNode}
+                              {edu.industry as React.ReactNode || ''}
                             </Badge>
                           )}
                           {edu.domain && (
                             <Badge variant="outline" className="text-orange-700 border-orange-300 text-xs">
-                              {edu.domain as React.ReactNode}
+                              {edu.domain as React.ReactNode || ''}
                             </Badge>
                           )}
                         </div>
