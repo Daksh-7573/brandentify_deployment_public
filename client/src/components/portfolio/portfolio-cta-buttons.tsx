@@ -249,35 +249,40 @@ export default function PortfolioCtaButtons({
           container: `flex flex-col sm:flex-row ${className}`,
           resumeBtn: 'bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none text-sm h-8 px-3',
           mentorBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3',
-          connectBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3'
+          connectBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3',
+          downloadBtn: 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] text-sm h-8 px-3'
         };
       case 'creative':
         return {
           container: `flex flex-wrap gap-3 mt-6 ${className}`,
           resumeBtn: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white border-none',
           mentorBtn: 'border-purple-400 text-purple-600 bg-white hover:bg-purple-50',
-          connectBtn: 'border-pink-400 text-pink-600 bg-white hover:bg-pink-50'
+          connectBtn: 'border-pink-400 text-pink-600 bg-white hover:bg-pink-50',
+          downloadBtn: 'border-purple-400 text-purple-600 bg-white hover:bg-purple-50'
         };
       case 'minimal':
         return {
           container: `flex flex-col sm:flex-row gap-3 mt-6 ${className}`,
           resumeBtn: 'bg-gray-900 hover:bg-gray-800 text-white border-none',
           mentorBtn: 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50',
-          connectBtn: 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+          connectBtn: 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50',
+          downloadBtn: 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
         };
       case 'technical':
         return {
           container: `flex flex-col sm:flex-row gap-3 mt-6 ${className}`,
           resumeBtn: 'bg-blue-600 hover:bg-blue-700 text-white border-none',
           mentorBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50',
-          connectBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50'
+          connectBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50',
+          downloadBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50'
         };
       default:
         return {
           container: `flex flex-col sm:flex-row gap-3 mt-6 ${className}`,
           resumeBtn: 'bg-primary hover:bg-primary/90 text-white border-none',
           mentorBtn: 'border-primary/30 text-primary bg-white hover:bg-primary/10',
-          connectBtn: 'border-primary/30 text-primary bg-white hover:bg-primary/10'
+          connectBtn: 'border-primary/30 text-primary bg-white hover:bg-primary/10',
+          downloadBtn: 'border-primary/30 text-primary bg-white hover:bg-primary/10'
         };
     }
   };
@@ -291,8 +296,9 @@ export default function PortfolioCtaButtons({
           <ResumeButton
             userId={userId}
             variant={variant}
-            className={`flex items-center gap-2 min-w-[120px] justify-center`}
+            className={`${styles.resumeBtn} flex items-center gap-2 min-w-[120px] justify-center`}
             buttonStyle={buttonStyle}
+            label="Resume"
           />
         ) : (
           <Button 
@@ -326,31 +332,6 @@ export default function PortfolioCtaButtons({
           <MessageCircle size={16} />
           Let's Talk
         </Button>
-        
-        {userId && (
-          <Button 
-            variant="outline"
-            onClick={handleDownloadPortfolio}
-            disabled={isDownloading}
-            className={variant === 'corporate' 
-              ? 'border-[#6a0dad] text-[#6a0dad] bg-white hover:bg-[#f8f5fd] flex items-center gap-2 min-w-[120px] justify-center text-sm h-8 px-3'
-              : `${styles.mentorBtn} flex items-center gap-2 min-w-[120px] justify-center`}
-            style={Object.keys(buttonStyle).length > 0 ? buttonStyle : undefined}
-            data-testid="button-download-portfolio"
-          >
-            {isDownloading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Download size={16} />
-                Download
-              </>
-            )}
-          </Button>
-        )}
       </div>
 
       {/* Let's Talk Dialog */}

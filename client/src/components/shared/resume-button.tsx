@@ -15,13 +15,15 @@ interface ResumeButtonProps {
   className?: string;
   variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
   buttonStyle?: CSSProperties;
+  label?: string;
 }
 
 export function ResumeButton({ 
   userId,
   className = '',
   variant = 'default',
-  buttonStyle = {}
+  buttonStyle = {},
+  label
 }: ResumeButtonProps) {
   const { 
     resumeStatus, 
@@ -47,6 +49,7 @@ export function ResumeButton({
     if (isLoading || isGenerating) {
       return 'Processing...';
     }
+    if (label) return label;
     return hasResume ? 'View Resume' : 'Generate Resume';
   };
   
