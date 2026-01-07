@@ -25,6 +25,7 @@ export function FastGoogleAuth() {
 
       if (event.data?.type === 'oauth_success') {
         console.log('✅ [FastGoogleAuth] Received oauth_success postMessage');
+        const sessionData = event.data.user;
         
         if (checkClosedIntervalRef.current) {
           clearInterval(checkClosedIntervalRef.current);

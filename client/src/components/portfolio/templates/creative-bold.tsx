@@ -196,18 +196,18 @@ export default function CreativeBold({
                 </p>
               )}
 
-              {/* Service chips */}
-              {userServices && userServices.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-4">
-                  {userServices.slice(0, 4).map(service => (
-                    <Badge 
-                      key={service.id} 
-                      style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                      className="text-sm font-medium"
-                    >
-                      {service.title}
-                    </Badge>
-                  ))}
+              {/* About Me */}
+              {userInfo.aboutMe && (
+                <p className="text-lg leading-relaxed max-w-2xl" style={{ color: COOL_GRAY }}>
+                  {userInfo.aboutMe}
+                </p>
+              )}
+
+              {/* What I Offer */}
+              {userInfo.whatIOffer && (
+                <div className="pt-4">
+                  <p className="text-xs uppercase font-bold mb-2" style={{ color: CORAL }}>What I Offer</p>
+                  <p className="text-lg" style={{ color: INK_BLACK }}>{userInfo.whatIOffer}</p>
                 </div>
               )}
 
@@ -225,8 +225,8 @@ export default function CreativeBold({
                 )}
               </div>
 
-              {/* Company, Domain, Looking For, UVP Grid */}
-              {(sortedExperiences[0]?.company || userInfo.domain || userInfo.lookingFor || userInfo.uniqueValueProposition) && (
+              {/* Company, Domain, Looking For Grid */}
+              {(sortedExperiences[0]?.company || userInfo.domain || userInfo.lookingFor) && (
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-4 pt-6 border-t" style={{ borderColor: '#E5E7EB' }}>
                   {sortedExperiences[0]?.company && (
                     <div>
@@ -244,12 +244,6 @@ export default function CreativeBold({
                     <div>
                       <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Looking For</p>
                       <p style={{ color: INK_BLACK }}>{userInfo.lookingFor}</p>
-                    </div>
-                  )}
-                  {userInfo.uniqueValueProposition && (
-                    <div>
-                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Unique Value</p>
-                      <p style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
                     </div>
                   )}
                 </div>
@@ -279,8 +273,8 @@ export default function CreativeBold({
         </div>
       </section>
 
-      {/* BRAND IDENTITY - Only show Vision/Mission/Values, NOT About */}
-      {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length) && (
+      {/* BRAND IDENTITY - Vision/Mission/Values/About */}
+      {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length || userInfo.uniqueValueProposition) && (
         <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
           <div className="max-w-[1200px] mx-auto">
             <motion.div
@@ -288,32 +282,52 @@ export default function CreativeBold({
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="space-y-8"
+              className="space-y-12"
             >
-              {/* Vision, Mission, Values Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {userInfo.visionStatement && (
-                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Vision</h3>
-                    <p style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
-                  </div>
-                )}
-                {userInfo.missionStatement && (
-                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-2" style={{ color: CORAL }}>Mission</h3>
-                    <p style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
-                  </div>
-                )}
+              {/* Profile Meta Info */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {userInfo.coreValues && userInfo.coreValues.length > 0 && (
                   <div>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-3" style={{ color: CORAL }}>Values</h3>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Values</h3>
                     <div className="flex flex-wrap gap-2">
                       {userInfo.coreValues.map((value, idx) => (
-                        <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }}>
+                        <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="px-3 py-1">
                           {value}
                         </Badge>
                       ))}
                     </div>
+                  </div>
+                )}
+              </div>
+
+              {/* UVP & About Me Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
+                {userInfo.uniqueValueProposition && (
+                  <div>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Unique Value Proposition</h3>
+                    <p className="text-2xl font-medium leading-snug" style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
+                  </div>
+                )}
+                {userInfo.aboutMe && (
+                  <div>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Background</h3>
+                    <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.aboutMe}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* MISSION & VISION - Moved here for better flow */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
+                {userInfo.missionStatement && (
+                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
+                    <p className="text-lg" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                  </div>
+                )}
+                {userInfo.visionStatement && (
+                  <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
+                    <p className="text-lg" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
                   </div>
                 )}
               </div>
@@ -464,7 +478,7 @@ export default function CreativeBold({
         </section>
       )}
 
-      {/* EXPERIENCE TIMELINE */}
+              {/* EXPERIENCE TIMELINE */}
       {sortedExperiences.length > 0 && (
         <section className="py-20 px-6 md:px-12">
           <div className="max-w-[1200px] mx-auto">
@@ -479,7 +493,7 @@ export default function CreativeBold({
               Experience
             </motion.h2>
 
-            <div className="space-y-8">
+            <div className="space-y-12">
               {sortedExperiences.map((exp, idx) => (
                 <motion.div
                   key={exp.id}
@@ -487,40 +501,58 @@ export default function CreativeBold({
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: idx * 0.1 }}
                   viewport={{ once: true }}
-                  className="flex gap-6"
+                  className="flex gap-8 group"
                 >
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: CORAL, flexShrink: 0 }} />
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold" style={{ color: INK_BLACK }}>
-                      {exp.title}
-                    </h3>
-                    <p style={{ color: COOL_GRAY }}>{exp.company}</p>
-                    {exp.location && (
-                      <p className="text-sm" style={{ color: COOL_GRAY }}>
-                        📍 {exp.location}
-                      </p>
+                  <div className="flex flex-col items-center">
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: CORAL, flexShrink: 0, display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+                      <Briefcase className="w-5 h-5 text-white" />
+                    </div>
+                    {idx !== sortedExperiences.length - 1 && (
+                      <div className="w-px h-full mt-4" style={{ backgroundColor: '#E5E7EB' }} />
                     )}
-                    {exp.industry && (
-                      <p className="text-sm" style={{ color: COOL_GRAY }}>
-                        🏢 {exp.industry}
-                      </p>
-                    )}
-                    <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
-                      {new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
-                    </p>
+                  </div>
+                  <div className="flex-1 pb-12">
+                    <div className="flex flex-wrap justify-between items-start mb-2">
+                      <h3 className="text-2xl font-bold" style={{ color: INK_BLACK }}>
+                        {exp.title}
+                      </h3>
+                      <span className="text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ backgroundColor: PORCELAIN, color: CORAL }}>
+                        {new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
+                      </span>
+                    </div>
+                    <p className="text-xl mb-4 font-medium" style={{ color: CORAL }}>{exp.company}</p>
+                    
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      {exp.location && (
+                        <p className="text-sm flex items-center" style={{ color: COOL_GRAY }}>
+                          <MapPin className="w-4 h-4 mr-1" /> {exp.location}
+                        </p>
+                      )}
+                      {exp.industry && (
+                        <p className="text-sm flex items-center" style={{ color: COOL_GRAY }}>
+                          <Briefcase className="w-4 h-4 mr-1" /> {exp.industry}
+                        </p>
+                      )}
+                    </div>
+
                     {exp.description && (
-                      <p className="mt-3" style={{ color: COOL_GRAY }}>
+                      <p className="text-lg leading-relaxed mb-6" style={{ color: COOL_GRAY }}>
                         {exp.description}
                       </p>
                     )}
+                    
                     {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 && (
-                      <ul className="mt-3 list-disc list-inside space-y-1">
-                        {exp.keyResponsibilities.map((resp, idx) => (
-                          <li key={idx} className="text-sm" style={{ color: COOL_GRAY }}>
-                            {resp}
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="space-y-3">
+                        <p className="text-xs uppercase font-bold tracking-widest" style={{ color: CORAL }}>Key Impact</p>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                          {exp.keyResponsibilities.map((resp, idx) => (
+                            <li key={idx} className="text-sm leading-relaxed flex items-start" style={{ color: COOL_GRAY }}>
+                              <span className="mr-2 mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: CORAL }} />
+                              {resp}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -595,7 +627,7 @@ export default function CreativeBold({
 
       {/* EDUCATION */}
       {userEducations.length > 0 && (
-        <section className="py-20 px-6 md:px-12">
+        <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
           <div className="max-w-[1200px] mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -608,49 +640,31 @@ export default function CreativeBold({
               Education
             </motion.h2>
 
-            <div className="space-y-6">
-              {userEducations.map((edu) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {userEducations.map((edu, idx) => (
                 <motion.div
                   key={edu.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
                   viewport={{ once: true }}
-                  className="p-6 rounded-lg"
-                  style={{ backgroundColor: PORCELAIN }}
+                  className="p-8 bg-white rounded-2xl shadow-sm border border-gray-100"
                 >
-                  <h3 className="text-xl font-bold mb-1" style={{ color: INK_BLACK }}>
+                  <GraduationCap className="w-10 h-10 mb-6 text-[#FF6B5A]" />
+                  <h3 className="text-2xl font-bold mb-2" style={{ color: INK_BLACK }}>
                     {edu.degree}
                   </h3>
-                  <p style={{ color: COOL_GRAY }}>{edu.institution}</p>
+                  <p className="text-xl mb-4" style={{ color: CORAL }}>{edu.institution}</p>
+                  
+                  <div className="flex flex-wrap gap-4 text-sm mb-6" style={{ color: COOL_GRAY }}>
+                    <span>{new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}</span>
+                    {edu.location && <span>• {edu.location}</span>}
+                  </div>
+
                   {edu.fieldOfStudy && (
-                    <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
-                      📚 {edu.fieldOfStudy}
-                    </p>
-                  )}
-                  {edu.location && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      📍 {edu.location}
-                    </p>
-                  )}
-                  {edu.industry && (
-                    <p className="text-sm" style={{ color: COOL_GRAY }}>
-                      🏢 {edu.industry}
-                    </p>
-                  )}
-                  <p className="text-sm mt-2" style={{ color: COOL_GRAY }}>
-                    {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                  </p>
-                  {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-sm font-semibold mb-2" style={{ color: INK_BLACK }}>Skills Acquired:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {edu.skillsAcquired.map((skill, idx) => (
-                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
+                    <div className="pt-4 border-t border-gray-50">
+                      <p className="text-xs uppercase font-bold tracking-widest mb-2" style={{ color: CORAL }}>Field of Study</p>
+                      <p style={{ color: COOL_GRAY }}>{edu.fieldOfStudy}</p>
                     </div>
                   )}
                 </motion.div>
