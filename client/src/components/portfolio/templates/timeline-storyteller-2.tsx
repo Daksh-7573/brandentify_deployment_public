@@ -635,12 +635,12 @@ export default function TimelineStoryteller2({
                             {exp.industry && (
                               <Badge variant="outline" className="text-amber-700 border-amber-300">
                                 <Building className="w-3 h-3 mr-1" />
-                                {exp.industry}
+                                {exp.industry as React.ReactNode}
                               </Badge>
                             )}
                             {exp.domain && (
                               <Badge variant="outline" className="text-orange-700 border-orange-300">
-                                {exp.domain}
+                                {exp.domain as React.ReactNode}
                               </Badge>
                             )}
                           </div>
@@ -715,12 +715,12 @@ export default function TimelineStoryteller2({
                         <div className="flex flex-wrap gap-2">
                           {edu.industry && (
                             <Badge variant="outline" className="text-amber-700 border-amber-300 text-xs">
-                              {edu.industry}
+                              {edu.industry as React.ReactNode}
                             </Badge>
                           )}
                           {edu.domain && (
                             <Badge variant="outline" className="text-orange-700 border-orange-300 text-xs">
-                              {edu.domain}
+                              {edu.domain as React.ReactNode}
                             </Badge>
                           )}
                         </div>
