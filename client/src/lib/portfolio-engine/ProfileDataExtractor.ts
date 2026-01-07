@@ -32,15 +32,12 @@ export function extractBasicInfo(userData: any): UserBasicInfo {
   return {
     id: userData?.id,
     name: userData?.name || 'Professional',
-    email: userData?.email || '',
-    phoneNumber: userData?.phoneNumber || null,
     photoURL: userData?.photoURL || null,
     title: userData?.title || null,
     company: userData?.company || null,
     location: userData?.location || null,
     industry: userData?.industry || null,
     domain: userData?.domain || null,
-    brandName: userData?.brandName || null,
     lookingFor: userData?.lookingFor || null,
   };
 }
@@ -57,8 +54,6 @@ export function extractProfessionalBrand(userData: any): UserProfessionalBrand {
 
 export function extractAudienceInfo(userData: any): UserAudienceInfo {
   return {
-    primaryAudience: parseJsonArray(userData?.primaryAudience),
-    secondaryAudience: parseJsonArray(userData?.secondaryAudience),
     whatIOffer: userData?.whatIOffer || null,
   };
 }
@@ -70,8 +65,6 @@ export function extractSkills(skillsData: any[]): SkillData[] {
     skillName: skill.name || skill.skillName || '',
     proficiencyLevel: skill.level || skill.proficiencyLevel || null,
     proficiency: skill.proficiency || null,
-    category: skill.category || null,
-    yearsOfExperience: skill.yearsOfExperience || null,
   }));
 }
 
@@ -121,12 +114,6 @@ export function extractProjects(projectsData: any[]): ProjectData[] {
     domain: proj.domain || null,
     thumbnailUrl: proj.thumbnailUrl || proj.imageUrl || null,
     mediaUrls: parseJsonArray(proj.mediaUrls),
-    clientEndorsement: proj.clientEndorsement || null,
-    technologies: parseJsonArray(proj.technologies),
-    outcome: proj.outcome || null,
-    impact: proj.impact || null,
-    role: proj.role || null,
-    teamSize: proj.teamSize || null,
   }));
 }
 
@@ -141,7 +128,6 @@ export function extractServices(servicesData: any[]): ServiceData[] {
     priceInr: service.priceInr || null,
     priceUsd: service.priceUsd || null,
     priceType: service.priceType || null,
-    deliveryTime: service.deliveryTime || null,
     isActive: service.isActive !== false,
   }));
 }

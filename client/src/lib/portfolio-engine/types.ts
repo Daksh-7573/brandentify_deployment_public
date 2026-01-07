@@ -1,15 +1,12 @@
 export interface UserBasicInfo {
   id?: number;
   name: string;
-  email: string;
-  phoneNumber?: string | null;
   photoURL: string | null;
   title: string | null;
   company: string | null;
   location: string | null;
   industry: string | null;
   domain: string | null;
-  brandName: string | null;
   lookingFor: string | null;
 }
 
@@ -22,8 +19,6 @@ export interface UserProfessionalBrand {
 }
 
 export interface UserAudienceInfo {
-  primaryAudience: string[] | null;
-  secondaryAudience: string[] | null;
   whatIOffer: string | null;
 }
 
@@ -32,8 +27,6 @@ export interface SkillData {
   skillName: string;
   proficiencyLevel: string | null;
   proficiency?: number | null;
-  category?: string | null;
-  yearsOfExperience?: number | null;
 }
 
 export interface ExperienceData {
@@ -74,14 +67,6 @@ export interface ProjectData {
   domain?: string | null;
   thumbnailUrl?: string | null;
   mediaUrls?: string[];
-  clientEndorsement?: string | null;
-  technologies?: string[];
-  outcome?: string | null;
-  impact?: string | null;
-  role?: string | null;
-  teamSize?: number | null;
-  collaborators?: { name: string; photoURL?: string; profileLink?: string }[];
-  endorsements?: { clientName: string; photoURL?: string; profileLink?: string; message?: string }[];
 }
 
 export interface ServiceData {
@@ -93,7 +78,6 @@ export interface ServiceData {
   priceInr?: string | null;
   priceUsd?: string | null;
   priceType?: string | null;
-  deliveryTime?: string | null;
   isActive: boolean;
 }
 
