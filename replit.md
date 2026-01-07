@@ -55,7 +55,15 @@ Preferred communication style: Simple, everyday language.
 - **Payment Gateway**: Razorpay
 - **File Processing**: Advanced PDF parsing
 
-## Latest Session Updates (2026-01-01)
+## Latest Session Updates (2026-01-07)
+
+### Profile System Cleanup - COMPLETED ✅
+- **Removed aboutMe Field**: Completely removed from schema, types, profile views, and edit forms
+- **Removed Edit Profile Page**: Redundant /edit-profile page deleted since users can edit sections inline from their profile
+- **Added Redirect**: /edit-profile now redirects to /profile for backward compatibility with bookmarks
+- **Updated Navigation**: Removed Settings link from dashboard sidebar that pointed to edit-profile
+
+## Session Updates (2026-01-01)
 
 ### Brand Quest FK Linking Fix - COMPLETED ✅
 - **Root Cause**: Drizzle ORM schema was missing `generatedQuestId` and `generatedCareerQuestId` columns in `userQuests` table
