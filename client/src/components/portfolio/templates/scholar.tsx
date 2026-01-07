@@ -42,25 +42,22 @@ import { useTypewriter } from "@/hooks/use-typewriter";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface ScholarProps {
-  userInfo: {
+    userInfo: {
+    id?: number;
     name: string;
     title: string | null;
     company: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
-    email: string;
+    email: string | null;
     photoURL: string | null;
     lookingFor: string | null;
-    jobLevel: string | null;
-    aboutMe?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
-    primaryAudience?: string[] | null;
-    secondaryAudience?: string[] | null;
   };
   userSkills: {
     id: number;
@@ -541,6 +538,7 @@ export default function Scholar({
             <div className="md:self-center flex items-center justify-center md:justify-end fade-in-up delay-400">
               <div className="flex flex-row gap-2">
                 <PortfolioCtaButtons 
+                  userId={userInfo?.id}
                   userEmail={userInfo?.email}
                   userName={userInfo?.name}
                   variant="technical"
