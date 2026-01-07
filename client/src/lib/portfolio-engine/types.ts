@@ -1,11 +1,15 @@
 export interface UserBasicInfo {
   id?: number;
   name: string;
+  email: string;
+  phoneNumber?: string | null;
+  photoURL: string | null;
   title: string | null;
   company: string | null;
   location: string | null;
   industry: string | null;
   domain: string | null;
+  brandName: string | null;
   lookingFor: string | null;
 }
 
@@ -18,6 +22,8 @@ export interface UserProfessionalBrand {
 }
 
 export interface UserAudienceInfo {
+  primaryAudience: string[] | null;
+  secondaryAudience: string[] | null;
   whatIOffer: string | null;
 }
 

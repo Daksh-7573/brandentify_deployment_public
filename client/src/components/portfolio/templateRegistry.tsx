@@ -57,6 +57,9 @@ export interface PortfolioTemplateProps {
     name: string;
     title: string | null;
     company: string | null;
+    email: string | null;
+    photoURL: string | null;
+    aboutMe: string | null;
     location: string | null;
     industry: string | null;
     domain: string | null;
@@ -68,6 +71,9 @@ export interface PortfolioTemplateProps {
     missionStatement: string | null;
     coreValues: string[] | null;
     uniqueValueProposition: string | null;
+    brandName: string | null;
+    primaryAudience: string[] | null;
+    secondaryAudience: string[] | null;
   };
   userSkills?: Array<{ id: number; skillName: string; proficiencyLevel?: string | null }>;
   userExperiences?: Array<{
@@ -154,6 +160,7 @@ const AnimatedWrapper: React.FC<PortfolioTemplateProps> = (props) => {
       industry={props.userInfo.industry || ''}
       domain={props.userInfo.domain || ''}
       location={props.userInfo.location || ''}
+      email={props.userInfo.email || ''}
       services={props.userServices as any || []}
       skills={props.userSkills as any || []}
       experiences={props.userExperiences as any || []}
@@ -215,19 +222,25 @@ export function buildPortfolioTemplateProps(
     userInfo: {
       id: userData.id,
       name: userData.name || userData.username,
+      email: userData.email,
       title: userData.title || null,
       company: userData.company || null,
       jobLevel: userData.jobLevel || null,
       industry: userData.industry || null,
       domain: userData.domain || null,
       location: userData.location || null,
+      photoURL: userData.photoURL || null,
+      aboutMe: userData.aboutMe || null,
       lookingFor: userData.lookingFor || null,
       whatIOffer: userData.whatIOffer || null,
+      brandName: userData.brandName || null,
       tagline: userData.tagline || null,
       visionStatement: userData.visionStatement || null,
       missionStatement: userData.missionStatement || null,
       coreValues: userData.coreValues || null,
       uniqueValueProposition: userData.uniqueValueProposition || null,
+      primaryAudience: userData.primaryAudience || null,
+      secondaryAudience: userData.secondaryAudience || null
     },
     userSkills: collections.skills || [],
     userExperiences: collections.experiences || [],

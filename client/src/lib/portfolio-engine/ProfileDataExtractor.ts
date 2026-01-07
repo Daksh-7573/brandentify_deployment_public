@@ -32,11 +32,15 @@ export function extractBasicInfo(userData: any): UserBasicInfo {
   return {
     id: userData?.id,
     name: userData?.name || 'Professional',
+    email: userData?.email || '',
+    phoneNumber: userData?.phoneNumber || null,
+    photoURL: userData?.photoURL || null,
     title: userData?.title || null,
     company: userData?.company || null,
     location: userData?.location || null,
     industry: userData?.industry || null,
     domain: userData?.domain || null,
+    brandName: userData?.brandName || null,
     lookingFor: userData?.lookingFor || null,
   };
 }
@@ -53,6 +57,8 @@ export function extractProfessionalBrand(userData: any): UserProfessionalBrand {
 
 export function extractAudienceInfo(userData: any): UserAudienceInfo {
   return {
+    primaryAudience: parseJsonArray(userData?.primaryAudience),
+    secondaryAudience: parseJsonArray(userData?.secondaryAudience),
     whatIOffer: userData?.whatIOffer || null,
   };
 }
