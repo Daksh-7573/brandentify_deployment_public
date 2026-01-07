@@ -211,33 +211,31 @@ export default function CreativeBold({
                 </div>
               )}
 
-              {/* Location & Industry badges */}
+              {/* Grouped Location & Industry badges */}
               <div className="flex flex-wrap gap-2 pt-2">
-                {userInfo.location && (
-                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
-                    <MapPin className="w-3 h-3 mr-1" /> {userInfo.location}
+                {(userInfo.location || userInfo.industry) && (
+                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }} className="flex items-center gap-2">
+                    {userInfo.location && <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {userInfo.location}</span>}
+                    {userInfo.location && userInfo.industry && <span className="opacity-50">|</span>}
+                    {userInfo.industry && <span>{userInfo.industry}</span>}
                   </Badge>
                 )}
-                {userInfo.industry && (
+                {userInfo.domain && (
                   <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
-                    {userInfo.industry}
+                    {userInfo.domain}
                   </Badge>
                 )}
               </div>
 
-              {/* Company, Domain, Looking For Grid */}
-              {(sortedExperiences[0]?.company || userInfo.domain || userInfo.lookingFor) && (
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 pt-6 border-t" style={{ borderColor: '#E5E7EB' }}>
-                  {sortedExperiences[0]?.company && (
+              {/* Grouped Job Title & Company */}
+              {(displayTitle || sortedExperiences[0]?.company || userInfo.lookingFor) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t" style={{ borderColor: '#E5E7EB' }}>
+                  {(displayTitle || sortedExperiences[0]?.company) && (
                     <div>
-                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Company</p>
-                      <p style={{ color: INK_BLACK }}>{sortedExperiences[0].company}</p>
-                    </div>
-                  )}
-                  {userInfo.domain && (
-                    <div>
-                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Domain</p>
-                      <p style={{ color: INK_BLACK }}>{userInfo.domain}</p>
+                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Current Role</p>
+                      <p style={{ color: INK_BLACK }} className="font-medium">
+                        {displayTitle} {sortedExperiences[0]?.company && <span style={{ color: COOL_GRAY }}>at {sortedExperiences[0].company}</span>}
+                      </p>
                     </div>
                   )}
                   {userInfo.lookingFor && (
@@ -275,8 +273,8 @@ export default function CreativeBold({
 
       {/* BRAND IDENTITY - Vision/Mission/Values/About */}
       {(userInfo.visionStatement || userInfo.missionStatement || userInfo.coreValues?.length || userInfo.uniqueValueProposition) && (
-        <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
-          <div className="max-w-[1200px] mx-auto">
+        <section className="py-20 px-6 md:px-12 relative" style={{ backgroundColor: PORCELAIN }}>
+          <div className="max-w-[1200px] mx-auto relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -284,8 +282,25 @@ export default function CreativeBold({
               viewport={{ once: true }}
               className="space-y-12"
             >
-              {/* Profile Meta Info */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {/* Profile Meta Info - UVP Moved here */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {userInfo.uniqueValueProposition && (
+                  <div>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Unique Value Proposition</h3>
+                    <p className="text-2xl font-medium leading-snug" style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Background Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
+                {userInfo.aboutMe && (
+                  <div>
+                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Background</h3>
+                    <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.aboutMe}</p>
+                  </div>
+                )}
+                {/* Values Moved here */}
                 {userInfo.coreValues && userInfo.coreValues.length > 0 && (
                   <div>
                     <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Values</h3>
@@ -300,23 +315,7 @@ export default function CreativeBold({
                 )}
               </div>
 
-              {/* UVP & About Me Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
-                {userInfo.uniqueValueProposition && (
-                  <div>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Unique Value Proposition</h3>
-                    <p className="text-2xl font-medium leading-snug" style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
-                  </div>
-                )}
-                {userInfo.aboutMe && (
-                  <div>
-                    <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Background</h3>
-                    <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.aboutMe}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* MISSION & VISION - Moved here for better flow */}
+              {/* MISSION & VISION */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
                 {userInfo.missionStatement && (
                   <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
@@ -568,11 +567,11 @@ export default function CreativeBold({
           const unwantedSkills = [
             'Automation & Workflow Optimization',
             'Machine Learning Solutions',
-            'ChatGPT said: AI Strategy & Consulting',
+            'AI Strategy & Consulting',
             'ChatGPT said'
           ];
           return !unwantedSkills.some(unwanted => 
-            skill.name.includes(unwanted) || skill.name.includes('ChatGPT')
+            skill.name.toLowerCase().includes(unwanted.toLowerCase())
           );
         });
         
