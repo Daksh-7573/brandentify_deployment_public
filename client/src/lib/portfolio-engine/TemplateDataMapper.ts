@@ -75,7 +75,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
   userInfo: {
     id?: number;
     name: string;
-    email: string;
     title: string;
     company: string | null;
     location: string | null;
@@ -83,16 +82,11 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     domain: string | null;
     lookingFor: string | null;
     whatIOffer: string | null;
-    photoURL: string | null;
-    phoneNumber?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
-    primaryAudience?: string[] | null;
-    secondaryAudience?: string[] | null;
-    brandName?: string | null;
   };
   userSkills: any[];
   userExperiences: any[];
@@ -105,7 +99,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     userInfo: {
       id: data.basicInfo.id,
       name: data.basicInfo.name,
-      email: data.basicInfo.email,
       title: data.basicInfo.title || '',
       company: data.basicInfo.company,
       location: data.basicInfo.location,
@@ -113,16 +106,11 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       domain: data.basicInfo.domain,
       lookingFor: data.basicInfo.lookingFor,
       whatIOffer: data.audienceInfo.whatIOffer,
-      photoURL: data.basicInfo.photoURL,
-      phoneNumber: data.basicInfo.phoneNumber,
       tagline: data.professionalBrand.tagline,
       visionStatement: data.professionalBrand.visionStatement,
       missionStatement: data.professionalBrand.missionStatement,
       coreValues: data.professionalBrand.coreValues,
       uniqueValueProposition: data.professionalBrand.uniqueValueProposition,
-      primaryAudience: data.audienceInfo.primaryAudience,
-      secondaryAudience: data.audienceInfo.secondaryAudience,
-      brandName: data.basicInfo.brandName,
     },
     userSkills: data.skills.map(skill => ({
       id: skill.id,
@@ -209,10 +197,7 @@ export function shouldShowSection(
         data.professionalBrand.uniqueValueProposition
       );
     case 'audience':
-      return !!(
-        (data.audienceInfo.primaryAudience && data.audienceInfo.primaryAudience.length > 0) ||
-        (data.audienceInfo.secondaryAudience && data.audienceInfo.secondaryAudience.length > 0)
-      );
+      return !!data.audienceInfo.whatIOffer;
     case 'services':
       return data.services.length > 0;
     case 'skills':
