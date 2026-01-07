@@ -74,6 +74,10 @@ interface CreativeBoldProps {
     id: number;
     title: string;
     description?: string | null;
+    priceInr?: string | null;
+    priceUsd?: string | null;
+    isHourly?: boolean;
+    priceType?: string | null;
   }>;
   currentUserId?: number;
   isPreview?: boolean;
@@ -124,16 +128,13 @@ export default function CreativeBold({
         >
           <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-bold" style={{ color: INK_BLACK }}>{userInfo.name}</h2>
-            <div className="flex items-center gap-2">
-              {userInfo.email && (
-                <Button 
-                  size="sm" 
-                  style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                  onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                >
-                  Book Me
-                </Button>
-              )}
+            <div className="flex items-center gap-4">
+              <PortfolioCtaButtons 
+                variant="minimal"
+                userId={userInfo.id}
+                userName={userInfo.name}
+                userEmail={userInfo.email || undefined}
+              />
             </div>
           </div>
         </motion.header>
@@ -214,11 +215,14 @@ export default function CreativeBold({
 
               {/* Grouped Location & Industry badges */}
               <div className="flex flex-wrap gap-2 pt-2">
-                {(userInfo.location || userInfo.industry) && (
+                {userInfo.location && (
                   <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }} className="flex items-center gap-2">
-                    {userInfo.location && <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {userInfo.location}</span>}
-                    {userInfo.location && userInfo.industry && <span className="opacity-50">|</span>}
-                    {userInfo.industry && <span>{userInfo.industry}</span>}
+                    <MapPin className="w-3 h-3 mr-1" /> {userInfo.location}
+                  </Badge>
+                )}
+                {userInfo.industry && (
+                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
+                    {userInfo.industry}
                   </Badge>
                 )}
                 {userInfo.domain && (
@@ -363,6 +367,14 @@ export default function CreativeBold({
                   <h3 className="text-xl font-bold mb-2" style={{ color: INK_BLACK }}>
                     {service.title}
                   </h3>
+                  {((service.priceUsd && parseFloat(String(service.priceUsd)) > 0) || (service.priceInr && parseFloat(String(service.priceInr)) > 0)) && (
+                    <div className="mb-2">
+                      <Badge className="bg-amber-100 text-amber-900 border border-amber-200">
+                        {service.priceUsd && parseFloat(String(service.priceUsd)) > 0 ? `$${service.priceUsd}` : `₹${service.priceInr}`}
+                        {service.isHourly && ' / hr'}
+                      </Badge>
+                    </div>
+                  )}
                   {service.description && (
                     <p className="text-sm" style={{ color: COOL_GRAY }}>
                       {service.description}
