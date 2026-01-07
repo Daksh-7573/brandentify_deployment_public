@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Mail, MapPin, ExternalLink, Download } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface FashionIsArtProps {
   userInfo: {
@@ -182,22 +183,13 @@ export default function FashionIsArt({
                 )}
               </div>
 
-              <div className="flex gap-3 pt-6">
-                <Button 
-                  size="lg"
-                  className="text-white font-semibold"
-                  style={{ backgroundColor: '#1E88E5' }}
-                  onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
-                >
-                  Book a Shoot
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-black/30 font-semibold"
-                >
-                  Download Media Kit
-                </Button>
+              <div className="pt-6">
+                <PortfolioCtaButtons 
+                  variant="creative" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </div>
             </motion.div>
           </motion.div>

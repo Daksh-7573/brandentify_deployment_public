@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 // Photography color palette
 const colors = {
@@ -501,43 +502,12 @@ export default function PhotographerPortfolio({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.8 }}
               >
-                <Button
-                  onClick={() => {
-                    triggerShutter();
-                    if (userInfo.email) window.location.href = `mailto:${userInfo.email}`;
-                  }}
-                  className="relative overflow-hidden group px-8 py-6 text-lg font-semibold"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.warmAmber}, ${colors.cameraRed})`,
-                    border: 'none',
-                  }}
-                  data-testid="button-lets-connect"
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-white"
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileHover={{ scale: 2, opacity: 0.2 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  <Mail className="inline mr-2" size={20} />
-                  Let's Connect
-                </Button>
-
-                <Button
-                  onClick={() => {
-                    triggerShutter();
-                    if (userInfo.email) window.location.href = `mailto:${userInfo.email}?subject=Mentorship Inquiry`;
-                  }}
-                  className="px-8 py-6 text-lg font-semibold border-2 bg-transparent hover:bg-white/10"
-                  style={{
-                    borderColor: colors.warmAmber,
-                    color: colors.warmAmber,
-                  }}
-                  data-testid="button-mentor"
-                >
-                  <Focus className="inline mr-2" size={20} />
-                  Mentor Me
-                </Button>
+                <PortfolioCtaButtons 
+                  variant="technical" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </motion.div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import {
   Briefcase, Heart, Users, Sparkles, Phone, Instagram, Linkedin, 
   X, ChevronDown
 } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import type { Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
 import {
@@ -605,24 +606,12 @@ export default function FashionRunway({
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            {userInfo.email && (
-              <Button
-                onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                className="bg-black text-white hover:bg-gray-800 px-8 py-6 text-lg font-light"
-                data-testid="button-lets-connect"
-              >
-                Let's Connect
-              </Button>
-            )}
-            
-            <Button
-              variant="outline"
-              onClick={() => window.location.href = `mailto:${userInfo.email}?subject=Mentorship Inquiry`}
-              className="border-black text-black hover:bg-black hover:text-white px-8 py-6 text-lg font-light"
-              data-testid="button-mentor"
-            >
-              Mentor
-            </Button>
+            <PortfolioCtaButtons 
+              variant="creative" 
+              userId={userInfo.id} 
+              userName={userInfo.name} 
+              userEmail={userInfo.email} 
+            />
           </div>
 
           {/* Email */}

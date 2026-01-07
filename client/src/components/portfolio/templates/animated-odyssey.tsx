@@ -11,8 +11,7 @@ import {
   MessageSquareText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MentorshipButton } from "@/components/shared/mentorship-button";
-import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 // Add custom styles for this template
 import "@/styles/animated-odyssey.css";
@@ -152,9 +151,6 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
   
   // Set up project modal state
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
-  
-  // Set up mentorship dialog state
-  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Get content for About Me section
   const aboutContent = whatIOffer || aboutMe || 
@@ -1184,34 +1180,16 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
       >
         <div className="container">
           <div className="cta-content">
-            <a href={`mailto:${email}`} className="cta-button cta-primary">
-              <MessageSquareText className="h-5 w-5 mr-2" />
-              Let's Talk
-            </a>
-            {/* For download resume feature: */}
-            <button className="cta-button cta-secondary">
-              <Download className="h-5 w-5 mr-2" />
-              Get My Resume
-            </button>
-            
-            {/* Mentorship Button - Always shown for demo */}
-            <button
-              className="cta-button cta-primary"
-              onClick={() => setIsMentorshipDialogOpen(true)}
-            >
-              Mentor
-            </button>
+            <PortfolioCtaButtons 
+              variant="creative" 
+              userId={id} 
+              userName={name} 
+              userEmail={email} 
+            />
           </div>
         </div>
       </motion.div>
       
-      {/* Mentorship Dialog - Always shown for demo */}
-      <MentorshipDialog
-        isOpen={isMentorshipDialogOpen}
-        onOpenChange={setIsMentorshipDialogOpen}
-        userId={currentUserId}
-        mentorId={id}
-      />
     </div>
   );
 };

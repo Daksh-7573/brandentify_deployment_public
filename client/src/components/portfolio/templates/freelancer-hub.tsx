@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MentorshipButton } from "@/components/shared/mentorship-button";
-import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Mail, Briefcase, GraduationCap, MapPin, 
   ChevronRight, Globe, ExternalLink, Sparkles,
@@ -136,8 +135,6 @@ export default function FreelancerHub({
   publicUrl,
   currentUserId
 }: FreelancerHubProps) {
-  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
-
   // Sort data
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
   const sortedExperiences = [...userExperiences].sort((a, b) => 
@@ -236,24 +233,12 @@ export default function FreelancerHub({
                 )}
 
                 <div className="flex flex-wrap gap-4">
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                    data-testid="button-connect-hero"
-                  >
-                    <Mail className="h-5 w-5 mr-2" />
-                    Connect
-                  </Button>
-
-                  {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
-                    <MentorshipButton
-                      userId={currentUserId}
-                      mentorId={userInfo.id}
-                      className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-                      buttonText="Request Mentorship"
-                      data-testid="button-mentor-hero"
-                    />
-                  )}
+                  <PortfolioCtaButtons 
+                    variant="creative" 
+                    userId={userInfo.id} 
+                    userName={userInfo.name} 
+                    userEmail={userInfo.email} 
+                  />
                 </div>
               </motion.div>
 
@@ -757,26 +742,12 @@ export default function FreelancerHub({
               </p>
 
               <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="bg-white text-purple-600 hover:bg-purple-50 border-white"
-                  data-testid="button-connect-footer"
-                >
-                  <Mail className="h-5 w-5 mr-2" />
-                  Connect With Me
-                </Button>
-
-                {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
-                  <MentorshipButton
-                    userId={currentUserId}
-                    mentorId={userInfo.id}
-                    className="bg-orange-500 hover:bg-orange-600 text-white border-white"
-                    variant="outline"
-                    buttonText="Request Mentorship"
-                    data-testid="button-mentor-footer"
-                  />
-                )}
+                <PortfolioCtaButtons 
+                  variant="creative" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
 
                 {publicUrl && (
                   <Button 
@@ -804,15 +775,6 @@ export default function FreelancerHub({
         </section>
       </div>
 
-      {/* Mentorship Dialog */}
-      {userInfo.id && currentUserId && currentUserId !== userInfo.id && (
-        <MentorshipDialog
-          isOpen={isMentorshipDialogOpen}
-          onOpenChange={setIsMentorshipDialogOpen}
-          userId={currentUserId}
-          mentorId={userInfo.id}
-        />
-      )}
     </div>
   );
 }

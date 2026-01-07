@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 const colors = {
   noirBlack: "#050509",
@@ -537,47 +538,12 @@ export default function FashionQuantum({
                 </div>
 
                 <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                  <button
-                    onClick={scrollToProjects}
-                    className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
-                      color: colors.noirBlack,
-                      boxShadow: '0 12px 32px rgba(249,197,213,0.3)',
-                    }}
-                    data-testid="cta-view-portfolio"
-                  >
-                    <Eye className="w-4 h-4 inline mr-2" />
-                    View Portfolio
-                  </button>
-                  <button
-                    onClick={() => setIsMentorshipDialogOpen(true)}
-                    className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
-                    style={{
-                      background: 'transparent',
-                      border: `1px solid rgba(245,243,238,0.4)`,
-                      color: 'rgba(255,255,255,0.95)',
-                    }}
-                    data-testid="cta-book-me"
-                  >
-                    <Calendar className="w-4 h-4 inline mr-2" />
-                    Book Me
-                  </button>
-                  {userInfo.email && (
-                    <a
-                      href={`mailto:${userInfo.email}`}
-                      className="px-7 py-3 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
-                      style={{
-                        background: 'transparent',
-                        border: `1px solid rgba(245,243,238,0.4)`,
-                        color: 'rgba(255,255,255,0.95)',
-                      }}
-                      data-testid="cta-contact"
-                    >
-                      <Mail className="w-4 h-4 inline mr-2" />
-                      Contact
-                    </a>
-                  )}
+                  <PortfolioCtaButtons 
+                    variant="creative" 
+                    userId={userInfo.id} 
+                    userName={userInfo.name} 
+                    userEmail={userInfo.email} 
+                  />
                 </div>
               </div>
             </div>

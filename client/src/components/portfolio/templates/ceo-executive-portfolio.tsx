@@ -4,6 +4,7 @@ import {
   Zap, ChevronDown, ChevronRight, Download, Heart, Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { Badge } from "@/components/ui/badge";
 import { useState, useRef, useEffect } from "react";
 
@@ -277,6 +278,16 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                     )}
                   </div>
                 )}
+                
+                {/* CTA Buttons */}
+                <div className="pt-6">
+                  <PortfolioCtaButtons 
+                    variant="corporate" 
+                    userId={userInfo.id} 
+                    userName={userInfo.name} 
+                    userEmail={userInfo.email} 
+                  />
+                </div>
               </motion.div>
             </div>
           </div>

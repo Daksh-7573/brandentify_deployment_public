@@ -7,6 +7,7 @@ import {
   Sparkles, Star, Heart,
   Briefcase, GraduationCap, Award, Code
 } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import type { Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
 
@@ -660,24 +661,12 @@ export default function PastelDreamscape({
                       <span>Looking for: {userInfo.lookingFor}</span>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                      {userInfo.email && (
-                        <>
-                          <Button
-                            onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                            className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white rounded-full px-6"
-                          >
-                            <Mail className="w-4 h-4 mr-2" />
-                            Let's Talk
-                          </Button>
-                          <Button
-                            onClick={() => window.location.href = `mailto:${userInfo.email}?subject=Mentorship Inquiry`}
-                            className="backdrop-blur-md bg-white/60 border-2 border-white/80 text-purple-600 hover:bg-white/80 shadow-lg rounded-full px-6"
-                          >
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            Mentor
-                          </Button>
-                        </>
-                      )}
+                      <PortfolioCtaButtons 
+                        variant="creative" 
+                        userId={userInfo.id} 
+                        userName={userInfo.name} 
+                        userEmail={userInfo.email} 
+                      />
                     </div>
                   </motion.div>
                 )}

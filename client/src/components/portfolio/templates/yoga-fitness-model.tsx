@@ -10,6 +10,7 @@ import {
   MapPin, Calendar, Building, GraduationCap, Briefcase, Award, 
   ExternalLink, Heart, Star, Sparkles, Flower2, Circle, Mail, Users
 } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface YogaFitnessModelProps {
   userInfo: {
@@ -304,14 +305,12 @@ export default function YogaFitnessModel({
             </div>
             
             <div className="flex gap-4">
-              <Button 
-                size="lg"
-                className="rounded-full font-medium px-8 py-6 text-white border-none"
-                style={{ backgroundColor: '#2D5F4F' }}
-                data-testid="button-main-cta"
-              >
-                Get Started
-              </Button>
+              <PortfolioCtaButtons 
+                variant="minimal" 
+                userId={userInfo.id} 
+                userName={userInfo.name} 
+                userEmail={userInfo.email} 
+              />
             </div>
           </motion.div>
 

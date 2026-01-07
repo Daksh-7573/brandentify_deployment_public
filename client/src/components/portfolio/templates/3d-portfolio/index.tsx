@@ -6,6 +6,7 @@ import ProjectsGrid from "./projects-grid";
 import TimelineSection from "./timeline-section";
 import ContactSection from "./contact-section";
 import { Sparkles } from "lucide-react";
+import PortfolioCtaButtons from "../../portfolio-cta-buttons";
 
 interface ThreeDPortfolioProps extends PortfolioTemplateProps {
   isPreview?: boolean;
@@ -192,6 +193,14 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
               }
             }}
           />
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+            <PortfolioCtaButtons 
+              variant="technical" 
+              userId={userInfo.id} 
+              userName={userInfo.name} 
+              userEmail={userInfo.email} 
+            />
+          </div>
         </div>
 
         {(heroCopy.goodAt || heroCopy.whatIOffer) && (

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import type { Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface NatureCreativeProps {
   userInfo: {
@@ -470,23 +471,12 @@ export default function NatureCreative({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
               >
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-500 hover:to-teal-500 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
-                  onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
-                  data-testid="button-lets-connect"
-                >
-                  <Mail className="mr-2 group-hover:rotate-12 transition-transform" size={20} />
-                  Let's Connect
-                </Button>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-rose-300 to-pink-300 hover:from-rose-400 hover:to-pink-400 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
-                  data-testid="button-mentor-me"
-                >
-                  <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
-                  Mentor Me
-                </Button>
+                <PortfolioCtaButtons 
+                  variant="creative" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </motion.div>
             </motion.div>
           </div>
@@ -1045,23 +1035,12 @@ export default function NatureCreative({
               </p>
               
               <div className="flex flex-wrap gap-4 justify-center mb-8">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-                  onClick={() => userInfo.email && (window.location.href = `mailto:${userInfo.email}`)}
-                  data-testid="button-lets-connect-footer"
-                >
-                  <Mail className="mr-2 group-hover:rotate-12 transition-transform" size={20} />
-                  Let's Connect
-                </Button>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group"
-                  data-testid="button-mentor-me-footer"
-                >
-                  <Heart className="mr-2 group-hover:scale-125 transition-transform" size={20} />
-                  Mentor Me
-                </Button>
+                <PortfolioCtaButtons 
+                  variant="creative" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </div>
 
               {userInfo.email && (

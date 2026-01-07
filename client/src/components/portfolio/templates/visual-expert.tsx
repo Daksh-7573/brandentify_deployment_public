@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Award
 } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import {
   Dialog,
   DialogContent,
@@ -214,27 +215,12 @@ export default function VisualExpert({
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-3 pt-4">
-                <Button
-                  size="lg"
-                  className="text-white px-8 py-4 text-sm font-medium uppercase tracking-wide hover:opacity-90 transition-opacity"
-                  style={{ backgroundColor: accentColor }}
-                  data-testid="button-connect"
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Connect
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 px-8 py-4 text-sm font-medium uppercase tracking-wide hover:text-white transition-colors"
-                  style={{ borderColor: accentColor, color: accentColor }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accentColor; e.currentTarget.style.color = 'white'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = accentColor; }}
-                  data-testid="button-mentor"
-                >
-                  <Star className="w-4 h-4 mr-2" />
-                  Mentor
-                </Button>
+                <PortfolioCtaButtons 
+                  variant="minimal" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </div>
             </div>
           </div>

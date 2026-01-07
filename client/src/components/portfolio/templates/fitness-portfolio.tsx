@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState, useRef, useEffect } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 const colors = {
   energeticLime: '#A3E635',
@@ -707,28 +708,12 @@ export default function FitnessPortfolio({
               )}
               
               <div className="flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  className="font-semibold"
-                  style={{ 
-                    background: `linear-gradient(90deg, ${colors.energeticLime}, ${colors.vibrantOrange})`,
-                    color: 'white'
-                  }}
-                  onClick={() => setContactOpen(true)}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Book a Session
-                </Button>
-                
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="font-semibold"
-                  style={{ borderColor: colors.deepEmerald, color: colors.deepEmerald }}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Grab Resume
-                </Button>
+                <PortfolioCtaButtons 
+                  variant="minimal" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </div>
             </motion.div>
             

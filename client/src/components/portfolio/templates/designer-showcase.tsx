@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Download, Calendar, Mail, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { User, Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 // Animation configuration with reduced motion support
 const useAnimationConfig = () => {
@@ -203,22 +204,12 @@ export default function DesignerShowcase({
               )}
               
               <div className="flex gap-4 justify-center md:justify-start flex-wrap mt-4">
-                <Button 
-                  onClick={() => setShowMentorModal(true)} 
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 transition-all duration-300"
-                >
-                  <Star className="w-5 h-5 mr-2" />
-                  Book a Mentorship
-                </Button>
-                {userInfo.email && (
-                  <Button 
-                    onClick={() => setShowContactModal(true)} 
-                    className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold px-6 py-3 shadow-lg shadow-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/60 transition-all duration-300"
-                  >
-                    <Mail className="w-5 h-5 mr-2" />
-                    Let's Talk
-                  </Button>
-                )}
+                <PortfolioCtaButtons 
+                  variant="creative" 
+                  userId={userInfo.id} 
+                  userName={userInfo.name} 
+                  userEmail={userInfo.email} 
+                />
               </div>
             </div>
           </motion.div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState, useRef } from "react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 const colors = {
   cream: '#F5F0E8',
@@ -766,21 +767,12 @@ export default function PhotographyCinematic({
             </div>
             
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-              <Button 
-                size="lg"
-                className="font-semibold shadow-lg hover:shadow-xl transition-all"
-                style={{ background: `linear-gradient(135deg, ${colors.goldenHour}, ${colors.goldenLight})`, color: colors.softBlack }}
-              >
-                <MessageCircle className="w-4 h-4 mr-2" /> Let's Talk
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="font-semibold"
-                style={{ borderColor: colors.charcoal, color: colors.charcoal }}
-              >
-                <Download className="w-4 h-4 mr-2" /> Grab Resume
-              </Button>
+              <PortfolioCtaButtons 
+                variant="technical" 
+                userId={userInfo.id} 
+                userName={userInfo.name} 
+                userEmail={userInfo.email} 
+              />
             </div>
           </motion.div>
         </div>

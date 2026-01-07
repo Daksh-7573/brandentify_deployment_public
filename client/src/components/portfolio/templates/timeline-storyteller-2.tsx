@@ -11,6 +11,7 @@ import {
   ExternalLink, Clock, Sparkles,
   Target, Heart, Users, TrendingUp, Mail, Globe, Building2
 } from "lucide-react";
+import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface TimelineStoryteller2Props {
   userInfo: {
@@ -302,23 +303,12 @@ export default function TimelineStoryteller2({
             transition={{ delay: 0.7 }}
             className="flex flex-wrap justify-center gap-4 mt-8 pb-12"
           >
-            <Button 
-              size="lg"
-              className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-8 py-5 rounded-lg shadow-md"
-              data-testid="button-connect"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Connect
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-2 border-amber-600 text-amber-700 hover:bg-amber-50 font-medium px-8 py-5 rounded-lg"
-              data-testid="button-mentor"
-            >
-              <Users className="w-5 h-5 mr-2" />
-              Mentor Me
-            </Button>
+            <PortfolioCtaButtons 
+              variant="minimal" 
+              userId={userInfo.id} 
+              userName={userInfo.name} 
+              userEmail={userInfo.email} 
+            />
           </motion.div>
         </motion.div>
       </motion.section>
