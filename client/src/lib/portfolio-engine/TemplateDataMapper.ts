@@ -202,7 +202,7 @@ export function shouldShowSection(
     case 'education':
       return data.educations.length > 0;
     case 'contact':
-      return true;
+      return false; // Requested not to show contact details (Email/Phone)
     default:
       return true;
   }

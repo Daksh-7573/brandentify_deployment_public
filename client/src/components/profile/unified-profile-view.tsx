@@ -122,7 +122,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                   <div className="text-center">
                     <h3 className="text-lg font-medium">{profileData.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {profileData.title} {profileData.company && `at ${profileData.company}`}
+                      {profileData.title}
                     </p>
                     {profileData.location && (
                       <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
@@ -153,35 +153,14 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                   </div>
                 )}
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Email</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.email}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Phone</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.phoneNumber || 'Not specified'}</p>
-                  </div>
-                </div>
-
                 {/* Professional Brand Section */}
-                {(profileData.tagline || profileData.uniqueValueProposition) && (
-                  <div className="space-y-3 pt-4 border-t">
-                    <h4 className="font-medium flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-primary" />
-                      Professional Brand
-                    </h4>
-                    {profileData.tagline && (
-                      <p className="text-sm italic text-muted-foreground">"{profileData.tagline}"</p>
-                    )}
-                    {profileData.uniqueValueProposition && (
-                      <div>
-                        <span className="text-xs font-medium text-primary uppercase">Unique Value: </span>
-                        <span className="text-sm text-muted-foreground">{profileData.uniqueValueProposition}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="space-y-3 pt-4 border-t">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    Professional Brand
+                  </h4>
+                  <p className="text-sm text-muted-foreground">Brand information available in portfolio view.</p>
+                </div>
                 
                 {profileData.whatIOffer && (
                   <div>
