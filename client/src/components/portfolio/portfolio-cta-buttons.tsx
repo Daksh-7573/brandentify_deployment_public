@@ -324,7 +324,7 @@ export default function PortfolioCtaButtons({
           data-testid="button-connect"
         >
           <MessageCircle size={16} />
-          {variant === 'corporate' ? "Let's Talk" : "Connect"}
+          Let's Talk
         </Button>
         
         {userId && (

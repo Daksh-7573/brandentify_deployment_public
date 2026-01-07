@@ -5,7 +5,6 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Project, Skill, WorkExperience, Education, Service } from "@shared/schema";
 import { useEffect, useState } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
-import { MentorshipButton } from "../../shared/mentorship-button";
 import { MentorshipDialog } from "../../shared/mentorship-dialog";
 import { 
   Mail, Linkedin, ExternalLink, Calendar, GraduationCap, 
@@ -213,23 +212,12 @@ export default function MinimalistPro({
                   </Badge>
                 )}
                 
-                {/* Mentorship Button */}
-                <div className="mt-2">
-                  <Button
-                    onClick={() => setIsMentorshipDialogOpen(true)}
-                    variant="secondary"
-                    className="text-sm font-medium"
-                  >
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    Mentor
-                  </Button>
-                  
-                  {/* Mentorship Dialog */}
-                  <MentorshipDialog
-                    isOpen={isMentorshipDialogOpen}
-                    onOpenChange={setIsMentorshipDialogOpen}
-                    userId={currentUserId}
-                    mentorId={userInfo.id}
+                <div className="mt-2 w-full">
+                  <PortfolioCtaButtons 
+                    variant="minimal"
+                    userId={userInfo.id}
+                    userName={userInfo.name}
+                    userEmail={userInfo.email}
                   />
                 </div>
               </div>

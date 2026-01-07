@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Mail, MapPin, ExternalLink, Briefcase, Award, GraduationCap } from "lucide-react";
+import PortfolioCtaButtons from '../portfolio-cta-buttons';
 
 interface CreativeBoldProps {
   userInfo: {
@@ -248,23 +249,13 @@ export default function CreativeBold({
               )}
 
               {/* CTAs */}
-              <div className="flex gap-3 pt-4">
-                {userInfo.email && (
-                  <Button 
-                    size="lg"
-                    style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                    onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                  >
-                    Book a Project
-                  </Button>
-                )}
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  style={{ borderColor: INK_BLACK, color: INK_BLACK }}
-                >
-                  Explore Work
-                </Button>
+              <div className="pt-4">
+                <PortfolioCtaButtons 
+                  variant="creative"
+                  userId={userInfo.id}
+                  userName={userInfo.name}
+                  userEmail={userInfo.email}
+                />
               </div>
             </motion.div>
           </motion.div>
