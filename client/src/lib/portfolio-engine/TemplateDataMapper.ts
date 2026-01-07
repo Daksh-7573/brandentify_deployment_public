@@ -78,7 +78,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     email: string;
     title: string;
     company: string | null;
-    aboutMe: string | null;
     location: string | null;
     industry: string | null;
     domain: string | null;
@@ -94,7 +93,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     primaryAudience?: string[] | null;
     secondaryAudience?: string[] | null;
     brandName?: string | null;
-    jobLevel?: string | null;
   };
   userSkills: any[];
   userExperiences: any[];
@@ -110,11 +108,10 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       email: data.basicInfo.email,
       title: data.basicInfo.title || '',
       company: data.basicInfo.company,
-      aboutMe: data.aboutMe.aboutMe,
       location: data.basicInfo.location,
       industry: data.basicInfo.industry,
       domain: data.basicInfo.domain,
-      lookingFor: data.audienceInfo.lookingFor,
+      lookingFor: data.basicInfo.lookingFor,
       whatIOffer: data.audienceInfo.whatIOffer,
       photoURL: data.basicInfo.photoURL,
       phoneNumber: data.basicInfo.phoneNumber,
@@ -126,7 +123,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       primaryAudience: data.audienceInfo.primaryAudience,
       secondaryAudience: data.audienceInfo.secondaryAudience,
       brandName: data.basicInfo.brandName,
-      jobLevel: data.aboutMe.jobLevel,
     },
     userSkills: data.skills.map(skill => ({
       id: skill.id,
@@ -204,7 +200,7 @@ export function shouldShowSection(
     case 'hero':
       return true;
     case 'about':
-      return !!data.aboutMe.aboutMe;
+      return false; // Removed aboutMe section
     case 'professional-brand':
       return !!(
         data.professionalBrand.visionStatement ||

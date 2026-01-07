@@ -3,7 +3,6 @@ import type {
   UserBasicInfo,
   UserProfessionalBrand,
   UserAudienceInfo,
-  UserAboutMe,
   SkillData,
   ExperienceData,
   EducationData,
@@ -42,6 +41,7 @@ export function extractBasicInfo(userData: any): UserBasicInfo {
     industry: userData?.industry || null,
     domain: userData?.domain || null,
     brandName: userData?.brandName || null,
+    lookingFor: userData?.lookingFor || null,
   };
 }
 
@@ -59,15 +59,7 @@ export function extractAudienceInfo(userData: any): UserAudienceInfo {
   return {
     primaryAudience: parseJsonArray(userData?.primaryAudience),
     secondaryAudience: parseJsonArray(userData?.secondaryAudience),
-    lookingFor: userData?.lookingFor || null,
     whatIOffer: userData?.whatIOffer || null,
-  };
-}
-
-export function extractAboutMe(userData: any): UserAboutMe {
-  return {
-    aboutMe: userData?.aboutMe || null,
-    jobLevel: userData?.jobLevel || null,
   };
 }
 
@@ -110,6 +102,7 @@ export function extractEducations(educationsData: any[]): EducationData[] {
     endDate: edu.endDate || null,
     location: edu.location || null,
     industry: edu.industry || null,
+    domain: edu.domain || null,
     skillsAcquired: parseJsonArray(edu.skillsAcquired),
   }));
 }
@@ -125,6 +118,7 @@ export function extractProjects(projectsData: any[]): ProjectData[] {
     endDate: proj.endDate || null,
     category: proj.category || null,
     industry: proj.industry || null,
+    domain: proj.domain || null,
     thumbnailUrl: proj.thumbnailUrl || proj.imageUrl || null,
     mediaUrls: parseJsonArray(proj.mediaUrls),
     clientEndorsement: proj.clientEndorsement || null,
@@ -144,8 +138,11 @@ export function extractServices(servicesData: any[]): ServiceData[] {
     description: service.description || null,
     icon: service.icon || null,
     price: service.price || null,
+    priceInr: service.priceInr || null,
+    priceUsd: service.priceUsd || null,
     priceType: service.priceType || null,
     deliveryTime: service.deliveryTime || null,
+    isActive: service.isActive !== false,
   }));
 }
 
@@ -164,7 +161,6 @@ export function extractAllProfileData(
     basicInfo: extractBasicInfo(userData),
     professionalBrand: extractProfessionalBrand(userData),
     audienceInfo: extractAudienceInfo(userData),
-    aboutMe: extractAboutMe(userData),
     skills: extractSkills(collections.skills || []),
     experiences: extractExperiences(collections.experiences || []),
     educations: extractEducations(collections.educations || []),
@@ -215,10 +211,6 @@ export class ProfileDataExtractor {
 
   getAudienceInfo(): UserAudienceInfo {
     return extractAudienceInfo(this.userData);
-  }
-
-  getAboutMe(): UserAboutMe {
-    return extractAboutMe(this.userData);
   }
 
   getSkills(): SkillData[] {

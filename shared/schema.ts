@@ -27,7 +27,6 @@ export const users = pgTable("users", {
   randomProfileLink: text("random_profile_link").unique(), // Unique random link for profile access
   title: text("title"), // Job title
   company: text("company"), // Company name
-  aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
   timezone: text("timezone").default("UTC"), // User's timezone (e.g., "America/New_York", "Asia/Kolkata", "Europe/London")
   nextQuestAssignmentTime: timestamp("next_quest_assignment_time"), // Next time to assign daily quests (calculated from user's timezone)
@@ -288,6 +287,10 @@ export const insertUserSchema = createInsertSchema(users)
     uniqueValueProposition: z.string().nullable().optional().refine(
       (val) => !val || val.length <= 150,
       { message: "Unique Value Proposition must be 150 characters or less" }
+    ),
+    whatIOffer: z.string().nullable().optional().refine(
+      (val) => !val || val.length <= 250,
+      { message: "What I Offer must be 250 characters or less" }
     ),
     coreValues: z.array(z.string()).max(5, { message: "Maximum 5 core values allowed" }).nullable().optional(),
     primaryAudience: z.array(z.string()).max(5, { message: "Maximum 5 primary audience items allowed" }).nullable().optional(),

@@ -10,6 +10,7 @@ export interface UserBasicInfo {
   industry: string | null;
   domain: string | null;
   brandName: string | null;
+  lookingFor: string | null;
 }
 
 export interface UserProfessionalBrand {
@@ -23,13 +24,7 @@ export interface UserProfessionalBrand {
 export interface UserAudienceInfo {
   primaryAudience: string[] | null;
   secondaryAudience: string[] | null;
-  lookingFor: string | null;
   whatIOffer: string | null;
-}
-
-export interface UserAboutMe {
-  aboutMe: string | null;
-  jobLevel?: string | null;
 }
 
 export interface SkillData {
@@ -63,6 +58,7 @@ export interface EducationData {
   endDate?: string | null;
   location?: string | null;
   industry?: string | null;
+  domain?: string | null;
   skillsAcquired?: string[];
 }
 
@@ -75,6 +71,7 @@ export interface ProjectData {
   endDate?: string | null;
   category?: string | null;
   industry?: string | null;
+  domain?: string | null;
   thumbnailUrl?: string | null;
   mediaUrls?: string[];
   clientEndorsement?: string | null;
@@ -83,6 +80,8 @@ export interface ProjectData {
   impact?: string | null;
   role?: string | null;
   teamSize?: number | null;
+  collaborators?: { name: string; photoURL?: string; profileLink?: string }[];
+  endorsements?: { clientName: string; photoURL?: string; profileLink?: string; message?: string }[];
 }
 
 export interface ServiceData {
@@ -91,15 +90,17 @@ export interface ServiceData {
   description: string | null;
   icon?: string | null;
   price?: string | null;
+  priceInr?: string | null;
+  priceUsd?: string | null;
   priceType?: string | null;
   deliveryTime?: string | null;
+  isActive: boolean;
 }
 
 export interface ExtractedProfileData {
   basicInfo: UserBasicInfo;
   professionalBrand: UserProfessionalBrand;
   audienceInfo: UserAudienceInfo;
-  aboutMe: UserAboutMe;
   skills: SkillData[];
   experiences: ExperienceData[];
   educations: EducationData[];
