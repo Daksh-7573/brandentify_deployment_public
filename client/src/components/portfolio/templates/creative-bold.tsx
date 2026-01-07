@@ -186,12 +186,7 @@ export default function CreativeBold({
                 <div style={{ width: '60px', height: '4px', backgroundColor: CORAL }} />
               </div>
 
-              {/* Title + tagline */}
-              {displayTitle && (
-                <p className="text-2xl font-light" style={{ color: COOL_GRAY }}>
-                  {displayTitle}
-                </p>
-              )}
+              {/* Tagline */}
               {userInfo.tagline && (
                 <p className="text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
                   {userInfo.tagline}
@@ -203,14 +198,6 @@ export default function CreativeBold({
                 <p className="text-lg leading-relaxed max-w-2xl" style={{ color: COOL_GRAY }}>
                   {userInfo.aboutMe}
                 </p>
-              )}
-
-              {/* What I Offer */}
-              {userInfo.whatIOffer && (
-                <div className="pt-4">
-                  <p className="text-xs uppercase font-bold mb-2" style={{ color: CORAL }}>What I Offer</p>
-                  <p className="text-lg" style={{ color: INK_BLACK }}>{userInfo.whatIOffer}</p>
-                </div>
               )}
 
               {/* Grouped Location & Industry badges */}
@@ -278,7 +265,7 @@ export default function CreativeBold({
               className="space-y-12"
             >
               {/* Profile Meta Info - UVP Moved here */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1">
                 {userInfo.uniqueValueProposition && (
                   <div>
                     <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Unique Value Proposition</h3>
@@ -315,13 +302,13 @@ export default function CreativeBold({
                 {userInfo.missionStatement && (
                   <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
                     <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
-                    <p className="text-lg" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                    <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
                   </div>
                 )}
                 {userInfo.visionStatement && (
                   <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
                     <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
-                    <p className="text-lg" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                    <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
                   </div>
                 )}
               </div>
@@ -380,14 +367,6 @@ export default function CreativeBold({
                       {service.description}
                     </p>
                   )}
-                  <Button 
-                    size="sm" 
-                    variant="ghost"
-                    className="mt-4 p-0"
-                    style={{ color: CORAL }}
-                  >
-                    Book Service →
-                  </Button>
                 </motion.div>
               ))}
             </motion.div>
@@ -674,6 +653,88 @@ export default function CreativeBold({
                       <p style={{ color: COOL_GRAY }}>{edu.fieldOfStudy}</p>
                     </div>
                   )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* EDUCATION */}
+      {userEducations.length > 0 && (
+        <section className="py-20 px-6 md:px-12">
+          <div className="max-w-[1200px] mx-auto">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-4xl font-bold mb-12"
+              style={{ color: INK_BLACK }}
+            >
+              Education
+            </motion.h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {userEducations.map((edu, idx) => (
+                <motion.div
+                  key={edu.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className="p-8 rounded-xl border border-gray-100"
+                  style={{ backgroundColor: PAPER_WHITE }}
+                >
+                  <div className="flex items-start gap-4 mb-6">
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: PORCELAIN, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <GraduationCap className="w-6 h-6" style={{ color: CORAL }} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-1" style={{ color: INK_BLACK }}>{edu.degree}</h3>
+                      <p className="text-lg font-medium" style={{ color: CORAL }}>{edu.institution}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-4">
+                      <span className="text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ backgroundColor: PORCELAIN, color: CORAL }}>
+                        {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                      </span>
+                      {edu.location && (
+                        <p className="text-sm flex items-center" style={{ color: COOL_GRAY }}>
+                          <MapPin className="w-4 h-4 mr-1" /> {edu.location}
+                        </p>
+                      )}
+                    </div>
+
+                    {edu.fieldOfStudy && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Major:</span>
+                        {edu.fieldOfStudy}
+                      </p>
+                    )}
+
+                    {edu.industry && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Industry:</span>
+                        {edu.industry}
+                      </p>
+                    )}
+
+                    {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                      <div className="pt-2">
+                        <p className="text-[10px] uppercase font-bold tracking-widest mb-2" style={{ color: CORAL }}>Specializations</p>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.skillsAcquired.map((skill, sIdx) => (
+                            <Badge key={sIdx} variant="secondary" className="bg-gray-50 text-gray-600 border-none font-normal">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>
