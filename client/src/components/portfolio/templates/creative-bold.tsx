@@ -535,6 +535,11 @@ export default function CreativeBold({
                           <Briefcase className="w-4 h-4 mr-1" /> {exp.industry}
                         </p>
                       )}
+                      {exp.domain && (
+                        <p className="text-sm flex items-center" style={{ color: COOL_GRAY }}>
+                          <ExternalLink className="w-4 h-4 mr-1" /> {exp.domain}
+                        </p>
+                      )}
                     </div>
 
                     {exp.description && (
