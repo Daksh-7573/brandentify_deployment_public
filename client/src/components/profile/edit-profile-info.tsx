@@ -16,7 +16,6 @@ const profileInfoSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   jobTitle: z.string().optional(),
   company: z.string().optional(),
-  aboutMe: z.string().optional(),
   location: z.string().optional(),
   industry: z.string().optional(),
   domain: z.string().optional(),
@@ -41,7 +40,6 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
       name: userData.name || '',
       jobTitle: userData.title || '',
       company: userData.company || '',
-      aboutMe: userData.aboutMe || '',
       location: userData.location || '',
       industry: userData.industry || '',
       domain: userData.domain || '',
@@ -60,7 +58,6 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
         name: data.name,
         title: data.jobTitle || null,
         company: data.company || null,
-        aboutMe: data.aboutMe || null,
         location: data.location || null,
         industry: data.industry || null,
         domain: data.domain || null,
@@ -164,25 +161,6 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
                         {...field}
                         placeholder="e.g., Google, Microsoft, Freelance"
                         className="bg-white/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* About Me */}
-              <FormField
-                control={form.control}
-                name="aboutMe"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>About Me</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Tell us about yourself, your experience, and your goals..."
-                        className="bg-white/50 min-h-[100px]"
                       />
                     </FormControl>
                     <FormMessage />

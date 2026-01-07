@@ -56,7 +56,6 @@ export default function EditProfilePage() {
     photoURL: string | null;
     title: string | null;
     company: string | null;
-    aboutMe: string | null;
     location: string | null;
     industry: string | null;
     domain: string | null;
@@ -211,7 +210,7 @@ export default function EditProfilePage() {
       // Extract all form values regardless of active tab to ensure complete data
       const collectFormValues = () => {
         // Common form fields
-        const commonFields = ['name', 'title', 'company', 'location', 'timezone', 'industry', 'domain', 'lookingFor', 'aboutMe', 'whatIOffer', 'email', 'phoneNumber'];
+        const commonFields = ['name', 'title', 'company', 'location', 'timezone', 'industry', 'domain', 'lookingFor', 'whatIOffer', 'email', 'phoneNumber'];
         
         commonFields.forEach(fieldName => {
           const element = document.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"], select[name="${fieldName}"]`);
@@ -357,7 +356,7 @@ export default function EditProfilePage() {
   
   // Map tab names to more user-friendly display names
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
-    "all about me": { label: "Professional Overview", icon: <User className="h-4 w-4 mr-2" /> },
+    "all about me": { label: "Basic Info", icon: <User className="h-4 w-4 mr-2" /> },
     "what i'm good at": { label: "What I'm Good At", icon: <Sparkles className="h-4 w-4 mr-2" /> },
     "what i offer": { label: "What I Offer", icon: <Briefcase className="h-4 w-4 mr-2" /> },
     "showcase": { label: "Showcase", icon: <Folder className="h-4 w-4 mr-2" /> },

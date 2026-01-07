@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { BriefcaseBusiness, GraduationCap, Medal, Layout, Hammer, User2 } from 'lucide-react';
+import { BriefcaseBusiness, GraduationCap, Medal, Layout, Hammer, User2, MapPin, Sparkles, UserCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface UnifiedProfileViewProps {
@@ -131,46 +131,106 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                 </div>
               </div>
               
-              <div className="md:w-2/3 space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2">Professional Overview</h4>
-                  <p className="text-sm text-muted-foreground">{profileData.aboutMe || 'No professional overview available'}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Industry</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.industry || 'Not specified'}</p>
+          <div className="flex-1 space-y-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-3xl font-bold tracking-tight text-white">
+                {profileData.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-2 text-muted-foreground">
+                <span className="font-medium text-primary">
+                  {profileData.title} {profileData.company && `at ${profileData.company}`}
+                </span>
+                {profileData.location && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>{profileData.location}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  {profileData.industry}
+                </Badge>
+                {profileData.domain && (
+                  <Badge variant="outline" className="border-primary/20 text-muted-foreground">
+                    {profileData.domain}
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {profileData.lookingFor && (
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 inline-flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary">Looking For:</span>
+                <span className="text-sm font-medium text-white">{profileData.lookingFor}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+        </div>
+      </Card>
+
+      {/* Professional Brand Section */}
+      {(profileData.tagline || profileData.visionStatement || profileData.missionStatement || (profileData.coreValues && profileData.coreValues.length > 0) || profileData.uniqueValueProposition) && (
+        <Card className="p-6 bg-card/50 backdrop-blur-sm border-white/10 space-y-6 mt-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Professional Brand
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {profileData.tagline && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Tagline</h3>
+                <p className="text-lg italic text-muted-foreground font-serif">"{profileData.tagline}"</p>
+              </div>
+            )}
+
+            {profileData.uniqueValueProposition && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Unique Value Proposition</h3>
+                <p className="text-muted-foreground leading-relaxed">{profileData.uniqueValueProposition}</p>
+              </div>
+            )}
+
+            {(profileData.visionStatement || profileData.missionStatement) && (
+              <div className="space-y-4">
+                {profileData.visionStatement && (
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Vision</h3>
+                    <p className="text-muted-foreground">{profileData.visionStatement}</p>
                   </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Domain</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.domain || 'Not specified'}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">I am Looking for</h4>
-                  <p className="text-sm text-muted-foreground">{profileData.lookingFor || 'Not specified'}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Email</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.email}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Phone</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.phoneNumber || 'Not specified'}</p>
-                  </div>
-                </div>
-                
-                {profileData.subscription_tier === 'premium' && (
-                  <div>
-                    <h4 className="font-medium mb-2">What I Offer</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.whatIOffer || 'Not specified'}</p>
+                )}
+                {profileData.missionStatement && (
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Mission</h3>
+                    <p className="text-muted-foreground">{profileData.missionStatement}</p>
                   </div>
                 )}
               </div>
+            )}
+
+            {profileData.coreValues && profileData.coreValues.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Core Values</h3>
+                <div className="flex flex-wrap gap-2">
+                  {profileData.coreValues.map((value: string, i: number) => (
+                    <Badge key={i} variant="outline" className="bg-primary/5 border-primary/20 text-primary">
+                      {value}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
             </div>
           </TabsContent>
           
