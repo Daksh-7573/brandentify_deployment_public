@@ -1207,7 +1207,6 @@ export default function PortfolioBuilder() {
     >
       {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm z-0"></div>
-      <Header />
       <div className="flex-1 overflow-y-auto">
         <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 mb-6 relative z-10">
           <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 gap-4 text-center">
