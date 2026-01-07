@@ -1085,9 +1085,16 @@ export default function Scholar({
           </div>
         </div>
       </footer>
+
+      {/* Project Details Modal */}
+      <Dialog open={isProjectModalOpen} onOpenChange={(open) => {
+        setIsProjectModalOpen(open);
+        if (!open) {
+          setDisplayedImageUrl(null);
+        }
+      }}>
         {selectedProject && (
-          <>
-            <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
+          <DialogContent className="max-w-3xl p-0 overflow-visible rounded-lg border-0 max-h-[95vh] h-auto my-6 mx-auto">
               <div className="scholar-template overflow-y-auto max-h-[95vh] flex flex-col">
                 {/* Modal Header with Title Bar */}
                 <div className="bg-indigo-50 border-b border-indigo-100 flex-shrink-0 p-4 pl-6">
@@ -1265,8 +1272,7 @@ export default function Scholar({
                   </div>
                 </DialogFooter>
               </div>
-            </DialogContent>
-          </>
+          </DialogContent>
         )}
       </Dialog>
     </div>
