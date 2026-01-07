@@ -87,12 +87,8 @@ interface DynamicInnovatorProps {
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
-    primaryAudience?: string[] | null;
-    secondaryAudience?: string[] | null;
     domain: string | null;
     location: string | null;
-    email: string | null;
-    photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
     whatIOffer: string | null;
@@ -777,14 +773,12 @@ export function DynamicInnovator({
                 onClick={() => setIsContactModalOpen(true)}
                 className="neon-button rounded-md text-sm px-4 py-2"
               >
-                <MessageSquare className="h-4 w-4 mr-2" />
                 Let's Talk
               </Button>
               
               <Button
                 className="neon-button rounded-md text-sm px-4 py-2"
               >
-                <Download className="h-4 w-4 mr-2" />
                 Grab My Resume
               </Button>
               
@@ -804,14 +798,10 @@ export function DynamicInnovator({
       {/* Hero Section */}
       <section className="section py-16 px-4 md:px-8 relative overflow-hidden">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Digital Profile Image with Scanner Effect */}
+          {/* Digital Profile Image - Simplified */}
           <div className="flex justify-center md:justify-start">
-            <div className="scanner-profile-frame w-64 h-64 relative">
-              <ProfileImage
-                src={userInfo.photoURL}
-                alt={userInfo.name}
-                className="w-full h-full object-cover"
-              />
+            <div className="scanner-profile-frame w-64 h-64 relative flex items-center justify-center bg-gradient-to-br from-[#08f7fe]/10 to-[#fe53bb]/10">
+              <Cpu className="h-20 w-20 text-[#08f7fe]/40" />
               {scannerOn && <div className="scanner-line"></div>}
               <div className="absolute -top-2 -left-2 -right-2 -bottom-2 border-2 border-[#08f7fe]/20 rounded-full"></div>
               <div className="absolute -top-4 -left-4 -right-4 -bottom-4 border-2 border-[#08f7fe]/10 rounded-full"></div>
@@ -874,14 +864,12 @@ export function DynamicInnovator({
                 onClick={() => setIsContactModalOpen(true)}
                 className="neon-button w-full rounded-md py-2.5"
               >
-                <MessageSquare className="h-5 w-5 mr-2" />
                 Let's Talk
               </Button>
               
               <Button
                 className="neon-button w-full rounded-md py-2.5"
               >
-                <Download className="h-5 w-5 mr-2" />
                 Grab My Resume
               </Button>
               
@@ -1026,9 +1014,7 @@ export function DynamicInnovator({
       {/* My Professional Brand Section */}
       {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
-        userInfo.uniqueValueProposition || 
-        (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-        (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+        userInfo.uniqueValueProposition) && (
         <section 
           id="brand-section" 
           ref={sectionRefs.about}
@@ -1112,49 +1098,6 @@ export function DynamicInnovator({
                   <p className="text-gray-300 leading-relaxed">
                     {userInfo.uniqueValueProposition}
                   </p>
-                </div>
-              )}
-
-              {/* Audiences */}
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <div className="tech-card p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Users className="h-6 w-6 text-[#08f7fe]" />
-                    <h3 className="text-lg font-bold text-white">Who I Serve</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-400 font-medium mb-2">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              className="bg-[#08f7fe] text-[#0c162d] hover:bg-[#06d5de] px-3 py-1.5 font-medium"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-400 font-medium mb-2">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              className="bg-transparent text-[#08f7fe] border border-[#08f7fe]/50 hover:bg-[#08f7fe]/10 px-3 py-1.5"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>

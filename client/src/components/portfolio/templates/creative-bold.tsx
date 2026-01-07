@@ -10,15 +10,12 @@ interface CreativeBoldProps {
   userInfo: {
     id?: number;
     name: string;
-    email: string | null;
     title: string | null;
-    aboutMe: string | null;
     location: string | null;
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
     whatIOffer: string | null;
-    photoURL: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
@@ -123,150 +120,93 @@ export default function CreativeBold({
         >
           <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-bold" style={{ color: INK_BLACK }}>{userInfo.name}</h2>
-            <div className="flex items-center gap-2">
-              {userInfo.email && (
-                <Button 
-                  size="sm" 
-                  style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                  onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                >
-                  Book Me
-                </Button>
-              )}
-            </div>
           </div>
         </motion.header>
       )}
 
-      {/* HERO - Service-First with Photo */}
+      {/* HERO - Service-First */}
       <section className={`pb-20 px-6 md:px-12 ${isPreview ? 'pt-6' : 'pt-32'}`}>
         <div className="max-w-[1200px] mx-auto">
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             transition={{ duration: 0.8 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+            className="flex flex-col items-center text-center space-y-8"
           >
-            {/* LEFT: Photo - Minimalist */}
-            {userInfo.photoURL && (
-              <motion.div
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="flex justify-center lg:justify-start order-2 lg:order-1"
-              >
-                <div className="relative">
-                  {/* Subtle gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B5A]/8 to-[#FF6B5A]/4 rounded-2xl blur-3xl" />
-                  <img
-                    src={userInfo.photoURL}
-                    alt={userInfo.name}
-                    className="relative w-full max-w-[380px] h-[500px] object-cover rounded-2xl shadow-xl"
-                  />
-                  {/* Subtle overlay accent */}
-                  <div className="absolute inset-0 rounded-2xl" style={{ border: `2px solid ${CORAL}`, opacity: 0.2 }} />
-                </div>
-              </motion.div>
+            {/* Name with coral underline */}
+            <div className="flex flex-col items-center">
+              <h1 className="text-6xl md:text-7xl font-bold mb-2" style={{ color: INK_BLACK }}>
+                {userInfo.name}
+              </h1>
+              <div style={{ width: '60px', height: '4px', backgroundColor: CORAL }} />
+            </div>
+
+            {/* Title + tagline */}
+            {displayTitle && (
+              <p className="text-2xl font-light" style={{ color: COOL_GRAY }}>
+                {displayTitle}
+              </p>
+            )}
+            {userInfo.tagline && (
+              <p className="text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
+                {userInfo.tagline}
+              </p>
             )}
 
-            {/* RIGHT: Content */}
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              transition={{ duration: 0.8 }}
-              className="space-y-8 order-1 lg:order-2"
-            >
-              {/* Name with coral underline */}
-              <div>
-                <h1 className="text-6xl md:text-7xl font-bold mb-2" style={{ color: INK_BLACK }}>
-                  {userInfo.name}
-                </h1>
-                <div style={{ width: '60px', height: '4px', backgroundColor: CORAL }} />
+            {/* What I Offer */}
+            {userInfo.whatIOffer && (
+              <div className="pt-4">
+                <p className="text-xs uppercase font-bold mb-2" style={{ color: CORAL }}>What I Offer</p>
+                <p className="text-lg max-w-2xl mx-auto" style={{ color: INK_BLACK }}>{userInfo.whatIOffer}</p>
               </div>
+            )}
 
-              {/* Title + tagline */}
-              {displayTitle && (
-                <p className="text-2xl font-light" style={{ color: COOL_GRAY }}>
-                  {displayTitle}
-                </p>
+            {/* Grouped Location & Industry badges */}
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              {(userInfo.location || userInfo.industry) && (
+                <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }} className="flex items-center gap-2">
+                  {userInfo.location && <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {userInfo.location}</span>}
+                  {userInfo.location && userInfo.industry && <span className="opacity-50">|</span>}
+                  {userInfo.industry && <span>{userInfo.industry}</span>}
+                </Badge>
               )}
-              {userInfo.tagline && (
-                <p className="text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
-                  {userInfo.tagline}
-                </p>
+              {userInfo.domain && (
+                <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
+                  {userInfo.domain}
+                </Badge>
               )}
+            </div>
 
-              {/* About Me */}
-              {userInfo.aboutMe && (
-                <p className="text-lg leading-relaxed max-w-2xl" style={{ color: COOL_GRAY }}>
-                  {userInfo.aboutMe}
-                </p>
-              )}
-
-              {/* What I Offer */}
-              {userInfo.whatIOffer && (
-                <div className="pt-4">
-                  <p className="text-xs uppercase font-bold mb-2" style={{ color: CORAL }}>What I Offer</p>
-                  <p className="text-lg" style={{ color: INK_BLACK }}>{userInfo.whatIOffer}</p>
-                </div>
-              )}
-
-              {/* Grouped Location & Industry badges */}
-              <div className="flex flex-wrap gap-2 pt-2">
-                {(userInfo.location || userInfo.industry) && (
-                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }} className="flex items-center gap-2">
-                    {userInfo.location && <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {userInfo.location}</span>}
-                    {userInfo.location && userInfo.industry && <span className="opacity-50">|</span>}
-                    {userInfo.industry && <span>{userInfo.industry}</span>}
-                  </Badge>
+            {/* Grouped Job Title & Company */}
+            {(displayTitle || sortedExperiences[0]?.company || userInfo.lookingFor) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t w-full max-w-2xl" style={{ borderColor: '#E5E7EB' }}>
+                {(displayTitle || sortedExperiences[0]?.company) && (
+                  <div>
+                    <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Current Role</p>
+                    <p style={{ color: INK_BLACK }} className="font-medium">
+                      {displayTitle} {sortedExperiences[0]?.company && <span style={{ color: COOL_GRAY }}>at {sortedExperiences[0].company}</span>}
+                    </p>
+                  </div>
                 )}
-                {userInfo.domain && (
-                  <Badge variant="outline" style={{ borderColor: COOL_GRAY, color: COOL_GRAY }}>
-                    {userInfo.domain}
-                  </Badge>
+                {userInfo.lookingFor && (
+                  <div>
+                    <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Looking For</p>
+                    <p style={{ color: INK_BLACK }}>{userInfo.lookingFor}</p>
+                  </div>
                 )}
               </div>
+            )}
 
-              {/* Grouped Job Title & Company */}
-              {(displayTitle || sortedExperiences[0]?.company || userInfo.lookingFor) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t" style={{ borderColor: '#E5E7EB' }}>
-                  {(displayTitle || sortedExperiences[0]?.company) && (
-                    <div>
-                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Current Role</p>
-                      <p style={{ color: INK_BLACK }} className="font-medium">
-                        {displayTitle} {sortedExperiences[0]?.company && <span style={{ color: COOL_GRAY }}>at {sortedExperiences[0].company}</span>}
-                      </p>
-                    </div>
-                  )}
-                  {userInfo.lookingFor && (
-                    <div>
-                      <p className="text-xs uppercase font-bold mb-1" style={{ color: CORAL }}>Looking For</p>
-                      <p style={{ color: INK_BLACK }}>{userInfo.lookingFor}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* CTAs */}
-              <div className="flex gap-3 pt-4">
-                {userInfo.email && (
-                  <Button 
-                    size="lg"
-                    style={{ backgroundColor: CORAL, color: PAPER_WHITE }}
-                    onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                  >
-                    Book a Project
-                  </Button>
-                )}
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  style={{ borderColor: INK_BLACK, color: INK_BLACK }}
-                >
-                  Explore Work
-                </Button>
-              </div>
-            </motion.div>
+            {/* CTAs */}
+            <div className="flex gap-3 pt-4">
+              <Button 
+                size="lg"
+                variant="outline"
+                style={{ borderColor: INK_BLACK, color: INK_BLACK }}
+              >
+                Explore Work
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -677,15 +617,6 @@ export default function CreativeBold({
       <footer className="py-12 px-6 md:px-12 border-t" style={{ borderColor: '#E5E7EB' }}>
         <div className="max-w-[1200px] mx-auto text-center">
           <p style={{ color: COOL_GRAY }}>© {new Date().getFullYear()}. {userInfo.name}</p>
-          {userInfo.email && (
-            <a 
-              href={`mailto:${userInfo.email}`} 
-              className="inline-block mt-2 transition-colors"
-              style={{ color: CORAL }}
-            >
-              {userInfo.email}
-            </a>
-          )}
         </div>
       </footer>
     </div>
