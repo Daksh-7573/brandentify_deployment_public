@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { BriefcaseBusiness, GraduationCap, Medal, Layout, Hammer, User2, MapPin, Sparkles, UserCircle } from 'lucide-react';
+import { BriefcaseBusiness, GraduationCap, Medal, Layout, Hammer, User2, MapPin, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface UnifiedProfileViewProps {
@@ -23,11 +23,10 @@ interface UnifiedProfileViewProps {
 export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUserId }) => {
   const { userId: paramUserId } = useParams<{ userId: string }>();
   const userId = propUserId || paramUserId;
-  const parsedUserId = userId ? parseInt(userId) : undefined; // No fallback - require valid ID
+  const parsedUserId = userId ? parseInt(userId) : undefined;
   
   const { data: profileData, isLoading, error } = useUserProfile(parsedUserId);
   
-  // Loading state
   if (isLoading) {
     return (
       <Card className="w-full">
@@ -55,7 +54,6 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
     );
   }
   
-  // Error state
   if (error || !profileData) {
     return (
       <Card className="w-full">
@@ -123,114 +121,75 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                   </Avatar>
                   <div className="text-center">
                     <h3 className="text-lg font-medium">{profileData.name}</h3>
-                    <p className="text-sm text-muted-foreground">{profileData.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {profileData.title} {profileData.company && `at ${profileData.company}`}
+                    </p>
                     {profileData.location && (
-                      <p className="text-xs text-muted-foreground mt-1">{profileData.location}</p>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {profileData.location}
+                      </p>
                     )}
                   </div>
                 </div>
               </div>
               
-          <div className="flex-1 space-y-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-3xl font-bold tracking-tight text-white">
-                {profileData.name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-2 text-muted-foreground">
-                <span className="font-medium text-primary">
-                  {profileData.title} {profileData.company && `at ${profileData.company}`}
-                </span>
-                {profileData.location && (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      <span>{profileData.location}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                  {profileData.industry}
-                </Badge>
-                {profileData.domain && (
-                  <Badge variant="outline" className="border-primary/20 text-muted-foreground">
-                    {profileData.domain}
-                  </Badge>
-                )}
-              </div>
-            </div>
-
-            {profileData.lookingFor && (
-              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 inline-flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-primary">Looking For:</span>
-                <span className="text-sm font-medium text-white">{profileData.lookingFor}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </Card>
-        </div>
-      </Card>
-
-      {/* Professional Brand Section */}
-      {(profileData.tagline || profileData.visionStatement || profileData.missionStatement || (profileData.coreValues && profileData.coreValues.length > 0) || profileData.uniqueValueProposition) && (
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-white/10 space-y-6 mt-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              Professional Brand
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {profileData.tagline && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Tagline</h3>
-                <p className="text-lg italic text-muted-foreground font-serif">"{profileData.tagline}"</p>
-              </div>
-            )}
-
-            {profileData.uniqueValueProposition && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Unique Value Proposition</h3>
-                <p className="text-muted-foreground leading-relaxed">{profileData.uniqueValueProposition}</p>
-              </div>
-            )}
-
-            {(profileData.visionStatement || profileData.missionStatement) && (
-              <div className="space-y-4">
-                {profileData.visionStatement && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Vision</h3>
-                    <p className="text-muted-foreground">{profileData.visionStatement}</p>
+              <div className="md:w-2/3 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Industry</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.industry || 'Not specified'}</p>
                   </div>
-                )}
-                {profileData.missionStatement && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Mission</h3>
-                    <p className="text-muted-foreground">{profileData.missionStatement}</p>
+                  <div>
+                    <h4 className="font-medium mb-2">Domain</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.domain || 'Not specified'}</p>
                   </div>
-                )}
-              </div>
-            )}
-
-            {profileData.coreValues && profileData.coreValues.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-primary uppercase tracking-widest">Core Values</h3>
-                <div className="flex flex-wrap gap-2">
-                  {profileData.coreValues.map((value: string, i: number) => (
-                    <Badge key={i} variant="outline" className="bg-primary/5 border-primary/20 text-primary">
-                      {value}
-                    </Badge>
-                  ))}
                 </div>
+                
+                {profileData.lookingFor && (
+                  <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-primary">Looking For: </span>
+                    <span className="text-sm font-medium">{profileData.lookingFor}</span>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Email</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.email}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Phone</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.phoneNumber || 'Not specified'}</p>
+                  </div>
+                </div>
+
+                {/* Professional Brand Section */}
+                {(profileData.tagline || profileData.uniqueValueProposition) && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <h4 className="font-medium flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      Professional Brand
+                    </h4>
+                    {profileData.tagline && (
+                      <p className="text-sm italic text-muted-foreground">"{profileData.tagline}"</p>
+                    )}
+                    {profileData.uniqueValueProposition && (
+                      <div>
+                        <span className="text-xs font-medium text-primary uppercase">Unique Value: </span>
+                        <span className="text-sm text-muted-foreground">{profileData.uniqueValueProposition}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {profileData.whatIOffer && (
+                  <div>
+                    <h4 className="font-medium mb-2">What I Offer</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.whatIOffer}</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </Card>
-      )}
             </div>
           </TabsContent>
           
@@ -250,6 +209,12 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                           <h4 className="font-medium">{experience.title}</h4>
                           <p className="text-sm">{experience.company}</p>
                           <p className="text-xs text-muted-foreground">{experience.location}</p>
+                          {(experience.industry || experience.domain) && (
+                            <div className="flex gap-2 mt-1">
+                              {experience.industry && <Badge variant="outline">{experience.industry}</Badge>}
+                              {experience.domain && <Badge variant="secondary">{experience.domain}</Badge>}
+                            </div>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="text-sm">
@@ -258,9 +223,6 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                               ? new Date(experience.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
                               : ' Present'}
                           </p>
-                          {experience.industry && (
-                            <Badge variant="outline" className="mt-1">{experience.industry}</Badge>
-                          )}
                         </div>
                       </div>
                       
@@ -301,6 +263,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                           <h4 className="font-medium">{edu.institution}</h4>
                           <p className="text-sm">{edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}</p>
                           <p className="text-xs text-muted-foreground">{edu.location}</p>
+                          {edu.industry && <Badge variant="outline" className="mt-1">{edu.industry}</Badge>}
                         </div>
                         <div className="text-right">
                           <p className="text-sm">
@@ -309,14 +272,17 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                               ? new Date(edu.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
                               : ' Present'}
                           </p>
-                          {edu.gpa && <p className="text-xs text-muted-foreground">GPA: {edu.gpa}</p>}
                         </div>
                       </div>
                       
-                      {edu.achievements && (
+                      {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
                         <div>
-                          <h5 className="text-sm font-medium mb-1">Achievements</h5>
-                          <p className="text-sm">{edu.achievements}</p>
+                          <h5 className="text-sm font-medium mb-1">Skills Acquired</h5>
+                          <div className="flex flex-wrap gap-1">
+                            {edu.skillsAcquired.map((skill: string, index: number) => (
+                              <Badge key={index} variant="secondary">{skill}</Badge>
+                            ))}
+                          </div>
                         </div>
                       )}
                       
@@ -331,7 +297,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
           {/* Skills Tab */}
           <TabsContent value="skills">
             <div className="space-y-6">
-              <h3 className="text-lg font-medium">Skills</h3>
+              <h3 className="text-lg font-medium">What I'm Good At</h3>
               
               {profileData.skills.length === 0 ? (
                 <p className="text-muted-foreground">No skills data available</p>
@@ -375,13 +341,9 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                         <h4 className="font-medium text-lg">{project.title}</h4>
                         <p className="text-sm mt-1">{project.description}</p>
                         
-                        <div className="flex mt-4 justify-between items-center">
-                          <Badge variant="outline">
-                            {project.category || 'Not categorized'}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(project.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
-                          </span>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {project.industry && <Badge variant="outline">{project.industry}</Badge>}
+                          {project.category && <Badge variant="secondary">{project.category}</Badge>}
                         </div>
                         
                         {project.projectUrl && (
@@ -392,7 +354,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                               rel="noopener noreferrer"
                               className="text-sm text-primary hover:underline"
                             >
-                              Visit Project
+                              Visit Project →
                             </a>
                           </div>
                         )}
@@ -407,16 +369,21 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
           {/* Services Tab */}
           <TabsContent value="services">
             <div className="space-y-6">
-              <h3 className="text-lg font-medium">Services</h3>
+              <h3 className="text-lg font-medium">What I Offer / Services</h3>
               
               {profileData.services.length === 0 ? (
                 <p className="text-muted-foreground">No services data available</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {profileData.services.map((service) => (
+                  {profileData.services.filter(s => s.isActive !== false).map((service) => (
                     <Card key={service.id}>
                       <CardContent className="p-6">
-                        <h4 className="font-medium text-lg">{service.title}</h4>
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-medium text-lg">{service.title}</h4>
+                          <Badge variant={service.isActive ? "default" : "secondary"}>
+                            {service.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </div>
 
                         <p className="text-sm mt-3">{service.description}</p>
                         
@@ -433,8 +400,9 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                         
                         <div className="mt-4 text-right">
                           <p className="font-medium">
-                            {service.priceUsd && '$' + service.priceUsd}
-                            {service.priceInr && '₹' + service.priceInr}
+                            {service.priceUsd && `$${service.priceUsd}`}
+                            {service.priceUsd && service.priceInr && ' / '}
+                            {service.priceInr && `₹${service.priceInr}`}
                             {service.isHourly && '/hr'}
                           </p>
                         </div>

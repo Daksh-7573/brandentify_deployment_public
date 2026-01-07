@@ -8,7 +8,6 @@ export interface UserData {
   email: string;
   photoURL: string | null;
   title: string | null;
-  aboutMe: string | null;
   location: string | null;
   industry: string | null;
   lookingFor: string | null;

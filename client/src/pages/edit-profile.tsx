@@ -21,7 +21,7 @@ export default function EditProfilePage() {
   const { user, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("all about me");
+  const [activeTab, setActiveTab] = useState("professional overview");
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [completionPercentage, setCompletionPercentage] = useState(0);
@@ -228,17 +228,8 @@ export default function EditProfilePage() {
       
       // Type check to ensure userData has an id property
       if (!isUserDataValid(userData)) {
-        console.error("Error: userData missing or missing id property, trying to recover from localStorage");
-        
-        // Try to recover from localStorage using our helper function
-        const cachedUserData = getCachedUserData();
-        if (cachedUserData) {
-          console.log("Successfully recovered userData from localStorage cache");
-          numericUserId = cachedUserData.id;
-        } else {
-          console.error("No valid cached userData available");
-          throw new Error("No recoverable userData available");
-        }
+        console.error("Error: userData missing or missing id property");
+        throw new Error("No valid userData available. Please refresh the page and try again.");
       } else {
         numericUserId = userData.id;
       }
@@ -261,11 +252,6 @@ export default function EditProfilePage() {
               queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
             }
             queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
-            
-            // Manually update local storage as backup
-            localStorage.setItem('whatIOffer_saved', whatIOffer);
-            localStorage.setItem('whatIOffer_savedAt', Date.now().toString());
-            localStorage.setItem('whatIOffer_userId', numericUserId.toString());
           }
         }
       }
@@ -355,21 +341,22 @@ export default function EditProfilePage() {
   };
   
   // Map tab names to more user-friendly display names
+  // Tab slugs MUST match step.title.toLowerCase() from ProfileSteps exactly
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
-    "all about me": { label: "Basic Info", icon: <User className="h-4 w-4 mr-2" /> },
-    "what i'm good at": { label: "What I'm Good At", icon: <Sparkles className="h-4 w-4 mr-2" /> },
-    "what i offer": { label: "What I Offer", icon: <Briefcase className="h-4 w-4 mr-2" /> },
-    "showcase": { label: "Showcase", icon: <Folder className="h-4 w-4 mr-2" /> },
-    "career path": { label: "Career Path", icon: <FileText className="h-4 w-4 mr-2" /> },
-    "academic background": { label: "Academic Background", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
-    "personal information": { label: "Personal Information", icon: <Phone className="h-4 w-4 mr-2" /> },
+    "professional overview": { label: "Basic Info", icon: <User className="h-4 w-4 mr-2" /> },
+    "what i'm good at": { label: "Skills", icon: <Sparkles className="h-4 w-4 mr-2" /> },
+    "services": { label: "Services", icon: <Briefcase className="h-4 w-4 mr-2" /> },
+    "showcase": { label: "Projects", icon: <Folder className="h-4 w-4 mr-2" /> },
+    "career path": { label: "Experience", icon: <FileText className="h-4 w-4 mr-2" /> },
+    "academic background": { label: "Education", icon: <GraduationCap className="h-4 w-4 mr-2" /> },
+    "personal information": { label: "Contact", icon: <Phone className="h-4 w-4 mr-2" /> },
   };
   
-  // Tabs order
+  // Tabs order - must match step.title.toLowerCase() in ProfileSteps exactly
   const tabOrder = [
-    "all about me", 
+    "professional overview", 
     "what i'm good at", 
-    "what i offer", 
+    "services", 
     "showcase", 
     "career path", 
     "academic background", 
