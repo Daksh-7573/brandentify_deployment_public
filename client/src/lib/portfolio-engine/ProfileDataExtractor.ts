@@ -217,6 +217,18 @@ export class ProfileDataExtractor {
   }
 
   getServices(): ServiceData[] {
-    return extractServices(this.collections.services || []);
+    if (!Array.isArray(this.collections.services)) return [];
+    return this.collections.services.map(service => ({
+      id: service.id,
+      title: service.title || '',
+      description: service.description || null,
+      icon: service.icon || null,
+      price: service.price || null,
+      priceInr: service.priceInr || null,
+      priceUsd: service.priceUsd || null,
+      priceType: service.priceType || null,
+      isActive: service.isActive !== false,
+      isHourly: service.priceType === 'Hourly'
+    }));
   }
 }

@@ -348,12 +348,10 @@ export default function Education() {
       location: uiData.location,
       startDate: uiData.startDate,
       endDate: uiData.endDate,
-      // Include the new fields - use names that match the database schema exactly
       industry: uiData.industry,
-      fieldOfStudy: uiData.field, // Map UI 'field' to database 'fieldOfStudy' column (camelCase)
-      // Convert skills array to JSON string for Postgres JSONB column
-      skillsAcquired: Array.isArray(uiData.skillsAcquired) ? JSON.stringify(uiData.skillsAcquired) : "[]",
-      domain: uiData.domain
+      domain: uiData.domain,
+      fieldOfStudy: uiData.field,
+      skillsAcquired: Array.isArray(uiData.skillsAcquired) ? JSON.stringify(uiData.skillsAcquired) : "[]"
     };
     
     if (editingEducation) {

@@ -2542,27 +2542,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.post("/educations", async (req: Request, res: Response) => {
     try {
-      console.log(`[POST /educations] Creating education with data:`, req.body);
+      console.log(`[POST /educations] Creating education with data:`, JSON.stringify(req.body, null, 2));
       
+      const rawData = { ...req.body };
+      
+      // Handle skillsAcquired which might come as a JSON string or already parsed
+      if (typeof rawData.skillsAcquired === 'string') {
+        try {
+          rawData.skillsAcquired = JSON.parse(rawData.skillsAcquired);
+        } catch (e) {
+          rawData.skillsAcquired = Array.isArray(rawData.skillsAcquired) ? rawData.skillsAcquired : [];
+        }
+      }
+
+      // Explicitly map UI 'field' to schema 'fieldOfStudy'
+      if (rawData.field && !rawData.fieldOfStudy) {
+        rawData.fieldOfStudy = rawData.field;
+      }
+
       // Check if we have a Firebase UID instead of numeric userId
-      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
-        console.log(`[POST /educations] Received Firebase UID as userId: ${req.body.userId}`);
+      if (typeof rawData.userId === 'string' && rawData.userId.length > 20) {
+        console.log(`[POST /educations] Received Firebase UID as userId: ${rawData.userId}`);
         
         // Look up the numeric userId for this Firebase UID
-        const user = await storage.getUserByUsername(req.body.userId);
+        const user = await storage.getUserByUsername(rawData.userId);
         
         if (user) {
           console.log(`[POST /educations] Found matching user with ID: ${user.id}`);
           // Replace the Firebase UID with the numeric userId
-          req.body.userId = user.id;
+          rawData.userId = user.id;
         } else {
-          console.log(`[POST /educations] No matching user found for Firebase UID: ${req.body.userId}`);
+          console.log(`[POST /educations] No matching user found for Firebase UID: ${rawData.userId}`);
           return res.status(404).json({ message: "User not found" });
         }
       }
       
-      console.log(`[POST /educations] Processing with userId: ${req.body.userId}`);
-      const educationData = insertEducationSchema.parse(req.body);
+      console.log(`[POST /educations] Final data for insertEducationSchema:`, JSON.stringify(rawData, null, 2));
+      const educationData = insertEducationSchema.parse(rawData);
       const education = await storage.createEducation(educationData);
       console.log(`[POST /educations] Created education with ID: ${education.id}`);
       res.status(201).json(education);
@@ -2580,9 +2596,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.put("/educations/:id", async (req: Request, res: Response) => {
     try {
       const educationId = parseInt(req.params.id);
-      const educationData = req.body;
+      const rawData = { ...req.body };
+
+      // Handle skillsAcquired parsing if it's a string
+      if (typeof rawData.skillsAcquired === 'string') {
+        try {
+          rawData.skillsAcquired = JSON.parse(rawData.skillsAcquired);
+        } catch (e) {
+          rawData.skillsAcquired = Array.isArray(rawData.skillsAcquired) ? rawData.skillsAcquired : [];
+        }
+      }
+
+      // Explicitly map UI 'field' to schema 'fieldOfStudy'
+      if (rawData.field && !rawData.fieldOfStudy) {
+        rawData.fieldOfStudy = rawData.field;
+      }
       
-      const education = await storage.updateEducation(educationId, educationData);
+      console.log(`[PUT /educations/:id] Updating with data:`, JSON.stringify(rawData, null, 2));
+      const education = await storage.updateEducation(educationId, rawData);
       if (!education) {
         return res.status(404).json({ message: "Education not found" });
       }
@@ -2598,10 +2629,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log(`[PATCH /educations/:id] Updating education with data:`, req.body);
       const educationId = parseInt(req.params.id);
-      const educationData = req.body;
+      const rawData = { ...req.body };
+
+      // Handle skillsAcquired parsing if it's a string
+      if (typeof rawData.skillsAcquired === 'string') {
+        try {
+          rawData.skillsAcquired = JSON.parse(rawData.skillsAcquired);
+        } catch (e) {
+          rawData.skillsAcquired = Array.isArray(rawData.skillsAcquired) ? rawData.skillsAcquired : [];
+        }
+      }
+
+      // Explicitly map UI 'field' to schema 'fieldOfStudy'
+      if (rawData.field && !rawData.fieldOfStudy) {
+        rawData.fieldOfStudy = rawData.field;
+      }
       
-      console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, JSON.stringify(educationData, null, 2));
-      const education = await storage.updateEducation(educationId, educationData);
+      console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, JSON.stringify(rawData, null, 2));
+      const education = await storage.updateEducation(educationId, rawData);
       
       if (!education) {
         return res.status(404).json({ message: "Education not found" });

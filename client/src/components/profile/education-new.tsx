@@ -152,7 +152,10 @@ export default function Education() {
       // Add userId to the education if it's not already there
       const educationToSave = {
         ...newEducation,
-        userId: userId
+        userId: userId,
+        // Map fieldOfStudy explicitly if needed, but schema.ts uses field_of_study which drizzle maps from fieldOfStudy
+        // Ensure skillsAcquired is sent as array (backend will handle parsing if needed)
+        skillsAcquired: Array.isArray(newEducation.skillsAcquired) ? newEducation.skillsAcquired : []
       };
       
       let response;

@@ -334,46 +334,45 @@ export default function CreativeBold({
               Services
             </motion.h2>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {userServices.map((service) => (
-                <motion.div
-                  key={service.id}
-                  whileHover={{ y: -6 }}
-                  transition={{ duration: 0.3 }}
-                  className="p-6 rounded-lg transition-all relative flex flex-col min-h-[160px]"
-                  style={{ 
-                    backgroundColor: PORCELAIN, 
-                    borderTop: `4px solid ${CORAL}`,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2" style={{ color: INK_BLACK }}>
-                      {service.title}
-                    </h3>
-                    {service.description && (
-                      <p className="text-sm mb-4" style={{ color: COOL_GRAY }}>
-                        {service.description}
-                      </p>
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {userServices.map((service) => (
+                      <motion.div
+                        key={service.id}
+                        whileHover={{ y: -6 }}
+                        transition={{ duration: 0.3 }}
+                        className="p-6 rounded-lg transition-all relative flex flex-col min-h-[160px]"
+                        style={{ 
+                          backgroundColor: PORCELAIN, 
+                          borderTop: `4px solid ${CORAL}`,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold mb-2" style={{ color: INK_BLACK }}>
+                            {service.title}
+                          </h3>
+                          {service.description && (
+                            <p className="text-sm mb-4" style={{ color: COOL_GRAY }}>
+                              {service.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between mt-auto">
+                          <div className="bg-white/10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                            {service.priceType === 'Hourly' ? 'Hourly Rate' : 'Fixed Price'}
+                          </div>
+                          <div className="text-lg font-black">
+                            {service.priceInr && parseFloat(String(service.priceInr)) > 0 
+                              ? `₹${parseFloat(String(service.priceInr)).toLocaleString()}` 
+                              : (service.priceUsd && parseFloat(String(service.priceUsd)) > 0 
+                                ? `$${parseFloat(String(service.priceUsd)).toLocaleString()}` 
+                                : 'Free')}
+                            {service.isHourly && <span className="text-xs text-white/40 ml-1">/hr</span>}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
-                  {((service.priceUsd && parseFloat(String(service.priceUsd)) > 0) || (service.priceInr && parseFloat(String(service.priceInr)) > 0)) && (
-                    <div className="mt-auto">
-                      <Badge className="bg-amber-100 text-amber-900 border border-amber-200">
-                        {service.priceUsd && parseFloat(String(service.priceUsd)) > 0 ? `$${service.priceUsd}` : `₹${service.priceInr}`}
-                        {service.isHourly && ' / hr'}
-                      </Badge>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </motion.div>
           </div>
         </section>
       )}
