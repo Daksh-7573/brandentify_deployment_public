@@ -613,7 +613,7 @@ export default function CreativeBold({
 
       {/* EDUCATION */}
       {userEducations.length > 0 && (
-        <section className="py-20 px-6 md:px-12" style={{ backgroundColor: PORCELAIN }}>
+        <section className="py-20 px-6 md:px-12">
           <div className="max-w-[1200px] mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -634,25 +634,58 @@ export default function CreativeBold({
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: idx * 0.1 }}
                   viewport={{ once: true }}
-                  className="p-8 bg-white rounded-2xl shadow-sm border border-gray-100"
+                  className="p-8 rounded-xl border border-gray-100"
+                  style={{ backgroundColor: PAPER_WHITE }}
                 >
-                  <GraduationCap className="w-10 h-10 mb-6 text-[#FF6B5A]" />
-                  <h3 className="text-2xl font-bold mb-2" style={{ color: INK_BLACK }}>
-                    {edu.degree}
-                  </h3>
-                  <p className="text-xl mb-4" style={{ color: CORAL }}>{edu.institution}</p>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm mb-6" style={{ color: COOL_GRAY }}>
-                    <span>{new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}</span>
-                    {edu.location && <span>• {edu.location}</span>}
+                  <div className="flex items-start gap-4 mb-6">
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: PORCELAIN, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <GraduationCap className="w-6 h-6" style={{ color: CORAL }} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-1" style={{ color: INK_BLACK }}>{edu.degree}</h3>
+                      <p className="text-lg font-medium" style={{ color: CORAL }}>{edu.institution}</p>
+                    </div>
                   </div>
 
-                  {edu.fieldOfStudy && (
-                    <div className="pt-4 border-t border-gray-50">
-                      <p className="text-xs uppercase font-bold tracking-widest mb-2" style={{ color: CORAL }}>Field of Study</p>
-                      <p style={{ color: COOL_GRAY }}>{edu.fieldOfStudy}</p>
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-4">
+                      <span className="text-sm font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ backgroundColor: PORCELAIN, color: CORAL }}>
+                        {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                      </span>
+                      {edu.location && (
+                        <p className="text-sm flex items-center" style={{ color: COOL_GRAY }}>
+                          <MapPin className="w-4 h-4 mr-1" /> {edu.location}
+                        </p>
+                      )}
                     </div>
-                  )}
+
+                    {edu.fieldOfStudy && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Major:</span>
+                        {edu.fieldOfStudy}
+                      </p>
+                    )}
+
+                    {edu.industry && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Industry:</span>
+                        {edu.industry}
+                      </p>
+                    )}
+
+                    {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
+                      <div className="pt-2">
+                        <p className="text-[10px] uppercase font-bold tracking-widest mb-2" style={{ color: CORAL }}>Specializations</p>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.skillsAcquired.map((skill, sIdx) => (
+                            <Badge key={sIdx} variant="secondary" className="bg-gray-50 text-gray-600 border-none font-normal">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>
