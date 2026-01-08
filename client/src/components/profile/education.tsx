@@ -683,42 +683,7 @@ export default function Education() {
                   </Select>
                 </div>
               </div>
-              
-              {/* Industry */}
-              <FormField
-                control={form.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" />
-                      Industry
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          setSelectedIndustry(value);
-                        }}
-                      >
-                        <SelectTrigger className="neo-glass-input">
-                          <SelectValue placeholder="Select an industry" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {industryOptions.map((option) => (
-                            <SelectItem key={option.key} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
+
               {/* Field of Study */}
               <FormField
                 control={form.control}
@@ -769,42 +734,7 @@ export default function Education() {
                 )}
               />
               
-              {/* Domain - only show if industry is selected */}
-              {selectedIndustry && (
-                <FormField
-                  control={form.control}
-                  name="domain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
-                        <Building className="h-4 w-4" />
-                        Domain
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            setSelectedDomain(value);
-                          }}
-                        >
-                          <SelectTrigger className="neo-glass-input">
-                            <SelectValue placeholder="Select a domain" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {domainOptionsFormatted.map((option) => (
-                              <SelectItem key={option.key} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              {/* Domain - removed since it's now in Industry Selection grid */}
               
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
