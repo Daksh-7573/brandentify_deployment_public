@@ -240,6 +240,30 @@ export default function FreelancerHub({
                   </Card>
                 )}
 
+                {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-purple-200 dark:border-purple-800">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3">
+                        <Heart className="h-6 w-6 text-purple-500 flex-shrink-0 mt-1" />
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Core Values</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {userInfo.coreValues.map((value, index) => (
+                              <Badge 
+                                key={index} 
+                                variant="secondary"
+                                className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 border-none"
+                              >
+                                {value}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {userInfo.lookingFor && (
                   <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-orange-200 dark:border-orange-800">
                     <CardContent className="p-6">
@@ -257,31 +281,6 @@ export default function FreelancerHub({
             </div>
           </div>
         </section>
-
-        {/* Core Values Section */}
-        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-          <section className="px-6 py-8">
-            <div className="max-w-6xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="flex flex-wrap justify-center gap-4">
-                  {userInfo.coreValues.map((value, index) => (
-                    <Badge 
-                      key={index} 
-                      className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 border-none px-6 py-2 text-lg font-medium shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      {value}
-                    </Badge>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </section>
-        )}
 
         {/* Vision & Mission Section */}
         {(userInfo.visionStatement || userInfo.missionStatement) && (
