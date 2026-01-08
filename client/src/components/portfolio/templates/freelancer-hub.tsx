@@ -296,8 +296,10 @@ export default function FreelancerHub({
                   >
                     <Card className="bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-800/30 border-none h-full">
                       <CardContent className="p-8">
-                        <Lightbulb className="h-10 w-10 text-purple-600 dark:text-purple-400 mb-4" />
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Vision</h3>
+                        <div className="flex items-center gap-3 mb-4">
+                          <Lightbulb className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+                          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Vision</h3>
+                        </div>
                         <p className="break-all text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.visionStatement}</p>
                       </CardContent>
                     </Card>
@@ -313,8 +315,10 @@ export default function FreelancerHub({
                   >
                     <Card className="bg-gradient-to-br from-pink-100 to-pink-50 dark:from-pink-900/30 dark:to-pink-800/30 border-none h-full">
                       <CardContent className="p-8">
-                        <Target className="h-10 w-10 text-pink-600 dark:text-pink-400 mb-4" />
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Mission</h3>
+                        <div className="flex items-center gap-3 mb-4">
+                          <Target className="h-10 w-10 text-pink-600 dark:text-pink-400" />
+                          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Mission</h3>
+                        </div>
                         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.missionStatement}</p>
                       </CardContent>
                     </Card>
