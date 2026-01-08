@@ -91,7 +91,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
             {heroCopy.coreValues && heroCopy.coreValues.length > 0 && !isPreview && (
               <div className="space-y-3 mt-8 w-full">
-                <p className="text-sm font-semibold uppercase tracking-wider text-center" style={{ color: COLORS.silverGray }}>
+                <p className="break-all text-sm font-semibold uppercase tracking-wider text-center" style={{ color: COLORS.silverGray }}>
                   Core Values
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">

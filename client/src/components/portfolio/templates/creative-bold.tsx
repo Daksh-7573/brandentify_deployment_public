@@ -189,7 +189,7 @@ export default function CreativeBold({
 
               {/* Tagline */}
               {userInfo.tagline && (
-                <p className="break-words text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
+                <p className="break-all text-lg italic max-w-2xl" style={{ color: COOL_GRAY }}>
                   {userInfo.tagline}
                 </p>
               )}
@@ -263,7 +263,7 @@ export default function CreativeBold({
                 {userInfo.uniqueValueProposition && (
                   <div>
                     <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Unique Value Proposition</h3>
-                    <p className="break-words text-2xl font-medium leading-snug" style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
+                    <p className="break-all text-2xl font-medium leading-snug" style={{ color: INK_BLACK }}>{userInfo.uniqueValueProposition}</p>
                   </div>
                 )}
               </div>
@@ -274,14 +274,14 @@ export default function CreativeBold({
                   {userInfo.missionStatement && (
                     <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
                       <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Mission</h3>
-                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
+                      <p className="text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-all" style={{ color: COOL_GRAY }}>{userInfo.missionStatement}</p>
                     </div>
                   )}
 
                   {userInfo.visionStatement && (
                     <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>
                       <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Vision</h3>
-                      <p className="break-words text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-words" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
+                      <p className="break-all text-lg leading-relaxed whitespace-pre-wrap overflow-hidden break-all" style={{ color: COOL_GRAY }}>{userInfo.visionStatement}</p>
                     </div>
                   )}
                 </div>

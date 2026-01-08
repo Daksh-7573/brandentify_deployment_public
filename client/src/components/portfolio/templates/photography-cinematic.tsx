@@ -259,7 +259,7 @@ function FilmReelExperience({ experience, index, isLast }: { experience: any; in
           <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
             <div>
               <h4 className="font-semibold text-lg" style={{ color: colors.charcoal }}>{experience.title}</h4>
-              <p className="break-words text-sm font-medium" style={{ color: colors.copper }}>{experience.company}</p>
+              <p className="break-all text-sm font-medium" style={{ color: colors.copper }}>{experience.company}</p>
             </div>
             <div className="flex items-center gap-1.5 text-xs px-2 py-1 rounded-full" style={{ background: `${colors.goldenHour}20`, color: colors.deepSepia }}>
               <Calendar className="w-3 h-3" />
@@ -831,7 +831,7 @@ export default function PhotographyCinematic({
                         </div>
                         <h4 className="font-semibold text-sm" style={{ color: colors.charcoal }}>Vision</h4>
                       </div>
-                      <p className="break-words text-sm" style={{ color: colors.charcoal, opacity: 0.8 }}>{userInfo.visionStatement}</p>
+                      <p className="break-all text-sm" style={{ color: colors.charcoal, opacity: 0.8 }}>{userInfo.visionStatement}</p>
                     </div>
                   )}
                   {userInfo.missionStatement && (

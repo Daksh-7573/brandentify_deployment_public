@@ -200,7 +200,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
     { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'education', label: 'Education', icon: <GraduationCap className="break-words w-4 h-4" /> }
+    { id: 'education', label: 'Education', icon: <GraduationCap className="break-all w-4 h-4" /> }
   ];
 
   return (
@@ -253,7 +253,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               </div>
               
               <div className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
-                <p className="break-words mb-2">
+                <p className="break-all mb-2">
                   <span className="font-medium">Looking For: </span>
                   {lookingFor || "I create engaging digital experiences with innovation and technical expertise."}
                 </p>
@@ -537,7 +537,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     <Star className="h-6 w-6 text-purple-400" />
                     <h3 className="text-xl font-semibold text-purple-300">Tagline</h3>
                   </div>
-                  <p className="break-words text-gray-300 italic text-lg">"{tagline}"</p>
+                  <p className="break-all text-gray-300 italic text-lg">"{tagline}"</p>
                 </motion.div>
               )}
 
@@ -554,7 +554,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                         <Lightbulb className="h-6 w-6 text-blue-400" />
                         <h3 className="text-xl font-semibold text-blue-300">Vision</h3>
                       </div>
-                      <p className="break-words text-gray-300 leading-relaxed">{visionStatement}</p>
+                      <p className="break-all text-gray-300 leading-relaxed">{visionStatement}</p>
                     </motion.div>
                   )}
                   {missionStatement && (

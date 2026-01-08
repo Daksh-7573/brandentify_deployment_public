@@ -184,7 +184,7 @@ export default function FreelancerHub({
                 )}
 
                 {userInfo.tagline && (
-                  <p className="break-words text-xl text-gray-600 dark:text-gray-400 mb-6 italic">
+                  <p className="break-all text-xl text-gray-600 dark:text-gray-400 mb-6 italic">
                     "{userInfo.tagline}"
                   </p>
                 )}
@@ -299,7 +299,7 @@ export default function FreelancerHub({
                       <CardContent className="p-8">
                         <Lightbulb className="h-10 w-10 text-purple-600 dark:text-purple-400 mb-4" />
                         <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Vision</h3>
-                        <p className="break-words text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.visionStatement}</p>
+                        <p className="break-all text-gray-700 dark:text-gray-300 leading-relaxed">{userInfo.visionStatement}</p>
                       </CardContent>
                     </Card>
                   </motion.div>

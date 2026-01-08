@@ -130,7 +130,7 @@ function ProjectModal({
           {/* Description */}
           {project.description && (
             <div className="prose prose-sm max-w-none">
-              <p className="break-words text-gray-700 leading-relaxed">{project.description}</p>
+              <p className="break-all break-all text-gray-700 leading-relaxed">{project.description}</p>
             </div>
           )}
 
@@ -352,7 +352,7 @@ export default function FashionRunway({
 
                 {/* Mission Statement */}
                 {userInfo.missionStatement && (
-                  <p className="break-words text-gray-700">
+                  <p className="break-all break-all text-gray-700">
                     {userInfo.missionStatement}
                   </p>
                 )}

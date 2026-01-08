@@ -256,7 +256,7 @@ export default function CreativeQuantum({
 
               {/* Tagline */}
               {userInfo.tagline && (
-                <p className="break-words text-white/70 text-sm mb-6 max-w-md">{userInfo.tagline}</p>
+                <p className="break-all text-white/70 text-sm mb-6 max-w-md">{userInfo.tagline}</p>
               )}
 
               {/* Info Chips Row */}
@@ -347,7 +347,7 @@ export default function CreativeQuantum({
                   }}
                 >
                   <h4 className="text-cyan-400 font-medium text-sm mb-2">Vision</h4>
-                  <p className="break-words text-white/80 text-sm">{userInfo.visionStatement}</p>
+                  <p className="break-all text-white/80 text-sm">{userInfo.visionStatement}</p>
                 </div>
               )}
 

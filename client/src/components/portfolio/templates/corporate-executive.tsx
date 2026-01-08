@@ -252,7 +252,7 @@ export default function CorporateExecutive({
     // Business & Strategy Skills
     if (nameLower.includes('strateg') || nameLower.includes('business') || nameLower.includes('planning')) return <Target className="h-5 w-5" />;
     if (nameLower.includes('lead') || nameLower.includes('management') || nameLower.includes('team')) return <UserCheck className="h-5 w-5" />;
-    if (nameLower.includes('finance') || nameLower.includes('invest') || nameLower.includes('accounting') || nameLower.includes('budget')) return <TrendingUp className="break-words break-words h-5 w-5" />;
+    if (nameLower.includes('finance') || nameLower.includes('invest') || nameLower.includes('accounting') || nameLower.includes('budget')) return <TrendingUp className="break-all break-all break-all h-5 w-5" />;
     if (nameLower.includes('marketing') || nameLower.includes('brand') || nameLower.includes('social') || nameLower.includes('campaign')) return <Presentation className="h-5 w-5" />;
     if (nameLower.includes('sales') || nameLower.includes('negotiat')) return <ChartBar className="h-5 w-5" />;
     
@@ -737,7 +737,7 @@ export default function CorporateExecutive({
                       <FileText className="h-5 w-5 text-[#6a0dad]" />
                       Project Description
                     </h3>
-                    <p className="break-words break-words text-gray-700 text-base leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <p className="break-all break-all break-all text-gray-700 text-base leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                       {selectedProject.description}
                     </p>
                   </div>
@@ -974,7 +974,7 @@ export default function CorporateExecutive({
                       Tagline
                     </h3>
                   </div>
-                  <p className="break-words break-words text-gray-800 italic text-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <p className="break-all break-all break-all text-gray-800 italic text-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                     "{userInfo.tagline}"
                   </p>
                 </div>
@@ -991,7 +991,7 @@ export default function CorporateExecutive({
                           Vision
                         </h3>
                       </div>
-                      <p className="break-words break-words text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      <p className="break-all break-all break-all text-gray-600 leading-relaxed break-all whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {userInfo.visionStatement}
                       </p>
                     </div>
@@ -1004,7 +1004,7 @@ export default function CorporateExecutive({
                           Mission
                         </h3>
                       </div>
-                      <p className="text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      <p className="text-gray-600 leading-relaxed break-all whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {userInfo.missionStatement}
                       </p>
                     </div>
@@ -1044,7 +1044,7 @@ export default function CorporateExecutive({
                       What Sets Me Apart
                     </h3>
                   </div>
-                  <p className="text-gray-600 leading-relaxed break-words whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                  <p className="text-gray-600 leading-relaxed break-all whitespace-normal" style={{ fontFamily: 'Inter, sans-serif', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                     {userInfo.uniqueValueProposition}
                   </p>
                 </div>

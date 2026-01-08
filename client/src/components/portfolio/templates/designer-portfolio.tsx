@@ -371,7 +371,7 @@ export default function DesignerPortfolio({
                     border: `1px solid ${colors.aluminium}`,
                   }}
                 >
-                  <Zap className="break-words break-words w-4 h-4" style={{ color: colors.softMagenta }} />
+                  <Zap className="break-all break-all w-4 h-4" style={{ color: colors.softMagenta }} />
                   <span 
                     className="text-sm font-semibold uppercase tracking-wider"
                     style={{ color: colors.graphite }}
@@ -504,7 +504,7 @@ export default function DesignerPortfolio({
                     Vision
                   </h4>
                 </div>
-                <p className="break-words break-words text-sm" style={{ color: colors.graphite }}>{userInfo.visionStatement}</p>
+                <p className="break-all break-all text-sm" style={{ color: colors.graphite }}>{userInfo.visionStatement}</p>
               </div>
             )}
 

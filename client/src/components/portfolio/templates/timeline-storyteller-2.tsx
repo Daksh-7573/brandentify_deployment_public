@@ -118,7 +118,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           
           {project.description && (
             <div className="prose prose-amber max-w-none">
-              <p className="break-words text-gray-700 leading-relaxed">{project.description}</p>
+              <p className="break-all text-gray-700 leading-relaxed">{project.description}</p>
             </div>
           )}
           
@@ -313,7 +313,7 @@ export default function TimelineStoryteller2({
                           <Target className="w-5 h-5" />
                           Vision
                         </h3>
-                        <p className="break-words text-gray-700 leading-relaxed italic break-words">{userInfo.visionStatement}</p>
+                        <p className="break-all text-gray-700 leading-relaxed italic break-all">{userInfo.visionStatement}</p>
                       </div>
                     )}
                     {userInfo.missionStatement && (
@@ -322,7 +322,7 @@ export default function TimelineStoryteller2({
                           <TrendingUp className="w-5 h-5" />
                           Mission
                         </h3>
-                        <p className="text-gray-700 leading-relaxed break-words">{userInfo.missionStatement}</p>
+                        <p className="text-gray-700 leading-relaxed break-all">{userInfo.missionStatement}</p>
                       </div>
                     )}
                   </div>
@@ -345,7 +345,7 @@ export default function TimelineStoryteller2({
                 {userInfo.uniqueValueProposition && (
                   <div className="space-y-3">
                     <h3 className="text-lg font-bold text-amber-900">Unique Value Proposition</h3>
-                    <p className="text-gray-700 leading-relaxed font-medium break-words">{userInfo.uniqueValueProposition}</p>
+                    <p className="text-gray-700 leading-relaxed font-medium break-all">{userInfo.uniqueValueProposition}</p>
                   </div>
                 )}
               </CardContent>
