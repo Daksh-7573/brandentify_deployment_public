@@ -165,7 +165,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                 {profileData.whatIOffer && (
                   <div>
                     <h4 className="font-medium mb-2">What I Offer</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.whatIOffer}</p>
+                    <p className="text-sm text-muted-foreground break-all">{profileData.whatIOffer}</p>
                   </div>
                 )}
               </div>

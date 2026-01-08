@@ -422,7 +422,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Tagline / Personal Motto</h3>
                         </div>
-                        <p className="text-white/80 text-sm italic">
+                        <p className="text-white/80 text-sm break-all italic">
                           {userData?.tagline ? `"${userData.tagline}"` : 'Not specified'}
                         </p>
                       </div>
@@ -432,7 +432,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Vision Statement</h3>
                         </div>
-                        <p className="text-white/80 text-sm">{userData?.visionStatement || 'Not specified'}</p>
+                        <p className="text-white/80 text-sm break-all">{userData?.visionStatement || 'Not specified'}</p>
                       </div>
 
                       {/* Mission Statement */}
@@ -440,7 +440,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Mission Statement</h3>
                         </div>
-                        <p className="text-white/80 text-sm">{userData?.missionStatement || 'Not specified'}</p>
+                        <p className="text-white/80 text-sm break-all">{userData?.missionStatement || 'Not specified'}</p>
                       </div>
 
                       {/* Core Values */}
@@ -466,7 +466,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Unique Value Proposition</h3>
                         </div>
-                        <p className="text-white/80 text-sm">{userData?.uniqueValueProposition || 'Not specified'}</p>
+                        <p className="text-white/80 text-sm break-all">{userData?.uniqueValueProposition || 'Not specified'}</p>
                       </div>
 
                       {/* Primary Audience */}

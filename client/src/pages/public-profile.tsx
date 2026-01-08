@@ -325,7 +325,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                   </div>
                   
                   {userData?.title && (
-                    <p className="text-lg text-muted-foreground">{userData.title}</p>
+                    <p className="text-lg text-muted-foreground break-all">{userData.title}</p>
                   )}
                   
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
@@ -347,7 +347,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                       <h3 className="text-md font-semibold mb-2">Personal Information</h3>
                       <div className="space-y-2">
                         {/* Email */}
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-sm break-all">
                           <Mail className="h-4 w-4 text-muted-foreground" />
                           <span>{userData?.email}</span>
                         </div>
