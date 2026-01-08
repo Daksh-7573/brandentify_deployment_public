@@ -214,11 +214,17 @@ export default function Education() {
     onSuccess: () => {
       // Direct refetch to ensure UI updates immediately
       refetch();
+      
+      // Use the actual user profile complete invalidate function if available or manually invalidate keys
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
-      // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', effectiveUserId, 'profile-complete'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', String(effectiveUserId), 'profile-complete'] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      // Also trigger a window-level reload if the profile still doesn't update (last resort)
+      // setTimeout(() => window.location.reload(), 500);
+      
       toast({
         title: "Education added",
         description: "Your education has been added successfully",
@@ -256,11 +262,13 @@ export default function Education() {
     onSuccess: () => {
       // Direct refetch to ensure UI updates immediately
       refetch();
+      
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
-      // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', effectiveUserId, 'profile-complete'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', String(effectiveUserId), 'profile-complete'] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
       toast({
         title: "Education updated",
         description: "Your education has been updated successfully",
@@ -295,11 +303,13 @@ export default function Education() {
     onSuccess: () => {
       // Direct refetch to ensure UI updates immediately
       refetch();
+      
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
-      // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', effectiveUserId, 'profile-complete'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', String(effectiveUserId), 'profile-complete'] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
       toast({
         title: "Education deleted",
         description: "Your education has been deleted successfully",
@@ -383,13 +393,22 @@ export default function Education() {
     // Process education data for the form
     const educationToEdit = { ...education };
     
-    // Set industry and domain for dropdowns
-    setSelectedIndustry(educationToEdit.industry || "");
-    setSelectedDomain(educationToEdit.domain || "");
+    // Explicitly handle fieldOfStudy to field mapping first
+    const field = educationToEdit.fieldOfStudy || educationToEdit.field || "";
+    educationToEdit.field = field;
+    
+    // Set local state for industry and domain to ensure UI dropdowns sync
+    const industry = educationToEdit.industry || "";
+    const domain = educationToEdit.domain || "";
+    
+    setSelectedIndustry(industry);
+    setSelectedDomain(domain);
     
     // Update domain options based on selected industry
-    if (educationToEdit.industry) {
-      setDomainOptions(INDUSTRY_DOMAINS[educationToEdit.industry] || []);
+    if (industry) {
+      setDomainOptions(INDUSTRY_DOMAINS[industry] || []);
+    } else {
+      setDomainOptions([]);
     }
     
     // Handle skillsAcquired parsing if it's a string
@@ -406,19 +425,23 @@ export default function Education() {
     setSkillsAcquired(safeSkills);
     setNewSkillInput("");
     
-    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
-    const field = educationToEdit.fieldOfStudy || educationToEdit.field || "";
-    
-    // Update form values
-    form.reset({
-      ...educationToEdit,
-      // Convert string dates to Date objects if they exist
-      startDate: educationToEdit.startDate ? new Date(educationToEdit.startDate) : undefined,
-      endDate: educationToEdit.endDate ? new Date(educationToEdit.endDate) : undefined,
-      // Ensure skillsAcquired is an array and field is properly mapped
-      skillsAcquired: safeSkills,
-      field: field,
-    });
+    // Ensure all state is set BEFORE updating the form
+    // This gives time for state updates to propagate before form.reset
+    setTimeout(() => {
+      form.reset({
+        ...educationToEdit,
+        startDate: educationToEdit.startDate ? new Date(educationToEdit.startDate) : undefined,
+        endDate: educationToEdit.endDate ? new Date(educationToEdit.endDate) : undefined,
+        skillsAcquired: safeSkills,
+        field: field,
+        industry: industry,
+        domain: domain,
+      });
+      
+      // Double check values are set
+      form.setValue("industry", industry);
+      form.setValue("domain", domain);
+    }, 0);
 
     setEditingEducation(educationToEdit);
     setOpenDialog(true);
@@ -662,7 +685,9 @@ export default function Education() {
                     value={selectedIndustry} 
                     onValueChange={(val) => {
                       setSelectedIndustry(val);
+                      setSelectedDomain(""); // Clear domain when industry changes
                       form.setValue("industry", val);
+                      form.setValue("domain", "");
                     }}
                   >
                     <SelectTrigger className="neo-glass-input border-gray-700 text-white">
