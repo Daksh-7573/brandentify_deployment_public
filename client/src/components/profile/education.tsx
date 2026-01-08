@@ -212,6 +212,8 @@ export default function Education() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
+      // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education added",
         description: "Your education has been added successfully",
@@ -248,6 +250,8 @@ export default function Education() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
+      // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education updated",
         description: "Your education has been updated successfully",
@@ -281,6 +285,8 @@ export default function Education() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
+      // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education deleted",
         description: "Your education has been deleted successfully",
