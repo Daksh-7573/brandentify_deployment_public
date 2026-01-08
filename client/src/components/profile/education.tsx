@@ -374,23 +374,33 @@ export default function Education() {
       setDomainOptions(INDUSTRY_DOMAINS[education.industry] || []);
     }
     
-    // Initialize the skills state
-    setSkillsAcquired(education.skillsAcquired || []);
-    setNewSkillInput("");
-    
-    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
-    const field = education.fieldOfStudy || "";
-    
-    // Update form values
-    form.reset({
-      ...education,
-      // Convert string dates to Date objects if they exist
-      startDate: education.startDate ? new Date(education.startDate) : undefined,
-      endDate: education.endDate ? new Date(education.endDate) : undefined,
-      // Ensure skillsAcquired is an array and field is properly mapped
-      skillsAcquired: education.skillsAcquired || [],
-      field: field,
-    });
+      // Handle skillsAcquired parsing if it's a string
+      let skills = education.skillsAcquired;
+      if (typeof skills === 'string') {
+        try {
+          skills = JSON.parse(skills);
+        } catch (e) {
+          skills = [];
+        }
+      }
+      // Initialize the skills state with a safe array
+      const safeSkills = Array.isArray(skills) ? skills : [];
+      setSkillsAcquired(safeSkills);
+      setNewSkillInput("");
+      
+      // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
+      const field = education.fieldOfStudy || "";
+      
+      // Update form values
+      form.reset({
+        ...education,
+        // Convert string dates to Date objects if they exist
+        startDate: education.startDate ? new Date(education.startDate) : undefined,
+        endDate: education.endDate ? new Date(education.endDate) : undefined,
+        // Ensure skillsAcquired is an array and field is properly mapped
+        skillsAcquired: safeSkills,
+        field: field,
+      });
     
     setOpenDialog(true);
   };
