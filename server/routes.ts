@@ -2613,7 +2613,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[PUT /educations/:id] Updating with data:`, JSON.stringify(rawData, null, 2));
-      const education = await storage.updateEducation(educationId, rawData);
+      
+      // Ensure domain is explicitly passed to storage if present in req.body
+      const updateData = {
+        ...rawData,
+        domain: rawData.domain !== undefined ? rawData.domain : undefined
+      };
+
+      const education = await storage.updateEducation(educationId, updateData);
       if (!education) {
         return res.status(404).json({ message: "Education not found" });
       }
@@ -2646,7 +2653,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, JSON.stringify(rawData, null, 2));
-      const education = await storage.updateEducation(educationId, rawData);
+      
+      // Ensure domain is explicitly passed to storage if present in req.body
+      const updateData = {
+        ...rawData,
+        domain: rawData.domain !== undefined ? rawData.domain : undefined
+      };
+
+      const education = await storage.updateEducation(educationId, updateData);
       
       if (!education) {
         return res.status(404).json({ message: "Education not found" });
