@@ -647,41 +647,6 @@ export default function FreelancerHub({
           </section>
         )}
 
-        {/* Core Values Section */}
-        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-          <section className="px-6 py-16 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
-            <div className="max-w-6xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  <Heart className="inline h-8 w-8 mr-3 text-purple-600" />
-                  Core Values
-                </h2>
-
-                <div className="flex flex-wrap justify-center gap-4">
-                  {userInfo.coreValues.map((value, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    >
-                      <Badge className="px-6 py-3 text-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                        {value}
-                      </Badge>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </section>
-        )}
-
         {/* Footer CTA Section */}
         <section className="px-6 py-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
           <div className="max-w-4xl mx-auto text-center">
