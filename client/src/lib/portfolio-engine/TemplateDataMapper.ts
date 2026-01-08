@@ -194,7 +194,7 @@ export function shouldShowSection(
         data.professionalBrand.uniqueValueProposition
       );
     case 'audience':
-      return false; // Specifically requested to not show Primary/Secondary audience
+      return false; // Audience section removed as per requirements
     case 'services':
       return data.services.length > 0;
     case 'skills':
@@ -206,7 +206,7 @@ export function shouldShowSection(
     case 'education':
       return data.educations.length > 0;
     case 'contact':
-      return false; // Requested not to show contact details (Email/Phone)
+      return false; // Contact details removed as per requirements
     default:
       return true;
   }
