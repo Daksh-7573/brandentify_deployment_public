@@ -996,32 +996,6 @@ export function DynamicInnovator({
         </div>
       </section>
       
-      {/* About Section */}
-      <section 
-        id="about-section" 
-        ref={sectionRefs.about}
-        className="section py-10 px-4 md:px-8 bg-[#0c162d]/50"
-      >
-        <div className="max-w-6xl mx-auto">
-          <h2 className="futuristic-heading text-2xl md:text-3xl font-bold mb-8 text-white inline-block">
-            <Cpu className="inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
-            About Me
-          </h2>
-          
-          <div className="tech-card p-6 md:p-8 text-gray-300 leading-relaxed">
-            <p className="mb-4">
-              {userInfo.title ? `As a ${userInfo.title}` : "As a technology professional"} with expertise in {userInfo.domain || userInfo.industry || "advanced technologies"}, 
-              I specialize in developing innovative solutions that push the boundaries of what's possible.
-            </p>
-            
-            <p>
-              My approach combines cutting-edge technical knowledge with strategic problem-solving, ensuring each project not only meets but exceeds expectations.
-              {userInfo.lookingFor ? ` Currently, I'm looking for ${userInfo.lookingFor} opportunities that challenge me to grow and innovate in the ${userInfo.industry || "technology"} space.` : ""}
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* My Professional Brand Section */}
       {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
         (userInfo.coreValues && userInfo.coreValues.length > 0) || 
@@ -1236,15 +1210,6 @@ export function DynamicInnovator({
                           <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
                             <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
                               <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                              Included Features:
-                            </h4>
-                            <ul className="text-gray-300 text-sm space-y-2">
-                              {service.features.map((feature, index) => (
-                                <li key={index} className="flex items-start">
-                                  <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                                    <Check className="h-3 w-3 text-[#fe53bb]" />
-                                  </div>
-                                  <span>{feature}</span>
                                 </li>
                               ))}
                             </ul>
@@ -1254,15 +1219,6 @@ export function DynamicInnovator({
                           <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
                             <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
                               <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                              Included Features:
-                            </h4>
-                            <ul className="text-gray-300 text-sm space-y-2">
-                              <li className="flex items-start">
-                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                                  <Check className="h-3 w-3 text-[#fe53bb]" />
-                                </div>
-                                <span>Professional consultation</span>
-                              </li>
                               <li className="flex items-start">
                                 <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
                                   <Check className="h-3 w-3 text-[#fe53bb]" />
