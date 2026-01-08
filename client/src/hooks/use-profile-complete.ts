@@ -32,9 +32,9 @@ export function useProfileComplete(userId: string | number | undefined): UseQuer
       return response.json();
     },
     enabled: !!userId,
-    staleTime: 60000,
-    gcTime: 300000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 

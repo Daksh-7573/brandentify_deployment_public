@@ -164,7 +164,8 @@ export default function Education() {
   const { data: fetchedEducations = [], isLoading: queryLoading, refetch } = useQuery<any>({
     queryKey: [`/api/users/${effectiveUserId}/educations`],
     enabled: !batchData.isFromBatch,
-    staleTime: 0, // Disable stale time for education to ensure fresh data
+    staleTime: 0,
+    gcTime: 0, // Ensure no caching for education data to force fresh fetch
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
@@ -215,6 +216,8 @@ export default function Education() {
       refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education added",
@@ -255,6 +258,8 @@ export default function Education() {
       refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education updated",
@@ -292,6 +297,8 @@ export default function Education() {
       refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-complete`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", effectiveUserId, "profile-complete"] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       toast({
         title: "Education deleted",
@@ -373,45 +380,47 @@ export default function Education() {
   
   // Handle edit education
   const handleEditEducation = (education: any) => {
-    setEditingEducation(education);
+    // Process education data for the form
+    const educationToEdit = { ...education };
     
     // Set industry and domain for dropdowns
-    setSelectedIndustry(education.industry || "");
-    setSelectedDomain(education.domain || "");
+    setSelectedIndustry(educationToEdit.industry || "");
+    setSelectedDomain(educationToEdit.domain || "");
     
     // Update domain options based on selected industry
-    if (education.industry) {
-      setDomainOptions(INDUSTRY_DOMAINS[education.industry] || []);
+    if (educationToEdit.industry) {
+      setDomainOptions(INDUSTRY_DOMAINS[educationToEdit.industry] || []);
     }
     
-      // Handle skillsAcquired parsing if it's a string
-      let skills = education.skillsAcquired;
-      if (typeof skills === 'string') {
-        try {
-          skills = JSON.parse(skills);
-        } catch (e) {
-          skills = [];
-        }
+    // Handle skillsAcquired parsing if it's a string
+    let skills = educationToEdit.skillsAcquired;
+    if (typeof skills === 'string') {
+      try {
+        skills = JSON.parse(skills);
+      } catch (e) {
+        skills = [];
       }
-      // Initialize the skills state with a safe array
-      const safeSkills = Array.isArray(skills) ? skills : [];
-      setSkillsAcquired(safeSkills);
-      setNewSkillInput("");
-      
-      // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
-      const field = education.fieldOfStudy || "";
-      
-      // Update form values
-      form.reset({
-        ...education,
-        // Convert string dates to Date objects if they exist
-        startDate: education.startDate ? new Date(education.startDate) : undefined,
-        endDate: education.endDate ? new Date(education.endDate) : undefined,
-        // Ensure skillsAcquired is an array and field is properly mapped
-        skillsAcquired: safeSkills,
-        field: field,
-      });
+    }
+    // Initialize the skills state with a safe array
+    const safeSkills = Array.isArray(skills) ? skills : [];
+    setSkillsAcquired(safeSkills);
+    setNewSkillInput("");
     
+    // Handle fieldOfStudy mapping - the database field is fieldOfStudy but we use field in the UI form
+    const field = educationToEdit.fieldOfStudy || educationToEdit.field || "";
+    
+    // Update form values
+    form.reset({
+      ...educationToEdit,
+      // Convert string dates to Date objects if they exist
+      startDate: educationToEdit.startDate ? new Date(educationToEdit.startDate) : undefined,
+      endDate: educationToEdit.endDate ? new Date(educationToEdit.endDate) : undefined,
+      // Ensure skillsAcquired is an array and field is properly mapped
+      skillsAcquired: safeSkills,
+      field: field,
+    });
+
+    setEditingEducation(educationToEdit);
     setOpenDialog(true);
   };
   
