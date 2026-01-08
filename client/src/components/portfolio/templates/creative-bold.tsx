@@ -193,13 +193,6 @@ export default function CreativeBold({
                 </p>
               )}
 
-              {/* About Me */}
-              {userInfo.aboutMe && (
-                <p className="text-lg leading-relaxed max-w-2xl" style={{ color: COOL_GRAY }}>
-                  {userInfo.aboutMe}
-                </p>
-              )}
-
               {/* Grouped Location & Industry badges */}
               <div className="flex flex-wrap gap-2 pt-2">
                 {userInfo.location && (
@@ -276,28 +269,6 @@ export default function CreativeBold({
 
               {/* BRAND STORY & CORE PILLARS */}
               <div className="pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-                  {userInfo.aboutMe && (
-                    <div>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Background</h3>
-                      <p className="text-lg leading-relaxed" style={{ color: COOL_GRAY }}>{userInfo.aboutMe}</p>
-                    </div>
-                  )}
-                  
-                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
-                    <div>
-                      <h3 className="text-sm uppercase tracking-wider font-bold mb-4" style={{ color: CORAL }}>Values</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {userInfo.coreValues.map((value, idx) => (
-                          <Badge key={idx} style={{ backgroundColor: CORAL, color: PAPER_WHITE }} className="px-3 py-1">
-                            {value}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t" style={{ borderColor: '#E5E7EB' }}>
                   {userInfo.missionStatement && (
                     <div className="pl-6 border-l-4" style={{ borderColor: CORAL }}>

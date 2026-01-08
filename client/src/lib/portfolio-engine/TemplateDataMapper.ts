@@ -148,6 +148,28 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       thumbnailUrl: proj.thumbnailUrl,
       mediaUrls: proj.mediaUrls,
     })),
+    userEducations: data.educations.map(edu => ({
+      id: edu.id,
+      institution: edu.institution,
+      degree: edu.degree,
+      fieldOfStudy: edu.fieldOfStudy,
+      startDate: edu.startDate,
+      endDate: edu.endDate,
+      location: edu.location,
+      industry: edu.industry,
+      domain: edu.domain,
+      skillsAcquired: edu.skillsAcquired,
+    })),
+    userServices: data.services.map(service => ({
+      id: service.id,
+      title: service.title,
+      description: service.description,
+      icon: service.icon,
+      priceInr: service.priceInr,
+      priceUsd: service.priceUsd,
+      isHourly: service.isHourly,
+      priceType: service.priceType,
+    })),
     currentUserId: data.currentUserId,
   };
 }
