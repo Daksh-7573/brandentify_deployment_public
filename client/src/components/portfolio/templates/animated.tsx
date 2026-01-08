@@ -324,7 +324,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   transition={{ 
                     duration: 20, 
                     repeat: Infinity,
-                    ease: "linear"
+                    repeatType: "loop"
                   }}
                 />
                 
@@ -336,12 +336,12 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   transition={{ 
                     duration: 15, 
                     repeat: Infinity,
-                    ease: "linear"
+                    repeatType: "loop"
                   }}
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg z-20">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
@@ -1039,89 +1039,60 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 30 }}
             transition={{ duration: 0.7 }}
-            className="mb-16 text-left"
+            className="mb-16 text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
                 Career Journey
               </span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               My professional path and significant milestones.
             </p>
           </motion.div>
           
-          {/* Timeline Content */}
-          <div className="relative timeline-container">
-            {/* Timeline vertical line */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20"></div>
+          <div className="relative max-w-4xl mx-auto">
+            {/* Timeline Line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-blue-500 rounded-full opacity-30" />
             
-            <div className="space-y-12">
+            <div className="space-y-16">
               {experiences && experiences.length > 0 ? (
-                experiences.map((experience, index) => (
+                experiences.map((exp, index) => (
                   <motion.div 
-                    key={experience.id}
-                    className="relative flex flex-col pl-8"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 50 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    key={exp.id}
+                    initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                    animate={{ 
+                      opacity: isTimelineInView ? 1 : 0, 
+                      x: isTimelineInView ? 0 : (index % 2 === 0 ? -50 : 50) 
+                    }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    className={`relative flex items-center ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}
                   >
-                    {/* Timeline node */}
-                    <div className="timeline-node">
-                      <motion.div 
-                        className="absolute left-0 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: isTimelineInView ? 1 : 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                      >
-                        <motion.div 
-                          className="absolute inset-1 bg-orange-300 rounded-full"
-                          animate={{ scale: [1, 1.4, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                      </motion.div>
-                    </div>
+                    {/* Timeline Dot */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gray-900 border-4 border-purple-500 z-10 shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
                     
-                    {/* Content */}
-                    <motion.div 
-                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
-                      whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{experience.title}</h3>
-                          <h4 className="text-orange-400 font-medium">{experience.company}</h4>
-                        </div>
-                        <div className="mt-2 md:mt-0">
-                          <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
-                            {new Date(experience.startDate).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short'
-                            })}
-                            {' - '}
-                            {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short'
-                            }) : 'Present'}
-                          </span>
-                        </div>
+                    {/* Experience Card */}
+                    <div className={`w-[45%] ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
+                      <div className="bg-gray-800/40 backdrop-blur-md p-6 rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 group">
+                        <span className="text-purple-400 font-bold mb-2 block">{exp.duration}</span>
+                        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{exp.title}</h3>
+                        <p className={`text-gray-400 font-medium mb-3 flex items-center gap-2 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                          {index % 2 !== 0 && <Briefcase className="h-4 w-4" />}
+                          {exp.company}
+                          {index % 2 === 0 && <Briefcase className="h-4 w-4" />}
+                        </p>
+                        <p className="text-gray-400 leading-relaxed text-sm">
+                          {exp.description}
+                        </p>
                       </div>
-                      
-                      {(experience.location || experience.industry) && (
-                        <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
-                          {experience.location && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" /> {experience.location}
-                            </span>
-                          )}
-                          {experience.industry && (
-                            <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                              {experience.industry}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                      
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center text-gray-400">No work experience available.</div>
+              )}
+            </div>
+          </div>
                       {experience.description && (
                         <p className="text-gray-300 mb-4">{experience.description}</p>
                       )}
