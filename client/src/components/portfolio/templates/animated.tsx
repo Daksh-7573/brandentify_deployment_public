@@ -341,18 +341,28 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
-                  {photoURL ? (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg bg-gray-800">
+                  {photoURL && photoURL.trim() !== '' ? (
                     <img 
                       src={photoURL} 
                       alt={name} 
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const placeholder = parent.querySelector('.profile-placeholder');
+                          if (placeholder) {
+                            (placeholder as HTMLElement).style.display = 'flex';
+                          }
+                        }
+                      }}
                     />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold">
-                      {name ? name.charAt(0) : '?'}
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`profile-placeholder w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold ${photoURL && photoURL.trim() !== '' ? 'hidden' : ''}`}>
+                    {name ? name.charAt(0) : '?'}
+                  </div>
                 </div>
                 
                 {/* Floating particles */}
@@ -1087,40 +1097,35 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
                       whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
                     >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{experience.title}</h3>
-                          <h4 className="text-orange-400 font-medium">{experience.company}</h4>
-                        </div>
-                        <div className="mt-2 md:mt-0">
-                          <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
-                            {new Date(experience.startDate).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short'
-                            })}
-                            {' - '}
-                            {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short'
-                            }) : 'Present'}
-                          </span>
+                      <div className="flex flex-col md:flex-row md:items-start justify-between mb-3 gap-4">
+                        <div className="md:w-3/4">
+                          <h3 className="text-xl font-bold text-white mb-1">{experience.title}</h3>
+                          <h4 className="text-orange-400 font-medium mb-2">{experience.company}</h4>
+                          <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
+                            <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
+                              {new Date(experience.startDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short'
+                              })}
+                              {' - '}
+                              {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short'
+                              }) : 'Present'}
+                            </span>
+                            {experience.location && (
+                              <span className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" /> {experience.location}
+                              </span>
+                            )}
+                            {experience.industry && (
+                              <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                {experience.industry}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      
-                      {(experience.location || experience.industry) && (
-                        <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
-                          {experience.location && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" /> {experience.location}
-                            </span>
-                          )}
-                          {experience.industry && (
-                            <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                              {experience.industry}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
                       
                       {experience.description && (
                         <p className="text-gray-300 mb-4">{experience.description}</p>
