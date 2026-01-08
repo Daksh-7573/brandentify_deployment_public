@@ -82,7 +82,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
     photoURL: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
@@ -107,7 +106,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       industry: data.basicInfo.industry,
       domain: data.basicInfo.domain,
       lookingFor: data.basicInfo.lookingFor,
-      whatIOffer: data.audienceInfo.whatIOffer,
       photoURL: data.basicInfo.photoURL,
       tagline: data.professionalBrand.tagline,
       visionStatement: data.professionalBrand.visionStatement,

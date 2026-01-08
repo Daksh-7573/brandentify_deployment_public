@@ -19,10 +19,6 @@ export interface UserProfessionalBrand {
   uniqueValueProposition: string | null;
 }
 
-export interface UserAudienceInfo {
-  whatIOffer: string | null;
-}
-
 export interface SkillData {
   id: number;
   skillName: string;
@@ -86,7 +82,6 @@ export interface ServiceData {
 export interface ExtractedProfileData {
   basicInfo: UserBasicInfo;
   professionalBrand: UserProfessionalBrand;
-  audienceInfo: UserAudienceInfo;
   skills: SkillData[];
   experiences: ExperienceData[];
   educations: EducationData[];

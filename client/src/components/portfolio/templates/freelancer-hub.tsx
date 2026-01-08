@@ -43,7 +43,7 @@ interface FreelancerHubProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
-    whatIOffer?: string | null;
+    
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;

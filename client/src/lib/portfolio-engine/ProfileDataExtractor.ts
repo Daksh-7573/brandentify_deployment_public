@@ -2,7 +2,6 @@ import type {
   ExtractedProfileData,
   UserBasicInfo,
   UserProfessionalBrand,
-  UserAudienceInfo,
   SkillData,
   ExperienceData,
   EducationData,
@@ -50,12 +49,6 @@ export function extractProfessionalBrand(userData: any): UserProfessionalBrand {
     missionStatement: userData?.missionStatement || null,
     coreValues: parseJsonArray(userData?.coreValues),
     uniqueValueProposition: userData?.uniqueValueProposition || null,
-  };
-}
-
-export function extractAudienceInfo(userData: any): UserAudienceInfo {
-  return {
-    whatIOffer: userData?.whatIOffer || null,
   };
 }
 
@@ -147,7 +140,6 @@ export function extractAllProfileData(
   return {
     basicInfo: extractBasicInfo(userData),
     professionalBrand: extractProfessionalBrand(userData),
-    audienceInfo: extractAudienceInfo(userData),
     skills: extractSkills(collections.skills || []),
     experiences: extractExperiences(collections.experiences || []),
     educations: extractEducations(collections.educations || []),
@@ -194,10 +186,6 @@ export class ProfileDataExtractor {
 
   getProfessionalBrand(): UserProfessionalBrand {
     return extractProfessionalBrand(this.userData);
-  }
-
-  getAudienceInfo(): UserAudienceInfo {
-    return extractAudienceInfo(this.userData);
   }
 
   getSkills(): SkillData[] {

@@ -112,7 +112,7 @@ interface FashionQuantumProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
+    
     jobLevel: string | null;
     tagline: string | null;
     visionStatement: string | null;

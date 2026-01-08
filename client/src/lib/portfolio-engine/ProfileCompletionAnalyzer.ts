@@ -36,10 +36,7 @@ const SECTION_WEIGHTS: SectionWeight[] = [
     name: 'Target Audience',
     weight: 10,
     fields: [
-      { name: 'Primary Audience', path: 'audienceInfo.primaryAudience', required: false },
-      { name: 'Secondary Audience', path: 'audienceInfo.secondaryAudience', required: false },
-      { name: 'Looking For', path: 'audienceInfo.lookingFor', required: false },
-      { name: 'What I Offer', path: 'audienceInfo.whatIOffer', required: false },
+      { name: 'Looking For', path: 'basicInfo.lookingFor', required: false },
     ],
   },
   {

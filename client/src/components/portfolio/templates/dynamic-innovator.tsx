@@ -95,7 +95,7 @@ interface DynamicInnovatorProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
-    whatIOffer: string | null;
+    
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -1191,25 +1191,9 @@ export function DynamicInnovator({
             What I Offer
           </h2>
           
-          {userInfo.whatIOffer || userServices.length > 0 ? (
+          {userServices.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 mt-6">
-              {/* Display whatIOffer from userInfo as a primary service */}
-              {userInfo.whatIOffer && (
-                <div className="tech-card p-6">
-                  <h3 className="text-lg font-medium text-[#08f7fe] mb-3">
-                    Professional Services
-                  </h3>
-                  <p className="text-gray-300 mb-4 whitespace-pre-line">
-                    {userInfo.whatIOffer}
-                  </p>
-                  
-                  <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
-                    {userInfo.domain || userInfo.industry || "Professional Services"}
-                  </Badge>
-                </div>
-              )}
-              
-              {/* Display any additional services */}
+              {/* Display services */}
               {userServices.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
                   {userServices.slice(0, 6).map((service) => (

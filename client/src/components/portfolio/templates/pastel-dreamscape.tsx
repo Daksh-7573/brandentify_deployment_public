@@ -23,7 +23,7 @@ interface PastelDreamscapeProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer?: string | null;
+    
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
@@ -803,29 +803,6 @@ export default function PastelDreamscape({
                       </div>
                     </div>
                   )}
-                </GlassCard>
-              </motion.div>
-            </div>
-          </section>
-        )}
-
-        {/* What I Offer Section */}
-        {userInfo.whatIOffer && (
-          <section className="py-24 px-6">
-            <div className="container mx-auto max-w-4xl">
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                <h2 className="text-5xl font-bold text-center mb-16 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                  What I Offer
-                </h2>
-                <GlassCard className="p-10">
-                  <p className="text-gray-700 text-lg leading-relaxed text-center">
-                    {userInfo.whatIOffer}
-                  </p>
                 </GlassCard>
               </motion.div>
             </div>

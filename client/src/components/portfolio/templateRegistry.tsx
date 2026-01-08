@@ -64,7 +64,6 @@ export interface PortfolioTemplateProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
     jobLevel: string | null;
     tagline: string | null;
     visionStatement: string | null;
@@ -232,7 +231,6 @@ export function buildPortfolioTemplateProps(
       photoURL: userData.photoURL || null,
       aboutMe: userData.aboutMe || null,
       lookingFor: userData.lookingFor || null,
-      whatIOffer: userData.whatIOffer || null,
       brandName: userData.brandName || null,
       tagline: userData.tagline || null,
       visionStatement: userData.visionStatement || null,

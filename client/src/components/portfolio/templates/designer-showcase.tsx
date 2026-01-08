@@ -110,7 +110,7 @@ interface DesignerShowcaseProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer?: string | null;
+    
     jobLevel?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
@@ -250,21 +250,11 @@ export default function DesignerShowcase({
                   <p className="text-white/70">{userInfo.missionStatement}</p>
                 </div>
               )}
-              {(userInfo.uniqueValueProposition || userInfo.whatIOffer) && (
-                <>
-                  {userInfo.uniqueValueProposition && (
-                    <div>
-                      <h3 className="text-xl font-semibold text-pink-400 mb-2">Unique Value Proposition</h3>
-                      <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
-                    </div>
-                  )}
-                  {userInfo.whatIOffer && (
-                    <div>
-                      <h3 className="text-xl font-semibold text-amber-400 mb-2">What I Offer</h3>
-                      <p className="text-white/70">{userInfo.whatIOffer}</p>
-                    </div>
-                  )}
-                </>
+              {userInfo.uniqueValueProposition && (
+                <div>
+                  <h3 className="text-xl font-semibold text-pink-400 mb-2">Unique Value Proposition</h3>
+                  <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
+                </div>
               )}
             </div>
           </motion.div>

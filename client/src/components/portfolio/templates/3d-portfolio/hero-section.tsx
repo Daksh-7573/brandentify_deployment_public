@@ -11,7 +11,6 @@ interface HeroSectionProps {
     company?: string;
     visionStatement?: string;
     paragraph?: string;
-    whatIOffer?: string;
     missionStatement?: string;
     coreValues?: string[];
     lookingFor?: string;
@@ -196,20 +195,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 >
                   {heroCopy.paragraph}
                 </p>
-              )}
-
-              {heroCopy.whatIOffer && !isPreview && (
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: COLORS.silverGray }}>
-                    What I Offer
-                  </p>
-                  <p
-                    className="text-base leading-relaxed max-w-xl"
-                    style={{ color: COLORS.coolGray }}
-                  >
-                    {heroCopy.whatIOffer}
-                  </p>
-                </div>
               )}
 
               {heroCopy.missionStatement && !isPreview && (

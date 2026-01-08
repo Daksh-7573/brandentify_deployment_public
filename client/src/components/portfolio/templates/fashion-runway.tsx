@@ -29,7 +29,7 @@ interface FashionRunwayProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer?: string | null;
+    
     jobLevel?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
@@ -501,8 +501,8 @@ export default function FashionRunway({
         </section>
       )}
 
-      {/* Services/What I Offer */}
-      {(userInfo.whatIOffer || userServices.length > 0) && (
+      {/* Services */}
+      {userServices.length > 0 && (
         <section className="relative py-20 md:py-32 px-6 md:px-20 lg:px-32">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -516,33 +516,25 @@ export default function FashionRunway({
             </h2>
             <div className="w-20 h-px bg-black mx-auto mb-16" />
 
-            {userInfo.whatIOffer && (
-              <p className="text-lg text-center text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed">
-                {userInfo.whatIOffer}
-              </p>
-            )}
-
-            {userServices.length > 0 && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {userServices.map((service, index) => (
-                  <motion.div
-                    key={service.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="p-6 border border-gray-200 hover:border-black transition-colors"
-                  >
-                    <h3 className="text-xl font-serif mb-3">{service.title}</h3>
-                    {service.description && (
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {service.description}
-                      </p>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            )}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {userServices.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="p-6 border border-gray-200 hover:border-black transition-colors"
+                >
+                  <h3 className="text-xl font-serif mb-3">{service.title}</h3>
+                  {service.description && (
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {service.description}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </section>
       )}

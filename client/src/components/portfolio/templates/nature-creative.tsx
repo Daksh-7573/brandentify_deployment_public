@@ -23,7 +23,7 @@ interface NatureCreativeProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer?: string | null;
+    
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;

@@ -56,7 +56,7 @@ interface AnimatedTemplateProps {
   lookingFor?: string;
   email?: string;
   aboutMe?: string | null;
-  whatIOffer?: string | null;
+  
   tagline?: string | null;
   visionStatement?: string | null;
   missionStatement?: string | null;
@@ -92,7 +92,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   lookingFor,
   email,
   aboutMe,
-  whatIOffer,
   tagline,
   visionStatement,
   missionStatement,
@@ -197,7 +196,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   const navItems = [
     { id: 'hero', label: 'Home', icon: <Star className="w-4 h-4" /> },
     { id: 'about', label: 'About', icon: <User className="w-4 h-4" /> },
-    ...(whatIOffer ? [{ id: 'what-i-offer', label: 'What I Offer', icon: <Lightbulb className="w-4 h-4" /> }] : []),
     { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
@@ -615,68 +613,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 </motion.div>
               )}
 
-            </div>
-          </div>
-        </section>
-      )}
-      
-      {/* What I Offer Section */}
-      {whatIOffer && (
-        <section id="what-i-offer" className="py-20 relative animated-offer">
-          <div className="container mx-auto px-6 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
-              transition={{ duration: 0.7 }}
-              className="mb-16 text-center"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
-                  What I Offer
-                </span>
-              </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                The value and expertise I bring to every project
-              </p>
-            </motion.div>
-            
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="relative"
-              >
-                <div className="bg-gray-800/40 rounded-2xl border border-gray-700/50 p-8 backdrop-blur-sm">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-t-2xl"></div>
-                  <div className="prose prose-invert max-w-none">
-                    <p className="text-gray-300 leading-relaxed text-lg">
-                      {whatIOffer}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Floating elements */}
-                <motion.div 
-                  className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-gradient-to-r from-green-500/10 to-blue-500/10 backdrop-blur-sm"
-                  animate={{ 
-                    y: [0, -10, 0],
-                    rotate: [0, 5, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{ 
-                    duration: 6, 
-                    repeat: Infinity,
-                    repeatType: "reverse" 
-                  }}
-                />
-              </motion.div>
-            </div>
-            
-            {/* Background elements */}
-            <div className="absolute inset-0 overflow-hidden -z-10">
-              <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-green-500/5 rounded-full filter blur-3xl"></div>
-              <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-blue-500/5 rounded-full filter blur-3xl"></div>
             </div>
           </div>
         </section>

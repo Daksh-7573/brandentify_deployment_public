@@ -18,7 +18,7 @@ interface CreativeBoldProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
+    
     photoURL: string | null;
     tagline?: string | null;
     visionStatement?: string | null;

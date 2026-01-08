@@ -77,7 +77,7 @@ interface AnimatedOdysseyProps {
   lookingFor: string;
   email: string;
   aboutMe: string | null;
-  whatIOffer: string | null;
+  
   tagline?: string | null;
   visionStatement?: string | null;
   missionStatement?: string | null;
@@ -104,11 +104,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
   lookingFor,
   email,
   aboutMe,
-  whatIOffer,
   currentUserId,
 }) => {
   // For debugging
-  console.log("AnimatedOdyssey template - whatIOffer:", whatIOffer);
   console.log("AnimatedOdyssey template - aboutMe:", aboutMe);
 
   // Setup refs for scroll animations
@@ -153,7 +151,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
   
   // Get content for About Me section
-  const aboutContent = whatIOffer || aboutMe || 
+  const aboutContent = aboutMe || 
     `I'm a passionate professional with a focus on ${domain || 'innovation'} within the ${industry || 'creative'} industry.`;
   
   return (

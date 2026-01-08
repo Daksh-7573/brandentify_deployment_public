@@ -35,7 +35,7 @@ interface VisualExpertProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
+    
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
@@ -496,7 +496,7 @@ export default function VisualExpert({
           </h2>
 
           <p className="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">
-            {userInfo.lookingFor || userInfo.whatIOffer || "Ready to collaborate and create something amazing together"}
+            {userInfo.lookingFor || "Ready to collaborate and create something amazing together"}
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 pt-6">

@@ -24,7 +24,7 @@ interface MinimalistProProps {
     lookingFor: string | null;
     jobLevel: string | null;
     aboutMe?: string | null;
-    whatIOffer?: string | null;
+    
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;

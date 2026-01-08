@@ -25,7 +25,7 @@ interface TimelineStoryteller2Props {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    whatIOffer: string | null;
+    
     photoURL: string | null;
     phoneNumber?: string | null;
     tagline?: string | null;
