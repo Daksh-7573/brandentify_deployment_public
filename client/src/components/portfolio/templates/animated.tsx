@@ -119,7 +119,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
 
   // Refs for scrolling animations
   const heroRef = useRef<HTMLDivElement>(null);
-  const aboutMeRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -128,7 +128,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
 
   // Check if sections are in view to trigger animations
   const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
-  const isAboutMeInView = useInView(aboutMeRef, { once: false, amount: 0.2 });
+  const isBrandInView = useInView(brandRef, { once: false, amount: 0.2 });
   const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.2 });
   const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.2 });
   const isServicesInView = useInView(servicesRef, { once: false, amount: 0.2 });
@@ -147,7 +147,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   useEffect(() => {
     const sections = [
       { id: 'hero', ref: heroRef },
-      { id: 'about', ref: aboutMeRef },
+      { id: 'brand', ref: brandRef },
       { id: 'skills', ref: skillsRef },
       { id: 'projects', ref: projectsRef },
       { id: 'services', ref: servicesRef },
@@ -195,6 +195,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   // Navigation items
   const navItems = [
     { id: 'hero', label: 'Home', icon: <Star className="w-4 h-4" /> },
+    { id: 'brand', label: 'Brand', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
@@ -442,7 +443,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
         uniqueValueProposition || 
         (primaryAudience && primaryAudience.length > 0) || 
         (secondaryAudience && secondaryAudience.length > 0)) && (
-        <section id="brand" className="py-20 relative" ref={skillsRef}>
+        <section id="brand" className="py-20 relative" ref={brandRef}>
           <div className="container mx-auto px-6 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -513,7 +514,8 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               {coreValues && coreValues.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                   className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
                 >
@@ -537,7 +539,8 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               {uniqueValueProposition && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
                 >
@@ -588,23 +591,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
                 >
                   <div className="p-6">
-                    <div className="relative mb-4">
-                      <div className="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
-                        <Sparkles className="w-8 h-8 text-purple-400" />
-                      </div>
-                      <motion.div 
-                        className="absolute inset-0 rounded-full"
-                        animate={{ 
-                          boxShadow: ['0 0 0 0px rgba(139, 92, 246, 0.2)', '0 0 0 10px rgba(139, 92, 246, 0)'],
-                        }}
-                        transition={{ 
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: index * 0.1
-                        }}
-                      />
-                    </div>
-                    
                     <h3 className="text-xl font-bold text-white mb-2 text-center">{skill.name}</h3>
                     
                     {((skill as any).category || (skill as any).yearsOfExperience) && (
@@ -693,24 +679,12 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.15)' }}
                 >
-                  <div className="p-6">
-                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-6">
-                      <PlusCircle className="w-6 h-6 text-blue-400" />
-                    </div>
-                    
+                  <div className="p-6 flex flex-col h-full">
                     <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
                     
-                    <p className="text-gray-400 mb-6 min-h-[4rem]">
+                    <p className="text-gray-400 mb-6 flex-grow">
                       {service.description || 'Professional service with expert execution and attention to detail.'}
                     </p>
-                    
-                    <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block mb-4">
-                      <span className="text-blue-400 font-bold">
-                        {service.priceUsd ? `$${service.priceUsd}` : 
-                         (service.priceInr ? `₹${service.priceInr}` : 'Contact for pricing')}
-                        {(service.priceUsd || service.priceInr) && service.isHourly ? '/hour' : ''}
-                      </span>
-                    </div>
                     
                     {(() => {
                       const features = toStringArray(service.features);
@@ -726,12 +700,15 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       );
                     })()}
                     
-                    <Button 
-                      onClick={() => setSelectedService(service)}
-                      className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white"
-                    >
-                      Order Now
-                    </Button>
+                    <div className="mt-auto pt-4 border-t border-gray-700/50">
+                      <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block">
+                        <span className="text-blue-400 font-bold text-lg">
+                          {service.priceUsd ? `$${service.priceUsd}` : 
+                           (service.priceInr ? `₹${service.priceInr}` : 'Contact for pricing')}
+                          {(service.priceUsd || service.priceInr) && service.isHourly ? '/hour' : ''}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))
@@ -1062,14 +1039,14 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 30 }}
             transition={{ duration: 0.7 }}
-            className="mb-16 text-center"
+            className="mb-16 text-left"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
                 Career Journey
               </span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl">
               My professional path and significant milestones.
             </p>
           </motion.div>
@@ -1077,14 +1054,14 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           {/* Timeline Content */}
           <div className="relative timeline-container">
             {/* Timeline vertical line */}
-            <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20 transform md:-translate-x-1/2"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20"></div>
             
             <div className="space-y-12">
               {experiences && experiences.length > 0 ? (
                 experiences.map((experience, index) => (
                   <motion.div 
                     key={experience.id}
-                    className="relative flex flex-col md:flex-row"
+                    className="relative flex flex-col pl-8"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 50 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -1092,7 +1069,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     {/* Timeline node */}
                     <div className="timeline-node">
                       <motion.div 
-                        className="absolute left-0 md:left-1/2 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10"
+                        className="absolute left-0 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10"
                         initial={{ scale: 0 }}
                         animate={{ scale: isTimelineInView ? 1 : 0 }}
                         transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
@@ -1105,44 +1082,42 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </motion.div>
                     </div>
                     
-                    {/* Date */}
-                    <div className="md:w-1/2 pr-8 pb-10 md:pb-0 md:text-right flex flex-col items-start md:items-end">
-                      <motion.div 
-                        className="bg-gray-800/40 px-4 py-2 rounded-lg inline-block"
-                        whileHover={{ y: -2 }}
-                      >
-                        <span className="text-orange-400 font-semibold">
-                          {new Date(experience.startDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          })}
-                          {' - '}
-                          {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          }) : 'Present'}
-                        </span>
-                      </motion.div>
-                    </div>
-                    
                     {/* Content */}
                     <motion.div 
-                      className="md:w-1/2 pl-8 bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
+                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
                       whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
                     >
-                      <h3 className="text-xl font-bold text-white">{experience.title}</h3>
-                      <h4 className="text-orange-400 font-medium mb-2">{experience.company}</h4>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+                        <div>
+                          <h3 className="text-xl font-bold text-white">{experience.title}</h3>
+                          <h4 className="text-orange-400 font-medium">{experience.company}</h4>
+                        </div>
+                        <div className="mt-2 md:mt-0">
+                          <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
+                            {new Date(experience.startDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short'
+                            })}
+                            {' - '}
+                            {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short'
+                            }) : 'Present'}
+                          </span>
+                        </div>
+                      </div>
+                      
                       {(experience.location || experience.industry) && (
-                        <div className="flex flex-wrap gap-2 mb-3 text-sm text-gray-400">
+                        <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
                           {experience.location && (
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" /> {experience.location}
                             </span>
                           )}
                           {experience.industry && (
-                            <span className="flex items-center gap-1">
-                              <Briefcase className="h-3 w-3" /> {experience.industry}
-                            </span>
+                            <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                              {experience.industry}
+                            </Badge>
                           )}
                         </div>
                       )}
@@ -1150,27 +1125,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       {experience.description && (
                         <p className="text-gray-300 mb-4">{experience.description}</p>
                       )}
-                      
-                      <div className="flex flex-wrap items-center gap-2 mb-4">
-                        {experience.location && (
-                          <div className="flex items-center text-sm text-gray-400">
-                            <MapPin className="h-4 w-4 mr-1 text-gray-500" />
-                            {experience.location}
-                          </div>
-                        )}
-                        
-                        {experience.industry && (
-                          <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                            {experience.industry}
-                          </Badge>
-                        )}
-                        
-                        {experience.domain && (
-                          <Badge className="bg-gray-700 text-gray-300">
-                            {experience.domain}
-                          </Badge>
-                        )}
-                      </div>
                       
                       {(() => {
                         const responsibilities = toStringArray(experience.keyResponsibilities);
