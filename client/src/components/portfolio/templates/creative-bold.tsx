@@ -68,6 +68,7 @@ interface CreativeBoldProps {
     endDate?: string | null;
     location?: string | null;
     industry?: string | null;
+    domain?: string | null;
     skillsAcquired?: string[];
   }>;
   userServices?: Array<{
@@ -643,6 +644,13 @@ export default function CreativeBold({
                       <p className="text-sm" style={{ color: COOL_GRAY }}>
                         <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Industry:</span>
                         {edu.industry}
+                      </p>
+                    )}
+
+                    {edu.domain && (
+                      <p className="text-sm" style={{ color: COOL_GRAY }}>
+                        <span className="font-bold text-black uppercase text-[10px] tracking-widest mr-2">Domain:</span>
+                        {String(edu.domain)}
                       </p>
                     )}
 
