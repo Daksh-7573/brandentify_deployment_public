@@ -770,6 +770,17 @@ export default function CreativeQuantum({
                           {edu.fieldOfStudy}
                         </span>
                       )}
+                      {edu.domain && (
+                        <span 
+                          className="inline-block mt-1 ml-1 px-2 py-0.5 rounded text-xs"
+                          style={{
+                            background: 'rgba(167, 139, 250, 0.15)',
+                            color: '#c4b5fd',
+                          }}
+                        >
+                          {String(edu.domain)}
+                        </span>
+                      )}
                     </div>
                     <span className="text-white/60 text-sm">
                       {formatDate(edu.startDate)} – {formatDate(edu.endDate)}

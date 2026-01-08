@@ -1427,6 +1427,13 @@ export default function CorporateExecutive({
                         <span>{edu.fieldOfStudy}</span>
                       </div>
                     )}
+                    
+                    {edu.domain && (
+                      <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <Briefcase className="h-4 w-4 mr-1" />
+                        <span>{String(edu.domain)}</span>
+                      </div>
+                    )}
                   </div>
                   
                   {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
