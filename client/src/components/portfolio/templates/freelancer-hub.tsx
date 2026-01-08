@@ -332,7 +332,7 @@ export default function FreelancerHub({
 
         {/* Skills Section */}
         {sortedSkills.length > 0 && (
-          <section className="px-6 py-16">
+          <section className="px-6 py-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -388,7 +388,7 @@ export default function FreelancerHub({
 
         {/* Projects Section */}
         {sortedProjects.length > 0 && (
-          <section className="px-6 py-16 bg-gradient-to-r from-orange-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
+          <section className="px-6 py-8 bg-gradient-to-r from-orange-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
             <div className="max-w-6xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -448,7 +448,7 @@ export default function FreelancerHub({
 
         {/* Experience Section */}
         {sortedExperiences.length > 0 && (
-          <section className="px-6 py-16">
+          <section className="px-6 py-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -603,7 +603,7 @@ export default function FreelancerHub({
 
         {/* Services Section */}
         {userServices.length > 0 && (
-          <section className="px-6 py-16">
+          <section className="px-6 py-8">
             <div className="max-w-6xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
