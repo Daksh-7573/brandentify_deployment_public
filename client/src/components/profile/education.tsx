@@ -323,21 +323,26 @@ export default function Education() {
       processedData.endDate = undefined;
     }
     
-    // Store all the UI data for display purposes
-    const uiData = {
-      id: processedData.id,
-      userId: processedData.userId,
-      institution: processedData.institution,
-      degree: processedData.degree,
-      location: processedData.location,
-      startDate: processedData.startDate ? processedData.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-      endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-      field: processedData.field,
-      currentlyEnrolled: processedData.currentlyEnrolled,
-      skillsAcquired: processedData.skillsAcquired,
-      industry: processedData.industry,
-      domain: processedData.domain
-    };
+      // Handle industry selection and update domains
+      if (processedData.industry) {
+        processedData.domain = selectedDomain || processedData.domain;
+      }
+      
+      // Store all the UI data for display purposes
+      const uiData = {
+        id: processedData.id,
+        userId: processedData.userId,
+        institution: processedData.institution,
+        degree: processedData.degree,
+        location: processedData.location,
+        startDate: processedData.startDate ? processedData.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+        endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+        field: processedData.field,
+        currentlyEnrolled: processedData.currentlyEnrolled,
+        skillsAcquired: processedData.skillsAcquired,
+        industry: processedData.industry,
+        domain: processedData.domain
+      };
     
     // Create a version with all fields including the newly added ones
     const apiData = {
