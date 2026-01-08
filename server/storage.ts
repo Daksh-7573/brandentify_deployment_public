@@ -2176,6 +2176,8 @@ export class MemStorage implements IStorage {
       ...insertEducation, 
       id,
       location: insertEducation.location ?? null,
+      industry: insertEducation.industry ?? null,
+      domain: insertEducation.domain ?? null,
       endDate: insertEducation.endDate ?? null
     };
     this.educations.set(id, education);

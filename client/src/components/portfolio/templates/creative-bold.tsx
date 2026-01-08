@@ -343,8 +343,7 @@ export default function CreativeBold({
                         className="p-6 rounded-lg transition-all relative flex flex-col min-h-[160px]"
                         style={{ 
                           backgroundColor: PORCELAIN, 
-                          borderTop: `4px solid ${CORAL}`,
-                          cursor: 'pointer'
+                          borderTop: `4px solid ${CORAL}`
                         }}
                       >
                         <div className="flex-1">
@@ -358,16 +357,16 @@ export default function CreativeBold({
                           )}
                         </div>
                         <div className="flex items-center justify-between mt-auto">
-                          <div className="bg-white/10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                            {service.priceType === 'Hourly' ? 'Hourly Rate' : 'Fixed Price'}
+                          <div className="bg-white/10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: INK_BLACK }}>
+                            {service.priceType === 'hourly' || service.isHourly ? 'Hourly Rate' : 'Fixed Price'}
                           </div>
-                          <div className="text-lg font-black">
+                          <div className="text-lg font-black" style={{ color: INK_BLACK }}>
                             {service.priceInr && parseFloat(String(service.priceInr)) > 0 
                               ? `₹${parseFloat(String(service.priceInr)).toLocaleString()}` 
                               : (service.priceUsd && parseFloat(String(service.priceUsd)) > 0 
                                 ? `$${parseFloat(String(service.priceUsd)).toLocaleString()}` 
                                 : 'Free')}
-                            {service.isHourly && <span className="text-xs text-white/40 ml-1">/hr</span>}
+                            {(service.isHourly || service.priceType === 'hourly') && <span className="text-xs opacity-40 ml-1">/hr</span>}
                           </div>
                         </div>
                       </motion.div>

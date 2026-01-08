@@ -228,7 +228,7 @@ export class ProfileDataExtractor {
       priceUsd: service.priceUsd || null,
       priceType: service.priceType || null,
       isActive: service.isActive !== false,
-      isHourly: service.priceType === 'Hourly'
+      isHourly: service.isHourly
     }));
   }
 }
