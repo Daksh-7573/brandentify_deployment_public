@@ -166,7 +166,6 @@ export function DynamicInnovator({
   // References to sections
   const sectionRefs = {
     projects: useRef<HTMLDivElement>(null),
-    about: useRef<HTMLDivElement>(null),
     career: useRef<HTMLDivElement>(null),
     education: useRef<HTMLDivElement>(null),
     skills: useRef<HTMLDivElement>(null),
@@ -1029,7 +1028,7 @@ export function DynamicInnovator({
         userInfo.uniqueValueProposition) && (
         <section 
           id="brand-section" 
-          ref={sectionRefs.about}
+          ref={sectionRefs.career}
           className="section py-10 px-4 md:px-8 bg-[#0c162d]/80"
         >
           <div className="max-w-6xl mx-auto">
@@ -1202,7 +1201,7 @@ export function DynamicInnovator({
                       <div className="absolute top-0 right-0">
                         <Badge className="m-3 bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] flex items-center">
                           <Tag className="h-3 w-3 mr-1" />
-                          {service.category ? service.category.charAt(0).toUpperCase() + service.category.slice(1) : "Other"}
+                          {service.category || "Service"}
                         </Badge>
                       </div>
                       
