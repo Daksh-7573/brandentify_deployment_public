@@ -195,11 +195,11 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   // Navigation items
   const navItems = [
     { id: 'hero', label: 'Home', icon: <Star className="w-4 h-4" /> },
-    { id: 'about', label: 'About', icon: <User className="w-4 h-4" /> },
+    { id: 'brand', label: 'Branding', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
-    { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
-    { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
-    { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'projects', label: 'Projects', icon: <PlusCircle className="w-4 h-4" /> },
+    { id: 'services', label: 'Services', icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'timeline', label: 'Experience', icon: <TrendingUp className="w-4 h-4" /> },
     { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> }
   ];
 
@@ -437,73 +437,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
         </div>
       </section>
       
-      {/* About Me Section */}
-      <section id="about" className="py-20 relative animated-about" ref={aboutMeRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
-            transition={{ duration: 0.7 }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                What I'm All About
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Get to know me beyond the resume
-            </p>
-          </motion.div>
-          
-          <div className="max-w-3xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="relative"
-            >
-              <div className="space-y-4">
-                <div className="relative">
-                  <div className="absolute top-0 left-0 w-12 h-12 -translate-x-1/2 -translate-y-1/2 bg-purple-500/10 rounded-full blur-xl"></div>
-                  <div className="relative z-10">
-                    <h3 className="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-                      Hello, I'm {name}
-                    </h3>
-                    <div className="prose prose-invert max-w-none">
-                      <p className="text-gray-300 leading-relaxed">
-                        {aboutMe || "I am passionate about creating exceptional digital experiences that combine aesthetic appeal with functional excellence. With a strong foundation in both design and development, I bring a unique perspective to every project I undertake."}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating elements */}
-              <motion.div 
-                className="absolute -bottom-10 -right-5 w-24 h-24 rounded-full bg-gradient-to-r from-blue-500/10 to-teal-500/10 backdrop-blur-sm"
-                animate={{ 
-                  y: [0, -15, 0],
-                  rotate: [0, -8, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 7, 
-                  repeat: Infinity,
-                  repeatType: "reverse" 
-                }}
-              />
-            </motion.div>
-          </div>
-        </div>
-        
-        {/* Background elements */}
-        <div className="absolute inset-0 overflow-hidden -z-10">
-          <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-purple-500/5 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500/5 rounded-full filter blur-3xl"></div>
-        </div>
-      </section>
-
       {/* My Professional Brand Section */}
       {(tagline || visionStatement || missionStatement || 
         (coreValues && coreValues.length > 0) || 
@@ -652,24 +585,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
                 >
                   <div className="p-6">
-                    <div className="relative mb-4">
-                      <div className="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
-                        <Sparkles className="w-8 h-8 text-purple-400" />
-                      </div>
-                      <motion.div 
-                        className="absolute inset-0 rounded-full"
-                        animate={{ 
-                          boxShadow: ['0 0 0 0px rgba(139, 92, 246, 0.2)', '0 0 0 10px rgba(139, 92, 246, 0)'],
-                        }}
-                        transition={{ 
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: index * 0.1
-                        }}
-                      />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-2 text-center">{skill.name}</h3>
+                    <h3 className="text-xl font-bold text-white mb-4 text-center">{skill.name}</h3>
                     
                     {((skill as any).category || (skill as any).yearsOfExperience) && (
                       <div className="flex flex-wrap gap-2 justify-center mb-3 text-xs">
