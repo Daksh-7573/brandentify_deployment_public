@@ -79,6 +79,7 @@ export interface ServiceData {
   priceInr?: string | null;
   priceUsd?: string | null;
   priceType?: string | null;
+  isHourly?: boolean;
   isActive: boolean;
 }
 

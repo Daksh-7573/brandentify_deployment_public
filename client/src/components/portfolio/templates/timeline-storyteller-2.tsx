@@ -658,7 +658,7 @@ export default function TimelineStoryteller2({
                             <h4 className="text-sm font-semibold text-amber-800">Key Responsibilities:</h4>
                             <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
                               {(exp.keyResponsibilities as string[]).map((resp, i) => (
-                                <li key={i}>{resp}</li>
+                                <li key={i}>{String(resp)}</li>
                               ))}
                             </ul>
                           </div>
@@ -751,7 +751,7 @@ export default function TimelineStoryteller2({
                           <div className="flex flex-wrap gap-2">
                             {(edu.skillsAcquired as string[]).map((skill, i) => (
                               <Badge key={i} className="bg-orange-100 text-orange-800 text-xs">
-                                {skill}
+                                {String(skill)}
                               </Badge>
                             ))}
                           </div>
