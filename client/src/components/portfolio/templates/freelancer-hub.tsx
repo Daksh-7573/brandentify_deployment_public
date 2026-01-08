@@ -154,6 +154,15 @@ export default function FreelancerHub({
       <ParallaxBackground />
       
       <div className="relative z-10">
+        {/* Top Right Floating CTA Buttons */}
+        <div className="absolute top-4 right-6 z-50">
+          <PortfolioCtaButtons 
+            variant="creative" 
+            userId={userInfo.id} 
+            userName={userInfo.name} 
+          />
+        </div>
+
         {/* Hero Section */}
         <section className="relative px-6 pt-20 pb-8 md:pt-28 md:pb-8">
           <div className="max-w-6xl mx-auto">
@@ -190,33 +199,6 @@ export default function FreelancerHub({
                 )}
 
                 <div className="flex flex-wrap gap-3 mb-6">
-                  {userInfo.location && (
-                    <Badge variant="outline" className="px-4 py-2 border-purple-400 text-purple-700 dark:text-purple-300">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {userInfo.location}
-                    </Badge>
-                  )}
-                  {userInfo.industry && (
-                    <Badge variant="outline" className="px-4 py-2 border-pink-400 text-pink-700 dark:text-pink-300">
-                      <Briefcase className="h-4 w-4 mr-2" />
-                      {userInfo.industry}
-                    </Badge>
-                  )}
-                  {userInfo.domain && (
-                    <Badge variant="outline" className="px-4 py-2 border-orange-400 text-orange-700 dark:text-orange-300">
-                      <Target className="h-4 w-4 mr-2" />
-                      {userInfo.domain}
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-4">
-                  <PortfolioCtaButtons 
-                    variant="creative" 
-                    userId={userInfo.id} 
-                    userName={userInfo.name} 
-                  />
-                </div>
               </motion.div>
 
               {/* Right: Key Info Cards */}
