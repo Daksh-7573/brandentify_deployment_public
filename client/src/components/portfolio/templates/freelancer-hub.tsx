@@ -240,20 +240,6 @@ export default function FreelancerHub({
                   </Card>
                 )}
 
-                {userInfo.whatIOffer && (
-                  <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-pink-200 dark:border-pink-800">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-3">
-                        <Award className="h-6 w-6 text-pink-500 flex-shrink-0 mt-1" />
-                        <div>
-                          <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">What I Offer</h3>
-                          <p className="text-gray-600 dark:text-gray-300">{userInfo.whatIOffer}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
                 {userInfo.lookingFor && (
                   <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-orange-200 dark:border-orange-800">
                     <CardContent className="p-6">
