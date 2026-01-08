@@ -84,7 +84,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
 
           {project.description && (
             <div className="prose max-w-none">
-              <p className="text-gray-700 leading-relaxed">{project.description}</p>
+              <p className="break-words text-gray-700 leading-relaxed">{project.description}</p>
             </div>
           )}
 
@@ -237,7 +237,7 @@ export default function VisualExpert({
               {userInfo.visionStatement && (
                 <div className="pl-4 border-l-4" style={{ borderLeftColor: accentColor }}>
                   <h3 className="text-lg font-bold uppercase tracking-wide mb-2" style={{ color: accentDark }}>Vision</h3>
-                  <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                  <p className="break-words text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
                 </div>
               )}
 

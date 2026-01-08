@@ -923,7 +923,7 @@ export function DynamicInnovator({
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="futuristic-heading text-2xl md:text-3xl font-bold mb-8 text-white inline-block">
-            <Zap className="inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
+            <Zap className="break-words break-words inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
             Projects & Innovations
           </h2>
           
@@ -991,7 +991,7 @@ export function DynamicInnovator({
             <div className="tech-card p-8 text-center">
               <CircuitBoard className="h-12 w-12 mx-auto mb-4 text-[#08f7fe]/50" />
               <h3 className="text-xl text-[#08f7fe]">Project Repository Empty</h3>
-              <p className="text-gray-400 mt-2">Technical projects will be indexed and displayed here.</p>
+              <p className="break-words break-words text-gray-400 mt-2">Technical projects will be indexed and displayed here.</p>
             </div>
           )}
         </div>
@@ -1046,7 +1046,7 @@ export function DynamicInnovator({
                     <Award className="h-6 w-6 text-[#08f7fe]" />
                     <h3 className="text-lg font-bold text-white">Tagline</h3>
                   </div>
-                  <p className="text-gray-300 italic text-xl leading-relaxed">
+                  <p className="break-words break-words text-gray-300 italic text-xl leading-relaxed">
                     "{userInfo.tagline}"
                   </p>
                 </div>
@@ -1061,7 +1061,7 @@ export function DynamicInnovator({
                         <Lightbulb className="h-6 w-6 text-[#08f7fe]" />
                         <h3 className="text-lg font-bold text-white">Vision</h3>
                       </div>
-                      <p className="text-gray-300 leading-relaxed">
+                      <p className="break-words break-words text-gray-300 leading-relaxed">
                         {userInfo.visionStatement}
                       </p>
                     </div>

@@ -302,7 +302,7 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                   borderLeft: `4px solid ${colors.executivePurple}`,
                 }}
               >
-                <p className="text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.executivePurple }}>
+                <p className="break-words text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.executivePurple }}>
                   Executive Summary
                 </p>
                 <p className="text-base leading-relaxed">{userInfo.aboutMe}</p>
@@ -323,10 +323,10 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                       borderColor: colors.executivePurple,
                     }}
                   >
-                    <p className="text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.executivePurple }}>
+                    <p className="break-words text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.executivePurple }}>
                       Vision
                     </p>
-                    <p className="text-sm leading-relaxed">{userInfo.visionStatement}</p>
+                    <p className="break-words text-sm leading-relaxed">{userInfo.visionStatement}</p>
                   </motion.div>
                 )}
 
@@ -341,7 +341,7 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                       borderColor: colors.platinumSilver,
                     }}
                   >
-                    <p className="text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.platinumSilver }}>
+                    <p className="break-words text-xs uppercase tracking-widest font-semibold mb-3" style={{ color: colors.platinumSilver }}>
                       Mission
                     </p>
                     <p className="text-sm leading-relaxed">{userInfo.missionStatement}</p>

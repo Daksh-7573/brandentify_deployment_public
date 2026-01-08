@@ -490,7 +490,7 @@ export default function HolographicNeo({
                       <Eye className="w-5 h-5" />
                       Vision
                     </h3>
-                    <p className="text-white/90 italic">"{userInfo.visionStatement}"</p>
+                    <p className="break-words text-white/90 italic">"{userInfo.visionStatement}"</p>
                   </div>
                 )}
 

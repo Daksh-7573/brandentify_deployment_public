@@ -332,7 +332,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                 }}
                 transition={{ duration: 0.8, delay: 1 }}
               >
-                <p className="text-lg">{aboutContent}</p>
+                <p className="break-words text-lg">{aboutContent}</p>
               </motion.div>
             </motion.div>
           </div>
@@ -395,7 +395,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                     <Star className="h-6 w-6 text-accent" />
                     <h3 className="text-xl font-bold">Tagline</h3>
                   </div>
-                  <p className="text-lg italic text-muted-foreground">"{tagline}"</p>
+                  <p className="break-words text-lg italic text-muted-foreground">"{tagline}"</p>
                 </motion.div>
               )}
 
@@ -415,7 +415,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                         <Lightbulb className="h-6 w-6 text-accent" />
                         <h3 className="text-xl font-bold">Vision</h3>
                       </div>
-                      <p className="text-muted-foreground leading-relaxed">{visionStatement}</p>
+                      <p className="break-words text-muted-foreground leading-relaxed">{visionStatement}</p>
                     </motion.div>
                   )}
                   {missionStatement && (

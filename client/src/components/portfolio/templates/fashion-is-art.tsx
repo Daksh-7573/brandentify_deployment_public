@@ -152,7 +152,7 @@ export default function FashionIsArt({
                   {userInfo.name}
                 </h1>
                 {displayTitle && (
-                  <p className="text-xl text-gray-700 font-light">{displayTitle}</p>
+                  <p className="break-words text-xl text-gray-700 font-light">{displayTitle}</p>
                 )}
               </div>
 
@@ -212,7 +212,7 @@ export default function FashionIsArt({
                   {userInfo.visionStatement && (
                     <div className="pl-6 border-l-4" style={{ borderColor: '#1E88E5' }}>
                       <h3 className="text-sm uppercase tracking-wider text-gray-600 mb-2">Vision</h3>
-                      <p className="text-gray-800 italic">{userInfo.visionStatement}</p>
+                      <p className="break-words text-gray-800 italic">{userInfo.visionStatement}</p>
                     </div>
                   )}
                   {userInfo.missionStatement && (

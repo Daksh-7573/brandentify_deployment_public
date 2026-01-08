@@ -237,7 +237,7 @@ export default function MinimalistPro({
           <h2 className="section-header">What I'm All About</h2>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             {userInfo.aboutMe ? (
-              <p className="text-gray-800 leading-relaxed font-serif text-lg">
+              <p className="break-words text-gray-800 leading-relaxed font-serif text-lg">
                 {userInfo.aboutMe}
               </p>
             ) : (
@@ -257,7 +257,7 @@ export default function MinimalistPro({
               {userInfo.tagline && (
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                   <h3 className="font-medium text-gray-900 mb-2">Tagline</h3>
-                  <p className="text-gray-800 italic text-lg">"{userInfo.tagline}"</p>
+                  <p className="break-words text-gray-800 italic text-lg">"{userInfo.tagline}"</p>
                 </div>
               )}
 
@@ -267,7 +267,7 @@ export default function MinimalistPro({
                   {userInfo.visionStatement && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                       <h3 className="font-medium text-gray-900 mb-2">Vision</h3>
-                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                      <p className="break-words text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
                     </div>
                   )}
                   {userInfo.missionStatement && (

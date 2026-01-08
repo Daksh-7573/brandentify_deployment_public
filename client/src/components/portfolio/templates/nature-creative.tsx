@@ -587,7 +587,7 @@ export default function NatureCreative({
                         <Mountain className="text-cyan-500" size={24} />
                         Vision Statement
                       </h3>
-                      <p className="text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                      <p className="break-words text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
                     </div>
                   </motion.div>
                 )}

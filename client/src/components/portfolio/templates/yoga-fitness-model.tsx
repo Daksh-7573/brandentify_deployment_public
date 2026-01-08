@@ -210,7 +210,7 @@ function ProjectModal({ project, isOpen, onClose }: { project: Project | null; i
           
           {project.description && (
             <div className="prose max-w-none">
-              <p className="leading-relaxed" style={{ color: '#6B7F75' }}>{project.description}</p>
+              <p className="break-words leading-relaxed" style={{ color: '#6B7F75' }}>{project.description}</p>
             </div>
           )}
           
@@ -396,7 +396,7 @@ export default function YogaFitnessModel({
             <Card className="border-0 shadow-lg" style={{ backgroundColor: '#C9B5A0', borderRadius: '24px' }}>
               <CardContent className="p-8 md:p-12">
                 <h3 className="text-2xl font-light mb-4" style={{ color: '#2D5F4F' }}>Vision</h3>
-                <p className="text-lg leading-relaxed italic" style={{ color: '#2D5F4F' }}>{userInfo.visionStatement}</p>
+                <p className="break-words text-lg leading-relaxed italic" style={{ color: '#2D5F4F' }}>{userInfo.visionStatement}</p>
               </CardContent>
             </Card>
           </motion.section>
