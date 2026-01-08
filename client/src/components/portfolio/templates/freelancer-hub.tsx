@@ -284,7 +284,7 @@ export default function FreelancerHub({
 
         {/* Vision & Mission Section */}
         {(userInfo.visionStatement || userInfo.missionStatement) && (
-          <section className="px-6 py-16">
+          <section className="px-6 py-8">
             <div className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8">
                 {userInfo.visionStatement && (
