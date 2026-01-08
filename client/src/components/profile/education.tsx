@@ -161,10 +161,10 @@ export default function Education() {
   const batchData = useProfileEducations();
   
   // Fetch education data for user
-  const { data: fetchedEducations = [], isLoading: queryLoading } = useQuery<any>({
+  const { data: fetchedEducations = [], isLoading: queryLoading, refetch } = useQuery<any>({
     queryKey: [`/api/users/${effectiveUserId}/educations`],
     enabled: !batchData.isFromBatch,
-    staleTime: 1000, 
+    staleTime: 0, // Disable stale time for education to ensure fresh data
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
@@ -211,6 +211,8 @@ export default function Education() {
       return await res.json();
     },
     onSuccess: () => {
+      // Direct refetch to ensure UI updates immediately
+      refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
@@ -249,6 +251,8 @@ export default function Education() {
       return await res.json();
     },
     onSuccess: () => {
+      // Direct refetch to ensure UI updates immediately
+      refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
@@ -284,6 +288,8 @@ export default function Education() {
       return res.ok;
     },
     onSuccess: () => {
+      // Direct refetch to ensure UI updates immediately
+      refetch();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/educations`] });
       // Also invalidate the main profile data which might be used in the parent component
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
