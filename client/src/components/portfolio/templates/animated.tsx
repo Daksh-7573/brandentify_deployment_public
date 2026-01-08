@@ -341,23 +341,18 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg bg-gray-800">
-                  <img 
-                    src={photoURL || ''} 
-                    alt={name} 
-                    className={`w-full h-full object-cover ${!photoURL ? 'hidden' : ''}`}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.classList.add('hidden');
-                      const placeholder = target.nextElementSibling;
-                      if (placeholder) {
-                        placeholder.classList.remove('hidden');
-                      }
-                    }}
-                  />
-                  <div className={`profile-placeholder w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold ${photoURL ? 'hidden' : ''}`}>
-                    {name ? name.charAt(0) : '?'}
-                  </div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
+                  {photoURL ? (
+                    <img 
+                      src={photoURL} 
+                      alt={name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold">
+                      {name ? name.charAt(0) : '?'}
+                    </div>
+                  )}
                 </div>
                 
                 {/* Floating particles */}
@@ -443,118 +438,124 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* My Professional Brand Section */}
-      <section id="brand" className="py-20 relative" ref={brandRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                My Professional Brand
-              </span>
-            </h2>
-          </motion.div>
-          
-          <div className="max-w-4xl mx-auto space-y-6">
-            {tagline && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <Star className="h-6 w-6 text-purple-400" />
-                  <h3 className="text-xl font-semibold text-purple-300">Tagline</h3>
-                </div>
-                <p className="break-all text-gray-300 italic text-lg">"{tagline}"</p>
-              </motion.div>
-            )}
+      {(tagline || visionStatement || missionStatement || 
+        (coreValues && coreValues.length > 0) || 
+        uniqueValueProposition || 
+        (primaryAudience && primaryAudience.length > 0) || 
+        (secondaryAudience && secondaryAudience.length > 0)) && (
+        <section id="brand" className="py-20 relative" ref={brandRef}>
+          <div className="container mx-auto px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="mb-12 text-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                  My Professional Brand
+                </span>
+              </h2>
+            </motion.div>
+            
+            <div className="max-w-4xl mx-auto space-y-6">
+              {tagline && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.1 }}
+                  className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Star className="h-6 w-6 text-purple-400" />
+                    <h3 className="text-xl font-semibold text-purple-300">Tagline</h3>
+                  </div>
+                  <p className="break-all text-gray-300 italic text-lg">"{tagline}"</p>
+                </motion.div>
+              )}
 
-            {(visionStatement || missionStatement) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {visionStatement && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Lightbulb className="h-6 w-6 text-blue-400" />
-                      <h3 className="text-xl font-semibold text-blue-300">Vision</h3>
-                    </div>
-                    <p className="break-all text-gray-300 leading-relaxed">{visionStatement}</p>
-                  </motion.div>
-                )}
-                {missionStatement && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Sparkles className="h-6 w-6 text-teal-400" />
-                      <h3 className="text-xl font-semibold text-teal-300">Mission</h3>
-                    </div>
-                    <p className="text-gray-300 leading-relaxed">{missionStatement}</p>
-                  </motion.div>
-                )}
-              </div>
-            )}
-
-            {coreValues && coreValues.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <Star className="h-6 w-6 text-rose-400" />
-                  <h3 className="text-xl font-semibold text-rose-300">Core Values</h3>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {coreValues.map((value: string, index: number) => (
-                    <span 
-                      key={index}
-                      className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
+              {(visionStatement || missionStatement) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {visionStatement && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
                     >
-                      {value}
-                    </span>
-                  ))}
+                      <div className="flex items-center gap-3 mb-3">
+                        <Lightbulb className="h-6 w-6 text-blue-400" />
+                        <h3 className="text-xl font-semibold text-blue-300">Vision</h3>
+                      </div>
+                      <p className="break-all text-gray-300 leading-relaxed">{visionStatement}</p>
+                    </motion.div>
+                  )}
+                  {missionStatement && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Sparkles className="h-6 w-6 text-teal-400" />
+                        <h3 className="text-xl font-semibold text-teal-300">Mission</h3>
+                      </div>
+                      <p className="text-gray-300 leading-relaxed">{missionStatement}</p>
+                    </motion.div>
+                  )}
                 </div>
-              </motion.div>
-            )}
+              )}
 
-            {uniqueValueProposition && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <Sparkles className="h-6 w-6 text-amber-400" />
-                  <h3 className="text-xl font-semibold text-amber-300">What Sets Me Apart</h3>
-                </div>
-                <p className="text-gray-300 leading-relaxed">{uniqueValueProposition}</p>
-              </motion.div>
-            )}
+              {coreValues && coreValues.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <Star className="h-6 w-6 text-rose-400" />
+                    <h3 className="text-xl font-semibold text-rose-300">Core Values</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {coreValues.map((value: string, index: number) => (
+                      <span 
+                        key={index}
+                        className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
+                      >
+                        {value}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
 
+              {uniqueValueProposition && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <Sparkles className="h-6 w-6 text-amber-400" />
+                    <h3 className="text-xl font-semibold text-amber-300">What Sets Me Apart</h3>
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">{uniqueValueProposition}</p>
+                </motion.div>
+              )}
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
       
       {/* Skills Section */}
       <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
@@ -1053,122 +1054,95 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           {/* Timeline Content */}
           <div className="relative timeline-container">
             {/* Timeline vertical line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20 transform -translate-x-1/2"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500/80 via-orange-500/50 to-orange-500/20"></div>
             
             <div className="space-y-12">
               {experiences && experiences.length > 0 ? (
                 experiences.map((experience, index) => (
                   <motion.div 
                     key={experience.id}
-                    className={`relative flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+                    className="relative flex flex-col pl-8"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: isTimelineInView ? 1 : 0, y: isTimelineInView ? 0 : 50 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                   >
                     {/* Timeline node */}
-                    <div className="absolute left-4 md:left-1/2 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10">
+                    <div className="timeline-node">
                       <motion.div 
-                        className="absolute inset-1 bg-orange-300 rounded-full"
-                        animate={{ scale: [1, 1.4, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
+                        className="absolute left-0 w-6 h-6 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 transform -translate-x-1/2 z-10"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: isTimelineInView ? 1 : 0 }}
+                        transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                      >
+                        <motion.div 
+                          className="absolute inset-1 bg-orange-300 rounded-full"
+                          animate={{ scale: [1, 1.4, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </motion.div>
                     </div>
                     
-                    {/* Date on the left side of the bar */}
-                    <div className="hidden md:block w-1/2 px-8 text-right">
-                      {index % 2 !== 0 && (
-                        <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
-                          {new Date(experience.startDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          })}
-                          {' - '}
-                          {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          }) : 'Present'}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Content Card */}
+                    {/* Content */}
                     <motion.div 
-                      className="ml-12 md:ml-0 md:w-1/2 px-8"
-                      whileHover={{ y: -5 }}
+                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
+                      whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
                     >
-                      <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg">
-                        <div className="mb-3">
-                          <h3 className="text-xl font-bold text-white mb-1">{experience.title}</h3>
-                          <h4 className="text-orange-400 font-medium mb-2">{experience.company}</h4>
-                          
-                          {/* Mobile Date */}
-                          <div className="md:hidden mb-3">
-                            <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
-                              {new Date(experience.startDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short'
-                              })}
-                              {' - '}
-                              {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short'
-                              }) : 'Present'}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
-                            {experience.location && (
-                              <span className="flex items-center gap-1">
-                                <MapPin className="h-3 w-3" /> {experience.location}
-                              </span>
-                            )}
-                            {experience.industry && (
-                              <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                                {experience.industry}
-                              </Badge>
-                            )}
-                          </div>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+                        <div>
+                          <h3 className="text-xl font-bold text-white">{experience.title}</h3>
+                          <h4 className="text-orange-400 font-medium">{experience.company}</h4>
                         </div>
-
-                        {experience.description && (
-                          <p className="text-gray-300 mb-4">{experience.description}</p>
-                        )}
-                        
-                        {(() => {
-                          const responsibilities = toStringArray(experience.keyResponsibilities);
-                          return responsibilities.length > 0 && (
-                            <div className="mb-4">
-                              <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
-                              <ul className="space-y-1">
-                                {responsibilities.map((responsibility, i) => (
-                                  <li key={i} className="text-gray-300 flex items-start">
-                                    <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
-                                    <span>{responsibility}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          );
-                        })()}
+                        <div className="mt-2 md:mt-0">
+                          <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
+                            {new Date(experience.startDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short'
+                            })}
+                            {' - '}
+                            {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short'
+                            }) : 'Present'}
+                          </span>
+                        </div>
                       </div>
-                    </motion.div>
-
-                    {/* Date on the right side of the bar for the other side */}
-                    <div className="hidden md:block w-1/2 px-8 text-left">
-                      {index % 2 === 0 && (
-                        <span className="text-orange-400 font-semibold bg-orange-500/10 px-3 py-1 rounded-full text-sm">
-                          {new Date(experience.startDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          })}
-                          {' - '}
-                          {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          }) : 'Present'}
-                        </span>
+                      
+                      {(experience.location || experience.industry) && (
+                        <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-400">
+                          {experience.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" /> {experience.location}
+                            </span>
+                          )}
+                          {experience.industry && (
+                            <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                              {experience.industry}
+                            </Badge>
+                          )}
+                        </div>
                       )}
-                    </div>
+                      
+                      {experience.description && (
+                        <p className="text-gray-300 mb-4">{experience.description}</p>
+                      )}
+                      
+                      {(() => {
+                        const responsibilities = toStringArray(experience.keyResponsibilities);
+                        return responsibilities.length > 0 && (
+                          <div className="mb-4">
+                            <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
+                            <ul className="space-y-1">
+                              {responsibilities.map((responsibility, i) => (
+                                <li key={i} className="text-gray-300 flex items-start">
+                                  <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
+                                  <span>{responsibility}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })()}
+                    </motion.div>
                   </motion.div>
                 ))
               ) : (
