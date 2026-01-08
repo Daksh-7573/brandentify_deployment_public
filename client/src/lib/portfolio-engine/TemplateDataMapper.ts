@@ -101,7 +101,6 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     userInfo: {
       id: data.basicInfo.id,
       name: data.basicInfo.name,
-      email: data.basicInfo.email,
       title: data.basicInfo.title || '',
       company: data.basicInfo.company,
       location: data.basicInfo.location,

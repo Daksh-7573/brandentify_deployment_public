@@ -210,21 +210,11 @@ export default function FreelancerHub({
                   )}
                 </div>
 
-                {userInfo.email && (
-                  <div className="flex items-center gap-2 mb-8 text-gray-600 dark:text-gray-400">
-                    <Mail className="h-5 w-5" />
-                    <a href={`mailto:${userInfo.email}`} className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                      {userInfo.email}
-                    </a>
-                  </div>
-                )}
-
                 <div className="flex flex-wrap gap-4">
                   <PortfolioCtaButtons 
                     variant="creative" 
                     userId={userInfo.id} 
                     userName={userInfo.name} 
-                    userEmail={userInfo.email} 
                   />
                 </div>
               </motion.div>
@@ -282,6 +272,31 @@ export default function FreelancerHub({
           </div>
         </section>
 
+        {/* Core Values Section */}
+        {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+          <section className="px-6 py-8">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="flex flex-wrap justify-center gap-4">
+                  {userInfo.coreValues.map((value, index) => (
+                    <Badge 
+                      key={index} 
+                      className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 border-none px-6 py-2 text-lg font-medium shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      {value}
+                    </Badge>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
+
         {/* Vision & Mission Section */}
         {(userInfo.visionStatement || userInfo.missionStatement) && (
           <section className="px-6 py-16">
@@ -325,56 +340,6 @@ export default function FreelancerHub({
           </section>
         )}
 
-        {/* Audience Section */}
-        {(userInfo.primaryAudience?.length || userInfo.secondaryAudience?.length) && (
-          <section className="px-6 py-16 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
-            <div className="max-w-6xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  <Users className="inline h-8 w-8 mr-3 text-purple-600" />
-                  My Audience
-                </h2>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                    <Card className="bg-white dark:bg-gray-900 border-purple-200 dark:border-purple-800">
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold mb-4 text-purple-600 dark:text-purple-400">Primary Audience</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience, index) => (
-                            <Badge key={index} className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                    <Card className="bg-white dark:bg-gray-900 border-pink-200 dark:border-pink-800">
-                      <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold mb-4 text-pink-600 dark:text-pink-400">Secondary Audience</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience, index) => (
-                            <Badge key={index} className="bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300">
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </motion.div>
-            </div>
-          </section>
-        )}
 
         {/* Skills Section */}
         {sortedSkills.length > 0 && (
@@ -523,7 +488,7 @@ export default function FreelancerHub({
                               <h3 className="text-xl font-bold text-gray-900 dark:text-white">{exp.title}</h3>
                               <p className="text-lg text-purple-600 dark:text-purple-400">{exp.company}</p>
                             </div>
-                            <Badge variant="outline" className="mt-2 md:mt-0 w-fit">
+                            <Badge className="mt-2 md:mt-0 w-fit bg-purple-600 text-white border-none shadow-sm">
                               {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                             </Badge>
                           </div>
@@ -595,7 +560,12 @@ export default function FreelancerHub({
                     >
                       <Card className="bg-white dark:bg-gray-900 h-full">
                         <CardContent className="p-6">
-                          <GraduationCap className="h-8 w-8 text-purple-500 mb-3" />
+                          <div className="flex justify-between items-start mb-4">
+                            <Badge className="bg-purple-600 text-white border-none shadow-md px-3 py-1 text-sm font-bold">
+                              {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                            </Badge>
+                            <GraduationCap className="h-8 w-8 text-purple-500" />
+                          </div>
                           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{edu.degree}</h3>
                           <p className="text-lg text-purple-600 dark:text-purple-400 mb-2">{edu.institution}</p>
                           {edu.fieldOfStudy && (
@@ -623,9 +593,6 @@ export default function FreelancerHub({
                               )}
                             </div>
                           )}
-                          <Badge variant="outline" className="mt-2">
-                            {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
-                          </Badge>
                           {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-2">
                               {edu.skillsAcquired.map((skill: string, idx: number) => (
@@ -671,15 +638,15 @@ export default function FreelancerHub({
                     >
                       <Card className="bg-gradient-to-br from-orange-50 to-pink-50 dark:from-orange-900/20 dark:to-pink-900/20 border-orange-200 dark:border-orange-800 h-full hover:shadow-xl transition-all duration-300">
                         <CardContent className="p-6">
-                          <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{service.title}</h3>
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
+                            <Badge className="bg-orange-600 text-white border-none shadow-md px-3 py-1 font-bold text-lg">
+                              {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
+                              {service.isHourly && <span className="text-xs ml-1">/hr</span>}
+                            </Badge>
+                          </div>
                           {service.description && (
                             <p className="text-gray-600 dark:text-gray-400 mb-4">{service.description}</p>
-                          )}
-                          {(service.priceUsd || service.priceInr) && (
-                            <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                              {service.priceUsd ? `$${service.priceUsd}` : `₹${service.priceInr}`}
-                              {service.isHourly && <span className="text-sm">/hr</span>}
-                            </p>
                           )}
                         </CardContent>
                       </Card>
@@ -745,7 +712,6 @@ export default function FreelancerHub({
                   variant="creative" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
                 />
 
                 {publicUrl && (
@@ -763,12 +729,6 @@ export default function FreelancerHub({
                 )}
               </div>
 
-              {userInfo.email && (
-                <p className="mt-8 text-purple-100">
-                  <Mail className="inline h-4 w-4 mr-2" />
-                  {userInfo.email}
-                </p>
-              )}
             </motion.div>
           </div>
         </section>
