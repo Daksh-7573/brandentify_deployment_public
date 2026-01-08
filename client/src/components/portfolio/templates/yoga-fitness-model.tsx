@@ -309,7 +309,7 @@ export default function YogaFitnessModel({
                 variant="minimal" 
                 userId={userInfo.id} 
                 userName={userInfo.name} 
-                userEmail={userInfo.email} 
+                 
               />
             </div>
           </motion.div>

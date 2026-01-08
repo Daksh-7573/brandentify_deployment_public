@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Mail, MapPin, Calendar, ExternalLink, Award, GraduationCap, 
+  MapPin, Calendar, ExternalLink, Award, GraduationCap, 
   Briefcase, Heart, Users, Sparkles, Phone, Instagram, Linkedin, 
   X, ChevronDown
 } from "lucide-react";
@@ -610,20 +610,11 @@ export default function FashionRunway({
               variant="creative" 
               userId={userInfo.id} 
               userName={userInfo.name} 
-              userEmail={userInfo.email} 
+               
             />
           </div>
 
           {/* Email */}
-          {userInfo.email && (
-            <a 
-              href={`mailto:${userInfo.email}`}
-              className="text-gray-600 hover:text-black transition-colors flex items-center justify-center gap-2 mb-8"
-            >
-              <Mail className="h-5 w-5" />
-              {userInfo.email}
-            </a>
-          )}
 
           {/* Social Links */}
           <div className="flex justify-center gap-6">

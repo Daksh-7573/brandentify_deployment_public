@@ -665,7 +665,7 @@ export default function PastelDreamscape({
                         variant="creative" 
                         userId={userInfo.id} 
                         userName={userInfo.name} 
-                        userEmail={userInfo.email} 
+                         
                       />
                     </div>
                   </motion.div>

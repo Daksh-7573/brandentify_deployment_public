@@ -224,7 +224,7 @@ export default function MinimalistPro({
                     variant="minimal"
                     userId={userInfo.id}
                     userName={userInfo.name}
-                    userEmail={userInfo.email}
+                    
                   />
                 </div>
               </div>
@@ -249,9 +249,7 @@ export default function MinimalistPro({
         {/* Personal Branding Section */}
         {(userInfo.tagline || userInfo.visionStatement || userInfo.missionStatement || 
           (userInfo.coreValues && userInfo.coreValues.length > 0) || 
-          userInfo.uniqueValueProposition || 
-          (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-          (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
+          userInfo.uniqueValueProposition) && (
           <section className="mb-12 animate-fade-in">
             <h2 className="section-header">My Professional Brand</h2>
             <div className="space-y-4">
@@ -303,39 +301,6 @@ export default function MinimalistPro({
                 </div>
               )}
 
-              {/* Audiences */}
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-                (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="font-medium text-gray-900 mb-3">Who I Serve</h3>
-                  <div className="space-y-3">
-                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.primaryAudience.map((audience: string, index: number) => (
-                            <Badge key={index} className="bg-primary text-white">
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-600 mb-2">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {userInfo.secondaryAudience.map((audience: string, index: number) => (
-                            <Badge key={index} variant="outline" className="bg-secondary/10">
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </section>
         )}
@@ -659,7 +624,7 @@ export default function MinimalistPro({
             resumeUrl={null} 
             mentorUrl={null}
             connectUrl={null}
-            userEmail={userInfo.email}
+            
             userName={userInfo.name}
             className="flex-row" 
           />

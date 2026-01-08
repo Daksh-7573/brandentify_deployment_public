@@ -443,7 +443,7 @@ export default function DesignerPortfolio({
                   variant="creative"
                   userId={userInfo.id}
                   userName={userInfo.name}
-                  userEmail={userInfo.email}
+                  
                 />
               </div>
             </div>

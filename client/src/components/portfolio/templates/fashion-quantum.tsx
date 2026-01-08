@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { 
-  MapPin, Mail, Eye, Calendar, Check, Star, Camera, Scissors, 
+  MapPin, Eye, Calendar, Check, Star, Camera, Scissors, 
   Target, Sparkles, ExternalLink, Heart, Award, Building2, 
   GraduationCap, Briefcase, User, X, ChevronRight, Instagram,
   Globe, Phone, Download, Play, Pause, ArrowRight, Zap
@@ -542,7 +542,7 @@ export default function FashionQuantum({
                     variant="creative" 
                     userId={userInfo.id} 
                     userName={userInfo.name} 
-                    userEmail={userInfo.email} 
+                     
                   />
                 </div>
               </div>
@@ -713,37 +713,6 @@ export default function FashionQuantum({
                           }}
                         >
                           {value}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {userInfo.primaryAudience && toStringArray(userInfo.primaryAudience).length > 0 && (
-                  <div 
-                    className="p-4 rounded-xl"
-                    style={{
-                      background: 'rgba(17,17,24,0.4)',
-                      borderTop: `1px solid rgba(245,243,238,0.08)`,
-                    }}
-                  >
-                    <h4 
-                      className="text-xs uppercase tracking-[0.15em] mb-2"
-                      style={{ color: colors.inkGrey }}
-                    >
-                      Ideal For
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {toStringArray(userInfo.primaryAudience).map((aud, i) => (
-                        <span 
-                          key={i}
-                          className="px-3 py-1 rounded-full text-xs"
-                          style={{
-                            background: `rgba(249,197,213,0.1)`,
-                            color: 'rgba(255,255,255,0.8)',
-                          }}
-                        >
-                          {aud}
                         </span>
                       ))}
                     </div>
@@ -1419,19 +1388,6 @@ export default function FashionQuantum({
           style={{ borderTop: `1px solid rgba(245,243,238,0.08)` }}
         >
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {userInfo.email && (
-              <a
-                href={`mailto:${userInfo.email}`}
-                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-                style={{
-                  background: 'rgba(245,243,238,0.06)',
-                  border: `1px solid rgba(245,243,238,0.2)`,
-                }}
-                data-testid="footer-email"
-              >
-                <Mail className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
-              </a>
-            )}
             <a
               href="#"
               className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
@@ -1608,25 +1564,6 @@ export default function FashionQuantum({
               Interested in working with {userInfo.name}? Reach out directly:
             </p>
             
-            {userInfo.email && (
-              <a
-                href={`mailto:${userInfo.email}`}
-                className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1"
-                style={{ border: `1px solid rgba(245,243,238,0.12)` }}
-              >
-                <div 
-                  className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${colors.blushPink}20, ${colors.champagneGlow}20)` }}
-                >
-                  <Mail className="w-5 h-5" style={{ color: colors.blushPink }} />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.15em]" style={{ color: colors.inkGrey }}>Email</p>
-                  <p style={{ color: colors.white }}>{userInfo.email}</p>
-                </div>
-                <ArrowRight className="w-5 h-5 ml-auto" style={{ color: colors.inkGrey }} />
-              </a>
-            )}
             
             <Button
               onClick={() => setIsMentorshipDialogOpen(false)}

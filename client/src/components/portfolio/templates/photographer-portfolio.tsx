@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Camera, Mail, Aperture, Focus, Film, Zap, Circle, X, ExternalLink, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, Aperture, Focus, Film, Zap, Circle, X, ExternalLink, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
@@ -506,7 +506,7 @@ export default function PhotographerPortfolio({
                   variant="technical" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </motion.div>
             </div>
@@ -1035,7 +1035,6 @@ export default function PhotographerPortfolio({
             <Button
               onClick={() => {
                 triggerShutter();
-                if (userInfo.email) window.location.href = `mailto:${userInfo.email}`;
               }}
               className="px-12 py-8 text-xl font-bold rounded-full relative overflow-hidden group"
               style={{
@@ -1056,7 +1055,6 @@ export default function PhotographerPortfolio({
                 transition={{ duration: 3, repeat: Infinity }}
               />
               <span className="relative z-10 flex items-center gap-3">
-                <Mail size={24} />
                 Get In Touch
               </span>
             </Button>

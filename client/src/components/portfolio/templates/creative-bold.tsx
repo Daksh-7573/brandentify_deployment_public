@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Mail, MapPin, ExternalLink, Briefcase, Award, GraduationCap } from "lucide-react";
+import { MapPin, ExternalLink, Briefcase, Award, GraduationCap } from "lucide-react";
 import PortfolioCtaButtons from '../portfolio-cta-buttons';
 
 interface CreativeBoldProps {
@@ -134,7 +134,7 @@ export default function CreativeBold({
                 variant="minimal"
                 userId={userInfo.id}
                 userName={userInfo.name}
-                userEmail={userInfo.email || undefined}
+                
               />
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function CreativeBold({
                   variant="creative"
                   userId={userInfo.id}
                   userName={userInfo.name}
-                  userEmail={userInfo.email}
+                  
                 />
               </div>
             </motion.div>

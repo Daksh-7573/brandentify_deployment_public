@@ -871,7 +871,7 @@ export default function CorporateExecutive({
                 <PortfolioCtaButtons 
                   variant="corporate"
                   userId={userInfo.id}
-                  userEmail={userInfo.email}
+                  
                   userName={userInfo.name}
                   className="flex-row gap-3 mt-0"
                 />
@@ -1489,7 +1489,7 @@ export default function CorporateExecutive({
               <PortfolioCtaButtons 
                 variant="corporate"
                 userId={userInfo.id}
-                userEmail={userInfo.email}
+                
                 userName={userInfo.name}
                 className="sm:justify-end"
               />

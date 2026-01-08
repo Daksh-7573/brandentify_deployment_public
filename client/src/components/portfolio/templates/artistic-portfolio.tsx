@@ -359,7 +359,7 @@ export default function ArtisticPortfolio({
                   variant="creative"
                   userId={userInfo.id}
                   userName={userInfo.name}
-                  userEmail={userInfo.email}
+                  
                 />
               </div>
             </div>
@@ -519,69 +519,6 @@ export default function ArtisticPortfolio({
                 </div>
               )}
 
-              {/* Audiences */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {userInfo.primaryAudience && toStringArray(userInfo.primaryAudience).length > 0 && (
-                  <div 
-                    className="p-4"
-                    style={{ 
-                      backgroundColor: cardBackgrounds[2].bg,
-                      clipPath: tornEdgeClipPaths.card3,
-                    }}
-                  >
-                    <h4 
-                      className="font-medium text-xs mb-2"
-                      style={{ color: colors.teal }}
-                    >
-                      Primary Audience
-                    </h4>
-                    <div className="flex flex-wrap gap-1">
-                      {toStringArray(userInfo.primaryAudience).map((aud, i) => (
-                        <span 
-                          key={i}
-                          className="px-2 py-0.5 rounded text-xs"
-                          style={{
-                            backgroundColor: `${colors.teal}15`,
-                            color: colors.teal,
-                          }}
-                        >
-                          {String(aud)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {userInfo.secondaryAudience && toStringArray(userInfo.secondaryAudience).length > 0 && (
-                  <div 
-                    className="p-4"
-                    style={{ 
-                      backgroundColor: cardBackgrounds[6].bg,
-                      clipPath: tornEdgeClipPaths.card1,
-                    }}
-                  >
-                    <h4 
-                      className="font-medium text-xs mb-2"
-                      style={{ color: colors.lilac }}
-                    >
-                      Secondary Audience
-                    </h4>
-                    <div className="flex flex-wrap gap-1">
-                      {toStringArray(userInfo.secondaryAudience).map((aud, i) => (
-                        <span 
-                          key={i}
-                          className="px-2 py-0.5 rounded text-xs"
-                          style={{
-                            backgroundColor: `${colors.lilac}15`,
-                            color: colors.lilac,
-                          }}
-                        >
-                          {String(aud)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* Looking For & Email */}
               <div 
@@ -596,16 +533,6 @@ export default function ArtisticPortfolio({
                     <Target className="w-4 h-4" style={{ color: colors.rust }} />
                     <span style={{ color: colors.darkGray }} className="text-sm">{userInfo.lookingFor}</span>
                   </div>
-                )}
-                {userInfo.email && (
-                  <a 
-                    href={`mailto:${userInfo.email}`}
-                    className="flex items-center gap-2 text-sm transition-colors hover:underline"
-                    style={{ color: colors.teal }}
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span className="truncate max-w-[200px]">{userInfo.email}</span>
-                  </a>
                 )}
               </div>
             </div>

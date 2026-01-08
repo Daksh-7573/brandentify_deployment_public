@@ -35,7 +35,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
       ...(userInfo.coreValues || []).slice(0, 1)
     ].filter(Boolean) as string[],
     contact: {
-      email: userInfo.email || undefined,
       profileUrl: userInfo.brandName 
         ? `brandentifier.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`
         : undefined
@@ -116,7 +115,6 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
   }), [userInfo]);
 
   const contact = useMemo(() => ({
-    email: userInfo.email || undefined,
     phone: (userInfo as any).phoneNumber || undefined,
     location: userInfo.location || undefined,
     profileUrl: userInfo.brandName 
@@ -198,7 +196,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
               variant="technical" 
               userId={userInfo.id} 
               userName={userInfo.name} 
-              userEmail={userInfo.email} 
+               
             />
           </div>
         </div>

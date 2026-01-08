@@ -219,7 +219,7 @@ export default function VisualExpert({
                   variant="minimal" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </div>
             </div>

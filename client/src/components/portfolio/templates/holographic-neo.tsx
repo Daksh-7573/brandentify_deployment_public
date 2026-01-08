@@ -410,20 +410,6 @@ export default function HolographicNeo({
                     </a>
                   )}
 
-                  {/* Contact Info */}
-                  {userInfo.email && (
-                    <div 
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                      }}
-                    >
-                      <Mail className="w-4 h-4 text-cyan-400" />
-                      <span className="text-white/80 text-sm truncate">{userInfo.email}</span>
-                    </div>
-                  )}
-
                   {userInfo.phoneNumber && (
                     <div 
                       className="flex items-center gap-3 px-4 py-3 rounded-lg"
@@ -590,58 +576,6 @@ export default function HolographicNeo({
                   </div>
                 )}
 
-                {/* Audiences */}
-                {(primaryAudience.length > 0 || secondaryAudience.length > 0) && (
-                  <div 
-                    className="p-6 rounded-2xl"
-                    style={{
-                      background: 'rgba(10, 10, 30, 0.8)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                    }}
-                  >
-                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Who I Work With
-                    </h3>
-                    <div className="space-y-3">
-                      {primaryAudience.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {primaryAudience.map((audience, i) => (
-                            <span 
-                              key={i}
-                              className="px-3 py-1.5 rounded-full text-xs font-medium"
-                              style={{
-                                background: 'rgba(34, 211, 238, 0.15)',
-                                border: '1px solid rgba(34, 211, 238, 0.3)',
-                                color: '#a5f3fc',
-                              }}
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {secondaryAudience.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {secondaryAudience.map((audience, i) => (
-                            <span 
-                              key={i}
-                              className="px-3 py-1.5 rounded-full text-xs font-medium"
-                              style={{
-                                background: 'rgba(167, 139, 251, 0.15)',
-                                border: '1px solid rgba(167, 139, 251, 0.3)',
-                                color: '#e9d5ff',
-                              }}
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </section>

@@ -485,56 +485,6 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                 </motion.div>
               )}
 
-              {((primaryAudience && primaryAudience.length > 0) || 
-                (secondaryAudience && secondaryAudience.length > 0)) && (
-                <motion.div
-                  className="glassmorphic-card p-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: isSkillsInView ? 1 : 0, 
-                    y: isSkillsInView ? 0 : 20 
-                  }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <User className="h-6 w-6 text-accent" />
-                    <h3 className="text-xl font-bold">Who I Serve</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {primaryAudience && primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-muted-foreground font-medium mb-2">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {primaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              className="bg-accent/30 text-accent hover:bg-accent/40"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {secondaryAudience && secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-muted-foreground font-medium mb-2">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {secondaryAudience.map((audience: string, index: number) => (
-                            <Badge 
-                              key={index}
-                              variant="outline"
-                              className="border-accent/30 text-muted-foreground"
-                            >
-                              {audience}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
             </div>
           </div>
         </section>
@@ -1184,7 +1134,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               variant="creative" 
               userId={id} 
               userName={name} 
-              userEmail={email} 
+               
             />
           </div>
         </div>

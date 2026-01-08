@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Mail, MapPin, ExternalLink, Download } from "lucide-react";
+import { MapPin, ExternalLink, Download } from "lucide-react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 
 interface FashionIsArtProps {
@@ -100,11 +100,6 @@ export default function FashionIsArt({
           <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{userInfo.name}</h2>
             <div className="flex items-center gap-3">
-              {userInfo.email && (
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = `mailto:${userInfo.email}`}>
-                  Book Me
-                </Button>
-              )}
               <Button variant="outline" size="sm">
                 <Download className="w-4 h-4 mr-1" />
                 Media Kit
@@ -188,7 +183,7 @@ export default function FashionIsArt({
                   variant="creative" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </div>
             </motion.div>
@@ -501,11 +496,6 @@ export default function FashionIsArt({
       <footer className="py-16 px-6 md:px-12 bg-black text-white">
         <div className="max-w-[1200px] mx-auto text-center">
           <p className="text-gray-400">{userInfo.name}</p>
-          {userInfo.email && (
-            <a href={`mailto:${userInfo.email}`} className="text-white hover:text-gray-300 mt-2 inline-block">
-              {userInfo.email}
-            </a>
-          )}
           <p className="text-gray-500 text-sm mt-6">© 2024. All rights reserved.</p>
         </div>
       </footer>

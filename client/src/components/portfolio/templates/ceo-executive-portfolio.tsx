@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Award, MapPin, Mail, ExternalLink, Target, Briefcase, Users, 
+  Award, MapPin, ExternalLink, Target, Briefcase, Users, 
   Zap, ChevronDown, ChevronRight, Download, Heart, Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -258,24 +258,12 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                 </div>
 
                 {/* Contact Info */}
-                {(userInfo.email || userInfo.location) && (
+                {userInfo.location && (
                   <div className="flex gap-4 pt-4">
-                    {userInfo.email && (
-                      <a
-                        href={`mailto:${userInfo.email}`}
-                        className="inline-flex items-center gap-2 text-xs hover:opacity-80 transition-opacity"
-                        style={{ color: colors.executivePurple }}
-                      >
-                        <Mail size={14} />
-                        {userInfo.email}
-                      </a>
-                    )}
-                    {userInfo.location && (
-                      <span className="inline-flex items-center gap-2 text-xs" style={{ color: colors.mutedSilver }}>
-                        <MapPin size={14} />
-                        {userInfo.location}
-                      </span>
-                    )}
+                    <span className="inline-flex items-center gap-2 text-xs" style={{ color: colors.mutedSilver }}>
+                      <MapPin size={14} />
+                      {userInfo.location}
+                    </span>
                   </div>
                 )}
                 
@@ -285,7 +273,7 @@ const CEOExecutivePortfolio: React.FC<CEOPortfolioProps> = ({
                     variant="corporate" 
                     userId={userInfo.id} 
                     userName={userInfo.name} 
-                    userEmail={userInfo.email} 
+                     
                   />
                 </div>
               </motion.div>

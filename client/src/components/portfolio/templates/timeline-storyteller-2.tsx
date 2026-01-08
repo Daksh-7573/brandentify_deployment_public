@@ -288,7 +288,7 @@ export default function TimelineStoryteller2({
               variant="minimal" 
               userId={userInfo.id} 
               userName={userInfo.name} 
-              userEmail={userInfo.email} 
+               
             />
           </motion.div>
         </motion.div>
@@ -350,61 +350,6 @@ export default function TimelineStoryteller2({
                 )}
               </CardContent>
             </Card>
-          </motion.section>
-        )}
-
-        {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || 
-          (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-          <motion.section
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-amber-900">Target Audience</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                <Card className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 shadow-lg">
-                  <CardContent className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
-                      <Target className="w-6 h-6" />
-                      Primary Audience
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.primaryAudience.map((audience, idx) => (
-                        <Badge key={idx} className="bg-amber-200 text-amber-900 hover:bg-amber-300">
-                          {audience}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              
-              {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                <Card className="bg-white/80 backdrop-blur-sm border-2 border-orange-200 shadow-lg">
-                  <CardContent className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-orange-900 flex items-center gap-2">
-                      <Users className="w-6 h-6" />
-                      Secondary Audience
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.secondaryAudience.map((audience, idx) => (
-                        <Badge key={idx} className="bg-orange-200 text-orange-900 hover:bg-orange-300">
-                          {audience}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
           </motion.section>
         )}
 
@@ -778,7 +723,7 @@ export default function TimelineStoryteller2({
               variant="minimal" 
               userId={userInfo.id} 
               userName={userInfo.name} 
-              userEmail={userInfo.email} 
+               
             />
           </div>
         </motion.section>

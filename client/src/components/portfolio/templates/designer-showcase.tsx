@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, Calendar, Mail, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap } from "lucide-react";
+import { Download, Calendar, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { User, Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
@@ -135,7 +135,6 @@ export default function DesignerShowcase({
 }: DesignerShowcaseProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showMentorModal, setShowMentorModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
   const anim = useAnimationConfig();
   
   return (
@@ -208,7 +207,7 @@ export default function DesignerShowcase({
                   variant="creative" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </div>
             </div>
@@ -473,28 +472,6 @@ export default function DesignerShowcase({
         </DialogContent>
       </Dialog>
 
-      {/* Contact Modal */}
-      <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
-        <DialogContent className="bg-slate-900/95 backdrop-blur-xl border-white/10 text-white">
-          <DialogHeader>
-            <DialogTitle>Get in Touch</DialogTitle>
-            <DialogDescription className="text-white/70">
-              Reach out to {userInfo.name}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            {userInfo.email && (
-              <Button 
-                onClick={() => window.location.href = `mailto:${userInfo.email}`}
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Send Email to {userInfo.email}
-              </Button>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

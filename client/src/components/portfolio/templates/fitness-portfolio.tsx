@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Dumbbell, Heart, Wind, Target, MapPin, Mail, Calendar, 
+  Dumbbell, Heart, Wind, Target, MapPin, Calendar, 
   Award, Users, TrendingUp, Play, Download, MessageCircle, 
   ChevronLeft, ChevronRight, X, ExternalLink, Clock, Star,
   Instagram, Youtube, CheckCircle, Zap, Activity
@@ -712,7 +712,7 @@ export default function FitnessPortfolio({
                   variant="minimal" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </div>
             </motion.div>
@@ -799,18 +799,6 @@ export default function FitnessPortfolio({
                   </div>
                 )}
                 
-                {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                  <div className="mt-6">
-                    <p className="text-sm font-medium text-gray-500 mb-2">Who I Help:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {userInfo.primaryAudience.map((audience, i) => (
-                        <span key={i} className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                          {audience}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </motion.div>
               
               <motion.div
@@ -1030,19 +1018,6 @@ export default function FitnessPortfolio({
               Book Free Assessment
             </Button>
             
-            {userInfo.email && (
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold border-white text-white hover:bg-white/10"
-                asChild
-              >
-                <a href={`mailto:${userInfo.email}`}>
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email Me
-                </a>
-              </Button>
-            )}
           </div>
         </div>
       </section>
@@ -1062,11 +1037,6 @@ export default function FitnessPortfolio({
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
-              {userInfo.email && (
-                <a href={`mailto:${userInfo.email}`} className="text-gray-400 hover:text-white transition-colors">
-                  <Mail className="w-5 h-5" />
-                </a>
-              )}
             </div>
           </div>
           
@@ -1151,18 +1121,6 @@ export default function FitnessPortfolio({
             </div>
             
             <div className="space-y-3">
-              {userInfo.email && (
-                <Button 
-                  className="w-full" 
-                  style={{ background: colors.deepEmerald }}
-                  asChild
-                >
-                  <a href={`mailto:${userInfo.email}?subject=Booking Request`}>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Email: {userInfo.email}
-                  </a>
-                </Button>
-              )}
               
               <Button variant="outline" className="w-full" onClick={() => setContactOpen(false)}>
                 Close

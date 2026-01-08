@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { Camera, Mail, MapPin, Eye, Target, Heart, Users, Briefcase, Calendar, ChevronLeft, ChevronRight, X, ExternalLink, Globe, Download, MessageCircle, Aperture, Film, Clock, Award } from "lucide-react";
+import { Camera, MapPin, Eye, Target, Heart, Users, Briefcase, Calendar, ChevronLeft, ChevronRight, X, ExternalLink, Globe, Download, MessageCircle, Aperture, Film, Clock, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -771,7 +771,7 @@ export default function PhotographyCinematic({
                 variant="technical" 
                 userId={userInfo.id} 
                 userName={userInfo.name} 
-                userEmail={userInfo.email} 
+                 
               />
             </div>
           </motion.div>
@@ -869,51 +869,7 @@ export default function PhotographyCinematic({
                 </div>
               )}
               
-              {((userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
-                <div className="p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-charcoal/10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Users className="w-4 h-4" style={{ color: colors.skyBlue }} />
-                    <h4 className="font-semibold text-sm" style={{ color: colors.charcoal }}>Target Audience</h4>
-                  </div>
-                  {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-xs text-charcoal/60 mb-1">Primary</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {userInfo.primaryAudience.map((aud, i) => (
-                          <span key={i} className="text-xs px-2 py-1 rounded" style={{ background: `${colors.skyBlue}15`, color: colors.skyBlue }}>
-                            {aud}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
-                    <div>
-                      <p className="text-xs text-charcoal/60 mb-1">Secondary</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {userInfo.secondaryAudience.map((aud, i) => (
-                          <span key={i} className="text-xs px-2 py-1 rounded" style={{ background: `${colors.charcoal}10`, color: colors.charcoal }}>
-                            {aud}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
               
-              {userInfo.email && (
-                <div className="p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-charcoal/10 flex items-center gap-3">
-                  <Mail className="w-5 h-5" style={{ color: colors.goldenHour }} />
-                  <a 
-                    href={`mailto:${userInfo.email}`}
-                    className="text-sm font-medium hover:underline truncate"
-                    style={{ color: colors.charcoal }}
-                  >
-                    {userInfo.email}
-                  </a>
-                </div>
-              )}
             </div>
           </motion.div>
         </div>
@@ -1107,14 +1063,6 @@ export default function PhotographyCinematic({
             <Button variant="outline" size="sm" style={{ borderColor: colors.goldenHour, color: colors.deepSepia }}>
               <Download className="w-4 h-4 mr-2" /> vCard
             </Button>
-            {userInfo.email && (
-              <Button 
-                size="sm"
-                style={{ background: `linear-gradient(135deg, ${colors.goldenHour}, ${colors.goldenLight})`, color: colors.softBlack }}
-              >
-                <Mail className="w-4 h-4 mr-2" /> Contact
-              </Button>
-            )}
           </div>
         </div>
       </footer>

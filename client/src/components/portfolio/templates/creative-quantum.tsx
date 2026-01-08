@@ -307,7 +307,7 @@ export default function CreativeQuantum({
                   variant="technical"
                   userId={userInfo.id}
                   userName={userInfo.name}
-                  userEmail={userInfo.email}
+                  
                 />
               </div>
             </div>
@@ -421,57 +421,6 @@ export default function CreativeQuantum({
                 </div>
               )}
 
-              {/* Audiences */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {userInfo.primaryAudience && toStringArray(userInfo.primaryAudience).length > 0 && (
-                  <div 
-                    className="p-4 rounded-xl"
-                    style={{
-                      background: 'rgba(10, 26, 63, 0.6)',
-                    }}
-                  >
-                    <h4 className="text-cyan-400 font-medium text-xs mb-2">Primary Audience</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {toStringArray(userInfo.primaryAudience).map((aud, i) => (
-                        <span 
-                          key={i}
-                          className="px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(34, 211, 238, 0.15)',
-                            color: '#a5f3fc',
-                          }}
-                        >
-                          {String(aud)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {userInfo.secondaryAudience && toStringArray(userInfo.secondaryAudience).length > 0 && (
-                  <div 
-                    className="p-4 rounded-xl"
-                    style={{
-                      background: 'rgba(10, 26, 63, 0.6)',
-                    }}
-                  >
-                    <h4 className="text-purple-400 font-medium text-xs mb-2">Secondary Audience</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {toStringArray(userInfo.secondaryAudience).map((aud, i) => (
-                        <span 
-                          key={i}
-                          className="px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(167, 139, 251, 0.15)',
-                            color: '#e9d5ff',
-                          }}
-                        >
-                          {String(aud)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* Looking For & Email */}
               <div 
@@ -485,15 +434,6 @@ export default function CreativeQuantum({
                     <Target className="w-4 h-4 text-cyan-400" />
                     <span className="text-white/80 text-sm">{userInfo.lookingFor}</span>
                   </div>
-                )}
-                {userInfo.email && (
-                  <a 
-                    href={`mailto:${userInfo.email}`}
-                    className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span className="truncate max-w-[200px]">{userInfo.email}</span>
-                  </a>
                 )}
               </div>
             </div>

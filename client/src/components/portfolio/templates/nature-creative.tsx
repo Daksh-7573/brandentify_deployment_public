@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Mail, MapPin, Leaf, TreePine, Flower2, Sparkles,
+  MapPin, Leaf, TreePine, Flower2, Sparkles,
   Award, GraduationCap, Briefcase, Globe, Heart,
   ExternalLink, Calendar, Users, Mountain, Bird,
   Phone, Linkedin, Github, Twitter, Instagram, Facebook
@@ -475,7 +475,7 @@ export default function NatureCreative({
                   variant="creative" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </motion.div>
             </motion.div>
@@ -566,20 +566,6 @@ export default function NatureCreative({
                     </div>
                   )}
                   
-                  {/* Contact Info */}
-                  <div className="mt-6 flex flex-wrap gap-4">
-                    {userInfo.email && (
-                      <motion.a
-                        href={`mailto:${userInfo.email}`}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full hover:bg-emerald-100 transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        data-testid="link-email"
-                      >
-                        <Mail size={16} />
-                        <span className="text-sm">{userInfo.email}</span>
-                      </motion.a>
-                    )}
-                  </div>
                 </div>
               </motion.div>
             </div>
@@ -1039,19 +1025,10 @@ export default function NatureCreative({
                   variant="creative" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                  userEmail={userInfo.email} 
+                   
                 />
               </div>
 
-              {userInfo.email && (
-                <motion.p
-                  className="flex items-center justify-center gap-2 text-lg text-gray-700"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Mail size={20} className="text-emerald-600" />
-                  {userInfo.email}
-                </motion.p>
-              )}
             </motion.div>
           </div>
 

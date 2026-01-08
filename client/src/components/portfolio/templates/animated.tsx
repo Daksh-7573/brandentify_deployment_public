@@ -287,7 +287,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   variant="technical"
                   userId={id}
                   userName={name}
-                  userEmail={email}
+                  
                 />
               </div>
             </motion.div>
@@ -615,52 +615,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 </motion.div>
               )}
 
-              {((primaryAudience && primaryAudience.length > 0) || 
-                (secondaryAudience && secondaryAudience.length > 0)) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 20 }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
-                  className="bg-gradient-to-r from-indigo-900/30 to-violet-900/30 backdrop-blur-md rounded-2xl p-6 border border-indigo-500/20"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <User className="h-6 w-6 text-indigo-400" />
-                    <h3 className="text-xl font-semibold text-indigo-300">Who I Serve</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {primaryAudience && primaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-400 mb-2 font-medium">Primary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {primaryAudience.map((audience: string, index: number) => (
-                            <span 
-                              key={index}
-                              className="px-3 py-1.5 bg-indigo-500/30 border border-indigo-400/40 rounded-full text-indigo-300 text-sm font-medium"
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {secondaryAudience && secondaryAudience.length > 0 && (
-                      <div>
-                        <p className="text-sm text-gray-400 mb-2 font-medium">Secondary Audience</p>
-                        <div className="flex flex-wrap gap-2">
-                          {secondaryAudience.map((audience: string, index: number) => (
-                            <span 
-                              key={index}
-                              className="px-3 py-1.5 bg-gray-700/30 border border-gray-600/40 rounded-full text-gray-300 text-sm"
-                            >
-                              {audience}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
             </div>
           </div>
         </section>
