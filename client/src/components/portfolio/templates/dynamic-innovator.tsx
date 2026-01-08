@@ -922,7 +922,7 @@ export function DynamicInnovator({
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="futuristic-heading text-2xl md:text-3xl font-bold mb-8 text-white inline-block">
-            <Zap className="break-all break-all break-all inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
+            <Zap className="break-all inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
             Projects & Innovations
           </h2>
           
@@ -990,7 +990,7 @@ export function DynamicInnovator({
             <div className="tech-card p-8 text-center">
               <CircuitBoard className="h-12 w-12 mx-auto mb-4 text-[#08f7fe]/50" />
               <h3 className="text-xl text-[#08f7fe]">Project Repository Empty</h3>
-              <p className="break-all break-all break-all text-gray-400 mt-2">Technical projects will be indexed and displayed here.</p>
+              <p className="break-all text-gray-400 mt-2">Technical projects will be indexed and displayed here.</p>
             </div>
           )}
         </div>
@@ -1019,7 +1019,7 @@ export function DynamicInnovator({
                     <Award className="h-6 w-6 text-[#08f7fe]" />
                     <h3 className="text-lg font-bold text-white">Tagline</h3>
                   </div>
-                  <p className="break-all break-all break-all text-gray-300 italic text-xl leading-relaxed">
+                  <p className="break-all text-gray-300 italic text-xl leading-relaxed">
                     "{userInfo.tagline}"
                   </p>
                 </div>
@@ -1034,7 +1034,7 @@ export function DynamicInnovator({
                         <Lightbulb className="h-6 w-6 text-[#08f7fe]" />
                         <h3 className="text-lg font-bold text-white">Vision</h3>
                       </div>
-                      <p className="break-all break-all break-all text-gray-300 leading-relaxed">
+                      <p className="break-all text-gray-300 leading-relaxed">
                         {userInfo.visionStatement}
                       </p>
                     </div>
@@ -1205,35 +1205,6 @@ export function DynamicInnovator({
                           </div>
                         </div>
                         
-                        {/* Display service features with enhanced styling */}
-                        {service.features && Array.isArray(service.features) && service.features.length > 0 ? (
-                          <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
-                            <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
-                              <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ) : (
-                          // Add sample features for demo services with no features
-                          <div className="mt-3 pt-3 border-t border-[#08f7fe]/20">
-                            <h4 className="text-sm font-medium text-[#08f7fe] mb-2 flex items-center">
-                              <Layers className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                              <li className="flex items-start">
-                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                                  <Check className="h-3 w-3 text-[#fe53bb]" />
-                                </div>
-                                <span>Dedicated support</span>
-                              </li>
-                              <li className="flex items-start">
-                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                                  <Check className="h-3 w-3 text-[#fe53bb]" />
-                                </div>
-                                <span>Satisfaction guarantee</span>
-                              </li>
-                            </ul>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
