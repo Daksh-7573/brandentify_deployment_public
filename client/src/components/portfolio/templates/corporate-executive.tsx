@@ -1417,7 +1417,7 @@ export default function CorporateExecutive({
                     {edu.industry && (
                       <div className="flex items-center text-sm text-gray-500" style={{ fontFamily: 'Inter, sans-serif' }}>
                         <Briefcase className="h-4 w-4 mr-1" />
-                        <span>{edu.industry}</span>
+                        <span>{String(edu.industry)}</span>
                       </div>
                     )}
                     

@@ -963,22 +963,22 @@ export default function HolographicNeo({
                           {edu.fieldOfStudy && (
                             <p className="text-white/60 text-sm mt-1">{edu.fieldOfStudy}</p>
                           )}
-                          {edu.domain && (
-                            <p className="text-purple-300/80 text-sm mt-1">{String(edu.domain)}</p>
-                          )}
-                        </div>
-                        <span 
-                          className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 self-start"
-                          style={{
-                            background: 'rgba(167, 139, 251, 0.15)',
-                            border: '1px solid rgba(167, 139, 251, 0.3)',
-                            color: '#e9d5ff',
-                          }}
-                        >
-                          <Calendar className="w-3 h-3" />
-                          {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
-                        </span>
+                        {edu.domain && (
+                          <p className="text-purple-300/80 text-sm mt-1">{String(edu.domain)}</p>
+                        )}
                       </div>
+                      <span 
+                        className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 self-start"
+                        style={{
+                          background: 'rgba(167, 139, 251, 0.15)',
+                          border: '1px solid rgba(167, 139, 251, 0.3)',
+                          color: '#e9d5ff',
+                        }}
+                      >
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
+                      </span>
+                    </div>
 
                       {/* Skills Acquired */}
                       {edu.skillsAcquired && toStringArray(edu.skillsAcquired).length > 0 && (
