@@ -200,7 +200,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
     { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'education', label: 'Education', icon: <GraduationCap className="break-all w-4 h-4" /> }
+    { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> }
   ];
 
   return (
