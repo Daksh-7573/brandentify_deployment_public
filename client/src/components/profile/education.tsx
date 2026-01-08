@@ -300,18 +300,10 @@ export default function Education() {
     if (selectedIndustry) {
       const domains = INDUSTRY_DOMAINS[selectedIndustry] || [];
       setDomainOptions(domains);
-      
-      // If current domain is not in new list, clear it
-      if (domains.length > 0 && selectedDomain && !domains.includes(selectedDomain)) {
-        setSelectedDomain("");
-        form.setValue("domain", "");
-      }
     } else {
       setDomainOptions([]);
-      setSelectedDomain("");
-      form.setValue("domain", "");
     }
-  }, [selectedIndustry, form, selectedDomain]);
+  }, [selectedIndustry]);
   
   // Handle form submission
   const onSubmit = (data: Education) => {
@@ -323,26 +315,25 @@ export default function Education() {
       processedData.endDate = undefined;
     }
     
-      // Handle industry selection and update domains
-      if (processedData.industry) {
-        processedData.domain = selectedDomain || processedData.domain;
-      }
-      
-      // Store all the UI data for display purposes
-      const uiData = {
-        id: processedData.id,
-        userId: processedData.userId,
-        institution: processedData.institution,
-        degree: processedData.degree,
-        location: processedData.location,
-        startDate: processedData.startDate ? processedData.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-        endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
-        field: processedData.field,
-        currentlyEnrolled: processedData.currentlyEnrolled,
-        skillsAcquired: processedData.skillsAcquired,
-        industry: processedData.industry,
-        domain: processedData.domain
-      };
+    // Explicitly set industry and domain from state to ensure they are captured
+    processedData.industry = selectedIndustry;
+    processedData.domain = selectedDomain;
+    
+    // Store all the UI data for display purposes
+    const uiData = {
+      id: processedData.id,
+      userId: processedData.userId,
+      institution: processedData.institution,
+      degree: processedData.degree,
+      location: processedData.location,
+      startDate: processedData.startDate ? processedData.startDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      endDate: processedData.endDate ? processedData.endDate.toISOString().split('T')[0] : undefined, // YYYY-MM-DD format
+      field: processedData.field,
+      currentlyEnrolled: processedData.currentlyEnrolled,
+      skillsAcquired: processedData.skillsAcquired,
+      industry: processedData.industry,
+      domain: processedData.domain
+    };
     
     // Create a version with all fields including the newly added ones
     const apiData = {
@@ -358,6 +349,8 @@ export default function Education() {
       fieldOfStudy: uiData.field,
       skillsAcquired: Array.isArray(uiData.skillsAcquired) ? JSON.stringify(uiData.skillsAcquired) : "[]"
     };
+    
+    console.log("Submitting apiData with industry/domain:", apiData.industry, apiData.domain);
     
     if (editingEducation) {
       updateEducationMutation.mutate(apiData);
@@ -637,27 +630,59 @@ export default function Education() {
                 )}
               />
               
-              {/* Degree */}
-              <FormField
-                control={form.control}
-                name="degree"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
-                      <GraduationCap className="h-4 w-4" />
-                      Degree
-                    </FormLabel>
-                    <FormControl>
-                      <DegreeCombobox
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Type or select a degree"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Industry Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-white font-medium text-sm flex items-center gap-2">
+                    <Briefcase className="h-4 w-4" />
+                    Industry
+                  </Label>
+                  <Select 
+                    value={selectedIndustry} 
+                    onValueChange={(val) => {
+                      setSelectedIndustry(val);
+                      form.setValue("industry", val);
+                    }}
+                  >
+                    <SelectTrigger className="neo-glass-input border-gray-700 text-white">
+                      <SelectValue placeholder="Select industry" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700 text-white">
+                      {INDUSTRIES.map((industry) => (
+                        <SelectItem key={industry} value={industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white font-medium text-sm flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Domain
+                  </Label>
+                  <Select 
+                    value={selectedDomain} 
+                    onValueChange={(val) => {
+                      setSelectedDomain(val);
+                      form.setValue("domain", val);
+                    }}
+                    disabled={!selectedIndustry}
+                  >
+                    <SelectTrigger className="neo-glass-input border-gray-700 text-white">
+                      <SelectValue placeholder={selectedIndustry ? "Select domain" : "Select industry first"} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700 text-white">
+                      {domainOptions.map((domain) => (
+                        <SelectItem key={domain} value={domain}>
+                          {domain}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               
               {/* Industry */}
               <FormField
