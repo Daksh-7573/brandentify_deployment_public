@@ -1173,10 +1173,12 @@ export function DynamicInnovator({
                     <div key={service.id} className="tech-card p-6 relative overflow-hidden flex flex-col">
                       {/* Service category badge - positioned top right */}
                       <div className="absolute top-0 right-0">
-                        <Badge className="m-3 bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] flex items-center">
-                          <Tag className="h-3 w-3 mr-1" />
-                          {service.category || "Service"}
-                        </Badge>
+                          {service.category && (
+                            <Badge className="m-3 bg-[#0c162d] border border-[#08f7fe]/30 text-[#08f7fe] flex items-center">
+                              <Tag className="h-3 w-3 mr-1" />
+                              {service.category}
+                            </Badge>
+                          )}
                       </div>
                       
                       {/* Service title and description */}
