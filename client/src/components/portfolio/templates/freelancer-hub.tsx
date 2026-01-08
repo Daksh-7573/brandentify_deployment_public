@@ -55,8 +55,30 @@ interface FreelancerHubProps {
   userSkills: Skill[];
   userProjects: Project[];
   userServices: Service[];
-  userExperiences: UserExperience[];
-  userEducations: UserEducation[];
+  userExperiences: Array<{
+    id: number;
+    title: string;
+    company: string;
+    startDate: string;
+    endDate?: string | null;
+    description?: string | null;
+    location?: string | null;
+    industry?: string | null;
+    domain?: string | null;
+    keyResponsibilities?: string[];
+  }>;
+  userEducations: Array<{
+    id: number;
+    degree: string;
+    institution: string;
+    fieldOfStudy?: string | null;
+    startDate: string;
+    endDate?: string | null;
+    location?: string | null;
+    industry?: string | null;
+    domain?: string | null;
+    skillsAcquired?: string[];
+  }>;
   publicUrl?: string | null;
   currentUserId?: number;
 }
@@ -66,60 +88,25 @@ function ParallaxBackground() {
   const { scrollY } = useScroll();
   const layer1Y = useTransform(scrollY, [0, 2000], [0, -300]);
   const layer2Y = useTransform(scrollY, [0, 2000], [0, -700]);
-  const layer3Y = useTransform(scrollY, [0, 2000], [0, -1200]);
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Layer 1: Colorful gradient background */}
+      {/* Layer 1: Subtle gradient background */}
       <motion.div 
         style={{ 
           y: layer1Y,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #feca57 100%)"
+          background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
         }}
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-40"
       />
       
-      {/* Layer 2: Large decorative shapes */}
+      {/* Layer 2: Large decorative shapes - softened */}
       <motion.div style={{ y: layer2Y }} className="absolute inset-0">
-        {/* Purple blob */}
-        <div className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-purple-400 opacity-30 blur-3xl" />
+        {/* Soft primary blob */}
+        <div className="absolute top-20 left-10 w-[500px] h-[500px] rounded-full bg-blue-50 opacity-20 blur-3xl" />
         
-        {/* Pink blob */}
-        <div className="absolute top-[40%] right-20 w-[600px] h-[600px] rounded-full bg-pink-400 opacity-30 blur-3xl" />
-        
-        {/* Orange blob */}
-        <div className="absolute bottom-40 left-[30%] w-[550px] h-[550px] rounded-full bg-orange-400 opacity-30 blur-3xl" />
-        
-        {/* Cyan blob */}
-        <div className="absolute top-[60%] right-[10%] w-[500px] h-[500px] rounded-full bg-cyan-400 opacity-30 blur-3xl" />
-      </motion.div>
-      
-      {/* Layer 3: Floating elements */}
-      <motion.div style={{ y: layer3Y }} className="absolute inset-0">
-        {/* Paint splashes and creative elements */}
-        <motion.div 
-          className="absolute top-40 left-[15%] w-32 h-32 border-4 border-purple-400 rounded-full opacity-50"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
-        
-        <motion.div 
-          className="absolute top-[30%] right-[20%] w-24 h-24 border-4 border-pink-400 opacity-50"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        />
-        
-        <motion.div 
-          className="absolute bottom-[40%] left-[40%] w-40 h-40 border-4 border-orange-400 rounded-full opacity-50"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        
-        {/* Stars and sparkles */}
-        <Star className="absolute top-[25%] left-[25%] w-8 h-8 text-yellow-400 opacity-60" />
-        <Sparkles className="absolute top-[50%] right-[30%] w-10 h-10 text-cyan-400 opacity-60" />
-        <Zap className="absolute bottom-[30%] right-[15%] w-8 h-8 text-purple-400 opacity-60" />
-        <Heart className="absolute bottom-[50%] left-[20%] w-8 h-8 text-pink-400 opacity-60" />
+        {/* Soft accent blob */}
+        <div className="absolute top-[40%] right-20 w-[600px] h-[600px] rounded-full bg-indigo-50 opacity-20 blur-3xl" />
       </motion.div>
     </div>
   );
@@ -163,7 +150,7 @@ export default function FreelancerHub({
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 relative overflow-hidden" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-gray-950 relative overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
       <ParallaxBackground />
       
       <div className="relative z-10">
@@ -537,10 +524,10 @@ export default function FreelancerHub({
                               <p className="text-lg text-purple-600 dark:text-purple-400">{exp.company}</p>
                             </div>
                             <Badge variant="outline" className="mt-2 md:mt-0 w-fit">
-                              {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                              {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                             </Badge>
                           </div>
-                          {(exp.location || (exp as any).industry) && (
+                          {(exp.location || exp.industry || exp.domain) && (
                             <div className="flex flex-wrap gap-3 mb-2 text-gray-600 dark:text-gray-400">
                               {exp.location && (
                                 <span className="flex items-center">
@@ -548,10 +535,16 @@ export default function FreelancerHub({
                                   {exp.location}
                                 </span>
                               )}
-                              {(exp as any).industry && (
+                              {exp.industry && (
                                 <span className="flex items-center">
                                   <Briefcase className="inline h-4 w-4 mr-1" />
-                                  {(exp as any).industry}
+                                  {exp.industry}
+                                </span>
+                              )}
+                              {exp.domain && (
+                                <span className="flex items-center">
+                                  <Target className="inline h-4 w-4 mr-1" />
+                                  {exp.domain}
                                 </span>
                               )}
                             </div>
@@ -559,10 +552,10 @@ export default function FreelancerHub({
                           {exp.description && (
                             <p className="text-gray-700 dark:text-gray-300 mt-3">{exp.description}</p>
                           )}
-                          {(exp as any).keyResponsibilities && (exp as any).keyResponsibilities.length > 0 && (
+                          {exp.keyResponsibilities && exp.keyResponsibilities.length > 0 && (
                             <ul className="mt-3 list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-                              {(exp as any).keyResponsibilities.map((resp: string, idx: number) => (
-                                <li key={idx} className="text-sm">{resp}</li>
+                              {exp.keyResponsibilities.map((resp: string, idx: number) => (
+                                <li key={idx} className="text-sm">{String(resp)}</li>
                               ))}
                             </ul>
                           )}
@@ -608,28 +601,34 @@ export default function FreelancerHub({
                           {edu.fieldOfStudy && (
                             <p className="text-gray-600 dark:text-gray-400 mb-2">{edu.fieldOfStudy}</p>
                           )}
-                          {((edu as any).location || (edu as any).industry) && (
+                          {(edu.location || edu.industry || edu.domain) && (
                             <div className="flex flex-wrap gap-3 mb-2 text-sm text-gray-500 dark:text-gray-400">
-                              {(edu as any).location && (
+                              {edu.location && (
                                 <span className="flex items-center">
                                   <MapPin className="inline h-3 w-3 mr-1" />
-                                  {(edu as any).location}
+                                  {edu.location}
                                 </span>
                               )}
-                              {(edu as any).industry && (
+                              {edu.industry && (
                                 <span className="flex items-center">
                                   <Briefcase className="inline h-3 w-3 mr-1" />
-                                  {(edu as any).industry}
+                                  {edu.industry}
+                                </span>
+                              )}
+                              {edu.domain && (
+                                <span className="flex items-center">
+                                  <Target className="inline h-3 w-3 mr-1" />
+                                  {edu.domain}
                                 </span>
                               )}
                             </div>
                           )}
                           <Badge variant="outline" className="mt-2">
-                            {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                            {formatDate(edu.startDate)} - {edu.endDate ? formatDate(edu.endDate) : 'Present'}
                           </Badge>
-                          {(edu as any).skillsAcquired && (edu as any).skillsAcquired.length > 0 && (
+                          {edu.skillsAcquired && edu.skillsAcquired.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-2">
-                              {(edu as any).skillsAcquired.map((skill: string, idx: number) => (
+                              {edu.skillsAcquired.map((skill: string, idx: number) => (
                                 <Badge key={idx} className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs">
                                   {skill}
                                 </Badge>
