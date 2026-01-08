@@ -155,7 +155,7 @@ export default function FreelancerHub({
       
       <div className="relative z-10">
         {/* Hero Section */}
-        <section className="relative px-6 py-20 md:py-28">
+        <section className="relative px-6 pt-20 pb-8 md:pt-28 md:pb-8">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               {/* Left: Profile Info */}
@@ -284,7 +284,7 @@ export default function FreelancerHub({
 
         {/* Vision & Mission Section */}
         {(userInfo.visionStatement || userInfo.missionStatement) && (
-          <section className="px-6 py-8">
+          <section className="px-6 py-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8">
                 {userInfo.visionStatement && (
@@ -332,7 +332,7 @@ export default function FreelancerHub({
 
         {/* Skills Section */}
         {sortedSkills.length > 0 && (
-          <section className="px-6 py-8">
+          <section className="px-6 py-4">
             <div className="max-w-6xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
