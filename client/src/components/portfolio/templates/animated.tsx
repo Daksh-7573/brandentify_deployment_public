@@ -1074,7 +1074,11 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     {/* Experience Card */}
                     <div className={`w-[45%] ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
                       <div className="bg-gray-800/40 backdrop-blur-md p-6 rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 group">
-                        <span className="text-purple-400 font-bold mb-2 block">{exp.duration}</span>
+                        <span className="text-purple-400 font-bold mb-2 block">
+                          {new Date(exp.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                          {' - '}
+                          {exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : 'Present'}
+                        </span>
                         <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{exp.title}</h3>
                         <p className={`text-gray-400 font-medium mb-3 flex items-center gap-2 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
                           {index % 2 !== 0 && <Briefcase className="h-4 w-4" />}
@@ -1090,43 +1094,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 ))
               ) : (
                 <div className="text-center text-gray-400">No work experience available.</div>
-              )}
-            </div>
-          </div>
-                      {experience.description && (
-                        <p className="text-gray-300 mb-4">{experience.description}</p>
-                      )}
-                      
-                      {(() => {
-                        const responsibilities = toStringArray(experience.keyResponsibilities);
-                        return responsibilities.length > 0 && (
-                          <div className="mb-4">
-                            <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
-                            <ul className="space-y-1">
-                              {responsibilities.map((responsibility, i) => (
-                                <li key={i} className="text-gray-300 flex items-start">
-                                  <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
-                                  <span>{responsibility}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        );
-                      })()}
-                    </motion.div>
-                  </motion.div>
-                ))
-              ) : (
-                <motion.div 
-                  className="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isTimelineInView ? 1 : 0 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <Briefcase className="h-12 w-12 text-orange-500 mx-auto mb-4 opacity-60" />
-                  <h3 className="text-white text-xl font-bold mb-2">No Work Experience Yet</h3>
-                  <p className="text-gray-400">Experience will be displayed here once added.</p>
-                </motion.div>
               )}
             </div>
           </div>
