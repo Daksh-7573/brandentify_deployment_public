@@ -341,16 +341,16 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg z-30">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg z-[100] bg-gray-800">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
                       alt={name} 
-                      className="w-full h-full object-cover"
-                      style={{ opacity: 1, visibility: 'visible' }}
+                      className="w-full h-full object-cover relative z-[101]"
+                      style={{ opacity: 1, display: 'block', minWidth: '100%', minHeight: '100%' }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold">
+                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold relative z-[101]">
                       {name ? name.charAt(0) : '?'}
                     </div>
                   )}
@@ -473,44 +473,42 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     <Star className="h-6 w-6 text-purple-400" />
                     <h3 className="text-xl font-semibold text-purple-300">Tagline / Personal Motto</h3>
                   </div>
-                  <p className="text-gray-300 italic text-lg whitespace-pre-wrap">"{tagline}"</p>
+                  <p className="text-gray-300 italic text-lg whitespace-pre-wrap break-words">"{tagline}"</p>
                 </motion.div>
               )}
 
-              {(visionStatement || missionStatement) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {visionStatement && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <Lightbulb className="h-6 w-6 text-blue-400" />
-                        <h3 className="text-xl font-semibold text-blue-300">Vision Statement</h3>
-                      </div>
-                      <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{visionStatement}</p>
-                    </motion.div>
-                  )}
-                  {missionStatement && (
-                    <motion.div
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <Sparkles className="h-6 w-6 text-teal-400" />
-                        <h3 className="text-xl font-semibold text-teal-300">Mission Statement</h3>
-                      </div>
-                      <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{missionStatement}</p>
-                    </motion.div>
-                  )}
-                </div>
-              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {visionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <Lightbulb className="h-6 w-6 text-blue-400" />
+                      <h3 className="text-xl font-semibold text-blue-300">Vision Statement</h3>
+                    </div>
+                    <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{visionStatement}</p>
+                  </motion.div>
+                )}
+                {missionStatement && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <Sparkles className="h-6 w-6 text-teal-400" />
+                      <h3 className="text-xl font-semibold text-teal-300">Mission Statement</h3>
+                    </div>
+                    <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{missionStatement}</p>
+                  </motion.div>
+                )}
+              </div>
 
               {coreValues && coreValues.length > 0 && (
                 <motion.div
@@ -549,7 +547,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     <Sparkles className="h-6 w-6 text-amber-400" />
                     <h3 className="text-xl font-semibold text-amber-300">Unique Value Proposition</h3>
                   </div>
-                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{uniqueValueProposition}</p>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{uniqueValueProposition}</p>
                 </motion.div>
               )}
             </div>
@@ -1104,9 +1102,9 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                           )}
                         </div>
 
-                        <div className={`bg-gray-900/40 rounded-xl p-4 border border-gray-700/50 mb-4 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{exp.description}</p>
-                        </div>
+                        <p className={`text-gray-300 text-sm leading-relaxed whitespace-pre-wrap mb-4 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                          {exp.description}
+                        </p>
 
                         {(() => {
                           const responsibilities = toStringArray(exp.keyResponsibilities);
