@@ -16,6 +16,7 @@ interface NatureCreativeProps {
     id?: number;
     name: string;
     title: string | null;
+    company: string | null;
     email: string | null;
     photoURL: string | null;
     aboutMe: string | null;
@@ -422,6 +423,11 @@ export default function NatureCreative({
                   transition={{ delay: 0.5 }}
                 >
                   {userInfo.title}
+                  {userInfo.company && (
+                    <span className="font-medium ml-2 border-l border-emerald-200 pl-2 opacity-80">
+                      {userInfo.company}
+                    </span>
+                  )}
                 </motion.p>
               )}
 
