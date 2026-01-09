@@ -343,15 +343,19 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 {/* Profile image */}
                 <div 
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-white/30 shadow-[0_0_40px_rgba(139,92,246,0.6)] z-[2000] bg-gray-800 flex items-center justify-center pointer-events-auto overflow-hidden"
-                  style={{
-                    backgroundImage: photoURL ? `url(${photoURL})` : 'none',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
-                  }}
                 >
-                  {!photoURL && (
-                    <div className="text-4xl font-bold text-white">
+                  {photoURL ? (
+                    <div 
+                      className="w-full h-full bg-cover bg-center bg-no-repeat"
+                      style={{ 
+                        backgroundImage: `url(${photoURL})`,
+                        display: 'block'
+                      }}
+                    />
+                  ) : (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-purple-600 to-blue-600"
+                    >
                       {name ? name.charAt(0) : '?'}
                     </div>
                   )}
