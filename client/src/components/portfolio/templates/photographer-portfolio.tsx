@@ -116,7 +116,7 @@ function ApertureOpening({ isOpen }: { isOpen: boolean }) {
             key={i}
             className="absolute top-0 left-1/2 origin-bottom border-none outline-none"
             style={{
-              width: '2px',
+              width: '1px',
               height: '50%',
               background: `linear-gradient(to bottom, ${colors.warmAmber}, transparent)`,
               transform: `rotate(${(360 / blades) * i}deg)`,
