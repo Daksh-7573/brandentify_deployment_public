@@ -1061,7 +1061,8 @@ export default function PhotographerPortfolio({
                 color: colors.richBlack,
                 fontWeight: 'bold',
                 padding: '1.5rem 2.5rem',
-                fontSize: '1.25rem'
+                fontSize: '1.25rem',
+                borderRadius: '9999px'
               }}
             />
           </div>
