@@ -13,7 +13,7 @@ import {
   Briefcase, GraduationCap, Award, Target, ChartBar,
   TrendingUp, Globe, Star, Building, ExternalLink, Play, 
   Image, Eye, Tag, Lightbulb, Heart, Sparkles, Users, Hash,
-  Phone, Zap, Code, Layers, Clock, ArrowRight, X
+  Zap, Code, Layers, Clock, ArrowRight, X
 } from "lucide-react";
 
 interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
@@ -32,6 +32,7 @@ interface HolographicNeoProps {
     id?: number;
     name: string;
     title: string | null;
+    company?: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
@@ -47,7 +48,6 @@ interface HolographicNeoProps {
     uniqueValueProposition?: string | null;
     primaryAudience?: string[] | null;
     secondaryAudience?: string[] | null;
-    phoneNumber?: string | null;
     resumeUrl?: string | null;
   };
   userSkills: Skill[];
@@ -288,7 +288,7 @@ export default function HolographicNeo({
                 {userInfo.name || "Your Name"}
               </h1>
 
-              {/* Title */}
+              {/* Title & Company */}
               <p 
                 className="text-xl sm:text-2xl text-cyan-200/90 font-light text-center lg:text-left"
                 style={{
@@ -296,6 +296,9 @@ export default function HolographicNeo({
                 }}
               >
                 {userInfo.title || "Your Designation"}
+                {userInfo.company && (
+                  <span className="text-purple-300/80"> at {userInfo.company}</span>
+                )}
               </p>
 
               {/* Tagline */}
@@ -410,18 +413,20 @@ export default function HolographicNeo({
                     </a>
                   )}
 
-                  {userInfo.phoneNumber && (
-                    <div 
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                      }}
-                    >
-                      <Phone className="w-4 h-4 text-cyan-400" />
-                      <span className="text-white/80 text-sm">{userInfo.phoneNumber}</span>
-                    </div>
-                  )}
+                  {/* Connect Button */}
+                  <button 
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] group"
+                    style={{
+                      background: 'rgba(34, 211, 238, 0.15)',
+                      border: '1px solid rgba(34, 211, 238, 0.3)',
+                      boxShadow: '0 0 15px rgba(34, 211, 238, 0.15)',
+                    }}
+                    onClick={() => setIsMentorshipDialogOpen(true)}
+                    data-testid="button-connect"
+                  >
+                    <Users className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
+                    <span className="text-white">Connect</span>
+                  </button>
                 </div>
 
                 {/* Scanline Effect on Card */}
@@ -512,37 +517,8 @@ export default function HolographicNeo({
                     <p className="text-white/90 italic">"{userInfo.missionStatement}"</p>
                   </div>
                 )}
-              </div>
 
-              {/* Right Column: UVP, Values, Audience */}
-              <div className="space-y-6">
-                {/* Unique Value Proposition */}
-                {userInfo.uniqueValueProposition && (
-                  <div 
-                    className="p-8 rounded-2xl relative overflow-hidden"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.15) 0%, rgba(167, 139, 251, 0.15) 100%)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(34, 211, 238, 0.3)',
-                      boxShadow: '0 8px 32px rgba(34, 211, 238, 0.2)',
-                    }}
-                  >
-                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5" />
-                      What Sets Me Apart
-                    </h3>
-                    <p 
-                      className="text-2xl sm:text-3xl font-bold text-white leading-snug"
-                      style={{
-                        textShadow: '0 0 20px rgba(34, 211, 238, 0.4)',
-                      }}
-                    >
-                      {userInfo.uniqueValueProposition}
-                    </p>
-                  </div>
-                )}
-
-                {/* Core Values */}
+                {/* Core Values - Now below Mission */}
                 {coreValues.length > 0 && (
                   <div 
                     className="p-6 rounded-2xl"
@@ -570,6 +546,99 @@ export default function HolographicNeo({
                           }}
                         >
                           {value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: UVP & Audience */}
+              <div className="space-y-6">
+                {/* Unique Value Proposition */}
+                {userInfo.uniqueValueProposition && (
+                  <div 
+                    className="p-8 rounded-2xl relative overflow-hidden"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.15) 0%, rgba(167, 139, 251, 0.15) 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(34, 211, 238, 0.3)',
+                      boxShadow: '0 8px 32px rgba(34, 211, 238, 0.2)',
+                    }}
+                  >
+                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      What Sets Me Apart
+                    </h3>
+                    <p 
+                      className="text-2xl sm:text-3xl font-bold text-white leading-snug"
+                      style={{
+                        textShadow: '0 0 20px rgba(34, 211, 238, 0.4)',
+                      }}
+                    >
+                      {userInfo.uniqueValueProposition}
+                    </p>
+                  </div>
+                )}
+
+                {/* Primary Audience */}
+                {primaryAudience.length > 0 && (
+                  <div 
+                    className="p-6 rounded-2xl"
+                    style={{
+                      background: 'rgba(10, 10, 30, 0.8)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                      <Target className="w-5 h-5" />
+                      Primary Audience
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {primaryAudience.map((audience, i) => (
+                        <span 
+                          key={i}
+                          className="px-3 py-1.5 rounded-full text-sm"
+                          style={{
+                            background: 'rgba(34, 211, 238, 0.15)',
+                            border: '1px solid rgba(34, 211, 238, 0.3)',
+                            color: '#a5f3fc',
+                          }}
+                        >
+                          {String(audience)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Secondary Audience */}
+                {secondaryAudience.length > 0 && (
+                  <div 
+                    className="p-6 rounded-2xl"
+                    style={{
+                      background: 'rgba(10, 10, 30, 0.8)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      Secondary Audience
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {secondaryAudience.map((audience, i) => (
+                        <span 
+                          key={i}
+                          className="px-3 py-1.5 rounded-full text-sm"
+                          style={{
+                            background: 'rgba(167, 139, 251, 0.15)',
+                            border: '1px solid rgba(167, 139, 251, 0.3)',
+                            color: '#e9d5ff',
+                          }}
+                        >
+                          {String(audience)}
                         </span>
                       ))}
                     </div>
@@ -784,7 +853,7 @@ export default function HolographicNeo({
                               color: '#e9d5ff',
                             }}
                           >
-                            {exp.industry}
+                            {String(exp.industry)}
                           </span>
                         )}
                         {exp.domain && (
@@ -795,7 +864,7 @@ export default function HolographicNeo({
                               color: '#e9d5ff',
                             }}
                           >
-                            {exp.domain}
+                            {String(exp.domain)}
                           </span>
                         )}
                         {exp.location && (
@@ -807,14 +876,14 @@ export default function HolographicNeo({
                             }}
                           >
                             <MapPin className="w-3 h-3" />
-                            {exp.location}
+                            {String(exp.location)}
                           </span>
                         )}
                       </div>
 
                       {/* Description */}
                       {exp.description && (
-                        <p className="text-white/70 text-sm mb-4">{exp.description}</p>
+                        <p className="text-white/70 text-sm mb-4">{String(exp.description)}</p>
                       )}
 
                       {/* Key Responsibilities */}
@@ -900,6 +969,33 @@ export default function HolographicNeo({
                         {edu.domain && (
                           <p className="text-purple-300/80 text-sm mt-1">{String(edu.domain)}</p>
                         )}
+                        {/* Industry & Location */}
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {edu.industry && (
+                            <span 
+                              className="px-2 py-1 rounded text-xs flex items-center gap-1"
+                              style={{
+                                background: 'rgba(167, 139, 251, 0.15)',
+                                color: '#e9d5ff',
+                              }}
+                            >
+                              <Briefcase className="w-3 h-3" />
+                              {String(edu.industry)}
+                            </span>
+                          )}
+                          {edu.location && (
+                            <span 
+                              className="px-2 py-1 rounded text-xs flex items-center gap-1"
+                              style={{
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                color: '#e2e8f0',
+                              }}
+                            >
+                              <MapPin className="w-3 h-3" />
+                              {String(edu.location)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <span 
                         className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 self-start"
@@ -1108,13 +1204,13 @@ export default function HolographicNeo({
                           textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
                         }}
                       >
-                        ₹{service.priceInr.toLocaleString()}
+                        ₹{String(service.priceInr)}
                         {service.isHourly && <span className="text-sm font-normal text-white/60">/hr</span>}
                       </span>
                     )}
                     {service.priceUsd && (
                       <span className="text-white/60 text-sm">
-                        (${service.priceUsd.toLocaleString()}{service.isHourly ? '/hr' : ''})
+                        (${String(service.priceUsd)}{service.isHourly ? '/hr' : ''})
                       </span>
                     )}
                   </div>
