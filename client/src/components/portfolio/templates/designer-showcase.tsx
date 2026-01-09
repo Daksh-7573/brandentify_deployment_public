@@ -103,6 +103,7 @@ interface DesignerShowcaseProps {
     id?: number;
     name: string;
     title: string | null;
+    company: string | null;
     email: string | null;
     photoURL: string | null;
     aboutMe: string | null;
@@ -120,9 +121,9 @@ interface DesignerShowcaseProps {
     secondaryAudience?: string[] | null;
   };
   userSkills: Skill[];
-  userExperiences: WorkExperience[];
+  userExperiences: (WorkExperience & { keyResponsibilities?: string[] | null; employmentType?: string | null })[];
   userProjects: Project[];
-  userEducations: Education[];
+  userEducations: (Education & { skillsAcquired?: string[] | null; grade?: string | null; description?: string | null })[];
   userServices: Service[];
 }
 
@@ -165,7 +166,14 @@ export default function DesignerShowcase({
               <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
                 {userInfo.name}
               </h1>
-              <p className="text-2xl text-white/80 mb-2">{userInfo.title || "Creative Professional"}</p>
+              <p className="text-2xl text-white/80 mb-2">
+                {userInfo.title || "Creative Professional"}
+                {userInfo.company && (
+                  <span className="text-purple-400 font-medium ml-2 border-l border-white/20 pl-2">
+                    {userInfo.company}
+                  </span>
+                )}
+              </p>
               
               {/* Industry & Domain under Job Title */}
               {(userInfo.industry || userInfo.domain) && (
@@ -246,7 +254,7 @@ export default function DesignerShowcase({
                   <h3 className="text-xl font-semibold text-purple-400 mb-2 flex items-center gap-2">
                     <Eye className="w-5 h-5" /> Vision
                   </h3>
-                  <p className="text-white/70 italic leading-relaxed">{userInfo.visionStatement}</p>
+                  <p className="text-white/70 italic leading-relaxed break-words whitespace-pre-wrap">{userInfo.visionStatement}</p>
                 </div>
               )}
               {userInfo.missionStatement && (
@@ -316,12 +324,12 @@ export default function DesignerShowcase({
             <div className="grid md:grid-cols-3 gap-6">
               {userServices.map((service) => (
                 <motion.div key={service.id} {...anim.hoverLift}>
-                  <Card className="bg-white/5 backdrop-blur-xl border-white/10 hover:border-purple-500/50 transition-colors h-full">
-                    <CardContent className="p-6">
+                  <Card className="bg-white/5 backdrop-blur-xl border-white/10 hover:border-purple-500/50 transition-colors h-full flex flex-col">
+                    <CardContent className="p-6 flex flex-col h-full">
                       <h3 className="text-xl font-semibold mb-3 text-white">{service.title}</h3>
-                      <p className="text-white/70 mb-4">{service.description}</p>
+                      <p className="text-white/70 mb-4 flex-grow">{service.description}</p>
                       {service.priceUsd && (
-                        <div className="flex items-baseline gap-2">
+                        <div className="flex items-baseline gap-2 mt-auto pt-4 border-t border-white/5">
                           <span className="text-2xl font-bold text-purple-400">${service.priceUsd}</span>
                           {service.isHourly && <span className="text-white/60 text-sm">/hour</span>}
                         </div>
@@ -387,15 +395,33 @@ export default function DesignerShowcase({
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <h3 className="text-2xl font-semibold text-white">{exp.title}</h3>
-                          <p className="text-purple-400 text-lg">{exp.company}</p>
+                          <p className="text-purple-400 text-lg">
+                            {exp.company}
+                            {exp.location && (
+                              <span className="text-white/40 text-sm ml-2 font-normal">
+                                • {exp.location}
+                              </span>
+                            )}
+                          </p>
                         </div>
-                        <Badge className="bg-indigo-500/20 text-indigo-300">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'}
-                        </Badge>
+                        <div className="text-right">
+                          <Badge className="bg-indigo-500/20 text-indigo-300 block mb-1">
+                            <Calendar className="w-3 h-3 mr-1 inline" />
+                            {new Date(exp.startDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} - 
+                            {exp.endDate ? new Date(exp.endDate).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : 'Present'}
+                          </Badge>
+                          {typeof exp === 'object' && exp !== null && 'employmentType' in exp && exp.employmentType && (
+                            <span className="text-xs text-white/40 block capitalize">{(exp.employmentType as string).replace(/_/g, ' ')}</span>
+                          )}
+                        </div>
                       </div>
+                      {exp.industry && (
+                        <Badge variant="outline" className="mb-3 text-[10px] py-0 border-white/10 text-white/50">
+                          {exp.industry}
+                        </Badge>
+                      )}
                       {exp.description && (
-                        <p className="text-white/80 mb-3">{exp.description}</p>
+                        <p className="text-white/80 mb-4 text-sm leading-relaxed">{exp.description}</p>
                       )}
                       {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 ? (
                         <ul className="list-disc list-inside space-y-1 text-white/70 text-sm">
@@ -429,14 +455,29 @@ export default function DesignerShowcase({
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="text-xl font-semibold text-white">{edu.degree}</h3>
-                          <p className="text-purple-400">{edu.institution}</p>
+                          <p className="text-purple-400">
+                            {edu.institution}
+                            {edu.location && (
+                              <span className="text-white/40 text-xs ml-2 font-normal">
+                                • {edu.location}
+                              </span>
+                            )}
+                          </p>
                         </div>
-                        <Badge className="bg-indigo-500/20 text-indigo-300 text-xs">
-                          {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                        </Badge>
+                        <div className="text-right flex flex-col items-end">
+                          <Badge className="bg-indigo-500/20 text-indigo-300 text-xs mb-1">
+                            {new Date(edu.startDate).getFullYear()} - {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                          </Badge>
+                          {typeof edu === 'object' && edu !== null && 'grade' in edu && edu.grade && (
+                            <span className="text-xs text-white/40">Grade: {edu.grade as string}</span>
+                          )}
+                        </div>
                       </div>
                       {edu.fieldOfStudy && (
-                        <p className="text-white/80 mb-3">Field: {edu.fieldOfStudy}</p>
+                        <p className="text-white/80 mb-3 text-sm">Major: {edu.fieldOfStudy}</p>
+                      )}
+                      {typeof edu === 'object' && edu !== null && 'description' in edu && edu.description && (
+                        <p className="text-white/60 mb-3 text-xs italic">{edu.description as string}</p>
                       )}
                       {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
