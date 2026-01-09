@@ -340,33 +340,25 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   }}
                 />
                 
-                {/* Profile image */}
                 <div 
-                  className="relative mx-auto w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-white/30 shadow-[0_0_40px_rgba(139,92,246,0.6)] z-[2000] bg-gray-800 flex items-center justify-center pointer-events-auto overflow-hidden mb-8"
+                  className="relative mx-auto w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-white/30 shadow-[0_0_40px_rgba(139,92,246,0.6)] z-10 bg-gray-800 flex items-center justify-center overflow-hidden mb-8"
                 >
-                  <div 
-                    className="profile-fallback w-full h-full flex items-center justify-center text-4xl md:text-6xl font-bold text-white bg-gradient-to-br from-purple-600 to-blue-600 absolute inset-0 z-[2001]"
-                  >
-                    {name ? name.charAt(0).toUpperCase() : '?'}
-                  </div>
-                  {photoURL && (
+                  {photoURL ? (
                     <img 
                       src={photoURL} 
                       alt={name}
-                      key={`profile-${photoURL}`}
-                      className="w-full h-full object-cover absolute inset-0 z-[2002]"
-                      style={{ opacity: 0 }}
+                      className="w-full h-full object-cover"
                       onLoad={(e) => {
-                        console.log("Profile image loaded successfully in Animated template");
                         const target = e.currentTarget as HTMLImageElement;
                         target.style.opacity = '1';
                       }}
-                      onError={(e) => {
-                        console.error("Profile image failed to load in Animated template:", photoURL?.substring(0, 50));
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
                     />
+                  ) : (
+                    <div 
+                      className="w-full h-full flex items-center justify-center text-4xl md:text-6xl font-bold text-white bg-gradient-to-br from-purple-600 to-blue-600"
+                    >
+                      {name ? name.charAt(0).toUpperCase() : '?'}
+                    </div>
                   )}
                 </div>
                 

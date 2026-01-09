@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, Calendar, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap } from "lucide-react";
+import { Download, Calendar, CheckCircle2, ExternalLink, Star, MapPin, Users, Award, Briefcase, GraduationCap, Eye, Target } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { User, Skill, Project, WorkExperience, Education, Service } from "@shared/schema";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
@@ -110,13 +110,14 @@ interface DesignerShowcaseProps {
     industry: string | null;
     domain: string | null;
     lookingFor: string | null;
-    
     jobLevel?: string | null;
     tagline?: string | null;
     visionStatement?: string | null;
     missionStatement?: string | null;
-    coreValues?: string[];
+    coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
@@ -225,13 +226,15 @@ export default function DesignerShowcase({
             </h2>
             {userInfo.aboutMe && <p className="text-white/80 leading-relaxed mb-6">{userInfo.aboutMe}</p>}
             
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-8">
               {userInfo.coreValues && userInfo.coreValues.length > 0 && (
                 <div className="md:col-span-2">
-                  <h3 className="text-xl font-semibold text-cyan-400 mb-3">Core Values</h3>
+                  <h3 className="text-xl font-semibold text-cyan-400 mb-3 flex items-center gap-2">
+                    <Star className="w-5 h-5" /> Core Values
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {userInfo.coreValues.map((value, i) => (
-                      <Badge key={i} className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
+                      <Badge key={i} className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 px-3 py-1">
                         {value}
                       </Badge>
                     ))}
@@ -239,21 +242,62 @@ export default function DesignerShowcase({
                 </div>
               )}
               {userInfo.visionStatement && (
-                <div>
-                  <h3 className="text-xl font-semibold text-purple-400 mb-2">Vision</h3>
-                  <p className="text-white/70">{userInfo.visionStatement}</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <h3 className="text-xl font-semibold text-purple-400 mb-2 flex items-center gap-2">
+                    <Eye className="w-5 h-5" /> Vision
+                  </h3>
+                  <p className="text-white/70 italic leading-relaxed">{userInfo.visionStatement}</p>
                 </div>
               )}
               {userInfo.missionStatement && (
-                <div>
-                  <h3 className="text-xl font-semibold text-indigo-400 mb-2">Mission</h3>
-                  <p className="text-white/70">{userInfo.missionStatement}</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <h3 className="text-xl font-semibold text-indigo-400 mb-2 flex items-center gap-2">
+                    <Target className="w-5 h-5" /> Mission
+                  </h3>
+                  <p className="text-white/70 leading-relaxed">{userInfo.missionStatement}</p>
                 </div>
               )}
               {userInfo.uniqueValueProposition && (
-                <div>
-                  <h3 className="text-xl font-semibold text-pink-400 mb-2">Unique Value Proposition</h3>
-                  <p className="text-white/70">{userInfo.uniqueValueProposition}</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10 md:col-span-2">
+                  <h3 className="text-xl font-semibold text-pink-400 mb-2 flex items-center gap-2">
+                    <Award className="w-5 h-5" /> Unique Value Proposition
+                  </h3>
+                  <p className="text-white/80 text-lg font-medium leading-relaxed italic">"{userInfo.uniqueValueProposition}"</p>
+                </div>
+              )}
+              
+              {/* Target Audience */}
+              {(userInfo.primaryAudience?.length || userInfo.secondaryAudience?.length) && (
+                <div className="md:col-span-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 p-6 rounded-2xl border border-white/10">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-indigo-400" /> Target Audience
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {userInfo.primaryAudience && userInfo.primaryAudience.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-2">Primary</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.primaryAudience.map((target, i) => (
+                            <Badge key={i} variant="outline" className="text-white/80 border-white/20 capitalize">
+                              {target}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-2">Secondary</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {userInfo.secondaryAudience.map((target, i) => (
+                            <Badge key={i} variant="outline" className="text-white/60 border-white/10 capitalize">
+                              {target}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
