@@ -88,6 +88,10 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
     missionStatement?: string | null;
     coreValues?: string[] | null;
     uniqueValueProposition?: string | null;
+    phoneNumber?: string | null;
+    resumeUrl?: string | null;
+    primaryAudience?: string[] | null;
+    secondaryAudience?: string[] | null;
   };
   userSkills: any[];
   userExperiences: any[];
@@ -95,6 +99,7 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
   userEducations: any[];
   userServices: any[];
   currentUserId?: number;
+  isPremium?: boolean;
 } {
   return {
     userInfo: {
@@ -113,6 +118,10 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       missionStatement: data.professionalBrand.missionStatement,
       coreValues: data.professionalBrand.coreValues,
       uniqueValueProposition: data.professionalBrand.uniqueValueProposition,
+      phoneNumber: data.basicInfo.phoneNumber,
+      resumeUrl: data.basicInfo.resumeUrl,
+      primaryAudience: data.basicInfo.primaryAudience,
+      secondaryAudience: data.basicInfo.secondaryAudience,
     },
     userSkills: data.skills.map(skill => ({
       id: skill.id,
@@ -169,6 +178,7 @@ export function mapToTemplateProps(data: ExtractedProfileData): {
       priceType: service.priceType,
     })),
     currentUserId: data.currentUserId,
+    isPremium: data.basicInfo.isPremium || false,
   };
 }
 

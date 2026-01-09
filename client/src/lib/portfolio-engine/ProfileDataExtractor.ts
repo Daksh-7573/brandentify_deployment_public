@@ -39,6 +39,11 @@ export function extractBasicInfo(userData: any): UserBasicInfo {
     industry: userData?.industry || null,
     domain: userData?.domain || null,
     lookingFor: userData?.lookingFor || null,
+    phoneNumber: userData?.phoneNumber || null,
+    resumeUrl: userData?.resumeUrl || null,
+    primaryAudience: parseJsonArray(userData?.primaryAudience),
+    secondaryAudience: parseJsonArray(userData?.secondaryAudience),
+    isPremium: userData?.isPremium || userData?.subscriptionTier === 'premium' || false,
   };
 }
 

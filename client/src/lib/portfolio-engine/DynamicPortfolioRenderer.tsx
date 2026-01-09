@@ -95,6 +95,7 @@ export function DynamicPortfolioRenderer({
         userEducations={templateProps.userEducations}
         userServices={templateProps.userServices}
         currentUserId={templateProps.currentUserId}
+        isPremium={templateProps.isPremium}
       />
     </div>
   );
@@ -116,6 +117,7 @@ export function renderPortfolio(
       userEducations={templateProps.userEducations}
       userServices={templateProps.userServices}
       currentUserId={templateProps.currentUserId}
+      isPremium={templateProps.isPremium}
     />
   );
 }

@@ -9,6 +9,11 @@ export interface UserBasicInfo {
   industry: string | null;
   domain: string | null;
   lookingFor: string | null;
+  phoneNumber?: string | null;
+  resumeUrl?: string | null;
+  primaryAudience?: string[] | null;
+  secondaryAudience?: string[] | null;
+  isPremium?: boolean;
 }
 
 export interface UserProfessionalBrand {
