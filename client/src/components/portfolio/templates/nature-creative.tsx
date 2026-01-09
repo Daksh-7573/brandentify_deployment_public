@@ -434,7 +434,7 @@ export default function NatureCreative({
               {/* Tagline/Personal Motto */}
               {userInfo.tagline && (
                 <motion.p 
-                  className="text-lg md:text-xl text-emerald-600 mb-6 italic font-medium"
+                  className="text-lg md:text-xl text-emerald-600 mb-2 italic font-medium"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -443,18 +443,26 @@ export default function NatureCreative({
                 </motion.p>
               )}
 
-              {/* Location */}
-              {userInfo.location && (
-                <motion.div
-                  className="flex items-center justify-center gap-2 text-gray-500 mb-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                >
-                  <MapPin className="text-rose-400" size={20} />
-                  <span>{userInfo.location}</span>
-                </motion.div>
-              )}
+              {/* Industry & Location */}
+              <motion.div
+                className="flex flex-wrap items-center justify-center gap-4 text-gray-500 mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                {userInfo.industry && (
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="text-teal-400" size={18} />
+                    <span>{userInfo.industry}</span>
+                  </div>
+                )}
+                {userInfo.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="text-rose-400" size={20} />
+                    <span>{userInfo.location}</span>
+                  </div>
+                )}
+              </motion.div>
 
               {/* Looking For (Highlighted) */}
               {userInfo.lookingFor && (
@@ -523,6 +531,17 @@ export default function NatureCreative({
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Professional Brand</h2>
                   </div>
+
+                  {/* Domain Display */}
+                  {userInfo.domain && (
+                    <div className="mb-6 flex justify-center">
+                      <div className="px-6 py-2 bg-teal-50/80 backdrop-blur-sm border border-teal-200 rounded-full shadow-sm">
+                        <span className="text-sm text-teal-700 font-bold uppercase tracking-wider">
+                          Domain: {String(userInfo.domain)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Vision Statement */}
                   {userInfo.visionStatement && (
@@ -577,26 +596,6 @@ export default function NatureCreative({
               </motion.div>
             </div>
           </section>
-        )}
-
-        {/* Industry & Domain Badge Row */}
-        {(userInfo.industry || userInfo.domain) && (
-          <div className="max-w-4xl mx-auto px-6 mb-8 flex flex-wrap gap-4 justify-center">
-            {userInfo.industry && (
-              <div className="px-6 py-2 bg-emerald-50/80 backdrop-blur-sm border border-emerald-200 rounded-full shadow-sm">
-                <span className="text-sm text-emerald-700 font-bold uppercase tracking-wider">
-                  Industry: {String(userInfo.industry)}
-                </span>
-              </div>
-            )}
-            {userInfo.domain && (
-              <div className="px-6 py-2 bg-teal-50/80 backdrop-blur-sm border border-teal-200 rounded-full shadow-sm">
-                <span className="text-sm text-teal-700 font-bold uppercase tracking-wider">
-                  Domain: {String(userInfo.domain)}
-                </span>
-              </div>
-            )}
-          </div>
         )}
 
         {/* Skills Section - Floating Leaves Layout */}
