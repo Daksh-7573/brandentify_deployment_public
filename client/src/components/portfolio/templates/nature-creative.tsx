@@ -443,7 +443,7 @@ export default function NatureCreative({
                 </motion.p>
               )}
 
-              {/* Industry & Location */}
+              {/* Industry, Domain & Location */}
               <motion.div
                 className="flex flex-wrap items-center justify-center gap-4 text-gray-500 mb-4"
                 initial={{ opacity: 0 }}
@@ -454,6 +454,12 @@ export default function NatureCreative({
                   <div className="flex items-center gap-2">
                     <Briefcase className="text-teal-400" size={18} />
                     <span>{userInfo.industry}</span>
+                  </div>
+                )}
+                {userInfo.domain && (
+                  <div className="flex items-center gap-2">
+                    <Globe className="text-cyan-400" size={18} />
+                    <span>{userInfo.domain}</span>
                   </div>
                 )}
                 {userInfo.location && (
@@ -531,17 +537,6 @@ export default function NatureCreative({
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Professional Brand</h2>
                   </div>
-
-                  {/* Domain Display */}
-                  {userInfo.domain && (
-                    <div className="mb-6 flex justify-center">
-                      <div className="px-6 py-2 bg-teal-50/80 backdrop-blur-sm border border-teal-200 rounded-full shadow-sm">
-                        <span className="text-sm text-teal-700 font-bold uppercase tracking-wider">
-                          Domain: {String(userInfo.domain)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
                   
                   {/* Vision Statement */}
                   {userInfo.visionStatement && (
