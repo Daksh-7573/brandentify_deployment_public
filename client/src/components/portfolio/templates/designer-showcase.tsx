@@ -217,7 +217,7 @@ export default function DesignerShowcase({
       </div>
 
       {/* About Section */}
-      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
+      {(userInfo.aboutMe || userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0) || (userInfo.primaryAudience && userInfo.primaryAudience.length > 0) || (userInfo.secondaryAudience && userInfo.secondaryAudience.length > 0)) && (
         <section className="max-w-7xl mx-auto px-6 py-16">
           <motion.div {...anim.fadeIn} className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
             <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
