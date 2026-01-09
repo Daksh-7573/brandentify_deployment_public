@@ -344,18 +344,27 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 <div 
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-white/30 shadow-[0_0_40px_rgba(139,92,246,0.6)] z-[2000] bg-gray-800 flex items-center justify-center pointer-events-auto overflow-hidden"
                 >
-                  {photoURL ? (
-                    <div 
-                      className="w-full h-full bg-cover bg-center bg-no-repeat"
-                      style={{ 
-                        backgroundImage: `url(${photoURL})`,
-                        display: 'block'
-                      }}
-                    />
-                  ) : (
-                    <div 
-                      className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-purple-600 to-blue-600"
-                    >
+                  <img 
+                    src={photoURL || ""} 
+                    alt={name}
+                    className="w-full h-full object-cover"
+                    style={{ 
+                      display: photoURL ? 'block' : 'none',
+                      minWidth: '100%',
+                      minHeight: '100%',
+                      zIndex: 2001
+                    }}
+                    onLoad={(e) => {
+                      console.log("Profile image loaded successfully");
+                      (e.currentTarget as HTMLElement).style.display = 'block';
+                    }}
+                    onError={(e) => {
+                      console.error("Profile image failed to load:", photoURL?.substring(0, 50));
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  {!photoURL && (
+                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-purple-600 to-blue-600">
                       {name ? name.charAt(0) : '?'}
                     </div>
                   )}
