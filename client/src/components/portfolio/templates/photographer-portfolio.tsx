@@ -109,12 +109,12 @@ function FloatingCamera({ delay = 0, yOffset = 0 }: { delay?: number; yOffset?: 
 function ApertureOpening({ isOpen }: { isOpen: boolean }) {
   const blades = 8;
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-      <div className="relative w-96 h-96">
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden border-none outline-none">
+      <div className="relative w-96 h-96 border-none outline-none">
         {[...Array(blades)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute top-0 left-1/2 origin-bottom"
+            className="absolute top-0 left-1/2 origin-bottom border-none outline-none"
             style={{
               width: '2px',
               height: '50%',
@@ -151,21 +151,21 @@ function LensFlare() {
 // Film Strip Border Component
 function FilmStripBorder({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className} border-none`}>
       {/* Top perforation */}
-      <div className="absolute top-0 left-0 right-0 h-4 flex justify-between px-2" style={{ background: colors.filmGray }}>
+      <div className="absolute top-0 left-0 right-0 h-4 flex justify-between px-2 border-none" style={{ background: colors.filmGray }}>
         {[...Array(20)].map((_, i) => (
-          <div key={`top-${i}`} className="w-2 h-2 bg-black rounded-sm my-auto" />
+          <div key={`top-${i}`} className="w-2 h-2 bg-black rounded-sm my-auto border-none" />
         ))}
       </div>
       {/* Bottom perforation */}
-      <div className="absolute bottom-0 left-0 right-0 h-4 flex justify-between px-2" style={{ background: colors.filmGray }}>
+      <div className="absolute bottom-0 left-0 right-0 h-4 flex justify-between px-2 border-none" style={{ background: colors.filmGray }}>
         {[...Array(20)].map((_, i) => (
-          <div key={`bottom-${i}`} className="w-2 h-2 bg-black rounded-sm my-auto" />
+          <div key={`bottom-${i}`} className="w-2 h-2 bg-black rounded-sm my-auto border-none" />
         ))}
       </div>
       {/* Content */}
-      <div className="py-6">{children}</div>
+      <div className="py-6 border-none">{children}</div>
     </div>
   );
 }
@@ -683,7 +683,7 @@ export default function PhotographerPortfolio({
             >
               Portfolio Gallery
             </motion.h2>
-            <FilmStripBorder>
+            <FilmStripBorder className="border-none">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userProjects.map((project, idx) => (
                   <motion.div
@@ -830,7 +830,7 @@ export default function PhotographerPortfolio({
             >
               Photography Journey
             </motion.h2>
-            <FilmStripBorder>
+            <FilmStripBorder className="border-none">
               <div className="space-y-8">
                 {userExperiences.map((exp, idx) => {
                   const startYear = exp.startDate ? new Date(exp.startDate).getFullYear() : '';
@@ -1036,8 +1036,10 @@ export default function PhotographerPortfolio({
       {/* CTA Footer with Lens Closing Effect */}
       <section className="relative py-32 overflow-hidden" style={{ background: colors.richBlack }}>
         <BokehBackground />
-        {/* Lens closing aperture effect */}
-        <ApertureOpening isOpen={false} />
+        {/* Lens closing aperture effect - wrapped in a div to prevent layout interference */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <ApertureOpening isOpen={false} />
+        </div>
         <motion.div
           className="container mx-auto px-6 text-center relative z-10"
           initial={{ opacity: 0, y: 30 }}
