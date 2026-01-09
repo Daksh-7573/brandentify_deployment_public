@@ -503,8 +503,8 @@ export default function NatureCreative({
           </motion.div>
         </motion.section>
 
-        {/* About Section */}
-        {userInfo.aboutMe && (
+        {/* Professional Brand Section */}
+        {userInfo && (userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
           <section className="py-20 px-6 relative">
             <div className="max-w-4xl mx-auto">
               <motion.div
@@ -519,51 +519,11 @@ export default function NatureCreative({
                 <div className="relative bg-white/40 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-emerald-100/50 shadow-xl">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl">
-                      <Leaf className="text-emerald-600" size={28} />
+                      <Sparkles className="text-emerald-600" size={28} />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800">About Me</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Professional Brand</h2>
                   </div>
-                  <p className="text-lg text-gray-600 leading-relaxed whitespace-pre-wrap mb-6">
-                    {userInfo.aboutMe}
-                  </p>
                   
-                  {/* Industry & Domain */}
-                  {(userInfo.industry || userInfo.domain) && (
-                    <div className="mb-6 flex flex-wrap gap-3">
-                      {userInfo.industry && (
-                        <div className="px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full">
-                          <span className="text-sm text-emerald-700 font-medium">
-                            Industry: {userInfo.industry}
-                          </span>
-                        </div>
-                      )}
-                      {userInfo.domain && (
-                        <div className="px-4 py-2 bg-teal-50 border border-teal-200 rounded-full">
-                          <span className="text-sm text-teal-700 font-medium">
-                            Domain: {userInfo.domain}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Core Values */}
-                  {userInfo.coreValues && Array.isArray(userInfo.coreValues) && userInfo.coreValues.length > 0 && (
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                        <Sparkles className="text-emerald-500" size={20} />
-                        Core Values
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {userInfo.coreValues.map((value, idx) => (
-                          <Badge key={idx} className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200 px-3 py-1">
-                            {String(value)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Vision Statement */}
                   {userInfo.visionStatement && (
                     <div className="mb-6 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-400 rounded-xl shadow-sm">
@@ -596,12 +556,47 @@ export default function NatureCreative({
                       <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.uniqueValueProposition)}</p>
                     </div>
                   )}
-                  
+
+                  {/* Core Values */}
+                  {userInfo.coreValues && Array.isArray(userInfo.coreValues) && userInfo.coreValues.length > 0 && (
+                    <div className="mt-8">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <Heart className="text-emerald-500" size={24} />
+                        Core Values
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {userInfo.coreValues.map((value, idx) => (
+                          <Badge key={idx} className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200 px-4 py-2 text-sm">
+                            {String(value)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
-
           </section>
+        )}
+
+        {/* Industry & Domain Badge Row */}
+        {(userInfo.industry || userInfo.domain) && (
+          <div className="max-w-4xl mx-auto px-6 mb-12 flex flex-wrap gap-4 justify-center">
+            {userInfo.industry && (
+              <div className="px-6 py-2 bg-emerald-50/80 backdrop-blur-sm border border-emerald-200 rounded-full shadow-sm">
+                <span className="text-sm text-emerald-700 font-bold uppercase tracking-wider">
+                  Industry: {userInfo.industry}
+                </span>
+              </div>
+            )}
+            {userInfo.domain && (
+              <div className="px-6 py-2 bg-teal-50/80 backdrop-blur-sm border border-teal-200 rounded-full shadow-sm">
+                <span className="text-sm text-teal-700 font-bold uppercase tracking-wider">
+                  Domain: {userInfo.domain}
+                </span>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Skills Section - Floating Leaves Layout */}
@@ -907,11 +902,18 @@ export default function NatureCreative({
                         <p className="text-gray-600 line-clamp-3 mb-4">
                           {project.description}
                         </p>
-                        {project.category && (
-                          <Badge className="bg-emerald-100 text-emerald-700">
-                            {project.category}
-                          </Badge>
-                        )}
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {project.category && (
+                              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-100">
+                                {String(project.category)}
+                              </Badge>
+                            )}
+                            {project.industry && (
+                              <Badge variant="outline" className="text-teal-600 border-teal-100">
+                                {String(project.industry)}
+                              </Badge>
+                            )}
+                          </div>
                       </div>
                     </div>
                   </motion.div>
@@ -959,25 +961,25 @@ export default function NatureCreative({
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
                       <p className="text-gray-600 mb-4 flex-grow">{service.description}</p>
                       
-                      {/* Price Display - Fixed at bottom */}
-                      {(service.priceInr || service.priceUsd) && (
-                        <div className="mt-auto pt-4 border-t border-emerald-100">
-                          <div className="flex flex-col gap-2">
-                            {service.priceInr && (
-                              <div className="text-emerald-700 font-bold text-lg">
-                                ₹{Number(service.priceInr).toLocaleString('en-IN')}
-                                {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
-                              </div>
-                            )}
-                            {service.priceUsd && (
-                              <div className="text-teal-700 font-semibold text-base">
-                                ${Number(service.priceUsd).toLocaleString('en-US')}
-                                {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
-                              </div>
-                            )}
+                        {/* Price Display - Fixed at bottom */}
+                        {(service.priceInr || service.priceUsd) && (
+                          <div className="mt-auto pt-4 border-t border-emerald-100">
+                            <div className="flex flex-col gap-2">
+                              {service.priceInr && (
+                                <div className="text-emerald-700 font-bold text-lg">
+                                  ₹{Number(service.priceInr).toLocaleString('en-IN')}
+                                  {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
+                                </div>
+                              )}
+                              {service.priceUsd && (
+                                <div className="text-teal-700 font-semibold text-base">
+                                  ${Number(service.priceUsd).toLocaleString('en-US')}
+                                  {service.isHourly && <span className="text-sm font-normal text-gray-500"> /hour</span>}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </motion.div>
                 ))}
