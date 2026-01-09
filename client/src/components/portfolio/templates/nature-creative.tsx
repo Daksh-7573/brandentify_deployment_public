@@ -741,17 +741,17 @@ export default function NatureCreative({
                           {exp.location && (
                             <div className="flex items-center gap-1 text-gray-500 text-sm">
                               <MapPin size={14} className="text-rose-400" />
-                              <span>{exp.location}</span>
+                              <span>{String(exp.location)}</span>
                             </div>
                           )}
                           {exp.industry && (
                             <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
-                              {exp.industry}
+                              {String(exp.industry)}
                             </Badge>
                           )}
                           {exp.domain && (
                             <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
-                              {exp.domain}
+                              {String(exp.domain)}
                             </Badge>
                           )}
                         </div>
@@ -961,24 +961,24 @@ export default function NatureCreative({
                     whileHover={{ scale: 1.05, rotateZ: 2 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="group relative"
+                    className="group relative h-full"
                     data-testid={`service-${service.id}`}
                   >
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
-                    <div className="relative p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-emerald-200 shadow-lg text-center">
+                    <div className="relative p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-emerald-200 shadow-lg text-center flex flex-col h-full">
                       <motion.div
-                        className="inline-block p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-full mb-4"
+                        className="inline-block p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-full mb-4 mx-auto"
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
                       >
                         <Award className="text-emerald-300" size={32} />
                       </motion.div>
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{service.title}</h3>
-                      <p className="text-gray-600 mb-4">{service.description}</p>
+                      <p className="text-gray-600 mb-4 flex-grow">{service.description}</p>
                       
-                      {/* Price Display */}
+                      {/* Price Display - Fixed at bottom */}
                       {(service.priceInr || service.priceUsd) && (
-                        <div className="mt-4 pt-4 border-t border-emerald-100">
+                        <div className="mt-auto pt-4 border-t border-emerald-100">
                           <div className="flex flex-col gap-2">
                             {service.priceInr && (
                               <div className="text-emerald-700 font-bold text-lg">
