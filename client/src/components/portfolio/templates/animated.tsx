@@ -228,7 +228,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </div>
 
       {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center relative pt-16 pb-32 animated-hero" ref={heroRef}>
+      <section id="hero" className="min-h-screen flex items-center relative pt-10 pb-20 animated-hero" ref={heroRef}>
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-10">
             {/* Hero Content */}
@@ -341,27 +341,28 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-[0_0_30px_rgba(139,92,246,0.3)] z-[100] bg-gray-800 flex items-center justify-center">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/30 shadow-[0_0_40px_rgba(139,92,246,0.6)] z-[2000] bg-gray-800 flex items-center justify-center pointer-events-auto">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
                       alt={name} 
-                      className="w-full h-full object-cover relative z-[101]"
-                      style={{ opacity: 1, display: 'block', minWidth: '100%', minHeight: '100%', imageRendering: 'auto' }}
+                      className="w-full h-full object-cover block"
+                      style={{ opacity: 1, visibility: 'visible', zIndex: 2001 }}
+                      onLoad={() => console.log("Profile image loaded successfully")}
                       onError={(e) => {
                         console.error("Profile image failed to load in Animated template:", photoURL);
                         e.currentTarget.style.display = 'none';
                         const parent = e.currentTarget.parentElement;
-                        if (parent) {
+                        if (parent && !parent.querySelector('.img-fallback')) {
                           const fallback = document.createElement('div');
-                          fallback.className = "w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold relative z-[101]";
+                          fallback.className = "img-fallback w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold text-white";
                           fallback.innerText = name ? name.charAt(0) : '?';
                           parent.appendChild(fallback);
                         }
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold relative z-[101]">
+                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold text-white">
                       {name ? name.charAt(0) : '?'}
                     </div>
                   )}
@@ -450,7 +451,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* My Professional Brand Section */}
-      <section id="brand" className="py-20 relative" ref={brandRef}>
+      <section id="brand" className="py-12 relative" ref={brandRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -478,7 +479,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 <Star className="h-6 w-6 text-purple-400" />
                 <h3 className="text-xl font-semibold text-purple-300">Tagline / Personal Motto</h3>
               </div>
-              <p className="text-gray-300 italic text-lg whitespace-pre-wrap break-words">"{tagline || "I create engaging digital experiences with innovation and technical expertise."}"</p>
+              <p className="text-gray-300 italic text-lg whitespace-pre-wrap break-words">"{tagline || "Innovating the future through technical excellence and creative design."}"</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -493,7 +494,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   <Lightbulb className="h-6 w-6 text-blue-400" />
                   <h3 className="text-xl font-semibold text-blue-300">Vision Statement</h3>
                 </div>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{visionStatement || "To lead the industry with forward-thinking solutions and creative excellence."}</p>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{visionStatement || "To become a global leader in providing innovative solutions that empower individuals and organizations to reach their full potential."}</p>
               </motion.div>
 
               <motion.div
@@ -507,7 +508,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   <Sparkles className="h-6 w-6 text-teal-400" />
                   <h3 className="text-xl font-semibold text-teal-300">Mission Statement</h3>
                 </div>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{missionStatement || "Empowering growth and transformation through reliable expertise and tailored strategies."}</p>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{missionStatement || "My mission is to deliver high-quality, impactful projects by combining technical expertise with a user-centric approach to problem-solving."}</p>
               </motion.div>
             </div>
 
@@ -533,7 +534,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     </span>
                   ))
                 ) : (
-                  ["Innovation", "Integrity", "Excellence"].map((value, index) => (
+                  ["Innovation", "Integrity", "Excellence", "Collaboration", "Customer-Centricity"].map((value, index) => (
                     <span 
                       key={index}
                       className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
@@ -556,14 +557,14 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 <Sparkles className="h-6 w-6 text-amber-400" />
                 <h3 className="text-xl font-semibold text-amber-300">Unique Value Proposition</h3>
               </div>
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{uniqueValueProposition || "Delivering high-impact solutions through a combination of industry expertise and creative problem-solving."}</p>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{uniqueValueProposition || "I bridge the gap between complex technology and intuitive user experiences, providing tailored solutions that drive real business growth."}</p>
             </motion.div>
           </div>
         </div>
       </section>
       
       {/* Skills Section */}
-      <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
+      <section id="skills" className="py-12 relative animated-skills" ref={skillsRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -652,7 +653,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* Services Section */}
-      <section id="services" className="py-20 relative animated-services" ref={servicesRef}>
+      <section id="services" className="py-12 relative animated-services" ref={servicesRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -822,7 +823,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* Projects Section */}
-      <section id="projects" className="py-20 relative animated-projects" ref={projectsRef}>
+      <section id="projects" className="py-12 relative animated-projects" ref={projectsRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1037,7 +1038,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* Career Timeline Section */}
-      <section id="timeline" className="py-20 relative animated-timeline" ref={timelineRef}>
+      <section id="timeline" className="py-12 relative animated-timeline" ref={timelineRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1142,7 +1143,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* Education Section */}
-      <section id="education" className="py-20 relative animated-education" ref={educationRef}>
+      <section id="education" className="py-12 relative animated-education" ref={educationRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
