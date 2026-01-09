@@ -1084,32 +1084,34 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                           {exp.company}
                           {index % 2 === 0 && <Briefcase className="h-4 w-4" />}
                         </p>
-                  <div className="flex flex-wrap gap-3 mb-4">
-                    {location && (
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <MapPin className="h-4 w-4" />
-                        <span>{location}</span>
-                      </div>
-                    )}
-                    {industry && (
-                      <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
-                        {industry}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="bg-gray-900/40 rounded-xl p-4 border border-gray-700/50 mb-4">
-                    <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{exp.description}</p>
-                  </div>
+                        
+                        <div className={`flex flex-wrap gap-3 mb-4 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                          {exp.location && (
+                            <div className="flex items-center gap-1 text-gray-400">
+                              <MapPin className="h-4 w-4" />
+                              <span>{location}</span>
+                            </div>
+                          )}
+                          {exp.industry && (
+                            <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                              {exp.industry}
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className={`bg-gray-900/40 rounded-xl p-4 border border-gray-700/50 mb-4 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{exp.description}</p>
+                        </div>
 
                         {(() => {
                           const responsibilities = toStringArray(exp.keyResponsibilities);
                           return responsibilities.length > 0 && (
-                            <div className="mt-4 text-left">
+                            <div className={`mt-4 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
                               <h5 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Key Responsibilities</h5>
                               <ul className="space-y-1">
                                 {responsibilities.map((responsibility, i) => (
-                                  <li key={i} className="text-gray-300 text-xs flex items-start">
-                                    <ChevronRight className="h-3 w-3 text-purple-400 mt-0.5 flex-shrink-0 mr-1" />
+                                  <li key={i} className={`text-gray-300 text-xs flex items-start ${index % 2 === 0 ? 'flex-row-reverse' : ''}`}>
+                                    <ChevronRight className={`h-3 w-3 text-purple-400 mt-0.5 flex-shrink-0 ${index % 2 === 0 ? 'ml-1 rotate-180' : 'mr-1'}`} />
                                     <span>{responsibility}</span>
                                   </li>
                                 ))}
