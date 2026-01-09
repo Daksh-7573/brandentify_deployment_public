@@ -660,9 +660,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 Services I Offer
               </span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Expert solutions tailored to your specific needs.
-            </p>
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -682,9 +679,11 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   <div className="p-6 flex flex-col h-full">
                     <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
                     
-                    <p className="text-gray-400 mb-6 flex-grow">
-                      {service.description || 'Professional service with expert execution and attention to detail.'}
-                    </p>
+                    {service.description && (
+                      <p className="text-gray-400 mb-6 flex-grow">
+                        {service.description}
+                      </p>
+                    )}
                     
                     {(() => {
                       const features = toStringArray(service.features);
@@ -756,7 +755,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     
                     <div className="space-y-6">
                       <p className="text-gray-300 leading-relaxed">
-                        {selectedService.description || 'Professional service with expert execution and attention to detail.'}
+                        {selectedService.description}
                       </p>
                       
                       <div className="flex flex-wrap gap-4">
@@ -1085,9 +1084,39 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                           {exp.company}
                           {index % 2 === 0 && <Briefcase className="h-4 w-4" />}
                         </p>
-                        <p className="text-gray-400 leading-relaxed text-sm">
-                          {exp.description}
-                        </p>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {location && (
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <MapPin className="h-4 w-4" />
+                        <span>{location}</span>
+                      </div>
+                    )}
+                    {industry && (
+                      <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                        {industry}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="bg-gray-900/40 rounded-xl p-4 border border-gray-700/50 mb-4">
+                    <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{exp.description}</p>
+                  </div>
+
+                        {(() => {
+                          const responsibilities = toStringArray(exp.keyResponsibilities);
+                          return responsibilities.length > 0 && (
+                            <div className="mt-4 text-left">
+                              <h5 className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Key Responsibilities</h5>
+                              <ul className="space-y-1">
+                                {responsibilities.map((responsibility, i) => (
+                                  <li key={i} className="text-gray-300 text-xs flex items-start">
+                                    <ChevronRight className="h-3 w-3 text-purple-400 mt-0.5 flex-shrink-0 mr-1" />
+                                    <span>{responsibility}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </motion.div>
