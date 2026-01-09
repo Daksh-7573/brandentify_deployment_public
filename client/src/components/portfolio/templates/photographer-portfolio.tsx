@@ -21,6 +21,7 @@ interface PhotographerPortfolioProps {
     id?: number;
     name: string;
     title: string | null;
+    company: string | null;
     email: string | null;
     photoURL: string | null;
     aboutMe: string | null;
@@ -882,6 +883,15 @@ export default function PhotographerPortfolio({
                               </span>
                             )}
                           </div>
+                        )}
+                        
+                        {/* Domain (if not already shown) */}
+                        {!exp.domain && (exp as any).domain && (
+                           <div className="flex items-center gap-2 mb-3">
+                              <span className="text-xs px-2 py-1 rounded-full border" style={{ borderColor: colors.warmAmber, color: colors.warmAmber }}>
+                                {(exp as any).domain}
+                              </span>
+                           </div>
                         )}
                         
                         {exp.location && (
