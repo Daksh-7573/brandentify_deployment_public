@@ -566,25 +566,34 @@ export default function NatureCreative({
 
                   {/* Vision Statement */}
                   {userInfo.visionStatement && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-400 rounded-lg">
-                      <h3 className="text-sm font-semibold text-cyan-700 mb-1">Vision Statement</h3>
-                      <p className="text-gray-700 whitespace-pre-wrap">{String(userInfo.visionStatement)}</p>
+                    <div className="mb-6 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-400 rounded-xl shadow-sm">
+                      <h3 className="text-lg font-bold text-cyan-800 mb-2 flex items-center gap-2">
+                        <Mountain className="text-cyan-600" size={24} />
+                        Vision Statement
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.visionStatement)}</p>
                     </div>
                   )}
 
                   {/* Mission Statement */}
                   {userInfo.missionStatement && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-400 rounded-lg">
-                      <h3 className="text-sm font-semibold text-emerald-700 mb-1">Mission Statement</h3>
-                      <p className="text-gray-700 whitespace-pre-wrap">{String(userInfo.missionStatement)}</p>
+                    <div className="mb-6 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-400 rounded-xl shadow-sm">
+                      <h3 className="text-lg font-bold text-emerald-800 mb-2 flex items-center gap-2">
+                        <Bird className="text-emerald-600" size={24} />
+                        Mission Statement
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.missionStatement)}</p>
                     </div>
                   )}
 
                   {/* Unique Value Proposition */}
                   {userInfo.uniqueValueProposition && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-lg">
-                      <h3 className="text-sm font-semibold text-rose-700 mb-1">What Sets Me Apart</h3>
-                      <p className="text-gray-700 whitespace-pre-wrap">{String(userInfo.uniqueValueProposition)}</p>
+                    <div className="mb-6 p-6 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-xl shadow-sm">
+                      <h3 className="text-lg font-bold text-rose-800 mb-2 flex items-center gap-2">
+                        <Sparkles className="text-rose-600" size={24} />
+                        What Sets Me Apart
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.uniqueValueProposition)}</p>
                     </div>
                   )}
                   
