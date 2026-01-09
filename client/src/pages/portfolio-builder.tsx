@@ -199,7 +199,19 @@ export default function PortfolioBuilder() {
 
   // Show all templates (Corporate Executive & Scholar always available)
   const getVisibleTemplates = () => {
-    return layoutOptions;
+    const hiddenTemplates = [
+      "ceo-executive",
+      "photography-cinematic",
+      "fitness-portfolio",
+      "light-designer",
+      "3d-immersive",
+      "yoga-fitness",
+      "fashion-is-art",
+      "fashion-runway",
+      "pastel-dreamscape",
+      "animated"
+    ];
+    return layoutOptions.filter(opt => !hiddenTemplates.includes(opt.id));
   };
 
   // Define User type to match server-side schema
