@@ -406,7 +406,6 @@ export default function HolographicNeo({
                         border: '1px solid rgba(167, 139, 251, 0.3)',
                         boxShadow: '0 0 15px rgba(167, 139, 251, 0.15)',
                       }}
-                      data-testid="button-download-resume"
                     >
                       <Download className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />
                       <span className="text-white">Download Resume</span>
@@ -422,7 +421,6 @@ export default function HolographicNeo({
                       boxShadow: '0 0 15px rgba(34, 211, 238, 0.15)',
                     }}
                     onClick={() => setIsMentorshipDialogOpen(true)}
-                    data-testid="button-connect"
                   >
                     <Users className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
                     <span className="text-white">Connect</span>
@@ -580,71 +578,6 @@ export default function HolographicNeo({
                     </p>
                   </div>
                 )}
-
-                {/* Primary Audience */}
-                {primaryAudience.length > 0 && (
-                  <div 
-                    className="p-6 rounded-2xl"
-                    style={{
-                      background: 'rgba(10, 10, 30, 0.8)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                    }}
-                  >
-                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
-                      <Target className="w-5 h-5" />
-                      Primary Audience
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {primaryAudience.map((audience, i) => (
-                        <span 
-                          key={i}
-                          className="px-3 py-1.5 rounded-full text-sm"
-                          style={{
-                            background: 'rgba(34, 211, 238, 0.15)',
-                            border: '1px solid rgba(34, 211, 238, 0.3)',
-                            color: '#a5f3fc',
-                          }}
-                        >
-                          {String(audience)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Secondary Audience */}
-                {secondaryAudience.length > 0 && (
-                  <div 
-                    className="p-6 rounded-2xl"
-                    style={{
-                      background: 'rgba(10, 10, 30, 0.8)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                    }}
-                  >
-                    <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Secondary Audience
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {secondaryAudience.map((audience, i) => (
-                        <span 
-                          key={i}
-                          className="px-3 py-1.5 rounded-full text-sm"
-                          style={{
-                            background: 'rgba(167, 139, 251, 0.15)',
-                            border: '1px solid rgba(167, 139, 251, 0.3)',
-                            color: '#e9d5ff',
-                          }}
-                        >
-                          {String(audience)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
               </div>
             </div>
           </section>
