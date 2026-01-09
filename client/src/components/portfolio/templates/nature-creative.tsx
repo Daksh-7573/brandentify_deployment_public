@@ -548,7 +548,7 @@ export default function NatureCreative({
                   )}
 
                   {/* Core Values */}
-                  {userInfo.coreValues && userInfo.coreValues.length > 0 && (
+                  {userInfo.coreValues && Array.isArray(userInfo.coreValues) && userInfo.coreValues.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                         <Sparkles className="text-emerald-500" size={20} />
@@ -557,7 +557,7 @@ export default function NatureCreative({
                       <div className="flex flex-wrap gap-2">
                         {userInfo.coreValues.map((value, idx) => (
                           <Badge key={idx} className="bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 border border-emerald-200 px-3 py-1">
-                            {value}
+                            {String(value)}
                           </Badge>
                         ))}
                       </div>
@@ -568,7 +568,7 @@ export default function NatureCreative({
                   {userInfo.uniqueValueProposition && (
                     <div className="mb-6 p-4 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-lg">
                       <h3 className="text-sm font-semibold text-rose-700 mb-1">What Sets Me Apart</h3>
-                      <p className="text-gray-700">{userInfo.uniqueValueProposition}</p>
+                      <p className="text-gray-700 whitespace-pre-wrap">{String(userInfo.uniqueValueProposition)}</p>
                     </div>
                   )}
                   
@@ -593,7 +593,7 @@ export default function NatureCreative({
                         <Mountain className="text-cyan-500" size={24} />
                         Vision Statement
                       </h3>
-                      <p className="break-all text-gray-700 leading-relaxed">{userInfo.visionStatement}</p>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{String(userInfo.visionStatement)}</p>
                     </div>
                   </motion.div>
                 )}
@@ -609,10 +609,10 @@ export default function NatureCreative({
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-300" />
                     <div className="relative bg-white/50 backdrop-blur-md rounded-2xl p-6 border border-emerald-100 shadow-lg">
                       <h3 className="text-xl font-bold text-emerald-700 mb-3 flex items-center gap-2">
-                        <TreePine className="text-emerald-500" size={24} />
+                        <Bird className="text-emerald-500" size={24} />
                         Mission Statement
                       </h3>
-                      <p className="text-gray-700 leading-relaxed">{userInfo.missionStatement}</p>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{String(userInfo.missionStatement)}</p>
                     </div>
                   </motion.div>
                 )}
