@@ -489,7 +489,7 @@ export default function NatureCreative({
 
           {/* Scroll indicator */}
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2"
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
@@ -505,7 +505,7 @@ export default function NatureCreative({
 
         {/* Professional Brand Section */}
         {userInfo && (userInfo.visionStatement || userInfo.missionStatement || userInfo.uniqueValueProposition || (userInfo.coreValues && userInfo.coreValues.length > 0)) && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-4xl mx-auto">
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
@@ -526,34 +526,34 @@ export default function NatureCreative({
                   
                   {/* Vision Statement */}
                   {userInfo.visionStatement && (
-                    <div className="mb-6 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-400 rounded-xl shadow-sm">
+                    <div className="mb-6 p-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-400 rounded-xl shadow-sm overflow-hidden break-words">
                       <h3 className="text-lg font-bold text-cyan-800 mb-2 flex items-center gap-2">
                         <Mountain className="text-cyan-600" size={24} />
                         Vision Statement
                       </h3>
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.visionStatement)}</p>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base break-words w-full overflow-hidden">{String(userInfo.visionStatement)}</p>
                     </div>
                   )}
 
                   {/* Mission Statement */}
                   {userInfo.missionStatement && (
-                    <div className="mb-6 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-400 rounded-xl shadow-sm">
+                    <div className="mb-6 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-400 rounded-xl shadow-sm overflow-hidden break-words">
                       <h3 className="text-lg font-bold text-emerald-800 mb-2 flex items-center gap-2">
                         <Bird className="text-emerald-600" size={24} />
                         Mission Statement
                       </h3>
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.missionStatement)}</p>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base break-words w-full overflow-hidden">{String(userInfo.missionStatement)}</p>
                     </div>
                   )}
 
                   {/* Unique Value Proposition */}
                   {userInfo.uniqueValueProposition && (
-                    <div className="mb-6 p-6 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-xl shadow-sm">
+                    <div className="mb-6 p-6 bg-gradient-to-r from-rose-50 to-pink-50 border-l-4 border-rose-400 rounded-xl shadow-sm overflow-hidden break-words">
                       <h3 className="text-lg font-bold text-rose-800 mb-2 flex items-center gap-2">
                         <Sparkles className="text-rose-600" size={24} />
                         What Sets Me Apart
                       </h3>
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base">{String(userInfo.uniqueValueProposition)}</p>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base break-words w-full overflow-hidden">{String(userInfo.uniqueValueProposition)}</p>
                     </div>
                   )}
 
@@ -581,18 +581,18 @@ export default function NatureCreative({
 
         {/* Industry & Domain Badge Row */}
         {(userInfo.industry || userInfo.domain) && (
-          <div className="max-w-4xl mx-auto px-6 mb-12 flex flex-wrap gap-4 justify-center">
+          <div className="max-w-4xl mx-auto px-6 mb-8 flex flex-wrap gap-4 justify-center">
             {userInfo.industry && (
               <div className="px-6 py-2 bg-emerald-50/80 backdrop-blur-sm border border-emerald-200 rounded-full shadow-sm">
                 <span className="text-sm text-emerald-700 font-bold uppercase tracking-wider">
-                  Industry: {userInfo.industry}
+                  Industry: {String(userInfo.industry)}
                 </span>
               </div>
             )}
             {userInfo.domain && (
               <div className="px-6 py-2 bg-teal-50/80 backdrop-blur-sm border border-teal-200 rounded-full shadow-sm">
                 <span className="text-sm text-teal-700 font-bold uppercase tracking-wider">
-                  Domain: {userInfo.domain}
+                  Domain: {String(userInfo.domain)}
                 </span>
               </div>
             )}
@@ -601,7 +601,7 @@ export default function NatureCreative({
 
         {/* Skills Section - Floating Leaves Layout */}
         {userSkills.length > 0 && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-6xl mx-auto">
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
@@ -664,7 +664,7 @@ export default function NatureCreative({
 
         {/* Experience Section - Growing Vine Timeline */}
         {userExperiences.length > 0 && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-5xl mx-auto">
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
@@ -714,25 +714,24 @@ export default function NatureCreative({
                         <h3 className="text-xl font-bold text-gray-800 mb-1">{exp.title}</h3>
                         <p className="text-emerald-600 font-medium mb-2">{exp.company}</p>
                         
-                        {/* Location, Industry, Domain */}
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {exp.location && (
-                            <div className="flex items-center gap-1 text-gray-500 text-sm">
-                              <MapPin size={14} className="text-rose-400" />
-                              <span>{String(exp.location)}</span>
-                            </div>
-                          )}
-                          {exp.industry && (
-                            <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
-                              {String(exp.industry)}
-                            </Badge>
-                          )}
-                          {exp.domain && (
-                            <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
-                              {String(exp.domain)}
-                            </Badge>
-                          )}
-                        </div>
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {exp.location && (
+                              <div className="flex items-center gap-1 text-gray-500 text-sm">
+                                <MapPin size={14} className="text-rose-400" />
+                                <span>{String(exp.location)}</span>
+                              </div>
+                            )}
+                            {exp.industry && (
+                              <Badge className="bg-emerald-50 text-emerald-700 text-xs border border-emerald-200">
+                                {String(exp.industry)}
+                              </Badge>
+                            )}
+                            {exp.domain && (
+                              <Badge className="bg-teal-50 text-teal-700 text-xs border border-teal-200">
+                                {String(exp.domain)}
+                              </Badge>
+                            )}
+                          </div>
 
                         {exp.startDate && (
                           <div className="flex items-center gap-2 text-gray-500 text-sm mb-3">
@@ -772,7 +771,7 @@ export default function NatureCreative({
 
         {/* Education Section */}
         {userEducations.length > 0 && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-5xl mx-auto">
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
@@ -856,7 +855,7 @@ export default function NatureCreative({
 
         {/* Projects Section - Masonry Grid with Nature Borders */}
         {userProjects.length > 0 && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-6xl mx-auto">
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
@@ -925,7 +924,7 @@ export default function NatureCreative({
 
         {/* Services Section */}
         {userServices.length > 0 && (
-          <section className="py-20 px-6 relative">
+          <section className="py-14 px-6 relative">
             <div className="max-w-6xl mx-auto">
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
