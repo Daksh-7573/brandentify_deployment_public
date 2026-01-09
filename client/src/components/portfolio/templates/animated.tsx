@@ -341,13 +341,24 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 />
                 
                 {/* Profile image */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg z-[100] bg-gray-800">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/20 shadow-[0_0_30px_rgba(139,92,246,0.3)] z-[100] bg-gray-800 flex items-center justify-center">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
                       alt={name} 
                       className="w-full h-full object-cover relative z-[101]"
-                      style={{ opacity: 1, display: 'block', minWidth: '100%', minHeight: '100%' }}
+                      style={{ opacity: 1, display: 'block', minWidth: '100%', minHeight: '100%', imageRendering: 'auto' }}
+                      onError={(e) => {
+                        console.error("Profile image failed to load in Animated template:", photoURL);
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          const fallback = document.createElement('div');
+                          fallback.className = "w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold relative z-[101]";
+                          fallback.innerText = name ? name.charAt(0) : '?';
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold relative z-[101]">
@@ -439,121 +450,117 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       </section>
       
       {/* My Professional Brand Section */}
-      {(tagline || visionStatement || missionStatement || 
-        (coreValues && coreValues.length > 0) || 
-        uniqueValueProposition || 
-        (primaryAudience && primaryAudience.length > 0) || 
-        (secondaryAudience && secondaryAudience.length > 0)) && (
-        <section id="brand" className="py-20 relative" ref={brandRef}>
-          <div className="container mx-auto px-6 relative z-10">
+      <section id="brand" className="py-20 relative" ref={brandRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="mb-12 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                My Professional Brand
+              </span>
+            </h2>
+          </motion.div>
+          
+          <div className="max-w-4xl mx-auto space-y-6">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="mb-12 text-center"
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20"
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                  My Professional Brand
-                </span>
-              </h2>
+              <div className="flex items-center gap-3 mb-3">
+                <Star className="h-6 w-6 text-purple-400" />
+                <h3 className="text-xl font-semibold text-purple-300">Tagline / Personal Motto</h3>
+              </div>
+              <p className="text-gray-300 italic text-lg whitespace-pre-wrap break-words">"{tagline || "I create engaging digital experiences with innovation and technical expertise."}"</p>
             </motion.div>
-            
-            <div className="max-w-4xl mx-auto space-y-6">
-              {tagline && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
-                  className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <Star className="h-6 w-6 text-purple-400" />
-                    <h3 className="text-xl font-semibold text-purple-300">Tagline / Personal Motto</h3>
-                  </div>
-                  <p className="text-gray-300 italic text-lg whitespace-pre-wrap break-words">"{tagline}"</p>
-                </motion.div>
-              )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {visionStatement && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Lightbulb className="h-6 w-6 text-blue-400" />
-                      <h3 className="text-xl font-semibold text-blue-300">Vision Statement</h3>
-                    </div>
-                    <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{visionStatement}</p>
-                  </motion.div>
-                )}
-                {missionStatement && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Sparkles className="h-6 w-6 text-teal-400" />
-                      <h3 className="text-xl font-semibold text-teal-300">Mission Statement</h3>
-                    </div>
-                    <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{missionStatement}</p>
-                  </motion.div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 backdrop-blur-md rounded-2xl p-6 border border-blue-500/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <Lightbulb className="h-6 w-6 text-blue-400" />
+                  <h3 className="text-xl font-semibold text-blue-300">Vision Statement</h3>
+                </div>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{visionStatement || "To lead the industry with forward-thinking solutions and creative excellence."}</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-gradient-to-br from-teal-900/30 to-emerald-900/30 backdrop-blur-md rounded-2xl p-6 border border-teal-500/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <Sparkles className="h-6 w-6 text-teal-400" />
+                  <h3 className="text-xl font-semibold text-teal-300">Mission Statement</h3>
+                </div>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{missionStatement || "Empowering growth and transformation through reliable expertise and tailored strategies."}</p>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <Star className="h-6 w-6 text-rose-400" />
+                <h3 className="text-xl font-semibold text-rose-300">Core Values</h3>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {coreValues && coreValues.length > 0 ? (
+                  coreValues.map((value: string, index: number) => (
+                    <span 
+                      key={index}
+                      className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
+                    >
+                      {value}
+                    </span>
+                  ))
+                ) : (
+                  ["Innovation", "Integrity", "Excellence"].map((value, index) => (
+                    <span 
+                      key={index}
+                      className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
+                    >
+                      {value}
+                    </span>
+                  ))
                 )}
               </div>
+            </motion.div>
 
-              {coreValues && coreValues.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-md rounded-2xl p-6 border border-rose-500/20"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <Star className="h-6 w-6 text-rose-400" />
-                    <h3 className="text-xl font-semibold text-rose-300">Core Values</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {coreValues.map((value: string, index: number) => (
-                      <span 
-                        key={index}
-                        className="px-4 py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 rounded-full text-rose-300 font-medium"
-                      >
-                        {value}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {uniqueValueProposition && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <Sparkles className="h-6 w-6 text-amber-400" />
-                    <h3 className="text-xl font-semibold text-amber-300">Unique Value Proposition</h3>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{uniqueValueProposition}</p>
-                </motion.div>
-              )}
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 backdrop-blur-md rounded-2xl p-6 border border-amber-500/20"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <Sparkles className="h-6 w-6 text-amber-400" />
+                <h3 className="text-xl font-semibold text-amber-300">Unique Value Proposition</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{uniqueValueProposition || "Delivering high-impact solutions through a combination of industry expertise and creative problem-solving."}</p>
+            </motion.div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
       
       {/* Skills Section */}
       <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
