@@ -512,7 +512,12 @@ export default function PhotographerPortfolio({
                   variant="technical" 
                   userId={userInfo.id} 
                   userName={userInfo.name} 
-                   
+                  buttonStyle={{
+                    background: `linear-gradient(135deg, ${colors.warmAmber}, ${colors.cameraRed})`,
+                    borderColor: colors.warmAmber,
+                    color: colors.richBlack,
+                    fontWeight: 'bold'
+                  }}
                 />
               </motion.div>
             </div>
@@ -1046,32 +1051,19 @@ export default function PhotographerPortfolio({
             Ready to capture your moments? Let's discuss your vision and bring it to life through the lens.
           </p>
           <div className="flex flex-wrap gap-6 justify-center">
-            <Button
-              onClick={() => {
-                triggerShutter();
-              }}
-              className="px-12 py-8 text-xl font-bold rounded-full relative overflow-hidden group"
-              style={{
+            <PortfolioCtaButtons 
+              variant="technical" 
+              userId={userInfo.id} 
+              userName={userInfo.name} 
+              buttonStyle={{
                 background: `linear-gradient(135deg, ${colors.warmAmber}, ${colors.cameraRed})`,
-                border: 'none',
+                borderColor: colors.warmAmber,
+                color: colors.richBlack,
+                fontWeight: 'bold',
+                padding: '1.5rem 2.5rem',
+                fontSize: '1.25rem'
               }}
-              data-testid="button-cta-connect"
-            >
-              <motion.div
-                className="absolute inset-0"
-                animate={{
-                  background: [
-                    `radial-gradient(circle at 0% 0%, ${colors.warmAmber}, transparent)`,
-                    `radial-gradient(circle at 100% 100%, ${colors.cameraRed}, transparent)`,
-                    `radial-gradient(circle at 0% 0%, ${colors.warmAmber}, transparent)`,
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-              <span className="relative z-10 flex items-center gap-3">
-                Get In Touch
-              </span>
-            </Button>
+            />
           </div>
         </motion.div>
       </section>
