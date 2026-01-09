@@ -415,11 +415,18 @@ export default function DesignerShowcase({
                           )}
                         </div>
                       </div>
-                      {exp.industry && (
-                        <Badge variant="outline" className="mb-3 text-[10px] py-0 border-white/10 text-white/50">
-                          {exp.industry}
-                        </Badge>
-                      )}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {exp.industry && (
+                          <Badge variant="outline" className="text-[10px] py-0 border-white/10 text-white/50">
+                            {exp.industry}
+                          </Badge>
+                        )}
+                        {exp.domain && (
+                          <Badge variant="outline" className="text-[10px] py-0 border-purple-500/20 text-purple-400/70">
+                            {exp.domain}
+                          </Badge>
+                        )}
+                      </div>
                       {exp.description && (
                         <p className="text-white/80 mb-4 text-sm leading-relaxed">{exp.description}</p>
                       )}
@@ -473,9 +480,21 @@ export default function DesignerShowcase({
                           )}
                         </div>
                       </div>
-                      {edu.fieldOfStudy && (
-                        <p className="text-white/80 mb-3 text-sm">Major: {edu.fieldOfStudy}</p>
-                      )}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {edu.fieldOfStudy && (
+                          <p className="text-white/80 text-sm">Major: {edu.fieldOfStudy}</p>
+                        )}
+                        {edu.industry && (
+                          <Badge variant="outline" className="text-[10px] py-0 border-white/10 text-white/50">
+                            {edu.industry}
+                          </Badge>
+                        )}
+                        {edu.domain && (
+                          <Badge variant="outline" className="text-[10px] py-0 border-purple-500/20 text-purple-400/70">
+                            {edu.domain}
+                          </Badge>
+                        )}
+                      </div>
                       {typeof edu === 'object' && edu !== null && 'description' in edu && edu.description && (
                         <p className="text-white/60 mb-3 text-xs italic">{edu.description as string}</p>
                       )}
