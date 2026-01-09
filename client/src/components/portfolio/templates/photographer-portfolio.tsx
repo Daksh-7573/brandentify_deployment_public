@@ -413,6 +413,11 @@ export default function PhotographerPortfolio({
                 </motion.h1>
                 <p className="text-2xl font-light mb-2" style={{ color: colors.warmAmber }}>
                   {userInfo.title || 'Photographer'}
+                  {userInfo.company && (
+                    <span className="font-medium ml-2 border-l border-white/20 pl-2 opacity-80" style={{ borderLeftColor: `${colors.warmAmber}40` }}>
+                      {userInfo.company}
+                    </span>
+                  )}
                 </p>
                 {userInfo.tagline && (
                   <p className="text-lg opacity-80 italic mb-3">{userInfo.tagline}</p>
@@ -948,17 +953,16 @@ export default function PhotographerPortfolio({
                       </div>
                     </div>
                     
-                    {/* Content */}
-                    <div className="text-center mb-4">
-                      <h3 className="font-bold text-xl mb-2" style={{ color: colors.warmAmber }}>{edu.degree}</h3>
-                      <p className="text-base font-medium opacity-90">{edu.institution}</p>
-                      {edu.fieldOfStudy && (
-                        <p className="text-sm opacity-70 mt-1">{edu.fieldOfStudy}</p>
-                      )}
-                      <p className="text-sm opacity-60 mt-2">
-                        {startYear} - {endYear}
-                      </p>
-                    </div>
+                      <div className="text-center mb-4">
+                        <h3 className="font-bold text-xl mb-2" style={{ color: colors.warmAmber }}>{edu.degree}</h3>
+                        <p className="text-base font-medium opacity-90">{edu.institution}</p>
+                        {edu.fieldOfStudy && (
+                          <p className="text-sm opacity-70 mt-1">{edu.fieldOfStudy}</p>
+                        )}
+                        <p className="text-sm opacity-60 mt-2">
+                          {startYear} - {endYear}
+                        </p>
+                      </div>
 
                     {/* Industry, Domain, Location */}
                     {(edu.industry || edu.domain || edu.location) && (
