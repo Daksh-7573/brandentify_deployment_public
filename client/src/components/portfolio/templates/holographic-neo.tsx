@@ -457,7 +457,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 2: ABOUT ME ==================== */}
         {(userInfo.aboutMe || userInfo.uniqueValueProposition || coreValues.length > 0) && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ textShadow: '0 0 20px rgba(34, 211, 238, 0.4)' }}
@@ -596,7 +596,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 3: SKILLS ==================== */}
         {sortedSkills.length > 0 && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ textShadow: '0 0 20px rgba(34, 211, 238, 0.4)' }}
@@ -716,7 +716,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 4: EXPERIENCE ==================== */}
         {sortedExperiences.length > 0 && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ textShadow: '0 0 20px rgba(34, 211, 238, 0.4)' }}
@@ -856,7 +856,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 5: EDUCATION ==================== */}
         {sortedEducations.length > 0 && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ textShadow: '0 0 20px rgba(167, 139, 251, 0.4)' }}
@@ -980,7 +980,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 6: PROJECTS ==================== */}
         {sortedProjects.length > 0 && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-12 text-center"
               style={{ textShadow: '0 0 20px rgba(34, 211, 238, 0.4)' }}
@@ -1081,7 +1081,7 @@ export default function HolographicNeo({
 
         {/* ==================== SECTION 7: SERVICES (PREMIUM) ==================== */}
         {isPremium && userServices.length > 0 && (
-          <section className="py-20">
+          <section className="py-12">
             <h2 
               className="text-3xl sm:text-4xl font-bold text-white mb-4 text-center"
               style={{ textShadow: '0 0 20px rgba(167, 139, 251, 0.4)' }}
