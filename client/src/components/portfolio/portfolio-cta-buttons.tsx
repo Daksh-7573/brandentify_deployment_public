@@ -26,7 +26,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 export interface PortfolioCtaButtonsProps {
-  variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical' | 'artistic';
+  variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical' | 'artistic' | 'fashion-quantum';
   resumeUrl?: string | null;
   mentorUrl?: string | null;
   connectUrl?: string | null;
@@ -283,6 +283,14 @@ export default function PortfolioCtaButtons({
           mentorBtn: 'border-[#3a7b7b] text-[#3a7b7b] bg-white hover:bg-[#3a7b7b]10',
           connectBtn: 'border-[#2c3e50] text-[#2c3e50] bg-white hover:bg-[#2c3e50]10',
           downloadBtn: 'border-[#3a7b7b] text-[#3a7b7b] bg-white hover:bg-[#3a7b7b]10'
+        };
+      case 'fashion-quantum':
+        return {
+          container: `flex flex-wrap gap-3 ${className}`,
+          resumeBtn: 'bg-gradient-to-r from-[#F9C5D5] to-[#FDF3D9] hover:opacity-90 text-[#050509] border-none font-medium',
+          mentorBtn: 'border-[#F5F3EE]/30 text-[#F5F3EE] bg-transparent hover:bg-[#F5F3EE]/10',
+          connectBtn: 'border-[#F9C5D5]/40 text-[#FDF3D9] bg-transparent hover:bg-[#F9C5D5]/10',
+          downloadBtn: 'border-[#F5F3EE]/30 text-[#F5F3EE] bg-transparent hover:bg-[#F5F3EE]/10'
         };
       default:
         return {

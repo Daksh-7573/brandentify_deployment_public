@@ -183,7 +183,7 @@ interface FashionQuantumProps {
 }
 
 const CircularMeter = ({ value, max = 5, size = 48, color = colors.blushPink }: { value: number; max?: number; size?: number; color?: string }) => {
-  const percentage = (value / max) * 100;
+  const percentage = Math.round((value / max) * 100);
   const strokeWidth = 3;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -214,7 +214,7 @@ const CircularMeter = ({ value, max = 5, size = 48, color = colors.blushPink }: 
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xs font-medium" style={{ color: colors.white }}>{value}</span>
+        <span className="text-[10px] font-medium" style={{ color: colors.white }}>{percentage}%</span>
       </div>
     </div>
   );
@@ -537,12 +537,25 @@ export default function FashionQuantum({
                   )}
                 </div>
 
+                {userInfo.lookingFor && (
+                  <div 
+                    className="flex items-center gap-3 mb-6 px-4 py-2.5 rounded-full w-fit mx-auto lg:mx-0"
+                    style={{ 
+                      background: 'rgba(249,197,213,0.12)',
+                      border: `1px solid ${colors.blushPink}40`,
+                    }}
+                  >
+                    <Target className="w-4 h-4" style={{ color: colors.blushPink }} />
+                    <span className="text-xs uppercase tracking-wider" style={{ color: colors.inkGrey }}>Looking For:</span>
+                    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>{userInfo.lookingFor}</span>
+                  </div>
+                )}
+
                 <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                   <PortfolioCtaButtons 
-                    variant="creative" 
+                    variant="fashion-quantum" 
                     userId={userInfo.id} 
                     userName={userInfo.name} 
-                     
                   />
                 </div>
               </div>
@@ -653,6 +666,32 @@ export default function FashionQuantum({
                       </p>
                     </div>
                   )}
+
+                  {userInfo.coreValues && toStringArray(userInfo.coreValues).length > 0 && (
+                    <div className="mt-4">
+                      <h4 
+                        className="text-xs uppercase tracking-[0.15em] mb-3"
+                        style={{ color: colors.warmSand }}
+                      >
+                        Core Values
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {toStringArray(userInfo.coreValues).map((value, i) => (
+                          <span 
+                            key={i}
+                            className="px-3 py-1.5 rounded-full text-xs uppercase tracking-wide transition-all duration-300 hover:translate-x-1"
+                            style={{
+                              background: 'transparent',
+                              border: `1px solid ${colors.softBone}`,
+                              color: 'rgba(255,255,255,0.9)',
+                            }}
+                          >
+                            {value}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -693,50 +732,6 @@ export default function FashionQuantum({
                   </div>
                 )}
 
-                {userInfo.coreValues && toStringArray(userInfo.coreValues).length > 0 && (
-                  <div>
-                    <h4 
-                      className="text-xs uppercase tracking-[0.15em] mb-4"
-                      style={{ color: colors.warmSand }}
-                    >
-                      Core Values
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {toStringArray(userInfo.coreValues).map((value, i) => (
-                        <span 
-                          key={i}
-                          className="px-4 py-2 rounded-full text-xs uppercase tracking-wide transition-all duration-300 hover:translate-x-1"
-                          style={{
-                            background: 'transparent',
-                            border: `1px solid ${colors.softBone}`,
-                            color: 'rgba(255,255,255,0.9)',
-                          }}
-                        >
-                          {value}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {userInfo.lookingFor && (
-                  <div className="flex items-start gap-4 p-4 rounded-xl" style={{ background: 'rgba(17,17,24,0.4)' }}>
-                    <div 
-                      className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: `rgba(249,197,213,0.15)` }}
-                    >
-                      <Target className="w-5 h-5" style={{ color: colors.blushPink }} />
-                    </div>
-                    <div>
-                      <span className="text-xs uppercase tracking-[0.15em]" style={{ color: colors.inkGrey }}>
-                        Looking For
-                      </span>
-                      <p className="mt-1 text-sm" style={{ color: 'rgba(255,255,255,0.85)' }}>
-                        {userInfo.lookingFor}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </section>
@@ -892,12 +887,8 @@ export default function FashionQuantum({
                                 fontFamily: "'Playfair Display', Georgia, serif",
                               }}
                             >
-                              {exp.title}
+                              {exp.title}{exp.company ? ` at ${exp.company}` : ''}
                             </h3>
-                            <p className="text-sm flex items-center gap-2" style={{ color: colors.warmSand }}>
-                              <Building2 className="w-3.5 h-3.5" />
-                              {exp.company}
-                            </p>
                           </div>
                           <div className="text-right">
                             {isCurrent && (
@@ -1308,7 +1299,7 @@ export default function FashionQuantum({
                   )}
 
                   <div 
-                    className="py-4 px-5 rounded-xl mb-5 -mx-1"
+                    className="py-4 px-5 rounded-xl mb-5 -mx-1 flex items-center gap-4"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
                       border: `1px solid ${colors.blushPink}30`,
@@ -1316,7 +1307,7 @@ export default function FashionQuantum({
                   >
                     {service.priceInr && (
                       <span 
-                        className="text-3xl font-bold"
+                        className="text-4xl font-bold"
                         style={{ 
                           color: colors.champagneGlow,
                           fontFamily: "'Playfair Display', Georgia, serif",
@@ -1324,15 +1315,16 @@ export default function FashionQuantum({
                       >
                         ₹{Number(service.priceInr).toLocaleString()}
                         {service.isHourly && (
-                          <span className="text-sm font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
+                          <span className="text-base font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
                         )}
                       </span>
                     )}
                     {service.priceUsd && (
-                      <span className="text-sm ml-3" style={{ color: colors.inkGrey }}>
-                        (${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''})
+                      <span className="text-lg" style={{ color: colors.warmSand }}>
+                        ${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''}
                       </span>
                     )}
+                    <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
                   </div>
 
                   {service.description && (
@@ -1344,7 +1336,7 @@ export default function FashionQuantum({
                   {(() => {
                     const features = toStringArray(service.features);
                     return features.length > 0 ? (
-                      <ul className="space-y-2.5 mb-6">
+                      <ul className="space-y-2.5">
                         {features.slice(0, 5).map((feature, i) => (
                           <li 
                             key={i} 
@@ -1363,20 +1355,6 @@ export default function FashionQuantum({
                       </ul>
                     ) : null;
                   })()}
-
-                  <button 
-                    onClick={() => setIsMentorshipDialogOpen(true)}
-                    className="w-full py-3.5 rounded-full text-xs uppercase font-semibold tracking-wider transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.blushPink}, ${colors.champagneGlow})`,
-                      color: colors.noirBlack,
-                      boxShadow: '0 8px 24px rgba(249,197,213,0.25)',
-                    }}
-                    data-testid={`service-cta-${service.id}`}
-                  >
-                    <ArrowRight className="w-4 h-4 inline mr-2" />
-                    Enquire Now
-                  </button>
                 </div>
               ))}
             </div>
