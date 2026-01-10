@@ -1120,47 +1120,45 @@ export default function HolographicNeo({
                       </div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white">{service.title}</h3>
-                      <div className="flex items-center gap-3 mt-1">
+                      <h3 className="text-xl font-bold text-white mb-1">{service.title}</h3>
+                      <div className="flex flex-col gap-1">
                         {service.priceInr && (
-                          <span 
-                            className="text-lg font-black"
+                          <div 
+                            className="text-2xl font-black inline-flex items-center"
                             style={{
                               color: '#22d3ee',
-                              textShadow: '0 0 10px rgba(34, 211, 238, 0.4)',
+                              textShadow: '0 0 15px rgba(34, 211, 238, 0.6), 0 0 30px rgba(34, 211, 238, 0.3)',
+                              letterSpacing: '-0.01em'
                             }}
                           >
                             ₹{String(service.priceInr)}
-                            {service.isHourly && <span className="text-xs font-normal text-white/60">/hr</span>}
-                          </span>
+                            {service.isHourly && <span className="text-xs font-normal text-white/60 ml-1">/hr</span>}
+                          </div>
                         )}
-                        <span 
-                          className="inline-block px-2 py-0.5 rounded text-[10px]"
-                          style={{
-                            background: 'rgba(167, 139, 251, 0.2)',
-                            color: '#e9d5ff',
-                          }}
-                        >
-                          {service.category}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          {service.priceUsd && (
+                            <span className="text-white/60 text-sm font-medium">
+                              (${String(service.priceUsd)}{service.isHourly ? '/hr' : ''})
+                            </span>
+                          )}
+                          <span 
+                            className="inline-block px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold"
+                            style={{
+                              background: 'rgba(167, 139, 251, 0.2)',
+                              border: '1px solid rgba(167, 139, 251, 0.3)',
+                              color: '#e9d5ff',
+                            }}
+                          >
+                            {service.category}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {service.description && (
-                    <p className="text-white/70 mt-4 text-sm">{service.description}</p>
+                    <p className="text-white/70 mt-4 text-sm leading-relaxed">{service.description}</p>
                   )}
-
-                  {/* Pricing (Moved up) */}
-                  <div className="mt-4 flex items-center gap-4">
-                    {service.priceUsd && (
-                      <span 
-                        className="text-white/60 text-sm font-medium"
-                      >
-                        (${String(service.priceUsd)}{service.isHourly ? '/hr' : ''})
-                      </span>
-                    )}
-                  </div>
 
                   {/* Features */}
                   {service.features && toStringArray(service.features).length > 0 && (
