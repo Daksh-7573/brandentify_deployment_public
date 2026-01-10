@@ -637,7 +637,7 @@ export default function HolographicNeo({
                           stroke="url(#skillGradient)"
                           strokeWidth="4"
                           strokeLinecap="round"
-                          strokeDasharray={`${((skill.proficiency || 3) / 5) * 176} 176`}
+                          strokeDasharray={`${(Math.min(100, Math.max(0, skill.proficiency || 0)) / 100) * 176} 176`}
                           className="transition-all duration-700"
                           style={{
                             filter: 'drop-shadow(0 0 6px rgba(34, 211, 238, 0.6))',
@@ -651,7 +651,7 @@ export default function HolographicNeo({
                         </defs>
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-lg font-bold text-white">{skill.proficiency || 3}</span>
+                        <span className="text-lg font-bold text-white">{skill.proficiency || 0}%</span>
                       </div>
                     </div>
 
@@ -695,17 +695,16 @@ export default function HolographicNeo({
                           </span>
                         )}
                       </div>
-                      {/* Stars */}
-                      <div className="flex gap-1 mt-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star 
-                            key={star}
-                            className={`w-4 h-4 ${star <= (skill.proficiency || 3) ? 'text-cyan-400 fill-cyan-400' : 'text-white/20'}`}
-                            style={{
-                              filter: star <= (skill.proficiency || 3) ? 'drop-shadow(0 0 4px rgba(34, 211, 238, 0.6))' : 'none',
-                            }}
-                          />
-                        ))}
+                      {/* Progress Bar (replacing stars) */}
+                      <div className="mt-3 w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="h-full rounded-full transition-all duration-1000"
+                          style={{ 
+                            width: `${skill.proficiency || 0}%`,
+                            background: 'linear-gradient(90deg, #22d3ee, #a78bfa)',
+                            boxShadow: '0 0 10px rgba(34, 211, 238, 0.5)'
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
