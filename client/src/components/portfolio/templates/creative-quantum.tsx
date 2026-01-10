@@ -1040,32 +1040,6 @@ export default function CreativeQuantum({
                 </div>
               ))}
             </div>
-                        {features.slice(0, 5).map((feature, i) => (
-                          <li key={i} className="flex items-center gap-2 text-white/80 text-sm">
-                            <Check className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                            <span>{String(feature)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null;
-                  })()}
-
-                  {/* CTA */}
-                  <button 
-                    onClick={() => setIsMentorshipDialogOpen(true)}
-                    className="w-full py-3 rounded-xl font-medium text-sm transition-all duration-300 hover:translate-y-[-2px]"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, rgba(167, 139, 251, 0.3) 100%)',
-                      border: '1px solid rgba(34, 211, 238, 0.4)',
-                      color: '#ffffff',
-                      boxShadow: '0 0 20px rgba(34, 211, 238, 0.2)',
-                    }}
-                  >
-                    Let's Talk
-                  </button>
-                </div>
-              ))}
-            </div>
           </section>
         )}
 
