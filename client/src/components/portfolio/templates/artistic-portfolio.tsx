@@ -39,6 +39,8 @@ const colors = {
   crimson: "#c0392b",
   emerald: "#27ae60",
   amber: "#f39c12",
+  coral: "#ff7f50",
+  mustard: "#ffdb58",
 };
 
 const artisticPalette = [colors.burgundy, colors.teal, colors.navy, colors.mint, colors.lilac, colors.rust, colors.sage];
@@ -246,7 +248,7 @@ export default function ArtisticPortfolio({
                       }}
                     >
                       <span className="text-4xl font-serif" style={{ color: colors.inkBlack }}>
-                        {userInfo.name.charAt(0)}
+                        {userInfo.name?.charAt(0) || "B"}
                       </span>
                     </div>
                   )}
@@ -270,7 +272,7 @@ export default function ArtisticPortfolio({
                     textShadow: "1px 1px 0px rgba(255, 255, 255, 0.5)",
                   }}
                 >
-                  {userInfo.name}
+                  {userInfo.name || "Professional"}
                 </h1>
               </div>
 
@@ -555,7 +557,6 @@ export default function ArtisticPortfolio({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {userSkills.map((skill, index) => {
-                const proficiency = getProficiencyLevel(skill);
                 const color = getArtisticColor(index);
                 const cardStyle = getCardStyle(index);
                 return (
@@ -1081,7 +1082,6 @@ export default function ArtisticPortfolio({
 
                     {/* Pricing */}
                     <div className="mb-4 flex items-baseline gap-2">
-                      <TrendingUp className="w-5 h-5" style={{ color: colors.burgundy }} />
                       {service.priceInr && (
                         <span 
                           className="text-2xl font-bold"
@@ -1098,6 +1098,7 @@ export default function ArtisticPortfolio({
                           ${service.priceUsd}{service.isHourly ? '/hr' : ''}
                         </span>
                       )}
+                      {/* Price moved before icon */}
                     </div>
 
                     {service.description && (

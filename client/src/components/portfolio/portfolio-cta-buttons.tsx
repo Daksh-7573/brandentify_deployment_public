@@ -26,7 +26,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 export interface PortfolioCtaButtonsProps {
-  variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical';
+  variant?: 'default' | 'corporate' | 'creative' | 'minimal' | 'technical' | 'artistic';
   resumeUrl?: string | null;
   mentorUrl?: string | null;
   connectUrl?: string | null;
@@ -275,6 +275,14 @@ export default function PortfolioCtaButtons({
           mentorBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50',
           connectBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50',
           downloadBtn: 'border-blue-300 text-blue-700 bg-white hover:bg-blue-50'
+        };
+      case 'artistic':
+        return {
+          container: `flex flex-wrap gap-3 mt-6 ${className}`,
+          resumeBtn: 'bg-[#a83838] hover:bg-[#8e2d2d] text-white border-none',
+          mentorBtn: 'border-[#3a7b7b] text-[#3a7b7b] bg-white hover:bg-[#3a7b7b]10',
+          connectBtn: 'border-[#2c3e50] text-[#2c3e50] bg-white hover:bg-[#2c3e50]10',
+          downloadBtn: 'border-[#3a7b7b] text-[#3a7b7b] bg-white hover:bg-[#3a7b7b]10'
         };
       default:
         return {
