@@ -387,7 +387,6 @@ export default function HolographicNeo({
                       boxShadow: '0 0 20px rgba(34, 211, 238, 0.2)',
                     }}
                     onClick={() => setIsMentorshipDialogOpen(true)}
-                    data-testid="button-lets-talk"
                   >
                     <Mail className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
                     <span className="text-white">Let's Talk</span>
@@ -395,7 +394,7 @@ export default function HolographicNeo({
                   </button>
 
                   {/* Download Resume CTA */}
-                  {userInfo.resumeUrl && (
+                  {userInfo.resumeUrl ? (
                     <a 
                       href={userInfo.resumeUrl}
                       target="_blank"
@@ -410,6 +409,18 @@ export default function HolographicNeo({
                       <Download className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />
                       <span className="text-white">Download Resume</span>
                     </a>
+                  ) : (
+                    <div 
+                      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                      style={{
+                        background: 'rgba(167, 139, 251, 0.05)',
+                        border: '1px solid rgba(167, 139, 251, 0.1)',
+                      }}
+                      title="Resume not available"
+                    >
+                      <Download className="w-5 h-5 text-purple-400/50" />
+                      <span className="text-white/50">Resume Not Available</span>
+                    </div>
                   )}
 
                   {/* Connect Button */}
@@ -1131,10 +1142,11 @@ export default function HolographicNeo({
                   <div className="mt-4 flex items-center gap-4">
                     {service.priceInr && (
                       <span 
-                        className="text-lg font-bold"
+                        className="text-2xl font-black"
                         style={{
                           color: '#22d3ee',
-                          textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
+                          textShadow: '0 0 15px rgba(34, 211, 238, 0.5), 0 0 30px rgba(34, 211, 238, 0.3)',
+                          letterSpacing: '-0.02em'
                         }}
                       >
                         ₹{String(service.priceInr)}
@@ -1142,7 +1154,12 @@ export default function HolographicNeo({
                       </span>
                     )}
                     {service.priceUsd && (
-                      <span className="text-white/60 text-sm">
+                      <span 
+                        className="text-white/80 text-lg font-bold"
+                        style={{
+                          textShadow: '0 0 10px rgba(255, 255, 255, 0.2)'
+                        }}
+                      >
                         (${String(service.priceUsd)}{service.isHourly ? '/hr' : ''})
                       </span>
                     )}
@@ -1150,27 +1167,15 @@ export default function HolographicNeo({
 
                   {/* Features */}
                   {service.features && toStringArray(service.features).length > 0 && (
-                    <ul className="mt-4 space-y-2">
+                    <ul className="mt-6 space-y-3">
                       {toStringArray(service.features).map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2 text-white/80 text-sm">
+                        <li key={i} className="flex items-center gap-3 text-white/90 text-sm">
                           <Zap className="w-4 h-4 text-cyan-400" />
                           {String(feature)}
                         </li>
                       ))}
                     </ul>
                   )}
-
-                  {/* CTA */}
-                  <button 
-                    className="w-full mt-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(167, 139, 251, 0.2) 0%, rgba(34, 211, 238, 0.2) 100%)',
-                      border: '1px solid rgba(167, 139, 251, 0.3)',
-                    }}
-                    onClick={() => setIsMentorshipDialogOpen(true)}
-                  >
-                    <span className="text-white">Book a Consultation</span>
-                  </button>
                 </div>
               ))}
             </div>
@@ -1179,9 +1184,6 @@ export default function HolographicNeo({
 
         {/* Footer */}
         <footer className="py-12 text-center">
-          <p className="text-white/40 text-sm">
-            Built with <span className="text-cyan-400">Brandentifier</span>
-          </p>
         </footer>
       </div>
 
