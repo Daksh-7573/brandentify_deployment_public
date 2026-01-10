@@ -148,14 +148,15 @@ export default function ArtisticPortfolio({
     } catch { return date; }
   };
 
-  const getProficiencyLevel = (skill: Skill): number => {
-    if (skill.proficiency) return Math.min(5, Math.max(1, skill.proficiency));
+  const getProficiencyPercentage = (skill: Skill): number => {
+    if (skill.proficiency) return Math.min(100, Math.max(0, skill.proficiency));
     const level = skill.level?.toLowerCase();
-    if (level === 'expert' || level === 'advanced') return 5;
-    if (level === 'proficient') return 4;
-    if (level === 'intermediate') return 3;
-    if (level === 'beginner') return 2;
-    return 3;
+    if (level === 'expert') return 100;
+    if (level === 'advanced') return 85;
+    if (level === 'proficient') return 70;
+    if (level === 'intermediate') return 50;
+    if (level === 'beginner') return 25;
+    return 60;
   };
 
   return (
@@ -308,7 +309,7 @@ export default function ArtisticPortfolio({
               )}
 
               {/* Info Chips Row - Paint chip style */}
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
+              <div className="flex flex-wrap justify-center gap-3 mb-6">
                 {userInfo.location && (
                   <div 
                     className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium transition-transform hover:translate-y-[-2px]"
@@ -353,13 +354,27 @@ export default function ArtisticPortfolio({
                 )}
               </div>
 
+              {/* Looking For - Relocated to Hero section */}
+              {userInfo.lookingFor && (
+                <div 
+                  className="mb-8 px-4 py-2 inline-flex items-center gap-2 rounded-full text-sm font-medium transition-all hover:scale-105"
+                  style={{ 
+                    backgroundColor: `${colors.rust}15`,
+                    color: colors.rust,
+                    border: `1px dashed ${colors.rust}40`
+                  }}
+                >
+                  <Target className="w-4 h-4 animate-pulse" />
+                  <span>Looking for: {userInfo.lookingFor}</span>
+                </div>
+              )}
+
               {/* CTA Buttons - Artistic style */}
               <div className="flex flex-wrap justify-center gap-4">
                 <PortfolioCtaButtons 
-                  variant="creative"
+                  variant="artistic"
                   userId={userInfo.id}
                   userName={userInfo.name}
-                  
                 />
               </div>
             </div>
@@ -470,7 +485,7 @@ export default function ArtisticPortfolio({
                     className="font-semibold mb-3"
                     style={{ color: colors.burgundy }}
                   >
-                    What Makes Me Different
+                    Unique Value Proposition
                   </h3>
                   <p 
                     className="text-lg font-medium"
@@ -518,23 +533,6 @@ export default function ArtisticPortfolio({
                   </div>
                 </div>
               )}
-
-
-              {/* Looking For & Email */}
-              <div 
-                className="p-4 flex flex-wrap gap-4 items-center justify-between"
-                style={{ 
-                  backgroundColor: cardBackgrounds[1].bg,
-                  clipPath: tornEdgeClipPaths.card2,
-                }}
-              >
-                {userInfo.lookingFor && (
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4" style={{ color: colors.rust }} />
-                    <span style={{ color: colors.darkGray }} className="text-sm">{userInfo.lookingFor}</span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </section>
@@ -614,18 +612,16 @@ export default function ArtisticPortfolio({
                       )}
                     </div>
                     
-                    {/* Proficiency Dots */}
-                    <div className="flex gap-1.5 mt-2">
-                      {[1, 2, 3, 4, 5].map((level) => (
-                        <div 
-                          key={level}
-                          className="w-3 h-3 rounded-full transition-all duration-300"
-                          style={{
-                            backgroundColor: level <= proficiency ? color : `${color}30`,
-                            boxShadow: level <= proficiency ? `0 0 6px ${color}60` : 'none',
-                          }}
-                        />
-                      ))}
+                    {/* Proficiency Bar */}
+                    <div className="relative w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mt-3">
+                      <div 
+                        className="absolute left-0 top-0 h-full transition-all duration-1000"
+                        style={{ 
+                          width: `${getProficiencyPercentage(skill)}%`,
+                          backgroundColor: color,
+                          boxShadow: `0 0 8px ${color}40`
+                        }}
+                      />
                     </div>
                   </div>
                 );
@@ -692,9 +688,8 @@ export default function ArtisticPortfolio({
                               className="text-lg font-bold"
                               style={{ color: colors.inkBlack }}
                             >
-                              {exp.title}
+                              {exp.title} at {exp.company}
                             </h3>
-                            <p style={{ color: color }} className="font-medium">{exp.company}</p>
                           </div>
                           <span 
                             className="text-xs px-3 py-1 rounded-full"
@@ -825,6 +820,29 @@ export default function ArtisticPortfolio({
                           {edu.degree}
                         </h3>
                         <p style={{ color: color }} className="font-medium">{edu.institution}</p>
+                        
+                        {/* Location, Industry, Domain Details */}
+                        <div className="mt-2 flex flex-wrap gap-3">
+                          {edu.location && (
+                            <div className="flex items-center gap-1.5 text-xs" style={{ color: colors.sage }}>
+                              <MapPin className="w-3 h-3" />
+                              <span>{edu.location}</span>
+                            </div>
+                          )}
+                          {edu.industry && (
+                            <div className="flex items-center gap-1.5 text-xs" style={{ color: colors.teal }}>
+                              <Briefcase className="w-3 h-3" />
+                              <span>{edu.industry}</span>
+                            </div>
+                          )}
+                          {edu.domain && (
+                            <div className="flex items-center gap-1.5 text-xs" style={{ color: colors.lilac }}>
+                              <PenTool className="w-3 h-3" />
+                              <span>{edu.domain}</span>
+                            </div>
+                          )}
+                        </div>
+
                         {edu.fieldOfStudy && (
                           <span 
                             className="inline-block mt-1 px-2 py-0.5 rounded text-xs"
@@ -1062,10 +1080,11 @@ export default function ArtisticPortfolio({
                     </span>
 
                     {/* Pricing */}
-                    <div className="mb-3">
+                    <div className="mb-4 flex items-baseline gap-2">
+                      <TrendingUp className="w-5 h-5" style={{ color: colors.burgundy }} />
                       {service.priceInr && (
                         <span 
-                          className="text-xl font-bold"
+                          className="text-2xl font-bold"
                           style={{ color: colors.burgundy }}
                         >
                           ₹{service.priceInr.toLocaleString()}
@@ -1075,8 +1094,8 @@ export default function ArtisticPortfolio({
                         </span>
                       )}
                       {service.priceUsd && (
-                        <span className="text-sm ml-2" style={{ color: colors.sage }}>
-                          (${service.priceUsd}{service.isHourly ? '/hr' : ''})
+                        <span className="text-lg" style={{ color: colors.sage }}>
+                          ${service.priceUsd}{service.isHourly ? '/hr' : ''}
                         </span>
                       )}
                     </div>
@@ -1094,7 +1113,7 @@ export default function ArtisticPortfolio({
                     {(() => {
                       const features = toStringArray(service.features);
                       return features.length > 0 ? (
-                        <ul className="space-y-2 mb-4">
+                        <ul className="space-y-2 mb-2">
                           {features.slice(0, 5).map((feature, i) => (
                             <li 
                               key={i} 
@@ -1111,19 +1130,6 @@ export default function ArtisticPortfolio({
                         </ul>
                       ) : null;
                     })()}
-
-                    {/* CTA */}
-                    <button 
-                      onClick={() => setIsMentorshipDialogOpen(true)}
-                      className="w-full py-3 rounded-lg font-medium text-sm transition-all duration-300 hover:translate-y-[-2px]"
-                      style={{
-                        backgroundColor: color,
-                        color: "white",
-                        boxShadow: `0 4px 12px ${color}40`,
-                      }}
-                    >
-                      Let's Collaborate
-                    </button>
                   </div>
                 );
               })}
