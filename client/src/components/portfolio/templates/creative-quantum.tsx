@@ -568,7 +568,7 @@ export default function CreativeQuantum({
                         <div 
                           className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                           style={{
-                            width: `${(proficiency / 5) * 100}%`,
+                            width: `${skill.proficiency ? Math.min(100, Math.max(0, skill.proficiency)) : (proficiency / 5) * 100}%`,
                             background: 'linear-gradient(90deg, #22d3ee, #3b82f6)',
                             boxShadow: '0 0 10px rgba(34, 211, 238, 0.6)',
                           }}
@@ -576,7 +576,7 @@ export default function CreativeQuantum({
                       </div>
                     </div>
                     <div className="mt-1 flex justify-between text-[10px] text-white/40">
-                      <span>{Math.round((proficiency / 5) * 100)}% Proficiency</span>
+                      <span>{skill.proficiency ? Math.round(skill.proficiency) : Math.round((proficiency / 5) * 100)}% Proficiency</span>
                     </div>
                   </div>
                 );
