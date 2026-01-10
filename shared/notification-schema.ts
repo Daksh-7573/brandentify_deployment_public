@@ -41,7 +41,8 @@ export const notifications = pgTable('notifications', {
       'team_member_request',
       'client_request',
       'project_tag',
-      'referral_signup'
+      'referral_signup',
+      'mentorship_expiring'
     ] 
   }).notNull(),
   title: text('title').notNull(),
