@@ -490,11 +490,11 @@ export default function ArtisticPortfolio({
                     Unique Value Proposition
                   </h3>
                   <p 
-                    className="text-lg font-medium"
+                    className="text-base font-medium"
                     style={{ 
                       color: colors.inkBlack,
                       fontFamily: "'Caveat', cursive",
-                      fontSize: "1.3rem",
+                      fontSize: "1.1rem",
                     }}
                   >
                     "{userInfo.uniqueValueProposition}"
