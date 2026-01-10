@@ -557,24 +557,21 @@ export default function CreativeQuantum({
                     
                     {/* Proficiency Bars */}
                     <div className="flex gap-1 mt-3">
-                      {[1, 2, 3, 4, 5].map((level) => (
+                      <div 
+                        className="flex-1 h-1.5 rounded-full transition-all duration-300 relative overflow-hidden bg-white/10"
+                      >
                         <div 
-                          key={level}
-                          className="flex-1 h-1.5 rounded-full transition-all duration-300"
+                          className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                           style={{
-                            background: level <= proficiency 
-                              ? 'linear-gradient(90deg, #22d3ee, #3b82f6)' 
-                              : 'rgba(255, 255, 255, 0.1)',
-                            boxShadow: level <= proficiency 
-                              ? '0 0 10px rgba(34, 211, 238, 0.6)' 
-                              : 'none',
+                            width: `${(proficiency / 5) * 100}%`,
+                            background: 'linear-gradient(90deg, #22d3ee, #3b82f6)',
+                            boxShadow: '0 0 10px rgba(34, 211, 238, 0.6)',
                           }}
                         />
-                      ))}
+                      </div>
                     </div>
                     <div className="mt-1 flex justify-between text-[10px] text-white/40">
-                      <span>Beginner</span>
-                      <span>Expert</span>
+                      <span>{Math.round((proficiency / 5) * 100)}% Proficiency</span>
                     </div>
                   </div>
                 );
@@ -788,6 +785,18 @@ export default function CreativeQuantum({
                             {String(edu.domain)}
                           </span>
                         )}
+                        {edu.location && (
+                          <span 
+                            className="px-2 py-0.5 rounded text-xs flex items-center gap-1"
+                            style={{
+                              background: 'rgba(59, 130, 246, 0.15)',
+                              color: '#93c5fd',
+                            }}
+                          >
+                            <MapPin className="w-3 h-3" />
+                            {edu.location}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <span className="text-white/60 text-sm">
@@ -956,29 +965,52 @@ export default function CreativeQuantum({
                     animation: `quantumFadeIn 0.5s ease-out ${index * 0.1}s both`,
                   }}
                 >
-                  {/* Service Image/Icon */}
-                  <div className="mb-4">
-                    {service.imageUrl ? (
-                      <img 
-                        src={service.imageUrl}
-                        alt={service.title}
-                        className="w-16 h-16 rounded-xl object-cover"
-                      />
-                    ) : (
-                      <div 
-                        className="w-16 h-16 rounded-xl flex items-center justify-center"
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(167, 139, 251, 0.3) 100%)',
-                        }}
-                      >
-                        <Briefcase className="w-8 h-8 text-purple-400" />
+                  {/* Service Header with Icon and Price */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      {service.imageUrl ? (
+                        <img 
+                          src={service.imageUrl}
+                          alt={service.title}
+                          className="w-12 h-12 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div 
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(167, 139, 251, 0.3) 100%)',
+                          }}
+                        >
+                          <Briefcase className="w-6 h-6 text-purple-400" />
+                        </div>
+                      )}
+                      
+                      {/* Pricing next to icon */}
+                      <div className="flex flex-col">
+                        {service.priceInr && (
+                          <span 
+                            className="text-lg font-bold"
+                            style={{
+                              color: '#22d3ee',
+                              textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
+                            }}
+                          >
+                            ₹{service.priceInr.toLocaleString()}
+                            {service.isHourly && <span className="text-xs font-normal text-white/60">/hr</span>}
+                          </span>
+                        )}
+                        {service.priceUsd && (
+                          <span className="text-white/40 text-[10px]">
+                            (${service.priceUsd}{service.isHourly ? '/hr' : ''})
+                          </span>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   <h3 className="text-xl font-bold text-white mb-1">{service.title}</h3>
                   <span 
-                    className="inline-block px-2 py-0.5 rounded text-xs mb-3"
+                    className="inline-block px-2 py-0.5 rounded text-[10px] mb-3 uppercase tracking-wider font-semibold"
                     style={{
                       background: 'rgba(167, 139, 251, 0.2)',
                       color: '#e9d5ff',
@@ -987,36 +1019,27 @@ export default function CreativeQuantum({
                     {service.category}
                   </span>
 
-                  {/* Pricing */}
-                  <div className="mb-3">
-                    {service.priceInr && (
-                      <span 
-                        className="text-xl font-bold"
-                        style={{
-                          color: '#22d3ee',
-                          textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
-                        }}
-                      >
-                        ₹{service.priceInr.toLocaleString()}
-                        {service.isHourly && <span className="text-sm font-normal text-white/60">/hr</span>}
-                      </span>
-                    )}
-                    {service.priceUsd && (
-                      <span className="text-white/60 text-sm ml-2">
-                        (${service.priceUsd}{service.isHourly ? '/hr' : ''})
-                      </span>
-                    )}
-                  </div>
-
                   {service.description && (
-                    <p className="text-white/70 text-sm mb-4">{service.description}</p>
+                    <p className="text-white/70 text-sm mb-4 line-clamp-3">{service.description}</p>
                   )}
 
                   {/* Features */}
                   {(() => {
                     const features = toStringArray(service.features);
                     return features.length > 0 ? (
-                      <ul className="space-y-2 mb-4">
+                      <ul className="space-y-2">
+                        {features.slice(0, 3).map((feature, i) => (
+                          <li key={i} className="flex items-center gap-2 text-xs text-white/60">
+                            <Check className="w-3 h-3 text-cyan-400" />
+                            {String(feature)}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null;
+                  })()}
+                </div>
+              ))}
+            </div>
                         {features.slice(0, 5).map((feature, i) => (
                           <li key={i} className="flex items-center gap-2 text-white/80 text-sm">
                             <Check className="w-4 h-4 text-cyan-400 flex-shrink-0" />
