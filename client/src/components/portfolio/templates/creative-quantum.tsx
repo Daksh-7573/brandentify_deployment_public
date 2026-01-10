@@ -25,6 +25,7 @@ interface CreativeQuantumProps {
     id?: number;
     name: string;
     title: string | null;
+    company?: string | null;
     industry: string | null;
     domain: string | null;
     location: string | null;
@@ -250,13 +251,26 @@ export default function CreativeQuantum({
                     boxShadow: '0 0 15px rgba(34, 211, 238, 0.2)',
                   }}
                 >
-                  <span className="text-cyan-300 text-sm font-medium">{userInfo.title}</span>
+                  <span className="text-cyan-300 text-sm font-medium">
+                    {userInfo.title}
+                    {userInfo.company && (
+                      <span className="text-purple-300/80"> at {userInfo.company}</span>
+                    )}
+                  </span>
                 </div>
               )}
 
               {/* Tagline */}
               {userInfo.tagline && (
-                <p className="break-all text-white/70 text-sm mb-6 max-w-md">{userInfo.tagline}</p>
+                <p className="break-all text-white/70 text-sm mb-4 max-w-md italic">"{userInfo.tagline}"</p>
+              )}
+
+              {/* Looking For - Moved from section 2 */}
+              {userInfo.lookingFor && (
+                <div className="flex items-center gap-2 mb-6 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                  <Target className="w-4 h-4 text-cyan-400" />
+                  <span className="text-cyan-100 text-sm font-medium">Looking For: {userInfo.lookingFor}</span>
+                </div>
               )}
 
               {/* Info Chips Row */}
@@ -303,12 +317,63 @@ export default function CreativeQuantum({
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap justify-center gap-4">
-                <PortfolioCtaButtons 
-                  variant="technical"
-                  userId={userInfo.id}
-                  userName={userInfo.name}
-                  
-                />
+                {/* Let's Talk */}
+                <button 
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-[1.05]"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #22d3ee 100%)',
+                    boxShadow: '0 0 20px rgba(34, 211, 238, 0.3)',
+                    color: '#fff'
+                  }}
+                  onClick={() => setIsMentorshipDialogOpen(true)}
+                >
+                  <Mail className="w-4 h-4" />
+                  Let's Talk
+                </button>
+
+                {/* Resume */}
+                {userInfo.resumeUrl ? (
+                  <a 
+                    href={userInfo.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-[1.05]"
+                    style={{
+                      background: 'rgba(167, 139, 251, 0.2)',
+                      border: '1px solid rgba(167, 139, 251, 0.4)',
+                      color: '#e9d5ff'
+                    }}
+                  >
+                    <Download className="w-4 h-4" />
+                    Resume
+                  </a>
+                ) : (
+                  <div 
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                    style={{
+                      background: 'rgba(167, 139, 251, 0.1)',
+                      border: '1px solid rgba(167, 139, 251, 0.2)',
+                      color: '#e9d5ff'
+                    }}
+                  >
+                    <Download className="w-4 h-4" />
+                    No Resume
+                  </div>
+                )}
+
+                {/* Connect */}
+                <button 
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 hover:scale-[1.05]"
+                  style={{
+                    background: 'rgba(34, 211, 238, 0.15)',
+                    border: '1px solid rgba(34, 211, 238, 0.3)',
+                    color: '#a5f3fc'
+                  }}
+                  onClick={() => setIsMentorshipDialogOpen(true)}
+                >
+                  <Users className="w-4 h-4" />
+                  Connect
+                </button>
               </div>
             </div>
           </div>
@@ -420,22 +485,6 @@ export default function CreativeQuantum({
                   </div>
                 </div>
               )}
-
-
-              {/* Looking For & Email */}
-              <div 
-                className="p-4 rounded-xl flex flex-wrap gap-4 items-center justify-between"
-                style={{
-                  background: 'rgba(10, 26, 63, 0.5)',
-                }}
-              >
-                {userInfo.lookingFor && (
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-cyan-400" />
-                    <span className="text-white/80 text-sm">{userInfo.lookingFor}</span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </section>
@@ -507,7 +556,7 @@ export default function CreativeQuantum({
                     </div>
                     
                     {/* Proficiency Bars */}
-                    <div className="flex gap-1 mt-2">
+                    <div className="flex gap-1 mt-3">
                       {[1, 2, 3, 4, 5].map((level) => (
                         <div 
                           key={level}
@@ -517,11 +566,15 @@ export default function CreativeQuantum({
                               ? 'linear-gradient(90deg, #22d3ee, #3b82f6)' 
                               : 'rgba(255, 255, 255, 0.1)',
                             boxShadow: level <= proficiency 
-                              ? '0 0 8px rgba(34, 211, 238, 0.5)' 
+                              ? '0 0 10px rgba(34, 211, 238, 0.6)' 
                               : 'none',
                           }}
                         />
                       ))}
+                    </div>
+                    <div className="mt-1 flex justify-between text-[10px] text-white/40">
+                      <span>Beginner</span>
+                      <span>Expert</span>
                     </div>
                   </div>
                 );
@@ -699,28 +752,43 @@ export default function CreativeQuantum({
                         {edu.degree}
                       </h3>
                       <p className="text-blue-300 font-medium">{edu.institution}</p>
-                      {edu.fieldOfStudy && (
-                        <span 
-                          className="inline-block mt-1 px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(59, 130, 246, 0.15)',
-                            color: '#93c5fd',
-                          }}
-                        >
-                          {edu.fieldOfStudy}
-                        </span>
-                      )}
-                      {edu.domain && (
-                        <span 
-                          className="inline-block mt-1 ml-1 px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(167, 139, 250, 0.15)',
-                            color: '#c4b5fd',
-                          }}
-                        >
-                          {String(edu.domain)}
-                        </span>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        {edu.fieldOfStudy && (
+                          <span 
+                            className="px-2 py-0.5 rounded text-xs"
+                            style={{
+                              background: 'rgba(59, 130, 246, 0.15)',
+                              color: '#93c5fd',
+                            }}
+                          >
+                            {edu.fieldOfStudy}
+                          </span>
+                        )}
+                        {edu.industry && (
+                          <span 
+                            className="px-2 py-0.5 rounded text-xs flex items-center gap-1"
+                            style={{
+                              background: 'rgba(167, 139, 250, 0.15)',
+                              color: '#c4b5fd',
+                            }}
+                          >
+                            <Briefcase className="w-3 h-3" />
+                            {edu.industry}
+                          </span>
+                        )}
+                        {edu.domain && (
+                          <span 
+                            className="px-2 py-0.5 rounded text-xs flex items-center gap-1"
+                            style={{
+                              background: 'rgba(167, 139, 250, 0.15)',
+                              color: '#c4b5fd',
+                            }}
+                          >
+                            <Command className="w-3 h-3" />
+                            {String(edu.domain)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <span className="text-white/60 text-sm">
                       {formatDate(edu.startDate)} – {formatDate(edu.endDate)}
