@@ -900,6 +900,12 @@ export default function FashionQuantum({
                                 <> – {formatDate(exp.endDate)}</>
                               ) : null}
                             </div>
+                            {exp.location && (
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
+                                <MapPin className="w-3 h-3" />
+                                {exp.location}
+                              </p>
+                            )}
                             {exp.industry && (
                               <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
                                 <Building2 className="w-3 h-3" />
@@ -1293,8 +1299,14 @@ export default function FashionQuantum({
                     </span>
                   )}
 
+                  {service.description && (
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      {service.description}
+                    </p>
+                  )}
+
                   <div 
-                    className="py-4 px-5 rounded-xl mb-5 -mx-1 flex items-center gap-4"
+                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
                       border: `1px solid ${colors.blushPink}30`,
@@ -1321,12 +1333,6 @@ export default function FashionQuantum({
                     )}
                     <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
                   </div>
-
-                  {service.description && (
-                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                      {service.description}
-                    </p>
-                  )}
 
                   {(() => {
                     const features = toStringArray(service.features);
@@ -1360,29 +1366,6 @@ export default function FashionQuantum({
           className="text-center py-12"
           style={{ borderTop: `1px solid rgba(245,243,238,0.08)` }}
         >
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <a
-              href="#"
-              className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-              style={{
-                background: 'rgba(245,243,238,0.06)',
-                border: `1px solid rgba(245,243,238,0.2)`,
-              }}
-            >
-              <Instagram className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
-            </a>
-            <a
-              href="#"
-              className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-              style={{
-                background: 'rgba(245,243,238,0.06)',
-                border: `1px solid rgba(245,243,238,0.2)`,
-              }}
-            >
-              <Globe className="w-5 h-5" style={{ color: 'rgba(255,255,255,0.8)' }} />
-            </a>
-          </div>
-          
           <p 
             className="text-lg mb-2"
             style={{ 
@@ -1392,12 +1375,8 @@ export default function FashionQuantum({
           >
             {userInfo.name}
           </p>
-          <p className="text-sm mb-6" style={{ color: colors.inkGrey }}>
+          <p className="text-sm" style={{ color: colors.inkGrey }}>
             {userInfo.title || 'Creative Professional'}
-          </p>
-          
-          <p className="text-xs" style={{ color: 'rgba(156,163,175,0.6)' }}>
-            Portfolio powered by <span style={{ color: colors.blushPink }}>Brandentifier</span>
           </p>
         </footer>
       </div>
