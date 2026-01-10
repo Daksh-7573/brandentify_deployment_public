@@ -907,8 +907,8 @@ export default function FashionQuantum({
                               </p>
                             )}
                             {exp.industry && (
-                              <div className="flex justify-end mt-1 w-full">
-                                <p className="text-xs flex items-center gap-1 text-right" style={{ color: colors.inkGrey }}>
+                              <div className="flex justify-end mt-1 w-full text-right">
+                                <p className="text-xs flex items-center gap-1" style={{ color: colors.inkGrey, textAlign: 'right' }}>
                                   <Building2 className="w-3 h-3" />
                                   {exp.industry}
                                 </p>
@@ -1302,10 +1302,11 @@ export default function FashionQuantum({
                   )}
 
                   <div 
-                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 h-[84px]"
+                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
                       border: `1px solid ${colors.blushPink}30`,
+                      boxSizing: 'border-box'
                     }}
                   >
                     {service.priceInr && (
