@@ -907,7 +907,7 @@ export default function FashionQuantum({
                               </p>
                             )}
                             {exp.industry && (
-                              <p className="text-xs flex items-center gap-1 justify-end mt-1 text-right" style={{ color: colors.inkGrey, textAlign: 'right' }}>
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1 text-right w-full" style={{ color: colors.inkGrey, textAlign: 'right', justifyContent: 'flex-end' }}>
                                 <Building2 className="w-3 h-3" />
                                 {exp.industry}
                               </p>
@@ -1327,6 +1327,12 @@ export default function FashionQuantum({
                     )}
                     <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
                   </div>
+
+                  {service.description && (
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      {service.description}
+                    </p>
+                  )}
 
                   {service.description && (
                     <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
