@@ -907,7 +907,7 @@ export default function FashionQuantum({
                               </p>
                             )}
                             {exp.industry && (
-                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1 text-right" style={{ color: colors.inkGrey, textAlign: 'right' }}>
                                 <Building2 className="w-3 h-3" />
                                 {exp.industry}
                               </p>
@@ -1299,12 +1299,6 @@ export default function FashionQuantum({
                     </span>
                   )}
 
-                  {service.description && (
-                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                      {service.description}
-                    </p>
-                  )}
-
                   <div 
                     className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4"
                     style={{
@@ -1333,6 +1327,12 @@ export default function FashionQuantum({
                     )}
                     <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
                   </div>
+
+                  {service.description && (
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      {service.description}
+                    </p>
+                  )}
 
                   {(() => {
                     const features = toStringArray(service.features);
