@@ -289,17 +289,32 @@ export default function HolographicNeo({
               </h1>
 
               {/* Title & Company */}
-              <p 
-                className="text-xl sm:text-2xl text-cyan-200/90 font-light text-center lg:text-left"
-                style={{
-                  textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
-                }}
-              >
-                {userInfo.title || "Your Designation"}
-                {userInfo.company && (
-                  <span className="text-purple-300/80"> at {userInfo.company}</span>
+              <div className="flex flex-col items-center lg:items-start gap-1">
+                <p 
+                  className="text-xl sm:text-2xl text-cyan-200/90 font-light text-center lg:text-left"
+                  style={{
+                    textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
+                  }}
+                >
+                  {userInfo.title || "Your Designation"}
+                  {userInfo.company && (
+                    <span className="text-purple-300/80"> at {userInfo.company}</span>
+                  )}
+                </p>
+                {userInfo.lookingFor && (
+                  <div 
+                    className="flex items-center gap-2 px-3 py-1 rounded-lg text-sm mt-1"
+                    style={{
+                      background: 'rgba(34, 211, 238, 0.1)',
+                      border: '1px solid rgba(34, 211, 238, 0.2)',
+                      color: '#a5f3fc',
+                    }}
+                  >
+                    <Target className="w-4 h-4 text-cyan-400" />
+                    <span className="font-medium">Looking for: {userInfo.lookingFor}</span>
+                  </div>
                 )}
-              </p>
+              </div>
 
               {/* Tagline */}
               {userInfo.tagline && (
@@ -380,17 +395,19 @@ export default function HolographicNeo({
                 <div className="space-y-4">
                   {/* Let's Talk CTA */}
                   <button 
-                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] group"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-[1.05] hover:rotate-[0.5deg] group active:scale-95"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.3) 0%, rgba(167, 139, 251, 0.3) 100%)',
-                      border: '1px solid rgba(34, 211, 238, 0.4)',
-                      boxShadow: '0 0 20px rgba(34, 211, 238, 0.2)',
+                      background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.6) 0%, rgba(167, 139, 251, 0.6) 100%)',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      boxShadow: '0 0 30px rgba(34, 211, 238, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.2)',
+                      color: '#fff',
+                      textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
                     }}
                     onClick={() => setIsMentorshipDialogOpen(true)}
                   >
-                    <Mail className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
-                    <span className="text-white">Let's Talk</span>
-                    <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" />
+                    <Mail className="w-5 h-5 text-white group-hover:animate-pulse" />
+                    <span>LET'S TALK</span>
+                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                   </button>
 
                   {/* Download Resume CTA */}
@@ -399,42 +416,44 @@ export default function HolographicNeo({
                       href={userInfo.resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] group"
+                      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-[1.05] hover:rotate-[-0.5deg] group active:scale-95"
                       style={{
-                        background: 'rgba(167, 139, 251, 0.15)',
-                        border: '1px solid rgba(167, 139, 251, 0.3)',
-                        boxShadow: '0 0 15px rgba(167, 139, 251, 0.15)',
+                        background: 'rgba(167, 139, 251, 0.2)',
+                        border: '2px solid rgba(167, 139, 251, 0.4)',
+                        boxShadow: '0 0 20px rgba(167, 139, 251, 0.3), inset 0 0 15px rgba(167, 139, 251, 0.2)',
+                        color: '#fff',
                       }}
                     >
-                      <Download className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />
-                      <span className="text-white">Download Resume</span>
+                      <Download className="w-5 h-5 text-purple-300 group-hover:animate-bounce" />
+                      <span>DOWNLOAD RESUME</span>
                     </a>
                   ) : (
                     <div 
-                      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                      className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold opacity-40 cursor-not-allowed"
                       style={{
-                        background: 'rgba(167, 139, 251, 0.05)',
-                        border: '1px solid rgba(167, 139, 251, 0.1)',
+                        background: 'rgba(10, 10, 30, 0.5)',
+                        border: '2px dashed rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.3)',
                       }}
-                      title="Resume not available"
                     >
-                      <Download className="w-5 h-5 text-purple-400/50" />
-                      <span className="text-white/50">Resume Not Available</span>
+                      <Download className="w-5 h-5" />
+                      <span>RESUME UNAVAILABLE</span>
                     </div>
                   )}
 
                   {/* Connect Button */}
                   <button 
-                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02] group"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] group active:scale-95"
                     style={{
-                      background: 'rgba(34, 211, 238, 0.15)',
-                      border: '1px solid rgba(34, 211, 238, 0.3)',
-                      boxShadow: '0 0 15px rgba(34, 211, 238, 0.15)',
+                      background: 'rgba(10, 10, 30, 0.6)',
+                      border: '2px solid rgba(34, 211, 238, 0.5)',
+                      boxShadow: '0 0 15px rgba(34, 211, 238, 0.2)',
+                      color: '#22d3ee',
                     }}
                     onClick={() => setIsMentorshipDialogOpen(true)}
                   >
-                    <Users className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
-                    <span className="text-white">Connect</span>
+                    <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <span>CONNECT NOW</span>
                   </button>
                 </div>
 
@@ -918,12 +937,13 @@ export default function HolographicNeo({
                             <span 
                               className="px-2 py-1 rounded text-xs flex items-center gap-1"
                               style={{
-                                background: 'rgba(167, 139, 251, 0.15)',
+                                background: 'rgba(167, 139, 251, 0.25)',
+                                border: '1px solid rgba(167, 139, 251, 0.4)',
                                 color: '#e9d5ff',
                               }}
                             >
-                              <Briefcase className="w-3 h-3" />
-                              {String(edu.industry)}
+                              <Briefcase className="w-3 h-3 text-purple-400" />
+                              <span className="font-semibold">Industry: {String(edu.industry)}</span>
                             </span>
                           )}
                           {edu.location && (
