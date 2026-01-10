@@ -95,7 +95,7 @@ export default function CreativeQuantum({
 
   const getProficiencyLevel = (skill: Skill): number => {
     if (skill.proficiency) return Math.min(5, Math.max(1, skill.proficiency));
-    const level = skill.level?.toLowerCase();
+    const level = (skill.level || "").toLowerCase().trim();
     if (level === 'expert' || level === 'advanced') return 5;
     if (level === 'proficient') return 4;
     if (level === 'intermediate') return 3;
@@ -967,19 +967,19 @@ export default function CreativeQuantum({
                       <div className="flex flex-col p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                         {service.priceInr && (
                           <span 
-                            className="text-lg font-bold"
+                            className="text-2xl font-bold"
                             style={{
                               color: '#22d3ee',
                               textShadow: '0 0 10px rgba(34, 211, 238, 0.5)',
                             }}
                           >
                             ₹{service.priceInr.toLocaleString()}
-                            {service.isHourly && <span className="text-xs font-normal text-white/60">/hr</span>}
+                            {service.isHourly && <span className="text-sm font-normal text-white/60">/hr</span>}
                           </span>
                         )}
                         {service.priceUsd && (
-                          <span className="text-white/40 text-[10px]">
-                            (${service.priceUsd}{service.isHourly ? '/hr' : ''})
+                          <span className="text-white/60 text-sm font-medium">
+                            ${service.priceUsd}{service.isHourly ? '/hr' : ''}
                           </span>
                         )}
                       </div>
