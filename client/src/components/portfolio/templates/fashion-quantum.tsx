@@ -865,12 +865,8 @@ export default function FashionQuantum({
                         />
                       )}
 
-                      <div className="absolute left-12 sm:left-16 top-0 text-xs uppercase tracking-widest" style={{ color: colors.inkGrey }}>
-                        {formatDate(exp.startDate)}
-                      </div>
-
                       <div 
-                        className="mt-6 p-6 rounded-2xl transition-all duration-300 hover:translate-x-2"
+                        className="mt-2 p-6 rounded-2xl transition-all duration-300 hover:translate-x-2"
                         style={{
                           background: 'rgba(17,17,24,0.6)',
                           border: `1px solid rgba(245,243,238,0.1)`,
@@ -889,31 +885,21 @@ export default function FashionQuantum({
                             >
                               {exp.title}{exp.company ? ` at ${exp.company}` : ''}
                             </h3>
-                          </div>
-                          <div className="text-right">
-                            {isCurrent && (
-                              <span 
-                                className="inline-block px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-medium mb-1"
-                                style={{
-                                  background: `linear-gradient(135deg, ${colors.blushPink}30, ${colors.champagneGlow}30)`,
-                                  border: `1px solid ${colors.blushPink}50`,
-                                  color: colors.champagneGlow,
-                                }}
-                              >
-                                Present
-                              </span>
-                            )}
-                            {!isCurrent && exp.endDate && (
-                              <span className="text-xs" style={{ color: colors.inkGrey }}>
-                                – {formatDate(exp.endDate)}
-                              </span>
-                            )}
-                            {exp.location && (
-                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
-                                <MapPin className="w-3 h-3" />
-                                {exp.location}
+                            {exp.domain && (
+                              <p className="text-xs mt-1" style={{ color: colors.warmSand }}>
+                                Domain: {exp.domain}
                               </p>
                             )}
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: colors.inkGrey }}>
+                              {formatDate(exp.startDate)}
+                              {isCurrent ? (
+                                <> – Present</>
+                              ) : exp.endDate ? (
+                                <> – {formatDate(exp.endDate)}</>
+                              ) : null}
+                            </div>
                             {exp.industry && (
                               <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
                                 <Building2 className="w-3 h-3" />
@@ -1039,7 +1025,7 @@ export default function FashionQuantum({
                             {edu.degree}
                             {edu.fieldOfStudy && <span className="opacity-80"> in {edu.fieldOfStudy}</span>}
                           </p>
-                          {(edu.location || edu.industry) && (
+                          {(edu.location || edu.industry || edu.domain) && (
                             <div className="flex flex-wrap gap-3 ml-12 mt-1 text-xs" style={{ color: colors.inkGrey }}>
                               {edu.location && (
                                 <span className="flex items-center gap-1">
@@ -1053,6 +1039,12 @@ export default function FashionQuantum({
                                   {edu.industry}
                                 </span>
                               )}
+                              {edu.domain && (
+                                <span className="flex items-center gap-1">
+                                  <Target className="w-3 h-3" />
+                                  {edu.domain}
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1063,7 +1055,10 @@ export default function FashionQuantum({
                             background: 'rgba(245,243,238,0.05)',
                           }}
                         >
-                          {edu.startYear || ''}{edu.endYear ? ` – ${edu.endYear}` : ''}
+                          {edu.startDate ? formatDate(edu.startDate) : edu.startYear || ''}
+                          {(edu.endDate || edu.endYear) && (
+                            <> – {edu.endDate ? formatDate(edu.endDate) : edu.endYear}</>
+                          )}
                         </span>
                       </div>
 
