@@ -94,12 +94,27 @@ export default function CreativeQuantum({
   };
 
   const getProficiencyLevel = (skill: Skill): number => {
+    // If proficiency (1-5) is explicitly set, use it
     if (skill.proficiency) return Math.min(5, Math.max(1, skill.proficiency));
+    
+    // Otherwise map common level strings
     const level = (skill.level || "").toLowerCase().trim();
-    if (level === 'expert' || level === 'advanced') return 5;
-    if (level === 'proficient') return 4;
-    if (level === 'intermediate') return 3;
-    if (level === 'beginner') return 2;
+    if (level === 'expert' || level === 'advanced' || level === '5') return 5;
+    if (level === 'proficient' || level === '4') return 4;
+    if (level === 'intermediate' || level === '3') return 3;
+    if (level === 'beginner' || level === '2') return 2;
+    if (level === '1') return 1;
+    
+    // Fallback based on years of experience if available
+    const years = (skill as any).yearsOfExperience;
+    if (years) {
+      const y = parseInt(String(years));
+      if (y >= 8) return 5;
+      if (y >= 5) return 4;
+      if (y >= 3) return 3;
+      if (y >= 1) return 2;
+    }
+    
     return 3;
   };
 
