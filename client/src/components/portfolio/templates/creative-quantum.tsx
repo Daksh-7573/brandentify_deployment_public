@@ -99,16 +99,28 @@ export default function CreativeQuantum({
     
     // Otherwise map common level strings
     const level = (skill.level || "").toLowerCase().trim();
-    if (level === 'expert' || level === 'advanced' || level === '5') return 5;
-    if (level === 'proficient' || level === '4') return 4;
-    if (level === 'intermediate' || level === '3') return 3;
-    if (level === 'beginner' || level === '2') return 2;
+    if (level.includes('expert') || level.includes('advanced') || level === '5') return 5;
+    if (level.includes('proficient') || level === '4') return 4;
+    if (level.includes('intermediate') || level === '3') return 3;
+    if (level.includes('beginner') || level === '2') return 2;
     if (level === '1') return 1;
     
     // Fallback based on years of experience if available
     const years = (skill as any).yearsOfExperience;
     if (years) {
       const y = parseInt(String(years));
+      if (!isNaN(y)) {
+        if (y >= 8) return 5;
+        if (y >= 5) return 4;
+        if (y >= 3) return 3;
+        if (y >= 1) return 2;
+      }
+    }
+    
+    // Check for level containing numbers directly (e.g. "8 years")
+    const levelNumberMatch = level.match(/\d+/);
+    if (levelNumberMatch) {
+      const y = parseInt(levelNumberMatch[0]);
       if (y >= 8) return 5;
       if (y >= 5) return 4;
       if (y >= 3) return 3;
