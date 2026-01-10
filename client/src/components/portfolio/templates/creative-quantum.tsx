@@ -502,7 +502,7 @@ export default function CreativeQuantum({
               <p className="text-white/60">Tools & strengths that power my work</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userSkills.map((skill, index) => {
                 const proficiency = getProficiencyLevel(skill);
                 return (
@@ -522,35 +522,13 @@ export default function CreativeQuantum({
                     <div className="flex flex-wrap gap-1 mb-2">
                       {skill.level && (
                         <span 
-                          className="inline-block px-2 py-0.5 rounded text-xs"
+                          className="inline-block px-2 py-0.5 rounded text-[10px]"
                           style={{
                             background: 'rgba(167, 139, 251, 0.2)',
                             color: '#e9d5ff',
                           }}
                         >
                           {skill.level}
-                        </span>
-                      )}
-                      {(skill as any).category && (
-                        <span 
-                          className="inline-block px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(34, 211, 238, 0.2)',
-                            color: '#67e8f9',
-                          }}
-                        >
-                          {(skill as any).category}
-                        </span>
-                      )}
-                      {(skill as any).yearsOfExperience && (
-                        <span 
-                          className="inline-block px-2 py-0.5 rounded text-xs"
-                          style={{
-                            background: 'rgba(74, 222, 128, 0.2)',
-                            color: '#86efac',
-                          }}
-                        >
-                          {(skill as any).yearsOfExperience}y
                         </span>
                       )}
                     </div>
@@ -986,13 +964,13 @@ export default function CreativeQuantum({
                       )}
                       
                       {/* Pricing next to icon */}
-                      <div className="flex flex-col">
+                      <div className="flex flex-col p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                         {service.priceInr && (
                           <span 
                             className="text-lg font-bold"
                             style={{
                               color: '#22d3ee',
-                              textShadow: '0 0 10px rgba(34, 211, 238, 0.3)',
+                              textShadow: '0 0 10px rgba(34, 211, 238, 0.5)',
                             }}
                           >
                             ₹{service.priceInr.toLocaleString()}
