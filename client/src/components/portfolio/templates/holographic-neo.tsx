@@ -714,17 +714,16 @@ export default function HolographicNeo({
                           </span>
                         )}
                       </div>
-                      {/* Progress Bar (replacing stars) */}
-                      <div className="mt-3 w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all duration-1000"
-                          style={{ 
-                            width: `${skill.proficiency || 0}%`,
-                            background: 'linear-gradient(90deg, #22d3ee, #a78bfa)',
-                            boxShadow: '0 0 10px rgba(34, 211, 238, 0.5)'
-                          }}
-                        />
-                      </div>
+                          <div className="mt-3 w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                              className="h-full rounded-full transition-all duration-1000"
+                              style={{ 
+                                width: skill.level === 'Expert' ? '95%' : skill.level === 'Advanced' ? '80%' : skill.level === 'Intermediate' ? '65%' : '40%',
+                                background: 'linear-gradient(90deg, #22d3ee, #a78bfa)',
+                                boxShadow: '0 0 10px rgba(34, 211, 238, 0.5)'
+                              }}
+                            />
+                          </div>
                     </div>
                   </div>
                 </div>
