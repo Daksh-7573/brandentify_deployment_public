@@ -1334,12 +1334,6 @@ export default function FashionQuantum({
                     </p>
                   )}
 
-                  {service.description && (
-                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                      {service.description}
-                    </p>
-                  )}
-
                   {(() => {
                     const features = toStringArray(service.features);
                     return features.length > 0 ? (
