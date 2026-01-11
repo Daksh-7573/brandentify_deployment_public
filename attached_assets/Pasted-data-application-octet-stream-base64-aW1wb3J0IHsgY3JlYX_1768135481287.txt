@@ -1,0 +1,290 @@
+data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKaW1wb3J0ICIuL3N0eWxlcy9uZW8tZ2xhc3MtbWFpbi5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy10aGVtZS5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy1zcG90aWZ5LmNzcyI7CgovLyBOb3RlOiBGaXJlYmFzZSByZW1vdmVkIC0gdXNpbmcgY3VzdG9tIE9BdXRoIG9ubHkKCi8vIFBlcmZvcm1hbmNlIG1lYXN1cmVtZW50CmNvbnN0IGFwcFN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwpjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCBpbml0aWFsaXphdGlvbiBzdGFydGVkJyk7CgovLyBSZW1vdmUgSFRNTCBsb2FkZXIgaW1tZWRpYXRlbHkgd2hlbiBSZWFjdCBhcHAgc3RhcnRzCmNvbnN0IGxvYWRlciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAtbG9hZGVyJyk7CmlmIChsb2FkZXIpIHsKICBsb2FkZXIuc3R5bGUub3BhY2l0eSA9ICcwJzsKICBsb2FkZXIuc3R5bGUudHJhbnNpdGlvbiA9ICdvcGFjaXR5IDAuMTVzIGVhc2Utb3V0JzsKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGxvYWRlci5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgY29uc29sZS5sb2coJ1tQRVJGXSBTa2VsZXRvbiBsb2FkZXIgcmVtb3ZlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIGFwcFN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgfSwgMTUwKTsKfQoKLy8gQ2hlY2sgaWYgd2Ugc2hvdWxkIHVzZSB0aGUgc2ltcGxlIGFwcCBvciB0aGUgZnVsbCBhcHAKY29uc3QgdXNlU2ltcGxlQXBwID0gZmFsc2U7IC8vIFNldCB0byB0cnVlIGZvciB0ZXN0aW5nCgovLyBQcm9ncmVzc2l2ZSByZW5kZXJpbmcgLSBzdGFydCB3aXRoIGNyaXRpY2FsIGNvbXBvbmVudHMKY29uc3QgcmVuZGVyQXBwID0gKCkgPT4gewogIGNvbnN0IHJlbmRlclN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwogIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgcmVuZGVyaW5nIHN0YXJ0ZWQnKTsKICAKICBjcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikhKS5yZW5kZXIoCiAgICB1c2VTaW1wbGVBcHAgPyA8U2ltcGxlQXBwIC8+IDogPEFwcCAvPgogICk7CiAgCiAgLy8gUmVwb3J0IHJlbmRlcmluZyB0aW1lIGFmdGVyIFJlYWN0IGhhcyBtb3VudGVkCiAgc2V0VGltZW91dCgoKSA9PiB7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCByZW5kZXJlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIHJlbmRlclN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFRvdGFsIGluaXRpYWxpemF0aW9uIHRpbWU6JywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAwKTsKfTsKCi8vIE9wdGltaXplIHJlbmRlcmluZyB0aW1pbmcKaWYgKGRvY3VtZW50LnJlYWR5U3RhdGUgPT09ICdsb2FkaW5nJykgewogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCByZW5kZXJBcHApOwp9IGVsc2UgewogIHJlbmRlckFwcCgpOwp9Cg==' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+VM7:33 [SW DISABLED] Unregistering all service workers to clear cache
+VM7:56 [SW DISABLED] ✅ All service workers and caches cleared - fresh content will load
+index-Dr90C6Pr.js:241 [PERF] React app initialization started
+index-Dr90C6Pr.js:241 [PERF] React rendering started
+VM8:4 [Skeleton] DOM loaded, preparing smooth transition
+index-Dr90C6Pr.js:184 [Auth] Current state: Object
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: DEFAULT
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: undefined
+index-Dr90C6Pr.js:184 [Auth] Starting auth check
+index-Dr90C6Pr.js:184 [Auth] Fetching session from server...
+index-Dr90C6Pr.js:241 [PERF] React app rendered in 71.00 ms
+index-Dr90C6Pr.js:241 [PERF] Total initialization time: 100.80 ms
+VM8:10 [Skeleton] Starting fade-out transition
+index-Dr90C6Pr.js:241 [PERF] Skeleton loader removed in 325.00 ms
+index-Dr90C6Pr.js:184 [Auth] Server session response: Object
+index-Dr90C6Pr.js:184 [Auth] Raw server response: Object
+index-Dr90C6Pr.js:184 [Auth] Unwrapped user from server response
+index-Dr90C6Pr.js:184 [Auth] Valid session found for: nishant.brodos@gmail.com
+index-Dr90C6Pr.js:184 [Auth] Auth check complete
+index-Dr90C6Pr.js:184 [Auth] Current state: Object
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-Dr90C6Pr.js:234 Header mounted - invalidating user query
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+index-Dr90C6Pr.js:49 Cached response for /api/notifications/9/count
+index-Dr90C6Pr.js:241 [Onboarding Check] Object
+index-Dr90C6Pr.js:241 [Onboarding] All mandatory fields present, no onboarding needed
+index-Dr90C6Pr.js:49 Cached response for /api/users/9
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: LOADING_PLACEHOLDER
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source type: BASE64
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source length: 55819
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+VM8:16 [Skeleton] Skeleton loading complete - app ready
+VM8:20 ⚡ [PERF] Skeleton-to-app transition: 1355.70ms
+index-Dr90C6Pr.js:241 [Progressive Loading] Starting tiered component loading
+index-Dr90C6Pr.js:241 [Progressive Loading] ⚡ Core components ready
+index-Dr90C6Pr.js:241 [Progressive Loading] 🚀 Secondary components loaded
+index-Dr90C6Pr.js:241 [Progressive Loading] 🔧 All components loaded in 259.80ms
+landing-CnP17QD6.js:6 Landing page - Auth state: Object
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/experiences
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/skills
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-Dr90C6Pr.js:234 Header mounted - invalidating user query
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/educations
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source type: BASE64
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source length: 55819
+VM7:67 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+VM7:68 📊 Total page load time: 1995.30ms
+VM7:69 🔥 Firebase init time: 1995.30ms
+VM7:77 ✅ [Strategy 1] Preconnect/Preload: 5 preconnect + 2 preload + 37 modulepreload links active
+VM7:78 ⚡ Expected improvement: 100-300ms faster cold starts
+VM7:83 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+VM7:84 ⚡ Expected improvement: 150-250ms faster auth loads
+VM7:113 🔄 [Strategy 4] Service Worker: Installing...
+VM7:122 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+VM7:125 📈 Performance Optimization Complete - All 4 strategies active!
+2index-Dr90C6Pr.js:49 Cached response for /api/users/9
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/experiences
+index-Dr90C6Pr.js:241 [Onboarding Check] Object
+index-Dr90C6Pr.js:241 [Onboarding] All mandatory fields present, no onboarding needed
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+2index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/projects
+industry-pulse-new-B9nPbzrs.js:16 [PULSE PAGE] user: Object userId: 9 user?.id: 9
+index-Dr90C6Pr.js:49 Fetching data from: /api/nowboard-items
+index-Dr90C6Pr.js:49 Cached response for /api/notifications/9/count
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+VM7:93 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+VM7:94 ⚡ Expected improvement: 50-100ms perceived performance boost
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 6 currentUser: 9 itemUser: 12
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 5 currentUser: 9 itemUser: 7
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 4 currentUser: 9 itemUser: 9
+index-Dr90C6Pr.js:49 Fetching data from: /api/nowboard-items/6/inspired-by/9
+index-Dr90C6Pr.js:49 Fetching data from: /api/nowboard-items/5/inspired-by/9
+index-Dr90C6Pr.js:49 Fetching data from: /api/nowboard-items/4/inspired-by/9
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+industry-pulse-new-B9nPbzrs.js:16 [PULSE PAGE] user: Object userId: 9 user?.id: 9
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 6 currentUser: 9 itemUser: 12
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 5 currentUser: 9 itemUser: 7
+nowboard-panel-simple-JpVbZhUm.js:1 NowboardMenu rendering for item: 4 currentUser: 9 itemUser: 9
+index-Dr90C6Pr.js:49 Fetching data from: /api/users/9/reaction-quota
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/529/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/539/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/528/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/527/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/526/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/538
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/538/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/538/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/537/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for video player: Object
+industry-pulse-new-B9nPbzrs.js:16 Video media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Video localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for video: /uploads/media/media_8_1767015966809.mp4
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/536/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/534/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/533/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/532
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/532/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/532/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/531/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/524/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/523
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/523/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/523/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/298
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/298/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/298/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/297/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/296
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/296/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/296/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/295/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/293
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/293/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/293/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/292
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/292/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/292/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/289/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/286
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/286/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/286/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/271/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/535/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/530/reactions
+industry-pulse-new-B9nPbzrs.js:16 Pulse received for carousel: Object
+industry-pulse-new-B9nPbzrs.js:16 Media URLs: Array(1)
+industry-pulse-new-B9nPbzrs.js:16 Media localStorage keys: Array(0)
+industry-pulse-new-B9nPbzrs.js:16 Using mediaUrls for carousel: Array(1)
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/294/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/290/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/288
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/288/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/288/reactions
+index-Dr90C6Pr.js:49 Fetching data from: /api/poll-votes/user/9/pulse/270
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/270/poll-votes
+index-Dr90C6Pr.js:49 Fetching data from: /api/pulses/270/reactions
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 529, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 528, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 539, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 527, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 526, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 537, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 538, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 534, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 536, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 533, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 532, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 298, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 296, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 531, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 524, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 297, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 523, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 295, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 293, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 286, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 292, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 535, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 294, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 530, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 290, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 271, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 289, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 270, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 [Flag Status Query] Pulse 288, User 9: hasFlag=false
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_7_1767957026780.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_7_1764496738058.png
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_7_1759655118427.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_7_1764395262102.png
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_7_1767015351087.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load video: /uploads/media/media_8_1767015966809.mp4
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load image: /uploads/media/media_8_1759656326610.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load project image: /uploads/media/media_7_1764395871187.png
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load project image: /uploads/media/media_8_1759656456590.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+industry-pulse-new-B9nPbzrs.js:16 Failed to load project image: /uploads/media/media_7_1759579550271.jpg
+onError @ industry-pulse-new-B9nPbzrs.js:16Understand this error
+dashboard:1 The resource https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+dashboard:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKaW1wb3J0ICIuL3N0eWxlcy9uZW8tZ2xhc3MtbWFpbi5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy10aGVtZS5jc3MiOwppbXBvcnQgIi4vc3R5bGVzL25lby1nbGFzcy1zcG90aWZ5LmNzcyI7CgovLyBOb3RlOiBGaXJlYmFzZSByZW1vdmVkIC0gdXNpbmcgY3VzdG9tIE9BdXRoIG9ubHkKCi8vIFBlcmZvcm1hbmNlIG1lYXN1cmVtZW50CmNvbnN0IGFwcFN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwpjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCBpbml0aWFsaXphdGlvbiBzdGFydGVkJyk7CgovLyBSZW1vdmUgSFRNTCBsb2FkZXIgaW1tZWRpYXRlbHkgd2hlbiBSZWFjdCBhcHAgc3RhcnRzCmNvbnN0IGxvYWRlciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAtbG9hZGVyJyk7CmlmIChsb2FkZXIpIHsKICBsb2FkZXIuc3R5bGUub3BhY2l0eSA9ICcwJzsKICBsb2FkZXIuc3R5bGUudHJhbnNpdGlvbiA9ICdvcGFjaXR5IDAuMTVzIGVhc2Utb3V0JzsKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGxvYWRlci5zdHlsZS5kaXNwbGF5ID0gJ25vbmUnOwogICAgY29uc29sZS5sb2coJ1tQRVJGXSBTa2VsZXRvbiBsb2FkZXIgcmVtb3ZlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIGFwcFN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgfSwgMTUwKTsKfQoKLy8gQ2hlY2sgaWYgd2Ugc2hvdWxkIHVzZSB0aGUgc2ltcGxlIGFwcCBvciB0aGUgZnVsbCBhcHAKY29uc3QgdXNlU2ltcGxlQXBwID0gZmFsc2U7IC8vIFNldCB0byB0cnVlIGZvciB0ZXN0aW5nCgovLyBQcm9ncmVzc2l2ZSByZW5kZXJpbmcgLSBzdGFydCB3aXRoIGNyaXRpY2FsIGNvbXBvbmVudHMKY29uc3QgcmVuZGVyQXBwID0gKCkgPT4gewogIGNvbnN0IHJlbmRlclN0YXJ0VGltZSA9IHBlcmZvcm1hbmNlLm5vdygpOwogIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgcmVuZGVyaW5nIHN0YXJ0ZWQnKTsKICAKICBjcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb290IikhKS5yZW5kZXIoCiAgICB1c2VTaW1wbGVBcHAgPyA8U2ltcGxlQXBwIC8+IDogPEFwcCAvPgogICk7CiAgCiAgLy8gUmVwb3J0IHJlbmRlcmluZyB0aW1lIGFmdGVyIFJlYWN0IGhhcyBtb3VudGVkCiAgc2V0VGltZW91dCgoKSA9PiB7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFJlYWN0IGFwcCByZW5kZXJlZCBpbicsIChwZXJmb3JtYW5jZS5ub3coKSAtIHJlbmRlclN0YXJ0VGltZSkudG9GaXhlZCgyKSwgJ21zJyk7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFRvdGFsIGluaXRpYWxpemF0aW9uIHRpbWU6JywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAwKTsKfTsKCi8vIE9wdGltaXplIHJlbmRlcmluZyB0aW1pbmcKaWYgKGRvY3VtZW50LnJlYWR5U3RhdGUgPT09ICdsb2FkaW5nJykgewogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCByZW5kZXJBcHApOwp9IGVsc2UgewogIHJlbmRlckFwcCgpOwp9Cg== was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-Dr90C6Pr.js:234 Header mounted - invalidating user query
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Fetching user data for ID: 9
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image loaded successfully
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source type: BASE64
+index-Dr90C6Pr.js:234 [HEADER IMAGE DEBUG] Image source length: 55819
+index-Dr90C6Pr.js:49 Cached response for /api/users/9
+brand-quests-3GzmoeMU.js:11 [BRAND QUESTS PAGE DEBUG] Component rendered with user: Object
+index-Dr90C6Pr.js:49 Cached response for /api/users/9
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/experiences
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/educations
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/skills
+index-Dr90C6Pr.js:49 Cached response for /api/users/9/projects
+index-Dr90C6Pr.js:241 [Onboarding Check] Object
+index-Dr90C6Pr.js:241 [Onboarding] All mandatory fields present, no onboarding needed
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-Dr90C6Pr.js:241 [AppShell] Rendering with hideHeader: false
+index-Dr90C6Pr.js:241 [AppShell] Rendering Header component
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] User data loaded: SUCCESS
+index-Dr90C6Pr.js:49 Cached response for /api/notifications/9/count
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+use-current-user-B_20gER_.js:1 [QUEST API] Career quests (completed) fetched: 0
+use-current-user-B_20gER_.js:1 [SOCIAL QUEST API] Social quests (completed) fetched: 0
+use-current-user-B_20gER_.js:1 [QUEST API] Career quests (daily) fetched: 0
+use-current-user-B_20gER_.js:1 [SOCIAL QUEST API] Social quests (daily) fetched: 0
+use-current-user-B_20gER_.js:1 [SOCIAL QUEST API] Social quests (missed) fetched: 6
+use-current-user-B_20gER_.js:1 [QUEST API] Career quests (missed) fetched: 0
+brand-quests-3GzmoeMU.js:11 [BRAND QUESTS PAGE DEBUG] Component rendered with user: Object
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+800x450?text=Video+Not+Available:1  Failed to load resource: net::ERR_NAME_NOT_RESOLVEDUnderstand this error
