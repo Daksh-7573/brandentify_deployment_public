@@ -267,8 +267,13 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
    * Internal method for AI completion (private)
    */
   private async _generateCompletion(prompt: string, taskType: string): Promise<string> {
+    const startTime = Date.now();
+    
     try {
       console.log(`[Local AI] Generating ${taskType} with ${this.config.provider}`);
+      console.log(`[Local AI] Base URL: ${this.config.baseUrl}`);
+      console.log(`[Local AI] Model: ${this.config.model}`);
+      console.log(`[Local AI] Prompt length: ${prompt.length} chars`);
       
       switch (this.config.provider) {
         case 'ollama':
@@ -283,15 +288,21 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
           throw new Error(`Unsupported AI provider: ${this.config.provider}`);
       }
     } catch (error) {
-      console.error(`[Local AI] Error with ${this.config.provider}:`, error);
+      const elapsed = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`[Local AI] Error with ${this.config.provider} after ${elapsed}ms:`, errorMsg);
       
       if (this.fallbackToOpenAI && this.config.provider !== 'openai') {
-        console.log('[Local AI] Falling back to OpenAI');
+        console.log('[Local AI] Falling back to OpenAI...');
+        console.log(`[Local AI] OpenAI API key present: ${!!process.env.OPENAI_API_KEY}`);
         try {
-          return await this.generateWithOpenAI(prompt);
+          const result = await this.generateWithOpenAI(prompt);
+          console.log(`[Local AI] OpenAI fallback succeeded after ${Date.now() - startTime}ms`);
+          return result;
         } catch (openaiError) {
-          console.error('[Local AI] OpenAI fallback also failed:', openaiError);
-          throw new Error(`All AI providers failed. Original error: ${error}. OpenAI fallback error: ${openaiError}`);
+          const openaiErrorMsg = openaiError instanceof Error ? openaiError.message : String(openaiError);
+          console.error('[Local AI] OpenAI fallback also failed:', openaiErrorMsg);
+          throw new Error(`All AI providers failed. Ollama error: ${errorMsg}. OpenAI error: ${openaiErrorMsg}`);
         }
       }
       
@@ -304,7 +315,11 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
    */
   private async generateWithOllama(prompt: string): Promise<string> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const OLLAMA_TIMEOUT = 60000; // 60 second timeout for longer prompts like resume analysis
+    const timeoutId = setTimeout(() => controller.abort(), OLLAMA_TIMEOUT);
+    
+    console.log(`[Ollama] Connecting to ${this.config.baseUrl}/api/generate...`);
+    const requestStart = Date.now();
     
     try {
       const response = await fetch(`${this.config.baseUrl}/api/generate`, {
@@ -325,18 +340,32 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
       });
 
       clearTimeout(timeoutId);
+      const elapsed = Date.now() - requestStart;
+      console.log(`[Ollama] Response received in ${elapsed}ms, status: ${response.status}`);
 
       if (!response.ok) {
         throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json() as any;
+      console.log(`[Ollama] Generation complete, response length: ${data.response?.length || 0} chars`);
       return data.response || 'No response generated';
     } catch (error: any) {
       clearTimeout(timeoutId);
+      const elapsed = Date.now() - requestStart;
+      
       if (error.name === 'AbortError') {
-        throw new Error('Ollama request timeout after 30 seconds - VPS may be down');
+        console.error(`[Ollama] Request TIMEOUT after ${elapsed}ms (limit: ${OLLAMA_TIMEOUT}ms)`);
+        throw new Error(`Ollama request timeout after ${OLLAMA_TIMEOUT/1000} seconds - VPS may be unreachable from this environment`);
       }
+      
+      // Check for network errors (common in development environments)
+      if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+        console.error(`[Ollama] Network error: ${error.code} after ${elapsed}ms`);
+        throw new Error(`Cannot connect to Ollama VPS (${error.code}) - network issue from this environment`);
+      }
+      
+      console.error(`[Ollama] Error after ${elapsed}ms:`, error.message || error);
       throw error;
     }
   }
@@ -431,21 +460,39 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
    * Fallback to OpenAI when local models are unavailable
    */
   private async generateWithOpenAI(prompt: string): Promise<string> {
+    console.log('[OpenAI] Starting fallback generation...');
+    const startTime = Date.now();
+    
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OpenAI API key is required for fallback');
+      console.error('[OpenAI] No API key found in environment!');
+      throw new Error('OpenAI API key is required for fallback - please set OPENAI_API_KEY secret');
     }
+    
+    console.log(`[OpenAI] API key present (length: ${process.env.OPENAI_API_KEY.length})`);
 
-    const { OpenAI } = await import('openai');
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    try {
+      const { OpenAI } = await import('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Use cheaper model for fallback
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: this.config.maxTokens,
-      temperature: this.config.temperature
-    });
+      console.log('[OpenAI] Calling gpt-4o-mini...');
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: this.config.maxTokens,
+        temperature: this.config.temperature
+      });
 
-    return response.choices[0]?.message?.content || 'No response generated';
+      const elapsed = Date.now() - startTime;
+      const content = response.choices[0]?.message?.content || 'No response generated';
+      console.log(`[OpenAI] Success in ${elapsed}ms, response length: ${content.length} chars`);
+      
+      return content;
+    } catch (error) {
+      const elapsed = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`[OpenAI] Failed after ${elapsed}ms:`, errorMsg);
+      throw error;
+    }
   }
 
   /**
