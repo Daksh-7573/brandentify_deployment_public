@@ -876,6 +876,11 @@ export default function FashionQuantum({
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                           <div>
+                            {exp.industry && (
+                              <p className="text-xs mb-1" style={{ color: colors.warmSand }}>
+                                Industry: {exp.industry}
+                              </p>
+                            )}
                             <h3 
                               className="text-lg sm:text-xl font-semibold"
                               style={{ 
@@ -905,14 +910,6 @@ export default function FashionQuantum({
                                 <MapPin className="w-3 h-3" />
                                 {exp.location}
                               </p>
-                            )}
-                            {exp.industry && (
-                              <div className="flex justify-end mt-1 w-full text-right">
-                                <p className="text-xs flex items-center gap-1" style={{ color: colors.inkGrey, textAlign: 'right' }}>
-                                  <Building2 className="w-3 h-3" />
-                                  {exp.industry}
-                                </p>
-                              </div>
                             )}
                           </div>
                         </div>
@@ -1301,41 +1298,20 @@ export default function FashionQuantum({
                     </span>
                   )}
 
+                  {service.description && (
+                    <p className="text-sm mb-5 leading-relaxed flex-grow" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      {service.description}
+                    </p>
+                  )}
+
                   <div 
-                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full"
+                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full mt-auto"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
                       border: `1px solid ${colors.blushPink}30`,
                       boxSizing: 'border-box'
                     }}
                   >
-                    {service.priceInr && (
-                      <span 
-                        className="text-4xl font-bold"
-                        style={{ 
-                          color: colors.champagneGlow,
-                          fontFamily: "'Playfair Display', Georgia, serif",
-                        }}
-                      >
-                        ₹{Number(service.priceInr).toLocaleString()}
-                        {service.isHourly && (
-                          <span className="text-base font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
-                        )}
-                      </span>
-                    )}
-                    {service.priceUsd && (
-                      <span className="text-lg" style={{ color: colors.warmSand }}>
-                        ${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''}
-                      </span>
-                    )}
-                    <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
-                  </div>
-
-                  {service.description && (
-                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                      {service.description}
-                    </p>
-                  )}
 
                   {(() => {
                     const features = toStringArray(service.features);
