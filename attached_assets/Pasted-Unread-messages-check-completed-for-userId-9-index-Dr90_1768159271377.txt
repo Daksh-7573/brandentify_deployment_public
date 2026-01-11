@@ -1,0 +1,70 @@
+Unread messages check completed for userId: 9
+index-Dr90C6Pr.js:49 Cached response for /api/messaging/unread/count?userId=9
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Unread messages check completed for userId: 9
+resume-upload:1  Failed to load resource: the server responded with a status of 503 ()Understand this error
+index-Dr90C6Pr.js:192 Error processing resume: Error: HTTP error 503: 
+    at G.onload (index-Dr90C6Pr.js:192:131626)
+$ @ index-Dr90C6Pr.js:192Understand this error
+profile-neo-DQeyIWcN.js:14 [USER ID DEBUG] User object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:14 [USER ID DEBUG] Selected userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 Profile page render - user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …}
+profile-neo-DQeyIWcN.js:14 Profile page render - userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 Profile page render - isUserDataLoading: false
+profile-neo-DQeyIWcN.js:14 Profile page render - userData: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-DQeyIWcN.js:14 Profile page render - userDataError: null
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userData full object: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+profile-utils-DWZVIC3W.js:1 Profile Completion Input: {userData: 'User ID: 9', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+profile-utils-DWZVIC3W.js:1 User data being used for calculation: {name: 'Varun Chawla', photoURL: 'exists', title: 'Founder', location: 'Agra, India', industry: 'Finance', …}
+profile-utils-DWZVIC3W.js:1 Profile completion percentage: 60
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] userData?.lookingFor: business_partnerships
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] Found category: {value: 'business_partnerships', label: 'Business Partnerships', icon: '🚀'}
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] Final label: Business Partnerships Icon: 🚀
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+profile-picture-dialog-CXVwRfKJ.js:2 useProfileServices hook - services found directly: 4
+profile-picture-dialog-CXVwRfKJ.js:2 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 4, isLoading: false, isError: false, error: undefined}
+profile-neo-DQeyIWcN.js:14 Skills component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:14 Skills component - Using userIdentifier: 9
+profile-neo-DQeyIWcN.js:11 WorkExperience component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:11 WorkExperience component - Using userIdentifier: 9
+profile-picture-dialog-CXVwRfKJ.js:2 ProfilePictureDialog rendered with open: false
+profile-picture-dialog-CXVwRfKJ.js:2 [PROFILE DIALOG DEBUG] Auth user data: {id: 9, uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-picture-dialog-CXVwRfKJ.js:2 [PROFILE DIALOG DEBUG] Using actualUserId: 9
+profile-neo-DQeyIWcN.js:14 [USER ID DEBUG] User object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:14 [USER ID DEBUG] Selected userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 Profile page render - user: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', name: 'Varun Chawla', photoURL: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD…7IqW/NLmlrmHl5Uo5JUckmC/Ocsr18Vb6BfH4EqZfJL2f/9k=', …}
+profile-neo-DQeyIWcN.js:14 Profile page render - userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 Profile page render - isUserDataLoading: false
+profile-neo-DQeyIWcN.js:14 Profile page render - userData: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-DQeyIWcN.js:14 Profile page render - userDataError: null
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userIdentifier: 9
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] userData full object: {id: 9, username: '107731462353452700275', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: null, …}
+profile-neo-DQeyIWcN.js:14 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+profile-utils-DWZVIC3W.js:1 Profile Completion Input: {userData: 'User ID: 9', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+profile-utils-DWZVIC3W.js:1 User data being used for calculation: {name: 'Varun Chawla', photoURL: 'exists', title: 'Founder', location: 'Agra, India', industry: 'Finance', …}
+profile-utils-DWZVIC3W.js:1 Profile completion percentage: 60
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] userData?.lookingFor: business_partnerships
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] Found category: {value: 'business_partnerships', label: 'Business Partnerships', icon: '🚀'}
+profile-neo-DQeyIWcN.js:14 [PROFILE NEO DEBUG] Final label: Business Partnerships Icon: 🚀
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] isLoading: false
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userData ready: true
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] Photo source: CUSTOM_UPLOAD
+index-Dr90C6Pr.js:234 [HEADER PERFORMANCE] userId: 9
+profile-picture-dialog-CXVwRfKJ.js:2 useProfileServices hook - services found directly: 4
+profile-picture-dialog-CXVwRfKJ.js:2 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 4, isLoading: false, isError: false, error: undefined}
+profile-neo-DQeyIWcN.js:14 Skills component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:14 Skills component - Using userIdentifier: 9
+profile-neo-DQeyIWcN.js:11 WorkExperience component - user object: {id: 9, username: '107731462353452700275', uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-neo-DQeyIWcN.js:11 WorkExperience component - Using userIdentifier: 9
+profile-picture-dialog-CXVwRfKJ.js:2 ProfilePictureDialog rendered with open: false
+profile-picture-dialog-CXVwRfKJ.js:2 [PROFILE DIALOG DEBUG] Auth user data: {id: 9, uid: undefined, email: 'nishant.brodos@gmail.com'}
+profile-picture-dialog-CXVwRfKJ.js:2 [PROFILE DIALOG DEBUG] Using actualUserId: 9
+index-Dr90C6Pr.js:49 Cached response for /api/notifications/9/count

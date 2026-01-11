@@ -3,8 +3,35 @@ import { storage } from './storage';
 import { connectionStatusEnum } from '@shared/schema';
 import { z } from 'zod';
 import * as messageService from './services/message-service';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
+
+/**
+ * Helper function to get the authenticated user ID from the JWT session cookie
+ * This is the primary authentication method for Brandentifier
+ */
+function getAuthenticatedUserId(req: Request): number | null {
+  // First, try to verify JWT from session cookie (primary auth method)
+  const sessionToken = req.cookies?.brandentifier_session;
+  
+  if (sessionToken) {
+    try {
+      const decoded = jwt.verify(
+        sessionToken, 
+        process.env.JWT_SECRET || 'brandentifier-jwt-secret-key'
+      ) as any;
+      if (decoded.userId) {
+        return decoded.userId;
+      }
+    } catch (jwtError) {
+      console.warn(`[Connection Routes] Invalid session token`);
+    }
+  }
+  
+  // Fallback to session or user object (for legacy compatibility)
+  return (req.session as any)?.userId || req.user?.id || null;
+}
 
 // Get a connection request by ID
 router.get('/connection-requests/:id', async (req: Request, res: Response) => {
@@ -14,8 +41,8 @@ router.get('/connection-requests/:id', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    // Verify user is authenticated
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Verify user is authenticated using JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId) {
       return res.status(401).json({ message: 'You must be logged in to view connection requests' });
     }
@@ -45,8 +72,8 @@ router.get('/users/:userId/sent-connection-requests', async (req: Request, res: 
       return res.status(400).json({ message: 'Invalid user ID format' });
     }
 
-    // Verify the current user is requesting their own data
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Verify the current user is requesting their own data using JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId || currentUserId !== userId) {
       return res.status(403).json({ message: 'You can only view your own connection requests' });
     }
@@ -67,8 +94,8 @@ router.get('/users/:userId/received-connection-requests', async (req: Request, r
       return res.status(400).json({ message: 'Invalid user ID format' });
     }
 
-    // Verify the current user is requesting their own data
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Verify the current user is requesting their own data using JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId || currentUserId !== userId) {
       return res.status(403).json({ message: 'You can only view your own connection requests' });
     }
@@ -89,8 +116,8 @@ router.get('/users/:userId/pending-connection-requests-count', async (req: Reque
       return res.status(400).json({ message: 'Invalid user ID format' });
     }
 
-    // Verify the current user is requesting their own data
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Verify the current user is requesting their own data using JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId || currentUserId !== userId) {
       return res.status(403).json({ message: 'You can only view your own connection request count' });
     }
@@ -124,8 +151,8 @@ router.get('/users/:userId1/connected-with/:userId2', async (req: Request, res: 
 // Create a new connection request
 router.post('/connection-requests', async (req: Request, res: Response) => {
   try {
-    // Get the current user from session (NEVER trust client-provided senderId)
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Get the current user from JWT session cookie (NEVER trust client-provided senderId)
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId) {
       return res.status(401).json({ message: 'You must be logged in to send connection requests' });
     }
@@ -218,8 +245,8 @@ router.put('/connection-requests/:id/accept', async (req: Request, res: Response
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    // Get the current user from session
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Get the current user from JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId) {
       return res.status(401).json({ message: 'You must be logged in to accept connection requests' });
     }
@@ -282,8 +309,8 @@ router.put('/connection-requests/:id/decline', async (req: Request, res: Respons
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    // Get the current user from session
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Get the current user from JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId) {
       return res.status(401).json({ message: 'You must be logged in to decline connection requests' });
     }
@@ -336,8 +363,8 @@ router.put('/connection-requests/:id/cancel', async (req: Request, res: Response
       return res.status(400).json({ message: 'Invalid ID format' });
     }
 
-    // Get the current user from session
-    const currentUserId = (req.session as any)?.userId || req.user?.id;
+    // Get the current user from JWT session cookie
+    const currentUserId = getAuthenticatedUserId(req);
     if (!currentUserId) {
       return res.status(401).json({ message: 'You must be logged in to cancel connection requests' });
     }
