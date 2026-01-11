@@ -885,6 +885,27 @@ export default function FashionQuantum({
                             >
                               {exp.title}{exp.company ? ` at ${exp.company}` : ''}
                             </h3>
+                            {exp.domain && (
+                              <p className="text-xs mt-1" style={{ color: colors.warmSand }}>
+                                Domain: {exp.domain}
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs uppercase tracking-widest mb-2" style={{ color: colors.inkGrey }}>
+                              {formatDate(exp.startDate)}
+                              {isCurrent ? (
+                                <> – Present</>
+                              ) : exp.endDate ? (
+                                <> – {formatDate(exp.endDate)}</>
+                              ) : null}
+                            </div>
+                            {exp.location && (
+                              <p className="text-xs flex items-center gap-1 justify-end mt-1" style={{ color: colors.inkGrey }}>
+                                <MapPin className="w-3 h-3" />
+                                {exp.location}
+                              </p>
+                            )}
                             {exp.industry && (
                               <div className="flex justify-end mt-1 w-full text-right">
                                 <p className="text-xs flex items-center gap-1" style={{ color: colors.inkGrey, textAlign: 'right' }}>
@@ -892,11 +913,6 @@ export default function FashionQuantum({
                                   {exp.industry}
                                 </p>
                               </div>
-                            )}
-                            {exp.domain && (
-                              <p className="text-xs mt-1 text-right" style={{ color: colors.warmSand }}>
-                                Domain: {exp.domain}
-                              </p>
                             )}
                           </div>
                         </div>
@@ -1286,7 +1302,7 @@ export default function FashionQuantum({
                   )}
 
                   <div 
-                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full mt-4"
+                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full"
                     style={{
                       background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
                       border: `1px solid ${colors.blushPink}30`,
