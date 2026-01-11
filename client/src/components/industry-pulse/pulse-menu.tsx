@@ -209,20 +209,20 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="neo-glass-panel border-0 text-white max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white text-lg font-semibold">Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70 text-sm">
-              This action cannot be undone. This will permanently delete your pulse and remove it from the platform.
+        <AlertDialogContent className="neo-glass-panel border border-white/20 text-white max-w-md p-6">
+          <AlertDialogHeader className="space-y-3">
+            <AlertDialogTitle className="text-white text-xl font-bold">Delete Pulse</AlertDialogTitle>
+            <AlertDialogDescription className="text-white text-base leading-relaxed">
+              Are you sure you want to delete this pulse? This action cannot be undone and will permanently remove it from the platform.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 mt-6">
-            <AlertDialogCancel className="neo-glass-button secondary">
+          <AlertDialogFooter className="gap-3 mt-6 flex-row justify-end">
+            <AlertDialogCancel className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-lg font-medium transition-colors border border-white/20">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete} 
-              className="bg-red-500/80 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-medium transition-colors border border-red-400/50"
+              className="bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors border border-red-400/50"
               disabled={deletePulseMutation.isPending}
             >
               {deletePulseMutation.isPending ? "Deleting..." : "Delete"}
