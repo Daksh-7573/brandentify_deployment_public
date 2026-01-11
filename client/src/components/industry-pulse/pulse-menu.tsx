@@ -209,7 +209,20 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="neo-glass-panel border border-white/20 text-white max-w-md p-6 fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100]">
+        <AlertDialogContent 
+          className="border border-white/20 text-white max-w-md p-6 rounded-xl"
+          style={{
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(20px)',
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 100,
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}
+        >
           <AlertDialogHeader className="space-y-3">
             <AlertDialogTitle className="text-white text-xl font-bold">Delete Pulse</AlertDialogTitle>
             <AlertDialogDescription className="text-white text-base leading-relaxed">
