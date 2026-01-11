@@ -879,6 +879,18 @@ export interface IStorage {
   getUserUnlocksByType(userId: number, unlockType: 'portfolio' | 'quantum_card'): Promise<UserUnlock[]>;
   checkUserHasUnlock(userId: number, unlockType: 'portfolio' | 'quantum_card', unlockId: string): Promise<boolean>;
   deleteUserUnlock(id: number): Promise<boolean>;
+  
+  // Learning Progression Engine (LPE) operations
+  getUserLearningPattern(userId: number): Promise<any | undefined>;
+  updateUserLearningContext(userId: number, context: {
+    inferredSkills?: string[];
+    emergingSkills?: string[];
+    missingSkills?: string[];
+    dominantThemes?: string[];
+    currentDepthLevel?: string;
+  }): Promise<void>;
+  updatePulseSkillDepth(pulseId: number, skillDepth: string): Promise<void>;
+  getPulseById(pulseId: number): Promise<Pulse | undefined>;
 }
 
 // In-memory implementation of the storage
@@ -14729,6 +14741,160 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
+
+  // Learning Progression Engine (LPE) methods
+  async getUserLearningPattern(userId: number): Promise<any | undefined> {
+    try {
+      const result = await pool.query(
+        `SELECT * FROM user_learning_patterns WHERE user_id = $1`,
+        [userId]
+      );
+      
+      if (result.rows.length === 0) return undefined;
+      
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        userId: row.user_id,
+        preferences: row.preferences,
+        behaviorPatterns: row.behavior_patterns,
+        learningInsights: row.learning_insights,
+        inferredSkills: row.inferred_skills || [],
+        emergingSkills: row.emerging_skills || [],
+        missingSkills: row.missing_skills || [],
+        dominantThemes: row.dominant_themes || [],
+        currentDepthLevel: row.current_depth_level || 'intro',
+        confidence: row.confidence,
+        lastUpdated: row.last_updated,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+    } catch (error) {
+      console.error(`[db.getUserLearningPattern] Error:`, error);
+      return undefined;
+    }
+  }
+
+  async updateUserLearningContext(userId: number, context: {
+    inferredSkills?: string[];
+    emergingSkills?: string[];
+    missingSkills?: string[];
+    dominantThemes?: string[];
+    currentDepthLevel?: string;
+  }): Promise<void> {
+    try {
+      const existing = await this.getUserLearningPattern(userId);
+      
+      if (existing) {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+        
+        if (context.inferredSkills !== undefined) {
+          updates.push(`inferred_skills = $${paramCount++}`);
+          values.push(JSON.stringify(context.inferredSkills));
+        }
+        if (context.emergingSkills !== undefined) {
+          updates.push(`emerging_skills = $${paramCount++}`);
+          values.push(JSON.stringify(context.emergingSkills));
+        }
+        if (context.missingSkills !== undefined) {
+          updates.push(`missing_skills = $${paramCount++}`);
+          values.push(JSON.stringify(context.missingSkills));
+        }
+        if (context.dominantThemes !== undefined) {
+          updates.push(`dominant_themes = $${paramCount++}`);
+          values.push(JSON.stringify(context.dominantThemes));
+        }
+        if (context.currentDepthLevel !== undefined) {
+          updates.push(`current_depth_level = $${paramCount++}`);
+          values.push(context.currentDepthLevel);
+        }
+        
+        updates.push(`last_updated = NOW()`);
+        updates.push(`updated_at = NOW()`);
+        
+        values.push(userId);
+        
+        await pool.query(
+          `UPDATE user_learning_patterns SET ${updates.join(', ')} WHERE user_id = $${paramCount}`,
+          values
+        );
+      } else {
+        await pool.query(
+          `INSERT INTO user_learning_patterns (user_id, inferred_skills, emerging_skills, missing_skills, dominant_themes, current_depth_level)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
+          [
+            userId,
+            JSON.stringify(context.inferredSkills || []),
+            JSON.stringify(context.emergingSkills || []),
+            JSON.stringify(context.missingSkills || []),
+            JSON.stringify(context.dominantThemes || []),
+            context.currentDepthLevel || 'intro'
+          ]
+        );
+      }
+      
+      console.log(`[db.updateUserLearningContext] Updated learning context for user ${userId}`);
+    } catch (error) {
+      console.error(`[db.updateUserLearningContext] Error:`, error);
+    }
+  }
+
+  async updatePulseSkillDepth(pulseId: number, skillDepth: string): Promise<void> {
+    try {
+      await pool.query(
+        `UPDATE pulses SET skill_depth = $1, updated_at = NOW() WHERE id = $2`,
+        [skillDepth, pulseId]
+      );
+      console.log(`[db.updatePulseSkillDepth] Updated pulse ${pulseId} skill depth to ${skillDepth}`);
+    } catch (error) {
+      console.error(`[db.updatePulseSkillDepth] Error:`, error);
+    }
+  }
+
+  async getPulseById(pulseId: number): Promise<Pulse | undefined> {
+    try {
+      const result = await pool.query(
+        `SELECT * FROM pulses WHERE id = $1`,
+        [pulseId]
+      );
+      
+      if (result.rows.length === 0) return undefined;
+      
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        userId: row.user_id,
+        targetUserId: row.target_user_id,
+        type: row.type,
+        category: row.category,
+        title: row.title,
+        content: row.content,
+        industry: row.industry,
+        domain: row.domain,
+        mediaType: row.media_type,
+        mediaUrls: row.media_urls || [],
+        mediaLocalStorageKeys: row.media_local_storage_keys || [],
+        pollOptions: row.poll_options || [],
+        projectId: row.project_id,
+        likes: row.likes || 0,
+        insightfulCount: row.insightful_count || 0,
+        misinformedCount: row.misinformed_count || 0,
+        shareCount: row.share_count || 0,
+        comments: row.comments || 0,
+        reachScore: row.reach_score || 0,
+        isPublished: row.is_published,
+        expiresAt: row.expires_at,
+        skillDepth: row.skill_depth,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      } as Pulse;
+    } catch (error) {
+      console.error(`[db.getPulseById] Error:`, error);
+      return undefined;
+    }
+  }
 }
 
 // Create a properly typed storage instance
@@ -15124,5 +15290,10 @@ export const storage = {
   getUserUnlocks: (userId: number) => dbStorage.getUserUnlocks(userId),
   getUserUnlocksByType: (userId: number, unlockType: 'portfolio' | 'quantum_card') => dbStorage.getUserUnlocksByType(userId, unlockType),
   checkUserHasUnlock: (userId: number, unlockType: 'portfolio' | 'quantum_card', unlockId: string) => dbStorage.checkUserHasUnlock(userId, unlockType, unlockId),
-  deleteUserUnlock: (id: number) => dbStorage.deleteUserUnlock(id)
+  deleteUserUnlock: (id: number) => dbStorage.deleteUserUnlock(id),
+  
+  // Learning Progression Engine (LPE) methods
+  getUserLearningPattern: (userId: number) => dbStorage.getUserLearningPattern(userId),
+  updateUserLearningContext: (userId: number, context: any) => dbStorage.updateUserLearningContext(userId, context),
+  updatePulseSkillDepth: (pulseId: number, skillDepth: string) => dbStorage.updatePulseSkillDepth(pulseId, skillDepth),
 } as IStorage;

@@ -645,6 +645,14 @@ export const reactionTypeEnum = pgEnum("reaction_type", [
   "misinformed",
 ]);
 
+// Skill depth level enum for Learning Progression Engine (LPE)
+export const skillDepthLevelEnum = pgEnum("skill_depth_level", [
+  "intro",      // Foundational/beginner content
+  "applied",    // Practical application content
+  "advanced",   // Deep expertise content
+  "strategic",  // Leadership/strategic thinking content
+]);
+
 // Flag status enum for content flags
 export const flagStatusEnum = pgEnum("flag_status", [
   "pending",
@@ -677,6 +685,7 @@ export const pulses = pgTable("pulses", {
   reachScore: integer("reach_score").default(0), // Calculated score for feed ranking: (comments × 3) + insightful - misinformed
   isPublished: boolean("is_published").default(true),
   expiresAt: timestamp("expires_at"), // When the pulse expires (for highlight category)
+  skillDepth: skillDepthLevelEnum("skill_depth"), // LPE: AI-tagged content depth level
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -2552,6 +2561,11 @@ export const userLearningPatterns = pgTable("user_learning_patterns", {
   preferences: jsonb("preferences").default('{"responseLength":"detailed","communicationStyle":"formal","focusAreas":[],"preferredTimeframes":"short_term"}'),
   behaviorPatterns: jsonb("behavior_patterns").default('{"questionTypes":{},"topicFrequency":{},"engagementLevel":0.5,"responsePreferences":[]}'),
   learningInsights: jsonb("learning_insights").default('{"careerStage":"mid","primaryGoals":[],"communicationPatterns":[],"preferredGuidanceStyle":"collaborative"}'),
+  inferredSkills: jsonb("inferred_skills").default('[]'), // LPE: Skills user has demonstrated
+  emergingSkills: jsonb("emerging_skills").default('[]'), // LPE: Skills user is currently developing
+  missingSkills: jsonb("missing_skills").default('[]'), // LPE: Skills user needs for career goals
+  dominantThemes: jsonb("dominant_themes").default('[]'), // LPE: Primary content themes user engages with
+  currentDepthLevel: text("current_depth_level").default("intro"), // LPE: intro | applied | advanced | strategic
   lastUpdated: timestamp("last_updated").defaultNow(),
   confidence: integer("confidence").default(10), // 0-100 scale (multiply by 0.01)
   createdAt: timestamp("created_at").defaultNow(),

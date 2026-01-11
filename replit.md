@@ -55,7 +55,24 @@ Preferred communication style: Simple, everyday language.
 - **Payment Gateway**: Razorpay
 - **File Processing**: Advanced PDF parsing
 
-## Latest Session Updates (2026-01-07)
+## Latest Session Updates (2026-01-11)
+
+### Learning Progression Engine (LPE) - IMPLEMENTED ✅
+- **Purpose**: Transforms feed from a "mirror" (showing what users like) into a "ladder" (guiding career growth)
+- **Schema Changes**: 
+  - Added `skillDepthLevelEnum` (intro | applied | advanced | strategic) to pulses table
+  - Extended `userLearningPatterns` with LPE fields (inferredSkills, emergingSkills, missingSkills, dominantThemes, currentDepthLevel)
+- **LPE Service** (`server/services/learning-progression-engine.ts`):
+  - Skill inference from engagement patterns (Insightful: +1.0, Comments: +2.5, Misinformed: -1.5)
+  - AI-powered skill depth tagging via Ollama
+  - StretchScore calculation (relevance - familiarity) for growth content
+  - Concept Diversity Guard (prevents 3+ consecutive similar topics)
+- **Content Composition Rule**: 60% comfort depth, 25% next level (growth), 15% stretch (adjacent skills)
+- **AI Ranker Integration**: LPE applies adjustments after initial AI ranking, non-destructive fallback if LPE fails
+- **Storage Methods**: getUserLearningPattern, updateUserLearningContext, updatePulseSkillDepth
+- **Micro Learning Hints**: Occasional session-based progress feedback (max once per session)
+
+## Session Updates (2026-01-07)
 
 ### Profile System Cleanup - COMPLETED ✅
 - **Removed aboutMe Field**: Completely removed from schema, types, profile views, and edit forms

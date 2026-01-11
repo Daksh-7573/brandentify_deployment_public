@@ -3,10 +3,16 @@
  * 
  * Uses Ollama (llama3.2:1b) to intelligently rank pulses for each user
  * based on their profile, interests, and career goals
+ * 
+ * Now enhanced with Learning Progression Engine (LPE) for:
+ * - Skill depth sequencing (intro → applied → advanced → strategic)
+ * - StretchScore injection (high-relevance, low-familiarity content)
+ * - Concept diversity guard (prevents topic clustering)
  */
 
 import { UserContext, UserContextBuilder } from './user-context-builder.js';
 import { Pulse } from '../../shared/schema.js';
+import { learningProgressionEngine, LPEFeedAdjustment, PulseWithLPE } from './learning-progression-engine.js';
 
 const AI_BASE_URL = process.env.AI_BASE_URL || 'http://65.20.73.122:11434';
 const AI_MODEL = process.env.AI_MODEL || 'llama3.2:1b';
@@ -15,6 +21,9 @@ export interface RankedPulse {
   pulseId: number;
   relevanceScore: number;
   reason?: string;
+  skillDepth?: string;
+  stretchScore?: number;
+  lpeReason?: string;
 }
 
 export interface FeedRankingResult {
@@ -22,6 +31,9 @@ export interface FeedRankingResult {
   rankings: RankedPulse[];
   timestamp: Date;
   usedAI: boolean;
+  lpeApplied?: boolean;
+  depthDistribution?: Record<string, number>;
+  learningHint?: string;
 }
 
 export class AIFeedRanker {
@@ -32,9 +44,9 @@ export class AIFeedRanker {
   }
 
   /**
-   * Rank pulses for a specific user using AI
+   * Rank pulses for a specific user using AI + Learning Progression Engine
    */
-  async rankFeedForUser(userId: number, pulses: Pulse[]): Promise<FeedRankingResult> {
+  async rankFeedForUser(userId: number, pulses: Pulse[], storage?: any): Promise<FeedRankingResult> {
     const startTime = Date.now();
     console.log(`[AIFeedRanker] Ranking ${pulses.length} pulses for user ${userId}`);
 
@@ -58,14 +70,60 @@ export class AIFeedRanker {
       // 5. Apply diversity filter
       const diversifiedRankings = this.applyDiversityFilter(rankings, pulsesToRank);
 
+      // 6. Apply Learning Progression Engine (LPE) adjustments
+      let lpeResult: LPEFeedAdjustment | null = null;
+      if (storage) {
+        try {
+          const learningContext = await learningProgressionEngine.getLearningContext(storage, userId);
+          
+          const pulsesWithLPE: PulseWithLPE[] = diversifiedRankings.map(r => {
+            const pulse = pulsesToRank.find(p => p.id === r.pulseId);
+            return {
+              id: r.pulseId,
+              title: pulse?.title || '',
+              content: pulse?.content || null,
+              skillDepth: (pulse as any)?.skillDepth || null,
+              industry: pulse?.industry,
+              domain: pulse?.domain,
+              hashtags: pulse?.hashtags as string[] || [],
+              relevanceScore: r.relevanceScore / 100,
+            };
+          });
+
+          lpeResult = await learningProgressionEngine.applyLPEAdjustments(
+            pulsesWithLPE,
+            learningContext,
+            storage
+          );
+
+          console.log(`[AIFeedRanker] LPE applied - Depth distribution:`, lpeResult.depthDistribution);
+        } catch (lpeError) {
+          console.error('[AIFeedRanker] LPE error (non-fatal):', lpeError);
+        }
+      }
+
       const duration = Date.now() - startTime;
-      console.log(`[AIFeedRanker] Ranking completed in ${duration}ms using AI`);
+      console.log(`[AIFeedRanker] Ranking completed in ${duration}ms using AI${lpeResult ? ' + LPE' : ''}`);
+
+      const finalRankings = lpeResult 
+        ? lpeResult.adjustedItems.map((item, idx) => ({
+            pulseId: item.id,
+            relevanceScore: 100 - (idx * 2),
+            reason: diversifiedRankings.find(r => r.pulseId === item.id)?.reason,
+            skillDepth: item.skillDepth || undefined,
+            stretchScore: item.stretchScore,
+            lpeReason: item.lpeReason,
+          }))
+        : diversifiedRankings;
 
       return {
-        rankedPulseIds: diversifiedRankings.map(r => r.pulseId),
-        rankings: diversifiedRankings,
+        rankedPulseIds: finalRankings.map(r => r.pulseId),
+        rankings: finalRankings,
         timestamp: new Date(),
         usedAI: true,
+        lpeApplied: !!lpeResult,
+        depthDistribution: lpeResult?.depthDistribution,
+        learningHint: lpeResult?.learningHint,
       };
     } catch (error) {
       console.error('[AIFeedRanker] Error ranking feed with AI:', error);
