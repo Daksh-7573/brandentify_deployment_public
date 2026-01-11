@@ -15270,6 +15270,13 @@ export const storage = {
   getConnectionRequestById: (id: number) => dbStorage.getConnectionRequestById(id),
   getConnectionRequestsBySenderId: (senderId: number) => dbStorage.getConnectionRequestsBySenderId(senderId),
   getConnectionRequestsByReceiverId: (receiverId: number) => dbStorage.getConnectionRequestsByReceiverId(receiverId),
+  getPendingConnectionRequestsCount: (userId: number) => dbStorage.getPendingConnectionRequestsCount(userId),
+  areUsersConnected: (userId1: number, userId2: number) => dbStorage.areUsersConnected(userId1, userId2),
+  getExistingConnectionRequest: (userId1: number, userId2: number) => dbStorage.getExistingConnectionRequest(userId1, userId2),
+  createConnectionRequest: (request: InsertConnectionRequest) => dbStorage.createConnectionRequest(request),
+  acceptConnectionRequest: (id: number, conversationId: number) => dbStorage.acceptConnectionRequest(id, conversationId),
+  declineConnectionRequest: (id: number) => dbStorage.declineConnectionRequest(id),
+  cancelConnectionRequest: (id: number) => dbStorage.cancelConnectionRequest(id),
   
   // Premium Feature Quota methods (Subscription enforcement)
   checkResumeAnalysisQuota: (userId: number) => dbStorage.checkResumeAnalysisQuota(userId),
