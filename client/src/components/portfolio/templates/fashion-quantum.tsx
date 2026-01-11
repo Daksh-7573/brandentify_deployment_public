@@ -1312,6 +1312,27 @@ export default function FashionQuantum({
                       boxSizing: 'border-box'
                     }}
                   >
+                    {service.priceInr && (
+                      <span 
+                        className="text-4xl font-bold"
+                        style={{ 
+                          color: colors.champagneGlow,
+                          fontFamily: "'Playfair Display', Georgia, serif",
+                        }}
+                      >
+                        ₹{Number(service.priceInr).toLocaleString()}
+                        {service.isHourly && (
+                          <span className="text-base font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
+                        )}
+                      </span>
+                    )}
+                    {service.priceUsd && (
+                      <span className="text-lg" style={{ color: colors.warmSand }}>
+                        ${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''}
+                      </span>
+                    )}
+                    <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
+                  </div>
 
                   {(() => {
                     const features = toStringArray(service.features);
