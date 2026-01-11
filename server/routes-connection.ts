@@ -30,7 +30,8 @@ function getAuthenticatedUserId(req: Request): number | null {
   }
   
   // Fallback to session or user object (for legacy compatibility)
-  return (req.session as any)?.userId || req.user?.id || null;
+  const legacyUserId = (req as any).session?.userId || (req as any).user?.id || null;
+  return legacyUserId;
 }
 
 // Get a connection request by ID
