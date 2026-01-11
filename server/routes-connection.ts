@@ -246,16 +246,8 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
     // Create notification for receiver
     try {
       const sender = await storage.getUser(senderId);
-      const { createNotification } = await import('./services/notification-service');
-      await createNotification({
-        userId: receiverId,
-        type: 'info' as const,
-        category: 'pulse_reaction' as const, // Changed to valid category from LSP diagnostics
-        title: 'New Connection Request',
-        message: `${sender?.name || 'Someone'} sent you a connection request`,
-        actionUrl: `/connections`,
-        isRead: false
-      });
+      const { createConnectionRequestNotification } = await import('./services/notification-service');
+      await createConnectionRequestNotification(receiverId, sender?.name || 'Someone');
     } catch (notificationError) {
       console.error('Error sending connection request notification:', notificationError);
     }
@@ -307,16 +299,8 @@ router.put('/connection-requests/:id/accept', async (req: Request, res: Response
     // Create notification for sender
     try {
       const receiver = await storage.getUser(request.receiverId);
-      const { createNotification } = await import('./services/notification-service');
-      await createNotification({
-        userId: request.senderId,
-        type: 'success' as const,
-        category: 'pulse_reaction' as const, // Changed to valid category from LSP diagnostics
-        title: 'Connection Request Accepted',
-        message: `${receiver?.name || 'Someone'} accepted your connection request`,
-        actionUrl: `/messages`,
-        isRead: false
-      });
+      const { createConnectionAcceptedNotification } = await import('./services/notification-service');
+      await createConnectionAcceptedNotification(request.senderId, receiver?.name || 'Someone');
     } catch (notificationError) {
       console.error('Error sending connection accepted notification:', notificationError);
     }
@@ -368,7 +352,7 @@ router.put('/connection-requests/:id/decline', async (req: Request, res: Respons
       await createNotification({
         userId: request.senderId,
         type: 'info' as const,
-        category: 'pulse_reaction' as const, // Changed to valid category from LSP diagnostics
+        category: 'connection_declined' as const,
         title: 'Connection Request Declined',
         message: `${receiver?.name || 'Someone'} declined your connection request`,
         actionUrl: `/connections`,

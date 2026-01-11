@@ -240,6 +240,42 @@ export async function createPulseReactionNotification(
 }
 
 /**
+ * Creates a notification for a new connection request
+ */
+export async function createConnectionRequestNotification(
+  userId: number,
+  senderName: string
+): Promise<Notification> {
+  return await createNotification({
+    userId,
+    type: 'info',
+    title: 'New Connection Request',
+    message: `${senderName} sent you a connection request`,
+    category: 'connection_request',
+    isRead: false,
+    actionUrl: '/connections'
+  });
+}
+
+/**
+ * Creates a notification for an accepted connection request
+ */
+export async function createConnectionAcceptedNotification(
+  userId: number,
+  receiverName: string
+): Promise<Notification> {
+  return await createNotification({
+    userId,
+    type: 'success',
+    title: 'Connection Accepted',
+    message: `${receiverName} accepted your connection request`,
+    category: 'connection_accepted',
+    isRead: false,
+    actionUrl: '/messages'
+  });
+}
+
+/**
  * Creates a notification for when someone comments on a pulse
  * @param userId The user ID to create the notification for
  * @param commenterName The name of the person who commented
