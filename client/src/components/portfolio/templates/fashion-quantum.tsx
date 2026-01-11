@@ -866,7 +866,7 @@ export default function FashionQuantum({
                       )}
 
                       <div 
-                        className="mt-2 p-6 rounded-2xl transition-all duration-300 hover:translate-x-2"
+                        className="mt-2 p-6 rounded-2xl transition-all duration-300 hover:translate-x-2 flex flex-col h-full"
                         style={{
                           background: 'rgba(17,17,24,0.6)',
                           border: `1px solid rgba(245,243,238,0.1)`,
@@ -877,8 +877,8 @@ export default function FashionQuantum({
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                           <div>
                             {exp.industry && (
-                              <p className="text-xs mb-1" style={{ color: colors.warmSand }}>
-                                Industry: {exp.industry}
+                              <p className="text-xs mb-1 uppercase tracking-widest font-bold" style={{ color: colors.blushPink }}>
+                                {exp.industry}
                               </p>
                             )}
                             <h3 
@@ -1299,45 +1299,15 @@ export default function FashionQuantum({
                   )}
 
                   {service.description && (
-                    <p className="text-sm mb-5 leading-relaxed flex-grow" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
                       {service.description}
                     </p>
                   )}
 
-                  <div 
-                    className="py-4 px-5 rounded-xl mb-5 flex items-center gap-4 min-h-[90px] w-full mt-auto"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
-                      border: `1px solid ${colors.blushPink}30`,
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    {service.priceInr && (
-                      <span 
-                        className="text-4xl font-bold"
-                        style={{ 
-                          color: colors.champagneGlow,
-                          fontFamily: "'Playfair Display', Georgia, serif",
-                        }}
-                      >
-                        ₹{Number(service.priceInr).toLocaleString()}
-                        {service.isHourly && (
-                          <span className="text-base font-normal ml-1" style={{ color: colors.inkGrey }}>/hr</span>
-                        )}
-                      </span>
-                    )}
-                    {service.priceUsd && (
-                      <span className="text-lg" style={{ color: colors.warmSand }}>
-                        ${Number(service.priceUsd).toLocaleString()}{service.isHourly ? '/hr' : ''}
-                      </span>
-                    )}
-                    <Sparkles className="w-6 h-6 ml-auto" style={{ color: colors.blushPink }} />
-                  </div>
-
                   {(() => {
                     const features = toStringArray(service.features);
                     return features.length > 0 ? (
-                      <ul className="space-y-2.5">
+                      <ul className="space-y-2.5 mb-8">
                         {features.slice(0, 5).map((feature, i) => (
                           <li 
                             key={i} 
@@ -1356,6 +1326,15 @@ export default function FashionQuantum({
                       </ul>
                     ) : null;
                   })()}
+
+                  <div 
+                    className="py-4 px-5 rounded-xl flex items-center gap-4 min-h-[90px] w-full mt-auto"
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.blushPink}15, ${colors.editorialNude}15)`,
+                      border: `1px solid ${colors.blushPink}30`,
+                      boxSizing: 'border-box'
+                    }}
+                  >
                 </div>
               ))}
             </div>
