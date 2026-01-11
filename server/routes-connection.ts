@@ -348,16 +348,8 @@ router.put('/connection-requests/:id/decline', async (req: Request, res: Respons
     // Create notification for sender
     try {
       const receiver = await storage.getUser(request.receiverId);
-      const { createNotification } = await import('./services/notification-service');
-      await createNotification({
-        userId: request.senderId,
-        type: 'info' as const,
-        category: 'connection_declined' as const,
-        title: 'Connection Request Declined',
-        message: `${receiver?.name || 'Someone'} declined your connection request`,
-        actionUrl: `/connections`,
-        isRead: false
-      });
+      const { createConnectionDeclinedNotification } = await import('./services/notification-service');
+      await createConnectionDeclinedNotification(request.senderId, receiver?.name || 'Someone');
     } catch (notificationError) {
       console.error('Error sending connection declined notification:', notificationError);
     }

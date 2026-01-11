@@ -276,6 +276,24 @@ export async function createConnectionAcceptedNotification(
 }
 
 /**
+ * Creates a notification for a declined connection request
+ */
+export async function createConnectionDeclinedNotification(
+  userId: number,
+  receiverName: string
+): Promise<Notification> {
+  return await createNotification({
+    userId,
+    type: 'info',
+    title: 'Connection Declined',
+    message: `${receiverName} declined your connection request`,
+    category: 'connection_declined',
+    isRead: false,
+    actionUrl: '/connections'
+  });
+}
+
+/**
  * Creates a notification for when someone comments on a pulse
  * @param userId The user ID to create the notification for
  * @param commenterName The name of the person who commented
