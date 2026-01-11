@@ -1534,7 +1534,10 @@ export default function IndustryPulsePage() {
       
       {/* Project Detail Modal */}
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto neo-glass-card bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95">
+        <DialogContent 
+          hideCloseButton
+          className="max-w-2xl max-h-[90vh] overflow-y-auto neo-glass-card bg-gradient-to-br from-gray-900/95 via-black/90 to-gray-800/95 border border-white/20"
+        >
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-white">{selectedProject?.title}</DialogTitle>
             {selectedProject?.category && (
@@ -1608,9 +1611,8 @@ export default function IndustryPulsePage() {
           
           <DialogFooter>
             <Button 
-              variant="outline" 
               onClick={() => setIsProjectModalOpen(false)}
-              className="border-white/20 text-white hover:bg-white/10"
+              className="bg-white/10 hover:bg-white/20 text-white px-6 py-2.5 rounded-lg font-medium transition-colors border border-white/20"
             >
               Close
             </Button>
