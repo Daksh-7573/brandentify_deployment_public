@@ -252,7 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         
         // Listen for postMessage from popup indicating successful authentication
-        const handlePostMessage = (event: MessageEvent) => {
+        const handlePostMessage = async (event: MessageEvent) => {
           // Verify the message came from same origin
           if (event.origin !== window.location.origin) {
             return;
@@ -261,16 +261,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Check if this is our oauth_success message
           if (event.data?.type === "oauth_success" && event.data?.provider === "google") {
             console.log("✅ Received oauth_success postMessage from popup");
-            setIsLoading(false);
             
-            // Remove listener
+            // Remove listener first to prevent duplicate handling
             window.removeEventListener("message", handlePostMessage);
             
-            // Redirect directly to dashboard with fresh cookie
-            // Use setTimeout to ensure message is fully processed
-            setTimeout(() => {
+            // DEV FIX: Wait for cookie to propagate, then fetch and update auth state
+            // This ensures the session is properly set before redirecting
+            try {
+              // Wait a bit for cookie propagation
+              await new Promise(resolve => setTimeout(resolve, 300));
+              
+              // Fetch session to update auth state
+              const sessionResponse = await fetch('/api/auth/session', {
+                method: 'GET',
+                credentials: 'include'
+              });
+              
+              if (sessionResponse.ok) {
+                const sessionData = await sessionResponse.json();
+                if (sessionData.success && sessionData.user) {
+                  console.log('[Auth Context] ✅ Session verified after OAuth, updating state');
+                  const userData = sessionData.user;
+                  const authUser = {
+                    uid: userData.id.toString(),
+                    ...userData,
+                    photoURL: userData.photoURL
+                  };
+                  setUser(authUser);
+                  sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+                }
+              }
+              
+              setIsLoading(false);
+              
+              // Now redirect to dashboard with auth state properly set
               window.location.href = "/dashboard";
-            }, 50);
+            } catch (error) {
+              console.error('[Auth Context] Error fetching session after OAuth:', error);
+              setIsLoading(false);
+              // Still redirect - the page load will re-fetch session
+              window.location.href = "/dashboard";
+            }
           }
         };
         
