@@ -29,9 +29,36 @@ function getAuthenticatedUserId(req: Request): number | null {
     }
   }
   
-  // Fallback to session or user object (for legacy compatibility)
-  const legacyUserId = (req as any).session?.userId || (req as any).user?.id || null;
-  return legacyUserId;
+  // Check for session in headers if not in session object
+  const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+  const sessionUserId = (req as any).session?.userId;
+  const userObjectId = (req as any).user?.id;
+  const directUserId = (req as any).userId;
+
+  const userId = directUserId || userObjectId || sessionUserId || headerUserId;
+  
+  if (!userId && req.headers.authorization) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      const extractedId = decoded.id || decoded.userId || decoded.sub;
+      return extractedId ? parseInt(extractedId.toString()) : null;
+    } catch (e) {
+      console.warn('[Connection Routes] Failed to extract ID from auth header');
+    }
+  }
+
+  if (!userId) {
+    console.warn('[Connection Routes] No authenticated userId found. Debug info:', {
+      directUserId,
+      userObjectId,
+      sessionUserId,
+      headerUserId,
+      hasAuthHeader: !!req.headers.authorization
+    });
+  }
+  
+  return userId;
 }
 
 // Get a connection request by ID
@@ -207,9 +234,11 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
     }
     
     // Create the connection request
+    console.log(`[Connection Routes] Creating request: ${senderId} -> ${receiverId}`);
     const newRequest = await storage.createConnectionRequest({
       senderId,
       receiverId,
+      status: 'pending',
       reason,
       message
     });

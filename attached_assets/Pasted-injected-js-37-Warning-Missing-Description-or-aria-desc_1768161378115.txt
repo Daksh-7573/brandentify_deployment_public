@@ -1,0 +1,42 @@
+injected.js:37 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 1/3 for: /api/connection-requests
+injected.js:37 Waiting 300ms before retry 1...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 2/3 for: /api/connection-requests
+injected.js:37 Waiting 600ms before retry 2...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 3/3 for: /api/connection-requests
+injected.js:37 Waiting 1200ms before retry 3...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 API Error 500 from https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests: {"message":"Error creating connection request"}
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 1/3 for: /api/connection-requests
+injected.js:37 Waiting 300ms before retry 1...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 2/3 for: /api/connection-requests
+injected.js:37 Waiting 600ms before retry 2...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 Server error 500, retry 3/3 for: /api/connection-requests
+injected.js:37 Waiting 1200ms before retry 3...
+injected.js:214 
+ POST https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests 500 (Internal Server Error)
+injected.js:37 API request failed: POST /api/connection-requests - Status: 500
+injected.js:37 API Error 500 from https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/connection-requests: {"message":"Error creating connection request"}
+﻿
+
