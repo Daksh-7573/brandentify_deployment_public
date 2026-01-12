@@ -20,7 +20,7 @@
 
 import cron from 'node-cron';
 import { storage } from '../storage';
-import { db } from '../db';
+import { db, sql } from '../db';
 import { users, userQuests } from '@shared/schema';
 import { and, lte, isNotNull, isNull, eq, lt } from 'drizzle-orm';
 import { fromZonedTime } from 'date-fns-tz';
@@ -341,10 +341,12 @@ class TimezoneAwareQuestScheduler {
         // Force set to NOW so they get quests immediately if they don't have them
         const nextMidnight = new Date(); 
         
-        await db
-          .update(users)
-          .set({ nextQuestAssignmentTime: nextMidnight })
-          .where(eq(users.id, user.id));
+        // Use direct SQL for safety since types are being tricky
+        await db.execute(sql`
+          UPDATE users 
+          SET next_quest_assignment_time = ${nextMidnight}
+          WHERE id = ${user.id}
+        `);
         
         console.log(`[TimezoneQuestScheduler] ✅ Forced initialization for user ${user.id} (${user.name}) - next assignment at ${nextMidnight.toISOString()}`);
       }
