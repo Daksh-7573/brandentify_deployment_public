@@ -177,6 +177,7 @@ export function EmailAuth() {
       
       // Check for pending referral code in sessionStorage
       const referralCode = sessionStorage.getItem("referral_code");
+      console.log("[Referral] Sending registration with referralCode:", referralCode);
       
       const response = await fetch("/api/users", {
         method: "POST",

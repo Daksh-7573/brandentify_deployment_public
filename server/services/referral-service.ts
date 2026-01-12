@@ -238,7 +238,7 @@ export class ReferralService {
          VALUES ($1, 'quantum_card', $2, 'referral', $3)`,
         [userId, randomCard, conversionId]
       );
-      console.log(`[Referral] Unlocked Quantum Card: ${randomCard}`);
+      console.log(`[Referral] Unlocked Quantum Card: ${randomCard} for user ${userId}`);
     } else {
       console.log(`[Referral] All Quantum Cards already unlocked for user ${userId}`);
     }
