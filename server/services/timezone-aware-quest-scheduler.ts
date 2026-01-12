@@ -338,17 +338,20 @@ class TimezoneAwareQuestScheduler {
       console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize/verify for quest assignment`);
 
       for (const user of uninitializedUsers) {
-        // Force set to NOW so they get quests immediately if they don't have them
-        const nextMidnight = new Date(); 
-        
-        // Use direct SQL for safety since types are being tricky
-        await db.execute(sql`
-          UPDATE users 
-          SET next_quest_assignment_time = ${nextMidnight}
-          WHERE id = ${user.id}
-        `);
-        
-        console.log(`[TimezoneQuestScheduler] ✅ Forced initialization for user ${user.id} (${user.name}) - next assignment at ${nextMidnight.toISOString()}`);
+        // Only initialize users without a next assignment time to avoid constant resets
+        if (!user.nextQuestAssignmentTime) {
+          const nextMidnight = new Date(); 
+          
+          await db.execute(sql`
+            UPDATE users 
+            SET next_quest_assignment_time = ${nextMidnight}
+            WHERE id = ${user.id}
+          `);
+          
+          console.log(`[TimezoneQuestScheduler] ✅ Initialized nextQuestAssignmentTime for user ${user.id} (${user.name}) - next assignment at ${nextMidnight.toISOString()}`);
+        } else {
+          console.log(`[TimezoneQuestScheduler] ⏭️ User ${user.id} (${user.name}) already has next assignment time at ${new Date(user.nextQuestAssignmentTime).toISOString()}`);
+        }
       }
 
       console.log('[TimezoneQuestScheduler] 🎉 Initialization complete - all users ready for daily quest generation');
