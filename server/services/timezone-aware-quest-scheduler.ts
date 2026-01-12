@@ -51,7 +51,10 @@ class TimezoneAwareQuestScheduler {
       return;
     }
 
-    // Primary scheduler: Every hour at :00
+    // Run initialization once on startup
+    this.initializeUsersNextAssignmentTime();
+
+    // Primary scheduler: Every 5 minutes
     this.cronJob = cron.schedule(this.CHECK_INTERVAL, async () => {
       await this.checkAndAssignQuests();
     }, {
@@ -323,27 +326,27 @@ class TimezoneAwareQuestScheduler {
         console.log(`[TimezoneQuestScheduler] ✅ Set timezone UTC for user ${user.id} (${user.name})`);
       }
 
-      // STEP 2: Find users without nextQuestAssignmentTime (now all users should have timezone)
+      // STEP 2: Find all users to initialize/ensure nextQuestAssignmentTime is set
       const uninitializedUsers = await db
         .select({
           id: users.id,
           name: users.name,
           timezone: users.timezone
         })
-        .from(users)
-        .where(isNull(users.nextQuestAssignmentTime));
+        .from(users);
 
-      console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize for quest assignment`);
+      console.log(`[TimezoneQuestScheduler] Found ${uninitializedUsers.length} users to initialize/verify for quest assignment`);
 
       for (const user of uninitializedUsers) {
-        const nextMidnight = this.calculateNextMidnight(user.timezone || 'UTC');
+        // Force set to NOW so they get quests immediately if they don't have them
+        const nextMidnight = new Date(); 
         
         await db
           .update(users)
           .set({ nextQuestAssignmentTime: nextMidnight })
           .where(eq(users.id, user.id));
         
-        console.log(`[TimezoneQuestScheduler] ✅ Initialized user ${user.id} (${user.name}) in timezone ${user.timezone} - next assignment at ${nextMidnight.toISOString()}`);
+        console.log(`[TimezoneQuestScheduler] ✅ Forced initialization for user ${user.id} (${user.name}) - next assignment at ${nextMidnight.toISOString()}`);
       }
 
       console.log('[TimezoneQuestScheduler] 🎉 Initialization complete - all users ready for daily quest generation');

@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { storage } from '../storage';
-import { db } from '../db';
+import { db, sql } from '../db';
 import { userQuests, generatedSocialQuests, generatedCareerQuests, questDefinitions, brandGoals, users } from '@shared/schema';
 import { eq, and, lt, ne } from 'drizzle-orm';
 import { recommendationService } from './recommendation-service';
@@ -113,6 +113,21 @@ class DailyQuestScheduler {
           if (existingTodayQuests.length > 0) {
             console.log(`[DailyQuestScheduler] ⏭️ Skipping user ${user.id} (${user.name}) - already has ${existingTodayQuests.length} quests assigned today`);
             skippedCount++;
+            
+            // AUTO-FIX: If user has quests but next_quest_assignment_time is stuck in the past, push it to tomorrow
+            const now = new Date();
+            if (user.nextQuestAssignmentTime && new Date(user.nextQuestAssignmentTime) < now) {
+              console.log(`[DailyQuestScheduler] 🔧 AUTO-FIX: User ${user.id} has quests today but stale timestamp. Pushing timestamp to tomorrow.`);
+              const nextMidnight = new Date();
+              nextMidnight.setUTCHours(24, 0, 1, 0); // Tomorrow 00:00:01 UTC
+              
+              // Use direct SQL for safety since types are being tricky
+              await db.execute(sql`
+                UPDATE users 
+                SET next_quest_assignment_time = ${nextMidnight}
+                WHERE id = ${user.id}
+              `);
+            }
             continue;
           }
           
