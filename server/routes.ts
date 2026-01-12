@@ -701,15 +701,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const referralCode = req.body.referralCode;
       if (referralCode) {
         try {
-          console.log(`[POST /users] Processing referral code: ${referralCode} for user ${user.id}`);
+          console.log(`[POST /users] Found referral code in request: ${referralCode} for user ${user.id}`);
           const referralSuccess = await referralService.processReferralSignup(referralCode, user.id);
           if (referralSuccess) {
-            console.log(`[POST /users] Referral processed successfully for user ${user.id}`);
+            console.log(`[POST /users] Referral rewards granted successfully for code ${referralCode} to user ${user.id}`);
           } else {
-            console.log(`[POST /users] Referral code invalid or already used: ${referralCode}`);
+            console.warn(`[POST /users] Referral processing failed (invalid code or self-referral): ${referralCode}`);
           }
         } catch (referralError) {
-          console.error("[POST /users] Error processing referral:", referralError);
+          console.error("[POST /users] Exception during referral processing:", referralError);
           // Don't fail user creation if referral processing fails
         }
       }

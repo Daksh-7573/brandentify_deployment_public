@@ -204,12 +204,12 @@ export function EmailAuth() {
       // Use the user data from the registration response
       const userData = responseData.user;
       
-      console.log("Registration successful:", userData);
+      console.log("[Referral] Registration successful:", userData);
       
       // Clear referral code from sessionStorage after successful registration
       if (referralCode) {
         sessionStorage.removeItem("referral_code");
-        console.log("[Referral] Cleared referral code from sessionStorage after registration");
+        console.log("[Referral] Cleared referral code REF-" + referralCode + " from sessionStorage after registration");
       }
       
       // Log email preview or verification token for development
