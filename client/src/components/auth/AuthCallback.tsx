@@ -70,8 +70,8 @@ export function AuthCallback() {
             description: 'Your account has been created successfully.',
           });
 
-          // Redirect to dashboard
-          const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+          // Redirect to dashboard or onboarding
+          const returnUrl = userData.profileCompleted < 95 ? '/onboarding-flow' : (sessionStorage.getItem('auth_return_url') || '/industry-pulse');
           setTimeout(() => {
             window.location.href = returnUrl;
           }, 2000);

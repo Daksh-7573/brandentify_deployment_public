@@ -1,0 +1,83 @@
+🔄 Starting Google authentication... injected.js:37:27
+🚀 Using custom OAuth flow for all domains injected.js:37:27
+✅ Got OAuth URL, redirecting... injected.js:37:27
+🔄 [FastGoogleAuth] Popup closed, waiting for cookie propagation... injected.js:37:27
+🔍 [FastGoogleAuth] Checking session after popup close... injected.js:37:27
+XHRGET
+https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session
+[HTTP/1.1 401 Unauthorized 287ms]
+
+The script from “https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js” was loaded even though its MIME type (“text/plain”) is not a valid JavaScript MIME type.
+auth
+Partitioned cookie or storage access was provided to “https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth” because it is loaded in the third-party context and dynamic state partitioning is enabled.
+auth:91:30
+[SW DISABLED] Unregistering all service workers to clear cache injected.js:37:27
+[SW DISABLED] ✅ All service workers and caches cleared - fresh content will load injected.js:37:27
+[vite] connecting... injected.js:37:27
+GET
+wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=nDfm3rtAxp20
+NS_ERROR_WEBSOCKET_CONNECTION_REFUSED
+
+Firefox can’t establish a connection to the server at wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=nDfm3rtAxp20. client:536:19
+Uncaught (in promise) DOMException: An invalid or illegal string was specified
+    setupWebSocket client:536
+    fallback client:509
+    setupWebSocket client:555
+    setupWebSocket client:552
+    <anonymous> client:531
+client:536:19
+[Skeleton] Backup removal after 3s injected.js:37:27
+[PERF] React app initialization started injected.js:37:27
+[PERF] React rendering started injected.js:37:27
+[Auth] Current state: 
+Object { hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined }
+injected.js:37:27
+[Skeleton] DOM loaded, preparing smooth transition injected.js:37:27
+[Auth] Starting auth check injected.js:37:27
+[Auth] Fetching session from server... injected.js:37:27
+[PERF] React app rendered in 24.00 ms injected.js:37:27
+[PERF] Total initialization time: 24.00 ms injected.js:37:27
+XHRGET
+https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/auth/session
+[HTTP/1.1 401 Unauthorized 315ms]
+
+⚡ [PERF] Skeleton-to-app transition: 4103.00ms injected.js:37:27
+[PERF] Skeleton loader removed in 168.00 ms injected.js:37:27
+[Auth] Server session response: 
+Object { status: 401, ok: false }
+injected.js:37:27
+[Auth] No valid session found injected.js:37:27
+[Auth] Auth check complete injected.js:37:27
+[Auth] Current state: 
+Object { hasUser: false, isAuthenticated: false, isLoading: false, userEmail: undefined }
+injected.js:37:27
+🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT: injected.js:37:27
+📊 Total page load time: 4892.00ms injected.js:37:27
+🔥 Firebase init time: 4892.00ms injected.js:37:27
+✅ [Strategy 1] Preconnect/Preload: 3 preconnect + 1 preload + 1 modulepreload links active injected.js:37:27
+⚡ Expected improvement: 100-300ms faster cold starts injected.js:37:27
+✅ [Strategy 2] Firebase Auth Caching: Active - cached state available injected.js:37:27
+⚡ Expected improvement: 150-250ms faster auth loads injected.js:37:27
+🔄 [Strategy 4] Service Worker: Installing... injected.js:37:27
+🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress injected.js:37:27
+📈 Performance Optimization Complete - All 4 strategies active! injected.js:37:27
+AuthPage: Current auth state: 
+Object { isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined }
+injected.js:37:27
+Loading failed for the <script> with source “https://replit.com/public/js/beacon.js”. auth:1:1
+[Progressive Loading] Starting tiered component loading injected.js:37:27
+[Progressive Loading] ⚡ Core components ready injected.js:37:27
+AuthPage: Current auth state: 
+Object { isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined }
+injected.js:37:27
+[Progressive Loading] 🚀 Secondary components loaded injected.js:37:27
+AuthPage: Current auth state: 
+Object { isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined }
+injected.js:37:27
+[Progressive Loading] 🔧 All components loaded in 216.00ms injected.js:37:27
+AuthPage: Current auth state: 
+Object { isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined }
+injected.js:37:27
+✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded injected.js:37:27
+⚡ Expected improvement: 50-100ms perceived performance boost injected.js:37:27
+The resource at “https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly. auth

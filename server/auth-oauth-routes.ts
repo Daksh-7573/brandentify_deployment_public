@@ -719,8 +719,8 @@ export async function handleGoogleOAuthCallbackRoute(
 
       const cookieOptions = {
         httpOnly: true,
-        secure: isSecure,
-        sameSite: "lax" as const, // Use 'lax' for better compatibility - fixed for Replit domains
+        secure: true, // Always true for modern browsers/Replit
+        sameSite: "none" as const, // Critical for Replit preview domains
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       };
@@ -931,8 +931,8 @@ export async function acceptSessionRoute(req: Request, res: Response) {
 
     const cookieOptions = {
       httpOnly: true,
-      secure: isSecure,
-      sameSite: "lax" as const, // Use 'lax' for better compatibility - fixed for Replit domains
+      secure: true, // Always true for modern browsers/Replit
+      sameSite: "none" as const, // Critical for Replit preview domains
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     };

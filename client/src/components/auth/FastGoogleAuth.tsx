@@ -78,7 +78,9 @@ export function FastGoogleAuth() {
           }));
           // Give auth context time to update before redirecting
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            // Check profile completion to decide where to go
+            const target = (sessionData as any)?.profileCompleted < 95 ? '/onboarding-flow' : '/dashboard';
+            window.location.href = target;
           }, 100);
         } else {
           console.log('⚠️ [FastGoogleAuth] Session verification failed after retries, reloading page...');
@@ -164,7 +166,8 @@ export function FastGoogleAuth() {
                   }));
                   // Give auth context time to update before redirecting
                   setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    const target = (sessionData.user as any)?.profileCompleted < 95 ? '/onboarding-flow' : '/dashboard';
+                    window.location.href = target;
                   }, 100);
                   return;
                 }
