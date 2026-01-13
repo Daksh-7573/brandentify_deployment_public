@@ -25,7 +25,7 @@ export function FastGoogleAuth() {
 
       if (event.data?.type === 'oauth_success') {
         console.log('✅ [FastGoogleAuth] Received oauth_success postMessage');
-        const sessionData = event.data.user;
+        const sessionToken = event.data.sessionToken;
         
         if (checkClosedIntervalRef.current) {
           clearInterval(checkClosedIntervalRef.current);
@@ -34,58 +34,93 @@ export function FastGoogleAuth() {
 
         setIsLoading(true);
         
-        console.log('🔄 [FastGoogleAuth] Waiting for cookie propagation...');
-        await new Promise(resolve => setTimeout(resolve, 700));
-        
-        const maxRetries = 5;
-        let sessionVerified = false;
-        
-        for (let i = 0; i < maxRetries; i++) {
-          console.log(`🔍 [FastGoogleAuth] Verifying session (attempt ${i + 1}/${maxRetries})...`);
+        // If we received a session token, set it via API call from parent context
+        // This bypasses Firefox/Safari cookie partitioning
+        if (sessionToken) {
+          console.log('🔐 [FastGoogleAuth] Received session token, setting via API...');
           
           try {
-            const sessionResponse = await fetch('/api/auth/session', {
-              method: 'GET',
+            const setSessionResponse = await fetch('/auth/set-session', {
+              method: 'POST',
               credentials: 'include',
               headers: { 
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache'
-              }
+              },
+              body: JSON.stringify({ token: sessionToken })
             });
 
-            if (sessionResponse.ok) {
-              const sessionData = await sessionResponse.json();
-              if (sessionData.success && sessionData.user) {
-                console.log('✅ [FastGoogleAuth] Session verified! User:', sessionData.user.email);
-                sessionVerified = true;
-                break;
+            if (setSessionResponse.ok) {
+              const result = await setSessionResponse.json();
+              console.log('✅ [FastGoogleAuth] Session cookie set successfully!', result);
+              
+              // Dispatch event to trigger auth context refresh
+              window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
+                detail: { user: result.user } 
+              }));
+              
+              // Wait a moment for cookie to propagate, then verify and redirect
+              await new Promise(resolve => setTimeout(resolve, 300));
+              
+              // Verify the session is now valid
+              const verifyResponse = await fetch('/api/auth/session', {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 'Cache-Control': 'no-cache' }
+              });
+              
+              if (verifyResponse.ok) {
+                const sessionData = await verifyResponse.json();
+                if (sessionData.success && sessionData.user) {
+                  console.log('✅ [FastGoogleAuth] Session verified! Redirecting...');
+                  const target = sessionData.user.profileCompleted < 95 ? '/onboarding-flow' : '/dashboard';
+                  window.location.href = target;
+                  return;
+                }
               }
+              
+              // If verification failed, still try to redirect based on result
+              console.log('⚠️ [FastGoogleAuth] Verification after set-session failed, using result data');
+              const target = (result.user?.profileCompleted || 0) < 95 ? '/onboarding-flow' : '/dashboard';
+              window.location.href = target;
+              return;
+            } else {
+              console.error('❌ [FastGoogleAuth] Failed to set session via API');
             }
           } catch (error) {
-            console.log(`⚠️ [FastGoogleAuth] Session check attempt ${i + 1} failed:`, error);
-          }
-          
-          if (i < maxRetries - 1) {
-            await new Promise(resolve => setTimeout(resolve, 400));
+            console.error('❌ [FastGoogleAuth] Error setting session:', error);
           }
         }
+        
+        // Fallback: try checking session directly (in case cookies worked)
+        console.log('🔄 [FastGoogleAuth] Fallback: checking session directly...');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        try {
+          const sessionResponse = await fetch('/api/auth/session', {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
 
-        if (sessionVerified) {
-          console.log('🚀 [FastGoogleAuth] Session verified, dispatching event and redirecting...');
-          // Dispatch event to trigger auth context refresh
-          window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
-            detail: { user: sessionData } 
-          }));
-          // Give auth context time to update before redirecting
-          setTimeout(() => {
-            // Check profile completion to decide where to go
-            const target = (sessionData as any)?.profileCompleted < 95 ? '/onboarding-flow' : '/dashboard';
-            window.location.href = target;
-          }, 100);
-        } else {
-          console.log('⚠️ [FastGoogleAuth] Session verification failed after retries, reloading page...');
-          window.location.reload();
+          if (sessionResponse.ok) {
+            const sessionData = await sessionResponse.json();
+            if (sessionData.success && sessionData.user) {
+              console.log('✅ [FastGoogleAuth] Session found! Redirecting...');
+              window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
+                detail: { user: sessionData.user } 
+              }));
+              const target = sessionData.user.profileCompleted < 95 ? '/onboarding-flow' : '/dashboard';
+              window.location.href = target;
+              return;
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ [FastGoogleAuth] Fallback session check failed:', error);
         }
+        
+        console.log('❌ [FastGoogleAuth] All session methods failed, reloading...');
+        window.location.reload();
       }
     };
 

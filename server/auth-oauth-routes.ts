@@ -741,8 +741,8 @@ export async function handleGoogleOAuthCallbackRoute(
         "✅ [SESSION-HANDOFF] Same domain - sending popup close response",
       );
 
-      // Serve a small HTML that notifies the opener via postMessage and auto-closes the popup
-      // FIXED: Increased delay to 500ms for cookie propagation and added multiple postMessage attempts
+      // Serve a small HTML that passes session token via postMessage to parent
+      // This bypasses Firefox cookie partitioning by letting parent set the cookie
       return res.send(`
         <html>
           <head>
@@ -750,19 +750,27 @@ export async function handleGoogleOAuthCallbackRoute(
             <script>
               (function() {
                 var messageSent = false;
+                var sessionToken = "${sessionToken}";
                 
                 function sendOAuthMessage() {
                   try {
                     if (window.opener && !window.opener.closed) {
-                      console.log('[OAuth Popup] Sending oauth_success message to parent');
+                      console.log('[OAuth Popup] Sending oauth_success with token to parent');
                       window.opener.postMessage(
-                        { type: "oauth_success", provider: "google", timestamp: Date.now() },
+                        { 
+                          type: "oauth_success", 
+                          provider: "google", 
+                          timestamp: Date.now(),
+                          sessionToken: sessionToken
+                        },
                         window.location.origin
                       );
                       messageSent = true;
                       return true;
                     } else {
-                      console.log('[OAuth Popup] No opener window available');
+                      console.log('[OAuth Popup] No opener window - redirecting with token');
+                      // If no opener, redirect to set-session endpoint
+                      window.location.href = '/auth/set-session?token=' + encodeURIComponent(sessionToken);
                       return false;
                     }
                   } catch (err) {
@@ -777,22 +785,16 @@ export async function handleGoogleOAuthCallbackRoute(
                 // Retry after 100ms to ensure parent is ready
                 setTimeout(sendOAuthMessage, 100);
                 
-                // Send additional message at 300ms for fresh browser support
-                setTimeout(sendOAuthMessage, 300);
-                
-                // Auto-close popup after 1000ms to ensure cookie propagation and message receipt
-                // Extended from 500ms for fresh browsers where cookie setting takes longer
+                // Auto-close popup after 500ms
                 setTimeout(function() {
                   console.log('[OAuth Popup] Closing popup, messageSent:', messageSent);
                   try {
                     window.close();
                   } catch (err) {
                     console.error("[OAuth Popup] Close error:", err);
-                    // If popup can't close itself, it may have been opened by redirect
-                    // In this case, redirect to dashboard
-                    window.location.href = '/dashboard';
+                    window.location.href = '/auth/set-session?token=' + encodeURIComponent(sessionToken);
                   }
-                }, 1000);
+                }, 500);
               })();
             </script>
           </head>
@@ -1196,6 +1198,94 @@ export async function checkSessionRoute(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: "Session check failed",
+    });
+  }
+}
+
+/**
+ * Set session from token - handles popup cookie bypass for browsers with cookie partitioning
+ * This endpoint is called by the parent window after receiving the token via postMessage
+ */
+export async function setSessionFromTokenRoute(req: Request, res: Response) {
+  try {
+    console.log("🔐 [SET-SESSION] Processing session token from parent window");
+
+    // Get token from query params (for redirect) or body (for fetch)
+    const token = req.query.token as string || req.body?.token;
+
+    if (!token) {
+      console.error("❌ [SET-SESSION] No token provided");
+      return res.status(400).json({
+        success: false,
+        error: "No session token provided",
+      });
+    }
+
+    // Verify the JWT token is valid
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      console.log("✅ [SET-SESSION] Token verified for user:", decoded.email);
+
+      // Get the current host for cookie settings
+      const currentHost = req.get("host") || "localhost:5000";
+
+      // Set the session cookie from the parent window's context (bypasses partitioning)
+      const isSecure =
+        currentHost.includes("replit.app") ||
+        currentHost.includes("replit.dev") ||
+        currentHost.includes("brandentifier.com");
+      
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: isSecure ? "none" as const : "lax" as const,
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      };
+
+      console.log("🍪 [SET-SESSION] Setting cookie from parent context:", {
+        host: currentHost,
+        sameSite: cookieOptions.sameSite,
+        secure: cookieOptions.secure,
+      });
+
+      res.cookie("brandentifier_session", token, cookieOptions);
+
+      // If this is a redirect (from popup that couldn't close), redirect to dashboard
+      if (req.method === "GET" && req.query.token) {
+        console.log("✅ [SET-SESSION] Redirect flow - going to dashboard");
+        
+        // Get user to check profile completion
+        const user = await storage.getUser(decoded.userId);
+        const destination = (user?.profileCompleted || 0) < 95 ? "/onboarding-flow" : "/dashboard";
+        
+        return res.redirect(303, destination);
+      }
+
+      // For fetch calls, return success JSON
+      return res.json({
+        success: true,
+        message: "Session set successfully",
+        user: {
+          id: decoded.userId,
+          email: decoded.email,
+          name: decoded.name,
+          profileCompleted: decoded.profileCompleted,
+        },
+      });
+    } catch (jwtError: any) {
+      console.error("❌ [SET-SESSION] Invalid token:", jwtError.message);
+      return res.status(401).json({
+        success: false,
+        error: "Invalid or expired session token",
+      });
+    }
+  } catch (error: any) {
+    console.error("❌ [SET-SESSION] Error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to set session",
+      message: error.message,
     });
   }
 }

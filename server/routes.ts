@@ -76,7 +76,7 @@ import { authRoutes } from "./auth-routes";
 import { UserContextBuilder } from "./services/user-context-builder.js";
 import { AIFeedRanker } from "./services/ai-feed-ranker.js";
 import { feedCache } from "./services/feed-cache.js";
-import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute } from "./auth-oauth-routes";
+import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute, setSessionFromTokenRoute } from "./auth-oauth-routes";
 import { 
   createNotification, 
   createXpEarnedNotification,
@@ -9252,6 +9252,8 @@ ${extractedText.substring(0, 5000)}
   app.get("/api/auth/session", checkSessionRoute);
   app.post("/api/auth/logout", logoutRoute); // Logout endpoint
   app.get("/auth/accept-session", acceptSessionRoute); // Cross-domain session handoff
+  app.get("/auth/set-session", setSessionFromTokenRoute); // Set session from token (redirect flow)
+  app.post("/auth/set-session", setSessionFromTokenRoute); // Set session from token (fetch flow)
   console.log("Custom OAuth routes loaded");
   
   // Career Capsule routes - removed
